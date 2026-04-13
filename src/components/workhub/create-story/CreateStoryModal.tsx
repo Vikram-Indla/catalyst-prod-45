@@ -710,31 +710,53 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             )}
           </div>
 
-          {/* Parent */}
-          <ParentPicker
-            label="Parent"
-            projectId={form.projectId}
-            projectKey={resolvedKey}
-            value={form.parentId ?? null}
-            onChange={(parentId) => updateField('parentId', parentId)}
-            helpText="Your work type hierarchy determines the work items you can select here."
-          />
+          {/* ── KEY DETAILS — collapsible, matches View Story modal ── */}
+          <div style={{ marginBottom: 8 }}>
+            <div onClick={() => setKeyDetailsOpen(!keyDetailsOpen)} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', userSelect: 'none', marginBottom: 14, padding: '2px 0' }}>
+              <span style={{ width: 16, height: 16, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: '#5E6C84', transition: 'transform 0.2s', transform: keyDetailsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', flexShrink: 0 }}>
+                <ChevronDown size={14} />
+              </span>
+              <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Key details</span>
+            </div>
+            {keyDetailsOpen && (
+              <div>
+                {/* Parent — canonical from View Story modal */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12, minHeight: 28 }}>
+                  <span style={{ width: 100, flexShrink: 0, fontSize: 13, color: '#5E6C84', paddingTop: 4 }}>Parent</span>
+                  <div style={{ flex: 1, fontSize: 13, color: '#172B4D' }}>
+                    <CreateParentPicker
+                      projectKey={resolvedKey}
+                      value={form.parentId ?? null}
+                      onChange={(parentId) => updateField('parentId', parentId)}
+                    />
+                  </div>
+                </div>
 
-          {/* Priority */}
-          <SelectField
-            label="Priority"
-            value={form.priority}
-            options={priorityOptions}
-            onChange={v => updateField('priority', v)}
-          />
+                {/* Priority — canonical from View Story modal */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12, minHeight: 28 }}>
+                  <span style={{ width: 100, flexShrink: 0, fontSize: 13, color: '#5E6C84', paddingTop: 4 }}>Priority</span>
+                  <div style={{ flex: 1 }}>
+                    <CreatePriorityPicker value={form.priority} onChange={v => updateField('priority', v)} />
+                  </div>
+                </div>
 
-          {/* Description */}
-          <div className="csField">
-            <label className="csLabel">Description</label>
-            <DescriptionEditor onChange={(html, json) => {
-              updateField('description', html);
-              updateField('descriptionAdf', json);
-            }} />
+                {/* Description — canonical StoryRichTextEditor from View Story modal */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, margin: '0 0 4px 0' }}>
+                  <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: 0, padding: 0, fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Description</h2>
+                </div>
+                <StoryRichTextEditor
+                  content=""
+                  workItemId="create-new"
+                  onSave={(html) => {
+                    updateField('description', html);
+                  }}
+                  onCancel={() => {}}
+                  placeholder="Add a description..."
+                  minHeight={150}
+                  aiLabel="Improve description"
+                />
+              </div>
+            )}
           </div>
 
           {/* Fix versions — Jira-parity: multi-select with DEEBFF pills, Unreleased/Released sections */}
