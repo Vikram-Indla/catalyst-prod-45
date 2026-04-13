@@ -65,7 +65,10 @@ export default function CatalystViewIncident({
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
-        { label: 'Clone incident', onClick: () => toast('Clone — coming soon') },
+        { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
+        { label: 'Clone', onClick: () => toast('Clone — coming soon') },
+        { label: 'Move', onClick: () => toast('Move — coming soon') },
+        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete incident', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

@@ -79,7 +79,10 @@ export default function CatalystViewSubtask({
       onParentClick={parentIssue ? () => onOpenItem?.(parentIssue.id) : undefined}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
-        { label: 'Clone sub-task', onClick: () => toast('Clone — coming soon') },
+        { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
+        { label: 'Clone', onClick: () => toast('Clone — coming soon') },
+        { label: 'Move', onClick: () => toast('Move — coming soon') },
+        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
