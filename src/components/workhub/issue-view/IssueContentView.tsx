@@ -97,6 +97,7 @@ export function IssueContentView({
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
+  const subtasksProvider = useMemo(() => new LocalStorageBackedProvider(), []);
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
