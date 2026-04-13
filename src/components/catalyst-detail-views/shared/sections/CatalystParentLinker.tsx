@@ -233,6 +233,8 @@ function renderBrGroup(
   );
 }
 
+/* ═══════════════════════════════════════════════
+   SINGLE PARENT PICKER — uses parent_key
    ═══════════════════════════════════════════════ */
 function SingleParentPicker({
   issue, itemId, rule, projectKey, onOpenItem,
