@@ -20,9 +20,10 @@ const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = 
 interface Props {
   status: string;
   interactive?: boolean;
+  onStatusChange?: (newStatus: string) => void;
 }
 
-export function JiraStatusLozenge({ status, interactive = false }: Props) {
+export function JiraStatusLozenge({ status, interactive = false, onStatusChange }: Props) {
   const config = STATUS_MAP[status] ?? STATUS_MAP.backlog;
   return (
     <button

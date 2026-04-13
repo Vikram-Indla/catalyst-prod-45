@@ -1,28 +1,71 @@
 /**
  * ProjectListView — List tab (epics table)
- * Stage C: Full pixel-perfect build
+ * Stage D: Full Supabase wiring — ZERO hardcoded data
  */
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Search, Filter, ChevronDown, MessageSquare, Plus, MoreHorizontal } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { JiraStatusLozenge } from '@/components/ui/JiraStatusLozenge';
-import { useProjectListItems } from '@/hooks/useProjectListItems';
+import { useProjectListItems, useCreateWorkItem, useUpdateWorkItemStatus, useSearchWorkItems } from '@/hooks/useProjectListItems';
 
 interface Props {
   projectKey: string;
+  projectId?: string;
 }
 
-export default function ProjectListView({ projectKey }: Props) {
-  const { data: items = [], isLoading } = useProjectListItems(projectKey);
-  const [search, setSearch] = useState('');
+/* ── Skeleton row ── */
+const SkeletonRow = () => (
+  <tr>
+    {[36, 52, 110, 0, 140, 150, 120].map((w, i) => (
+      <td key={i} style={{ width: w || undefined }}>
+        <div style={{
+          height: 14, borderRadius: 4,
+          background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)',
+          backgroundSize: '200% 100%',
+          animation: 'shimmer 1.5s infinite',
+          width: w ? Math.round(w * 0.6) : '80%',
+        }} />
+      </td>
+    ))}
+  </tr>
+);
+
+export default function ProjectListView({ projectKey, projectId }: Props) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const { data: allItems = [], isLoading } = useProjectListItems(projectKey);
+  const { data: searchResults } = useSearchWorkItems(projectKey, searchQuery);
+  const { mutateAsync: createItem, isPending: isCreating } = useCreateWorkItem();
+  const { mutate: updateStatus } = useUpdateWorkItemStatus();
+
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [inlineCreate, setInlineCreate] = useState(false);
   const [newItemSummary, setNewItemSummary] = useState('');
+  const newInputRef = useRef<HTMLInputElement>(null);
 
-  const filtered = items.filter(i =>
-    i.summary.toLowerCase().includes(search.toLowerCase()) ||
-    i.jiraKey.toLowerCase().includes(search.toLowerCase())
-  );
+  const displayItems = searchQuery.length >= 2 ? (searchResults ?? []) : allItems;
+
+  // Auto-generate next key
+  const nextKey = `${projectKey ?? 'CAT'}-${(allItems.length + 1).toString().padStart(3, '0')}`;
+
+  const handleInlineCreate = async () => {
+    if (!newItemSummary.trim() || !projectId) {
+      setInlineCreate(false);
+      setNewItemSummary('');
+      return;
+    }
+    try {
+      await createItem({
+        projectId,
+        type: 'epic',
+        summary: newItemSummary.trim(),
+        itemKey: nextKey,
+      });
+      setNewItemSummary('');
+      setInlineCreate(false);
+    } catch (err) {
+      console.error('Failed to create work item:', err);
+    }
+  };
 
   const toggleRow = (id: string) => {
     setSelectedRows(prev => {
@@ -48,8 +91,8 @@ export default function ProjectListView({ projectKey }: Props) {
         }}>
           <Search size={13} />
           <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search list"
             style={{ border: 'none', outline: 'none', fontSize: 14,
               fontFamily: 'Inter, sans-serif', color: 'var(--cp-text-primary)',
@@ -102,7 +145,7 @@ export default function ProjectListView({ projectKey }: Props) {
             <tr>
               <th style={{ width: 36, textAlign: 'center', padding: '0 8px' }}>
                 <input type="checkbox" style={{ width: 14, height: 14, cursor: 'pointer' }}
-                  onChange={e => setSelectedRows(e.target.checked ? new Set(filtered.map(i => i.id)) : new Set())}
+                  onChange={e => setSelectedRows(e.target.checked ? new Set(displayItems.map(i => i.id)) : new Set())}
                 />
               </th>
               <th style={{ width: 52, textAlign: 'center' }}>TYPE</th>
@@ -128,12 +171,32 @@ export default function ProjectListView({ projectKey }: Props) {
           </thead>
           <tbody>
             {isLoading ? (
-              <tr><td colSpan={8} style={{ textAlign: 'center', padding: 24, color: 'var(--cp-text-tertiary)' }}>Loading…</td></tr>
-            ) : filtered.length === 0 ? (
-              <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--cp-text-tertiary)' }}>
-                No items found
-              </td></tr>
-            ) : filtered.map(item => (
+              Array.from({ length: 8 }).map((_, i) => <SkeletonRow key={i} />)
+            ) : displayItems.length === 0 ? (
+              <tr>
+                <td colSpan={8}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', gap: 12 }}>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cp-border-default)" strokeWidth="1.5">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <line x1="8" y1="8" x2="16" y2="8"/>
+                      <line x1="8" y1="12" x2="16" y2="12"/>
+                      <line x1="8" y1="16" x2="12" y2="16"/>
+                    </svg>
+                    <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary)', margin: 0, fontFamily: 'Sora, sans-serif' }}>
+                      No work items yet
+                    </p>
+                    <p style={{ fontSize: 14, color: 'var(--cp-text-tertiary)', margin: 0, textAlign: 'center' }}>
+                      Create your first Epic to start tracking work in this project.
+                    </p>
+                    <button
+                      onClick={() => setInlineCreate(true)}
+                      style={{ height: 36, padding: '0 16px', borderRadius: 6, border: 'none', background: 'var(--cp-primary)', color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      + Create Epic
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ) : displayItems.map(item => (
               <tr key={item.id} className={selectedRows.has(item.id) ? 'ph-row-selected' : ''}>
                 <td style={{ textAlign: 'center', width: 36 }}>
                   <input type="checkbox" checked={selectedRows.has(item.id)}
@@ -160,7 +223,11 @@ export default function ProjectListView({ projectKey }: Props) {
                   </span>
                 </td>
                 <td style={{ width: 140 }}>
-                  <JiraStatusLozenge status={item.status} interactive />
+                  <JiraStatusLozenge
+                    status={item.status}
+                    interactive
+                    onStatusChange={(newStatus) => updateStatus({ id: item.id, status: newStatus })}
+                  />
                 </td>
                 <td style={{ width: 150 }}>
                   <span style={{
@@ -180,20 +247,33 @@ export default function ProjectListView({ projectKey }: Props) {
 
             {inlineCreate && (
               <tr>
-                <td colSpan={2} />
-                <td colSpan={5}>
+                <td style={{ textAlign: 'center' }} />
+                <td style={{ textAlign: 'center' }}>
+                  <WorkItemTypeIcon type="epic" size={16} />
+                </td>
+                <td>
+                  <span style={{ fontSize: 13, color: 'var(--cp-text-tertiary)', fontFamily: "'JetBrains Mono', monospace" }}>
+                    {nextKey}
+                  </span>
+                </td>
+                <td colSpan={4}>
                   <input
+                    ref={newInputRef}
                     autoFocus
                     value={newItemSummary}
                     onChange={e => setNewItemSummary(e.target.value)}
-                    onKeyDown={e => {
+                    onKeyDown={async e => {
+                      if (e.key === 'Enter') await handleInlineCreate();
                       if (e.key === 'Escape') { setInlineCreate(false); setNewItemSummary(''); }
                     }}
+                    onBlur={handleInlineCreate}
                     placeholder="What needs to be done?"
+                    disabled={isCreating}
                     style={{
                       width: '100%', border: 'none', outline: '2px solid var(--cp-primary)',
                       borderRadius: 3, fontSize: 14, fontFamily: 'Inter, sans-serif',
                       padding: '4px 8px', background: 'var(--cp-bg-page)',
+                      opacity: isCreating ? 0.6 : 1,
                     }}
                   />
                 </td>

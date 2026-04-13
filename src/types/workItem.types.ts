@@ -46,6 +46,7 @@ export interface WorkItem {
   childCount: number;
   children?: WorkItem[];
   isExpanded?: boolean;
+  description?: string | null;
   createdAt: string;
   updatedAt: string;
   createdBy: string | null;
