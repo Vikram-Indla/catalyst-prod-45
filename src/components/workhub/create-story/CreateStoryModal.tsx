@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { createPortal } from 'react-dom';
 import { catalystToast } from '@/lib/catalystToast';
+import ReactDOM from 'react-dom';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, ChevronRight,
   Bold, Italic, List, ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
@@ -945,32 +946,80 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
 
   const showCreateToast = useCallback((keys: string[]) => {
     if (keys.length === 0) return;
-    const copyLink = () => {
-      const urls = keys.map(k => `${window.location.origin}/browse/${k}`).join('\n');
-      navigator.clipboard.writeText(urls);
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+
+    const dismiss = () => {
+      const el = container.querySelector('[data-toast-bar]') as HTMLElement;
+      if (el) { el.style.opacity = '0'; el.style.transform = 'translateY(12px)'; }
+      setTimeout(() => { ReactDOM.unmountComponentAtNode(container); container.remove(); }, 200);
     };
-    if (keys.length === 1) {
-      const key = keys[0];
-      catalystToast.show({
-        type: 'success',
-        title: `${key} created`,
-        actions: [
-          { label: 'View details', onClick: () => navigate(`/browse/${key}`) },
-          { label: 'Copy link', onClick: copyLink },
-        ],
-        duration: 6000,
-      });
-    } else {
-      catalystToast.show({
-        type: 'success',
-        title: `You've created ${keys.length} work items`,
-        actions: [
-          { label: 'View work items', onClick: () => navigate(`/browse/${keys[keys.length - 1]}`) },
-          { label: 'Copy link', onClick: copyLink },
-        ],
-        duration: 6000,
-      });
-    }
+    const autoDismiss = setTimeout(dismiss, 6000);
+
+    const title = keys.length === 1 ? `${keys[0]} created` : `You've created ${keys.length} work items`;
+    const viewLabel = keys.length === 1 ? 'View details' : 'View work items';
+    const viewTarget = keys.length === 1 ? `/browse/${keys[0]}` : `/browse/${keys[keys.length - 1]}`;
+
+    ReactDOM.render(
+      <div style={{
+        position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 99999, pointerEvents: 'auto',
+      }}>
+        <div data-toast-bar="" style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          background: '#FFFFFF', borderRadius: 8, padding: '10px 16px',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)',
+          transition: 'opacity 0.2s, transform 0.2s',
+          animation: 'slideUpFadeIn 0.3s ease-out',
+          minWidth: 280,
+        }}>
+          {/* Green checkmark */}
+          <svg width="24" height="24" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+            <circle cx="12" cy="12" r="12" fill="#36B37E"/>
+            <path d="M7 12l3.5 3.5L17 9" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+          </svg>
+          {/* Title */}
+          <span style={{ fontSize: 14, fontWeight: 500, color: '#172B4D', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif" }}>
+            {title}
+          </span>
+          {/* Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 4 }}>
+            <button onClick={() => { clearTimeout(autoDismiss); dismiss(); navigate(viewTarget); }} style={{
+              fontSize: 13, fontWeight: 500, color: '#0052CC', background: 'none', border: 'none',
+              cursor: 'pointer', padding: '4px 8px', borderRadius: 4, fontFamily: "'Inter', sans-serif",
+              transition: 'background 0.12s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+            >{viewLabel}</button>
+            <span style={{ color: '#C1C7D0', fontSize: 13 }}>·</span>
+            <button onClick={() => {
+              const urls = keys.map(k => `${window.location.origin}/browse/${k}`).join('\n');
+              navigator.clipboard.writeText(urls);
+              clearTimeout(autoDismiss); dismiss();
+            }} style={{
+              fontSize: 13, fontWeight: 500, color: '#0052CC', background: 'none', border: 'none',
+              cursor: 'pointer', padding: '4px 8px', borderRadius: 4, fontFamily: "'Inter', sans-serif",
+              transition: 'background 0.12s',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+            >Copy link</button>
+          </div>
+          {/* Dismiss X */}
+          <button onClick={() => { clearTimeout(autoDismiss); dismiss(); }} style={{
+            background: 'none', border: 'none', cursor: 'pointer', padding: 4, marginLeft: 4,
+            color: '#6B778C', display: 'flex', borderRadius: 4, transition: 'background 0.12s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'none'; }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      </div>,
+      container
+    );
   }, [navigate]);
 
   // Wrap onClose to flush any batch-created items as a toast
