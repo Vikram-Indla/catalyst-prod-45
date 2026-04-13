@@ -449,7 +449,6 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     icon: <span className="csStatusDot" />,
   }));
 
-  return (
   return createPortal(
     <div className="csOverlay" onClick={onClose}>
       <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
