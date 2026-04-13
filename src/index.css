@@ -175,6 +175,20 @@
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
 
+  /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
+  --cp-primary: #2563EB;
+  --cp-primary-hover: #1D4ED8;
+  --cp-bg-hover: rgba(0,0,0,0.04);
+  --cp-bg-selected: rgba(37,99,235,0.08);
+  --ph-row-height: 36px;
+  --ph-header-height: 36px;
+  --ph-cell-px: 8px;
+  --ph-cell-py: 12px;
+  --ph-divider: 0.75px solid rgba(15,23,42,0.08);
+  --ph-tab-height: 40px;
+  --ph-card-panel-w: 288px;
+  --ph-sidebar-w: 240px;
+
   /* ═══ SHORTHAND TOKENS — For You / shared components ═══ */
   --cp-bg: #FFFFFF;
   --cp-float: #FFFFFF;
@@ -1542,8 +1556,8 @@ html:has(body[data-scroll-locked]) {
   .c-surface-hover:hover {
     background-color: hsl(var(--muted) / 0.6);
   }
-  
-  
+
+
   /* === SURFACE UTILITIES === */
   .c-bg-0 { background-color: var(--bg-0); }
   .c-bg-1 { background-color: var(--bg-1); }
@@ -5061,4 +5075,67 @@ input[type="range"]::-moz-range-thumb {
 
 .dark .adf-content table tr:hover td {
   background-color: #1F1F1F;
+}
+
+/* ═══ ProjectHub Work Views — Table & Chrome classes ═══ */
+.ph-list-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+.ph-list-table th {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cp-text-tertiary);
+  padding: 0 var(--ph-cell-px, 8px);
+  height: var(--ph-header-height, 36px);
+  text-align: left;
+  border-bottom: var(--ph-divider);
+  background: var(--cp-bg-sunken);
+  white-space: nowrap;
+  user-select: none;
+}
+.ph-list-table td {
+  font-size: 14px;
+  color: var(--cp-text-primary);
+  padding: 0 var(--ph-cell-px, 8px);
+  height: var(--ph-row-height, 36px);
+  border-bottom: var(--ph-divider);
+  vertical-align: middle;
+}
+.ph-list-table tbody tr:hover td {
+  background: var(--cp-bg-hover);
+}
+.ph-row-selected td {
+  background: var(--cp-bg-selected) !important;
+}
+.ph-icon-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cp-text-secondary);
+  transition: background 100ms;
+}
+.ph-icon-btn:hover {
+  background: var(--cp-bg-hover);
+}
+.ph-iss-key {
+  color: var(--cp-text-link);
+  text-decoration: none;
+  font-size: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ph-iss-key:hover {
+  text-decoration: underline;
 }
