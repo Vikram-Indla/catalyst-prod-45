@@ -22,7 +22,7 @@ export function WorkItemDetailPanel({ item, allItems, onNavigate }: Props) {
   const currentIdx = allItems.findIndex(i => i.id === item.id);
   const isEpic = item.type === 'epic';
   const { data: children = [], isLoading: childrenLoading } = useWorkItemChildren(
-    isEpic ? item.id : undefined,
+    isEpic ? item.jiraKey : undefined,
     isEpic,
   );
   const { mutate: updateStatus } = useUpdateWorkItemStatus();
