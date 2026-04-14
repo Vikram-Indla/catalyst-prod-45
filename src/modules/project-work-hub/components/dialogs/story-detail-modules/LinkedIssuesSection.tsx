@@ -454,7 +454,12 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0 }}>{target.issue_key}</span>
+                  <span
+                    onClick={(e) => { e.stopPropagation(); navigate(`/issue/${target.issue_key}`); }}
+                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >{target.issue_key}</span>
                   <span style={{ flex: 1, fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
                   <span style={{
                     ...statusLoz as any, display: 'inline-flex', alignItems: 'center', gap: 3,
