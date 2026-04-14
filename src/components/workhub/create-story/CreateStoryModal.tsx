@@ -1078,7 +1078,7 @@ function LinkedWorkItemsField({
                     type="button"
                     disabled={isAlreadyLinked}
                     onClick={() => {
-                      onAddItem({ key: item.issue_key, summary: item.title, issueType: item.issue_type || 'Story' });
+                      onAddItem({ key: item.issue_key, summary: item.summary, issueType: item.issue_type || 'Story' });
                       setSearchQuery('');
                     }}
                     style={{
@@ -1096,7 +1096,7 @@ function LinkedWorkItemsField({
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <span style={{ fontSize: 13, color: '#172B4D', lineHeight: '20px', wordBreak: 'break-word' }}>
-                        {item.issue_key} {item.title}
+                        {item.issue_key} {item.summary}
                       </span>
                     </div>
                   </button>
