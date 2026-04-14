@@ -1319,7 +1319,7 @@ export default function StoryDetailModal({
                   {issue && (
                     <>
                       <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
-                      <LinkedIssuesSection issueId={issue.id} />
+                      <LinkedIssuesSection issueId={issue.id} projectKey={issue.project_key} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
                       <TestHubSection storyId={issue.id} />

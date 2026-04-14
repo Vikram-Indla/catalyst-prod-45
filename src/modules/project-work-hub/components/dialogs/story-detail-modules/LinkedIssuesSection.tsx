@@ -6,7 +6,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
 import { AiLinkSimilarPanel } from './AiLinkSimilarPanel';
+import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
@@ -77,7 +79,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
 }
 
 /* ── Add Link Row (Jira-parity, multi-select) ── */
-function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose: () => void; onSuccess: () => void }) {
+function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
@@ -142,7 +144,13 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
         if (error) throw error;
       }
     },
-    onSuccess,
+    onSuccess: () => {
+      toast.success(`Linked ${selectedItems.length} item${selectedItems.length > 1 ? 's' : ''}`);
+      onSuccess();
+    },
+    onError: (err: any) => {
+      toast.error('Failed to link', { description: err.message });
+    },
   });
 
   const handleSelect = (r: any) => {
@@ -242,7 +250,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
 
       {/* + Create linked work item / Link / Cancel */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#6B778C', fontFamily: 'inherit', padding: 0 }}>
+        <button onClick={onCreateNew} style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#172B4D', fontFamily: 'inherit', fontWeight: 500, padding: 0 }}>
           <Plus size={14} /> Create linked work item
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -270,9 +278,26 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
 }
 
 /* ── Main Section ── */
-export function LinkedIssuesSection({ issueId }: { issueId: string }) {
+export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; projectKey?: string }) {
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createLinkType, setCreateLinkType] = useState('relates to');
+
+  // Resolve projectId (UUID) from projectKey for CreateWorkItemModal
+  const derivedProjectKey = projectKey || issueId.split('-')[0];
+  const { data: projectData } = useQuery({
+    queryKey: ['projectByKey', derivedProjectKey],
+    queryFn: async () => {
+      const { data } = await supabase.from('projects')
+        .select('id, key')
+        .eq('key', derivedProjectKey)
+        .single();
+      return data;
+    },
+    enabled: !!derivedProjectKey,
+    staleTime: Infinity,
+  });
 
   const { data: links = [], isLoading } = useQuery({
     queryKey: ['linkedIssues', issueId],
@@ -283,7 +308,6 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
         .order('created_at', { ascending: false });
       if (error) throw error;
       if (!rawLinks?.length) return [];
-      // target keys are the "other side" of the link
       const targetKeys = rawLinks.map(l => l.source_id === issueId ? l.target_id : l.source_id);
       const { data: targets } = await supabase.from('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
@@ -299,8 +323,31 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
 
   const removeMutation = useMutation({
     mutationFn: async (linkId: string) => { const { error } = await supabase.from('ph_issue_links').delete().eq('id', linkId); if (error) throw error; },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+      toast.success('Link removed');
+    },
   });
+
+  // Auto-link after creating a new work item
+  const handleCreatedItem = async (newItemKey: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase.from('ph_issue_links').insert({
+        source_id: issueId,
+        target_id: newItemKey,
+        link_type: createLinkType,
+        created_by: user.id,
+      } as any);
+      if (error) throw error;
+      toast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+    } catch (err: any) {
+      toast.error(`Created ${newItemKey} but failed to link`, { description: err.message });
+    }
+    setShowCreateModal(false);
+  };
 
   // Group links by type (Jira groups them under type headers)
   const grouped = links.reduce((acc: Record<string, any[]>, link: any) => {
@@ -419,6 +466,18 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
           issueId={issueId}
           onClose={() => setShowAdd(false)}
           onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }}
+          onCreateNew={() => { setShowAdd(false); setShowCreateModal(true); }}
+        />
+      )}
+
+      {/* Create linked work item modal — reuses existing Catalyst create flow */}
+      {showCreateModal && projectData && (
+        <CreateWorkItemModal
+          open={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          projectId={projectData.id}
+          projectKey={projectData.key}
+          onCreated={handleCreatedItem}
         />
       )}
     </SectionBlock>

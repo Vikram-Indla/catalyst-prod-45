@@ -6,6 +6,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { ChevronDown, ThumbsUp, ThumbsDown, Info, Loader2, RefreshCw } from 'lucide-react';
 import { IssueIcon } from './shared-components';
 import { LINK_TYPE_OPTIONS } from './constants';
@@ -191,6 +192,9 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
         successKeys.forEach(k => next.delete(k));
         return next;
       });
+      const failedKeys = results.filter(r => !r.ok).map(r => r.key);
+      if (successKeys.length) toast.success(`Linked ${successKeys.length} similar item${successKeys.length > 1 ? 's' : ''}`);
+      if (failedKeys.length) toast.error(`Failed to link: ${failedKeys.join(', ')}`);
       onLinked();
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
     },

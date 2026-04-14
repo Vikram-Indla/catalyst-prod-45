@@ -18,6 +18,7 @@ interface CreateWorkItemModalProps {
   onClose: () => void;
   projectId: string;
   projectKey: string;
+  onCreated?: (itemKey: string) => void;
 }
 
 // ─── Hierarchy Icons ──────────────────────────────────────
@@ -38,7 +39,7 @@ const PRIORITIES = [
 ];
 
 // ─── Component ────────────────────────────────────────────
-export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: CreateWorkItemModalProps) {
+export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCreated }: CreateWorkItemModalProps) {
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -206,6 +207,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: Cr
         description: result.title,
         duration: 4000,
       });
+
+      onCreated?.(result.item_key);
 
       if (createAnother) {
         resetForm(true);
