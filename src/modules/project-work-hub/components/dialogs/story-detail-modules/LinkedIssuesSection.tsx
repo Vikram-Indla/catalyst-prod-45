@@ -464,9 +464,14 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   <span
                     onClick={(e) => {
                       e.stopPropagation();
-                      const targetId = target.id || target.issue_key;
-                      const targetProjectKey = target.project_key || target.issue_key?.split('-')[0] || derivedProjectKey;
-                      setOpenedItem({ id: targetId, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey });
+                      if (target.id) {
+                        // catalyst_issues item — open in modal
+                        const targetProjectKey = target.project_key || target.issue_key?.split('-')[0] || derivedProjectKey;
+                        setOpenedItem({ id: target.id, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey });
+                      } else {
+                        // ph_issues item — navigate to full page
+                        navigate(`/issue/${target.issue_key}`);
+                      }
                     }}
                     style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
