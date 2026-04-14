@@ -115,6 +115,7 @@ export function IssueListPanel({
           <button className="jlpToolBtn" title={sortAsc ? 'Sort ascending' : 'Sort descending'} onClick={() => setSortAsc(a => !a)}>
             {sortAsc ? <ArrowUpNarrowWide size={16} /> : <ArrowDownNarrowWide size={16} />}
           </button>
+          <button className="jlpToolBtn" title="Refresh"><RotateCcw size={16} /></button>
 
           {sortMenuOpen && (
             <div className="jlpSortMenu">
