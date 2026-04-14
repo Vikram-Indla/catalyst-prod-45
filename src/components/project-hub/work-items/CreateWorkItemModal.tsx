@@ -208,6 +208,8 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
         duration: 4000,
       });
 
+      onCreated?.(result.item_key);
+
       if (createAnother) {
         resetForm(true);
         setTimeout(() => titleRef.current?.focus(), 50);
