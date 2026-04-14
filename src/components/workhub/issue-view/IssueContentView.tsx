@@ -187,6 +187,9 @@ export function IssueContentView({
   const [posting, setPosting] = useState(false);
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [descEditMode, setDescEditMode] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [showConvertWizard, setShowConvertWizard] = useState(false);
+  const moreMenuRef = useRef<HTMLDivElement>(null);
 
   // Status update mutation
   const updateStatusMutation = useMutation({
