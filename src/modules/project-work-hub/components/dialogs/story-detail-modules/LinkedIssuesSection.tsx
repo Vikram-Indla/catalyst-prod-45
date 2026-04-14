@@ -82,8 +82,25 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 50); }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(target) &&
+        inputAreaRef.current && !inputAreaRef.current.contains(target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const { data: results = [] } = useQuery({
     queryKey: ['linkSearch', search],
