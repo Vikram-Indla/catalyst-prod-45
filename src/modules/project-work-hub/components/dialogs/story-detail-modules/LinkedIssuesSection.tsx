@@ -80,7 +80,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
 }
 
 /* ── Add Link Row (Jira-parity, multi-select) ── */
-function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKeys = new Set() }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void; existingLinkedKeys?: Set<string> }) {
+function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedKeys = new Set() }: { issueKey: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void; existingLinkedKeys?: Set<string> }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
@@ -130,7 +130,7 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
   // Filter out already-selected AND already-linked items from results
   const filteredResults = results.filter((r: any) =>
     !selectedItems.some(s => s.item_key === r.issue_key) &&
-    r.issue_key !== issueId &&
+    r.issue_key !== issueKey &&
     !existingLinkedKeys.has(r.issue_key)
   );
 
@@ -141,7 +141,7 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
       if (!user) throw new Error('Not authenticated');
       for (const item of selectedItems) {
         const { error } = await supabase.from('ph_issue_links').insert({
-          source_id: issueId,
+          source_id: issueKey,
           target_id: item.item_key,
           link_type: linkType,
           created_by: user.id,
@@ -292,7 +292,10 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
 }
 
 /* ── Main Section ── */
-export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; projectKey?: string }) {
+export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKey }: { issueId: string; issueKey?: string; projectKey?: string }) {
+  // ph_issue_links stores issue_keys (e.g. "BAU-4511"), not UUIDs.
+  // Use issueKey for all ph_issue_links operations; fall back to issueId for legacy callers.
+  const issueKey = issueKeyProp || issueId;
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
