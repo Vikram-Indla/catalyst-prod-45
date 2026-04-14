@@ -302,7 +302,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   const [createLinkType, setCreateLinkType] = useState('relates to');
 
   // Resolve projectId (UUID) from projectKey for CreateWorkItemModal
-  const derivedProjectKey = projectKey || issueId.split('-')[0];
+  const derivedProjectKey = projectKey || issueKey.split('-')[0];
   const { data: projectData } = useQuery({
     queryKey: ['projectByKey', derivedProjectKey],
     queryFn: async () => {
@@ -317,22 +317,22 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   });
 
   const { data: links = [], isLoading } = useQuery({
-    queryKey: ['linkedIssues', issueId],
+    queryKey: ['linkedIssues', issueKey],
     queryFn: async () => {
       const { data: rawLinks, error } = await supabase.from('ph_issue_links')
         .select('id, link_type, created_at, source_id, target_id')
-        .or(`source_id.eq.${issueId},target_id.eq.${issueId}`)
+        .or(`source_id.eq.${issueKey},target_id.eq.${issueKey}`)
         .order('created_at', { ascending: false });
       if (error) throw error;
       if (!rawLinks?.length) return [];
-      const targetKeys = rawLinks.map(l => l.source_id === issueId ? l.target_id : l.source_id);
+      const targetKeys = rawLinks.map(l => l.source_id === issueKey ? l.target_id : l.source_id);
       const { data: targets } = await supabase.from('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
         .in('issue_key', targetKeys)
         .is('jira_removed_at', null);
       const targetMap = new Map((targets ?? []).map((t: any) => [t.issue_key, t]));
       return rawLinks.map(l => {
-        const key = l.source_id === issueId ? l.target_id : l.source_id;
+        const key = l.source_id === issueKey ? l.target_id : l.source_id;
         return { ...l, target: targetMap.get(key) };
       }).filter(l => l.target) as any[];
     },
@@ -341,7 +341,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   const removeMutation = useMutation({
     mutationFn: async (linkId: string) => { const { error } = await supabase.from('ph_issue_links').delete().eq('id', linkId); if (error) throw error; },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
       catalystToast.success('Link removed');
     },
   });
@@ -352,21 +352,21 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { error } = await supabase.from('ph_issue_links').insert({
-        source_id: issueId,
+        source_id: issueKey,
         target_id: newItemKey,
         link_type: createLinkType,
         created_by: user.id,
       } as any);
       if (error) {
         if (error.code === '23505' || error.message?.includes('unique_link')) {
-          catalystToast.info(`${newItemKey} already linked to ${issueId}`);
+          catalystToast.info(`${newItemKey} already linked to ${issueKey}`);
         } else {
           throw error;
         }
       } else {
-        catalystToast.success(`Linked ${newItemKey} to ${issueId}`, `as "${createLinkType}"`);
+        catalystToast.success(`Linked ${newItemKey} to ${issueKey}`, `as "${createLinkType}"`);
       }
-      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
     } catch (err: any) {
       catalystToast.error(`Created ${newItemKey} but failed to link`, err.message);
     }
