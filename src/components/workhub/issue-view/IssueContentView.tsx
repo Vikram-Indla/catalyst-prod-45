@@ -25,7 +25,7 @@ import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialo
 import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection';
 import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
-import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
