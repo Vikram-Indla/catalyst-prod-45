@@ -79,18 +79,26 @@
   border-color: #85B8FF;
 }
 .awToolbarSearchInput {
-  border: none;
-  outline: none;
-  box-shadow: none;
-  background: transparent;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  -webkit-appearance: none;
+  appearance: none;
   font: 400 13px system-ui;
   color: var(--aw-text);
   width: 100%;
+  min-width: 0;
 }
-.awToolbarSearchInput:focus {
-  outline: none;
-  box-shadow: none;
-  border: none;
+.awToolbarSearchInput:focus,
+.awToolbarSearchInput:focus-visible,
+.awToolbarSearch:focus-within .awToolbarSearchInput {
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
 }
 .awToolbarSearchInput::placeholder { color: var(--aw-text-subtle); }
 
