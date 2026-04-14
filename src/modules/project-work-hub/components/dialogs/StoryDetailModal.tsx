@@ -275,36 +275,7 @@ export default function StoryDetailModal({
   const [addMenuSearch, setAddMenuSearch] = useState('');
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
-  const [parentPickerTrigger, setParentPickerTrigger] = useState(0);
-  const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
-  const [epicSearchTerm, setEpicSearchTerm] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
-  const [descEditMode, setDescEditMode] = useState(false);
-  const [acEditMode, setAcEditMode] = useState(false);
-  const [descUnsaved, setDescUnsaved] = useState(false);
-  const [acUnsaved, setAcUnsaved] = useState(false);
-  const [titleFocused, setTitleFocused] = useState(false);
-  const [commentSummary, setCommentSummary] = useState<string | null>(null);
-  const [commentSummaryLoading, setCommentSummaryLoading] = useState(false);
-  const [showCommentSummary, setShowCommentSummary] = useState(true);
-  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
-  const [fixVersionSearch, setFixVersionSearch] = useState('');
-
-  // All epics for "Add epic" panel (breadcrumb)
-  const { data: allEpics = [] } = useQuery({
-    queryKey: ['ph-all-epics', issue?.project_key],
-    enabled: !!issue?.project_key && showAddEpicPanel,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', issue!.project_key)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .order('jira_updated_at', { ascending: false })
-        .limit(100);
-      return data || [];
-    },
-    staleTime: 60000,
-  });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
