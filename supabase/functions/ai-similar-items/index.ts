@@ -85,7 +85,7 @@ No other text. If fewer than 20 are relevant, return fewer.`;
 Key: ${source.issue_key}
 Type: ${source.issue_type || "Task"}
 Summary: ${source.summary}
-Description: ${(source.description || "").slice(0, 500)}
+Labels: ${(source.labels || []).join(", ") || "none"}
 Labels: ${(source.labels || []).join(", ") || "none"}
 
 CANDIDATES:
