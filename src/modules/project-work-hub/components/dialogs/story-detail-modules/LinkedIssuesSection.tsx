@@ -348,8 +348,15 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
         link_type: createLinkType,
         created_by: user.id,
       } as any);
-      if (error) throw error;
-      toast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+      if (error) {
+        if (error.code === '23505' || error.message?.includes('unique_link')) {
+          toast.info(`${newItemKey} already linked to ${issueId}`);
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+      }
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
     } catch (err: any) {
       toast.error(`Created ${newItemKey} but failed to link`, { description: err.message });
