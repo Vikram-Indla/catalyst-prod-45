@@ -14,8 +14,8 @@ import {
   ChevronDown, ChevronRight, Plus, MoreHorizontal, LayoutGrid,
   Check, Loader2, CornerDownLeft,
 } from 'lucide-react';
-import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import { nextPos } from '../dialogs/story-detail-modules/helpers';
+import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
 import { WorkCell } from './cells/WorkCell';
 import { PriorityCell } from './cells/PriorityCell';
 import { AssigneeCell } from './cells/AssigneeCell';
@@ -47,24 +47,7 @@ interface SubtasksPanelProps {
 }
 
 // ─── Type selector for inline create ────────────────────
-const TYPE_OPTIONS = [
-  { key: 'API Requirement', label: 'API Requirement', icon: WORK_ITEM_ICONS['API Requirement'] },
-  { key: 'Backend', label: 'Backend', icon: WORK_ITEM_ICONS.Backend },
-  { key: 'Bug', label: 'Bug', icon: WORK_ITEM_ICONS.Bug },
-  { key: 'Business Gap', label: 'Business Gap', icon: WORK_ITEM_ICONS['Business Gap'] },
-  { key: 'Change Request', label: 'Change Request', icon: WORK_ITEM_ICONS['Change Request'] },
-  { key: 'Epic', label: 'Epic', icon: WORK_ITEM_ICONS.Epic },
-  { key: 'Feature', label: 'Feature', icon: WORK_ITEM_ICONS.Feature },
-  { key: 'Figma', label: 'Figma', icon: WORK_ITEM_ICONS.Figma },
-  { key: 'Frontend', label: 'Frontend', icon: WORK_ITEM_ICONS.Frontend },
-  { key: 'Improvement', label: 'Improvement', icon: WORK_ITEM_ICONS.Improvement },
-  { key: 'Integration', label: 'Integration', icon: WORK_ITEM_ICONS.Integration },
-  { key: 'Production Incident', label: 'Production Incident', icon: WORK_ITEM_ICONS['Production Incident'] },
-  { key: 'QA Bug', label: 'QA Bug', icon: WORK_ITEM_ICONS['QA Bug'] },
-  { key: 'Story', label: 'Story', icon: WORK_ITEM_ICONS.Story },
-  { key: 'Sub-task', label: 'Sub-task', icon: WORK_ITEM_ICONS['Sub-task'] },
-  { key: 'Task', label: 'Task', icon: WORK_ITEM_ICONS.Task },
-];
+const TYPE_OPTIONS = CANONICAL_WORK_ITEM_OPTIONS;
 
 function TypeSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
@@ -87,7 +70,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
         border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', cursor: 'pointer',
         fontSize: 13, color: '#172B4D', fontFamily: 'inherit',
       }}>
-        <span dangerouslySetInnerHTML={{ __html: current.icon }} style={{ display: 'flex', width: 16, height: 16 }} />
+        <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
         <ChevronDown size={12} color="#6B778C" />
       </button>
@@ -107,7 +90,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
               onMouseEnter={e => { if (opt.key !== value) e.currentTarget.style.background = '#F4F5F7'; }}
               onMouseLeave={e => { if (opt.key !== value) e.currentTarget.style.background = 'transparent'; }}
             >
-              <span dangerouslySetInnerHTML={{ __html: opt.icon }} style={{ display: 'flex', width: 16, height: 16 }} />
+              <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
               {opt.key === value && <Check size={12} color="#0052CC" style={{ marginLeft: 'auto' }} />}
             </div>
