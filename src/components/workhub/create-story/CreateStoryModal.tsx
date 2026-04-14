@@ -908,18 +908,25 @@ const JIRA_LINK_TYPES = [
 // ── Linked Work Items Section (used in createLinked mode) ──
 function LinkedWorkItemsField({
   linkType, onLinkTypeChange,
-  linkedItems, onRemoveItem,
-  lockedKeys,
+  linkedItems, onAddItem, onRemoveItem,
+  lockedKeys, projectKey,
 }: {
   linkType: string;
   onLinkTypeChange: (v: string) => void;
-  linkedItems: { key: string; summary?: string }[];
+  linkedItems: { key: string; summary?: string; issueType?: string }[];
+  onAddItem: (item: { key: string; summary?: string; issueType?: string }) => void;
   onRemoveItem: (key: string) => void;
   lockedKeys: Set<string>;
+  projectKey?: string;
 }) {
   const [ltOpen, setLtOpen] = useState(false);
   const ltRef = useRef<HTMLDivElement>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Close link type dropdown on outside click
   useEffect(() => {
     if (!ltOpen) return;
     const h = (e: MouseEvent) => { if (ltRef.current && !ltRef.current.contains(e.target as Node)) setLtOpen(false); };
@@ -927,12 +934,43 @@ function LinkedWorkItemsField({
     return () => document.removeEventListener('mousedown', h);
   }, [ltOpen]);
 
+  // Close picker on outside click
+  useEffect(() => {
+    if (!pickerOpen) return;
+    const h = (e: MouseEvent) => { if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) setPickerOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [pickerOpen]);
+
+  // Focus search when picker opens
+  useEffect(() => {
+    if (pickerOpen) setTimeout(() => searchInputRef.current?.focus(), 50);
+  }, [pickerOpen]);
+
+  // Search work items from ph_issues
+  const { data: searchResults = [], isFetching } = useQuery({
+    queryKey: ['linked-item-search', searchQuery, projectKey],
+    queryFn: async () => {
+      let q = supabase.from('ph_issues').select('issue_key, summary, issue_type').limit(20);
+      if (projectKey) q = q.eq('project_key', projectKey);
+      if (searchQuery.trim()) {
+        q = q.or(`issue_key.ilike.%${searchQuery.trim()}%,summary.ilike.%${searchQuery.trim()}%`);
+      }
+      const { data } = await q.order('updated_at', { ascending: false });
+      return (data || []).filter(r => !linkedItems.some(li => li.key === r.issue_key));
+    },
+    enabled: pickerOpen,
+    staleTime: 10_000,
+  });
+
+  const linkedKeySet = new Set(linkedItems.map(i => i.key));
+
   return (
     <>
       {/* Link type */}
       <div className="csField">
         <label className="csLabel">Linked Work Items<span className="csRequired"> *</span></label>
-        <div ref={ltRef} style={{ position: 'relative', maxWidth: 260 }}>
+        <div ref={ltRef} style={{ position: 'relative', maxWidth: 380 }}>
           <button type="button" className="csSelect" onClick={() => setLtOpen(o => !o)}>
             <span className="csSelectText">{linkType}</span>
             <ChevronDown className="csSelectChevron" />
@@ -951,28 +989,121 @@ function LinkedWorkItemsField({
         </div>
       </div>
 
-      {/* Linked issue tokens */}
+      {/* Issue picker — tokenized multi-select with search dropdown */}
       <div className="csField" style={{ marginTop: -4 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-          {linkedItems.map(item => {
-            const isLocked = lockedKeys.has(item.key);
-            return (
-              <span key={item.key} style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4, height: 26,
-                padding: '0 8px', background: '#F4F5F7', borderRadius: 3,
-                border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, color: '#172B4D',
+        <div ref={pickerRef} style={{ position: 'relative' }}>
+          {/* Token input container */}
+          <div
+            onClick={() => setPickerOpen(true)}
+            style={{
+              display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 4,
+              minHeight: 38, padding: '4px 32px 4px 8px',
+              border: pickerOpen ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+              borderRadius: 3, background: '#FAFBFC', cursor: 'text',
+              position: 'relative',
+            }}
+          >
+            {linkedItems.map(item => {
+              const isLocked = lockedKeys.has(item.key);
+              return (
+                <span key={item.key} style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 4, height: 24,
+                  padding: '0 6px', background: '#F4F5F7', borderRadius: 3,
+                  border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, color: '#172B4D',
+                }}>
+                  <JiraIssueTypeIcon type={item.issueType || 'Story'} size={14} />
+                  {item.key}
+                  {!isLocked && (
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onRemoveItem(item.key); }} style={{
+                      display: 'flex', alignItems: 'center', border: 'none', background: 'none',
+                      cursor: 'pointer', padding: 0, color: '#6B778C', marginLeft: 2, fontSize: 14,
+                    }}>×</button>
+                  )}
+                </span>
+              );
+            })}
+            <input
+              ref={searchInputRef}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              onFocus={() => setPickerOpen(true)}
+              placeholder={linkedItems.length === 0 ? 'Search work items...' : ''}
+              style={{
+                flex: 1, minWidth: 80, border: 'none', outline: 'none', background: 'transparent',
+                fontSize: 13, color: '#172B4D', height: 24, padding: 0,
+              }}
+            />
+            {/* Clear all button */}
+            {linkedItems.some(i => !lockedKeys.has(i.key)) && (
+              <button type="button" onClick={(e) => {
+                e.stopPropagation();
+                linkedItems.forEach(i => { if (!lockedKeys.has(i.key)) onRemoveItem(i.key); });
+              }} style={{
+                position: 'absolute', right: 24, top: '50%', transform: 'translateY(-50%)',
+                display: 'flex', alignItems: 'center', border: 'none', background: 'none',
+                cursor: 'pointer', color: '#6B778C', padding: 2,
               }}>
-                <JiraIssueTypeIcon type="Story" size={14} />
-                {item.key}
-                {!isLocked && (
-                  <button type="button" onClick={() => onRemoveItem(item.key)} style={{
-                    display: 'flex', alignItems: 'center', border: 'none', background: 'none',
-                    cursor: 'pointer', padding: 0, color: '#6B778C', marginLeft: 2,
-                  }}>×</button>
-                )}
-              </span>
-            );
-          })}
+                <X size={14} />
+              </button>
+            )}
+            {/* Dropdown chevron */}
+            <ChevronDown size={14} style={{
+              position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)',
+              color: '#6B778C', pointerEvents: 'none',
+            }} />
+          </div>
+
+          {/* Search results dropdown */}
+          {pickerOpen && (
+            <div style={{
+              position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2,
+              background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 4,
+              boxShadow: '0 4px 14px rgba(0,0,0,0.15)', maxHeight: 280, overflowY: 'auto',
+              zIndex: 9999,
+            }}>
+              <div style={{ padding: '8px 12px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Open work items
+              </div>
+              {isFetching && (
+                <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>Searching...</div>
+              )}
+              {!isFetching && searchResults.length === 0 && (
+                <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No matching work items</div>
+              )}
+              {searchResults.map((item, idx) => {
+                const isAlreadyLinked = linkedKeySet.has(item.issue_key);
+                return (
+                  <button
+                    key={item.issue_key}
+                    type="button"
+                    disabled={isAlreadyLinked}
+                    onClick={() => {
+                      onAddItem({ key: item.issue_key, summary: item.summary, issueType: item.issue_type || 'Story' });
+                      setSearchQuery('');
+                    }}
+                    style={{
+                      display: 'flex', alignItems: 'flex-start', gap: 8, width: '100%',
+                      padding: '8px 12px', border: 'none', background: isAlreadyLinked ? '#F4F5F7' : 'transparent',
+                      cursor: isAlreadyLinked ? 'default' : 'pointer', textAlign: 'left',
+                      opacity: isAlreadyLinked ? 0.5 : 1,
+                      borderLeft: idx === 0 ? '3px solid #4C9AFF' : '3px solid transparent',
+                    }}
+                    onMouseEnter={e => { if (!isAlreadyLinked) e.currentTarget.style.background = '#F4F5F7'; }}
+                    onMouseLeave={e => { if (!isAlreadyLinked) e.currentTarget.style.background = 'transparent'; }}
+                  >
+                    <div style={{ flexShrink: 0, marginTop: 2 }}>
+                      <JiraIssueTypeIcon type={item.issue_type || 'Story'} size={16} />
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <span style={{ fontSize: 13, color: '#172B4D', lineHeight: '20px', wordBreak: 'break-word' }}>
+                        {item.issue_key} {item.summary}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </>
@@ -1031,6 +1162,13 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     if (lockedKeys.has(key)) return;
     setLinkedItems(prev => prev.filter(i => i.key !== key));
   }, [lockedKeys]);
+
+  const handleAddLinkedItem = useCallback((item: { key: string; summary?: string; issueType?: string }) => {
+    setLinkedItems(prev => {
+      if (prev.some(i => i.key === item.key)) return prev;
+      return [...prev, item];
+    });
+  }, []);
 
   // Set reporter to current user on mount
   useEffect(() => {
@@ -1301,8 +1439,10 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
               linkType={linkedLinkType}
               onLinkTypeChange={setLinkedLinkType}
               linkedItems={linkedItems}
+              onAddItem={handleAddLinkedItem}
               onRemoveItem={handleRemoveLinkedItem}
               lockedKeys={lockedKeys}
+              projectKey={projectKey}
             />
           )}
 
