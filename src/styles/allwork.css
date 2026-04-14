@@ -15,6 +15,136 @@
   --aw-selected-outline: rgba(12,102,228,0.25);
 }
 
+/* ── Shell wrapper (toolbar + split) ── */
+.awShellWrap {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top Toolbar (Jira parity: Ask AI, Search, avatars, Filter, Saved filters, view toggle) ── */
+.awToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--aw-border);
+  background: var(--aw-bg);
+  flex-shrink: 0;
+  gap: 8px;
+}
+.awToolbarLeft, .awToolbarRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.awToolbarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 4px;
+  border: 1px solid var(--aw-border);
+  background: var(--aw-bg);
+  font: 500 13px/32px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.awToolbarBtn:hover { background: var(--aw-hover); }
+.awToolbarBtn.awAskAi {
+  border: none;
+  background: none;
+  color: var(--aw-text-subtle);
+  font-weight: 400;
+}
+.awToolbarBtn.awAskAi:hover { color: var(--aw-blue); background: var(--aw-selected); }
+
+/* Search in toolbar */
+.awToolbarSearch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--aw-border);
+  border-radius: 4px;
+  background: var(--aw-bg);
+  width: 180px;
+}
+.awToolbarSearchInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font: 400 13px system-ui;
+  color: var(--aw-text);
+  width: 100%;
+}
+.awToolbarSearchInput::placeholder { color: var(--aw-text-subtle); }
+
+/* Avatar stack */
+.awToolbarAvatars {
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+.awToolbarAvatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  position: relative;
+}
+.awToolbarAvatarFallback {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 10px/1 system-ui;
+  color: #fff;
+  border: 2px solid #fff;
+  position: relative;
+}
+.awToolbarAvatarOverflow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: 600 10px/1 system-ui;
+  color: var(--aw-text-subtle);
+  background: #DFE1E6;
+  border: 2px solid #fff;
+  position: relative;
+}
+
+/* View toggle */
+.awViewToggle {
+  display: flex;
+  border: 1px solid var(--aw-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.awViewToggleBtn {
+  width: 32px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: var(--aw-bg);
+  cursor: pointer;
+  color: var(--aw-text-subtle);
+}
+.awViewToggleBtn:hover { background: var(--aw-hover); }
+.awViewToggleBtn.active { background: var(--aw-selected); color: var(--aw-blue); }
+.awViewToggleBtn + .awViewToggleBtn { border-left: 1px solid var(--aw-border); }
+
 /* ── Shell: 2 columns (list + issue view) ── */
 .awShell {
   height: 100%;
