@@ -1596,8 +1596,8 @@
 .dark .awRow.awRowSelected { background: rgba(12,102,228,0.12); }
 .dark .awSearch { background-color: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
 .dark .awChip, .dark .awPill { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awNavArrow { background: #1A1A1A; border-color: #2E2E2E; color: #878787; }
-.dark .awNavArrow:hover { background: #1F1F1F; color: #EDEDED; }
+.dark .awNavArrow { background: #1A1A1A; border-color: #454545; color: #A1A1A1; }
+.dark .awNavArrow:hover { background: #1F1F1F; border-color: #555; color: #EDEDED; }
 .dark .awCollapseBtn { background: #1A1A1A; border-color: #2E2E2E; }
 .dark .awIssueTitle { color: #EDEDED; }
 .dark .awRowTitle { color: #EDEDED; }
