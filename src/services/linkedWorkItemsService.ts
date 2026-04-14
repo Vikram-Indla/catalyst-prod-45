@@ -48,6 +48,63 @@ export interface SearchResultItem {
   source_table: 'ph_issues' | 'ph_work_items';
 }
 
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+function isUuid(value: string): boolean {
+  return UUID_PATTERN.test(value.trim());
+}
+
+async function resolveItemIdToUuid(itemIdOrKey: string): Promise<string | null> {
+  if (!itemIdOrKey) return null;
+
+  const normalized = itemIdOrKey.trim();
+  if (!normalized) return null;
+  if (isUuid(normalized)) return normalized;
+
+  const [issueRes, workItemRes] = await Promise.all([
+    supabase
+      .from('ph_issues')
+      .select('id')
+      .eq('issue_key', normalized)
+      .is('jira_removed_at', null)
+      .maybeSingle(),
+    supabase
+      .from('ph_work_items')
+      .select('id')
+      .eq('item_key', normalized)
+      .maybeSingle(),
+  ]);
+
+  return issueRes.data?.id ?? workItemRes.data?.id ?? null;
+}
+
+async function resolveItemIdsToUuids(itemIdsOrKeys: string[]): Promise<string[]> {
+  const normalized = [...new Set(itemIdsOrKeys.map(value => value?.trim()).filter(Boolean) as string[])];
+  const directUuids = normalized.filter(isUuid);
+  const lookupKeys = normalized.filter(value => !isUuid(value));
+
+  if (lookupKeys.length === 0) return directUuids;
+
+  const [issueRes, workItemRes] = await Promise.all([
+    supabase
+      .from('ph_issues')
+      .select('id, issue_key')
+      .in('issue_key', lookupKeys)
+      .is('jira_removed_at', null),
+    supabase
+      .from('ph_work_items')
+      .select('id, item_key')
+      .in('item_key', lookupKeys),
+  ]);
+
+  const resolved = new Set(directUuids);
+
+  for (const row of issueRes.data ?? []) resolved.add(row.id);
+  for (const row of workItemRes.data ?? []) resolved.add(row.id);
+
+  return [...resolved];
+}
+
 // ─── Fetch Link Types ─────────────────────────────────────
 
 export async function fetchLinkTypes(): Promise<LinkType[]> {
@@ -88,11 +145,14 @@ export function buildLinkTypeOptions(linkTypes: LinkType[]): LinkTypeOption[] {
 // ─── Fetch Links (Bidirectional) ──────────────────────────
 
 export async function fetchLinksForItem(itemId: string): Promise<LinkedItemDisplay[]> {
+  const resolvedItemId = await resolveItemIdToUuid(itemId);
+  if (!resolvedItemId) return [];
+
   // Fetch outgoing links (source = current item)
   const { data: outgoing, error: outErr } = await supabase
     .from('ph_issue_links')
     .select('id, link_type, created_at, source_id, target_id')
-    .eq('source_id', itemId)
+    .eq('source_id', resolvedItemId)
     .order('created_at', { ascending: false });
   if (outErr) throw new Error(outErr.message);
 
@@ -100,7 +160,7 @@ export async function fetchLinksForItem(itemId: string): Promise<LinkedItemDispl
   const { data: incoming, error: inErr } = await supabase
     .from('ph_issue_links')
     .select('id, link_type, created_at, source_id, target_id')
-    .eq('target_id', itemId)
+    .eq('target_id', resolvedItemId)
     .order('created_at', { ascending: false });
   if (inErr) throw new Error(inErr.message);
 
@@ -113,11 +173,13 @@ export async function fetchLinksForItem(itemId: string): Promise<LinkedItemDispl
 
   // Enrich from both tables in parallel
   const [issuesRes, workItemsRes] = await Promise.all([
-    supabase.from('ph_issues')
-      .select('id, issue_key, summary, status, status_category, issue_type, assignee_display_name, deleted_at')
+    supabase
+      .from('ph_issues')
+      .select('id, issue_key, summary, status, status_category, issue_type, assignee_display_name')
       .in('id', allTargetIds)
-      .is('deleted_at', null),
-    supabase.from('ph_work_items')
+      .is('jira_removed_at', null),
+    supabase
+      .from('ph_work_items')
       .select(`id, item_key, title, summary,
         ph_work_types!ph_work_items_type_id_fkey (name, color),
         ph_workflow_statuses!ph_work_items_status_id_fkey (name, category)`)
@@ -211,9 +273,17 @@ export async function createWorkItemLink(
   const { data: userData } = await supabase.auth.getUser();
   if (!userData.user) throw new Error('Not authenticated');
 
+  const [resolvedSourceId, resolvedTargetId] = await Promise.all([
+    resolveItemIdToUuid(sourceId),
+    resolveItemIdToUuid(targetId),
+  ]);
+
+  if (!resolvedSourceId) throw new Error('Unable to resolve the source work item');
+  if (!resolvedTargetId) throw new Error('Unable to resolve the target work item');
+
   const { error } = await supabase.from('ph_issue_links').insert({
-    source_id: sourceId,
-    target_id: targetId,
+    source_id: resolvedSourceId,
+    target_id: resolvedTargetId,
     link_type: linkTypeLabel,
     created_by: userData.user.id,
   });
@@ -245,31 +315,43 @@ export async function searchWorkItemsForLinking(
   if (!query || query.trim().length < 2) return { items: [], total: 0 };
 
   const q = query.trim();
+  const resolvedExcludeIds = await resolveItemIdsToUuids(excludeIds);
   const results: SearchResultItem[] = [];
-  let totalEstimate = 0;
 
-  // Search ph_issues
-  const issueQuery = supabase
+  let issueQuery: any = supabase
     .from('ph_issues')
     .select('id, issue_key, summary, status, status_category, issue_type', { count: 'exact' })
-    .is('deleted_at', null)
-    .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
-    .not('id', 'in', `(${excludeIds.join(',')})`)
-    .range(offset, offset + limit - 1)
-    .order('issue_key');
+    .is('jira_removed_at', null)
+    .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`);
 
-  const workItemQuery = supabase
+  if (resolvedExcludeIds.length > 0) {
+    issueQuery = issueQuery.not('id', 'in', `(${resolvedExcludeIds.join(',')})`);
+  }
+
+  issueQuery = issueQuery
+    .order('issue_key')
+    .range(offset, offset + limit - 1);
+
+  let workItemQuery: any = supabase
     .from('ph_work_items')
     .select(`id, item_key, title, summary,
       ph_work_types!ph_work_items_type_id_fkey (name, color),
       ph_workflow_statuses!ph_work_items_status_id_fkey (name, category)`,
       { count: 'exact' })
-    .or(`item_key.ilike.%${q}%,title.ilike.%${q}%,summary.ilike.%${q}%`)
-    .not('id', 'in', `(${excludeIds.join(',')})`)
-    .range(offset, offset + limit - 1)
-    .order('item_key');
+    .or(`item_key.ilike.%${q}%,title.ilike.%${q}%,summary.ilike.%${q}%`);
+
+  if (resolvedExcludeIds.length > 0) {
+    workItemQuery = workItemQuery.not('id', 'in', `(${resolvedExcludeIds.join(',')})`);
+  }
+
+  workItemQuery = workItemQuery
+    .order('item_key')
+    .range(offset, offset + limit - 1);
 
   const [issuesRes, workItemsRes] = await Promise.all([issueQuery, workItemQuery]);
+
+  if (issuesRes.error) throw new Error(issuesRes.error.message);
+  if (workItemsRes.error) throw new Error(workItemsRes.error.message);
 
   // Map issues
   for (const issue of issuesRes.data ?? []) {
@@ -301,7 +383,7 @@ export async function searchWorkItemsForLinking(
     });
   }
 
-  totalEstimate = (issuesRes.count ?? 0) + (workItemsRes.count ?? 0);
+  const totalEstimate = (issuesRes.count ?? 0) + (workItemsRes.count ?? 0);
 
   // De-duplicate by ID (an item might exist in both tables)
   const seen = new Set<string>();
