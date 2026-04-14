@@ -6,7 +6,7 @@
  */
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
@@ -190,7 +190,8 @@ export function IssueContentView({
   const [descEditMode, setDescEditMode] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showConvertWizard, setShowConvertWizard] = useState(false);
-  const [showFlagDialog, setShowFlagDialog] = useState(false);
+  const [showFlagPopover, setShowFlagPopover] = useState(false);
+  const flagBtnRef = useRef<HTMLButtonElement>(null);
   const [showCloneWizard, setShowCloneWizard] = useState(false);
   const [showMoveWizard, setShowMoveWizard] = useState(false);
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
