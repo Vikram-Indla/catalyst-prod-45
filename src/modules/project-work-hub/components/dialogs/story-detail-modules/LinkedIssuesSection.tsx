@@ -6,6 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
+import { AiLinkSimilarPanel } from './AiLinkSimilarPanel';
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
@@ -322,22 +323,15 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
         <Plus size={16} strokeWidth={2} />
       </button>
     }>
-      {/* AI suggest bar */}
-      {links.length > 0 && (
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
-          border: '1px solid #DFE1E6', borderRadius: 8, margin: '0 0 8px 0',
-          background: '#FAFBFC',
-        }}>
-          <Sparkles size={16} color="#6B778C" />
-          <span style={{ fontSize: 13, color: '#172B4D', flex: 1 }}>Link similar work items</span>
-          <span style={{ fontSize: 12, color: '#36B37E', fontStyle: 'italic', marginRight: 8 }}>No results found.</span>
-          <button style={{
-            height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
-            background: '#fff', cursor: 'pointer', fontSize: 13, color: '#172B4D', fontFamily: 'inherit',
-          }}>Search again</button>
-        </div>
-      )}
+      {/* AI Link Similar panel */}
+      <AiLinkSimilarPanel
+        issueKey={issueId}
+        existingLinkedKeys={links.map((l: any) => {
+          const target = l.target;
+          return target?.issue_key ?? '';
+        }).filter(Boolean)}
+        onLinked={() => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] })}
+      />
 
       {isLoading && <SkeletonRows />}
       {!isLoading && links.length === 0 && !showAdd && (
