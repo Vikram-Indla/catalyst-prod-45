@@ -460,9 +460,9 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: '#FF5630', flexShrink: 0, transition: 'color 0.15s',
+                      cursor: 'pointer', color: '#6B778C', flexShrink: 0, transition: 'color 0.15s',
                     }}
-                    onMouseEnter={e => (e.currentTarget.style.color = '#DE350B')}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#172B4D')}
                     onMouseLeave={e => (e.currentTarget.style.color = '#FF5630')}
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
