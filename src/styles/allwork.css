@@ -648,7 +648,7 @@
   flex-shrink: 0;
   overflow-y: scroll;
   overscroll-behavior: contain;
-  padding: 0;
+  padding: 0 0 24px 0;
   background: #FFFFFF !important;
   scrollbar-gutter: stable;
 }
