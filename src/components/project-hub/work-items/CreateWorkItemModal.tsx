@@ -18,6 +18,7 @@ interface CreateWorkItemModalProps {
   onClose: () => void;
   projectId: string;
   projectKey: string;
+  onCreated?: (itemKey: string) => void;
 }
 
 // ─── Hierarchy Icons ──────────────────────────────────────
