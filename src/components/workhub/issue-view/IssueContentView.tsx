@@ -523,14 +523,6 @@ export function IssueContentView({
             </div>
             {!collapsed.keydetails && (
               <div className="awSectionBody">
-                {/* Priority */}
-                <div className="awKeyDetailRow">
-                  <div className="awKeyDetailLabel">Priority</div>
-                  <div className="awKeyDetailValue">
-                    <PriorityIcon priority={item?.priority} />
-                    <span>{capitalize(item?.priority ?? 'Medium')}</span>
-                  </div>
-                </div>
                 {/* Parent — editable via canonical ParentFieldPicker */}
                 <div className="awKeyDetailRow">
                   <div className="awKeyDetailLabel">Parent</div>
