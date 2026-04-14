@@ -132,23 +132,18 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
       for (const item of selectedItems) {
         const { error } = await supabase.from('ph_issue_links').insert({
           source_id: issueId,
-          target_id: item.id,
+          target_id: item.item_key,
           link_type: linkType,
-        });
+        } as any);
         if (error) throw error;
       }
     },
     onSuccess,
   });
 
-  const handleSelect = async (r: any) => {
-    const { data: workItem } = await supabase.from('ph_work_items')
-      .select('id')
-      .eq('item_key', r.issue_key)
-      .limit(1)
-      .maybeSingle();
+  const handleSelect = (r: any) => {
     setSelectedItems(prev => [...prev, {
-      id: workItem?.id ?? r.issue_key,
+      id: r.issue_key,
       item_key: r.issue_key,
       summary: r.summary,
       issue_type: r.issue_type,
@@ -280,15 +275,21 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
     queryFn: async () => {
       const { data: rawLinks, error } = await supabase.from('ph_issue_links')
         .select('id, link_type, created_at, source_id, target_id')
-        .eq('source_id', issueId).order('created_at', { ascending: false });
+        .or(`source_id.eq.${issueId},target_id.eq.${issueId}`)
+        .order('created_at', { ascending: false });
       if (error) throw error;
       if (!rawLinks?.length) return [];
-      const targetIds = rawLinks.map(l => l.target_id);
+      // target keys are the "other side" of the link
+      const targetKeys = rawLinks.map(l => l.source_id === issueId ? l.target_id : l.source_id);
       const { data: targets } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, deleted_at')
-        .in('id', targetIds).is('deleted_at', null);
-      const targetMap = new Map((targets ?? []).map((t: any) => [t.id, t]));
-      return rawLinks.map(l => ({ ...l, target: targetMap.get(l.target_id) })).filter(l => l.target) as any[];
+        .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
+        .in('issue_key', targetKeys)
+        .is('jira_removed_at', null);
+      const targetMap = new Map((targets ?? []).map((t: any) => [t.issue_key, t]));
+      return rawLinks.map(l => {
+        const key = l.source_id === issueId ? l.target_id : l.source_id;
+        return { ...l, target: targetMap.get(key) };
+      }).filter(l => l.target) as any[];
     },
   });
 
