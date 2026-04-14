@@ -1035,6 +1035,7 @@ export function IssueContentView({
                 {item?.id ? (
                   <EditablePriority
                     issueId={item.id}
+                    issueKey={issueKey ?? item.issue_key}
                     currentPriority={item.priority ?? 'Medium'}
                     onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />

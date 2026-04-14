@@ -203,11 +203,17 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
 }
 
 /* ── EditablePriority ──────────────────────── */
-export function EditablePriority({ issueId, currentPriority, onUpdate }: { issueId: string; currentPriority: string; onUpdate: () => void }) {
+export function EditablePriority({ issueId, issueKey, currentPriority, onUpdate }: { issueId: string; issueKey?: string; currentPriority: string; onUpdate: () => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const updateMutation = useMutation({
-    mutationFn: async (priority: string) => { const { error } = await supabase.from('ph_issues').update({ priority }).eq('id', issueId); if (error) throw error; },
+    mutationFn: async (priority: string) => {
+      const query = issueKey
+        ? supabase.from('ph_issues').update({ priority } as any).eq('issue_key', issueKey)
+        : supabase.from('ph_issues').update({ priority } as any).eq('id', issueId);
+      const { error } = await query;
+      if (error) throw error;
+    },
     onSuccess: () => { onUpdate(); setOpen(false); },
   });
   useEffect(() => {
