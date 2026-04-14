@@ -748,8 +748,54 @@ export function IssueContentView({
             </button>
             {/* Share — copies current URL */}
             <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}><Share2 style={{ width: 14, height: 14 }} /></button>
-            {/* More menu */}
-            <button className="awPill" style={{ padding: '0 4px', height: 22 }}><MoreHorizontal style={{ width: 14, height: 14 }} /></button>
+            {/* More menu — Jira parity dropdown */}
+            <div ref={moreMenuRef} style={{ position: 'relative' }}>
+              <button className="awPill" style={{ padding: '0 4px', height: 22, background: moreMenuOpen ? '#E9F2FF' : undefined }} onClick={() => setMoreMenuOpen(o => !o)}>
+                <MoreHorizontal style={{ width: 14, height: 14 }} />
+              </button>
+              {moreMenuOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                  background: '#fff', borderRadius: 6, width: 220,
+                  boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
+                  border: '1px solid #DFE1E6', padding: '4px 0',
+                }}>
+                  {[
+                    { label: 'Add flag', action: () => { toast.info('Flag added'); setMoreMenuOpen(false); } },
+                  ].map(({ label, action }) => (
+                    <button key={label} onClick={action} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                      onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                      onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                    >{label}</button>
+                  ))}
+                  <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
+                  {/* Convert to Subtask — only for non-subtask types */}
+                  {item?.issue_type && item.issue_type !== 'Sub-task' && (
+                    <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                      onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                      onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                    >Convert to Subtask</button>
+                  )}
+                  <button onClick={() => { toast.info('Issue cloned'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                  >Clone</button>
+                  <button onClick={() => { toast.info('Move not implemented'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                  >Move</button>
+                  <button onClick={() => { toast.info('Archived'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                  >Archive</button>
+                  <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
+                  <button onClick={() => { toast.error('Delete not implemented'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#DE350B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#FFEBE6')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                  >Delete</button>
+                </div>
+              )}
+            </div>
           </span>
         </div>
 
