@@ -102,7 +102,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
   const linkMutation = useMutation({
     mutationFn: async () => {
       if (!selected) return;
-      const { error } = await supabase.from('ph_issue_links').insert({ source_id: issueId, target_id: selected.id, link_type: linkType });
+      const { error } = await supabase.from('ph_issue_links').insert({ source_id: selected.issue_key, target_id: selected.issue_key, link_type: linkType });
       if (error) throw error;
     },
     onSuccess,
