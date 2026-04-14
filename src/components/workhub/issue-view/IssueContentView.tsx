@@ -1028,6 +1028,23 @@ export function IssueContentView({
           onClose={() => setShowConvertWizard(false)}
         />
       )}
+
+      {/* Action dialogs */}
+      {showFlagDialog && item?.id && (
+        <FlagDialog issueId={item.id} issueKey={issueKey ?? ''} isFlagged={!!(item as any).flagged} onClose={() => setShowFlagDialog(false)} />
+      )}
+      {showCloneWizard && item?.id && (
+        <CloneWizard issueId={item.id} issueKey={issueKey ?? ''} item={item} projectKey={projectKey} onClose={() => setShowCloneWizard(false)} />
+      )}
+      {showMoveWizard && item?.id && (
+        <MoveWizard issueId={item.id} issueKey={issueKey ?? ''} item={item} projectKey={projectKey} onClose={() => setShowMoveWizard(false)} />
+      )}
+      {showArchiveDialog && item?.id && (
+        <ArchiveDialog issueId={item.id} issueKey={issueKey ?? ''} onClose={() => setShowArchiveDialog(false)} />
+      )}
+      {showDeleteDialog && item?.id && (
+        <DeleteDialog issueId={item.id} issueKey={issueKey ?? ''} onClose={() => setShowDeleteDialog(false)} />
+      )}
     </div>
   );
 }
