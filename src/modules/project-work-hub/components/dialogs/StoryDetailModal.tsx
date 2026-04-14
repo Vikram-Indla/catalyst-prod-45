@@ -696,6 +696,8 @@ export default function StoryDetailModal({
                   </button>
                 </div>
               )}
+              {/* Close — hidden in full-page mode */}
+              {!fullPageMode && (
               <button onClick={onClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                 borderRadius: 4, color: '#5E6C84', fontSize: 16, display: 'flex', alignItems: 'center',
@@ -704,6 +706,7 @@ export default function StoryDetailModal({
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
               ><X size={16} /></button>
+              )}
             </div>
           </div>
 
