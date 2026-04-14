@@ -25,6 +25,9 @@ import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
+import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
+import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
+import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 
 
@@ -129,6 +132,7 @@ export function IssueContentView({
   const [commentFocused, setCommentFocused] = useState(false);
   const [posting, setPosting] = useState(false);
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
+  const [descEditMode, setDescEditMode] = useState(false);
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -391,25 +395,53 @@ export function IssueContentView({
             )}
           </div>
 
-          {/* ── Description ── */}
+          {/* ── Description (Story Detail Modal parity — ADF rich text with edit mode) ── */}
           <div className="awSection">
             <div className="awSectionHead" onClick={() => toggle('desc')}>
               <span className="awSectionLabel">
                 {collapsed.desc ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
                 Description
               </span>
-              <div className="awSectionActions">
-                <button className="awPill" style={{ height: 22 }}><Pencil style={{ width: 12, height: 12 }} /></button>
-              </div>
             </div>
             {!collapsed.desc && (
               <div className="awSectionBody">
-                {item?.description_text ? (
-                  <div className="awDescriptionContent">
-                    {item.description_text}
+                {descEditMode ? (
+                  <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
+                    <StoryRichTextEditor
+                      content={adfToHtml((item as any)?.description_adf) || item?.description_text || ''}
+                      workItemId={item?.id ?? ''}
+                      onSave={(html) => {
+                        if (item?.id) {
+                          supabase.from('ph_issues').update({ description_text: html }).eq('id', item.id).then(() => {
+                            toast.success('Description saved');
+                          });
+                        }
+                        setDescEditMode(false);
+                      }}
+                      onCancel={() => setDescEditMode(false)}
+                      placeholder="Add a description..."
+                      minHeight={150}
+                    />
                   </div>
                 ) : (
-                  <div className="awDescPlaceholder">Add a description...</div>
+                  <div
+                    onClick={() => setDescEditMode(true)}
+                    style={{
+                      borderRadius: 3, padding: '8px 6px', minHeight: 32,
+                      cursor: 'text', outline: 'none',
+                      transition: 'background-color 0.2s ease-in-out',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#F8F8F8'; }}
+                    onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  >
+                    {(() => {
+                      const descHtml = adfToHtml((item as any)?.description_adf) || item?.description_text || '';
+                      if (!descHtml || descHtml === '<p></p>' || descHtml.trim() === '') {
+                        return <span style={{ fontSize: 14, color: '#8C8F97', padding: '4px 0' }}>Add a description...</span>;
+                      }
+                      return <AdfDescriptionRenderer html={descHtml} issueKey={item?.issue_key} />;
+                    })()}
+                  </div>
                 )}
               </div>
             )}
