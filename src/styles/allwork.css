@@ -618,8 +618,8 @@
   background: var(--aw-border);
 }
 .awCollapseBtn {
-  width: 20px;
-  height: 20px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   border: 1px solid var(--aw-border);
   background: #fff;
@@ -629,11 +629,12 @@
   justify-content: center;
   z-index: 2;
   position: relative;
-  left: -10px;
+  left: -14px;
   color: var(--aw-text-subtle);
   font-size: 11px;
   transition: background 120ms;
 }
+.awCollapseBtn svg { width: 16px !important; height: 16px !important; }
 .awCollapseBtn:hover {
   background: var(--aw-hover);
   color: var(--aw-blue);
@@ -825,8 +826,8 @@
 
 /* Nav arrows (#12) */
 .awNavArrow {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 1.5px solid #DFE1E6;
   border-radius: 6px;
   background: #FFFFFF;
@@ -839,7 +840,7 @@
   transition: background 120ms, border-color 120ms, color 120ms;
 }
 .awNavArrow:hover { background: #F4F5F7; border-color: #C1C7D0; color: #172B4D; }
-.awNavArrow svg { width: 18px !important; height: 18px !important; stroke-width: 2.5; }
+.awNavArrow svg { width: 16px !important; height: 16px !important; stroke-width: 2.5; }
 
 /* Description content (#26) */
 .awDescriptionContent {
