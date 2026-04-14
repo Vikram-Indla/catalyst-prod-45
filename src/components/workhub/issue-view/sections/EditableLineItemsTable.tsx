@@ -289,7 +289,7 @@ export function EditableLineItemsTable({
               <td className="elt-td elt-td--idx">
                 <span className="elt-idx">{idx + 1}</span>
                 {item.isPrefilled && !item.isDirty && (
-                  <Copy size={10} className="elt-cloned-icon" title="Cloned from source" />
+                  <Copy size={10} className="elt-cloned-icon" />
                 )}
               </td>
               <td className="elt-td">
