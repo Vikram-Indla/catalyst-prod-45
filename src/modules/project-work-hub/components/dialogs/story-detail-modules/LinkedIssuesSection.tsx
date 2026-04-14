@@ -372,16 +372,16 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
                       flexShrink: 0,
                     }} />
                   )}
-                  {/* Remove button — Jira uses orange "=" drag handle, we use minus */}
+                  {/* Remove button */}
                   <button onClick={e => { e.stopPropagation(); removeMutation.mutate(link.id); }}
                     title="Remove link"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: '#FF991F', flexShrink: 0,
+                      cursor: 'pointer', color: '#6B778C', flexShrink: 0,
                     }}
                   >
-                    <Minus size={16} strokeWidth={2.5} />
+                    <X size={14} strokeWidth={2.5} />
                   </button>
                 </div>
               );
