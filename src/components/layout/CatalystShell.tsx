@@ -160,9 +160,19 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // No sidebar for Home, Admin, or full-screen issue routes
-    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin') || isIssueFullPageRoute) {
+    // No sidebar for Home or Admin routes
+    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
       return null;
+    }
+
+    // Full-screen issue view: show ProjectHub sidebar forced-collapsed
+    if (isIssueFullPageRoute) {
+      return (
+        <ProjectHubSidebar
+          expanded={false}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
     }
 
     // Wiki sidebar
