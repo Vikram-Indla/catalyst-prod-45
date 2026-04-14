@@ -320,6 +320,7 @@
   background: #A5ADBA;
   border-radius: 999px;
   border: 3px solid #F1F2F4;
+  min-height: 80px;
 }
 .jlpBody::-webkit-scrollbar-thumb:hover {
   background: #7A869A;
