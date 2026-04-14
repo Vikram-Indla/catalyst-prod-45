@@ -141,14 +141,9 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
     onSuccess,
   });
 
-  const handleSelect = async (r: any) => {
-    const { data: workItem } = await supabase.from('ph_work_items')
-      .select('id')
-      .eq('item_key', r.issue_key)
-      .limit(1)
-      .maybeSingle();
+  const handleSelect = (r: any) => {
     setSelectedItems(prev => [...prev, {
-      id: workItem?.id ?? r.issue_key,
+      id: r.issue_key,
       item_key: r.issue_key,
       summary: r.summary,
       issue_type: r.issue_type,
