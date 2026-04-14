@@ -26,7 +26,10 @@ interface Props {
   commentsLoading?: boolean;
   historyItems?: any[];
   historyLoading?: boolean;
+  worklogs?: any[];
+  worklogsLoading?: boolean;
   createComment?: any;
+  logWork?: any;
   loading?: boolean;
   onPrev?: () => void;
   onNext?: () => void;
@@ -38,6 +41,14 @@ function initials(name: string) { return name.split(' ').map(n => n[0]).join('')
 function fmtRel(d: string | null) { if (!d) return ''; try { return formatDistanceToNow(new Date(d), { addSuffix: true }); } catch { return ''; } }
 function fmtDate(d: string | null) { if (!d) return ''; try { return format(new Date(d), 'MMMM d, yyyy \'at\' h:mm a'); } catch { return ''; } }
 function capitalize(s: string) { if (!s) return s; return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); }
+function fmtMinutes(m: number) {
+  if (!m || m <= 0) return '0m';
+  const h = Math.floor(m / 60);
+  const mins = m % 60;
+  if (h > 0 && mins > 0) return `${h}h ${mins}m`;
+  if (h > 0) return `${h}h`;
+  return `${mins}m`;
+}
 
 function Avatar({ name, url, size = 22 }: { name: string; url?: string | null; size?: number }) {
   if (url) {
@@ -92,7 +103,8 @@ type ActivityTab = 'all' | 'comments' | 'history' | 'worklog';
 export function IssueContentView({
   issueKey, item, parentItem, childItems = [], childrenLoading,
   links = [], linksLoading, comments = [], commentsLoading,
-  historyItems = [], historyLoading, createComment, loading,
+  historyItems = [], historyLoading, worklogs = [], worklogsLoading,
+  createComment, logWork, loading,
   onPrev, onNext,
 }: Props) {
   const { user } = useAuth();
@@ -100,7 +112,13 @@ export function IssueContentView({
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
-  
+  const [logWorkOpen, setLogWorkOpen] = useState(false);
+  const [logHours, setLogHours] = useState('');
+  const [logMinutes, setLogMinutes] = useState('');
+  const [logDate, setLogDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [logDesc, setLogDesc] = useState('');
+  const [logPosting, setLogPosting] = useState(false);
+
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -125,6 +143,23 @@ export function IssueContentView({
     setPosting(true);
     try { await createComment.mutateAsync({ body: commentText.trim(), authorId: user?.id ?? '' }); setCommentText(''); }
     catch {} finally { setPosting(false); }
+  };
+
+  const handleLogWork = async () => {
+    const h = parseInt(logHours || '0', 10);
+    const m = parseInt(logMinutes || '0', 10);
+    const totalMin = h * 60 + m;
+    if (totalMin <= 0 || !logWork) return;
+    setLogPosting(true);
+    try {
+      await logWork.mutateAsync({
+        timeSpentMinutes: totalMin,
+        workDate: logDate,
+        description: logDesc.trim() || null,
+        authorId: user?.id ?? '',
+      });
+      setLogHours(''); setLogMinutes(''); setLogDesc(''); setLogWorkOpen(false);
+    } catch {} finally { setLogPosting(false); }
   };
 
   const TABS: { key: ActivityTab; label: string }[] = [
@@ -304,7 +339,67 @@ export function IssueContentView({
                 )}
               </div>
 
-              {/* Activity items */}
+              {/* Log work form (toggle) — visible on Work log tab */}
+              {activityTab === 'worklog' && (
+                <div style={{ marginBottom: 12 }}>
+                  {!logWorkOpen ? (
+                    <button className="awLogWorkToggle" onClick={() => setLogWorkOpen(true)}>
+                      <Clock style={{ width: 14, height: 14 }} /> Log work
+                    </button>
+                  ) : (
+                    <div className="awLogWorkForm">
+                      <div className="awLogWorkRow">
+                        <label className="awLogWorkLabel">Time spent</label>
+                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <input
+                            type="number" min="0" placeholder="0" value={logHours}
+                            onChange={e => setLogHours(e.target.value)}
+                            className="awLogWorkInput" style={{ width: 56 }}
+                          />
+                          <span className="awLogWorkUnit">h</span>
+                          <input
+                            type="number" min="0" max="59" placeholder="0" value={logMinutes}
+                            onChange={e => setLogMinutes(e.target.value)}
+                            className="awLogWorkInput" style={{ width: 56 }}
+                          />
+                          <span className="awLogWorkUnit">m</span>
+                        </div>
+                      </div>
+                      <div className="awLogWorkRow">
+                        <label className="awLogWorkLabel">Date</label>
+                        <input
+                          type="date" value={logDate}
+                          onChange={e => setLogDate(e.target.value)}
+                          className="awLogWorkInput" style={{ width: 150 }}
+                        />
+                      </div>
+                      <div className="awLogWorkRow">
+                        <label className="awLogWorkLabel">Description</label>
+                        <input
+                          placeholder="What did you work on?"
+                          value={logDesc}
+                          onChange={e => setLogDesc(e.target.value)}
+                          className="awLogWorkInput" style={{ flex: 1 }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', marginTop: 8 }}>
+                        <button className="awLogWorkCancel" onClick={() => { setLogWorkOpen(false); setLogHours(''); setLogMinutes(''); setLogDesc(''); }}>
+                          Cancel
+                        </button>
+                        <button
+                          className="awLogWorkSubmit"
+                          onClick={handleLogWork}
+                          disabled={logPosting || (parseInt(logHours || '0', 10) * 60 + parseInt(logMinutes || '0', 10)) <= 0}
+                        >
+                          {logPosting ? 'Saving...' : 'Log'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Activity items — merged feed for 'all' tab */}
               {(activityTab === 'all' || activityTab === 'comments') && comments.map((c: any, i: number) => (
                 <div key={c.id ?? `c-${i}`} className="awActivityItem">
                   <div className="awAvatar" style={{ background: avatarBg(c._author_name ?? 'U') }}>{initials(c._author_name ?? 'U')}</div>
@@ -325,9 +420,33 @@ export function IssueContentView({
                   </div>
                 </div>
               ))}
-              {comments.length === 0 && historyItems.length === 0 && (
-                <div className="awEmpty">No activity yet</div>
-              )}
+              {(activityTab === 'all' || activityTab === 'worklog') && worklogs.map((w: any, i: number) => (
+                <div key={w.id ?? `w-${i}`} className="awActivityItem">
+                  <div className="awAvatar" style={{ background: '#4C6EF5' }}>
+                    <Clock style={{ width: 14, height: 14, color: '#fff' }} />
+                  </div>
+                  <div className="awActivityBody">
+                    <div className="awActivityMeta">
+                      <strong>{w._author_name ?? 'Unknown'}</strong> logged <strong>{fmtMinutes(w.time_spent_minutes)}</strong> {fmtRel(w.created_at)}
+                    </div>
+                    {w.work_date && (
+                      <div style={{ fontSize: 12, marginTop: 2, color: 'var(--aw-text-subtle)' }}>
+                        Date: {w.work_date}
+                      </div>
+                    )}
+                    {w.description && <div style={{ fontSize: 13, marginTop: 4 }}>{w.description}</div>}
+                  </div>
+                </div>
+              ))}
+              {(() => {
+                const hasComments = activityTab === 'all' || activityTab === 'comments' ? comments.length > 0 : false;
+                const hasHistory = activityTab === 'all' || activityTab === 'history' ? historyItems.length > 0 : false;
+                const hasWorklogs = activityTab === 'all' || activityTab === 'worklog' ? worklogs.length > 0 : false;
+                if (!hasComments && !hasHistory && !hasWorklogs) {
+                  return <div className="awEmpty">No activity yet</div>;
+                }
+                return null;
+              })()}
             </div>
           </div>
         </div>

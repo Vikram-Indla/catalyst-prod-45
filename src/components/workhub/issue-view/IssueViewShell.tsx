@@ -34,7 +34,8 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
   const {
     items, itemsLoading, selectedItem, parentItem,
     children, childrenLoading, links, linksLoading,
-    comments, commentsLoading, history, historyLoading, createComment,
+    comments, commentsLoading, history, historyLoading,
+    worklogs, worklogsLoading, createComment, logWork,
   } = useIssueViewData(projectKey, selectedIssueKey, searchQuery);
 
   // Build filter categories from items
@@ -166,7 +167,10 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
             commentsLoading={commentsLoading}
             historyItems={history}
             historyLoading={historyLoading}
+            worklogs={worklogs}
+            worklogsLoading={worklogsLoading}
             createComment={createComment}
+            logWork={logWork}
             loading={itemsLoading && !selectedItem}
             onPrev={() => handlePrevNext('prev')}
             onNext={() => handlePrevNext('next')}
