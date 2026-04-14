@@ -393,7 +393,7 @@ export function IssueContentView({
                       {/* Textarea */}
                       <textarea
                         autoFocus
-                        rows={4}
+                        rows={3}
                         placeholder="Type @ to mention and notify someone."
                         value={commentText}
                         onChange={e => setCommentText(e.target.value)}

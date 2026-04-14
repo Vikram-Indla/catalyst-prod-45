@@ -892,39 +892,39 @@
 /* Editor box (toolbar + textarea) */
 .awCommentEditorBox {
   border: 1px solid var(--aw-border);
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   transition: border-color 150ms ease;
 }
-.awCommentEditorBox:focus-within { border-color: #0C66E4; }
+.awCommentEditorBox:focus-within { border-color: #0C66E4; box-shadow: 0 0 0 1px #0C66E4; }
 
 /* Formatting toolbar */
 .awEditorToolbar {
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 6px 8px;
+  gap: 1px;
+  padding: 4px 6px;
   border-bottom: 1px solid var(--aw-border);
-  background: var(--aw-hover, rgba(0,0,0,0.02));
+  background: #F7F8F9;
 }
 .awToolbarBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: none;
   border-radius: 4px;
   background: none;
-  color: var(--aw-text-subtle);
+  color: #626F86;
   cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
+  transition: background 120ms ease, color 120ms ease;
 }
-.awToolbarBtn:hover { background: rgba(0,0,0,0.06); color: var(--aw-text); }
+.awToolbarBtn:hover { background: rgba(0,0,0,0.06); color: #172B4D; }
 .awToolbarDivider {
   width: 1px;
-  height: 20px;
-  background: var(--aw-border);
+  height: 16px;
+  background: #DFE1E6;
   margin: 0 4px;
 }
 
@@ -933,14 +933,15 @@
   width: 100%;
   border: none;
   outline: none;
-  padding: 12px 14px;
-  font: 400 14px/22px system-ui, -apple-system, sans-serif;
+  padding: 10px 12px;
+  font: 400 14px/20px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   background: transparent;
   resize: vertical;
-  min-height: 80px;
+  min-height: 60px;
+  max-height: 200px;
 }
-.awCommentTextarea2::placeholder { color: var(--aw-text-subtle); }
+.awCommentTextarea2::placeholder { color: #7A869A; }
 
 /* Save / Cancel below editor */
 .awCommentFooter {
