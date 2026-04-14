@@ -11,8 +11,7 @@ import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
-import { SubtasksPanel } from './sections/SubtasksPanel';
-import { LocalStorageBackedProvider } from '@/lib/subtasks-provider';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 
 
 interface Props {
