@@ -17,7 +17,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
-import { PriorityBars } from '@/components/shared/PriorityIndicator';
+import { PriorityBars, PRIORITY_MAP, normalisePriority } from '@/components/shared/PriorityIndicator';
+import { getJiraTypeLabel } from '@/lib/jira-issue-type-icons';
 
 interface Props {
   projectKey: string;
@@ -60,19 +61,11 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     const types = [...new Set(items.map(i => i.issue_type).filter(Boolean))].sort();
     const assignees = [...new Set(items.map(i => i.assignee_display_name).filter(Boolean))].sort();
 
-    const PRIORITY_ICONS: Record<string, React.ReactNode> = {
-      Highest: <PriorityBars priority="critical" />,
-      High: <PriorityBars priority="high" />,
-      Medium: <PriorityBars priority="medium" />,
-      Low: <PriorityBars priority="low" />,
-      Lowest: <PriorityBars priority="low" />,
-    };
-    const canonical = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+    const canonicalPriorityOrder = ['Critical', 'High', 'Medium', 'Low'] as const;
     const seenPriorities = new Set<string>();
     items.forEach(i => {
       if (!i.priority) return;
-      const norm = i.priority.charAt(0).toUpperCase() + i.priority.slice(1).toLowerCase();
-      if (canonical.includes(norm)) seenPriorities.add(norm);
+      seenPriorities.add(PRIORITY_MAP[normalisePriority(i.priority)].label);
     });
 
     const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
@@ -98,9 +91,9 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
       },
       {
         id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority',
-        options: canonical.filter(p => seenPriorities.has(p)).map(p => ({
+        options: canonicalPriorityOrder.filter(p => seenPriorities.has(p)).map(p => ({
           id: p, label: p,
-          iconNode: PRIORITY_ICONS[p],
+          iconNode: <PriorityBars priority={normalisePriority(p)} />,
         })),
       },
       {
@@ -120,6 +113,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
         id: 'type', label: 'Type', searchPlaceholder: 'Search issue type',
         options: types.map(t => ({
           id: t, label: t,
+          description: getJiraTypeLabel(t),
           iconNode: <JiraIssueTypeIcon issueType={t} size={16} />,
         })),
       },

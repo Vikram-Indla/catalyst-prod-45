@@ -153,24 +153,6 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   );
 }
 
-/** Priority icon matching Jira native */
-function PriorityIcon({ priority }: { priority?: string | null }) {
-  const p = (priority ?? '').toLowerCase();
-  let color = '#F79232';
-  if (p === 'highest' || p === 'critical') color = '#EF4444';
-  else if (p === 'high') color = '#F97316';
-  else if (p === 'low') color = '#3B82F6';
-  else if (p === 'lowest' || p === 'trivial') color = '#60A5FA';
-
-  if (p === 'highest' || p === 'high' || p === 'critical') {
-    return <svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 13l5-10 5 10" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  }
-  if (p === 'low' || p === 'lowest' || p === 'trivial') {
-    return <svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 3l5 10 5-10" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
-  }
-  return <svg width="14" height="14" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" rx="1" fill={color}/><rect x="2" y="9" width="12" height="2" rx="1" fill={color}/></svg>;
-}
-
 type ActivityTab = 'all' | 'comments' | 'history';
 
 export function IssueContentView({

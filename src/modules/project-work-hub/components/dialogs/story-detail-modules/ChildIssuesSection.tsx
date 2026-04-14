@@ -7,8 +7,11 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Plus, Eye, EyeOff, ChevronDown, ChevronUp, Check, Loader2, CornerDownLeft, Sparkles, ArrowUpDown } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
+import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
 import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
-import { DEFAULT_COLUMNS, WORK_ITEM_ICONS, STATUS_OPTION_GROUPS, PRIORITY_COLORS, LOZENGE } from './constants';
+import { DEFAULT_COLUMNS, STATUS_OPTION_GROUPS, LOZENGE } from './constants';
 import { nextPos, getAvatarColor, formatDateShort, resolveStatusCategory } from './helpers';
 import { SectionBlock, IssueIcon, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
 import { ConfirmDialog } from './ConfirmDialog';
@@ -22,15 +25,9 @@ const PRIORITY_ORDER: Record<string, number> = { Highest: 0, High: 1, Medium: 2,
 const STATUS_CAT_ORDER: Record<string, number> = { done: 0, in_progress: 1, todo: 2 };
 
 /* ── Type selector dropdown ── */
-const TYPE_OPTIONS = [
-  { key: 'Sub-task', label: 'Sub-task', icon: WORK_ITEM_ICONS['Sub-task'] },
-  { key: 'Frontend', label: 'Frontend', icon: WORK_ITEM_ICONS['Frontend'] },
-  { key: 'Backend', label: 'Backend', icon: WORK_ITEM_ICONS['Backend'] },
-  { key: 'Figma', label: 'Figma', icon: WORK_ITEM_ICONS['Figma'] },
-  { key: 'Integration', label: 'Integration', icon: WORK_ITEM_ICONS['Integration'] },
-  { key: 'bug', label: 'Bug', icon: WORK_ITEM_ICONS.bug },
-  { key: 'task', label: 'Task', icon: WORK_ITEM_ICONS.task },
-];
+const TYPE_OPTIONS = CANONICAL_WORK_ITEM_OPTIONS.filter(option =>
+  ['Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration', 'Bug', 'Task'].includes(option.key)
+);
 
 function TypeSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
@@ -51,7 +48,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
         border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', cursor: 'pointer',
         fontSize: 13, color: '#172B4D', fontFamily: 'inherit',
       }}>
-        <span dangerouslySetInnerHTML={{ __html: current.icon }} style={{ display: 'flex', width: 16, height: 16 }} />
+        <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
         <ChevronDown size={12} color="#6B778C" />
       </button>
@@ -71,7 +68,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
               onMouseEnter={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
               onMouseLeave={e => { if (opt.key !== value) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
             >
-              <span dangerouslySetInnerHTML={{ __html: opt.icon }} style={{ display: 'flex', width: 16, height: 16 }} />
+              <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
               {opt.key === value && <Check size={12} color="#0052CC" style={{ marginLeft: 'auto' }} />}
             </div>
@@ -192,7 +189,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
     <div className="sdm-child-row" role="listitem">
       {/* Work cell: icon + linked key + summary */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0, overflow: 'hidden' }}>
-        <span className="sdm-type-icon" dangerouslySetInnerHTML={{ __html: WORK_ITEM_ICONS[item.issue_type] ?? WORK_ITEM_ICONS.task }} />
+        <span className="sdm-type-icon"><JiraIssueTypeIcon type={item.issue_type} size={16} /></span>
         <button
           onClick={e => { e.stopPropagation(); onClickKey(item.id); }}
           style={{
@@ -216,10 +213,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
       {/* Priority */}
       {columns.priority && (
         <div style={{ width: 80, display: 'flex', justifyContent: 'center', alignItems: 'center', flexShrink: 0 }}>
-          <div style={{
-            width: 10, height: 10, borderRadius: '50%',
-            background: PRIORITY_COLORS[item.priority] ?? '#8993A4',
-          }} title={item.priority} />
+            <PriorityBars priority={normalisePriority(item.priority)} barWidth={3} barHeight={12} />
         </div>
       )}
 

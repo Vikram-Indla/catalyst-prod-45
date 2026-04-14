@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, ListTree } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { PriorityIndicator } from '@/components/shared/PriorityIndicator';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { formatDistanceToNow } from 'date-fns';
 import type { AllWorkItem } from '@/types/allwork.types';
@@ -19,27 +20,6 @@ function getStatusCategory(status: string): 'todo' | 'inprogress' | 'done' {
   const progP = ['inprogress', 'indevelopment', 'indev', 'inreview', 'testing', 'readyfordevelopment', 'readyfordev', 'readyforqa', 'development', 'review', 'active', 'started', 'reopened', 'open', 'ready', 'triage', 'onhold'];
   if (progP.some(p => n.includes(p))) return 'inprogress';
   return 'todo';
-}
-
-/* ── Priority helpers ── */
-const PRIORITY_MAP: Record<string, { label: string; bars: number }> = {
-  Highest: { label: 'Highest', bars: 4 }, High: { label: 'High', bars: 3 },
-  Medium: { label: 'Medium', bars: 2 }, Low: { label: 'Low', bars: 1 }, Lowest: { label: 'Lowest', bars: 0 },
-};
-
-function PriorityBars({ priority }: { priority: string }) {
-  const cfg = PRIORITY_MAP[priority] || { bars: 2 };
-  return (
-    <div style={{ display: 'flex', alignItems: 'flex-end', gap: 1, height: 12 }}>
-      {[1, 2, 3, 4].map(i => (
-        <div key={i} style={{
-          width: 3, height: 3 + i * 2.5,
-          borderRadius: 1,
-          backgroundColor: i <= cfg.bars ? 'var(--fg-3)' : '#E4E4E7',
-        }} />
-      ))}
-    </div>
-  );
 }
 
 function formatRel(d: string | null): string {
@@ -97,8 +77,6 @@ function MiniAvatar({ name }: { name: string }) {
 
 /* ── Sub-task card ── */
 function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void }) {
-  const prio = PRIORITY_MAP[item.priority] || { label: item.priority, bars: 2 };
-
   return (
     <button
       onClick={onClick}
@@ -141,10 +119,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-          <PriorityBars priority={item.priority} />
-          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
-            {prio.label}
-          </span>
+          <PriorityIndicator priority={item.priority} fontSize={12} />
         </div>
 
         <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>

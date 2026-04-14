@@ -5,6 +5,7 @@
 import { useState, useMemo, useCallback, memo } from 'react';
 import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { AllWorkContextMenu } from './AllWorkContextMenu';
@@ -46,15 +47,6 @@ function flattenTree(nodes: TreeNode[], expanded: Set<string>): TreeNode[] {
   }
   return result;
 }
-
-// ── Constants ──
-const PRIORITY_BARS: Record<string, { bars: number; color: string }> = {
-  Highest: { bars: 4, color: 'var(--sem-danger)' },
-  High: { bars: 3, color: '#f97316' },
-  Medium: { bars: 2, color: 'var(--cp-blue)' },
-  Low: { bars: 1, color: '#22c55e' },
-  Lowest: { bars: 0, color: '#8c8f96' },
-};
 
 const HUB_COLORS: Record<string, { border: string; text: string; bg: string }> = {
   project: { border: 'var(--cp-blue)', text: 'var(--cp-blue)', bg: 'var(--cp-primary-5)' },
@@ -100,26 +92,6 @@ const COLUMNS: Column[] = [
 ];
 
 const GRID_TEMPLATE = COLUMNS.map(c => c.width).join(' ');
-
-// ── Sub-components ──
-const PriorityBars = memo(function PriorityBars({ priority }: { priority: string }) {
-  const cfg = PRIORITY_BARS[priority] || { bars: 2, color: 'var(--cp-blue)' };
-  return (
-    <div className="flex items-end gap-[2px]" title={priority} aria-label={`Priority: ${priority}`}>
-      {[0, 1, 2, 3].map(i => (
-        <div
-          key={i}
-          style={{
-            width: 3,
-            height: 6 + i * 3,
-            borderRadius: 1,
-            backgroundColor: i < cfg.bars ? cfg.color : 'var(--divider)',
-          }}
-        />
-      ))}
-    </div>
-  );
-});
 
 // ── Props ──
 interface Props {
@@ -361,7 +333,7 @@ const TableRow = memo(function TableRow({
 
       {/* Priority */}
       <div className="px-2">
-        <PriorityBars priority={item.priority} />
+        <PriorityBars priority={normalisePriority(item.priority)} barWidth={3} barHeight={12} />
       </div>
 
       {/* Updated */}
