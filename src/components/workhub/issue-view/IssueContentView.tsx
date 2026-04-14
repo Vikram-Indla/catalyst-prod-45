@@ -81,8 +81,10 @@ function Avatar({ name, url, size = 22 }: { name: string; url?: string | null; s
   );
 }
 
-/** Jira-strong status pill with dropdown chevron */
-function StatusPill({ status, statusCategory }: { status: string; statusCategory?: string | null }) {
+/** Jira-strong status pill with editable dropdown */
+function StatusPill({ status, statusCategory, issueId, onStatusChange }: { status: string; statusCategory?: string | null; issueId?: string; onStatusChange?: (newStatus: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
   const cat = (statusCategory ?? '').toLowerCase();
   let bg = '#44546F';
   let color = '#FFFFFF';
@@ -92,11 +94,59 @@ function StatusPill({ status, statusCategory }: { status: string; statusCategory
   else if (status.toLowerCase().includes('done') || status.toLowerCase().includes('complete')) { bg = '#1B845D'; }
   else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review') || status.toLowerCase().includes('requirement')) { bg = '#0C66E4'; }
 
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  const handleSelect = (newStatus: string) => {
+    setOpen(false);
+    onStatusChange?.(newStatus);
+  };
+
+  const groupLabelColor: Record<string, string> = { 'TO DO': '#42526E', 'IN PROGRESS': '#0C66E4', 'DONE': '#1B845D' };
+
   return (
-    <button className="awStatusPill" style={{ background: bg, color }}>
-      {status}
-      <ChevronDown style={{ width: 12, height: 12 }} />
-    </button>
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button className="awStatusPill" style={{ background: bg, color }} onClick={() => setOpen(o => !o)}>
+        {status}
+        <ChevronDown style={{ width: 12, height: 12 }} />
+      </button>
+      {open && (
+        <div style={{
+          position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          background: '#fff', borderRadius: 6, width: 220,
+          boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80, padding: '4px 0',
+          border: '1px solid #DFE1E6', maxHeight: 320, overflowY: 'auto',
+        }}>
+          {STATUS_OPTION_GROUPS.map(group => (
+            <div key={group.groupLabel}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: groupLabelColor[group.groupLabel] ?? '#42526E', padding: '8px 12px 4px', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>
+                {group.groupLabel}
+              </div>
+              {group.statuses.map(s => (
+                <button
+                  key={s}
+                  onClick={() => handleSelect(s)}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '6px 12px', fontSize: 13, color: '#172B4D',
+                    background: s === status ? '#E9F2FF' : 'transparent',
+                    border: 'none', cursor: 'pointer', fontWeight: s === status ? 600 : 400,
+                  }}
+                  onMouseOver={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : '#F4F5F7')}
+                  onMouseOut={e => (e.currentTarget.style.background = s === status ? '#E9F2FF' : 'transparent')}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
