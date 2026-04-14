@@ -60,6 +60,7 @@ interface Props {
   onSearch: (query: string) => void;
   items?: AllWorkItem[];
   loading?: boolean;
+  totalCount?: number;
 }
 
 export function IssueListPanel({

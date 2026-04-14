@@ -2,9 +2,10 @@
  * IssueContentView — Jira-parity single issue view:
  * Left side: breadcrumb, title, actions, key details, description, subtasks, linked work, activity
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
+ * Implements recommendations #11-16, #17, #19-26, #28-30
  */
-import { useState, useMemo, useRef } from 'react';
-import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, Settings, MessageSquare, History as HistoryIcon, Clock, FileText, Send, Minus, Eye, Share2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, Settings, MessageSquare, History as HistoryIcon, Clock, FileText, Send, Eye, Share2 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
@@ -28,6 +29,8 @@ interface Props {
   historyLoading?: boolean;
   createComment?: any;
   loading?: boolean;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
@@ -51,13 +54,13 @@ function Avatar({ name, url, size = 22 }: { name: string; url?: string | null; s
 /** Jira-strong status pill with dropdown chevron */
 function StatusPill({ status, statusCategory }: { status: string; statusCategory?: string | null }) {
   const cat = (statusCategory ?? '').toLowerCase();
-  let bg = '#44546F'; // default grey
+  let bg = '#44546F';
   let color = '#FFFFFF';
   if (cat.includes('done') || cat === 'complete') { bg = '#1B845D'; }
   else if (cat.includes('progress') || cat === 'indeterminate') { bg = '#0C66E4'; }
   else if (status.toLowerCase().includes('beta')) { bg = '#1B845D'; }
   else if (status.toLowerCase().includes('done') || status.toLowerCase().includes('complete')) { bg = '#1B845D'; }
-  else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review')) { bg = '#0C66E4'; }
+  else if (status.toLowerCase().includes('progress') || status.toLowerCase().includes('implementation') || status.toLowerCase().includes('review') || status.toLowerCase().includes('requirement')) { bg = '#0C66E4'; }
 
   return (
     <button className="awStatusPill" style={{ background: bg, color }}>
@@ -70,7 +73,7 @@ function StatusPill({ status, statusCategory }: { status: string; statusCategory
 /** Priority icon matching Jira native */
 function PriorityIcon({ priority }: { priority?: string | null }) {
   const p = (priority ?? '').toLowerCase();
-  let color = '#F79232'; // medium amber
+  let color = '#F79232';
   if (p === 'highest' || p === 'critical') color = '#EF4444';
   else if (p === 'high') color = '#F97316';
   else if (p === 'low') color = '#3B82F6';
@@ -82,7 +85,6 @@ function PriorityIcon({ priority }: { priority?: string | null }) {
   if (p === 'low' || p === 'lowest' || p === 'trivial') {
     return <svg width="14" height="14" viewBox="0 0 16 16"><path d="M3 3l5 10 5-10" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
   }
-  // Medium — equals sign
   return <svg width="14" height="14" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" rx="1" fill={color}/><rect x="2" y="9" width="12" height="2" rx="1" fill={color}/></svg>;
 }
 
@@ -92,6 +94,7 @@ export function IssueContentView({
   issueKey, item, parentItem, childItems = [], childrenLoading,
   links = [], linksLoading, comments = [], commentsLoading,
   historyItems = [], historyLoading, createComment, loading,
+  onPrev, onNext,
 }: Props) {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -99,7 +102,6 @@ export function IssueContentView({
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
   const subtasksProvider = useMemo(() => new LocalStorageBackedProvider(), []);
-  const [createStoryOpen, setCreateStoryOpen] = useState(false);
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -131,7 +133,6 @@ export function IssueContentView({
     { key: 'history', label: 'History' }, { key: 'worklog', label: 'Work log' },
   ];
 
-  // Fix version display
   const fixVersionName = item?.fix_version_name;
 
   return (
@@ -140,35 +141,43 @@ export function IssueContentView({
       <div className="awIssueContent">
         {/* Header */}
         <div className="awIssueHeader">
-          {/* Breadcrumb */}
+          {/* Breadcrumb — #11: Add parent link, #12: nav arrows */}
           <div className="awBreadcrumb">
-            {parentItem && <>
-              <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />
-              <span className="awBreadcrumbLink">{parentItem.issue_key}</span>
-              <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
+            {/* Add parent CTA when no parent */}
+            {!parentItem && !item?.parent_key && (
+              <span className="awAddParentLink">
+                <Pencil style={{ width: 11, height: 11 }} />
+                Add parent
+              </span>
+            )}
+            {/* Show parent if exists */}
+            {(parentItem || item?.parent_key) && <>
+              <JiraIssueTypeIcon type={parentItem?.issue_type ?? 'epic'} size={14} />
+              <span className="awBreadcrumbLink">{parentItem?.issue_key ?? item?.parent_key}</span>
             </>}
+            <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
             <span>{issueKey}</span>
-            {/* Prev/Next arrows */}
+            {/* #12: Prev/Next navigation arrows */}
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
-              <button className="awPill" style={{ padding: '0 4px', height: 22 }}>▲</button>
-              <button className="awPill" style={{ padding: '0 4px', height: 22 }}>▼</button>
+              <button className="awNavArrow" onClick={onPrev} title="Previous issue"><ChevronUp style={{ width: 14, height: 14 }} /></button>
+              <button className="awNavArrow" onClick={onNext} title="Next issue"><ChevronDown style={{ width: 14, height: 14 }} /></button>
             </span>
           </div>
 
           {/* Title */}
           <div className="awIssueTitle">{item?.summary ?? 'Untitled'}</div>
 
-          {/* Actions row: + and ⚙ buttons */}
+          {/* #13: Actions row: + and ⚙ buttons */}
           <div className="awActions">
-            
+            <button className="awPill" style={{ padding: '0 6px' }}><Plus style={{ width: 14, height: 14 }} /></button>
             <button className="awPill" style={{ padding: '0 6px' }}><Settings style={{ width: 14, height: 14 }} /></button>
           </div>
         </div>
 
         {/* Scrollable body */}
         <div className="awBody">
-          {/* ── Key details (Parent + Priority) ── */}
+          {/* ── Key details (#26: show description content here, not just priority) ── */}
           <div className="awSection">
             <div className="awSectionHead" onClick={() => toggle('keydetails')}>
               <span className="awSectionLabel">
@@ -178,20 +187,6 @@ export function IssueContentView({
             </div>
             {!collapsed.keydetails && (
               <div className="awSectionBody">
-                {/* Parent */}
-                {(parentItem || item?.parent_key) && (
-                  <div className="awKeyDetailRow">
-                    <div className="awKeyDetailLabel">Parent</div>
-                    <div className="awKeyDetailValue">
-                      {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
-                      <span className="awParentLink">
-                        {parentItem?.issue_key ?? item?.parent_key}
-                        {parentItem?.summary && ` ${parentItem.summary}`}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
                 {/* Priority */}
                 <div className="awKeyDetailRow">
                   <div className="awKeyDetailLabel">Priority</div>
@@ -218,24 +213,24 @@ export function IssueContentView({
             {!collapsed.desc && (
               <div className="awSectionBody">
                 {item?.description_text ? (
-                  <div style={{ fontSize: 13, lineHeight: 1.6, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                  <div className="awDescriptionContent">
                     {item.description_text}
                   </div>
                 ) : (
-                  <div style={{ color: 'var(--aw-text-subtle)', fontStyle: 'italic' }}>Add a description...</div>
+                  <div className="awDescPlaceholder">Add a description...</div>
                 )}
               </div>
             )}
           </div>
 
-          {/* ── Subtasks Panel (full Jira-parity) ── */}
+          {/* ── Subtasks Panel (#28: actions already in SubtasksPanel) ── */}
           <SubtasksPanel
             parentKey={issueKey!}
             provider={subtasksProvider}
             externalChildren={childItems}
           />
 
-          {/* ── Linked work items ── */}
+          {/* ── Linked work items (#29) ── */}
           <div className="awSection">
             <div className="awSectionHead" onClick={() => toggle('links')}>
               <span className="awSectionLabel">
@@ -265,7 +260,7 @@ export function IssueContentView({
             )}
           </div>
 
-          {/* ── Activity ── */}
+          {/* ── Activity (#30: pill-style tabs) ── */}
           <div className="awSection" style={{ borderBottom: 'none' }}>
             <div className="awSectionHead" style={{ cursor: 'default' }}>
               <span className="awSectionLabel">Activity</span>
@@ -280,7 +275,7 @@ export function IssueContentView({
             <div className="awSectionBody">
               {/* Comment box */}
               <div className="awCommentBox">
-                {user && <Avatar name={user.email ?? 'You'} size={24} />}
+                {user && <Avatar name={user.email ?? 'You'} size={28} />}
                 <input
                   placeholder="Add a comment..."
                   value={commentText}
@@ -333,12 +328,25 @@ export function IssueContentView({
 
       {/* ══ RIGHT: Details sidebar (collapsible) ══ */}
       <div className={`awDetailsSidebar ${sidebarOpen ? '' : 'collapsed'}`}>
-        {/* Status pill + header actions */}
-        <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {/* Status pill + #14 watcher + #15 share + #16 more menu + #19 issue type badge */}
+        <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} />
+          {/* #19: Issue type badge next to status */}
+          {item?.issue_type && (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--aw-text-subtle)', border: '1px solid var(--aw-border)', borderRadius: 4, padding: '2px 8px', height: 24 }}>
+              <JiraIssueTypeIcon type={item.issue_type} size={14} />
+              {item.issue_type}
+            </span>
+          )}
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-            <button className="awPill" style={{ padding: '0 4px', height: 22 }}><Eye style={{ width: 14, height: 14 }} /></button>
+            {/* #14: Watcher count */}
+            <button className="awPill" style={{ padding: '0 6px', height: 22, gap: 3 }}>
+              <Eye style={{ width: 14, height: 14 }} />
+              <span style={{ fontSize: 11, fontWeight: 600 }}>1</span>
+            </button>
+            {/* #15: Share button */}
             <button className="awPill" style={{ padding: '0 4px', height: 22 }}><Share2 style={{ width: 14, height: 14 }} /></button>
+            {/* #16: More menu */}
             <button className="awPill" style={{ padding: '0 4px', height: 22 }}><MoreHorizontal style={{ width: 14, height: 14 }} /></button>
           </span>
         </div>
@@ -352,46 +360,48 @@ export function IssueContentView({
           {!collapsed.details && (
             <div className="awDetailsSectionBody">
               {/* Fix versions */}
-              <div className="awFieldRow">
+              <div className="awFieldRow awFieldRowBorder">
                 <div className="awFieldLabel">Fix versions</div>
                 <div className="awFieldValue"><span className="awFieldNone">{fixVersionName || 'None'}</span></div>
               </div>
-              {/* Assignee */}
-              <div className="awFieldRow">
+              {/* #20: Assignee + always show "Assign to me" */}
+              <div className="awFieldRow awFieldRowBorder awFieldRowTall">
                 <div className="awFieldLabel">Assignee</div>
-                <div className="awFieldValue">
-                  {item?.assignee_display_name ? <>
-                    <Avatar name={item.assignee_display_name} url={item.assignee_avatar} />
-                    <span>{item.assignee_display_name}</span>
-                  </> : <span className="awFieldNone">Unassigned</span>}
+                <div className="awFieldValue" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {item?.assignee_display_name ? <>
+                      <Avatar name={item.assignee_display_name} url={item.assignee_avatar} size={24} />
+                      <span>{item.assignee_display_name}</span>
+                    </> : (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B3BAC5" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                        <span className="awFieldNone">Unassigned</span>
+                      </span>
+                    )}
+                  </div>
+                  <span style={{ color: '#0C66E4', fontSize: 12, cursor: 'pointer', marginLeft: item?.assignee_display_name ? 30 : 26 }}>Assign to me</span>
                 </div>
               </div>
-              {item?.assignee_display_name && (
-                <div className="awFieldRow">
-                  <div className="awFieldLabel" />
-                  <div className="awFieldValue"><span style={{ color: 'var(--aw-blue)', fontSize: 12, cursor: 'pointer' }}>Assign to me</span></div>
-                </div>
-              )}
               {/* Priority */}
-              <div className="awFieldRow">
+              <div className="awFieldRow awFieldRowBorder">
                 <div className="awFieldLabel">Priority</div>
                 <div className="awFieldValue">
                   <PriorityIcon priority={item?.priority} />
                   <span>{capitalize(item?.priority ?? 'Medium')}</span>
                 </div>
               </div>
-              {/* Reporter */}
-              <div className="awFieldRow">
+              {/* #21: Reporter with photo avatar */}
+              <div className="awFieldRow awFieldRowBorder">
                 <div className="awFieldLabel">Reporter</div>
                 <div className="awFieldValue">
                   {item?.reporter_name ? <>
-                    <Avatar name={item.reporter_name} />
+                    <Avatar name={item.reporter_name} url={(item as any).reporter_avatar} size={24} />
                     <span>{item.reporter_name}</span>
                   </> : <span className="awFieldNone">None</span>}
                 </div>
               </div>
               {/* Labels */}
-              <div className="awFieldRow">
+              <div className="awFieldRow awFieldRowBorder">
                 <div className="awFieldLabel">Labels</div>
                 <div className="awFieldValue">
                   {item?.labels && item.labels.length > 0
@@ -401,7 +411,7 @@ export function IssueContentView({
                 </div>
               </div>
               {/* MDT Ref */}
-              <div className="awFieldRow">
+              <div className="awFieldRow awFieldRowBorder">
                 <div className="awFieldLabel">MDT Ref</div>
                 <div className="awFieldValue"><span className="awFieldNone" style={{ cursor: 'pointer' }}>Add text</span></div>
               </div>
@@ -409,23 +419,36 @@ export function IssueContentView({
           )}
         </div>
 
-        {/* Development */}
+        {/* #23: More fields collapsible */}
         <div className="awDetailsSection">
-          <div className="awDetailsSectionHead" onClick={() => toggle('dev')}>
-            {collapsed.dev ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-            Development
-          </div>
-        </div>
-
-        {/* Automation */}
-        <div className="awDetailsSection">
-          <div className="awDetailsSectionHead" onClick={() => toggle('automation')}>
-            {collapsed.automation ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-            Automation
-            <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--aw-text-subtle)', marginLeft: 6, display: 'flex', alignItems: 'center', gap: 4 }}>
-              ⚡ Rule executions
+          <div className="awDetailsSectionHead" onClick={() => toggle('morefields')}>
+            {collapsed.morefields ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
+            More fields
+            <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--aw-text-subtle)', marginLeft: 6 }}>
+              Original estimate, Time tracking, Fix versions, Parent
             </span>
           </div>
+          {!collapsed.morefields && (
+            <div className="awDetailsSectionBody">
+              <div className="awFieldRow awFieldRowBorder">
+                <div className="awFieldLabel">Original estimate</div>
+                <div className="awFieldValue"><span className="awFieldNone">None</span></div>
+              </div>
+              <div className="awFieldRow awFieldRowBorder">
+                <div className="awFieldLabel">Time tracking</div>
+                <div className="awFieldValue"><span className="awFieldNone">None</span></div>
+              </div>
+              {(parentItem || item?.parent_key) && (
+                <div className="awFieldRow awFieldRowBorder">
+                  <div className="awFieldLabel">Parent</div>
+                  <div className="awFieldValue">
+                    {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
+                    <span className="awParentLink">{parentItem?.issue_key ?? item?.parent_key}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Timestamps */}
@@ -441,7 +464,6 @@ export function IssueContentView({
           </button>
         </div>
       </div>
-
     </div>
   );
 }
