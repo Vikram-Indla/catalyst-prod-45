@@ -6,19 +6,21 @@
  *   - EditableAssignee (Jira-parity user picker with avatars)
  *   - EditablePriority (Jira-native priority SVGs with dropdown)
  *   - EditableLabels (add/remove labels with suggestions)
+ *   - EditableStoryPoints (Fibonacci picker with None option)
+ *   - EditableFixVersions (multi-select with unreleased/released groups)
  *
  * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Fix Versions → Story Points → Timestamps
  *
  * The `children` slot is where type-specific sidebar fields go.
  */
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
-import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditablePriority, EditableLabels, EditableStoryPoints, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -83,14 +85,6 @@ export function CatalystSidebarDetails({
   const { data: reporterProfile } = useCatalystAvatarProfile(issue?.reporter_account_id);
 
   const labelsArray: string[] = Array.isArray(issue?.labels) ? issue.labels : [];
-
-  /* ── Fix versions ──────────────────────── */
-  const fixVersionNames = useMemo(() => {
-    if (!issue?.fix_versions) return [];
-    const fv = issue.fix_versions;
-    if (Array.isArray(fv)) return fv.map((v: any) => v?.name || v).filter(Boolean) as string[];
-    return [];
-  }, [issue?.fix_versions]);
 
   const invalidateIssue = useCallback(
     () => queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] }),
@@ -280,27 +274,31 @@ export function CatalystSidebarDetails({
           {/* ── Fix Versions ──── */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
             <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0, paddingTop: 2 }}>Fix versions</span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-              {fixVersionNames.length > 0 ? (
-                fixVersionNames.map(v => (
-                  <span key={v} style={{
-                    background: '#DEEBFF', color: '#0747A6', fontSize: 12, fontWeight: 500,
-                    padding: '2px 8px', borderRadius: 3, lineHeight: '18px',
-                  }}>{v}</span>
-                ))
-              ) : (
-                <span style={{ fontSize: 14, fontWeight: 400, color: '#6B6E76' }}>None</span>
+            <div style={{ flex: 1 }}>
+              {issue && (
+                <EditableFixVersions
+                  issueId={issue.id}
+                  currentFixVersions={issue.fix_versions}
+                  projectKey={issue.project_key}
+                  onUpdate={invalidateIssue}
+                />
               )}
             </div>
           </div>
 
           {/* ── Story Points ──── */}
-          {(issue as any)?.story_points != null && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
-              <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Story points</span>
-              <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>{(issue as any).story_points}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Story points</span>
+            <div style={{ flex: 1 }}>
+              {issue && (
+                <EditableStoryPoints
+                  issueId={issue.id}
+                  currentPoints={issue.story_points}
+                  onUpdate={invalidateIssue}
+                />
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 

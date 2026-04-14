@@ -465,6 +465,265 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
   );
 }
 
+/* ── EditableStoryPoints — Jira-parity inline numeric picker ── */
+
+const FIBONACCI_POINTS = [0, 0.5, 1, 2, 3, 5, 8, 13, 21];
+
+export function EditableStoryPoints({ issueId, currentPoints, onUpdate }: {
+  issueId: string; currentPoints: number | null | undefined; onUpdate: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const updateMutation = useMutation({
+    mutationFn: async (points: number | null) => {
+      const { error } = await supabase.from('ph_issues').update({ story_points: points } as any).eq('id', issueId);
+      if (error) throw error;
+    },
+    onSuccess: () => { onUpdate(); setOpen(false); },
+  });
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ flex: 1, position: 'relative' }}>
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6, cursor: 'pointer',
+        padding: '4px 6px', borderRadius: 4, transition: 'background .12s',
+      }}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+      >
+        <span style={{ fontSize: 14, color: currentPoints != null ? '#172B4D' : '#97A0AF', fontWeight: 400 }}>
+          {currentPoints != null ? currentPoints : 'None'}
+        </span>
+      </div>
+      {open && (
+        <div style={{ ...ATLASSIAN_DROPDOWN, position: 'absolute', top: 'calc(100% + 4px)', left: 0, width: 160, overflow: 'hidden' }}>
+          {/* Clear option */}
+          <div onClick={() => updateMutation.mutate(null)}
+            style={{
+              height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
+              cursor: 'pointer', fontSize: 14, fontWeight: 400, color: '#6B778C',
+              background: currentPoints == null ? '#DEEBFF' : 'transparent',
+              borderBottom: '1px solid #F4F5F7',
+            }}
+            onMouseEnter={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { if (currentPoints != null) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+          >
+            <span style={{ flex: 1 }}>None</span>
+            {currentPoints == null && <CheckmarkSVG />}
+          </div>
+          {FIBONACCI_POINTS.map(p => (
+            <div key={p} onClick={() => updateMutation.mutate(p)}
+              style={{
+                height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
+                cursor: 'pointer', fontSize: 14, fontWeight: 400, color: '#172B4D',
+                background: p === currentPoints ? '#DEEBFF' : 'transparent',
+              }}
+              onMouseEnter={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { if (p !== currentPoints) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+            >
+              <span style={{ flex: 1 }}>{p}</span>
+              {p === currentPoints && <CheckmarkSVG />}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── EditableFixVersions — Jira-parity multi-select dropdown ── */
+
+export function EditableFixVersions({ issueId, currentFixVersions, projectKey, onUpdate }: {
+  issueId: string; currentFixVersions: any | null; projectKey: string | null | undefined; onUpdate: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Parse current fix version names
+  const fixVersionNames: string[] = (() => {
+    if (!currentFixVersions) return [];
+    if (Array.isArray(currentFixVersions)) return currentFixVersions.map((v: any) => v?.name || v).filter(Boolean) as string[];
+    return [];
+  })();
+
+  // Fetch available versions from ph_versions
+  const { data: versionsData, isLoading: versionsLoading } = useQuery({
+    queryKey: ['ph-fix-versions', projectKey],
+    queryFn: async () => {
+      if (!projectKey) return [];
+      const { data, error } = await supabase
+        .from('ph_versions' as any)
+        .select('name, released, archived, release_date')
+        .eq('project_key', projectKey)
+        .order('name', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as { name: string; released: boolean; archived: boolean; release_date: string | null }[];
+    },
+    enabled: !!projectKey,
+    staleTime: 60_000,
+  });
+
+  const versions = versionsData ?? [];
+  const unreleased = versions.filter(v => !v.released && !v.archived);
+  const released = versions.filter(v => v.released && !v.archived);
+
+  const handleToggle = (versionName: string) => {
+    let updated: string[];
+    if (fixVersionNames.includes(versionName)) {
+      updated = fixVersionNames.filter(v => v !== versionName);
+    } else {
+      updated = [...fixVersionNames, versionName];
+    }
+    const jsonValue = updated.map(n => ({ name: n }));
+    supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', issueId).then(() => onUpdate());
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) { setOpen(false); setSearch(''); } };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, [open]);
+
+  useEffect(() => { if (open) setTimeout(() => searchInputRef.current?.focus(), 50); }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      {/* Selected version chips */}
+      {fixVersionNames.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 4 }}>
+          {fixVersionNames.map(v => (
+            <span key={v} style={{
+              display: 'inline-flex', alignItems: 'center', gap: 4,
+              fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3,
+              background: '#DEEBFF', color: '#0747A6', lineHeight: '18px',
+            }}>
+              {v}
+              <button onClick={e => { e.stopPropagation(); handleToggle(v); }} style={{
+                background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+                display: 'flex', alignItems: 'center', color: '#0747A6',
+              }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '0.7')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Trigger */}
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', minHeight: 32, padding: '4px 8px',
+        borderRadius: 3, cursor: 'pointer', background: 'transparent',
+        transition: 'background 0.15s',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+      >
+        <span style={{ fontSize: 14, color: fixVersionNames.length > 0 ? '#172B4D' : '#7A869A' }}>
+          {fixVersionNames.length > 0 ? 'Add more' : 'None'}
+        </span>
+      </div>
+
+      {/* Dropdown */}
+      {open && (
+        <div style={{
+          ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
+          width: Math.max(ref.current?.offsetWidth ?? 260, 260),
+          maxHeight: 360, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}>
+          {/* Search */}
+          <div style={{ padding: '8px 8px 4px' }}>
+            <input ref={searchInputRef} value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search versions..."
+              onKeyDown={e => { if (e.key === 'Escape') { setOpen(false); setSearch(''); } }}
+              style={{
+                width: '100%', height: 36, padding: '0 12px',
+                border: '2px solid #4C9AFF', borderRadius: 3,
+                fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+              }} />
+          </div>
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>Loading...</div>}
+
+            {/* Unreleased */}
+            {(() => {
+              const filtered = unreleased.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
+              if (filtered.length === 0) return null;
+              return (
+                <>
+                  <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                  {filtered.map(v => {
+                    const isSelected = fixVersionNames.includes(v.name);
+                    return (
+                      <div key={v.name} onClick={() => handleToggle(v.name)}
+                        style={{
+                          padding: '8px 12px', fontSize: 14, color: '#172B4D',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          background: isSelected ? '#DEEBFF' : 'transparent', transition: 'background 0.1s',
+                        }}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                      >
+                        <span>{v.name}</span>
+                        {isSelected && <CheckmarkSVG />}
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()}
+
+            {/* Released */}
+            {(() => {
+              const filtered = released.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
+              if (filtered.length === 0) return null;
+              return (
+                <>
+                  <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                  {filtered.map(v => {
+                    const isSelected = fixVersionNames.includes(v.name);
+                    return (
+                      <div key={v.name} onClick={() => handleToggle(v.name)}
+                        style={{
+                          padding: '8px 12px', fontSize: 14, color: '#172B4D',
+                          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          background: isSelected ? '#DEEBFF' : 'transparent', transition: 'background 0.1s',
+                        }}
+                        onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
+                      >
+                        <span>{v.name}</span>
+                        {isSelected && <CheckmarkSVG />}
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            })()}
+
+            {!versionsLoading && unreleased.length === 0 && released.length === 0 && (
+              <div style={{ padding: 16, fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No versions found for this project</div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── ParentFieldPicker — Jira-parity rebuild ── */
 
 /** Canonical epic icon — lightning bolt on purple rounded square (Jira parity) */
