@@ -176,6 +176,23 @@ export function useCreateStoryMutation() {
         .single();
 
       if (error) throw error;
+
+      // Log initial "created" activity so the item has activity from birth
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('ph_activity_log').insert({
+          work_item_id: data.id,
+          user_id: user?.id ?? null,
+          action: 'created',
+          field_name: null,
+          old_value: null,
+          new_value: null,
+          metadata: { issue_key: issueKey, issue_type: issueType || 'Story', summary: form.summary.trim() },
+        } as any);
+      } catch (actErr) {
+        console.warn('[CreateStory] Failed to log activity:', actErr);
+      }
+
       return data;
     },
     onSuccess: () => {
