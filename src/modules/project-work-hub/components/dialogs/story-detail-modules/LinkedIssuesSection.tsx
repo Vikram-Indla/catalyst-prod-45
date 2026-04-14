@@ -144,7 +144,13 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: str
         if (error) throw error;
       }
     },
-    onSuccess,
+    onSuccess: () => {
+      toast.success(`Linked ${selectedItems.length} item${selectedItems.length > 1 ? 's' : ''}`);
+      onSuccess();
+    },
+    onError: (err: any) => {
+      toast.error('Failed to link', { description: err.message });
+    },
   });
 
   const handleSelect = (r: any) => {
