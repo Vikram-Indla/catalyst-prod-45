@@ -556,6 +556,19 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
           }}
         />
       )}
+
+      {/* Detail modal for linked item */}
+      {openedItem && (
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={() => setOpenedItem(null)}
+            itemId={openedItem.id}
+            itemType={openedItem.issueType}
+            projectKey={openedItem.projectKey}
+          />
+        </Suspense>
+      )}
     </SectionBlock>
   );
 }
