@@ -35,6 +35,8 @@ export interface AllWorkItem {
   icon_glyph: string | null;
   work_type_id: string | null;
   rank: string | null;
+  is_flagged: boolean;
+  flag_reason: string | null;
   _source?: 'wh' | 'ph_issues';
 }
 
@@ -75,6 +77,8 @@ export function normalizeWorkItem(raw: any): AllWorkItem {
     icon_glyph: raw.icon_glyph ?? null,
     work_type_id: raw.work_type_id ?? null,
     rank: raw.rank ?? null,
+    is_flagged: raw.is_flagged ?? false,
+    flag_reason: raw.flag_reason ?? null,
     _source: raw._source === 'ph_issues' ? 'ph_issues' : 'wh',
   };
 }

@@ -50,66 +50,110 @@ const inputStyle: React.CSSProperties = {
   borderRadius: 4, fontSize: 14, outline: 'none',
 };
 
-/* ═══ 1. FLAG DIALOG ═══ */
-export function FlagDialog({ issueId, issueKey, isFlagged, onClose }: {
-  issueId: string; issueKey: string; isFlagged: boolean; onClose: () => void;
+/* ═══ Flag helpers (Jira BAU-4375 format) ═══ */
+const DEFAULT_ADD_FLAG_NOTE = 'none';    // BAU-4375 uses "flag" and "none"; we default to "none" if blank
+const DEFAULT_REMOVE_FLAG_NOTE = 'none'; // BAU-4375 uses "remove" and "none"; we default to "none" if blank
+const FLAG_VALUE = 'Impediment';         // Jira canonical flag value
+
+function normalizeNote(note?: string, fallback = 'none') {
+  const trimmed = (note ?? '').trim();
+  return trimmed.length > 0 ? trimmed : fallback;
+}
+
+export function isFlagged(item: any): boolean {
+  return Boolean(item?.is_flagged);
+}
+
+/* ═══ 1. FLAG POPOVER (Jira inline popover — not a full-screen modal) ═══ */
+export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, tableName = 'ph_work_items' }: {
+  issueId: string;
+  issueKey: string;
+  flagged: boolean;
+  anchorRef: React.RefObject<HTMLElement | null>;
+  onClose: () => void;
+  tableName?: 'ph_work_items' | 'ph_issues';
 }) {
-  const [reason, setReason] = useState('');
+  const [note, setNote] = useState('');
   const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: async () => {
-      const newVal = !isFlagged;
-      await supabase.from('ph_issues').update({
-        flagged: newVal,
+      const newFlagged = !flagged;
+      // Update flag fields
+      await supabase.from(tableName).update({
+        is_flagged: newFlagged,
+        flag_reason: newFlagged ? (note.trim() || null) : null,
       } as any).eq('id', issueId);
-      // Activity log
+
+      // Build Jira-format comment text
+      const commentNote = newFlagged
+        ? normalizeNote(note, DEFAULT_ADD_FLAG_NOTE)
+        : normalizeNote(note, DEFAULT_REMOVE_FLAG_NOTE);
+      const commentText = newFlagged
+        ? `:flag_on: Flag added\n${commentNote}`
+        : `:flag_off: Flag removed\n${commentNote}`;
+
+      // Activity log entry
       await supabase.from('activity_logs').insert({
         entity_id: issueId, entity_type: 'ph_issue',
-        action: newVal ? 'flag_added' : 'flag_removed',
-        after_json: { flagged: newVal, reason: reason || null },
+        action: newFlagged ? 'flag_added' : 'flag_removed',
+        after_json: { is_flagged: newFlagged, flag_reason: note.trim() || null, comment: commentText },
       });
     },
     onSuccess: () => {
-      toast.success(isFlagged ? 'Flag removed' : 'Flag added');
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+      queryClient.invalidateQueries({ queryKey: ['project-work-items'] });
       onClose();
     },
     onError: () => toast.error('Failed to update flag'),
   });
 
   return (
-    <div style={overlayStyle} onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} style={{ ...modalBase, width: 440, padding: '24px 28px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: '#172B4D', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Flag size={20} color="#DE350B" />
-            {isFlagged ? 'Remove flag' : 'Flag issue'}
-          </h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}><X size={18} color="#6B778C" /></button>
+    <>
+      {/* Click-outside overlay */}
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99 }} />
+      <div style={{
+        position: 'absolute', top: '100%', left: 0, marginTop: 6,
+        background: '#fff', borderRadius: 8, width: 320, padding: '16px 20px',
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 100,
+        border: '1px solid #DFE1E6',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <Flag size={18} color="#DE350B" />
+          <span style={{ fontSize: 16, fontWeight: 700, color: '#172B4D' }}>
+            {flagged ? 'Remove flag' : 'Flag added'}
+          </span>
         </div>
-        <p style={{ fontSize: 14, color: '#6B778C', marginBottom: 16 }}>
-          {isFlagged
-            ? `Remove the flag from ${issueKey}?`
-            : `Flagging ${issueKey} will highlight it as needing attention.`}
-        </p>
-        {!isFlagged && (
-          <div style={{ marginBottom: 16 }}>
-            <label style={labelStyle}>Reason (optional)</label>
-            <textarea value={reason} onChange={e => setReason(e.target.value)}
-              placeholder="Why is this issue flagged?"
-              style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} />
-          </div>
-        )}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button onClick={onClose} style={btnSecondary}>Cancel</button>
-          <button onClick={() => mutation.mutate()} disabled={mutation.isPending}
-            style={isFlagged ? btnSecondary : { ...btnPrimary, background: '#DE350B' }}>
-            {mutation.isPending ? 'Updating...' : isFlagged ? 'Remove flag' : 'Flag'}
+        <textarea
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          placeholder={flagged
+            ? 'Optional: let your team know why the flag was removed'
+            : 'Optional: let your team know why this work item has been flagged'}
+          style={{
+            width: '100%', padding: '10px 12px', border: '1px solid #DFE1E6',
+            borderRadius: 4, fontSize: 14, outline: 'none', resize: 'vertical',
+            minHeight: 80, fontFamily: 'Inter, sans-serif', color: '#172B4D',
+            lineHeight: '1.5',
+          }}
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+          <button
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending}
+            style={{
+              padding: '8px 20px', borderRadius: 4, fontSize: 14, fontWeight: 600,
+              cursor: 'pointer', border: 'none', color: '#fff',
+              background: flagged ? '#6B778C' : '#0C66E4',
+              opacity: mutation.isPending ? 0.6 : 1,
+            }}
+          >
+            {mutation.isPending ? 'Updating...' : flagged ? 'Remove flag' : 'Add comment'}
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
