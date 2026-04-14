@@ -181,6 +181,18 @@ export function IssueContentView({
 
   const fixVersionName = item?.fix_version_name;
 
+  if (!issueKey) {
+    return <div className="awBody" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13 }}>Select an issue to view details</span>
+    </div>;
+  }
+
+  if (loading) {
+    return <div className="awBody" style={{ padding: 20 }}>
+      {[1,2,3].map(i => <div key={i} style={{ width: `${80-i*15}%`, height: 14, borderRadius: 3, background: '#E2E8F0', marginBottom: 10 }} />)}
+    </div>;
+  }
+
   return (
     <div className="awIssueView">
       {/* ══ LEFT: Issue content ══ */}
