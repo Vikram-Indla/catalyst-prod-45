@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
 import { IssueListPanel } from './IssueListPanel';
 import { IssueContentView } from './IssueContentView';
-import { Sparkles, Search, SlidersHorizontal, ChevronDown, LayoutGrid, Columns2 } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, LayoutGrid, Columns2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -94,12 +94,6 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
       {/* ── Top toolbar (Jira parity: Ask AI, Search, avatars, Filter, Saved filters, view toggle) ── */}
       <div className="awToolbar">
         <div className="awToolbarLeft">
-          {/* Ask AI */}
-          <button className="awToolbarBtn awAskAi">
-            <Sparkles style={{ width: 14, height: 14 }} />
-            Ask AI
-          </button>
-
           {/* Search work */}
           <div className="awToolbarSearch">
             <Search style={{ width: 14, height: 14, color: '#6B778C', flexShrink: 0 }} />

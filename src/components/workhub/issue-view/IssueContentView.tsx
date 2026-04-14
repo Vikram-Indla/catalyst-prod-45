@@ -410,11 +410,6 @@ export function IssueContentView({
                   }
                 </div>
               </div>
-              {/* MDT Ref */}
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">MDT Ref</div>
-                <div className="awFieldValue"><span className="awFieldNone" style={{ cursor: 'pointer' }}>Add text</span></div>
-              </div>
             </div>
           )}
         </div>
@@ -425,19 +420,11 @@ export function IssueContentView({
             {collapsed.morefields ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
             More fields
             <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--aw-text-subtle)', marginLeft: 6 }}>
-              Original estimate, Time tracking, Fix versions, Parent
+              Fix versions, Parent
             </span>
           </div>
           {!collapsed.morefields && (
             <div className="awDetailsSectionBody">
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">Original estimate</div>
-                <div className="awFieldValue"><span className="awFieldNone">None</span></div>
-              </div>
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">Time tracking</div>
-                <div className="awFieldValue"><span className="awFieldNone">None</span></div>
-              </div>
               {(parentItem || item?.parent_key) && (
                 <div className="awFieldRow awFieldRowBorder">
                   <div className="awFieldLabel">Parent</div>
