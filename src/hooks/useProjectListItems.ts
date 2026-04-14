@@ -72,9 +72,34 @@ function countComments(raw: any): number {
   return 0;
 }
 
+function hasCanonicalFlagValue(value: unknown): boolean {
+  if (value == null) return false;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  return typeof value === 'object';
+}
+
+function derivePhIssueFlag(row: any): boolean {
+  if (row?.is_flagged === true) return true;
+  if (typeof row?.flag_reason === 'string' && row.flag_reason.trim().length > 0) return true;
+  return hasCanonicalFlagValue(row?.raw_json?.fields?.Flagged);
+}
+
+function derivePhIssueFlagReason(row: any): string | null {
+  if (typeof row?.flag_reason === 'string' && row.flag_reason.trim().length > 0) {
+    return row.flag_reason;
+  }
+
+  const rawFlag = row?.raw_json?.fields?.Flagged;
+  return typeof rawFlag === 'string' && rawFlag.trim().length > 0 ? rawFlag : null;
+}
+
 function mapPhIssue(row: any): WorkItem {
   const assigneeId = row.assignee_account_id ?? null;
   const assigneeName = row.assignee_display_name ?? null;
+  const issueFlagged = derivePhIssueFlag(row);
+  const issueFlagReason = derivePhIssueFlagReason(row);
   return {
     id: row.issue_key,
     projectId: '',
@@ -109,12 +134,12 @@ function mapPhIssue(row: any): WorkItem {
     sprintName: row.sprint_name ?? null,
     resolution: row.resolution ?? null,
     labels: row.labels ?? [],
-    is_flagged: row.is_flagged ?? false,
-    flag_reason: row.flag_reason ?? null,
+    is_flagged: issueFlagged,
+    flag_reason: issueFlagReason,
   };
 }
 
-const PH_ISSUES_SELECT = 'issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason';
+const PH_ISSUES_SELECT = 'issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
 
 /* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {

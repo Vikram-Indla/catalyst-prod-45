@@ -60,8 +60,58 @@ function normalizeNote(note?: string, fallback = 'none') {
   return trimmed.length > 0 ? trimmed : fallback;
 }
 
+function hasCanonicalFlagValue(value: unknown): boolean {
+  if (value == null) return false;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  return typeof value === 'object';
+}
+
 export function isFlagged(item: any): boolean {
-  return Boolean(item?.is_flagged);
+  if (!item) return false;
+  if (item.is_flagged === true) return true;
+  if (hasCanonicalFlagValue(item?.flag_reason)) return true;
+  return (
+    hasCanonicalFlagValue(item?.fields?.Flagged) ||
+    hasCanonicalFlagValue(item?.raw_json?.fields?.Flagged) ||
+    hasCanonicalFlagValue(item?.Flagged) ||
+    item?.flagged === true
+  );
+}
+
+function updateFlagStateInCache(data: any, issueKey: string, nextFlagged: boolean, nextReason: string | null): any {
+  if (Array.isArray(data)) {
+    return data.map((entry) => updateFlagStateInCache(entry, issueKey, nextFlagged, nextReason));
+  }
+
+  if (!data || typeof data !== 'object') return data;
+
+  const recordIssueKey = data.issue_key ?? data.jiraKey ?? data.item_key;
+  if (recordIssueKey === issueKey) {
+    return {
+      ...data,
+      is_flagged: nextFlagged,
+      flag_reason: nextReason,
+    };
+  }
+
+  return data;
+}
+
+function syncFlagCaches(queryClient: ReturnType<typeof useQueryClient>, issueKey: string, nextFlagged: boolean, nextReason: string | null) {
+  const cacheKeys = [
+    ['project-all-work-items-v2'],
+    ['project-list-items-v2'],
+    ['allwork-items'],
+    ['project-work-items'],
+    ['ph_issues'],
+    ['work-item-detail'],
+  ];
+
+  cacheKeys.forEach((queryKey) => {
+    queryClient.setQueriesData({ queryKey }, (current) => updateFlagStateInCache(current, issueKey, nextFlagged, nextReason));
+  });
 }
 
 /* ═══ 1. FLAG POPOVER (Jira inline popover — not a full-screen modal) ═══ */
@@ -71,7 +121,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   flagged: boolean;
   anchorRef: React.RefObject<HTMLElement | null>;
   onClose: () => void;
-  tableName?: string;
+  tableName?: 'ph_issues';
 }) {
   const [note, setNote] = useState('');
   const queryClient = useQueryClient();
@@ -79,11 +129,14 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   const mutation = useMutation({
     mutationFn: async () => {
       const newFlagged = !flagged;
+      const nextFlagReason = newFlagged ? (note.trim() || FLAG_VALUE) : null;
+
       // Update flag fields on ph_issues
-      await (supabase.from('ph_issues') as any).update({
+      const { error } = await (supabase.from(tableName) as any).update({
         is_flagged: newFlagged,
-        flag_reason: newFlagged ? (note.trim() || null) : null,
+        flag_reason: nextFlagReason,
       }).eq('issue_key', issueKey);
+      if (error) throw error;
 
       // Build Jira-format comment text
       const commentNote = newFlagged
@@ -93,17 +146,29 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
         ? `:flag_on: Flag added\n${commentNote}`
         : `:flag_off: Flag removed\n${commentNote}`;
 
-      // Activity log entry
-      await supabase.from('activity_logs').insert({
-        entity_id: issueId, entity_type: 'ph_issue',
-        action: newFlagged ? 'flag_added' : 'flag_removed',
-        after_json: { is_flagged: newFlagged, flag_reason: note.trim() || null, comment: commentText },
-      });
+      try {
+        const { error: activityError } = await supabase.from('activity_logs').insert({
+          entity_id: issueId, entity_type: 'ph_issue',
+          action: newFlagged ? 'flag_added' : 'flag_removed',
+          after_json: { is_flagged: newFlagged, flag_reason: nextFlagReason, comment: commentText },
+        });
+
+        if (activityError) {
+          console.warn('Flag activity log skipped:', activityError.message);
+        }
+      } catch (activityError) {
+        console.warn('Flag activity log skipped:', activityError);
+      }
+
+      return { newFlagged, nextFlagReason };
     },
-    onSuccess: () => {
+    onSuccess: ({ newFlagged, nextFlagReason }) => {
+      syncFlagCaches(queryClient, issueKey, newFlagged, nextFlagReason);
       queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       queryClient.invalidateQueries({ queryKey: ['project-work-items'] });
+      toast.success(newFlagged ? 'Flag added' : 'Flag removed');
       onClose();
     },
     onError: () => toast.error('Failed to update flag'),
