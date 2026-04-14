@@ -46,6 +46,7 @@ interface Props {
   loading?: boolean;
   onPrev?: () => void;
   onNext?: () => void;
+  projectId?: string;
 }
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
@@ -118,7 +119,7 @@ export function IssueContentView({
   links = [], linksLoading, comments = [], commentsLoading,
   historyItems = [], historyLoading, worklogs = [], worklogsLoading,
   createComment, logWork, loading,
-  onPrev, onNext,
+  onPrev, onNext, projectId = '',
 }: Props) {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -565,7 +566,7 @@ export function IssueContentView({
                 {item?.id ? (
                   <EditableAssignee
                     issueId={item.id}
-                    projectId={projectKey}
+                    projectId={projectId}
                     currentAssigneeId={item.assignee_id ?? null}
                     currentAssigneeName={item.assignee_display_name ?? null}
                     onUpdate={() => {}}

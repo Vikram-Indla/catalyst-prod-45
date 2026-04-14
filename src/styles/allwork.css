@@ -190,6 +190,7 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+  padding: 0 24px;              /* Jira-parity left/right inset for mid panel content */
 }
 
 /* ═══════════════════════════════════════════

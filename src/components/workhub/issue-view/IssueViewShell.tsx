@@ -35,6 +35,18 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
 
+  // Resolve project UUID from key for EditableAssignee
+  const { data: projectMeta } = useQuery({
+    queryKey: ['project-meta-shell', projectKey],
+    queryFn: async () => {
+      const { data } = await supabase.from('projects').select('id').eq('key', projectKey).maybeSingle();
+      return data;
+    },
+    enabled: !!projectKey,
+    staleTime: 5 * 60 * 1000,
+  });
+  const projectId = projectMeta?.id ?? '';
+
   const {
     items, itemsLoading, selectedItem, parentItem,
     children, childrenLoading, links, linksLoading,
@@ -223,6 +235,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
             loading={itemsLoading && !selectedItem}
             onPrev={() => handlePrevNext('prev')}
             onNext={() => handlePrevNext('next')}
+            projectId={projectId}
           />
         </div>
       </div>

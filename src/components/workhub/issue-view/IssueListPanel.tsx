@@ -93,13 +93,46 @@ export function IssueListPanel({
 
   // Keyboard navigation
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!items.length) return;
-    const idx = items.findIndex(i => i.issue_key === selectedIssueKey);
-    if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < items.length - 1) onSelectIssue(items[idx + 1].issue_key); }
-    if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) onSelectIssue(items[idx - 1].issue_key); }
-  }, [items, selectedIssueKey, onSelectIssue]);
+    if (!sortedItems.length) return;
+    const idx = sortedItems.findIndex(i => i.issue_key === selectedIssueKey);
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < sortedItems.length - 1) onSelectIssue(sortedItems[idx + 1].issue_key); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) onSelectIssue(sortedItems[idx - 1].issue_key); }
+  }, [sortedItems, selectedIssueKey, onSelectIssue]);
 
   const sortLabel = SORT_OPTIONS.find(o => o.key === sortKey)?.label ?? 'Last viewed';
+
+  // Sort items based on selected sort key and direction
+  const PRIORITY_ORDER: Record<string, number> = { Highest: 0, High: 1, Medium: 2, Low: 3, Lowest: 4 };
+  const STATUS_CAT_ORDER: Record<string, number> = { done: 0, in_progress: 1, todo: 2 };
+
+  const sortedItems = useMemo(() => {
+    const sorted = [...items];
+    sorted.sort((a, b) => {
+      let cmp = 0;
+      switch (sortKey) {
+        case 'updated':
+          cmp = new Date(b.jira_updated_at ?? 0).getTime() - new Date(a.jira_updated_at ?? 0).getTime();
+          break;
+        case 'created':
+          cmp = new Date(b.jira_created_at ?? 0).getTime() - new Date(a.jira_created_at ?? 0).getTime();
+          break;
+        case 'key': {
+          const aNum = parseInt(a.issue_key.split('-').pop() ?? '0', 10);
+          const bNum = parseInt(b.issue_key.split('-').pop() ?? '0', 10);
+          cmp = aNum - bNum;
+          break;
+        }
+        case 'priority':
+          cmp = (PRIORITY_ORDER[a.priority] ?? 99) - (PRIORITY_ORDER[b.priority] ?? 99);
+          break;
+        case 'status':
+          cmp = (STATUS_CAT_ORDER[a.status_category ?? 'todo'] ?? 99) - (STATUS_CAT_ORDER[b.status_category ?? 'todo'] ?? 99);
+          break;
+      }
+      return sortAsc ? cmp : -cmp;
+    });
+    return sorted;
+  }, [items, sortKey, sortAsc]);
 
   return (
     <>
@@ -138,7 +171,7 @@ export function IssueListPanel({
 
       {/* ── Scrollable card list ── */}
       <div className="jlpBody" onKeyDown={handleKeyDown} tabIndex={0}>
-        {loading && !items.length ? (
+        {loading && !sortedItems.length ? (
           <div className="jlpCards">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="jlpCard jlpCardSkeleton">
@@ -151,7 +184,7 @@ export function IssueListPanel({
               </div>
             ))}
           </div>
-        ) : items.length === 0 ? (
+        ) : sortedItems.length === 0 ? (
           <div className="jlpEmpty">
             No issues found
             {searchQuery && (
@@ -162,7 +195,7 @@ export function IssueListPanel({
           </div>
         ) : (
           <div className="jlpCards" role="listbox" aria-label="Issues">
-            {items.map((item) => {
+            {sortedItems.map((item) => {
               const isSelected = item.issue_key === selectedIssueKey;
               const avatarUrl = item.assignee_avatar || (item.assignee_display_name ? avatarMap[item.assignee_display_name] : null);
 
@@ -218,9 +251,9 @@ export function IssueListPanel({
         )}
 
         {/* Footer count — Jira parity */}
-        {items.length > 0 && (
+        {sortedItems.length > 0 && (
           <div className="jlpFooterCount">
-            {items.length} of <strong>{items.length >= 1000 ? '1000+' : items.length}</strong>
+            {sortedItems.length} of <strong>{sortedItems.length >= 1000 ? '1000+' : sortedItems.length}</strong>
           </div>
         )}
       </div>
