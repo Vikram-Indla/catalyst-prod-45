@@ -308,10 +308,10 @@ export function IssueContentView({
               return (
                 <div style={{ position: 'absolute', left: 0, top: 34, background: '#ffffff', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
                   <div style={{ margin: '4px 8px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '0.556px solid #8C8F97', borderRadius: 3, padding: '1px 0' }}>
-                      <Search size={14} color={atlText} style={{ marginLeft: 8, flexShrink: 0 }} />
+                    <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '2px solid #85B8FF', borderRadius: 3, padding: '1px 0' }}>
+                      <Search size={14} color="#626F86" style={{ marginLeft: 8, flexShrink: 0 }} />
                       <input type="text" placeholder="Find menu item" value={addMenuSearch} onChange={e => setAddMenuSearch(e.target.value)} autoFocus
-                        style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }} />
+                        style={{ background: 'transparent', border: 'none', outline: 'none', boxShadow: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }} />
                       {addMenuSearch && (
                         <button onClick={() => setAddMenuSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: atlText, display: 'flex', alignItems: 'center', padding: 0, marginRight: 6 }}>
                           <X size={14} />
