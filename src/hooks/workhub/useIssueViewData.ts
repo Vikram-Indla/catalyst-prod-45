@@ -6,7 +6,7 @@
  */
 import { useMemo } from 'react';
 import { useProjectAllWorkItems, useWorkItemChildren } from '@/hooks/useProjectListItems';
-import { useWhComments, useWhLinks, useWhHistory, useCreateComment } from '@/hooks/workhub/useAllWork';
+import { useWhComments, useWhLinks, useWhHistory, useWhWorkLogs, useCreateComment, useLogWork } from '@/hooks/workhub/useAllWork';
 import type { AllWorkItem } from '@/types/allwork.types';
 
 /**
@@ -105,8 +105,12 @@ export function useIssueViewData(
   // ─── History (raw wh_history rows with field_name/old_value/new_value) ───
   const { data: history = [], isLoading: historyLoading } = useWhHistory(selectedItem?.id ?? null);
 
+  // ─── Work logs (raw wh_work_logs rows) ───
+  const { data: worklogs = [], isLoading: worklogsLoading } = useWhWorkLogs(selectedItem?.id ?? null);
+
   // ─── Mutations ───
   const createComment = useCreateComment(selectedItem?.id ?? '');
+  const logWork = useLogWork(selectedItem?.id ?? '');
 
   return {
     items: filteredItems,
@@ -121,6 +125,9 @@ export function useIssueViewData(
     commentsLoading,
     history,
     historyLoading,
+    worklogs,
+    worklogsLoading,
     createComment,
+    logWork,
   };
 }

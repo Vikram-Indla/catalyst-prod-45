@@ -868,6 +868,75 @@
 }
 .awActivityMeta strong { color: var(--aw-text); font-weight: 500; }
 
+/* ── Log Work form ── */
+.awLogWorkToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--aw-border);
+  border-radius: 6px;
+  background: none;
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-blue);
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.awLogWorkToggle:hover { background: var(--aw-hover); }
+
+.awLogWorkForm {
+  border: 1px solid var(--aw-border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.awLogWorkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.awLogWorkLabel {
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  width: 80px;
+  flex-shrink: 0;
+}
+.awLogWorkInput {
+  border: 1px solid var(--aw-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  background: transparent;
+  outline: none;
+}
+.awLogWorkInput:focus { border-color: var(--aw-blue); }
+.awLogWorkUnit {
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+}
+.awLogWorkCancel {
+  padding: 4px 12px;
+  border: 1px solid var(--aw-border);
+  border-radius: 4px;
+  background: none;
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  cursor: pointer;
+}
+.awLogWorkCancel:hover { background: var(--aw-hover); }
+.awLogWorkSubmit {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 4px;
+  background: #0C66E4;
+  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  color: #fff;
+  cursor: pointer;
+}
+.awLogWorkSubmit:hover { background: #0052CC; }
+.awLogWorkSubmit:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* ── Details sidebar sections ── */
 .awDetailsSection {
   border-bottom: 1px solid var(--aw-border);
@@ -1241,6 +1310,15 @@
 .dark .awFieldLabel { color: #A1A1A1; }
 .dark .awFieldRow.awFieldRowBorder { border-color: #2E2E2E; }
 .dark .awCommentBox { border-color: #2E2E2E; }
+.dark .awLogWorkToggle { border-color: #2E2E2E; color: #4C9AFF; }
+.dark .awLogWorkToggle:hover { background: #1F1F1F; }
+.dark .awLogWorkForm { border-color: #2E2E2E; }
+.dark .awLogWorkInput { border-color: #2E2E2E; color: #EDEDED; }
+.dark .awLogWorkInput:focus { border-color: #4C9AFF; }
+.dark .awLogWorkCancel { border-color: #2E2E2E; color: #A1A1A1; }
+.dark .awLogWorkCancel:hover { background: #1F1F1F; }
+.dark .awLogWorkSubmit { background: #1D4ED8; }
+.dark .awLogWorkSubmit:hover { background: #2563EB; }
 .dark .awDescriptionContent { color: #EDEDED; }
 .dark .awDescPlaceholder:hover { background: #1F1F1F; }
 .dark .awAddParentLink { color: #878787; }
