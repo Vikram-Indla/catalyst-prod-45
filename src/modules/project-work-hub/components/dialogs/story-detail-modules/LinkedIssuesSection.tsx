@@ -2,7 +2,8 @@
  * LinkedIssuesSection — Jira-parity rebuild
  * Full link type list, inline create with dropdown + search + Link/Cancel buttons
  */
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
@@ -293,6 +294,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
 /* ── Main Section ── */
 export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKey }: { issueId: string; issueKey?: string; projectKey?: string }) {
+  const navigate = useNavigate();
   // ph_issue_links stores issue_keys (e.g. "BAU-4511"), not UUIDs.
   // Use issueKey for all ph_issue_links operations; fall back to issueId for legacy callers.
   const issueKey = issueKeyProp || issueId;
@@ -452,7 +454,12 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
                   <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0 }}>{target.issue_key}</span>
+                  <span
+                    onClick={(e) => { e.stopPropagation(); navigate(`/issue/${target.issue_key}`); }}
+                    style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
+                    onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+                    onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+                  >{target.issue_key}</span>
                   <span style={{ flex: 1, fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
                   <span style={{
                     ...statusLoz as any, display: 'inline-flex', alignItems: 'center', gap: 3,
