@@ -82,27 +82,15 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   const { data: recentIssues = [] } = useQuery({
     queryKey: ['convert-recent', projectKey, issueId],
     queryFn: async () => {
-      // Try project_key column first, fallback to issue_key prefix
-      let data: any[] | null = null;
-      const { data: d1 } = await supabase
+      // Minimal query — project_key match, no complex filters
+      const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
         .eq('project_key', projectKey)
-        .neq('id', issueId)
-        .order('jira_updated_at', { ascending: false, nullsFirst: false })
+        .neq('issue_key', issueKey)
+        .is('deleted_at', null)
         .limit(50);
-      data = d1;
-      // Fallback: if project_key column returned nothing, try issue_key prefix
-      if (!data?.length) {
-        const { data: d2 } = await supabase
-          .from('ph_issues')
-          .select('id, issue_key, summary, issue_type, status, status_category')
-          .ilike('issue_key', `${projectKey}-%`)
-          .neq('id', issueId)
-          .order('jira_updated_at', { ascending: false, nullsFirst: false })
-          .limit(50);
-        data = d2;
-      }
+      if (error) console.error('[ConvertWizard] recent query error:', error);
       const rows = (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()));
       return rows.slice(0, 10);
     },
@@ -120,7 +108,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
         .eq('project_key', projectKey)
-        .neq('id', issueId)
+        .neq('issue_key', issueKey)
+        .is('deleted_at', null)
         .ilike('issue_key', `%${q}%`)
         .limit(15);
       // Summary match
@@ -128,7 +117,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
         .eq('project_key', projectKey)
-        .neq('id', issueId)
+        .neq('issue_key', issueKey)
+        .is('deleted_at', null)
         .ilike('summary', `%${q}%`)
         .limit(15);
       // Merge and dedupe
