@@ -735,7 +735,7 @@ export function IssueContentView({
       <div className={`awDetailsSidebar ${sidebarOpen ? '' : 'collapsed'}`}>
         {/* Status pill + watcher + share (copy link) + more menu */}
         <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} />
+          <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} issueId={item?.id} onStatusChange={(s) => updateStatusMutation.mutate(s)} />
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             {/* Watcher count */}
             <button className="awPill" style={{ padding: '0 6px', height: 22, gap: 3 }}>
