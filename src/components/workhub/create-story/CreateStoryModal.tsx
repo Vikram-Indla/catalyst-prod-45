@@ -1215,7 +1215,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     } catch (err: any) {
       setSummaryError(err?.message ?? 'Failed to create');
     }
-  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType, showCreateToast]);
+  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType, showCreateToast, isCreateLinkedMode, linkedItems, linkedLinkType]);
 
   if (!open) return null;
 
