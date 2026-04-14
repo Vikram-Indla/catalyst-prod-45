@@ -86,7 +86,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
       const { data } = await supabase.from('ph_issues').select('id, issue_key, summary, issue_type, status, status_category')
         .or(`issue_key.ilike.${prefix}-%`)
         .is('deleted_at', null).neq('issue_key', issueKey).limit(50);
-      const rows = (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()));
+      const rows = (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()) && (r.status_category ?? '').toUpperCase() !== 'DONE');
       return rows.slice(0, 10);
     },
     enabled: !!issueKey,
@@ -102,7 +102,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
       const { data } = await supabase.from('ph_issues').select('id, issue_key, summary, issue_type, status, status_category')
         .or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`)
         .is('deleted_at', null).neq('issue_key', issueKey).limit(20);
-      return (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase())).slice(0, 15);
+      return (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()) && (r.status_category ?? '').toUpperCase() !== 'DONE').slice(0, 15);
     },
     enabled: parentSearch.trim().length >= 1,
     staleTime: 10_000,
