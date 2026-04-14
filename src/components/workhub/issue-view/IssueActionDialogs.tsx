@@ -177,10 +177,10 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   return (
     <>
       {/* Click-outside overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99 }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'rgba(9,30,66,0.08)' }} />
       <div style={{
-        position: 'absolute', top: '100%', left: 0, marginTop: 6,
-        background: '#fff', borderRadius: 8, width: 320, padding: '16px 20px',
+        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        background: '#fff', borderRadius: 8, width: 360, padding: '20px 24px',
         boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 100,
         border: '1px solid #DFE1E6',
       }}>
