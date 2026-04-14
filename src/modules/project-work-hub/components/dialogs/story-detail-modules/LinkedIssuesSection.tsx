@@ -570,6 +570,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             onClose={() => setOpenedItem(null)}
             itemId={openedItem.id}
             itemType={openedItem.issueType}
+            projectId={openedItem.projectId}
             projectKey={openedItem.projectKey}
           />
         </Suspense>
