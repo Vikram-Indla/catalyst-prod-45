@@ -30,6 +30,7 @@ const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
 const CleanupPage = lazy(() => import("./pages/CleanupPage"));
 const AuditTrailPage = lazy(() => import("./pages/AuditTrailPage"));
+const IssueFullPage = lazy(() => import("./pages/IssueFullPage"));
 
 // Full app routes — only imported when ENABLE_FULL_APP=true
 const FullAppRoutes = ENABLE_FULL_APP
@@ -72,6 +73,9 @@ const App = () => (
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
                 <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
+
+                {/* Full-screen issue view — outside CatalystShell (no top nav / sidebar) */}
+                <Route path="/issue/:issueKey" element={<ProtectedRoute><S><IssueFullPage /></S></ProtectedRoute>} />
 
                 {/* Protected shell with minimal routes */}
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
