@@ -947,20 +947,31 @@ function LinkedWorkItemsField({
     if (pickerOpen) setTimeout(() => searchInputRef.current?.focus(), 50);
   }, [pickerOpen]);
 
-  // Search work items from ph_issues
+  // Search work items from ph_issues — global scope (cross-project like Jira)
   const { data: searchResults = [], isFetching } = useQuery({
-    queryKey: ['linked-item-search', searchQuery, projectKey],
+    queryKey: ['linked-item-search', searchQuery],
     queryFn: async () => {
-      let q = supabase.from('ph_issues').select('issue_key, summary, issue_type').limit(20);
-      if (projectKey) q = q.eq('project_key', projectKey);
+      let q = supabase.from('ph_issues').select('issue_key, summary, issue_type')
+        .is('deleted_at', null)
+        .limit(25);
       if (searchQuery.trim()) {
-        q = q.or(`issue_key.ilike.%${searchQuery.trim()}%,summary.ilike.%${searchQuery.trim()}%`);
+        const term = searchQuery.trim();
+        // Check if it looks like an issue key (e.g. BAU-1234)
+        if (/^[A-Z]+-\d+$/i.test(term)) {
+          q = q.ilike('issue_key', `%${term}%`);
+        } else if (term.includes('/browse/')) {
+          // Extract key from URL like .../browse/BAU-1234
+          const match = term.match(/\/browse\/([A-Z]+-\d+)/i);
+          if (match) q = q.ilike('issue_key', `%${match[1]}%`);
+        } else {
+          q = q.or(`issue_key.ilike.%${term}%,summary.ilike.%${term}%`);
+        }
       }
       const { data } = await q.order('updated_at', { ascending: false });
       return (data || []).filter(r => !linkedItems.some(li => li.key === r.issue_key));
     },
     enabled: pickerOpen,
-    staleTime: 10_000,
+    staleTime: 5_000,
   });
 
   const linkedKeySet = new Set(linkedItems.map(i => i.key));
