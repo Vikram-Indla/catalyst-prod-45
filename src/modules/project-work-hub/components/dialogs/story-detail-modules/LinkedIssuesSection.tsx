@@ -334,8 +334,6 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
         .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, project_key')
         .in('issue_key', targetKeys)
         .is('jira_removed_at', null);
-        .in('issue_key', targetKeys)
-        .is('jira_removed_at', null);
       const targetMap = new Map((phTargets ?? []).map((t: any) => [t.issue_key, t]));
 
       // Fallback: resolve missing keys from catalyst_issues (locally-created items)
