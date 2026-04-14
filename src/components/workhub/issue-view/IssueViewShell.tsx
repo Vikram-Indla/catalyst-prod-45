@@ -9,7 +9,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
 import { IssueListPanel } from './IssueListPanel';
 import { IssueContentView } from './IssueContentView';
-import { Sparkles, Search, SlidersHorizontal, ChevronDown, LayoutGrid, Columns2 } from 'lucide-react';
+import { Search, SlidersHorizontal, ChevronDown, LayoutGrid, Columns2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
