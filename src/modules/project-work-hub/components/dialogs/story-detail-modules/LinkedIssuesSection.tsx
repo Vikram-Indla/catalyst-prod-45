@@ -2,7 +2,7 @@
  * LinkedIssuesSection — Jira-parity rebuild
  * Full link type list, inline create with dropdown + search + Link/Cancel buttons
  */
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,6 +15,10 @@ import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
 import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
+
+const CatalystDetailRouter = lazy(
+  () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
+);
 
 /* ── Complete Jira link types ── */
 const JIRA_LINK_TYPES = [
@@ -302,6 +306,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   const [showAdd, setShowAdd] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createLinkType, setCreateLinkType] = useState('relates to');
+  const [openedItem, setOpenedItem] = useState<{ id: string; issueKey: string; issueType: string; projectKey: string } | null>(null);
 
   // Resolve projectId (UUID) from projectKey for CreateWorkItemModal
   const derivedProjectKey = projectKey || issueKey.split('-')[0];
@@ -331,7 +336,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
 
       // Resolve targets from ph_issues first
       const { data: phTargets } = await supabase.from('ph_issues')
-        .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
+        .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, project_key')
         .in('issue_key', targetKeys)
         .is('jira_removed_at', null);
       const targetMap = new Map((phTargets ?? []).map((t: any) => [t.issue_key, t]));
@@ -340,10 +345,11 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       const missingKeys = targetKeys.filter(k => !targetMap.has(k));
       if (missingKeys.length > 0) {
         const { data: catTargets } = await supabase.from('catalyst_issues')
-          .select('issue_key, title, status, issue_type, assignee_id, priority')
+          .select('id, issue_key, title, status, issue_type, assignee_id, priority, project_id')
           .in('issue_key', missingKeys);
         (catTargets ?? []).forEach((ct: any) => {
           targetMap.set(ct.issue_key, {
+            id: ct.id,
             issue_key: ct.issue_key,
             summary: ct.title,
             status: ct.status,
@@ -353,6 +359,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             assignee_display_name: null,
             priority: ct.priority,
             jira_updated_at: null,
+            project_id: ct.project_id,
           });
         });
       }
@@ -455,7 +462,17 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                 >
                   <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
                   <span
-                    onClick={(e) => { e.stopPropagation(); navigate(`/issue/${target.issue_key}`); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (target.id) {
+                        // catalyst_issues item — open in modal
+                        const targetProjectKey = target.project_key || target.issue_key?.split('-')[0] || derivedProjectKey;
+                        setOpenedItem({ id: target.id, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey });
+                      } else {
+                        // ph_issues item — navigate to full page
+                        navigate(`/issue/${target.issue_key}`);
+                      }
+                    }}
                     style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0, cursor: 'pointer', textDecoration: 'none' }}
                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
@@ -543,6 +560,19 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             setShowCreateModal(false);
           }}
         />
+      )}
+
+      {/* Detail modal for linked item */}
+      {openedItem && (
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={() => setOpenedItem(null)}
+            itemId={openedItem.id}
+            itemType={openedItem.issueType}
+            projectKey={openedItem.projectKey}
+          />
+        </Suspense>
       )}
     </SectionBlock>
   );
