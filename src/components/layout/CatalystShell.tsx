@@ -160,8 +160,8 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // No sidebar for Home or Admin routes
-    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
+    // No sidebar for Home, Admin, or full-screen issue routes
+    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin') || isIssueFullPageRoute) {
       return null;
     }
 
