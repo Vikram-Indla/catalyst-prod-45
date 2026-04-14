@@ -306,7 +306,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   const [showAdd, setShowAdd] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createLinkType, setCreateLinkType] = useState('relates to');
-  const [openedItem, setOpenedItem] = useState<{ id: string; issueKey: string; issueType: string; projectKey: string } | null>(null);
+  const [openedItem, setOpenedItem] = useState<{ id: string; issueKey: string; issueType: string; projectKey: string; projectId?: string } | null>(null);
 
   // Resolve projectId (UUID) from projectKey for CreateWorkItemModal
   const derivedProjectKey = projectKey || issueKey.split('-')[0];
@@ -467,7 +467,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                       if (target.id) {
                         // catalyst_issues item — open in modal
                         const targetProjectKey = target.project_key || target.issue_key?.split('-')[0] || derivedProjectKey;
-                        setOpenedItem({ id: target.id, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey });
+                        setOpenedItem({ id: target.id, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey, projectId: target.project_id });
                       } else {
                         // ph_issues item — navigate to full page
                         navigate(`/issue/${target.issue_key}`);
@@ -570,6 +570,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             onClose={() => setOpenedItem(null)}
             itemId={openedItem.id}
             itemType={openedItem.issueType}
+            projectId={openedItem.projectId}
             projectKey={openedItem.projectKey}
           />
         </Suspense>
