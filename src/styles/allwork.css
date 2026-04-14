@@ -632,16 +632,18 @@
   align-items: center;
   justify-content: center;
   z-index: 2;
-  position: relative;
+  position: absolute;
   left: -14px;
-  color: var(--aw-text-subtle);
+  top: 50%;
+  transform: translateY(-50%);
+  color: #44546F;
   font-size: 11px;
   transition: background 120ms;
 }
 .awCollapseBtn svg { width: 16px !important; height: 16px !important; }
 .awCollapseBtn:hover {
   background: var(--aw-hover);
-  color: var(--aw-blue);
+  color: #172B4D;
 }
 
 /* Details sidebar */
