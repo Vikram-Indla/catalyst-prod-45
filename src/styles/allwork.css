@@ -504,14 +504,16 @@
 /* ── Issue view: content + collapsible details sidebar ── */
 .awIssueView {
   display: flex;
-  height: 100%;
+  flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 .awIssueContent {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 .awIssueContent > .awBody { flex: 1; }
 
