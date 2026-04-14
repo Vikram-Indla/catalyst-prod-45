@@ -409,10 +409,7 @@ export function WorkItemPicker({
                   transition: 'background 0.1s',
                 }}
               >
-                <span
-                  className="w-2 h-2 rounded-sm shrink-0"
-                  style={{ backgroundColor: item.type_color || '#94A3B8' }}
-                />
+                <JiraIssueTypeIcon type={item.type_name} size={16} />
                 <span
                   className="shrink-0"
                   style={{
