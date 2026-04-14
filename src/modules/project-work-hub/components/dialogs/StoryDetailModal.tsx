@@ -145,8 +145,24 @@ export default function StoryDetailModal({
   const { data: issue, isLoading: issueLoading } = useQuery({
     queryKey: ['ph-issue-detail', itemId], enabled: !!itemId && isOpen,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('*').eq('id', itemId).is('deleted_at', null).single();
-      return data as unknown as PhIssue | null;
+      // Try ph_issues first (Jira-synced items)
+      const { data } = await supabase.from('ph_issues').select('*').eq('id', itemId).is('deleted_at', null).maybeSingle();
+      if (data) return data as unknown as PhIssue;
+      // Fallback: catalyst_issues (locally-created items like BAU-1)
+      const { data: cat } = await supabase.from('catalyst_issues').select('*').eq('id', itemId).maybeSingle();
+      if (cat) {
+        return {
+          id: cat.id, issue_key: cat.issue_key, summary: cat.title, description: cat.description,
+          status: cat.status, status_category: cat.status === 'Done' ? 'Done' : cat.status === 'In Progress' ? 'In Progress' : 'To Do',
+          issue_type: cat.issue_type, priority: cat.priority, story_points: cat.story_points,
+          assignee_account_id: cat.assignee_id, assignee_display_name: null,
+          reporter_account_id: cat.reporter_id, reporter_display_name: null,
+          project_key: cat.issue_key?.split('-')[0] || projectKey || '',
+          sprint_name: cat.sprint_name, created_at: cat.created_at, updated_at: cat.updated_at,
+          parent_key: null, acceptance_criteria: null, labels: null,
+        } as unknown as PhIssue;
+      }
+      return null;
     },
   });
 
