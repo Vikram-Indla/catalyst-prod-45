@@ -17,6 +17,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { searchWorkItemsForLinking, type SearchResultItem } from '@/services/linkedWorkItemsService';
 import { parseWorkItemKey } from '@/lib/parseWorkItemKey';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkItemPickerProps {
   /** Current item ID — excluded from results */
