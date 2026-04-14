@@ -75,43 +75,59 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   const [subtaskType, setSubtaskType] = useState('Sub-task');
   const [newStatus, setNewStatus] = useState(currentStatus);
 
-  // Child types that cannot be parents — filtered client-side (Supabase not.in is unreliable)
-  const CHILD_TYPES_SET = new Set(['sub-task', 'frontend', 'backend', 'figma', 'integration']);
-  const filterParents = (rows: any[]) => rows.filter(r => !CHILD_TYPES_SET.has((r.issue_type ?? '').toLowerCase()));
+  // Child types that cannot be parents — filtered client-side
+  const CHILD_SET = new Set(['sub-task', 'frontend', 'backend', 'figma', 'integration']);
 
-  // Recent issues (shown on focus before typing — Jira parity)
+  // Recent issues — simple query, no complex filters
   const { data: recentIssues = [] } = useQuery({
-    queryKey: ['convert-recent-issues', projectKey, issueId],
+    queryKey: ['convert-recent', projectKey, issueId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('ph_issues')
+      // Simple: get all recent issues from this project
+      const { data } = await supabase
+        .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
-        .ilike('issue_key', `${projectKey}-%`)
+        .like('issue_key', `${projectKey}-%`)
         .neq('id', issueId)
-        .is('deleted_at', null)
-        .order('jira_updated_at', { ascending: false })
-        .limit(30);
-      if (error) { console.error('Recent issues query error:', error); return []; }
-      return filterParents(data ?? []).slice(0, 10);
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
+        .limit(50);
+      const rows = (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()));
+      return rows.slice(0, 10);
     },
     enabled: !!projectKey,
     staleTime: 30_000,
   });
 
-  // Search parent issues (1+ char, same project)
+  // Search parent issues
   const { data: searchResults = [], isFetching: searchingParents } = useQuery({
-    queryKey: ['convert-parent-search', projectKey, parentSearch],
+    queryKey: ['convert-search', projectKey, parentSearch],
     queryFn: async () => {
       const q = parentSearch.trim();
-      const { data, error } = await supabase.from('ph_issues')
+      // Try key match first
+      const { data: keyData } = await supabase
+        .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
-        .ilike('issue_key', `${projectKey}-%`)
+        .like('issue_key', `${projectKey}-%`)
         .neq('id', issueId)
-        .is('deleted_at', null)
-        .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
-        .order('jira_updated_at', { ascending: false })
-        .limit(30);
-      if (error) { console.error('Search query error:', error); return []; }
-      return filterParents(data ?? []).slice(0, 15);
+        .ilike('issue_key', `%${q}%`)
+        .limit(15);
+      // Then summary match
+      const { data: sumData } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .like('issue_key', `${projectKey}-%`)
+        .neq('id', issueId)
+        .ilike('summary', `%${q}%`)
+        .limit(15);
+      // Merge and dedupe
+      const seen = new Set<string>();
+      const merged: any[] = [];
+      for (const r of [...(keyData ?? []), ...(sumData ?? [])]) {
+        if (!seen.has(r.id) && !CHILD_SET.has((r.issue_type ?? '').toLowerCase())) {
+          seen.add(r.id);
+          merged.push(r);
+        }
+      }
+      return merged.slice(0, 15);
     },
     enabled: parentSearch.trim().length >= 1,
     staleTime: 10_000,
