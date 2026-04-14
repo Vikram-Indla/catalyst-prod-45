@@ -294,8 +294,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
           {step === 1 && (
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#172B4D', minWidth: 160 }}>Select New Status:</div>
-                <div style={{ padding: '4px 10px', borderRadius: 3, background: '#FFFAE6', border: '1px solid #FFE380', fontSize: 12, fontWeight: 700, textTransform: 'uppercase' as const }}>{currentStatus}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#172B4D', flexShrink: 0 }}>Select New Status:</div>
+                <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: '#DFE1E6', color: '#253858', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
                 <span style={{ color: '#6B778C', fontSize: 16 }}>→</span>
                 <select value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ padding: '6px 10px', border: '1px solid #DFE1E6', borderRadius: 4, fontSize: 13 }}>
                   {STATUS_OPTION_GROUPS.map(g => (
