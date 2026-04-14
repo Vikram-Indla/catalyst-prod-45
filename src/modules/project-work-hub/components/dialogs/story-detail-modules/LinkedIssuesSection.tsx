@@ -82,8 +82,25 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 50); }, []);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(target) &&
+        inputAreaRef.current && !inputAreaRef.current.contains(target)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const { data: results = [] } = useQuery({
     queryKey: ['linkSearch', search],
@@ -150,6 +167,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
         <LinkTypeDropdown value={linkType} onChange={setLinkType} />
         {/* Multi-select input area */}
         <div
+          ref={inputAreaRef}
           style={{
             flex: 1, minHeight: 36, display: 'flex', flexWrap: 'wrap', alignItems: 'center',
             gap: 4, padding: '4px 8px',
@@ -198,7 +216,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
