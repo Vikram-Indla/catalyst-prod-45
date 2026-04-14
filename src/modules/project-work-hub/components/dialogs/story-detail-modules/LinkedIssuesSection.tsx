@@ -88,9 +88,12 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
     queryKey: ['linkSearch', search],
     queryFn: async () => {
       if (!search.trim()) return [];
-      const { data } = await supabase.from('ph_issues').select('id, issue_key, summary')
+      const { data } = await supabase.from('ph_issues')
+        .select('issue_key, summary, issue_type, status, status_category')
         .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
-        .is('deleted_at', null).neq('id', issueId).limit(10);
+        .is('jira_removed_at', null)
+        .neq('issue_key', issueId)
+        .limit(10);
       return data ?? [];
     },
     enabled: search.length > 1,
