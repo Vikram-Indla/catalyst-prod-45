@@ -625,15 +625,15 @@
 .awDetailsSidebar {
   width: 340px;
   flex-shrink: 0;
-  overflow-y: auto;
+  overflow-y: scroll;
   overscroll-behavior: contain;
   padding: 0;
   background: #FFFFFF !important;
   scrollbar-gutter: stable;
 }
-.awDetailsSidebar::-webkit-scrollbar { width: 8px; }
-.awDetailsSidebar::-webkit-scrollbar-track { background: #FFFFFF; }
-.awDetailsSidebar::-webkit-scrollbar-thumb { background: #C1C7D0; border-radius: 999px; border: 2px solid #FFFFFF; }
+.awDetailsSidebar::-webkit-scrollbar { width: 12px; }
+.awDetailsSidebar::-webkit-scrollbar-track { background: #F1F2F4; border-left: 1px solid #EBECF0; }
+.awDetailsSidebar::-webkit-scrollbar-thumb { background: #A5ADBA; border-radius: 999px; border: 2px solid #F1F2F4; }
 .awDetailsSidebar::-webkit-scrollbar-thumb:hover { background: #7A869A; }
 .awDetailsSidebar.collapsed { display: none; }
 
