@@ -79,34 +79,62 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
 function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose: () => void; onSuccess: () => void }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<{ id: string; issue_key: string; summary: string } | null>(null);
+  const [selected, setSelected] = useState<{ id: string; item_key: string; summary: string; issue_type?: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 50); }, []);
 
+  // Search ph_issues for display, then resolve UUID from ph_work_items
   const { data: results = [] } = useQuery({
     queryKey: ['linkSearch', search],
     queryFn: async () => {
-      if (!search.trim()) return [];
+      if (!search.trim()) {
+        // Show recently updated items when no search term
+        const { data } = await supabase.from('ph_issues')
+          .select('issue_key, summary, issue_type, status, status_category')
+          .is('jira_removed_at', null)
+          .order('jira_updated_at', { ascending: false })
+          .limit(8);
+        return data ?? [];
+      }
       const { data } = await supabase.from('ph_issues')
         .select('issue_key, summary, issue_type, status, status_category')
         .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
         .is('jira_removed_at', null)
-        .neq('issue_key', issueId)
         .limit(10);
       return data ?? [];
     },
-    enabled: search.length > 1,
+    enabled: true,
   });
 
   const linkMutation = useMutation({
     mutationFn: async () => {
       if (!selected) return;
-      const { error } = await supabase.from('ph_issue_links').insert({ source_id: selected.issue_key, target_id: selected.issue_key, link_type: linkType });
+      const { error } = await supabase.from('ph_issue_links').insert({
+        source_id: issueId,
+        target_id: selected.id,
+        link_type: linkType,
+      });
       if (error) throw error;
     },
     onSuccess,
   });
+
+  const handleSelect = async (r: any) => {
+    // Resolve UUID from ph_work_items
+    const { data: workItem } = await supabase.from('ph_work_items')
+      .select('id')
+      .eq('item_key', r.issue_key)
+      .limit(1)
+      .maybeSingle();
+    setSelected({
+      id: workItem?.id ?? r.issue_key,
+      item_key: r.issue_key,
+      summary: r.summary,
+      issue_type: r.issue_type,
+    });
+    setSearch(r.issue_key + ' ' + r.summary);
+  };
 
   return (
     <div style={{ padding: '12px 0', borderTop: '1px solid #DFE1E6' }}>
@@ -125,22 +153,30 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
         />
       </div>
 
-      {/* Search results */}
+      {/* Search results dropdown */}
       {results.length > 0 && !selected && (
-        <div style={{ maxHeight: 200, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8 }}>
-          {results.map((r: any) => (
-            <div key={r.id} onClick={() => { setSelected(r); setSearch(r.issue_key + ' ' + r.summary); }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 12px',
-                cursor: 'pointer', fontSize: 13, color: '#172B4D', borderBottom: '1px solid #F4F5F7',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-            >
-              <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#0052CC', flexShrink: 0 }}>{r.issue_key}</span>
-              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
-            </div>
-          ))}
+        <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
+          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            {search.trim() ? 'Search results' : 'Recently viewed'}
+          </div>
+          {results.map((r: any) => {
+            const issueIcon = WORK_ITEM_ICONS[r.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story;
+            return (
+              <div key={r.issue_key} onClick={() => handleSelect(r)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 12px',
+                  cursor: 'pointer', fontSize: 13, color: '#172B4D', borderLeft: '3px solid transparent',
+                  transition: 'background 0.1s, border-color 0.1s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderLeftColor = '#4C9AFF'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderLeftColor = 'transparent'; }}
+              >
+                <span dangerouslySetInnerHTML={{ __html: issueIcon }} style={{ display: 'flex', width: 16, height: 16, flexShrink: 0 }} />
+                <span style={{ fontFamily: 'var(--cp-font-mono, monospace)', fontSize: 12, fontWeight: 600, color: '#505258', flexShrink: 0 }}>{r.issue_key}</span>
+                <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.summary}</span>
+              </div>
+            );
+          })}
         </div>
       )}
 
