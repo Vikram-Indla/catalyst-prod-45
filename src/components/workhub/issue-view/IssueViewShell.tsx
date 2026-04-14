@@ -187,7 +187,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
       {/* ── 2-column split view ── */}
       <div className={`awShell ${isDark ? 'dark' : ''}`}>
         {/* Left: issue list */}
-        <div className="awCol">
+        <div className="awCol awColNav">
           <IssueListPanel
             projectKey={projectKey}
             selectedIssueKey={selectedIssueKey}
@@ -203,7 +203,7 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
         <div className="awDivider" />
 
         {/* Right: issue view (content + collapsible details sidebar) */}
-        <div className="awCol">
+        <div className="awCol awColMain">
           <IssueContentView
             issueKey={selectedIssueKey}
             item={selectedItem}

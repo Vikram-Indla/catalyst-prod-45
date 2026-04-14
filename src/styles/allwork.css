@@ -20,6 +20,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* ── Top Toolbar (Jira parity: Ask AI, Search, avatars, Filter, Saved filters, view toggle) ── */
@@ -161,6 +162,12 @@
   background: var(--aw-bg);
   overflow: hidden;
 }
+.awColNav {
+  min-width: 0;
+}
+.awColMain {
+  min-width: 0;
+}
 
 /* Column separator (static 1px line between list and content) */
 .awDivider {
@@ -181,6 +188,7 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* ═══════════════════════════════════════════
@@ -276,23 +284,33 @@
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: scroll;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   outline: none;
+  background: var(--aw-bg);
 }
 .jlpBody::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 .jlpBody::-webkit-scrollbar-track {
-  background: transparent;
+  background: #F1F2F4;
+  border-left: 1px solid #EBECF0;
 }
 .jlpBody::-webkit-scrollbar-thumb {
-  background: #C1C7CD;
-  border-radius: 4px;
+  background: #A5ADBA;
+  border-radius: 999px;
+  border: 2px solid #F1F2F4;
 }
 .jlpBody::-webkit-scrollbar-thumb:hover {
-  background: #A8B0B8;
+  background: #7A869A;
+}
+.dark .jlpBody::-webkit-scrollbar-track {
+  background: #111111;
+  border-left: 1px solid #2E2E2E;
 }
 .dark .jlpBody::-webkit-scrollbar-thumb {
   background: #454545;
+  border: 2px solid #111111;
 }
 .dark .jlpBody::-webkit-scrollbar-thumb:hover {
   background: #5A5A5A;
@@ -533,6 +551,7 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .awIssueContent > .awBody { flex: 1; }
 
@@ -583,6 +602,7 @@
   width: 340px;
   flex-shrink: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 0;
   background: #FFFFFF;
 }
