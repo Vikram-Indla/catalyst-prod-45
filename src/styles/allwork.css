@@ -1116,6 +1116,21 @@
 @keyframes stShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 /* ── Dark mode ── */
+.dark .awShellWrap { background: #0A0A0A; }
+.dark .awToolbar { background: #0A0A0A; border-color: #2E2E2E; }
+.dark .awToolbarBtn { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .awToolbarBtn:hover { background: #1F1F1F; }
+.dark .awToolbarBtn.awAskAi { background: none; color: #878787; }
+.dark .awToolbarBtn.awAskAi:hover { color: #4C9AFF; background: rgba(12,102,228,0.12); }
+.dark .awToolbarSearch { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .awToolbarSearchInput { color: #EDEDED; }
+.dark .awToolbarAvatar { border-color: #0A0A0A; }
+.dark .awToolbarAvatarFallback { border-color: #0A0A0A; }
+.dark .awToolbarAvatarOverflow { background: #292929; color: #A1A1A1; border-color: #0A0A0A; }
+.dark .awViewToggleBtn { background: #1A1A1A; color: #878787; border-color: #2E2E2E; }
+.dark .awViewToggleBtn:hover { background: #1F1F1F; }
+.dark .awViewToggleBtn.active { background: rgba(12,102,228,0.12); color: #4C9AFF; }
+.dark .awViewToggle { border-color: #2E2E2E; }
 .dark .awShell, .dark .awCol, .dark .awHeader,
 .dark .awIssueContent, .dark .awDetailsSidebar { background: #0A0A0A; }
 .dark .awDivider, .dark .awSidebarDivider::before { background: #2E2E2E; }
@@ -1124,13 +1139,23 @@
 .dark .awRow.awRowSelected { background: rgba(12,102,228,0.12); }
 .dark .awSearch { background-color: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
 .dark .awChip, .dark .awPill { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
+.dark .awNavArrow { background: #1A1A1A; border-color: #2E2E2E; color: #878787; }
+.dark .awNavArrow:hover { background: #1F1F1F; color: #EDEDED; }
 .dark .awCollapseBtn { background: #1A1A1A; border-color: #2E2E2E; }
 .dark .awIssueTitle { color: #EDEDED; }
 .dark .awRowTitle { color: #EDEDED; }
 .dark .awKey { color: #A1A1A1; }
 .dark .awSubtasksTable td { border-color: #2E2E2E; }
 .dark .awFieldValue { color: #EDEDED; }
+.dark .awFieldLabel { color: #A1A1A1; }
+.dark .awFieldRow.awFieldRowBorder { border-color: #2E2E2E; }
 .dark .awCommentBox { border-color: #2E2E2E; }
+.dark .awDescriptionContent { color: #EDEDED; }
+.dark .awDescPlaceholder:hover { background: #1F1F1F; }
+.dark .awAddParentLink { color: #878787; }
+.dark .awAddParentLink:hover { color: #4C9AFF; background: #1F1F1F; }
+.dark .awActivityTab.active { background: rgba(12,102,228,0.12); color: #4C9AFF; border-color: rgba(76,154,255,0.2); }
+.dark .awLabelChip { background: #292929; color: #EDEDED; }
 .dark .stTd { border-color: #2E2E2E; }
 .dark .stTh { border-color: #2E2E2E; }
 .dark .stTr:hover .stTd { background: #1F1F1F; }
