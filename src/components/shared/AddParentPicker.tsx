@@ -167,7 +167,6 @@ export function AddParentPicker({
         >
           <JiraIssueTypeIcon type={parentIssueType} size={14} />
           <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{parentKey}</span>
-          <SquarePen size={11} style={{ color: '#6B778C' }} />
         </button>
       );
     }
