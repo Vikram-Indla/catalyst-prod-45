@@ -77,10 +77,15 @@
 .awToolbarSearchInput {
   border: none;
   outline: none;
+  box-shadow: none;
   background: transparent;
   font: 400 13px system-ui;
   color: var(--aw-text);
   width: 100%;
+}
+.awToolbarSearchInput:focus {
+  outline: none;
+  box-shadow: none;
 }
 .awToolbarSearchInput::placeholder { color: var(--aw-text-subtle); }
 
