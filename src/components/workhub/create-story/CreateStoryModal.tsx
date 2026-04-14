@@ -898,16 +898,108 @@ function CreateLabelsField({ value, onChange }: { value: string[]; onChange: (la
   );
 }
 
+// ── Jira link types — canonical list (matches LinkedIssuesSection) ──
+const JIRA_LINK_TYPES = [
+  'is blocked by', 'blocks', 'is BRD of', 'BRD',
+  'is cloned by', 'clones', 'is duplicated by', 'duplicates',
+  'is implemented by', 'implements', 'relates to',
+];
+
+// ── Linked Work Items Section (used in createLinked mode) ──
+function LinkedWorkItemsField({
+  linkType, onLinkTypeChange,
+  linkedItems, onRemoveItem,
+  lockedKeys,
+}: {
+  linkType: string;
+  onLinkTypeChange: (v: string) => void;
+  linkedItems: { key: string; summary?: string }[];
+  onRemoveItem: (key: string) => void;
+  lockedKeys: Set<string>;
+}) {
+  const [ltOpen, setLtOpen] = useState(false);
+  const ltRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!ltOpen) return;
+    const h = (e: MouseEvent) => { if (ltRef.current && !ltRef.current.contains(e.target as Node)) setLtOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [ltOpen]);
+
+  return (
+    <>
+      {/* Link type */}
+      <div className="csField">
+        <label className="csLabel">Linked Work Items<span className="csRequired"> *</span></label>
+        <div ref={ltRef} style={{ position: 'relative', maxWidth: 260 }}>
+          <button type="button" className="csSelect" onClick={() => setLtOpen(o => !o)}>
+            <span className="csSelectText">{linkType}</span>
+            <ChevronDown className="csSelectChevron" />
+          </button>
+          {ltOpen && (
+            <div className="csDropdown" style={{ maxHeight: 280, overflowY: 'auto' }}>
+              {JIRA_LINK_TYPES.map(lt => (
+                <button key={lt} type="button" className={`csDropdownItem ${lt === linkType ? 'selected' : ''}`}
+                  onClick={() => { onLinkTypeChange(lt); setLtOpen(false); }}
+                >
+                  <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>{lt}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Linked issue tokens */}
+      <div className="csField" style={{ marginTop: -4 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {linkedItems.map(item => {
+            const isLocked = lockedKeys.has(item.key);
+            return (
+              <span key={item.key} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4, height: 26,
+                padding: '0 8px', background: '#F4F5F7', borderRadius: 3,
+                border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, color: '#172B4D',
+              }}>
+                <JiraIssueTypeIcon type="Story" size={14} />
+                {item.key}
+                {!isLocked && (
+                  <button type="button" onClick={() => onRemoveItem(item.key)} style={{
+                    display: 'flex', alignItems: 'center', border: 'none', background: 'none',
+                    cursor: 'pointer', padding: 0, color: '#6B778C', marginLeft: 2,
+                  }}>×</button>
+                )}
+              </span>
+            );
+          })}
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ── Main Modal ──
+export interface LinkedSourceConfig {
+  /** Source issue key, e.g. "BAU-4351" */
+  issueKey: string;
+  /** Default link type, e.g. "BRD" */
+  linkType?: string;
+  /** If true, the source issue token cannot be removed */
+  locked?: boolean;
+}
+
 interface CreateStoryModalProps {
   open: boolean;
   onClose: () => void;
   projectId?: string;
   projectKey?: string;
   onSuccess?: (issueKey: string) => void;
+  /** When provided, modal enters "create linked" mode with pre-populated linked items */
+  linkedSource?: LinkedSourceConfig;
 }
 
-export function CreateStoryModal({ open, onClose, projectId, projectKey, onSuccess }: CreateStoryModalProps) {
+export function CreateStoryModal({ open, onClose, projectId, projectKey, onSuccess, linkedSource }: CreateStoryModalProps) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -926,6 +1018,19 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const [keyDetailsOpen, setKeyDetailsOpen] = useState(true);
   const summaryRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // ── Linked Work Items state (createLinked mode) ──
+  const isCreateLinkedMode = !!linkedSource;
+  const [linkedLinkType, setLinkedLinkType] = useState(linkedSource?.linkType ?? 'relates to');
+  const [linkedItems, setLinkedItems] = useState<{ key: string; summary?: string }[]>(
+    linkedSource ? [{ key: linkedSource.issueKey }] : []
+  );
+  const lockedKeys = new Set(linkedSource?.locked !== false && linkedSource ? [linkedSource.issueKey] : []);
+
+  const handleRemoveLinkedItem = useCallback((key: string) => {
+    if (lockedKeys.has(key)) return;
+    setLinkedItems(prev => prev.filter(i => i.key !== key));
+  }, [lockedKeys]);
 
   // Set reporter to current user on mount
   useEffect(() => {
@@ -1054,14 +1159,46 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       summaryRef.current?.focus();
       return;
     }
+    // Validate linked items in createLinked mode
+    if (isCreateLinkedMode && linkedItems.length === 0) {
+      setSummaryError('At least one linked work item is required');
+      return;
+    }
     setSummaryError('');
     setCreatedKey(null);
 
     try {
       const result = await createMutation.mutateAsync({ form, projectKey: resolvedKey, issueType: workType });
+
+      // ── After creation: create links if in createLinked mode ──
+      if (isCreateLinkedMode && linkedItems.length > 0) {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.getUser();
+          if (!authUser) throw new Error('Not authenticated');
+          for (const item of linkedItems) {
+            await supabase.from('ph_issue_links').insert({
+              source_id: item.key,
+              target_id: result.issue_key,
+              link_type: linkedLinkType,
+              created_by: authUser.id,
+            } as any);
+          }
+        } catch (linkErr: any) {
+          // Partial success: item created but linking failed
+          catalystToast.warning(
+            `${result.issue_key} created, but linking failed`,
+            linkErr.message ?? 'Please link manually'
+          );
+          onSuccess?.(result.issue_key);
+          onClose();
+          reset();
+          return;
+        }
+      }
+
       onSuccess?.(result.issue_key);
 
-      if (createAnother) {
+      if (createAnother && !isCreateLinkedMode) {
         createdKeysRef.current.push(result.issue_key);
         setCreatedKey(result.issue_key);
         reset(true);
@@ -1078,7 +1215,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     } catch (err: any) {
       setSummaryError(err?.message ?? 'Failed to create');
     }
-  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType, showCreateToast]);
+  }, [form, resolvedKey, createMutation, createAnother, onSuccess, onClose, reset, workType, showCreateToast, isCreateLinkedMode, linkedItems, linkedLinkType]);
 
   if (!open) return null;
 
@@ -1115,7 +1252,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
         {/* ── Header ── */}
         <div className="csModalHeader">
-          <h2 className="csModalTitle">Create {workType}</h2>
+          <h2 className="csModalTitle">{isCreateLinkedMode ? 'Create linked work item' : `Create ${workType}`}</h2>
           <div className="csModalHeaderActions">
             <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
             <button type="button" className="csHeaderBtn" onClick={handleClose} title="Close"><X size={18} /></button>
@@ -1158,7 +1295,17 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           />
           <div className="csHelpText">This is the initial status upon creation</div>
 
-          {/* Summary */}
+          {/* Linked Work Items — shown only in createLinked mode */}
+          {isCreateLinkedMode && (
+            <LinkedWorkItemsField
+              linkType={linkedLinkType}
+              onLinkTypeChange={setLinkedLinkType}
+              linkedItems={linkedItems}
+              onRemoveItem={handleRemoveLinkedItem}
+              lockedKeys={lockedKeys}
+            />
+          )}
+
           <div className="csField">
             <label className="csLabel">Summary<span className="csRequired"> *</span></label>
             <input
