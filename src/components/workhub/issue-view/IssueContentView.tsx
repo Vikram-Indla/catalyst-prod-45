@@ -98,7 +98,7 @@ function PriorityIcon({ priority }: { priority?: string | null }) {
   return <svg width="14" height="14" viewBox="0 0 16 16"><rect x="2" y="5" width="12" height="2" rx="1" fill={color}/><rect x="2" y="9" width="12" height="2" rx="1" fill={color}/></svg>;
 }
 
-type ActivityTab = 'all' | 'comments' | 'history' | 'worklog';
+type ActivityTab = 'all' | 'comments' | 'history';
 
 export function IssueContentView({
   issueKey, item, parentItem, childItems = [], childrenLoading,
@@ -113,12 +113,6 @@ export function IssueContentView({
   const [commentText, setCommentText] = useState('');
   const [commentFocused, setCommentFocused] = useState(false);
   const [posting, setPosting] = useState(false);
-  const [logWorkOpen, setLogWorkOpen] = useState(false);
-  const [logHours, setLogHours] = useState('');
-  const [logMinutes, setLogMinutes] = useState('');
-  const [logDate, setLogDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [logDesc, setLogDesc] = useState('');
-  const [logPosting, setLogPosting] = useState(false);
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
 
   // Section collapse
@@ -141,26 +135,9 @@ export function IssueContentView({
     }
   };
 
-  const handleLogWork = async () => {
-    const h = parseInt(logHours || '0', 10);
-    const m = parseInt(logMinutes || '0', 10);
-    const totalMin = h * 60 + m;
-    if (totalMin <= 0 || !logWork) return;
-    setLogPosting(true);
-    try {
-      await logWork.mutateAsync({
-        timeSpentMinutes: totalMin,
-        workDate: logDate,
-        description: logDesc.trim() || null,
-        authorId: user?.id ?? '',
-      });
-      setLogHours(''); setLogMinutes(''); setLogDesc(''); setLogWorkOpen(false);
-    } catch {} finally { setLogPosting(false); }
-  };
-
   const TABS: { key: ActivityTab; label: string }[] = [
     { key: 'all', label: 'All' }, { key: 'comments', label: 'Comments' },
-    { key: 'history', label: 'History' }, { key: 'worklog', label: 'Work log' },
+    { key: 'history', label: 'History' },
   ];
 
   // Merged + sorted activity feed
@@ -171,9 +148,6 @@ export function IssueContentView({
     }
     if (activityTab === 'all' || activityTab === 'history') {
       historyItems.forEach((h: any) => items.push({ type: 'history', data: h, ts: new Date(h.created_at ?? 0).getTime() }));
-    }
-    if (activityTab === 'all' || activityTab === 'worklog') {
-      worklogs.forEach((w: any) => items.push({ type: 'worklog', data: w, ts: new Date(w.created_at ?? 0).getTime() }));
     }
     items.sort((a, b) => sortDir === 'desc' ? b.ts - a.ts : a.ts - b.ts);
     return items;
@@ -427,41 +401,6 @@ export function IssueContentView({
               )}
 
               {/* Log work form (toggle) — visible on Work log tab */}
-              {activityTab === 'worklog' && (
-                <div style={{ marginBottom: 16 }}>
-                  {!logWorkOpen ? (
-                    <button className="awLogWorkToggle" onClick={() => setLogWorkOpen(true)}>
-                      <Clock style={{ width: 14, height: 14 }} /> Log work
-                    </button>
-                  ) : (
-                    <div className="awLogWorkForm">
-                      <div className="awLogWorkRow">
-                        <label className="awLogWorkLabel">Time spent</label>
-                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                          <input type="number" min="0" placeholder="0" value={logHours} onChange={e => setLogHours(e.target.value)} className="awLogWorkInput" style={{ width: 56 }} />
-                          <span className="awLogWorkUnit">h</span>
-                          <input type="number" min="0" max="59" placeholder="0" value={logMinutes} onChange={e => setLogMinutes(e.target.value)} className="awLogWorkInput" style={{ width: 56 }} />
-                          <span className="awLogWorkUnit">m</span>
-                        </div>
-                      </div>
-                      <div className="awLogWorkRow">
-                        <label className="awLogWorkLabel">Date</label>
-                        <input type="date" value={logDate} onChange={e => setLogDate(e.target.value)} className="awLogWorkInput" style={{ width: 150 }} />
-                      </div>
-                      <div className="awLogWorkRow">
-                        <label className="awLogWorkLabel">Description</label>
-                        <input placeholder="What did you work on?" value={logDesc} onChange={e => setLogDesc(e.target.value)} className="awLogWorkInput" style={{ flex: 1 }} />
-                      </div>
-                      <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', marginTop: 8 }}>
-                        <button className="awLogWorkCancel" onClick={() => { setLogWorkOpen(false); setLogHours(''); setLogMinutes(''); setLogDesc(''); }}>Cancel</button>
-                        <button className="awLogWorkSubmit" onClick={handleLogWork} disabled={logPosting || (parseInt(logHours || '0', 10) * 60 + parseInt(logMinutes || '0', 10)) <= 0}>
-                          {logPosting ? 'Saving...' : 'Log'}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
 
               {/* Merged activity timeline */}
               {activityFeed.length > 0 ? (
