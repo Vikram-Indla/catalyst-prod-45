@@ -177,8 +177,8 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
         return next;
       });
       const failedKeys = results.filter(r => !r.ok).map(r => r.key);
-      if (successKeys.length) toast.success(`Linked ${successKeys.length} similar item${successKeys.length > 1 ? 's' : ''}`);
-      if (failedKeys.length) toast.error(`Failed to link: ${failedKeys.join(', ')}`);
+      if (successKeys.length) catalystToast.success(`Linked ${successKeys.length} similar item${successKeys.length > 1 ? 's' : ''}`);
+      if (failedKeys.length) catalystToast.error(`Failed to link: ${failedKeys.join(', ')}`);
       onLinked();
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
     },
