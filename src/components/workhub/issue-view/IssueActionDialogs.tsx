@@ -126,6 +126,23 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   const [note, setNote] = useState('');
   const queryClient = useQueryClient();
 
+  // Compute position anchored below the flag icon, clamped to viewport
+  const pos = useMemo(() => {
+    const rect = anchorRef.current?.getBoundingClientRect();
+    if (!rect) return { top: 120, left: 400 };
+    const popW = 360, popH = 280, pad = 12;
+    let top = rect.bottom + 6;
+    let left = rect.left;
+    // clamp right edge
+    if (left + popW > window.innerWidth - pad) left = window.innerWidth - pad - popW;
+    // clamp left edge
+    if (left < pad) left = pad;
+    // if overflows bottom, show above
+    if (top + popH > window.innerHeight - pad) top = rect.top - popH - 6;
+    if (top < pad) top = pad;
+    return { top, left };
+  }, [anchorRef]);
+
   const mutation = useMutation({
     mutationFn: async () => {
       const newFlagged = !flagged;
@@ -177,9 +194,9 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   return (
     <>
       {/* Click-outside overlay */}
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99, background: 'rgba(9,30,66,0.08)' }} />
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99 }} />
       <div style={{
-        position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+        position: 'fixed', top: pos.top, left: pos.left,
         background: '#fff', borderRadius: 8, width: 360, padding: '20px 24px',
         boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 100,
         border: '1px solid #DFE1E6',
