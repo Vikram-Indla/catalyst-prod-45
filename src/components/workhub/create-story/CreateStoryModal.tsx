@@ -1019,6 +1019,19 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
   const summaryRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // ── Linked Work Items state (createLinked mode) ──
+  const isCreateLinkedMode = !!linkedSource;
+  const [linkedLinkType, setLinkedLinkType] = useState(linkedSource?.linkType ?? 'relates to');
+  const [linkedItems, setLinkedItems] = useState<{ key: string; summary?: string }[]>(
+    linkedSource ? [{ key: linkedSource.issueKey }] : []
+  );
+  const lockedKeys = new Set(linkedSource?.locked !== false && linkedSource ? [linkedSource.issueKey] : []);
+
+  const handleRemoveLinkedItem = useCallback((key: string) => {
+    if (lockedKeys.has(key)) return;
+    setLinkedItems(prev => prev.filter(i => i.key !== key));
+  }, [lockedKeys]);
+
   // Set reporter to current user on mount
   useEffect(() => {
     if (user?.id && !form.reporterId) {
