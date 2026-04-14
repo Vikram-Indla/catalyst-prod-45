@@ -91,14 +91,6 @@ export function IssueListPanel({
     return () => document.removeEventListener('mousedown', handleClick);
   }, [sortMenuOpen]);
 
-  // Keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (!sortedItems.length) return;
-    const idx = sortedItems.findIndex(i => i.issue_key === selectedIssueKey);
-    if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < sortedItems.length - 1) onSelectIssue(sortedItems[idx + 1].issue_key); }
-    if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) onSelectIssue(sortedItems[idx - 1].issue_key); }
-  }, [sortedItems, selectedIssueKey, onSelectIssue]);
-
   const sortLabel = SORT_OPTIONS.find(o => o.key === sortKey)?.label ?? 'Last viewed';
 
   // Sort items based on selected sort key and direction
@@ -134,7 +126,14 @@ export function IssueListPanel({
     return sorted;
   }, [items, sortKey, sortAsc]);
 
-  return (
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!sortedItems.length) return;
+    const idx = sortedItems.findIndex(i => i.issue_key === selectedIssueKey);
+    if (e.key === 'ArrowDown') { e.preventDefault(); if (idx < sortedItems.length - 1) onSelectIssue(sortedItems[idx + 1].issue_key); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) onSelectIssue(sortedItems[idx - 1].issue_key); }
+  }, [sortedItems, selectedIssueKey, onSelectIssue]);
+
     <>
       {/* ── Header toolbar ── */}
       <div className="jlpHeader">

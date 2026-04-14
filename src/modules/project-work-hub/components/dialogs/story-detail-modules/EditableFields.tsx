@@ -566,7 +566,7 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
         .eq('project_key', projectKey)
         .order('name', { ascending: true });
       if (error) throw error;
-      return (data ?? []) as { name: string; released: boolean; archived: boolean; release_date: string | null }[];
+      return (data ?? []) as unknown as { name: string; released: boolean; archived: boolean; release_date: string | null }[];
     },
     enabled: !!projectKey,
     staleTime: 60_000,

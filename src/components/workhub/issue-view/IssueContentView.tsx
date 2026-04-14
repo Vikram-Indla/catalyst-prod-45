@@ -174,7 +174,7 @@ export function IssueContentView({
       updated = [...current, versionName];
     }
     if (item?.id) {
-      supabase.from('ph_issues').update({ fix_version_name: updated.join(', ') || null }).eq('id', item.id).then(() => {});
+      supabase.from('ph_issues').update({ fix_versions: updated.join(', ') || null } as any).eq('id', item.id).then(() => {});
     }
   }, [fixVersionNames, item?.id]);
 
