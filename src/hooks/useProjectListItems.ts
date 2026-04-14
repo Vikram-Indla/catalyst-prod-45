@@ -109,6 +109,8 @@ function mapPhIssue(row: any): WorkItem {
     sprintName: row.sprint_name ?? null,
     resolution: row.resolution ?? null,
     labels: row.labels ?? [],
+    is_flagged: row.is_flagged ?? false,
+    flag_reason: row.flag_reason ?? null,
   };
 }
 
