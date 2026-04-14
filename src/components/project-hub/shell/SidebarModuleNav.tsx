@@ -47,9 +47,9 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {collapsed ? (
-            <ChevronsRight size={16} className="text-[#64748B] dark:text-[#878787]" />
+            <ChevronsRight size={16} className="text-[#2563EB] dark:text-[#4C9AFF]" />
           ) : (
-            <ChevronsLeft size={16} className="text-[#64748B] dark:text-[#878787]" />
+            <ChevronsLeft size={16} className="text-[#2563EB] dark:text-[#4C9AFF]" />
           )}
         </button>
       </div>
