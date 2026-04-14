@@ -122,7 +122,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <Flag size={18} color="#DE350B" />
           <span style={{ fontSize: 16, fontWeight: 700, color: '#172B4D' }}>
-            {flagged ? 'Remove flag' : 'Flag added'}
+            {flagged ? 'Remove flag' : 'Add flag'}
           </span>
         </div>
         <textarea
