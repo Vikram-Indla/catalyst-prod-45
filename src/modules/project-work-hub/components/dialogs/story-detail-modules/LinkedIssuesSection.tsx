@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { AiLinkSimilarPanel } from './AiLinkSimilarPanel';
 import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 import type { StatusCategory } from './types';
