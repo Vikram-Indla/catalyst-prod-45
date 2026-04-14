@@ -1,7 +1,7 @@
 /**
  * AiLinkSimilarPanel — "Link similar work items" AI suggestion panel
- * Jira-parity collapsible panel with checkbox suggestions, link-type dropdown,
- * feedback controls, and bulk linking.
+ * Collapsed by default: shows "Link similar work items" + "Show N result" button.
+ * Expands to show checkbox list, select/deselect all, feedback, link-type dropdown.
  */
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -16,8 +16,6 @@ interface AiSuggestion {
   issue_type: string | null;
   status: string | null;
   status_category: string | null;
-  score?: number;
-  reason?: string;
 }
 
 interface AiLinkSimilarPanelProps {
@@ -26,7 +24,7 @@ interface AiLinkSimilarPanelProps {
   onLinked: () => void;
 }
 
-/* ── Link-type dropdown (bottom-right, Jira parity) ── */
+/* ── Link-type dropdown (bottom-right, opens upward) ── */
 function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -40,9 +38,6 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
 
-  // Map internal value to display label
-  const displayLabel = `Link as ${value}`;
-
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button
@@ -55,7 +50,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
           fontFamily: 'inherit', color: '#172B4D', whiteSpace: 'nowrap',
         }}
       >
-        {displayLabel}
+        Link as {value}
         <ChevronDown size={14} color={open ? '#0052CC' : '#6B778C'} />
       </button>
       {open && (
@@ -90,7 +85,7 @@ function LinkAsDropdown({ value, onChange }: { value: string; onChange: (v: stri
 function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
-      onClick={() => onChange(!checked)}
+      onClick={(e) => { e.stopPropagation(); onChange(!checked); }}
       style={{
         width: 18, height: 18, borderRadius: 3, border: checked ? 'none' : '2px solid #C1C7D0',
         background: checked ? '#0052CC' : '#fff', display: 'flex', alignItems: 'center',
@@ -110,18 +105,17 @@ function Checkbox({ checked, onChange }: { checked: boolean; onChange: (v: boole
 
 export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: AiLinkSimilarPanelProps) {
   const queryClient = useQueryClient();
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
-  const [linkType, setLinkType] = useState('relates to');
+  const [linkType, setLinkType] = useState('related');
   const [feedback, setFeedback] = useState<'up' | 'down' | null>(null);
   const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
   const [linkedThisSession, setLinkedThisSession] = useState<Set<string>>(new Set());
 
-  // Fetch AI suggestions — uses text similarity via pg search
+  // Always fetch suggestions (so we can show count on collapsed bar)
   const { data: suggestions = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['aiSimilarItems', issueKey],
     queryFn: async () => {
-      // Get current issue summary for similarity matching
       const { data: current } = await supabase.from('ph_issues')
         .select('summary, issue_type, project_key, labels')
         .eq('issue_key', issueKey)
@@ -130,7 +124,6 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
 
       if (!current?.summary) return [];
 
-      // Extract key terms from summary for search
       const terms = current.summary
         .replace(/[^\w\s]/g, '')
         .split(/\s+/)
@@ -139,7 +132,6 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
 
       if (!terms.length) return [];
 
-      // Search for similar issues using ilike on key terms
       const orClauses = terms.map((t: string) => `summary.ilike.%${t}%`).join(',');
 
       const { data: candidates } = await supabase.from('ph_issues')
@@ -152,27 +144,19 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
       return (candidates ?? []) as AiSuggestion[];
     },
     staleTime: 5 * 60 * 1000,
-    enabled: expanded,
   });
 
-  // Filter out already-linked, dismissed, and linked-this-session
   const filteredSuggestions = useMemo(() => {
-    const excludeSet = new Set([
-      ...existingLinkedKeys,
-      ...dismissedKeys,
-      ...linkedThisSession,
-    ]);
+    const excludeSet = new Set([...existingLinkedKeys, ...dismissedKeys, ...linkedThisSession]);
     return suggestions.filter(s => !excludeSet.has(s.issue_key));
   }, [suggestions, existingLinkedKeys, dismissedKeys, linkedThisSession]);
 
-  const allSelected = filteredSuggestions.length > 0 && filteredSuggestions.every(s => selectedKeys.has(s.issue_key));
+  const count = filteredSuggestions.length;
+  const allSelected = count > 0 && filteredSuggestions.every(s => selectedKeys.has(s.issue_key));
 
   const toggleAll = () => {
-    if (allSelected) {
-      setSelectedKeys(new Set());
-    } else {
-      setSelectedKeys(new Set(filteredSuggestions.map(s => s.issue_key)));
-    }
+    if (allSelected) setSelectedKeys(new Set());
+    else setSelectedKeys(new Set(filteredSuggestions.map(s => s.issue_key)));
   };
 
   const toggleOne = (key: string) => {
@@ -183,21 +167,19 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
     });
   };
 
-  // Bulk link mutation
   const linkMutation = useMutation({
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      const keys = Array.from(selectedKeys);
-      const results: { key: string; ok: boolean; error?: string }[] = [];
-      for (const targetKey of keys) {
+      const results: { key: string; ok: boolean }[] = [];
+      for (const targetKey of Array.from(selectedKeys)) {
         const { error } = await supabase.from('ph_issue_links').insert({
           source_id: issueKey,
           target_id: targetKey,
           link_type: linkType,
           created_by: user.id,
         } as any);
-        results.push({ key: targetKey, ok: !error, error: error?.message });
+        results.push({ key: targetKey, ok: !error });
       }
       return results;
     },
@@ -214,28 +196,44 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
     },
   });
 
+  /* ── COLLAPSED STATE ── */
   if (!expanded) {
     return (
-      <div
-        onClick={() => setExpanded(true)}
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '10px 12px', border: '1px solid #DFE1E6', borderRadius: 8,
-          cursor: 'pointer', background: '#FAFBFC', marginBottom: 8,
-        }}
-      >
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 12px', border: '1px solid #DFE1E6', borderRadius: 8,
+        background: '#FAFBFC', marginBottom: 8,
+      }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#6B778C" strokeWidth="1.5" fill="none"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#6B778C" strokeWidth="1.5" fill="none"/>
+          </svg>
           <span style={{ fontSize: 14, fontWeight: 500, color: '#172B4D' }}>Link similar work items</span>
         </div>
-        <ChevronDown size={16} color="#6B778C" />
+        {isLoading ? (
+          <Loader2 size={14} className="animate-spin" color="#6B778C" />
+        ) : count > 0 ? (
+          <button
+            onClick={() => setExpanded(true)}
+            style={{
+              height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
+              background: '#fff', cursor: 'pointer', fontSize: 13, color: '#172B4D',
+              fontFamily: 'inherit', fontWeight: 500, whiteSpace: 'nowrap',
+            }}
+          >
+            Show {count} result{count !== 1 ? 's' : ''}
+          </button>
+        ) : (
+          <span style={{ fontSize: 12, color: '#6B778C', fontStyle: 'italic' }}>No results found.</span>
+        )}
       </div>
     );
   }
 
+  /* ── EXPANDED STATE ── */
   return (
     <div style={{ border: '1px solid #DFE1E6', borderRadius: 8, marginBottom: 8, overflow: 'hidden' }}>
-      {/* Header */}
+      {/* Header — click to collapse */}
       <div
         onClick={() => setExpanded(false)}
         style={{
@@ -245,23 +243,18 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#6B778C" strokeWidth="1.5" fill="none"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#6B778C" strokeWidth="1.5" fill="none"/>
+          </svg>
           <span style={{ fontSize: 14, fontWeight: 500, color: '#172B4D' }}>Link similar work items</span>
         </div>
         <ChevronDown size={16} color="#6B778C" style={{ transform: 'rotate(180deg)' }} />
       </div>
 
-      {/* Body */}
+      {/* Content */}
       <div style={{ padding: '0 12px 12px' }}>
-        {/* Loading */}
-        {isLoading && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
-            <Loader2 size={20} className="animate-spin" color="#6B778C" />
-          </div>
-        )}
-
         {/* Error */}
-        {isError && !isLoading && (
+        {isError && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '16px 0' }}>
             <span style={{ fontSize: 13, color: '#FF5630' }}>Failed to load suggestions</span>
             <button onClick={() => refetch()} style={{
@@ -274,114 +267,94 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
           </div>
         )}
 
-        {/* Empty */}
-        {!isLoading && !isError && filteredSuggestions.length === 0 && (
+        {/* Empty after filter */}
+        {!isError && count === 0 && (
           <div style={{ padding: '12px 0', fontSize: 13, color: '#6B778C', fontStyle: 'italic' }}>
             No similar work items found.
           </div>
         )}
 
-        {/* Suggestions list */}
-        {!isLoading && filteredSuggestions.length > 0 && (
+        {/* Suggestions */}
+        {count > 0 && (
           <>
             {/* Select all / Deselect all */}
-            <div
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '10px 0 6px', borderBottom: '1px solid #F4F5F7',
-              }}
-            >
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              padding: '10px 0 6px', borderBottom: '1px solid #F4F5F7',
+            }}>
               <Checkbox checked={allSelected} onChange={toggleAll} />
               <span style={{ fontSize: 14, fontWeight: 500, color: '#172B4D' }}>
                 {allSelected ? 'Deselect all' : 'Select all'}
               </span>
             </div>
 
-            {/* Suggestion rows */}
+            {/* Rows */}
             {filteredSuggestions.map(s => (
               <div
                 key={s.issue_key}
+                onClick={() => toggleOne(s.issue_key)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   padding: '8px 0', borderBottom: '1px solid #F4F5F7',
                   cursor: 'pointer',
                 }}
-                onClick={() => toggleOne(s.issue_key)}
                 onMouseEnter={e => (e.currentTarget.style.background = '#FAFBFC')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
                 <Checkbox checked={selectedKeys.has(s.issue_key)} onChange={() => toggleOne(s.issue_key)} />
                 <IssueIcon type={s.issue_type || 'task'} size={16} />
-                <span style={{ fontSize: 13, color: '#172B4D' }}>
-                  <span style={{ fontWeight: 600 }}>{s.issue_key}:</span>{' '}
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {s.summary}
-                  </span>
+                <span style={{ fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <span style={{ fontWeight: 600 }}>{s.issue_key}:</span> {s.summary}
                 </span>
               </div>
             ))}
-          </>
-        )}
 
-        {/* Footer: disclaimer + feedback + link action */}
-        {!isLoading && filteredSuggestions.length > 0 && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            paddingTop: 10, marginTop: 4,
-          }}>
-            {/* Left: disclaimer + feedback */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <Info size={14} color="#6B778C" />
-                <span style={{ fontSize: 12, color: '#6B778C' }}>Uses AI. Verify results.</span>
+            {/* Footer: disclaimer + feedback | link-type dropdown */}
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              paddingTop: 10, marginTop: 4,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Info size={14} color="#6B778C" />
+                  <span style={{ fontSize: 12, color: '#6B778C' }}>Uses AI. Verify results.</span>
+                </div>
+                <button
+                  onClick={e => { e.stopPropagation(); setFeedback('up'); }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'up' ? '#0052CC' : '#6B778C' }}
+                  title="Helpful"
+                >
+                  <ThumbsUp size={14} />
+                </button>
+                <button
+                  onClick={e => { e.stopPropagation(); setFeedback('down'); }}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 2, color: feedback === 'down' ? '#FF5630' : '#6B778C' }}
+                  title="Not helpful"
+                >
+                  <ThumbsDown size={14} />
+                </button>
               </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setFeedback('up'); }}
-                style={{
-                  border: 'none', background: 'none', cursor: 'pointer', padding: 2,
-                  color: feedback === 'up' ? '#0052CC' : '#6B778C',
-                }}
-                title="Helpful"
-              >
-                <ThumbsUp size={14} />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); setFeedback('down'); }}
-                style={{
-                  border: 'none', background: 'none', cursor: 'pointer', padding: 2,
-                  color: feedback === 'down' ? '#FF5630' : '#6B778C',
-                }}
-                title="Not helpful"
-              >
-                <ThumbsDown size={14} />
-              </button>
+              <LinkAsDropdown value={linkType} onChange={setLinkType} />
             </div>
 
-            {/* Right: link action */}
-            <LinkAsDropdown value={linkType} onChange={setLinkType} />
-          </div>
-        )}
-
-        {/* Link button (when items selected) */}
-        {selectedKeys.size > 0 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8 }}>
-            <button
-              onClick={() => linkMutation.mutate()}
-              disabled={linkMutation.isPending}
-              style={{
-                height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-                background: '#0052CC', color: '#fff', fontSize: 14, fontWeight: 500,
-                cursor: linkMutation.isPending ? 'not-allowed' : 'pointer',
-                fontFamily: 'inherit', opacity: linkMutation.isPending ? 0.7 : 1,
-              }}
-            >
-              {linkMutation.isPending ? (
-                <Loader2 size={14} className="animate-spin" />
-              ) : (
-                `Link ${selectedKeys.size} item${selectedKeys.size > 1 ? 's' : ''}`
-              )}
-            </button>
-          </div>
+            {/* Link button when items selected */}
+            {selectedKeys.size > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: 8 }}>
+                <button
+                  onClick={() => linkMutation.mutate()}
+                  disabled={linkMutation.isPending}
+                  style={{
+                    height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
+                    background: '#0052CC', color: '#fff', fontSize: 14, fontWeight: 500,
+                    cursor: linkMutation.isPending ? 'not-allowed' : 'pointer',
+                    fontFamily: 'inherit', opacity: linkMutation.isPending ? 0.7 : 1,
+                  }}
+                >
+                  {linkMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : `Link ${selectedKeys.size} item${selectedKeys.size > 1 ? 's' : ''}`}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
