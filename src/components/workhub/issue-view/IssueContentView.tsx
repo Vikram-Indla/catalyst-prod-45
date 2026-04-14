@@ -275,9 +275,9 @@ export function IssueContentView({
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
             <span>{issueKey}</span>
             {/* #12: Prev/Next navigation arrows */}
-            <span style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
-              <button className="awNavArrow" onClick={onPrev} title="Previous issue"><ChevronUp style={{ width: 14, height: 14 }} /></button>
-              <button className="awNavArrow" onClick={onNext} title="Next issue"><ChevronDown style={{ width: 14, height: 14 }} /></button>
+            <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
+              <button className="awNavArrow" onClick={onPrev} title="Previous issue"><ChevronUp /></button>
+              <button className="awNavArrow" onClick={onNext} title="Next issue"><ChevronDown /></button>
             </span>
           </div>
 
