@@ -75,39 +75,43 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   const [subtaskType, setSubtaskType] = useState('Sub-task');
   const [newStatus, setNewStatus] = useState(currentStatus);
 
+  // Child types that cannot be parents — filtered client-side (Supabase not.in is unreliable)
+  const CHILD_TYPES_SET = new Set(['sub-task', 'frontend', 'backend', 'figma', 'integration']);
+  const filterParents = (rows: any[]) => rows.filter(r => !CHILD_TYPES_SET.has((r.issue_type ?? '').toLowerCase()));
+
   // Recent issues (shown on focus before typing — Jira parity)
   const { data: recentIssues = [] } = useQuery({
     queryKey: ['convert-recent-issues', projectKey, issueId],
     queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
+      const { data, error } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
         .ilike('issue_key', `${projectKey}-%`)
         .neq('id', issueId)
         .is('deleted_at', null)
-        .not('issue_type', 'in', '("Sub-task","Frontend","Backend","Figma","Integration")')
         .order('jira_updated_at', { ascending: false })
-        .limit(10);
-      return data ?? [];
+        .limit(30);
+      if (error) { console.error('Recent issues query error:', error); return []; }
+      return filterParents(data ?? []).slice(0, 10);
     },
     enabled: !!projectKey,
     staleTime: 30_000,
   });
 
-  // Search parent issues (1+ char, same project, excludes child types + self)
+  // Search parent issues (1+ char, same project)
   const { data: searchResults = [], isFetching: searchingParents } = useQuery({
     queryKey: ['convert-parent-search', projectKey, parentSearch],
     queryFn: async () => {
       const q = parentSearch.trim();
-      const { data } = await supabase.from('ph_issues')
+      const { data, error } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
         .ilike('issue_key', `${projectKey}-%`)
         .neq('id', issueId)
         .is('deleted_at', null)
-        .not('issue_type', 'in', '("Sub-task","Frontend","Backend","Figma","Integration")')
         .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
         .order('jira_updated_at', { ascending: false })
-        .limit(15);
-      return data ?? [];
+        .limit(30);
+      if (error) { console.error('Search query error:', error); return []; }
+      return filterParents(data ?? []).slice(0, 15);
     },
     enabled: parentSearch.trim().length >= 1,
     staleTime: 10_000,
@@ -115,8 +119,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
 
   // Show search results if typing, otherwise show recent issues
   const parentCandidates = parentSearch.trim().length >= 1 ? searchResults : recentIssues;
-  const [inputFocused, setInputFocused] = useState(true); // auto-focused on mount
-  const showDropdown = !selectedParentId && inputFocused && (parentSearch.trim().length >= 1 || parentCandidates.length > 0);
+  const [inputFocused, setInputFocused] = useState(true);
+  const showDropdown = !selectedParentId && inputFocused;
 
   // All statuses from the STATUS_OPTION_GROUPS
   const allStatuses = useMemo(() => STATUS_OPTION_GROUPS.flatMap(g => g.statuses), []);
