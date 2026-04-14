@@ -28,6 +28,8 @@ interface Props {
   historyLoading?: boolean;
   createComment?: any;
   loading?: boolean;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
 const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1'];
