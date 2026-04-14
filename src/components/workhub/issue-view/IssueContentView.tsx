@@ -1017,6 +1017,7 @@ export function IssueContentView({
                 {item?.id ? (
                   <EditableAssignee
                     issueId={item.id}
+                    issueKey={issueKey ?? item.issue_key}
                     projectId={projectId}
                     currentAssigneeId={item.assignee_id ?? null}
                     currentAssigneeName={item.assignee_display_name ?? null}
@@ -1035,6 +1036,7 @@ export function IssueContentView({
                 {item?.id ? (
                   <EditablePriority
                     issueId={item.id}
+                    issueKey={issueKey ?? item.issue_key}
                     currentPriority={item.priority ?? 'Medium'}
                     onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />
@@ -1064,6 +1066,7 @@ export function IssueContentView({
                 {item?.id ? (
                   <EditableLabels
                     issueId={item.id}
+                    issueKey={issueKey ?? item.issue_key}
                     currentLabels={item.labels ?? []}
                     onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />
