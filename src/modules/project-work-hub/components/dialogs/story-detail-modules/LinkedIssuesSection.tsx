@@ -6,7 +6,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
-import { toast } from 'sonner';
+import { catalystToast } from '@/lib/catalystToast';
 import { AiLinkSimilarPanel } from './AiLinkSimilarPanel';
 import { CreateWorkItemModal } from '@/components/project-hub/work-items/CreateWorkItemModal';
 import type { StatusCategory } from './types';
@@ -153,11 +153,11 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
       }
     },
     onSuccess: () => {
-      toast.success(`Linked ${selectedItems.length} item${selectedItems.length > 1 ? 's' : ''}`);
+      catalystToast.success(`Linked ${selectedItems.length} item${selectedItems.length > 1 ? 's' : ''}`);
       onSuccess();
     },
     onError: (err: any) => {
-      toast.error('Failed to link', { description: err.message });
+      catalystToast.error('Failed to link', err.message);
     },
   });
 
@@ -333,7 +333,7 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
     mutationFn: async (linkId: string) => { const { error } = await supabase.from('ph_issue_links').delete().eq('id', linkId); if (error) throw error; },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
-      toast.success('Link removed');
+      catalystToast.success('Link removed');
     },
   });
 
@@ -350,16 +350,16 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
       } as any);
       if (error) {
         if (error.code === '23505' || error.message?.includes('unique_link')) {
-          toast.info(`${newItemKey} already linked to ${issueId}`);
+          catalystToast.info(`${newItemKey} already linked to ${issueId}`);
         } else {
           throw error;
         }
       } else {
-        toast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+        catalystToast.success(`Linked ${newItemKey} to ${issueId}`, `as "${createLinkType}"`);
       }
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
     } catch (err: any) {
-      toast.error(`Created ${newItemKey} but failed to link`, { description: err.message });
+      catalystToast.error(`Created ${newItemKey} but failed to link`, err.message);
     }
     setShowCreateModal(false);
   };
