@@ -73,6 +73,10 @@
   border-radius: 4px;
   background: var(--aw-bg);
   width: 180px;
+  transition: border-color 80ms;
+}
+.awToolbarSearch:focus-within {
+  border-color: #85B8FF;
 }
 .awToolbarSearchInput {
   border: none;
