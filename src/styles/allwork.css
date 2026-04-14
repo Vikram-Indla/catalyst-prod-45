@@ -160,7 +160,8 @@
   display: flex;
   flex-direction: column;
   background: var(--aw-bg);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .awColNav {
   min-width: 0;
@@ -551,27 +552,33 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow: hidden;                    /* header pinned; only awBody scrolls */
   overscroll-behavior: contain;
   background: #FFFFFF;
   scrollbar-gutter: stable;
 }
-.awIssueContent::-webkit-scrollbar {
+.awIssueContent > .awBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: scroll;                  /* independent middle panel scroll */
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.awIssueContent > .awBody::-webkit-scrollbar {
   width: 12px;
 }
-.awIssueContent::-webkit-scrollbar-track {
+.awIssueContent > .awBody::-webkit-scrollbar-track {
   background: #F1F2F4;
   border-left: 1px solid #EBECF0;
 }
-.awIssueContent::-webkit-scrollbar-thumb {
+.awIssueContent > .awBody::-webkit-scrollbar-thumb {
   background: #A5ADBA;
   border-radius: 999px;
   border: 2px solid #F1F2F4;
 }
-.awIssueContent::-webkit-scrollbar-thumb:hover {
+.awIssueContent > .awBody::-webkit-scrollbar-thumb:hover {
   background: #7A869A;
 }
-.awIssueContent > .awBody { flex: 1; }
 
 /* Collapsible sidebar divider with toggle button */
 .awSidebarDivider {
@@ -630,6 +637,7 @@
 .awIssueHeader {
   padding: 12px 16px 10px;
   border-bottom: 1px solid var(--aw-border);
+  flex-shrink: 0;
 }
 .awBreadcrumb {
   display: flex;
