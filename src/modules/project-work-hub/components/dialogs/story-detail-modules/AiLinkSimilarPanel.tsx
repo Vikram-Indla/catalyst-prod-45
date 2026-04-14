@@ -113,38 +113,22 @@ export function AiLinkSimilarPanel({ issueKey, existingLinkedKeys, onLinked }: A
   const [dismissedKeys, setDismissedKeys] = useState<Set<string>>(new Set());
   const [linkedThisSession, setLinkedThisSession] = useState<Set<string>>(new Set());
 
-  // Always fetch suggestions (so we can show count on collapsed bar)
   const { data: suggestions = [], isLoading, isError, refetch } = useQuery({
     queryKey: ['aiSimilarItems', issueKey],
     queryFn: async () => {
-      const { data: current } = await supabase.from('ph_issues')
-        .select('summary, issue_type, project_key, labels')
-        .eq('issue_key', issueKey)
-        .is('jira_removed_at', null)
-        .single();
+      const { data, error } = await supabase.functions.invoke('ai-similar-items', {
+        body: { issueKey, existingLinkedKeys },
+      });
 
-      if (!current?.summary) return [];
+      if (error) throw error;
 
-      const terms = current.summary
-        .replace(/[^\w\s]/g, '')
-        .split(/\s+/)
-        .filter((w: string) => w.length > 3)
-        .slice(0, 5);
+      // Handle rate-limit / payment errors
+      if (data?.error) throw new Error(data.error);
 
-      if (!terms.length) return [];
-
-      const orClauses = terms.map((t: string) => `summary.ilike.%${t}%`).join(',');
-
-      const { data: candidates } = await supabase.from('ph_issues')
-        .select('issue_key, summary, issue_type, status, status_category')
-        .or(orClauses)
-        .is('jira_removed_at', null)
-        .neq('issue_key', issueKey)
-        .limit(20);
-
-      return (candidates ?? []) as AiSuggestion[];
+      return (data?.suggestions ?? []) as AiSuggestion[];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 min — AI results are expensive
+    retry: 1,
   });
 
   const filteredSuggestions = useMemo(() => {
