@@ -1159,14 +1159,46 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       summaryRef.current?.focus();
       return;
     }
+    // Validate linked items in createLinked mode
+    if (isCreateLinkedMode && linkedItems.length === 0) {
+      setSummaryError('At least one linked work item is required');
+      return;
+    }
     setSummaryError('');
     setCreatedKey(null);
 
     try {
       const result = await createMutation.mutateAsync({ form, projectKey: resolvedKey, issueType: workType });
+
+      // ── After creation: create links if in createLinked mode ──
+      if (isCreateLinkedMode && linkedItems.length > 0) {
+        try {
+          const { data: { user: authUser } } = await supabase.auth.getUser();
+          if (!authUser) throw new Error('Not authenticated');
+          for (const item of linkedItems) {
+            await supabase.from('ph_issue_links').insert({
+              source_id: item.key,
+              target_id: result.issue_key,
+              link_type: linkedLinkType,
+              created_by: authUser.id,
+            } as any);
+          }
+        } catch (linkErr: any) {
+          // Partial success: item created but linking failed
+          catalystToast.warning(
+            `${result.issue_key} created, but linking failed`,
+            linkErr.message ?? 'Please link manually'
+          );
+          onSuccess?.(result.issue_key);
+          onClose();
+          reset();
+          return;
+        }
+      }
+
       onSuccess?.(result.issue_key);
 
-      if (createAnother) {
+      if (createAnother && !isCreateLinkedMode) {
         createdKeysRef.current.push(result.issue_key);
         setCreatedKey(result.issue_key);
         reset(true);
