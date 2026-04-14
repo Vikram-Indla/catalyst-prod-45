@@ -465,14 +465,20 @@
 .awKeyDetailLabel {
   width: 100px;
   flex-shrink: 0;
-  font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18.67px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #505258;
 }
 .awKeyDetailValue {
   flex: 1;
   min-width: 0;
-  font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 18.67px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #292A2E;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -567,8 +573,11 @@
   align-items: center;
   gap: 4px;
   margin-bottom: 6px;
-  font: 500 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #505258;
 }
 .awBreadcrumb a, .awBreadcrumb .awBreadcrumbLink {
   color: var(--aw-blue);
@@ -576,8 +585,11 @@
   cursor: pointer;
 }
 .awIssueTitle {
-  font: 600 20px/1.25 system-ui, -apple-system, sans-serif;
-  color: var(--aw-text);
+  font-size: 24px;
+  font-weight: 653;
+  line-height: 1.25;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #292A2E;
   margin-bottom: 8px;
 }
 .awActions {
@@ -614,8 +626,11 @@
 }
 .awSectionHead:hover { background: var(--aw-hover); }
 .awSectionLabel {
-  font: 600 14px/20px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #292A2E;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -687,9 +702,11 @@
   margin-bottom: 8px;
 }
 .awLinkGroupLabel {
-  font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
-  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #6B6E76;
 }
 .awLinkRow {
   display: flex;
@@ -733,12 +750,12 @@
 .awDescriptionContent {
   font-size: 14px;
   line-height: 24px;
-  color: var(--aw-text);
+  color: #292A2E;
   white-space: pre-wrap;
   word-break: break-word;
 }
 .awDescPlaceholder {
-  color: var(--aw-text-subtle);
+  color: #6B6E76;
   font-size: 14px;
   cursor: pointer;
   padding: 4px 8px;
@@ -908,9 +925,13 @@
 /* Timestamps at bottom of sidebar */
 .awTimestamps {
   padding: 10px 16px;
-  font: 400 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #5E6C84;
 }
+.awTimestamps strong, .awTimestamps span { color: #42526E; font-weight: 500; }
 
 /* ── Empty/muted ── */
 .awEmpty {
