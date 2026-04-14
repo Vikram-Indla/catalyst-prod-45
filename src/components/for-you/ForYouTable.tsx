@@ -345,8 +345,10 @@ export function CatalystTable({
           <tbody>
             {resolvedGroups.map(group => {
               const isCollapsed = !!collapsed[group.key];
-              // Check if this group looks like an assignee name (has a space = first+last name)
-              const isAssigneeGroup = group.label.includes(' ') && group.label !== 'No Status' && group.label !== 'No Priority' && group.label !== 'No Project';
+              // Check if this group is an assignee group — only when groupBy is 'assignee'
+              const timeGroupLabels = ['Yesterday', 'This Week', 'Earlier'];
+              const nonAssigneeLabels = ['No Status', 'No Priority', 'No Project', 'No Assignee', 'No Type', 'No Hub', 'Unassigned', ...timeGroupLabels];
+              const isAssigneeGroup = group.label.includes(' ') && !nonAssigneeLabels.includes(group.label);
               const avatarUrl = isAssigneeGroup ? nameAvatarMap.get(group.label.toLowerCase()) : undefined;
               const initials = group.label.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
 
