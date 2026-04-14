@@ -970,6 +970,18 @@ export function IssueContentView({
         </div>
 
       </div>
+
+      {/* Convert to Sub-task wizard */}
+      {showConvertWizard && item?.id && (
+        <ConvertToSubtaskWizard
+          issueId={item.id}
+          issueKey={issueKey ?? ''}
+          issueType={item.issue_type}
+          currentStatus={item.status}
+          projectKey={projectKey}
+          onClose={() => setShowConvertWizard(false)}
+        />
+      )}
     </div>
   );
 }
