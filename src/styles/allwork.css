@@ -797,122 +797,300 @@
   margin-right: 4px;
 }
 
-/* Activity tab pills (#30) */
-.awActivityTabs {
-  display: flex;
-  gap: 2px;
+/* ═══════════════════════════════════════════
+   ACTIVITY SECTION — Jira Cloud Parity
+   ═══════════════════════════════════════════ */
+
+/* Activity heading */
+.awActivityHeader {
+  padding: 0 0 4px;
 }
-.awActivityTab {
-  padding: 4px 10px;
-  border-radius: 12px;
-  border: 1px solid transparent;
-  background: none;
-  font: 500 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
-  cursor: pointer;
-  height: 26px;
-  display: flex;
-  align-items: center;
-}
-.awActivityTab:hover { background: var(--aw-hover); color: var(--aw-text); }
-.awActivityTab.active {
-  background: #E9F2FE;
-  color: #1868DB;
-  border-color: rgba(24,104,219,0.2);
+.awActivityHeading {
+  font: 600 15px/20px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  margin: 0;
 }
 
-/* Comment composer — collapsed state */
+/* Underline-style tab bar */
+.awActivityTabBar {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--aw-border);
+  margin-bottom: 16px;
+}
+.awActivityTabList {
+  display: flex;
+  gap: 0;
+  flex: 1;
+}
+.awActivityTab2 {
+  padding: 8px 14px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: 500 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.awActivityTab2:hover { color: var(--aw-text); }
+.awActivityTab2.active {
+  color: #0C66E4;
+  border-bottom-color: #0C66E4;
+}
+
+/* Sort toggle */
+.awSortToggle {
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--aw-text-subtle);
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: background 150ms ease, color 150ms ease;
+}
+.awSortToggle:hover { background: var(--aw-hover); color: var(--aw-text); }
+
+/* Activity body container */
+.awActivityBody2 { padding: 0; }
+
+/* Comment box — collapsed state */
 .awCommentBox {
   border: 1px solid var(--aw-border);
   border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  font: 400 13px/18px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
+  padding: 10px 14px;
+  margin-bottom: 16px;
   cursor: text;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   transition: border-color 150ms ease;
 }
-.awCommentBox:hover { border-color: var(--aw-blue); }
-
-/* Comment composer — expanded editor state */
-.awCommentEditor {
-  border: 1px solid var(--aw-blue);
-  border-radius: 8px;
-  padding: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 0 0 1px rgba(37,99,235,0.15);
+.awCommentBox:hover { border-color: #B3BAC5; }
+.awCommentPlaceholder {
+  font: 400 14px/20px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
 }
-.awCommentTextarea {
-  flex: 1;
+
+/* Comment composer — expanded (Jira Cloud layout) */
+.awCommentComposer {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.awCommentComposerLeft { flex-shrink: 0; padding-top: 4px; }
+.awCommentComposerRight { flex: 1; min-width: 0; }
+
+/* Editor box (toolbar + textarea) */
+.awCommentEditorBox {
+  border: 1px solid var(--aw-border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 150ms ease;
+}
+.awCommentEditorBox:focus-within { border-color: #0C66E4; }
+
+/* Formatting toolbar */
+.awEditorToolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--aw-border);
+  background: var(--aw-hover, rgba(0,0,0,0.02));
+}
+.awToolbarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--aw-text-subtle);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+.awToolbarBtn:hover { background: rgba(0,0,0,0.06); color: var(--aw-text); }
+.awToolbarDivider {
+  width: 1px;
+  height: 20px;
+  background: var(--aw-border);
+  margin: 0 4px;
+}
+
+/* Textarea inside editor */
+.awCommentTextarea2 {
   width: 100%;
   border: none;
   outline: none;
-  font: 400 13px/20px system-ui, -apple-system, sans-serif;
+  padding: 12px 14px;
+  font: 400 14px/22px system-ui, -apple-system, sans-serif;
   color: var(--aw-text);
   background: transparent;
   resize: vertical;
-  min-height: 60px;
+  min-height: 80px;
 }
-.awCommentTextarea::placeholder { color: var(--aw-text-subtle); }
-.awCommentActions {
+.awCommentTextarea2::placeholder { color: var(--aw-text-subtle); }
+
+/* Save / Cancel below editor */
+.awCommentFooter {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--aw-border);
+  gap: 8px;
+  margin-top: 10px;
 }
-.awCommentCancel {
-  padding: 5px 14px;
-  border: 1px solid var(--aw-border);
-  border-radius: 4px;
-  background: none;
-  font: 500 12px/16px system-ui, -apple-system, sans-serif;
-  color: var(--aw-text-subtle);
-  cursor: pointer;
-  transition: background 150ms ease;
-}
-.awCommentCancel:hover { background: var(--aw-hover); }
-.awCommentSave {
-  padding: 5px 14px;
+.awCommentSaveBtn {
+  padding: 6px 16px;
   border: none;
   border-radius: 4px;
   background: #0C66E4;
-  font: 500 12px/16px system-ui, -apple-system, sans-serif;
+  font: 500 13px/18px system-ui, -apple-system, sans-serif;
   color: #fff;
   cursor: pointer;
   transition: background 150ms ease;
 }
-.awCommentSave:hover { background: #0052CC; }
-.awCommentSave:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.awActivityItem {
-  display: flex;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(9,30,66,0.06);
+.awCommentSaveBtn:hover { background: #0052CC; }
+.awCommentSaveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.awCommentCancelBtn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 0;
+  background: none;
+  font: 500 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+  cursor: pointer;
+  transition: color 150ms ease;
 }
-.awActivityItem:last-child { border-bottom: none; }
-.awAvatar {
-  width: 28px;
-  height: 28px;
+.awCommentCancelBtn:hover { color: var(--aw-text); }
+
+/* ═══════════════════════════════════════════
+   ACTIVITY TIMELINE — Jira Cloud Parity
+   ═══════════════════════════════════════════ */
+.awTimeline { padding: 0; }
+
+.awTimelineItem {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.awTimelineAvatar {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font: 700 10px/1 system-ui;
+  font: 700 11px/1 system-ui;
   color: #fff;
 }
-.awActivityBody { flex: 1; min-width: 0; }
-.awActivityMeta {
+
+.awTimelineContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.awTimelineName {
+  font: 500 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+}
+.awTimelineName strong { font-weight: 600; }
+
+.awTimelineTime {
   font: 400 12px/16px system-ui, -apple-system, sans-serif;
   color: var(--aw-text-subtle);
+  margin-top: 1px;
 }
-.awActivityMeta strong { color: var(--aw-text); font-weight: 500; }
+
+/* Type badges (HISTORY / COMMENT / WORK LOG) */
+.awTypeBadge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font: 700 10px/14px system-ui, -apple-system, sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+.awTypeBadgeHistory {
+  background: #292A2E;
+  color: #fff;
+}
+.awTypeBadgeComment {
+  background: #E9F2FF;
+  color: #0C66E4;
+}
+.awTypeBadgeWorklog {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+/* Change detail row */
+.awTimelineChange {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* Status lozenges in history (bordered uppercase pills) */
+.awStatusLoz {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--aw-border);
+  border-radius: 4px;
+  font: 600 11px/16px system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+  color: var(--aw-text);
+  background: transparent;
+  white-space: nowrap;
+}
+
+/* Assignee chips in history */
+.awAssigneeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+}
+.awAssigneeChipAvatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 8px/1 system-ui;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+/* Simple old → new text values */
+.awChangeOld {
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text-subtle);
+}
+.awChangeNew {
+  font: 500 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+}
+
+/* Comment body in timeline */
+.awTimelineDetail {
+  font: 400 13px/20px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text);
+  margin-top: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
 /* ── Log Work form ── */
 .awLogWorkToggle {
@@ -1355,16 +1533,39 @@
 .dark .awFieldValue { color: #EDEDED; }
 .dark .awFieldLabel { color: #A1A1A1; }
 .dark .awFieldRow.awFieldRowBorder { border-color: #2E2E2E; }
+/* ── Activity section dark mode ── */
+.dark .awActivityHeading { color: #EDEDED; }
+.dark .awActivityTabBar { border-color: #2E2E2E; }
+.dark .awActivityTab2 { color: #878787; }
+.dark .awActivityTab2:hover { color: #EDEDED; }
+.dark .awActivityTab2.active { color: #4C9AFF; border-bottom-color: #4C9AFF; }
+.dark .awSortToggle { color: #878787; }
+.dark .awSortToggle:hover { background: #1F1F1F; color: #EDEDED; }
 .dark .awCommentBox { border-color: #2E2E2E; }
-.dark .awCommentBox:hover { border-color: #4C9AFF; }
-.dark .awCommentEditor { border-color: #4C9AFF; box-shadow: 0 0 0 1px rgba(76,154,255,0.2); }
-.dark .awCommentTextarea { color: #EDEDED; }
-.dark .awCommentTextarea::placeholder { color: #878787; }
-.dark .awCommentActions { border-color: #2E2E2E; }
-.dark .awCommentCancel { border-color: #2E2E2E; color: #A1A1A1; }
-.dark .awCommentCancel:hover { background: #1F1F1F; }
-.dark .awCommentSave { background: #1D4ED8; }
-.dark .awCommentSave:hover { background: #2563EB; }
+.dark .awCommentBox:hover { border-color: #454545; }
+.dark .awCommentPlaceholder { color: #878787; }
+.dark .awCommentEditorBox { border-color: #2E2E2E; }
+.dark .awCommentEditorBox:focus-within { border-color: #4C9AFF; }
+.dark .awEditorToolbar { background: #111111; border-color: #2E2E2E; }
+.dark .awToolbarBtn { color: #878787; }
+.dark .awToolbarBtn:hover { background: #1F1F1F; color: #EDEDED; }
+.dark .awToolbarDivider { background: #2E2E2E; }
+.dark .awCommentTextarea2 { color: #EDEDED; }
+.dark .awCommentTextarea2::placeholder { color: #878787; }
+.dark .awCommentSaveBtn { background: #1D4ED8; }
+.dark .awCommentSaveBtn:hover { background: #2563EB; }
+.dark .awCommentCancelBtn { color: #A1A1A1; }
+.dark .awCommentCancelBtn:hover { color: #EDEDED; }
+.dark .awTimelineName { color: #EDEDED; }
+.dark .awTimelineTime { color: #878787; }
+.dark .awTypeBadgeHistory { background: #454545; color: #EDEDED; }
+.dark .awTypeBadgeComment { background: rgba(12,102,228,0.15); color: #4C9AFF; }
+.dark .awTypeBadgeWorklog { background: #292929; color: #A1A1A1; }
+.dark .awStatusLoz { border-color: #454545; color: #EDEDED; }
+.dark .awAssigneeChip { color: #EDEDED; }
+.dark .awChangeOld { color: #878787; }
+.dark .awChangeNew { color: #EDEDED; }
+.dark .awTimelineDetail { color: #EDEDED; }
 .dark .awLogWorkToggle { border-color: #2E2E2E; color: #4C9AFF; }
 .dark .awLogWorkToggle:hover { background: #1F1F1F; }
 .dark .awLogWorkForm { border-color: #2E2E2E; }
@@ -1378,7 +1579,7 @@
 .dark .awDescPlaceholder:hover { background: #1F1F1F; }
 .dark .awAddParentLink { color: #878787; }
 .dark .awAddParentLink:hover { color: #4C9AFF; background: #1F1F1F; }
-.dark .awActivityTab.active { background: rgba(12,102,228,0.12); color: #4C9AFF; border-color: rgba(76,154,255,0.2); }
+/* (old pill-style tab dark rule removed — now using underline tabs) */
 .dark .awLabelChip { background: #292929; color: #EDEDED; }
 .dark .sp-panel { color: #EDEDED; }
 .dark .sp-title { color: #EDEDED; }

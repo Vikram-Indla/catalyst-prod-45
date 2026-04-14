@@ -5,7 +5,7 @@
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
 import { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, Settings, MessageSquare, History as HistoryIcon, Clock, FileText, Send, Eye, Share2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, Settings, MessageSquare, History as HistoryIcon, Clock, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
@@ -119,7 +119,7 @@ export function IssueContentView({
   const [logDate, setLogDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [logDesc, setLogDesc] = useState('');
   const [logPosting, setLogPosting] = useState(false);
-
+  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -174,6 +174,22 @@ export function IssueContentView({
     { key: 'all', label: 'All' }, { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' }, { key: 'worklog', label: 'Work log' },
   ];
+
+  // Merged + sorted activity feed
+  const activityFeed = useMemo(() => {
+    const items: { type: 'comment' | 'history' | 'worklog'; data: any; ts: number }[] = [];
+    if (activityTab === 'all' || activityTab === 'comments') {
+      comments.forEach((c: any) => items.push({ type: 'comment', data: c, ts: new Date(c.created_at ?? 0).getTime() }));
+    }
+    if (activityTab === 'all' || activityTab === 'history') {
+      historyItems.forEach((h: any) => items.push({ type: 'history', data: h, ts: new Date(h.created_at ?? 0).getTime() }));
+    }
+    if (activityTab === 'all' || activityTab === 'worklog') {
+      worklogs.forEach((w: any) => items.push({ type: 'worklog', data: w, ts: new Date(w.created_at ?? 0).getTime() }));
+    }
+    items.sort((a, b) => sortDir === 'desc' ? b.ts - a.ts : a.ts - b.ts);
+    return items;
+  }, [comments, historyItems, worklogs, activityTab, sortDir]);
 
   const fixVersionName = item?.fix_version_name;
 
@@ -317,61 +333,93 @@ export function IssueContentView({
             )}
           </div>
 
-          {/* ── Activity (#30: pill-style tabs) ── */}
+          {/* ── Activity — Jira Cloud parity ── */}
           <div className="awSection" style={{ borderBottom: 'none' }}>
-            <div className="awSectionHead" style={{ cursor: 'default' }}>
-              <span className="awSectionLabel">Activity</span>
-              <div className="awActivityTabs">
+            {/* Activity heading */}
+            <div className="awActivityHeader">
+              <h3 className="awActivityHeading">Activity</h3>
+            </div>
+
+            {/* Underline-style tabs + sort toggle */}
+            <div className="awActivityTabBar">
+              <div className="awActivityTabList">
                 {TABS.map(t => (
-                  <button key={t.key} className={`awActivityTab ${activityTab === t.key ? 'active' : ''}`} onClick={() => setActivityTab(t.key)}>
+                  <button
+                    key={t.key}
+                    className={`awActivityTab2 ${activityTab === t.key ? 'active' : ''}`}
+                    onClick={() => setActivityTab(t.key)}
+                  >
                     {t.label}
                   </button>
                 ))}
               </div>
+              <button
+                className="awSortToggle"
+                onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
+                title={sortDir === 'desc' ? 'Newest first' : 'Oldest first'}
+              >
+                <ArrowUpDown style={{ width: 16, height: 16 }} />
+              </button>
             </div>
-            <div className="awSectionBody">
-              {/* Comment composer — Atlassian-style expand on focus */}
+
+            {/* Comment composer — Atlassian pattern: collapsed → expanded */}
+            <div className="awActivityBody2">
               {!commentFocused ? (
                 <div className="awCommentBox" onClick={() => setCommentFocused(true)}>
-                  {user && <Avatar name={user.email ?? 'You'} size={28} />}
-                  <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13, cursor: 'text' }}>Add a comment...</span>
+                  {user && <Avatar name={user.email ?? 'You'} size={32} />}
+                  <span className="awCommentPlaceholder">Add a comment...</span>
                 </div>
               ) : (
-                <div className="awCommentEditor">
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                    {user && <Avatar name={user.email ?? 'You'} size={28} />}
-                    <textarea
-                      autoFocus
-                      rows={3}
-                      placeholder="What do you want to say?"
-                      value={commentText}
-                      onChange={e => setCommentText(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleComment(); }
-                        if (e.key === 'Escape') { if (!commentText.trim()) { setCommentFocused(false); } }
-                      }}
-                      disabled={posting}
-                      className="awCommentTextarea"
-                    />
+                <div className="awCommentComposer">
+                  <div className="awCommentComposerLeft">
+                    {user && <Avatar name={user.email ?? 'You'} size={32} />}
                   </div>
-                  <div className="awCommentActions">
-                    <span style={{ fontSize: 11, color: 'var(--aw-text-subtle)' }}>
-                      <strong style={{ color: 'var(--aw-text-subtle)' }}>Tip:</strong> press <kbd style={{ padding: '1px 4px', borderRadius: 3, border: '1px solid var(--aw-border)', fontSize: 10 }}>Ctrl+Enter</kbd> to save
-                    </span>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <button
-                        className="awCommentCancel"
-                        onClick={() => { setCommentFocused(false); setCommentText(''); }}
+                  <div className="awCommentComposerRight">
+                    <div className="awCommentEditorBox">
+                      {/* Formatting toolbar (visual parity) */}
+                      <div className="awEditorToolbar">
+                        <button className="awToolbarBtn" title="Bold"><Bold style={{ width: 15, height: 15 }} /></button>
+                        <button className="awToolbarBtn" title="Italic"><Italic style={{ width: 15, height: 15 }} /></button>
+                        <button className="awToolbarBtn" title="List"><List style={{ width: 15, height: 15 }} /></button>
+                        <button className="awToolbarBtn" title="Code"><Code2 style={{ width: 15, height: 15 }} /></button>
+                        <span className="awToolbarDivider" />
+                        <button className="awToolbarBtn" title="Link"><LinkIcon style={{ width: 15, height: 15 }} /></button>
+                        <button className="awToolbarBtn" title="Emoji"><Smile style={{ width: 15, height: 15 }} /></button>
+                        <button className="awToolbarBtn" title="Attachment"><Paperclip style={{ width: 15, height: 15 }} /></button>
+                        <span className="awToolbarDivider" />
+                        <button className="awToolbarBtn" title="Undo"><Undo2 style={{ width: 15, height: 15 }} /></button>
+                        <button className="awToolbarBtn" title="Redo"><Redo2 style={{ width: 15, height: 15 }} /></button>
+                      </div>
+                      {/* Textarea */}
+                      <textarea
+                        autoFocus
+                        rows={4}
+                        placeholder="Type @ to mention and notify someone."
+                        value={commentText}
+                        onChange={e => setCommentText(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleComment(); }
+                          if (e.key === 'Escape' && !commentText.trim()) { setCommentFocused(false); }
+                        }}
                         disabled={posting}
-                      >
-                        Cancel
-                      </button>
+                        className="awCommentTextarea2"
+                      />
+                    </div>
+                    {/* Save / Cancel below editor box */}
+                    <div className="awCommentFooter">
                       <button
-                        className="awCommentSave"
+                        className="awCommentSaveBtn"
                         onClick={handleComment}
                         disabled={posting || !commentText.trim()}
                       >
                         {posting ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        className="awCommentCancelBtn"
+                        onClick={() => { setCommentFocused(false); setCommentText(''); }}
+                        disabled={posting}
+                      >
+                        Cancel
                       </button>
                     </div>
                   </div>
@@ -380,7 +428,7 @@ export function IssueContentView({
 
               {/* Log work form (toggle) — visible on Work log tab */}
               {activityTab === 'worklog' && (
-                <div style={{ marginBottom: 12 }}>
+                <div style={{ marginBottom: 16 }}>
                   {!logWorkOpen ? (
                     <button className="awLogWorkToggle" onClick={() => setLogWorkOpen(true)}>
                       <Clock style={{ width: 14, height: 14 }} /> Log work
@@ -390,46 +438,23 @@ export function IssueContentView({
                       <div className="awLogWorkRow">
                         <label className="awLogWorkLabel">Time spent</label>
                         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                          <input
-                            type="number" min="0" placeholder="0" value={logHours}
-                            onChange={e => setLogHours(e.target.value)}
-                            className="awLogWorkInput" style={{ width: 56 }}
-                          />
+                          <input type="number" min="0" placeholder="0" value={logHours} onChange={e => setLogHours(e.target.value)} className="awLogWorkInput" style={{ width: 56 }} />
                           <span className="awLogWorkUnit">h</span>
-                          <input
-                            type="number" min="0" max="59" placeholder="0" value={logMinutes}
-                            onChange={e => setLogMinutes(e.target.value)}
-                            className="awLogWorkInput" style={{ width: 56 }}
-                          />
+                          <input type="number" min="0" max="59" placeholder="0" value={logMinutes} onChange={e => setLogMinutes(e.target.value)} className="awLogWorkInput" style={{ width: 56 }} />
                           <span className="awLogWorkUnit">m</span>
                         </div>
                       </div>
                       <div className="awLogWorkRow">
                         <label className="awLogWorkLabel">Date</label>
-                        <input
-                          type="date" value={logDate}
-                          onChange={e => setLogDate(e.target.value)}
-                          className="awLogWorkInput" style={{ width: 150 }}
-                        />
+                        <input type="date" value={logDate} onChange={e => setLogDate(e.target.value)} className="awLogWorkInput" style={{ width: 150 }} />
                       </div>
                       <div className="awLogWorkRow">
                         <label className="awLogWorkLabel">Description</label>
-                        <input
-                          placeholder="What did you work on?"
-                          value={logDesc}
-                          onChange={e => setLogDesc(e.target.value)}
-                          className="awLogWorkInput" style={{ flex: 1 }}
-                        />
+                        <input placeholder="What did you work on?" value={logDesc} onChange={e => setLogDesc(e.target.value)} className="awLogWorkInput" style={{ flex: 1 }} />
                       </div>
                       <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end', marginTop: 8 }}>
-                        <button className="awLogWorkCancel" onClick={() => { setLogWorkOpen(false); setLogHours(''); setLogMinutes(''); setLogDesc(''); }}>
-                          Cancel
-                        </button>
-                        <button
-                          className="awLogWorkSubmit"
-                          onClick={handleLogWork}
-                          disabled={logPosting || (parseInt(logHours || '0', 10) * 60 + parseInt(logMinutes || '0', 10)) <= 0}
-                        >
+                        <button className="awLogWorkCancel" onClick={() => { setLogWorkOpen(false); setLogHours(''); setLogMinutes(''); setLogDesc(''); }}>Cancel</button>
+                        <button className="awLogWorkSubmit" onClick={handleLogWork} disabled={logPosting || (parseInt(logHours || '0', 10) * 60 + parseInt(logMinutes || '0', 10)) <= 0}>
                           {logPosting ? 'Saving...' : 'Log'}
                         </button>
                       </div>
@@ -438,54 +463,102 @@ export function IssueContentView({
                 </div>
               )}
 
-              {/* Activity items — merged feed for 'all' tab */}
-              {(activityTab === 'all' || activityTab === 'comments') && comments.map((c: any, i: number) => (
-                <div key={c.id ?? `c-${i}`} className="awActivityItem">
-                  <div className="awAvatar" style={{ background: avatarBg(c._author_name ?? 'U') }}>{initials(c._author_name ?? 'U')}</div>
-                  <div className="awActivityBody">
-                    <div className="awActivityMeta"><strong>{c._author_name ?? 'Unknown'}</strong> {fmtRel(c.created_at)}</div>
-                    <div style={{ fontSize: 13, marginTop: 4 }}>{c.body}</div>
-                  </div>
-                </div>
-              ))}
-              {(activityTab === 'all' || activityTab === 'history') && historyItems.map((h: any, i: number) => (
-                <div key={h.id ?? `h-${i}`} className="awActivityItem">
-                  <div className="awAvatar" style={{ background: avatarBg(h._author_name ?? 'S') }}>{initials(h._author_name ?? 'S')}</div>
-                  <div className="awActivityBody">
-                    <div className="awActivityMeta">
-                      <strong>{h._author_name ?? 'System'}</strong> changed <strong>{h.field_name}</strong> {fmtRel(h.created_at)}
-                    </div>
-                    {(h.old_display ?? h.old_value) && <div style={{ fontSize: 12, marginTop: 2, color: 'var(--aw-text-subtle)' }}>{h.old_display ?? h.old_value} → <strong style={{ color: 'var(--aw-text)' }}>{h.new_display ?? h.new_value}</strong></div>}
-                  </div>
-                </div>
-              ))}
-              {(activityTab === 'all' || activityTab === 'worklog') && worklogs.map((w: any, i: number) => (
-                <div key={w.id ?? `w-${i}`} className="awActivityItem">
-                  <div className="awAvatar" style={{ background: '#4C6EF5' }}>
-                    <Clock style={{ width: 14, height: 14, color: '#fff' }} />
-                  </div>
-                  <div className="awActivityBody">
-                    <div className="awActivityMeta">
-                      <strong>{w._author_name ?? 'Unknown'}</strong> logged <strong>{fmtMinutes(w.time_spent_minutes)}</strong> {fmtRel(w.created_at)}
-                    </div>
-                    {w.work_date && (
-                      <div style={{ fontSize: 12, marginTop: 2, color: 'var(--aw-text-subtle)' }}>
-                        Date: {w.work_date}
+              {/* Merged activity timeline */}
+              {activityFeed.length > 0 ? (
+                <div className="awTimeline">
+                  {activityFeed.map((entry, i) => {
+                    if (entry.type === 'comment') {
+                      const c = entry.data;
+                      const name = c._author_name ?? 'Unknown';
+                      return (
+                        <div key={c.id ?? `c-${i}`} className="awTimelineItem">
+                          <div className="awTimelineAvatar" style={{ background: avatarBg(name) }}>{initials(name)}</div>
+                          <div className="awTimelineContent">
+                            <div className="awTimelineName">{name}</div>
+                            <div className="awTimelineTime">{fmtRel(c.created_at)}</div>
+                            <span className="awTypeBadge awTypeBadgeComment">COMMENT</span>
+                            <div className="awTimelineDetail">{c.body}</div>
+                          </div>
+                        </div>
+                      );
+                    }
+                    if (entry.type === 'history') {
+                      const h = entry.data;
+                      const name = h._author_name ?? 'System';
+                      const field = h.field_name ?? '';
+                      const oldVal = h.old_display ?? h.old_value ?? null;
+                      const newVal = h.new_display ?? h.new_value ?? null;
+                      const isStatus = field.toLowerCase() === 'status';
+                      const isAssignee = field.toLowerCase() === 'assignee';
+                      const isCreated = field.toLowerCase() === '' && !oldVal && !newVal;
+                      return (
+                        <div key={h.id ?? `h-${i}`} className="awTimelineItem">
+                          <div className="awTimelineAvatar" style={{ background: avatarBg(name) }}>{initials(name)}</div>
+                          <div className="awTimelineContent">
+                            <div className="awTimelineName">
+                              {name} {isCreated ? 'created the Work item' : <>changed the <strong>{field}</strong></>}
+                            </div>
+                            <div className="awTimelineTime">{fmtRel(h.created_at)}</div>
+                            <span className="awTypeBadge awTypeBadgeHistory">HISTORY</span>
+                            {/* Change detail rendering */}
+                            {!isCreated && (oldVal || newVal) && (
+                              <div className="awTimelineChange">
+                                {isStatus ? (
+                                  <>
+                                    {oldVal && <span className="awStatusLoz">{oldVal}</span>}
+                                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--aw-text-subtle)', flexShrink: 0 }} />
+                                    {newVal && <span className="awStatusLoz">{newVal}</span>}
+                                  </>
+                                ) : isAssignee ? (
+                                  <>
+                                    {oldVal && (
+                                      <span className="awAssigneeChip">
+                                        <span className="awAssigneeChipAvatar" style={{ background: avatarBg(oldVal) }}>{initials(oldVal)}</span>
+                                        {oldVal}
+                                      </span>
+                                    )}
+                                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--aw-text-subtle)', flexShrink: 0 }} />
+                                    {newVal && (
+                                      <span className="awAssigneeChip">
+                                        <span className="awAssigneeChipAvatar" style={{ background: avatarBg(newVal) }}>{initials(newVal)}</span>
+                                        {newVal}
+                                      </span>
+                                    )}
+                                  </>
+                                ) : (
+                                  <>
+                                    <span className="awChangeOld">{oldVal ?? 'None'}</span>
+                                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--aw-text-subtle)', flexShrink: 0 }} />
+                                    <span className="awChangeNew">{newVal}</span>
+                                  </>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    }
+                    // worklog
+                    const w = entry.data;
+                    const wName = w._author_name ?? 'Unknown';
+                    return (
+                      <div key={w.id ?? `w-${i}`} className="awTimelineItem">
+                        <div className="awTimelineAvatar" style={{ background: '#4C6EF5' }}>
+                          <Clock style={{ width: 13, height: 13, color: '#fff' }} />
+                        </div>
+                        <div className="awTimelineContent">
+                          <div className="awTimelineName">{wName} logged <strong>{fmtMinutes(w.time_spent_minutes)}</strong></div>
+                          <div className="awTimelineTime">{fmtRel(w.created_at)}{w.work_date ? ` · ${w.work_date}` : ''}</div>
+                          <span className="awTypeBadge awTypeBadgeWorklog">WORK LOG</span>
+                          {w.description && <div className="awTimelineDetail">{w.description}</div>}
+                        </div>
                       </div>
-                    )}
-                    {w.description && <div style={{ fontSize: 13, marginTop: 4 }}>{w.description}</div>}
-                  </div>
+                    );
+                  })}
                 </div>
-              ))}
-              {(() => {
-                const hasComments = activityTab === 'all' || activityTab === 'comments' ? comments.length > 0 : false;
-                const hasHistory = activityTab === 'all' || activityTab === 'history' ? historyItems.length > 0 : false;
-                const hasWorklogs = activityTab === 'all' || activityTab === 'worklog' ? worklogs.length > 0 : false;
-                if (!hasComments && !hasHistory && !hasWorklogs) {
-                  return <div className="awEmpty">No activity yet</div>;
-                }
-                return null;
-              })()}
+              ) : (
+                <div className="awEmpty">No activity yet</div>
+              )}
             </div>
           </div>
         </div>
