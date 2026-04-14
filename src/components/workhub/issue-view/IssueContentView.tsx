@@ -1066,10 +1066,7 @@ export function IssueContentView({
         />
       )}
 
-      {/* Action dialogs */}
-      {showFlagDialog && item?.id && (
-        <FlagDialog issueId={item.id} issueKey={issueKey ?? ''} isFlagged={!!(item as any).flagged} onClose={() => setShowFlagDialog(false)} />
-      )}
+      {/* Flag popover is now rendered inline next to the flag button — no separate dialog needed */}
       {showCloneWizard && item?.id && (
         <CloneWizard issueId={item.id} issueKey={issueKey ?? ''} item={item} projectKey={projectKey} onClose={() => setShowCloneWizard(false)} />
       )}
