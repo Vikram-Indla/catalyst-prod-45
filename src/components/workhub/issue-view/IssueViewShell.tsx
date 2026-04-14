@@ -129,12 +129,6 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
         </div>
 
         <div className="awToolbarRight">
-          {/* Saved filters */}
-          <button className="awToolbarBtn">
-            Saved filters
-            <ChevronDown style={{ width: 14, height: 14 }} />
-          </button>
-
           {/* View toggle: Table / Split */}
           <div className="awViewToggle">
             <button
