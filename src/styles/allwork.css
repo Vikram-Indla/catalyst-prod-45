@@ -156,12 +156,11 @@
   overflow: hidden;
 }
 .awCol {
-  min-height: 0;
+  min-height: 0 !important;
   display: flex;
   flex-direction: column;
   background: var(--aw-bg);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden !important;         /* children handle their own scroll */
 }
 .awColNav {
   min-width: 0;
@@ -543,27 +542,25 @@
 /* ── Issue view: content + collapsible details sidebar ── */
 .awIssueView {
   display: flex;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  flex: 1 1 0%;
+  min-height: 0 !important;
+  overflow: hidden !important;
   background: #FFFFFF;
 }
 .awIssueContent {
-  flex: 1 1 auto;
+  flex: 1 1 0%;
   min-width: 0;
+  min-height: 0 !important;
   display: flex;
   flex-direction: column;
-  overflow: hidden;                    /* header pinned; only awBody scrolls */
-  overscroll-behavior: contain;
+  overflow: hidden !important;         /* header pinned; only awBody scrolls */
   background: #FFFFFF;
-  scrollbar-gutter: stable;
 }
 .awIssueContent > .awBody {
-  flex: 1;
-  min-height: 0;
-  overflow-y: scroll;                  /* independent middle panel scroll */
+  flex: 1 1 0%;
+  min-height: 0 !important;
+  overflow-y: auto !important;         /* middle panel scrollbar */
   overscroll-behavior: contain;
-  scrollbar-gutter: stable;
 }
 .awIssueContent > .awBody::-webkit-scrollbar {
   width: 12px;
