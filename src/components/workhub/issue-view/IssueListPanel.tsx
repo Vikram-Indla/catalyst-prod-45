@@ -4,7 +4,7 @@
  * Sort dropdown header, face avatars, no status lozenges in cards
  */
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { ChevronDown, ListFilter, RotateCcw, Search } from 'lucide-react';
+import { ChevronDown, ArrowUpNarrowWide, ArrowDownNarrowWide, RotateCcw } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,7 +68,7 @@ export function IssueListPanel({
   items = [], loading = false,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortKey, setSortKey] = useState<SortKey>('updated');
+  const [sortAsc, setSortAsc] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const sortRef = useRef<HTMLDivElement>(null);
@@ -111,8 +111,9 @@ export function IssueListPanel({
           >
             {sortLabel} <ChevronDown size={14} />
           </button>
-          <button className="jlpToolBtn" title="Filter"><ListFilter size={16} /></button>
-          <button className="jlpToolBtn" title="Refresh"><RotateCcw size={16} /></button>
+          <button className="jlpToolBtn" title={sortAsc ? 'Sort ascending' : 'Sort descending'} onClick={() => setSortAsc(a => !a)}>
+            {sortAsc ? <ArrowUpNarrowWide size={16} /> : <ArrowDownNarrowWide size={16} />}
+          </button>
 
           {sortMenuOpen && (
             <div className="jlpSortMenu">
