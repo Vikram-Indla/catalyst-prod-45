@@ -560,31 +560,63 @@ export function IssueContentView({
             )}
           </div>
 
-          {/* ── Attachments (from StoryDetailModal) ── */}
+          {/* ── Attachments (universal — all types) ── */}
           <AttachmentsSection
             attachments={attachments}
             itemId={item?.id ?? ''}
             userId={user?.id ?? ''}
           />
 
-          {/* ── Subtasks / Child Issues (from StoryDetailModal — ChildIssuesSection) ── */}
-          <ChildIssuesSection
-            storyKey={issueKey!}
-            storyId={item?.id ?? ''}
-            projectKey={projectKey}
-          />
+          {/* ── Section visibility matrix by work item type ──
+               Sub-tasks:    Epic, Story, Feature, Task, Improvement
+               Defects:      Story, Feature
+               Incidents:    Story, Feature
+               TestHub:      Story, Feature, Bug/Defect
+               Linked items: Universal
+               Activity:     Universal
+          ── */}
+          {(() => {
+            const t = (item?.issue_type ?? '').toLowerCase();
+            const isEpic = t.includes('epic');
+            const isStory = t.includes('story') || t === 'feature' || t.includes('new feature');
+            const isFeature = t === 'feature' || t.includes('new feature');
+            const isTask = t === 'task' && !t.includes('sub');
+            const isSubtask = t.includes('sub-task') || t.includes('subtask');
+            const isBug = t.includes('bug') || t.includes('defect');
+            const isIncident = t.includes('incident');
+            const isImprovement = t.includes('improvement');
 
-          {/* ── Linked work items (from StoryDetailModal — LinkedIssuesSection) ── */}
-          <LinkedIssuesSection issueId={item?.id ?? ''} />
+            const showSubtasks = isEpic || isStory || isFeature || isTask || isImprovement;
+            const showDefects = isStory || isFeature;
+            const showIncidents = isStory || isFeature;
+            const showTestHub = isStory || isFeature || isBug;
 
-          {/* ── Defects (from StoryDetailModal) ── */}
-          <DefectsSection storyKey={issueKey!} projectKey={projectKey} />
+            return (
+              <>
+                {showSubtasks && (
+                  <ChildIssuesSection
+                    storyKey={issueKey!}
+                    storyId={item?.id ?? ''}
+                    projectKey={projectKey}
+                  />
+                )}
 
-          {/* ── Production Incidents (from StoryDetailModal) ── */}
-          <IncidentsSection storyKey={issueKey!} />
+                <LinkedIssuesSection issueId={item?.id ?? ''} />
 
-          {/* ── TestHub (from StoryDetailModal) ── */}
-          <TestHubSection storyId={item?.id ?? ''} />
+                {showDefects && (
+                  <DefectsSection storyKey={issueKey!} projectKey={projectKey} />
+                )}
+
+                {showIncidents && (
+                  <IncidentsSection storyKey={issueKey!} />
+                )}
+
+                {showTestHub && (
+                  <TestHubSection storyId={item?.id ?? ''} />
+                )}
+              </>
+            );
+          })()}
 
           {/* ── Activity — Jira Cloud parity ── */}
           <div className="awSection" style={{ borderBottom: 'none' }}>
