@@ -56,7 +56,6 @@ import { SubtasksPanel } from '../SubtasksPanel';
 import { DefectsSection } from './story-detail-modules';
 import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
-import { LinkedIssuesSection } from './story-detail-modules';
 import { LinkedItemsSection } from '@/components/project-hub/work-items/detail/LinkedItemsSection';
 import { CreateLinkedWorkItemModal } from '@/components/project-hub/work-items/detail/CreateLinkedWorkItemModal';
 import { AttachmentsSection } from './story-detail-modules';
