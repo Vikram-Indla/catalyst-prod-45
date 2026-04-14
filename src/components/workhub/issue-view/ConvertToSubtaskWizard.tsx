@@ -181,14 +181,14 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                   </div>
                 ) : (
                   <div style={{ position: 'relative' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', height: 36, border: '1px solid #DFE1E6', borderRadius: 4 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0 10px', height: 36, border: '2px solid #4C9AFF', borderRadius: 4 }}>
                       <Search size={14} color="#6B778C" />
                       <input
                         autoFocus
                         value={parentSearch}
                         onChange={e => setParentSearch(e.target.value)}
                         placeholder="Search by key or summary..."
-                        style={{ flex: 1, border: 'none', outline: 'none', fontSize: 13, background: 'transparent' }}
+                        style={{ flex: 1, border: 'none', outline: 'none', boxShadow: 'none', fontSize: 13, background: 'transparent' }}
                       />
                       {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: '#6B778C' }} />}
                     </div>
