@@ -4,6 +4,7 @@
  *   - Paste URL/key detection and auto-resolution (FR-11)
  *   - "Load more" pagination (FR-12)
  *   - Excludes self + already-linked items (FR-13)
+ *   - Recently viewed suggestions on empty focus
  *   - Keyboard accessible (FR-42)
  *   - Error state with retry (FR-16)
  *   - Race condition protection via React Query keying (FR-18)
@@ -13,6 +14,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Search, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { searchWorkItemsForLinking, type SearchResultItem } from '@/services/linkedWorkItemsService';
 import { parseWorkItemKey } from '@/lib/parseWorkItemKey';
 
@@ -32,6 +34,7 @@ interface WorkItemPickerProps {
 }
 
 const PAGE_SIZE = 15;
+const RECENT_ISSUES_FETCH_LIMIT = 50;
 
 // Status lozenge styles matching Catalyst's 3-colour guardrail
 const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
@@ -41,11 +44,47 @@ const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
 };
 
 function getStatusStyle(category: string) {
-  if (category.includes('done') || category.includes('closed') || category.includes('resolved'))
+  if (category.includes('done') || category.includes('closed') || category.includes('resolved')) {
     return STATUS_STYLES.done;
-  if (category.includes('progress') || category.includes('review') || category.includes('active'))
+  }
+  if (category.includes('progress') || category.includes('review') || category.includes('active')) {
     return STATUS_STYLES.in_progress;
+  }
   return STATUS_STYLES.todo;
+}
+
+async function fetchRecentIssuesForLinking(
+  excludeIds: string[],
+  limit = PAGE_SIZE,
+): Promise<{ items: SearchResultItem[]; total: number }> {
+  const { data, error } = await supabase
+    .from('ph_issues')
+    .select('id, issue_key, summary, status, status_category, issue_type')
+    .is('jira_removed_at', null)
+    .order('jira_updated_at', { ascending: false })
+    .limit(RECENT_ISSUES_FETCH_LIMIT);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const excluded = new Set(excludeIds.map(value => value.trim()).filter(Boolean));
+
+  const items = (data ?? [])
+    .map((issue) => ({
+      id: issue.id,
+      item_key: issue.issue_key,
+      summary: issue.summary,
+      type_name: issue.issue_type || 'Issue',
+      type_color: '#94A3B8',
+      status_name: issue.status || 'Backlog',
+      status_category: issue.status_category || 'todo',
+      source_table: 'ph_issues' as const,
+    }))
+    .filter(item => !excluded.has(item.id) && !excluded.has(item.item_key))
+    .slice(0, limit);
+
+  return { items, total: items.length };
 }
 
 export function WorkItemPicker({
@@ -60,61 +99,103 @@ export function WorkItemPicker({
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(0);
   const [allResults, setAllResults] = useState<SearchResultItem[]>([]);
+  const [open, setOpen] = useState(false);
+  const [focusIdx, setFocusIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const [focusIdx, setFocusIdx] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const allExcludeIds = [excludeSelfId, ...excludeLinkedIds];
+  const activeSearch = debouncedSearch.trim();
+  const isRecentMode = activeSearch.length < 2;
 
   // Auto-focus
   useEffect(() => {
-    if (autoFocus) setTimeout(() => inputRef.current?.focus(), 50);
+    if (!autoFocus) return;
+    const timer = setTimeout(() => inputRef.current?.focus(), 50);
+    return () => clearTimeout(timer);
   }, [autoFocus]);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!open) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current?.contains(event.target as Node)) return;
+      setOpen(false);
+      setFocusIdx(-1);
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [open]);
 
   // Debounce search input (FR-17)
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Check for pasted key/URL (FR-11)
       const parsedKey = parseWorkItemKey(search);
       setDebouncedSearch(parsedKey || search);
       setPage(0);
       setAllResults([]);
+      setFocusIdx(-1);
     }, 250);
+
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Fetch search results — React Query keying handles race conditions (FR-18)
-  const { data: searchData, isLoading, isFetching, isError, error, refetch } = useQuery({
-    queryKey: ['linked-items-picker', debouncedSearch, allExcludeIds.join(','), page],
-    queryFn: () => searchWorkItemsForLinking(debouncedSearch, allExcludeIds, PAGE_SIZE, page * PAGE_SIZE),
-    enabled: debouncedSearch.trim().length >= 2 && !selected,
+  const {
+    data: searchData,
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['linked-items-picker', isRecentMode ? '__recent__' : activeSearch, allExcludeIds.join(','), page],
+    queryFn: () => (
+      isRecentMode
+        ? fetchRecentIssuesForLinking(allExcludeIds, PAGE_SIZE)
+        : searchWorkItemsForLinking(activeSearch, allExcludeIds, PAGE_SIZE, page * PAGE_SIZE)
+    ),
+    enabled: open && !selected,
     staleTime: 30_000,
     retry: 1,
   });
 
   // Accumulate paginated results
   useEffect(() => {
-    if (!searchData) return;
-    if (page === 0) {
-      setAllResults(searchData.items);
-    } else {
-      setAllResults(prev => {
-        const existingIds = new Set(prev.map(r => r.id));
-        const newItems = searchData.items.filter(r => !existingIds.has(r.id));
-        return [...prev, ...newItems];
-      });
+    if (isError) {
+      setAllResults([]);
+      return;
     }
-  }, [searchData, page]);
 
-  const hasMore = searchData ? allResults.length < searchData.total : false;
+    if (!searchData) return;
+
+    if (page === 0 || isRecentMode) {
+      setAllResults(searchData.items);
+      return;
+    }
+
+    setAllResults(prev => {
+      const existingIds = new Set(prev.map(result => result.id));
+      const newItems = searchData.items.filter(result => !existingIds.has(result.id));
+      return [...prev, ...newItems];
+    });
+  }, [searchData, page, isError, isRecentMode]);
+
+  const hasMore = searchData ? !isRecentMode && allResults.length < searchData.total : false;
 
   const handleLoadMore = useCallback(() => {
-    setPage(p => p + 1);
-  }, []);
+    if (!isRecentMode) {
+      setPage(prev => prev + 1);
+    }
+  }, [isRecentMode]);
 
   const handleSelect = (item: SearchResultItem) => {
     onSelect(item);
     setSearch(`${item.item_key} ${item.summary}`);
+    setOpen(false);
+    setFocusIdx(-1);
   };
 
   const handleClear = () => {
@@ -122,32 +203,46 @@ export function WorkItemPicker({
     setSearch('');
     setAllResults([]);
     setPage(0);
+    setOpen(false);
+    setFocusIdx(-1);
     setTimeout(() => inputRef.current?.focus(), 50);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (selected) onSelect(null);
-    setSearch(e.target.value);
+    setSearch(event.target.value);
+    setOpen(true);
     setFocusIdx(-1);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      if (!open) {
+        setOpen(true);
+        setFocusIdx(0);
+        return;
+      }
       setFocusIdx(prev => Math.min(prev + 1, allResults.length - 1));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
       setFocusIdx(prev => Math.max(prev - 1, 0));
-    } else if (e.key === 'Enter' && focusIdx >= 0 && allResults[focusIdx]) {
-      e.preventDefault();
+    } else if (event.key === 'Enter' && focusIdx >= 0 && allResults[focusIdx]) {
+      event.preventDefault();
       handleSelect(allResults[focusIdx]);
-    } else if (e.key === 'Escape' && selected) {
-      handleClear();
-    } else if (e.key === 'Home') {
-      e.preventDefault();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      if (selected) {
+        handleClear();
+      } else {
+        setOpen(false);
+        setFocusIdx(-1);
+      }
+    } else if (event.key === 'Home') {
+      event.preventDefault();
       setFocusIdx(0);
-    } else if (e.key === 'End') {
-      e.preventDefault();
+    } else if (event.key === 'End') {
+      event.preventDefault();
       setFocusIdx(allResults.length - 1);
     }
   };
@@ -159,27 +254,29 @@ export function WorkItemPicker({
     items[focusIdx]?.scrollIntoView({ block: 'nearest' });
   }, [focusIdx]);
 
-  const showResults = !selected && debouncedSearch.length >= 2;
+  const showResults = open && !selected;
 
   // Build aria-live status message (FR-43)
   const statusMessage = isLoading
-    ? 'Searching...'
+    ? isRecentMode
+      ? 'Loading recent work items...'
+      : 'Searching...'
     : isError
-    ? 'Search failed'
-    : showResults && allResults.length === 0
-    ? 'No matching work items'
-    : showResults
-    ? `${allResults.length} results found`
-    : '';
+      ? 'Search failed'
+      : showResults && allResults.length === 0
+        ? isRecentMode
+          ? 'No recent work items'
+          : 'No matching work items'
+        : showResults
+          ? `${allResults.length} results found`
+          : '';
 
   return (
-    <div className="relative flex-1">
-      {/* aria-live status region (FR-43) */}
+    <div ref={containerRef} className="relative flex-1">
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {statusMessage}
       </div>
 
-      {/* Search input */}
       <div
         className="flex items-center gap-1.5 rounded"
         style={{
@@ -195,10 +292,12 @@ export function WorkItemPicker({
           ref={inputRef}
           value={search}
           onChange={handleInputChange}
+          onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label="Search work items"
           aria-autocomplete="list"
+          aria-expanded={showResults}
           aria-controls={showResults ? 'work-item-picker-results' : undefined}
           aria-activedescendant={focusIdx >= 0 ? `picker-option-${focusIdx}` : undefined}
           className="flex-1 text-[14px] outline-none bg-transparent"
@@ -206,6 +305,7 @@ export function WorkItemPicker({
         />
         {selected && (
           <button
+            type="button"
             onClick={handleClear}
             className="text-[12px] font-medium px-1.5 rounded hover:bg-[#F4F5F7] transition-colors"
             style={{ color: '#6B778C' }}
@@ -217,7 +317,6 @@ export function WorkItemPicker({
         {(isLoading || isFetching) && <Loader2 size={14} className="animate-spin" color="#6B778C" />}
       </div>
 
-      {/* Results dropdown */}
       {showResults && (
         <div
           id="work-item-picker-results"
@@ -236,7 +335,6 @@ export function WorkItemPicker({
             overflowY: 'auto',
           }}
         >
-          {/* FR-16: Error state with retry */}
           {isError && (
             <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
               <AlertCircle size={14} color="#DE350B" />
@@ -244,6 +342,7 @@ export function WorkItemPicker({
                 Search failed: {(error as Error)?.message || 'Unknown error'}
               </span>
               <button
+                type="button"
                 onClick={() => refetch()}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
@@ -258,25 +357,43 @@ export function WorkItemPicker({
             </div>
           )}
 
-          {/* FR-15: deterministic empty state */}
-          {!isError && allResults.length === 0 && !isLoading && !isFetching && (
-            <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: '#6B778C' }}>
-              No matching work items
+          {!isError && isRecentMode && allResults.length > 0 && (
+            <div
+              style={{
+                padding: '8px 12px 4px',
+                fontSize: 11,
+                fontWeight: 700,
+                color: '#6B778C',
+              }}
+            >
+              Recently viewed
             </div>
           )}
 
-          {!isError && allResults.map((item, i) => {
+          {!isError && (isLoading || isFetching) && allResults.length === 0 && (
+            <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>
+              {isRecentMode ? 'Loading recent work items...' : 'Searching work items...'}
+            </div>
+          )}
+
+          {!isError && allResults.length === 0 && !isLoading && !isFetching && (
+            <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: '#6B778C' }}>
+              {isRecentMode ? 'No recent work items' : 'No matching work items'}
+            </div>
+          )}
+
+          {!isError && allResults.map((item, index) => {
             const statusStyle = getStatusStyle(item.status_category);
-            const isFocused = focusIdx === i;
+            const isFocused = focusIdx === index;
             return (
               <div
                 key={item.id}
-                id={`picker-option-${i}`}
+                id={`picker-option-${index}`}
                 data-result
                 role="option"
                 aria-selected={isFocused}
                 onClick={() => handleSelect(item)}
-                onMouseEnter={() => setFocusIdx(i)}
+                onMouseEnter={() => setFocusIdx(index)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -291,12 +408,10 @@ export function WorkItemPicker({
                   transition: 'background 0.1s',
                 }}
               >
-                {/* Type indicator */}
                 <span
                   className="w-2 h-2 rounded-sm shrink-0"
                   style={{ backgroundColor: item.type_color || '#94A3B8' }}
                 />
-                {/* Key */}
                 <span
                   className="shrink-0"
                   style={{
@@ -308,14 +423,9 @@ export function WorkItemPicker({
                 >
                   {item.item_key}
                 </span>
-                {/* Summary */}
-                <span
-                  className="flex-1 truncate"
-                  style={{ color: '#172B4D' }}
-                >
+                <span className="flex-1 truncate" style={{ color: '#172B4D' }}>
                   {item.summary}
                 </span>
-                {/* Status */}
                 <span
                   className="shrink-0"
                   style={{
@@ -339,9 +449,9 @@ export function WorkItemPicker({
             );
           })}
 
-          {/* Load more (FR-12) */}
           {hasMore && (
             <button
+              type="button"
               onClick={handleLoadMore}
               disabled={isFetching}
               className="w-full text-center py-2 text-[12px] font-medium hover:bg-[#F4F5F7] transition-colors"
