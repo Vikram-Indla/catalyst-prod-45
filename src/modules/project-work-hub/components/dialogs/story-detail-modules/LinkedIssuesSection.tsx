@@ -167,6 +167,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
         <LinkTypeDropdown value={linkType} onChange={setLinkType} />
         {/* Multi-select input area */}
         <div
+          ref={inputAreaRef}
           style={{
             flex: 1, minHeight: 36, display: 'flex', flexWrap: 'wrap', alignItems: 'center',
             gap: 4, padding: '4px 8px',
