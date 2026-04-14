@@ -45,10 +45,10 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     const types = [...new Set(items.map(i => i.issue_type).filter(Boolean))].sort();
 
     return [
-      { key: 'status', label: 'Status', options: statuses.map(s => ({ value: s, label: s })) },
-      { key: 'priority', label: 'Priority', options: priorities.map(p => ({ value: p, label: p })) },
-      { key: 'assignee', label: 'Assignee', options: assignees.map(a => ({ value: a, label: a })) },
-      { key: 'type', label: 'Type', options: types.map(t => ({ value: t, label: t })) },
+      { id: 'status', label: 'Status', options: statuses.map(s => ({ value: s, label: s })) },
+      { id: 'priority', label: 'Priority', options: priorities.map(p => ({ value: p, label: p })) },
+      { id: 'assignee', label: 'Assignee', options: assignees.map(a => ({ value: a, label: a })) },
+      { id: 'type', label: 'Type', options: types.map(t => ({ value: t, label: t })) },
     ].filter(c => c.options.length > 0);
   }, [items]);
 
