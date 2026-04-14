@@ -96,21 +96,25 @@ export function useIssueViewData(
     return rawChildren.map(workItemToAllWork);
   }, [rawChildren]);
 
+  // Derive lookup IDs — wh_ tables use item.id, ph_issues fallback uses issue_key
+  const itemId = selectedItem?.id ?? null;
+  const issueKey = selectedItem?.issue_key ?? null;
+
   // ─── Links (raw wh_work_item_links rows) ───
-  const { data: links = [], isLoading: linksLoading } = useWhLinks(selectedItem?.id ?? null);
+  const { data: links = [], isLoading: linksLoading } = useWhLinks(itemId);
 
-  // ─── Comments (raw wh_comments rows with _author_name fallback) ───
-  const { data: comments = [], isLoading: commentsLoading } = useWhComments(selectedItem?.id ?? null);
+  // ─── Comments — pass issue_key so ph_issues JSONB fallback works ───
+  const { data: comments = [], isLoading: commentsLoading } = useWhComments(issueKey);
 
-  // ─── History (raw wh_history rows with field_name/old_value/new_value) ───
-  const { data: history = [], isLoading: historyLoading } = useWhHistory(selectedItem?.id ?? null);
+  // ─── History — pass issue_key so ph_issues changelog fallback works ───
+  const { data: history = [], isLoading: historyLoading } = useWhHistory(issueKey);
 
   // ─── Work logs (raw wh_work_logs rows) ───
-  const { data: worklogs = [], isLoading: worklogsLoading } = useWhWorkLogs(selectedItem?.id ?? null);
+  const { data: worklogs = [], isLoading: worklogsLoading } = useWhWorkLogs(itemId);
 
   // ─── Mutations ───
-  const createComment = useCreateComment(selectedItem?.id ?? '');
-  const logWork = useLogWork(selectedItem?.id ?? '');
+  const createComment = useCreateComment(issueKey ?? '');
+  const logWork = useLogWork(itemId ?? '');
 
   return {
     items: filteredItems,
