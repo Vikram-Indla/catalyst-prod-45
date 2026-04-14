@@ -1,6 +1,6 @@
 /**
  * IssueViewShell — 3-panel layout matching Jira Cloud:
- * Top: toolbar (Ask AI, Search, avatars, Filter, Saved filters, Table/Split toggle)
+ * Top: toolbar (Search, Filter — matches For You page pattern)
  * Left: issue list | Right: issue view (content + collapsible Details sidebar)
  */
 import { useState, useCallback, useEffect, useMemo } from 'react';
@@ -9,7 +9,9 @@ import { useTheme } from '@/hooks/useTheme';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
 import { IssueListPanel } from './IssueListPanel';
 import { IssueContentView } from './IssueContentView';
-import { Search, SlidersHorizontal, ChevronDown, LayoutGrid, Columns2 } from 'lucide-react';
+import { Search } from 'lucide-react';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -17,34 +19,6 @@ interface Props {
   projectKey: string;
   storageKey: string;
 }
-
-/** Fetch unique assignees for the avatar stack */
-function useAssigneeAvatars(projectKey: string) {
-  return useQuery({
-    queryKey: ['assignee-avatars-toolbar', projectKey],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_issues')
-        .select('assignee_display_name, assignee_avatar')
-        .eq('project_key', projectKey)
-        .not('assignee_display_name', 'is', null)
-        .limit(200);
-      // Deduplicate by name
-      const map = new Map<string, { name: string; avatar: string | null }>();
-      (data ?? []).forEach((r: any) => {
-        if (r.assignee_display_name && !map.has(r.assignee_display_name)) {
-          map.set(r.assignee_display_name, { name: r.assignee_display_name, avatar: r.assignee_avatar || null });
-        }
-      });
-      return Array.from(map.values());
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#00B8D9'];
-function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
-function initials(name: string) { return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
 
 export function IssueViewShell({ projectKey, storageKey }: Props) {
   const { isDark } = useTheme();
@@ -54,7 +28,8 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [toolbarSearch, setToolbarSearch] = useState('');
-  const [viewMode, setViewMode] = useState<'split' | 'table'>('split');
+  const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
 
   const {
     items, itemsLoading, selectedItem, parentItem,
@@ -62,16 +37,51 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     comments, commentsLoading, history, historyLoading, createComment,
   } = useIssueViewData(projectKey, selectedIssueKey, searchQuery);
 
-  const { data: assignees = [] } = useAssigneeAvatars(projectKey);
+  // Build filter categories from items
+  const filterCategories = useMemo<FilterCategory[]>(() => {
+    const statuses = [...new Set(items.map(i => i.status).filter(Boolean))].sort();
+    const priorities = [...new Set(items.map(i => i.priority).filter(Boolean))].sort();
+    const assignees = [...new Set(items.map(i => i.assignee_display_name).filter(Boolean))].sort();
+    const types = [...new Set(items.map(i => i.issue_type).filter(Boolean))].sort();
+
+    return [
+      { key: 'status', label: 'Status', options: statuses.map(s => ({ value: s, label: s })) },
+      { key: 'priority', label: 'Priority', options: priorities.map(p => ({ value: p, label: p })) },
+      { key: 'assignee', label: 'Assignee', options: assignees.map(a => ({ value: a, label: a })) },
+      { key: 'type', label: 'Type', options: types.map(t => ({ value: t, label: t })) },
+    ].filter(c => c.options.length > 0);
+  }, [items]);
+
+  const advancedFilterCount = useMemo(() => Object.values(advancedFilters).flat().length, [advancedFilters]);
+
+  const handleAdvancedFilterChange = useCallback((key: string, values: string[]) => {
+    setAdvancedFilters(prev => ({ ...prev, [key]: values }));
+  }, []);
+
+  const handleClearAllFilters = useCallback(() => {
+    setAdvancedFilters({});
+  }, []);
+
+  // Filter items based on advanced filters
+  const filteredItems = useMemo(() => {
+    if (advancedFilterCount === 0) return items;
+    return items.filter(item => {
+      if (advancedFilters.status?.length && !advancedFilters.status.includes(item.status)) return false;
+      if (advancedFilters.priority?.length && !advancedFilters.priority.includes(item.priority)) return false;
+      if (advancedFilters.assignee?.length && !advancedFilters.assignee.includes(item.assignee_display_name || '')) return false;
+      if (advancedFilters.type?.length && !advancedFilters.type.includes(item.issue_type)) return false;
+      return true;
+    });
+  }, [items, advancedFilters, advancedFilterCount]);
 
   // Auto-select first
   useEffect(() => {
-    if (!selectedIssueKey && items.length > 0 && !itemsLoading) {
-      const key = items[0].issue_key;
+    if (!selectedIssueKey && filteredItems.length > 0 && !itemsLoading) {
+      const key = filteredItems[0].issue_key;
       setSelectedIssueKey(key);
       setSearchParams(p => { p.set('selectedIssue', key); return p; }, { replace: true });
     }
-  }, [items, selectedIssueKey, itemsLoading]);
+  }, [filteredItems, selectedIssueKey, itemsLoading]);
 
   const handleSelect = useCallback((key: string) => {
     setSelectedIssueKey(key);
@@ -80,22 +90,19 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
 
   // Navigate prev/next
   const handlePrevNext = useCallback((direction: 'prev' | 'next') => {
-    if (!items.length || !selectedIssueKey) return;
-    const idx = items.findIndex(i => i.issue_key === selectedIssueKey);
-    if (direction === 'prev' && idx > 0) handleSelect(items[idx - 1].issue_key);
-    if (direction === 'next' && idx < items.length - 1) handleSelect(items[idx + 1].issue_key);
-  }, [items, selectedIssueKey, handleSelect]);
-
-  const visibleAvatars = assignees.slice(0, 5);
-  const overflowCount = Math.max(0, assignees.length - 5);
+    if (!filteredItems.length || !selectedIssueKey) return;
+    const idx = filteredItems.findIndex(i => i.issue_key === selectedIssueKey);
+    if (direction === 'prev' && idx > 0) handleSelect(filteredItems[idx - 1].issue_key);
+    if (direction === 'next' && idx < filteredItems.length - 1) handleSelect(filteredItems[idx + 1].issue_key);
+  }, [filteredItems, selectedIssueKey, handleSelect]);
 
   return (
     <div className={`awShellWrap ${isDark ? 'dark' : ''}`}>
-      {/* ── Top toolbar (Jira parity: Ask AI, Search, avatars, Filter, Saved filters, view toggle) ── */}
+      {/* ── Top toolbar (For You page pattern: Search + Filter) ── */}
       <div className="awToolbar">
         <div className="awToolbarLeft">
-          {/* Search work */}
-          <div className="awToolbarSearch">
+          {/* Search work — matches For You page w-80 pattern */}
+          <div className="awToolbarSearch" style={{ width: 320 }}>
             <Search style={{ width: 14, height: 14, color: '#6B778C', flexShrink: 0 }} />
             <input
               placeholder="Search work"
@@ -105,51 +112,26 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
             />
           </div>
 
-          {/* Avatar stack */}
-          <div className="awToolbarAvatars">
-            {visibleAvatars.map((a, i) => (
-              a.avatar ? (
-                <img key={a.name} src={a.avatar} alt={a.name} title={a.name} className="awToolbarAvatar" style={{ zIndex: 10 - i, marginLeft: i > 0 ? -6 : 0 }} />
-              ) : (
-                <div key={a.name} className="awToolbarAvatarFallback" style={{ background: avatarBg(a.name), zIndex: 10 - i, marginLeft: i > 0 ? -6 : 0 }} title={a.name}>
-                  {initials(a.name)}
-                </div>
-              )
-            ))}
-            {overflowCount > 0 && (
-              <div className="awToolbarAvatarOverflow" style={{ marginLeft: -6 }}>+{overflowCount}</div>
+          {/* Filter — JiraBasicFilter pattern from For You */}
+          <div style={{ position: 'relative' }}>
+            <FilterTriggerButton
+              count={advancedFilterCount}
+              onClick={() => setFilterPanelOpen(v => !v)}
+              isOpen={filterPanelOpen}
+            />
+            {filterPanelOpen && (
+              <JiraBasicFilter
+                categories={filterCategories}
+                selected={advancedFilters}
+                onSelectionChange={handleAdvancedFilterChange}
+                onClearAll={handleClearAllFilters}
+                onClose={() => setFilterPanelOpen(false)}
+              />
             )}
           </div>
-
-          {/* Filter */}
-          <button className="awToolbarBtn">
-            <SlidersHorizontal style={{ width: 14, height: 14 }} />
-            Filter
-          </button>
         </div>
 
-        <div className="awToolbarRight">
-          {/* View toggle: Table / Split */}
-          <div className="awViewToggle">
-            <button
-              className={`awViewToggleBtn ${viewMode === 'table' ? 'active' : ''}`}
-              onClick={() => setViewMode('table')}
-              title="Table view"
-            >
-              <LayoutGrid style={{ width: 16, height: 16 }} />
-            </button>
-            <button
-              className={`awViewToggleBtn ${viewMode === 'split' ? 'active' : ''}`}
-              onClick={() => setViewMode('split')}
-              title="Split view"
-            >
-              <Columns2 style={{ width: 16, height: 16 }} />
-            </button>
-          </div>
-
-          {/* More */}
-          <button className="awToolbarBtn" style={{ padding: '0 6px' }}>⋯</button>
-        </div>
+        <div className="awToolbarRight" />
       </div>
 
       {/* ── 2-column split view ── */}
@@ -161,9 +143,9 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
             selectedIssueKey={selectedIssueKey}
             onSelectIssue={handleSelect}
             onSearch={setSearchQuery}
-            items={items}
+            items={filteredItems}
             loading={itemsLoading}
-            totalCount={items.length}
+            totalCount={filteredItems.length}
           />
         </div>
 
