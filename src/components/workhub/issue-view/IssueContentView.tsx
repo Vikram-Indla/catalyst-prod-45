@@ -799,36 +799,43 @@ export function IssueContentView({
                   boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
                   border: '1px solid #DFE1E6', padding: '4px 0',
                 }}>
-                  {[
-                    { label: 'Add flag', action: () => { toast.info('Flag added'); setMoreMenuOpen(false); } },
-                  ].map(({ label, action }) => (
-                    <button key={label} onClick={action} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                      onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
-                      onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-                    >{label}</button>
-                  ))}
+                  {/* Add flag */}
+                  <button onClick={() => { setShowFlagDialog(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                  >Add flag</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
-                  {/* Convert to Subtask — only for non-subtask types */}
+                  {/* Convert to Subtask */}
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
-                    <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }}
+                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                       onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                       onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                     >Convert to Subtask</button>
                   )}
-                  <button onClick={() => { toast.info('Issue cloned'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Clone */}
+                  <button onClick={() => { setShowCloneWizard(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Clone</button>
-                  <button onClick={() => { toast.info('Move not implemented'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Move */}
+                  <button onClick={() => { setShowMoveWizard(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Move</button>
-                  <button onClick={() => { toast.info('Archived'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Archive */}
+                  <button onClick={() => { setShowArchiveDialog(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Archive</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
-                  <button onClick={() => { toast.error('Delete not implemented'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#DE350B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Delete */}
+                  <button onClick={() => { setShowDeleteDialog(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#DE350B', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#FFEBE6')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Delete</button>
