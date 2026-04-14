@@ -566,6 +566,21 @@ export default function StoryDetailModal({
 
   if (!isOpen) return null;
 
+  // Guard: show loading overlay while issue data hasn't loaded yet (prevents null crash for catalyst_issues items)
+  if (issueLoading || !issue) {
+    const guardOverlay: React.CSSProperties = (fullPageMode || panelMode) ? {
+      position: 'relative' as const, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFFFFF',
+    } : {
+      position: 'fixed' as const, inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'rgba(9, 30, 66, 0.54)',
+    };
+    return (
+      <div style={guardOverlay} onClick={!fullPageMode && !panelMode ? onClose : undefined}>
+        <div style={{ width: 48, height: 48, border: '3px solid #DFE1E6', borderTopColor: '#0052CC', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      </div>
+    );
+  }
+
   /* ═════════════════════════════════════════════
      RENDER — Jira-parity layout
      ═════════════════════════════════════════════ */
