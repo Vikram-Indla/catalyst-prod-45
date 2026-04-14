@@ -11,8 +11,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Search, X, ChevronRight, Loader2 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+/** Sub-task types only get 3 statuses: To Do, In Progress, Done */
+const SUBTASK_STATUS_GROUPS = [
+  { groupLabel: 'TO DO', statuses: ['To Do'] },
+  { groupLabel: 'IN PROGRESS', statuses: ['In Progress'] },
+  { groupLabel: 'DONE', statuses: ['Done'] },
+];
 
 /** Context-aware sub-task types — varies based on what you're converting FROM */
 function getAvailableSubtaskTypes(sourceIssueType: string): string[] {
