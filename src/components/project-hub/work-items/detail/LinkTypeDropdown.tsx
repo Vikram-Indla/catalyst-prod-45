@@ -2,9 +2,16 @@
  * LinkTypeDropdown — Direction-aware link type selector.
  * Fetches ALL link types from wh_link_types and generates inward/outward options.
  * Jira-parity: shows full list, keyboard accessible, no truncation.
+ *
+ * FR-5: Loads from server
+ * FR-6: No truncation
+ * FR-7: Scroll + keyboard
+ * FR-8: Full object preserved
+ * FR-9: Direction label shown
+ * FR-10: Error + retry on load failure
  */
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, AlertCircle, RefreshCw } from 'lucide-react';
 import { useLinkTypes } from '@/hooks/useLinkedWorkItems';
 import type { LinkTypeOption } from '@/services/linkedWorkItemsService';
 
@@ -19,7 +26,7 @@ export function LinkTypeDropdown({ value, onChange, disabled }: LinkTypeDropdown
   const [focusIdx, setFocusIdx] = useState(-1);
   const ref = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const { options, isLoading } = useLinkTypes();
+  const { options, isLoading, isError, refetch } = useLinkTypes();
 
   // Close on outside click
   useEffect(() => {
@@ -58,10 +65,16 @@ export function LinkTypeDropdown({ value, onChange, disabled }: LinkTypeDropdown
       setFocusIdx(prev => Math.max(prev - 1, 0));
     } else if (e.key === 'Escape') {
       setOpen(false);
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setFocusIdx(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setFocusIdx(options.length - 1);
     }
   };
 
-  const displayLabel = value?.label || (isLoading ? 'Loading...' : 'Select link type');
+  const displayLabel = value?.label || (isLoading ? 'Loading...' : isError ? 'Error loading' : 'Select link type');
 
   return (
     <div ref={ref} className="relative" style={{ flexShrink: 0 }}>
@@ -77,13 +90,13 @@ export function LinkTypeDropdown({ value, onChange, disabled }: LinkTypeDropdown
         style={{
           height: 36,
           padding: '0 10px',
-          border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+          border: open ? '2px solid #4C9AFF' : isError ? '1px solid #DE350B' : '1px solid #DFE1E6',
           borderRadius: 3,
           fontSize: 14,
           fontFamily: 'Inter, sans-serif',
           background: 'var(--cp-float, #fff)',
           cursor: disabled ? 'not-allowed' : 'pointer',
-          color: disabled ? '#A5ADBA' : '#172B4D',
+          color: isError ? '#DE350B' : disabled ? '#A5ADBA' : '#172B4D',
           minWidth: 160,
           opacity: disabled ? 0.6 : 1,
         }}
@@ -114,6 +127,24 @@ export function LinkTypeDropdown({ value, onChange, disabled }: LinkTypeDropdown
         >
           {isLoading ? (
             <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>Loading link types...</div>
+          ) : isError ? (
+            /* FR-10: Error + retry */
+            <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <AlertCircle size={14} color="#DE350B" />
+              <span style={{ flex: 1, fontSize: 13, color: '#DE350B' }}>Failed to load link types</span>
+              <button
+                onClick={(e) => { e.stopPropagation(); refetch(); }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  fontSize: 12, fontWeight: 500, color: '#0052CC',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: '2px 6px', borderRadius: 3,
+                }}
+                className="hover:bg-[#F4F5F7]"
+              >
+                <RefreshCw size={12} /> Retry
+              </button>
+            </div>
           ) : options.length === 0 ? (
             <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No link types available</div>
           ) : (

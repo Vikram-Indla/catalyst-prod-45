@@ -1,13 +1,17 @@
 /**
  * WorkItemPicker — Async searchable work item selector with:
- *   - Debounced search across ph_issues + ph_work_items
- *   - Paste URL/key detection and auto-resolution
- *   - "Load more" pagination
- *   - Excludes self + already-linked items
- *   - Keyboard accessible
+ *   - Debounced search across ph_issues + ph_work_items (FR-17)
+ *   - Paste URL/key detection and auto-resolution (FR-11)
+ *   - "Load more" pagination (FR-12)
+ *   - Excludes self + already-linked items (FR-13)
+ *   - Keyboard accessible (FR-42)
+ *   - Error state with retry (FR-16)
+ *   - Race condition protection via React Query keying (FR-18)
+ *   - Deterministic empty state (FR-15)
+ *   - aria-live announcements (FR-43)
  */
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, Loader2, Check } from 'lucide-react';
+import { Search, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { searchWorkItemsForLinking, type SearchResultItem } from '@/services/linkedWorkItemsService';
 import { parseWorkItemKey } from '@/lib/parseWorkItemKey';
@@ -67,10 +71,10 @@ export function WorkItemPicker({
     if (autoFocus) setTimeout(() => inputRef.current?.focus(), 50);
   }, [autoFocus]);
 
-  // Debounce search input
+  // Debounce search input (FR-17)
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Check for pasted key/URL
+      // Check for pasted key/URL (FR-11)
       const parsedKey = parseWorkItemKey(search);
       setDebouncedSearch(parsedKey || search);
       setPage(0);
@@ -79,12 +83,13 @@ export function WorkItemPicker({
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Fetch search results
-  const { data: searchData, isLoading, isFetching } = useQuery({
+  // Fetch search results — React Query keying handles race conditions (FR-18)
+  const { data: searchData, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: ['linked-items-picker', debouncedSearch, allExcludeIds.join(','), page],
     queryFn: () => searchWorkItemsForLinking(debouncedSearch, allExcludeIds, PAGE_SIZE, page * PAGE_SIZE),
     enabled: debouncedSearch.trim().length >= 2 && !selected,
     staleTime: 30_000,
+    retry: 1,
   });
 
   // Accumulate paginated results
@@ -138,6 +143,12 @@ export function WorkItemPicker({
       handleSelect(allResults[focusIdx]);
     } else if (e.key === 'Escape' && selected) {
       handleClear();
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      setFocusIdx(0);
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      setFocusIdx(allResults.length - 1);
     }
   };
 
@@ -150,15 +161,31 @@ export function WorkItemPicker({
 
   const showResults = !selected && debouncedSearch.length >= 2;
 
+  // Build aria-live status message (FR-43)
+  const statusMessage = isLoading
+    ? 'Searching...'
+    : isError
+    ? 'Search failed'
+    : showResults && allResults.length === 0
+    ? 'No matching work items'
+    : showResults
+    ? `${allResults.length} results found`
+    : '';
+
   return (
     <div className="relative flex-1">
+      {/* aria-live status region (FR-43) */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {statusMessage}
+      </div>
+
       {/* Search input */}
       <div
         className="flex items-center gap-1.5 rounded"
         style={{
           height: 36,
           padding: '0 10px',
-          border: '2px solid #4C9AFF',
+          border: isError ? '2px solid #DE350B' : '2px solid #4C9AFF',
           borderRadius: 3,
           background: 'var(--cp-float, #fff)',
         }}
@@ -171,6 +198,9 @@ export function WorkItemPicker({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label="Search work items"
+          aria-autocomplete="list"
+          aria-controls={showResults ? 'work-item-picker-results' : undefined}
+          aria-activedescendant={focusIdx >= 0 ? `picker-option-${focusIdx}` : undefined}
           className="flex-1 text-[14px] outline-none bg-transparent"
           style={{ color: '#172B4D', fontFamily: 'Inter, sans-serif' }}
         />
@@ -190,6 +220,7 @@ export function WorkItemPicker({
       {/* Results dropdown */}
       {showResults && (
         <div
+          id="work-item-picker-results"
           ref={listRef}
           role="listbox"
           aria-label="Search results"
@@ -205,20 +236,45 @@ export function WorkItemPicker({
             overflowY: 'auto',
           }}
         >
-          {allResults.length === 0 && !isLoading && !isFetching && (
-            <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: '#6B778C' }}>
-              No items found
+          {/* FR-16: Error state with retry */}
+          {isError && (
+            <div style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <AlertCircle size={14} color="#DE350B" />
+              <span style={{ flex: 1, fontSize: 13, color: '#DE350B' }}>
+                Search failed: {(error as Error)?.message || 'Unknown error'}
+              </span>
+              <button
+                onClick={() => refetch()}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  fontSize: 12, fontWeight: 500, color: '#0052CC',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  padding: '2px 6px', borderRadius: 3,
+                }}
+                className="hover:bg-[#F4F5F7]"
+              >
+                <RefreshCw size={12} /> Retry
+              </button>
             </div>
           )}
 
-          {allResults.map((item, i) => {
+          {/* FR-15: deterministic empty state */}
+          {!isError && allResults.length === 0 && !isLoading && !isFetching && (
+            <div style={{ padding: '16px', textAlign: 'center', fontSize: 13, color: '#6B778C' }}>
+              No matching work items
+            </div>
+          )}
+
+          {!isError && allResults.map((item, i) => {
             const statusStyle = getStatusStyle(item.status_category);
             const isFocused = focusIdx === i;
             return (
               <div
                 key={item.id}
+                id={`picker-option-${i}`}
                 data-result
                 role="option"
+                aria-selected={isFocused}
                 onClick={() => handleSelect(item)}
                 onMouseEnter={() => setFocusIdx(i)}
                 style={{
@@ -283,7 +339,7 @@ export function WorkItemPicker({
             );
           })}
 
-          {/* Load more */}
+          {/* Load more (FR-12) */}
           {hasMore && (
             <button
               onClick={handleLoadMore}
