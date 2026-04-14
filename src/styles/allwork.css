@@ -802,19 +802,21 @@
 
 /* Nav arrows (#12) */
 .awNavArrow {
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--aw-border);
-  border-radius: 4px;
-  background: var(--aw-bg);
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid #DFE1E6;
+  border-radius: 6px;
+  background: #FFFFFF;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--aw-text-subtle);
+  color: #42526E;
   padding: 0;
+  transition: background 120ms, border-color 120ms, color 120ms;
 }
-.awNavArrow:hover { background: var(--aw-hover); color: var(--aw-text); }
+.awNavArrow:hover { background: #F4F5F7; border-color: #C1C7D0; color: #172B4D; }
+.awNavArrow svg { width: 18px !important; height: 18px !important; stroke-width: 2.5; }
 
 /* Description content (#26) */
 .awDescriptionContent {
@@ -1594,8 +1596,8 @@
 .dark .awRow.awRowSelected { background: rgba(12,102,228,0.12); }
 .dark .awSearch { background-color: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
 .dark .awChip, .dark .awPill { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .awNavArrow { background: #1A1A1A; border-color: #2E2E2E; color: #878787; }
-.dark .awNavArrow:hover { background: #1F1F1F; color: #EDEDED; }
+.dark .awNavArrow { background: #1A1A1A; border-color: #454545; color: #A1A1A1; }
+.dark .awNavArrow:hover { background: #1F1F1F; border-color: #555; color: #EDEDED; }
 .dark .awCollapseBtn { background: #1A1A1A; border-color: #2E2E2E; }
 .dark .awIssueTitle { color: #EDEDED; }
 .dark .awRowTitle { color: #EDEDED; }
