@@ -8,6 +8,7 @@ import { ChevronDown, ArrowUpNarrowWide, ArrowDownNarrowWide, RotateCcw } from '
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import type { AllWorkItem } from '@/types/allwork.types';
 
 /* ── Avatar helpers ── */
@@ -268,7 +269,11 @@ export function IssueListPanel({
                   <div className="jlpCardFooter">
                     <div className="jlpCardMeta">
                       <JiraIssueTypeIcon type={item.issue_type} size={16} />
-                      <span className="jlpCardKey">{item.issue_key}</span>
+                      <IssueKeyLink
+                        issueKey={item.issue_key}
+                        className="jlpCardKey"
+                        style={{ color: '#0052CC', textDecoration: 'none' }}
+                      />
                     </div>
                     {item.assignee_display_name ? (
                       avatarUrl ? (

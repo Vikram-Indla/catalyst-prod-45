@@ -60,6 +60,7 @@ import { LinkedIssuesSection } from './story-detail-modules';
 import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels } from './story-detail-modules';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
+import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
@@ -614,7 +615,7 @@ export default function StoryDetailModal({
               )}
               <span style={{ color: '#C1C7D0', fontSize: 12 }}>/</span>
               <IssueIcon type={issue?.issue_type ?? 'Story'} size={14} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84' }}>{issue?.issue_key ?? '—'}</span>
+              <IssueKeyLink issueKey={issue?.issue_key ?? '—'} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#0052CC', textDecoration: 'none' }} />
             </div>
 
             {/* Right actions */}
