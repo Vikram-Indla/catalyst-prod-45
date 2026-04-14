@@ -190,6 +190,11 @@ export function IssueContentView({
   const [descEditMode, setDescEditMode] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showConvertWizard, setShowConvertWizard] = useState(false);
+  const [showFlagDialog, setShowFlagDialog] = useState(false);
+  const [showCloneWizard, setShowCloneWizard] = useState(false);
+  const [showMoveWizard, setShowMoveWizard] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
   // Status update mutation
