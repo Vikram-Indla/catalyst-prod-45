@@ -60,6 +60,7 @@ import { LinkedIssuesSection } from './story-detail-modules';
 import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels } from './story-detail-modules';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
+import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
