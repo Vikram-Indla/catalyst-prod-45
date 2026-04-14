@@ -466,6 +466,18 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
           issueId={issueId}
           onClose={() => setShowAdd(false)}
           onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }}
+          onCreateNew={() => { setShowAdd(false); setShowCreateModal(true); }}
+        />
+      )}
+
+      {/* Create linked work item modal — reuses existing Catalyst create flow */}
+      {showCreateModal && projectData && (
+        <CreateWorkItemModal
+          open={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          projectId={projectData.id}
+          projectKey={projectData.key}
+          onCreated={handleCreatedItem}
         />
       )}
     </SectionBlock>
