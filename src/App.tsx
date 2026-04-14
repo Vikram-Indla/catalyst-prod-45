@@ -92,6 +92,9 @@ const App = () => (
                   <Route path="/cleanup" element={<S><CleanupPage /></S>} />
                   <Route path="/audit-trail" element={<S><AuditTrailPage /></S>} />
 
+                  {/* Full-screen issue view — inside shell, sidebar auto-collapsed */}
+                  <Route path="/issue/:issueKey" element={<S><IssueFullPage /></S>} />
+
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
                     <Route path="/*" element={<S><FullAppRoutes /></S>} />

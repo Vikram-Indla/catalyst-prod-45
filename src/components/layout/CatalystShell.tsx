@@ -110,6 +110,9 @@ function CatalystShellContent() {
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
   const isProjectHubAllWorkRoute = location.pathname.includes('/hierarchy/allwork');
 
+  // Check if on full-screen issue view (/issue/:issueKey)
+  const isIssueFullPageRoute = location.pathname.startsWith('/issue/');
+
 
   // Check if on Wiki route
   const isWikiRoute = location.pathname.startsWith('/wiki');
