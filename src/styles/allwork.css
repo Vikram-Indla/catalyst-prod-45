@@ -584,6 +584,7 @@
   flex-shrink: 0;
   overflow-y: auto;
   padding: 0;
+  background: #FFFFFF;
 }
 .awDetailsSidebar.collapsed { display: none; }
 

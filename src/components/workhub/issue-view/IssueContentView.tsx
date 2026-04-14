@@ -516,25 +516,18 @@ export function IssueContentView({
 
       {/* ══ RIGHT: Details sidebar (collapsible) ══ */}
       <div className={`awDetailsSidebar ${sidebarOpen ? '' : 'collapsed'}`}>
-        {/* Status pill + #14 watcher + #15 share + #16 more menu + #19 issue type badge */}
+        {/* Status pill + watcher + share (copy link) + more menu */}
         <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} />
-          {/* #19: Issue type badge next to status */}
-          {item?.issue_type && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, color: 'var(--aw-text-subtle)', border: '1px solid var(--aw-border)', borderRadius: 4, padding: '2px 8px', height: 24 }}>
-              <JiraIssueTypeIcon type={item.issue_type} size={14} />
-              {item.issue_type}
-            </span>
-          )}
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-            {/* #14: Watcher count */}
+            {/* Watcher count */}
             <button className="awPill" style={{ padding: '0 6px', height: 22, gap: 3 }}>
               <Eye style={{ width: 14, height: 14 }} />
               <span style={{ fontSize: 11, fontWeight: 600 }}>1</span>
             </button>
-            {/* #15: Share button */}
-            <button className="awPill" style={{ padding: '0 4px', height: 22 }}><Share2 style={{ width: 14, height: 14 }} /></button>
-            {/* #16: More menu */}
+            {/* Share — copies current URL */}
+            <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); import('sonner').then(m => m.toast.success('Link copied')); }}><Share2 style={{ width: 14, height: 14 }} /></button>
+            {/* More menu */}
             <button className="awPill" style={{ padding: '0 4px', height: 22 }}><MoreHorizontal style={{ width: 14, height: 14 }} /></button>
           </span>
         </div>
