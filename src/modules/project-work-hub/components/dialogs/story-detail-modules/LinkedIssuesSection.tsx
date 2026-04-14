@@ -467,7 +467,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                       if (target.id) {
                         // catalyst_issues item — open in modal
                         const targetProjectKey = target.project_key || target.issue_key?.split('-')[0] || derivedProjectKey;
-                        setOpenedItem({ id: target.id, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey });
+                        setOpenedItem({ id: target.id, issueKey: target.issue_key, issueType: target.issue_type, projectKey: targetProjectKey, projectId: target.project_id });
                       } else {
                         // ph_issues item — navigate to full page
                         navigate(`/issue/${target.issue_key}`);
