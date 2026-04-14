@@ -26,11 +26,13 @@ serve(async (req) => {
     }
 
     // 1. Fetch the source issue
-    const { data: source } = await supabase.from("ph_issues")
-      .select("issue_key, summary, description, issue_type, project_key, labels, status")
+    const { data: source, error: srcError } = await supabase.from("ph_issues")
+      .select("issue_key, summary, issue_type, project_key, labels, status")
       .eq("issue_key", issueKey)
       .is("jira_removed_at", null)
       .single();
+    
+    console.log("Source:", source?.issue_key, "Error:", srcError?.message);
 
     if (!source?.summary) {
       return new Response(JSON.stringify({ suggestions: [] }), {
