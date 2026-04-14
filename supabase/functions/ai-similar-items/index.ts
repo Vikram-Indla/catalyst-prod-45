@@ -49,7 +49,7 @@ serve(async (req) => {
       .order("jira_updated_at", { ascending: false, nullsFirst: false })
       .limit(200);
 
-    console.log("Candidates found:", candidates?.length, "Error:", candError?.message);
+    
 
     if (!candidates?.length) {
       return new Response(JSON.stringify({ suggestions: [] }), {
