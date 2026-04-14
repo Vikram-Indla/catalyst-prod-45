@@ -198,6 +198,55 @@ export function IssueContentView({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
+  const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
+  const [epicSearchTerm, setEpicSearchTerm] = useState('');
+
+  // Derive project key from issue key (e.g. "BAU-5364" → "BAU")
+  const projectKey = issueKey?.split('-')[0] ?? '';
+
+  // Recent epics for breadcrumb "Add/Change parent"
+  const { data: recentEpics = [] } = useQuery({
+    queryKey: ['ph-recent-epics-aw', projectKey],
+    enabled: !!projectKey,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status_category')
+        .eq('project_key', projectKey)
+        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
+        .neq('status_category', 'done')
+        .order('jira_updated_at', { ascending: false })
+        .limit(5);
+      return data || [];
+    },
+    staleTime: 60000,
+  });
+
+  // All epics for "View all epics" panel
+  const { data: allEpics = [] } = useQuery({
+    queryKey: ['ph-all-epics-aw', projectKey],
+    enabled: !!projectKey && showAddEpicPanel,
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status_category')
+        .eq('project_key', projectKey)
+        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
+        .order('jira_updated_at', { ascending: false })
+        .limit(100);
+      return data || [];
+    },
+    staleTime: 60000,
+  });
+
+  const handleBreadcrumbParentChange = useCallback(async (newParentKey: string | null) => {
+    if (!item?.id) return;
+    await (supabase.from('ph_issues') as any)
+      .update({ parent_key: newParentKey })
+      .eq('issue_key', issueKey ?? item?.issue_key);
+    await supabase.from('jira_write_back_queue').insert({ ph_issue_id: item.id, field_name: 'parent', new_value: newParentKey ?? '', status: 'approved' } as any);
+    queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+    queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+    queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+  }, [item?.id, issueKey, item?.issue_key, queryClient]);
 
   // Status update mutation
   const updateStatusMutation = useMutation({
@@ -226,10 +275,6 @@ export function IssueContentView({
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setCollapsed(s => ({ ...s, [id]: !s[id] }));
-
-  // Derive project key from issue key (e.g. "BAU-5364" → "BAU")
-  const projectKey = issueKey?.split('-')[0] ?? '';
-
   // Attachments query — wired to ph_attachments table
   const { data: attachments = [] } = useQuery({
     queryKey: ['ph-attachments', item?.id],
