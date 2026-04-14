@@ -396,12 +396,12 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
     }>
       {/* AI Link Similar panel */}
       <AiLinkSimilarPanel
-        issueKey={issueId}
+        issueKey={issueKey}
         existingLinkedKeys={links.map((l: any) => {
           const target = l.target;
           return target?.issue_key ?? '';
         }).filter(Boolean)}
-        onLinked={() => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] })}
+        onLinked={() => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] })}
       />
 
       {isLoading && <SkeletonRows />}
@@ -487,9 +487,9 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
 
       {showAdd && (
         <AddLinkRow
-          issueId={issueId}
+          issueKey={issueKey}
           onClose={() => setShowAdd(false)}
-          onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }}
+          onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] }); setShowAdd(false); }}
           onCreateNew={() => { setShowAdd(false); setShowCreateModal(true); }}
           existingLinkedKeys={new Set(links.map((l: any) => l.target?.issue_key).filter(Boolean))}
         />
@@ -503,12 +503,12 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
           projectId={projectData.id}
           projectKey={projectData.key}
           linkedSource={{
-            issueKey: issueId,
+            issueKey: issueKey,
             linkType: createLinkType,
             locked: true,
           }}
           onSuccess={(newKey) => {
-            queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+            queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
             setShowCreateModal(false);
           }}
         />
