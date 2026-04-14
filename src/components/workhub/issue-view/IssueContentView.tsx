@@ -709,6 +709,22 @@ export function IssueContentView({
             </div>
             {!collapsed.keydetails && (
               <div className="awSectionBody">
+                {/* Priority — canonical EditablePriority */}
+                <div className="awKeyDetailRow">
+                  <div className="awKeyDetailLabel">Priority</div>
+                  <div className="awKeyDetailValue" style={{ overflow: 'visible' }}>
+                    {item?.id ? (
+                      <EditablePriority
+                        issueId={item.id}
+                        issueKey={issueKey ?? item?.issue_key}
+                        currentPriority={item.priority ?? 'Medium'}
+                        onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: 14, color: '#172B4D' }}>Medium</span>
+                    )}
+                  </div>
+                </div>
                 {/* Parent — editable via canonical ParentFieldPicker */}
                 <div className="awKeyDetailRow">
                   <div className="awKeyDetailLabel">Parent</div>
@@ -1269,22 +1285,6 @@ export function IssueContentView({
                 )}
               </div>
 
-              {/* Priority — Jira parity: SVG icon + dark text, click-to-edit */}
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
-                {item?.id ? (
-                  <EditablePriority
-                    issueId={item.id}
-                    issueKey={issueKey ?? item.issue_key}
-                    currentPriority={item.priority ?? 'Medium'}
-                    onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
-                  />
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px' }}>
-                    <span style={{ fontSize: 14, color: '#172B4D' }}>Medium</span>
-                  </div>
-                )}
-              </div>
 
               {/* Reporter — Jira parity: 28px avatar + 14px name */}
               <div style={{ marginBottom: 14 }}>
