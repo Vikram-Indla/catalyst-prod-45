@@ -28,6 +28,7 @@ import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/st
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
+import { FlagDialog, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
@@ -189,6 +190,11 @@ export function IssueContentView({
   const [descEditMode, setDescEditMode] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showConvertWizard, setShowConvertWizard] = useState(false);
+  const [showFlagDialog, setShowFlagDialog] = useState(false);
+  const [showCloneWizard, setShowCloneWizard] = useState(false);
+  const [showMoveWizard, setShowMoveWizard] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
   // Status update mutation
@@ -793,36 +799,43 @@ export function IssueContentView({
                   boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
                   border: '1px solid #DFE1E6', padding: '4px 0',
                 }}>
-                  {[
-                    { label: 'Add flag', action: () => { toast.info('Flag added'); setMoreMenuOpen(false); } },
-                  ].map(({ label, action }) => (
-                    <button key={label} onClick={action} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
-                      onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
-                      onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-                    >{label}</button>
-                  ))}
+                  {/* Add flag */}
+                  <button onClick={() => { setShowFlagDialog(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                    onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                  >Add flag</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
-                  {/* Convert to Subtask — only for non-subtask types */}
+                  {/* Convert to Subtask */}
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
-                    <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                    <button onClick={() => { setShowConvertWizard(true); setMoreMenuOpen(false); }}
+                      style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                       onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                       onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                     >Convert to Subtask</button>
                   )}
-                  <button onClick={() => { toast.info('Issue cloned'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Clone */}
+                  <button onClick={() => { setShowCloneWizard(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Clone</button>
-                  <button onClick={() => { toast.info('Move not implemented'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Move */}
+                  <button onClick={() => { setShowMoveWizard(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Move</button>
-                  <button onClick={() => { toast.info('Archived'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Archive */}
+                  <button onClick={() => { setShowArchiveDialog(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Archive</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
-                  <button onClick={() => { toast.error('Delete not implemented'); setMoreMenuOpen(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#DE350B', background: 'transparent', border: 'none', cursor: 'pointer' }}
+                  {/* Delete */}
+                  <button onClick={() => { setShowDeleteDialog(true); setMoreMenuOpen(false); }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#DE350B', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#FFEBE6')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
                   >Delete</button>
@@ -1014,6 +1027,23 @@ export function IssueContentView({
           projectKey={projectKey}
           onClose={() => setShowConvertWizard(false)}
         />
+      )}
+
+      {/* Action dialogs */}
+      {showFlagDialog && item?.id && (
+        <FlagDialog issueId={item.id} issueKey={issueKey ?? ''} isFlagged={!!(item as any).flagged} onClose={() => setShowFlagDialog(false)} />
+      )}
+      {showCloneWizard && item?.id && (
+        <CloneWizard issueId={item.id} issueKey={issueKey ?? ''} item={item} projectKey={projectKey} onClose={() => setShowCloneWizard(false)} />
+      )}
+      {showMoveWizard && item?.id && (
+        <MoveWizard issueId={item.id} issueKey={issueKey ?? ''} item={item} projectKey={projectKey} onClose={() => setShowMoveWizard(false)} />
+      )}
+      {showArchiveDialog && item?.id && (
+        <ArchiveDialog issueId={item.id} issueKey={issueKey ?? ''} onClose={() => setShowArchiveDialog(false)} />
+      )}
+      {showDeleteDialog && item?.id && (
+        <DeleteDialog issueId={item.id} issueKey={issueKey ?? ''} onClose={() => setShowDeleteDialog(false)} />
       )}
     </div>
   );
