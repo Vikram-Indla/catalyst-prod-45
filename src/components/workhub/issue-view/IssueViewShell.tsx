@@ -4,6 +4,7 @@
  * Left: issue list | Right: issue view (content + collapsible Details sidebar)
  */
 import { useState, useCallback, useEffect, useMemo } from 'react';
+import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { useIssueViewData } from '@/hooks/workhub/useIssueViewData';
@@ -14,6 +15,9 @@ import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBa
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { PriorityBars } from '@/components/shared/PriorityIndicator';
 
 interface Props {
   projectKey: string;
