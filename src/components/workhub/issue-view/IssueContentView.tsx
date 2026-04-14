@@ -489,19 +489,22 @@ export function IssueContentView({
                     <span>{capitalize(item?.priority ?? 'Medium')}</span>
                   </div>
                 </div>
-                {/* Parent */}
+                {/* Parent — editable via canonical ParentFieldPicker */}
                 <div className="awKeyDetailRow">
                   <div className="awKeyDetailLabel">Parent</div>
-                  <div className="awKeyDetailValue">
-                    {(parentItem || item?.parent_key) ? (
-                      <>
-                        <JiraIssueTypeIcon type={parentItem?.issue_type ?? 'epic'} size={14} />
-                        <span style={{ color: '#1868DB', cursor: 'pointer' }}>{parentItem?.issue_key ?? item?.parent_key}</span>
-                        {parentItem?.summary && <span style={{ color: '#505258', marginLeft: 4 }}>{parentItem.summary}</span>}
-                      </>
-                    ) : (
-                      <span className="awFieldNone" style={{ cursor: 'pointer' }}>Select parent</span>
-                    )}
+                  <div className="awKeyDetailValue" style={{ overflow: 'visible' }}>
+                    <ParentFieldPicker
+                      storyKey={issueKey ?? item?.issue_key ?? ''}
+                      parentKey={item?.parent_key ?? null}
+                      projectKey={projectKey}
+                      onParentChange={async (newParentKey) => {
+                        await (supabase.from('ph_issues') as any)
+                          .update({ parent_key: newParentKey })
+                          .eq('issue_key', issueKey ?? item?.issue_key);
+                        queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                        queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                      }}
+                    />
                   </div>
                 </div>
               </div>
