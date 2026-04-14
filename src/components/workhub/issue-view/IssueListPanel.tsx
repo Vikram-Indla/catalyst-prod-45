@@ -68,6 +68,7 @@ export function IssueListPanel({
   items = [], loading = false,
 }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('updated');
   const [sortAsc, setSortAsc] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
