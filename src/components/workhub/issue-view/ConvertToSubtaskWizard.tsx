@@ -75,31 +75,49 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   const [subtaskType, setSubtaskType] = useState('Sub-task');
   const [newStatus, setNewStatus] = useState(currentStatus);
 
-  // Search parent issues in same project (non-subtask, not self)
-  const { data: parentCandidates = [], isFetching: searchingParents } = useQuery({
-    queryKey: ['convert-parent-search', projectKey, parentSearch],
-    queryFn: async () => {
-      if (!parentSearch || parentSearch.length < 2) return [];
-      let q = supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status')
-        .neq('issue_type', 'Sub-task')
-        .neq('id', issueId)
-        .limit(15);
-      
-      if (parentSearch.includes('-')) {
-        q = q.ilike('issue_key', `%${parentSearch}%`);
-      } else {
-        q = q.or(`issue_key.ilike.%${parentSearch}%,summary.ilike.%${parentSearch}%`);
-      }
-      // Filter by project key
-      q = q.ilike('issue_key', `${projectKey}-%`);
+  // Child issue types that cannot be parents
+  const CHILD_TYPES = ['Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration'];
 
-      const { data } = await q;
+  // Recent issues (shown on focus before typing — Jira parity)
+  const { data: recentIssues = [] } = useQuery({
+    queryKey: ['convert-recent-issues', projectKey, issueId],
+    queryFn: async () => {
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('project_key', projectKey)
+        .not('issue_type', 'in', `(${CHILD_TYPES.join(',')})`)
+        .neq('id', issueId)
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false })
+        .limit(10);
       return data ?? [];
     },
-    enabled: parentSearch.length >= 2,
+    staleTime: 30_000,
+  });
+
+  // Search parent issues (1+ char, same project, excludes subtask types + self)
+  const { data: searchResults = [], isFetching: searchingParents } = useQuery({
+    queryKey: ['convert-parent-search', projectKey, parentSearch],
+    queryFn: async () => {
+      const q = parentSearch.trim().toLowerCase();
+      const { data } = await supabase.from('ph_issues')
+        .select('id, issue_key, summary, issue_type, status, status_category')
+        .eq('project_key', projectKey)
+        .not('issue_type', 'in', `(${CHILD_TYPES.join(',')})`)
+        .neq('id', issueId)
+        .is('deleted_at', null)
+        .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
+        .order('jira_updated_at', { ascending: false })
+        .limit(15);
+      return data ?? [];
+    },
+    enabled: parentSearch.trim().length >= 1,
     staleTime: 10_000,
   });
+
+  // Show search results if typing, otherwise show recent issues
+  const parentCandidates = parentSearch.trim().length >= 1 ? searchResults : recentIssues;
+  const showDropdown = !selectedParentId && (parentSearch.trim().length >= 1 || parentCandidates.length > 0);
 
   // All statuses from the STATUS_OPTION_GROUPS
   const allStatuses = useMemo(() => STATUS_OPTION_GROUPS.flatMap(g => g.statuses), []);
@@ -225,18 +243,32 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                       />
                       {searchingParents && <Loader2 size={14} className="animate-spin" style={{ color: '#6B778C' }} />}
                     </div>
-                    {parentCandidates.length > 0 && (
-                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: '#fff', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,.15)', zIndex: 10, maxHeight: 200, overflowY: 'auto' }}>
-                        {parentCandidates.map((p: any) => (
-                          <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13 }}
-                            onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
-                            onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-                          >
-                            <JiraIssueTypeIcon type={p.issue_type} size={16} />
-                            <span style={{ fontWeight: 600, color: '#0C66E4' }}>{p.issue_key}</span>
-                            <span style={{ color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.summary}</span>
-                          </button>
-                        ))}
+                    {showDropdown && (
+                      <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 2, background: '#fff', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 8px 16px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.31)', zIndex: 10, maxHeight: 280, overflowY: 'auto' }}>
+                        {/* Section label */}
+                        {parentSearch.trim().length === 0 && parentCandidates.length > 0 && (
+                          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Recent issues</div>
+                        )}
+                        {parentCandidates.length > 0 ? parentCandidates.map((p: any) => {
+                          const cat = (p.status_category ?? '').toLowerCase();
+                          const lozBg = cat.includes('done') ? '#E3FCEF' : cat.includes('progress') ? '#DEEBFF' : '#DFE1E6';
+                          const lozColor = cat.includes('done') ? '#006644' : cat.includes('progress') ? '#0747A6' : '#253858';
+                          return (
+                            <button key={p.id} onClick={() => selectParent(p)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', width: '100%', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 13, borderBottom: '1px solid #F4F5F7' }}
+                              onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
+                              onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
+                            >
+                              <JiraIssueTypeIcon type={p.issue_type} size={16} />
+                              <span style={{ fontWeight: 600, color: '#0C66E4', flexShrink: 0 }}>{p.issue_key}</span>
+                              <span style={{ color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>{p.summary}</span>
+                              <span style={{ display: 'inline-block', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em', padding: '2px 6px', borderRadius: 3, background: lozBg, color: lozColor, flexShrink: 0, whiteSpace: 'nowrap' }}>{p.status}</span>
+                            </button>
+                          );
+                        }) : (
+                          <div style={{ padding: '16px 12px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>
+                            {searchingParents ? 'Searching...' : 'No matching issues found'}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
