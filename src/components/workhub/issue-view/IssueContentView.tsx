@@ -11,8 +11,7 @@ import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
-import { SubtasksPanel } from './sections/SubtasksPanel';
-import { LocalStorageBackedProvider } from '@/lib/subtasks-provider';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 
 
 interface Props {
@@ -101,7 +100,7 @@ export function IssueContentView({
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
   const [commentText, setCommentText] = useState('');
   const [posting, setPosting] = useState(false);
-  const subtasksProvider = useMemo(() => new LocalStorageBackedProvider(), []);
+  
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
@@ -240,9 +239,9 @@ export function IssueContentView({
 
           {/* ── Subtasks Panel (#28: actions already in SubtasksPanel) ── */}
           <SubtasksPanel
-            parentKey={issueKey!}
-            provider={subtasksProvider}
-            externalChildren={childItems}
+            storyKey={issueKey!}
+            storyId={item?.id || ''}
+            projectKey={item?.project_key || ''}
           />
 
           {/* ── Linked work items (#29) ── */}
