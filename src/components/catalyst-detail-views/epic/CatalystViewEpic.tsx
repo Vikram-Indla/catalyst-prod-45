@@ -32,13 +32,13 @@ export default function CatalystViewEpic({
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
-      {/* EPIC: Child work items table (Jira-parity with full CRUD) */}
+      {/* EPIC: Child work items (canonical SubtasksPanel) */}
       {issue?.issue_key && (
-        <CatalystChildWorkItemsTable
-          parentKey={issue.issue_key}
-          parentId={issue.id}
+        <SubtasksPanel
+          storyKey={issue.issue_key}
+          storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
-          onOpenItem={onOpenItem}
+          onSubtaskClick={onOpenItem}
         />
       )}
 
