@@ -110,46 +110,50 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   });
 
   return (
-    <div style={{
-      position: 'absolute', top: '100%', left: 0, marginTop: 6,
-      background: '#fff', borderRadius: 8, width: 320, padding: '16px 20px',
-      boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 100,
-      border: '1px solid #DFE1E6',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-        <Flag size={18} color="#DE350B" />
-        <span style={{ fontSize: 16, fontWeight: 700, color: '#172B4D' }}>
-          {flagged ? 'Remove flag' : 'Flag added'}
-        </span>
-      </div>
-      <textarea
-        value={note}
-        onChange={e => setNote(e.target.value)}
-        placeholder={flagged
-          ? 'Optional: let your team know why the flag was removed'
-          : 'Optional: let your team know why this work item has been flagged'}
-        style={{
-          width: '100%', padding: '10px 12px', border: '1px solid #DFE1E6',
-          borderRadius: 4, fontSize: 14, outline: 'none', resize: 'vertical',
-          minHeight: 80, fontFamily: 'Inter, sans-serif', color: '#172B4D',
-          lineHeight: '1.5',
-        }}
-      />
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
-        <button
-          onClick={() => mutation.mutate()}
-          disabled={mutation.isPending}
+    <>
+      {/* Click-outside overlay */}
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, zIndex: 99 }} />
+      <div style={{
+        position: 'absolute', top: '100%', left: 0, marginTop: 6,
+        background: '#fff', borderRadius: 8, width: 320, padding: '16px 20px',
+        boxShadow: '0 8px 28px rgba(9,30,66,0.25)', zIndex: 100,
+        border: '1px solid #DFE1E6',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+          <Flag size={18} color="#DE350B" />
+          <span style={{ fontSize: 16, fontWeight: 700, color: '#172B4D' }}>
+            {flagged ? 'Remove flag' : 'Flag added'}
+          </span>
+        </div>
+        <textarea
+          value={note}
+          onChange={e => setNote(e.target.value)}
+          placeholder={flagged
+            ? 'Optional: let your team know why the flag was removed'
+            : 'Optional: let your team know why this work item has been flagged'}
           style={{
-            padding: '8px 20px', borderRadius: 4, fontSize: 14, fontWeight: 600,
-            cursor: 'pointer', border: 'none', color: '#fff',
-            background: flagged ? '#6B778C' : '#0C66E4',
-            opacity: mutation.isPending ? 0.6 : 1,
+            width: '100%', padding: '10px 12px', border: '1px solid #DFE1E6',
+            borderRadius: 4, fontSize: 14, outline: 'none', resize: 'vertical',
+            minHeight: 80, fontFamily: 'Inter, sans-serif', color: '#172B4D',
+            lineHeight: '1.5',
           }}
-        >
-          {mutation.isPending ? 'Updating...' : flagged ? 'Remove flag' : 'Add comment'}
-        </button>
+        />
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 12 }}>
+          <button
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending}
+            style={{
+              padding: '8px 20px', borderRadius: 4, fontSize: 14, fontWeight: 600,
+              cursor: 'pointer', border: 'none', color: '#fff',
+              background: flagged ? '#6B778C' : '#0C66E4',
+              opacity: mutation.isPending ? 0.6 : 1,
+            }}
+          >
+            {mutation.isPending ? 'Updating...' : flagged ? 'Remove flag' : 'Add comment'}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
