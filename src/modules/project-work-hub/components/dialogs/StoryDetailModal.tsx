@@ -536,9 +536,9 @@ export default function StoryDetailModal({
     try { return JSON.parse(issue.labels as any); } catch { return []; }
   }, [issue?.labels]);
 
-  // Escape key to close modal
+  // Escape key to close modal (not in full-page mode)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || fullPageMode) return;
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
         onClose();
@@ -546,7 +546,7 @@ export default function StoryDetailModal({
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+  }, [isOpen, fullPageMode, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
 
   if (!isOpen) return null;
 
