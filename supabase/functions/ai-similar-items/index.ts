@@ -31,8 +31,8 @@ serve(async (req) => {
       .eq("issue_key", issueKey)
       .is("jira_removed_at", null)
       .single();
-    
-    console.log("Source:", source?.issue_key, "Error:", srcError?.message);
+
+
 
     if (!source?.summary) {
       return new Response(JSON.stringify({ suggestions: [] }), {
