@@ -102,7 +102,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const { data: results = [] } = useQuery({
+  const { data: results = [], isLoading: searchLoading } = useQuery({
     queryKey: ['linkSearch', search],
     queryFn: async () => {
       if (!search.trim()) {
@@ -113,12 +113,28 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
           .limit(8);
         return data ?? [];
       }
-      const { data } = await supabase.from('ph_issues')
+      const term = search.trim();
+      // Search by key prefix OR summary substring
+      let query = supabase.from('ph_issues')
         .select('issue_key, summary, issue_type, status, status_category')
-        .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
+        .is('jira_removed_at', null);
+      
+      // Use separate queries and merge to avoid or() syntax issues
+      const { data: byKey } = await supabase.from('ph_issues')
+        .select('issue_key, summary, issue_type, status, status_category')
         .is('jira_removed_at', null)
+        .ilike('issue_key', `${term}%`)
         .limit(10);
-      return data ?? [];
+      const { data: bySummary } = await supabase.from('ph_issues')
+        .select('issue_key, summary, issue_type, status, status_category')
+        .is('jira_removed_at', null)
+        .ilike('summary', `%${term}%`)
+        .limit(10);
+      
+      // Merge and deduplicate
+      const map = new Map<string, any>();
+      [...(byKey ?? []), ...(bySummary ?? [])].forEach(r => map.set(r.issue_key, r));
+      return Array.from(map.values()).slice(0, 15);
     },
     enabled: true,
   });
