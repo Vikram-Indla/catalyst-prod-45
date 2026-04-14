@@ -303,11 +303,53 @@ export function IssueContentView({
     return () => document.removeEventListener('mousedown', handler);
   }, [showAddMenu]);
 
+  // Direct ph_comments + ph_activity_log queries (canonical — same as Story Detail Modal)
+  const { data: phComments = [] } = useQuery({
+    queryKey: ['ph-comments', item?.id],
+    queryFn: async () => {
+      if (!item?.id) return [];
+      const { data } = await supabase.from('ph_comments')
+        .select('id, work_item_id, body, author_id, created_at, updated_at')
+        .eq('work_item_id', item.id).order('created_at', { ascending: true });
+      if (!data?.length) return [];
+      const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', authorIds);
+      const pm = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(c => ({ ...c, _author_name: pm.get(c.author_id)?.full_name ?? 'Unknown', _author_avatar: pm.get(c.author_id)?.avatar_url ?? null }));
+    },
+    enabled: !!item?.id,
+  });
+
+  const { data: phHistory = [] } = useQuery({
+    queryKey: ['ph-activity', item?.id],
+    queryFn: async () => {
+      if (!item?.id) return [];
+      const { data } = await supabase.from('ph_activity_log')
+        .select('id, work_item_id, action, field_name, old_value, new_value, user_id, created_at')
+        .eq('work_item_id', item.id).order('created_at', { ascending: false });
+      if (!data?.length) return [];
+      const uids = [...new Set(data.map(h => h.user_id).filter(Boolean))];
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', uids);
+      const pm = new Map((profiles ?? []).map(p => [p.id, p]));
+      return data.map(h => ({ ...h, _author_name: pm.get(h.user_id)?.full_name ?? 'System', _author_avatar: pm.get(h.user_id)?.avatar_url ?? null }));
+    },
+    enabled: !!item?.id,
+  });
+
+  const createPhComment = useMutation({
+    mutationFn: async (body: string) => {
+      if (!item?.id || !user?.id) throw new Error('Missing');
+      const { error } = await supabase.from('ph_comments').insert({ work_item_id: item.id, body, author_id: user.id });
+      if (error) throw error;
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-comments', item?.id] }); toast.success('Comment added'); },
+  });
+
   const handleComment = async () => {
-    if (!commentText.trim() || !createComment) return;
+    if (!commentText.trim()) return;
     setPosting(true);
     try {
-      await createComment.mutateAsync({ body: commentText.trim(), authorId: user?.id ?? '' });
+      await createPhComment.mutateAsync(commentText.trim());
       setCommentText('');
       setCommentFocused(false);
     } catch {
@@ -322,18 +364,18 @@ export function IssueContentView({
     { key: 'history', label: 'History' },
   ];
 
-  // Merged + sorted activity feed
+  // Merged + sorted activity feed (ph_comments + ph_activity_log — canonical tables)
   const activityFeed = useMemo(() => {
     const items: { type: 'comment' | 'history' | 'worklog'; data: any; ts: number }[] = [];
     if (activityTab === 'all' || activityTab === 'comments') {
-      comments.forEach((c: any) => items.push({ type: 'comment', data: c, ts: new Date(c.created_at ?? 0).getTime() }));
+      phComments.forEach((c: any) => items.push({ type: 'comment', data: c, ts: new Date(c.created_at ?? 0).getTime() }));
     }
     if (activityTab === 'all' || activityTab === 'history') {
-      historyItems.forEach((h: any) => items.push({ type: 'history', data: h, ts: new Date(h.created_at ?? 0).getTime() }));
+      phHistory.forEach((h: any) => items.push({ type: 'history', data: h, ts: new Date(h.created_at ?? 0).getTime() }));
     }
     items.sort((a, b) => sortDir === 'desc' ? b.ts - a.ts : a.ts - b.ts);
     return items;
-  }, [comments, historyItems, worklogs, activityTab, sortDir]);
+  }, [phComments, phHistory, activityTab, sortDir]);
 
   const fixVersionName = item?.fix_version_name;
 
