@@ -157,7 +157,7 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
       onSuccess();
     },
     onError: (err: any) => {
-      catalystToast.error('Failed to link', { description: err.message });
+      catalystToast.error('Failed to link', err.message);
     },
   });
 
@@ -355,11 +355,11 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
           throw error;
         }
       } else {
-        catalystToast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+        catalystToast.success(`Linked ${newItemKey} to ${issueId}`, `as "${createLinkType}"`);
       }
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
     } catch (err: any) {
-      catalystToast.error(`Created ${newItemKey} but failed to link`, { description: err.message });
+      catalystToast.error(`Created ${newItemKey} but failed to link`, err.message);
     }
     setShowCreateModal(false);
   };
