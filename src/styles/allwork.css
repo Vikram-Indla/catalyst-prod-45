@@ -147,16 +147,19 @@
 
 /* ── Shell: 2 columns (list + issue view) ── */
 .awShell {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: var(--aw-left, 240px) 1px minmax(0, 1fr);
   background: var(--aw-bg);
+  overflow: hidden;
 }
 .awCol {
   min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--aw-bg);
+  overflow-y: auto;
 }
 
 /* Column separator (static 1px line between list and content) */
@@ -501,14 +504,16 @@
 /* ── Issue view: content + collapsible details sidebar ── */
 .awIssueView {
   display: flex;
-  height: 100%;
+  flex: 1;
   min-height: 0;
+  overflow: hidden;
 }
 .awIssueContent {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
+  overflow-y: auto;
 }
 .awIssueContent > .awBody { flex: 1; }
 
