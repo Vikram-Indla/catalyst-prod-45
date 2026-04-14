@@ -207,6 +207,14 @@ export function IssueContentView({
     onError: () => toast.error('Failed to update status'),
   });
 
+  // Close more menu on outside click
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const h = (e: MouseEvent) => { if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) setMoreMenuOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [moreMenuOpen]);
+
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setCollapsed(s => ({ ...s, [id]: !s[id] }));
