@@ -671,7 +671,7 @@ export function IssueContentView({
                   />
                 )}
 
-                <LinkedIssuesSection issueId={item?.id ?? ''} />
+                <LinkedIssuesSection issueId={item?.id ?? ''} issueKey={item?.issue_key ?? ''} />
 
                 {showDefects && (
                   <DefectsSection storyKey={issueKey!} projectKey={projectKey} />
