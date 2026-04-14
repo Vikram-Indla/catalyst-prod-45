@@ -55,6 +55,8 @@ export interface WorkItem {
   sprintName?: string | null;
   resolution?: string | null;
   labels?: string[];
+  is_flagged?: boolean;
+  flag_reason?: string | null;
 }
 
 export interface ProjectInfo {

@@ -109,10 +109,12 @@ function mapPhIssue(row: any): WorkItem {
     sprintName: row.sprint_name ?? null,
     resolution: row.resolution ?? null,
     labels: row.labels ?? [],
+    is_flagged: row.is_flagged ?? false,
+    flag_reason: row.flag_reason ?? null,
   };
 }
 
-const PH_ISSUES_SELECT = 'issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name';
+const PH_ISSUES_SELECT = 'issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason';
 
 /* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {

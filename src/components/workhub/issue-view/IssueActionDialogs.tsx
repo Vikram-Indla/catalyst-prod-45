@@ -65,13 +65,13 @@ export function isFlagged(item: any): boolean {
 }
 
 /* ═══ 1. FLAG POPOVER (Jira inline popover — not a full-screen modal) ═══ */
-export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, tableName = 'ph_work_items' }: {
+export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, tableName = 'ph_issues' }: {
   issueId: string;
   issueKey: string;
   flagged: boolean;
   anchorRef: React.RefObject<HTMLElement | null>;
   onClose: () => void;
-  tableName?: 'ph_work_items' | 'ph_issues';
+  tableName?: string;
 }) {
   const [note, setNote] = useState('');
   const queryClient = useQueryClient();
@@ -79,11 +79,11 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
   const mutation = useMutation({
     mutationFn: async () => {
       const newFlagged = !flagged;
-      // Update flag fields
-      await supabase.from(tableName).update({
+      // Update flag fields on ph_issues
+      await (supabase.from('ph_issues') as any).update({
         is_flagged: newFlagged,
         flag_reason: newFlagged ? (note.trim() || null) : null,
-      } as any).eq('id', issueId);
+      }).eq('id', issueId);
 
       // Build Jira-format comment text
       const commentNote = newFlagged
@@ -101,7 +101,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       queryClient.invalidateQueries({ queryKey: ['project-work-items'] });
       onClose();
