@@ -132,9 +132,9 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
       for (const item of selectedItems) {
         const { error } = await supabase.from('ph_issue_links').insert({
           source_id: issueId,
-          target_id: item.id,
+          target_id: item.item_key,
           link_type: linkType,
-        });
+        } as any);
         if (error) throw error;
       }
     },
