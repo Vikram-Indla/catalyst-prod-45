@@ -82,14 +82,27 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   const { data: recentIssues = [] } = useQuery({
     queryKey: ['convert-recent', projectKey, issueId],
     queryFn: async () => {
-      // Simple: get all recent issues from this project
-      const { data } = await supabase
+      // Try project_key column first, fallback to issue_key prefix
+      let data: any[] | null = null;
+      const { data: d1 } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
-        .like('issue_key', `${projectKey}-%`)
+        .eq('project_key', projectKey)
         .neq('id', issueId)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(50);
+      data = d1;
+      // Fallback: if project_key column returned nothing, try issue_key prefix
+      if (!data?.length) {
+        const { data: d2 } = await supabase
+          .from('ph_issues')
+          .select('id, issue_key, summary, issue_type, status, status_category')
+          .ilike('issue_key', `${projectKey}-%`)
+          .neq('id', issueId)
+          .order('jira_updated_at', { ascending: false, nullsFirst: false })
+          .limit(50);
+        data = d2;
+      }
       const rows = (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()));
       return rows.slice(0, 10);
     },
@@ -102,19 +115,19 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
     queryKey: ['convert-search', projectKey, parentSearch],
     queryFn: async () => {
       const q = parentSearch.trim();
-      // Try key match first
+      // Key match
       const { data: keyData } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
-        .like('issue_key', `${projectKey}-%`)
+        .eq('project_key', projectKey)
         .neq('id', issueId)
         .ilike('issue_key', `%${q}%`)
         .limit(15);
-      // Then summary match
+      // Summary match
       const { data: sumData } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category')
-        .like('issue_key', `${projectKey}-%`)
+        .eq('project_key', projectKey)
         .neq('id', issueId)
         .ilike('summary', `%${q}%`)
         .limit(15);
