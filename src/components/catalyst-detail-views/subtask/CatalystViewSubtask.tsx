@@ -62,7 +62,7 @@ export default function CatalystViewSubtask({
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
-      <LinkedIssuesSection issueId={itemId} />
+      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );

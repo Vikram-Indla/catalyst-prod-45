@@ -46,7 +46,7 @@ export default function CatalystViewFeature({
         />
       )}
 
-      <LinkedIssuesSection issueId={itemId} />
+      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );

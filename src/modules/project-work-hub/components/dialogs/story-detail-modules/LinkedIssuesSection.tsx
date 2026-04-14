@@ -80,7 +80,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
 }
 
 /* ── Add Link Row (Jira-parity, multi-select) ── */
-function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKeys = new Set() }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void; existingLinkedKeys?: Set<string> }) {
+function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedKeys = new Set() }: { issueKey: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void; existingLinkedKeys?: Set<string> }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
@@ -130,7 +130,7 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
   // Filter out already-selected AND already-linked items from results
   const filteredResults = results.filter((r: any) =>
     !selectedItems.some(s => s.item_key === r.issue_key) &&
-    r.issue_key !== issueId &&
+    r.issue_key !== issueKey &&
     !existingLinkedKeys.has(r.issue_key)
   );
 
@@ -141,7 +141,7 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
       if (!user) throw new Error('Not authenticated');
       for (const item of selectedItems) {
         const { error } = await supabase.from('ph_issue_links').insert({
-          source_id: issueId,
+          source_id: issueKey,
           target_id: item.item_key,
           link_type: linkType,
           created_by: user.id,
@@ -292,14 +292,17 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
 }
 
 /* ── Main Section ── */
-export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; projectKey?: string }) {
+export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKey }: { issueId: string; issueKey?: string; projectKey?: string }) {
+  // ph_issue_links stores issue_keys (e.g. "BAU-4511"), not UUIDs.
+  // Use issueKey for all ph_issue_links operations; fall back to issueId for legacy callers.
+  const issueKey = issueKeyProp || issueId;
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createLinkType, setCreateLinkType] = useState('relates to');
 
   // Resolve projectId (UUID) from projectKey for CreateWorkItemModal
-  const derivedProjectKey = projectKey || issueId.split('-')[0];
+  const derivedProjectKey = projectKey || issueKey.split('-')[0];
   const { data: projectData } = useQuery({
     queryKey: ['projectByKey', derivedProjectKey],
     queryFn: async () => {
@@ -314,22 +317,22 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
   });
 
   const { data: links = [], isLoading } = useQuery({
-    queryKey: ['linkedIssues', issueId],
+    queryKey: ['linkedIssues', issueKey],
     queryFn: async () => {
       const { data: rawLinks, error } = await supabase.from('ph_issue_links')
         .select('id, link_type, created_at, source_id, target_id')
-        .or(`source_id.eq.${issueId},target_id.eq.${issueId}`)
+        .or(`source_id.eq.${issueKey},target_id.eq.${issueKey}`)
         .order('created_at', { ascending: false });
       if (error) throw error;
       if (!rawLinks?.length) return [];
-      const targetKeys = rawLinks.map(l => l.source_id === issueId ? l.target_id : l.source_id);
+      const targetKeys = rawLinks.map(l => l.source_id === issueKey ? l.target_id : l.source_id);
       const { data: targets } = await supabase.from('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
         .in('issue_key', targetKeys)
         .is('jira_removed_at', null);
       const targetMap = new Map((targets ?? []).map((t: any) => [t.issue_key, t]));
       return rawLinks.map(l => {
-        const key = l.source_id === issueId ? l.target_id : l.source_id;
+        const key = l.source_id === issueKey ? l.target_id : l.source_id;
         return { ...l, target: targetMap.get(key) };
       }).filter(l => l.target) as any[];
     },
@@ -338,7 +341,7 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
   const removeMutation = useMutation({
     mutationFn: async (linkId: string) => { const { error } = await supabase.from('ph_issue_links').delete().eq('id', linkId); if (error) throw error; },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
       catalystToast.success('Link removed');
     },
   });
@@ -349,21 +352,21 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
       const { error } = await supabase.from('ph_issue_links').insert({
-        source_id: issueId,
+        source_id: issueKey,
         target_id: newItemKey,
         link_type: createLinkType,
         created_by: user.id,
       } as any);
       if (error) {
         if (error.code === '23505' || error.message?.includes('unique_link')) {
-          catalystToast.info(`${newItemKey} already linked to ${issueId}`);
+          catalystToast.info(`${newItemKey} already linked to ${issueKey}`);
         } else {
           throw error;
         }
       } else {
-        catalystToast.success(`Linked ${newItemKey} to ${issueId}`, `as "${createLinkType}"`);
+        catalystToast.success(`Linked ${newItemKey} to ${issueKey}`, `as "${createLinkType}"`);
       }
-      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+      queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
     } catch (err: any) {
       catalystToast.error(`Created ${newItemKey} but failed to link`, err.message);
     }
@@ -393,12 +396,12 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
     }>
       {/* AI Link Similar panel */}
       <AiLinkSimilarPanel
-        issueKey={issueId}
+        issueKey={issueKey}
         existingLinkedKeys={links.map((l: any) => {
           const target = l.target;
           return target?.issue_key ?? '';
         }).filter(Boolean)}
-        onLinked={() => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] })}
+        onLinked={() => queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] })}
       />
 
       {isLoading && <SkeletonRows />}
@@ -484,9 +487,9 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
 
       {showAdd && (
         <AddLinkRow
-          issueId={issueId}
+          issueKey={issueKey}
           onClose={() => setShowAdd(false)}
-          onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }}
+          onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] }); setShowAdd(false); }}
           onCreateNew={() => { setShowAdd(false); setShowCreateModal(true); }}
           existingLinkedKeys={new Set(links.map((l: any) => l.target?.issue_key).filter(Boolean))}
         />
@@ -500,12 +503,12 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
           projectId={projectData.id}
           projectKey={projectData.key}
           linkedSource={{
-            issueKey: issueId,
+            issueKey: issueKey,
             linkType: createLinkType,
             locked: true,
           }}
           onSuccess={(newKey) => {
-            queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
+            queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] });
             setShowCreateModal(false);
           }}
         />
