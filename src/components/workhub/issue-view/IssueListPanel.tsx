@@ -203,14 +203,16 @@ export function IssueListPanel({
           {sortMenuOpen && (
             <div className="jlpSortMenu">
               <div className="jlpSortMenuTitle">Order work items by</div>
-              {SORT_OPTIONS.map(opt => (
+              {SORT_OPTIONS.filter(o => o.group === 'order').map(opt => (
                 <label key={opt.key} className="jlpSortOption">
-                  <input
-                    type="radio"
-                    name="sort"
-                    checked={sortKey === opt.key}
-                    onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }}
-                  />
+                  <input type="radio" name="sort" checked={sortKey === opt.key} onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }} />
+                  {opt.label}
+                </label>
+              ))}
+              <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
+              {SORT_OPTIONS.filter(o => o.group === 'extra').map(opt => (
+                <label key={opt.key} className="jlpSortOption">
+                  <input type="radio" name="sort" checked={sortKey === opt.key} onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }} />
                   {opt.label}
                 </label>
               ))}
