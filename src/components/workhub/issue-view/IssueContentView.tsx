@@ -477,23 +477,9 @@ export function IssueContentView({
                         </div>
                       );
                     }
-                    // worklog
-                    const w = entry.data;
-                    const wName = w._author_name ?? 'Unknown';
-                    return (
-                      <div key={w.id ?? `w-${i}`} className="awTimelineItem">
-                        <div className="awTimelineAvatar" style={{ background: '#4C6EF5' }}>
-                          <Clock style={{ width: 13, height: 13, color: '#fff' }} />
-                        </div>
-                        <div className="awTimelineContent">
-                          <div className="awTimelineName">{wName} logged <strong>{fmtMinutes(w.time_spent_minutes)}</strong></div>
-                          <div className="awTimelineTime">{fmtRel(w.created_at)}{w.work_date ? ` · ${w.work_date}` : ''}</div>
-                          <span className="awTypeBadge awTypeBadgeWorklog">WORK LOG</span>
-                          {w.description && <div className="awTimelineDetail">{w.description}</div>}
-                        </div>
-                      </div>
-                    );
+                    return null;
                   })}
+                
                 </div>
               ) : (
                 <div className="awEmpty">No activity yet</div>
