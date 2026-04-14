@@ -475,6 +475,7 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
           onClose={() => setShowAdd(false)}
           onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }}
           onCreateNew={() => { setShowAdd(false); setShowCreateModal(true); }}
+          existingLinkedKeys={new Set(links.map((l: any) => l.target?.issue_key).filter(Boolean))}
         />
       )}
 
