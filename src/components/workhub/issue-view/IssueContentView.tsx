@@ -259,7 +259,7 @@ export function IssueContentView({
       updated = [...current, versionName];
     }
     if (item?.id) {
-      supabase.from('ph_issues').update({ fix_version_name: updated.join(', ') || null }).eq('id', item.id)
+      supabase.from('ph_issues').update({ fix_versions: updated } as any).eq('id', item.id)
         .then(({ error }) => {
           if (error) { toast.error('Failed to update fix version'); return; }
           toast.success('Fix version updated');
