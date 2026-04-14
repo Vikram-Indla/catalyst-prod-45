@@ -596,7 +596,7 @@ export default function StoryDetailModal({
   return (
     <>
       {/* OVERLAY */}
-      <div style={OVERLAY} onClick={panelMode ? undefined : onClose}>
+      <div style={OVERLAY} onClick={(panelMode || fullPageMode) ? undefined : onClose}>
         <div data-sdm-scope style={MODAL} onClick={e => e.stopPropagation()}>
 
           {/* ── A. TOP BAR — Jira breadcrumb + actions ─────── */}
@@ -651,8 +651,8 @@ export default function StoryDetailModal({
                   </div>
                 )}
               </div>
-              {/* Expand/Collapse panel toggle */}
-              {onTogglePanelMode && (
+              {/* Expand/Collapse panel toggle — hidden in full-page mode */}
+              {onTogglePanelMode && !fullPageMode && (
                 <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
