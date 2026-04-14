@@ -259,9 +259,15 @@ export function IssueContentView({
       updated = [...current, versionName];
     }
     if (item?.id) {
-      supabase.from('ph_issues').update({ fix_versions: updated.join(', ') || null } as any).eq('id', item.id).then(() => {});
+      supabase.from('ph_issues').update({ fix_version_name: updated.join(', ') || null }).eq('id', item.id)
+        .then(({ error }) => {
+          if (error) { toast.error('Failed to update fix version'); return; }
+          toast.success('Fix version updated');
+          queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+          queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+        });
     }
-  }, [fixVersionNames, item?.id]);
+  }, [fixVersionNames, item?.id, queryClient]);
 
   // Close fix version dropdown on outside click
   useEffect(() => {
@@ -367,7 +373,26 @@ export function IssueContentView({
           </div>
 
           {/* Title */}
-          <div className="awIssueTitle">{item?.summary ?? 'Untitled'}</div>
+          <h1
+            className="awIssueTitle"
+            contentEditable
+            suppressContentEditableWarning
+            onBlur={e => {
+              const newText = e.currentTarget.textContent?.trim() ?? '';
+              if (newText && newText !== item?.summary && item?.id) {
+                supabase.from('ph_issues').update({ summary: newText }).eq('id', item.id).then(({ error }) => {
+                  if (error) { toast.error('Failed to save title'); return; }
+                  toast.success('Title saved');
+                  queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                  queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                });
+              }
+            }}
+            onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } }}
+            style={{ cursor: 'text' }}
+          >
+            {item?.summary ?? 'Untitled'}
+          </h1>
 
           {/* #13: Actions row: + menu (Story Detail Modal parity) */}
           <div className="awActions" ref={addMenuRef} style={{ position: 'relative' }}>
@@ -913,7 +938,7 @@ export function IssueContentView({
                     projectId={projectId}
                     currentAssigneeId={item.assignee_id ?? null}
                     currentAssigneeName={item.assignee_display_name ?? null}
-                    onUpdate={() => {}}
+                    onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px' }}>
@@ -929,7 +954,7 @@ export function IssueContentView({
                   <EditablePriority
                     issueId={item.id}
                     currentPriority={item.priority ?? 'Medium'}
-                    onUpdate={() => {}}
+                    onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />
                 ) : (
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px' }}>
@@ -958,7 +983,7 @@ export function IssueContentView({
                   <EditableLabels
                     issueId={item.id}
                     currentLabels={item.labels ?? []}
-                    onUpdate={() => {}}
+                    onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
                   />
                 ) : (
                   <div style={{ padding: '4px 8px' }}>
