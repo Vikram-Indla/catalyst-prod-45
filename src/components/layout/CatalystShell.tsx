@@ -110,6 +110,9 @@ function CatalystShellContent() {
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
   const isProjectHubAllWorkRoute = location.pathname.includes('/hierarchy/allwork');
 
+  // Check if on full-screen issue view (/issue/:issueKey)
+  const isIssueFullPageRoute = location.pathname.startsWith('/issue/');
+
 
   // Check if on Wiki route
   const isWikiRoute = location.pathname.startsWith('/wiki');
@@ -157,8 +160,8 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // No sidebar for Home or Admin routes
-    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
+    // No sidebar for Home, Admin, or full-screen issue routes
+    if (location.pathname === '/for-you' || location.pathname.startsWith('/admin') || isIssueFullPageRoute) {
       return null;
     }
 
@@ -352,8 +355,8 @@ function CatalystShellContent() {
         {/* Route content scroll container (single scroll parent) - workspace frame */}
         <main data-catalyst-main className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden" style={{ background: 'var(--cp-bg)' }}>
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
-          <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${isProjectHubAllWorkRoute ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
-            <div className={`w-full max-w-full ${isProjectHubAllWorkRoute ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
+          <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
+            <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
               <Outlet />
             </div>
           </div>

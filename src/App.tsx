@@ -74,8 +74,7 @@ const App = () => (
                 <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
                 <Route path="/reset-password" element={<S><ResetPassword /></S>} />
 
-                {/* Full-screen issue view — outside CatalystShell (no top nav / sidebar) */}
-                <Route path="/issue/:issueKey" element={<ProtectedRoute><S><IssueFullPage /></S></ProtectedRoute>} />
+                {/* Protected shell with minimal routes */}
 
                 {/* Protected shell with minimal routes */}
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
@@ -92,6 +91,9 @@ const App = () => (
                   {/* AI Cleanup route */}
                   <Route path="/cleanup" element={<S><CleanupPage /></S>} />
                   <Route path="/audit-trail" element={<S><AuditTrailPage /></S>} />
+
+                  {/* Full-screen issue view — inside shell, sidebar auto-collapsed */}
+                  <Route path="/issue/:issueKey" element={<S><IssueFullPage /></S>} />
 
                   {/* All other routes — only when ENABLE_FULL_APP=true */}
                   {FullAppRoutes && (
