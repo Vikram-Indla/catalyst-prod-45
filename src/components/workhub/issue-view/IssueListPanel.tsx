@@ -250,13 +250,14 @@ export function IssueListPanel({
           </div>
         )}
 
-        {/* Footer count — Jira parity */}
-        {sortedItems.length > 0 && (
-          <div className="jlpFooterCount">
-            {sortedItems.length} of <strong>{sortedItems.length >= 1000 ? '1000+' : sortedItems.length}</strong>
-          </div>
-        )}
       </div>
+
+      {/* Footer count — pinned outside scroll, Jira parity */}
+      {sortedItems.length > 0 && (
+        <div className="jlpFooterCount">
+          {sortedItems.length} of <strong>{sortedItems.length >= 1000 ? '1000+' : sortedItems.length}</strong>
+        </div>
+      )}
     </>
   );
 }
