@@ -404,7 +404,7 @@ export function IssueContentView({
             />
             <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
-            <span>{issueKey}</span>
+            <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: '#0052CC', textDecoration: 'none', fontSize: 13 }} />
             {/* #12: Prev/Next navigation arrows */}
             <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
               <button className="awNavArrow" onClick={onPrev} title="Previous issue"><ChevronUp /></button>
