@@ -2,7 +2,7 @@
  * LinkedIssuesSection — Jira-parity rebuild
  * Full link type list, inline create with dropdown + search + Link/Cancel buttons
  */
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -331,7 +331,9 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
 
       // Resolve targets from ph_issues first
       const { data: phTargets } = await supabase.from('ph_issues')
-        .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
+        .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, project_key')
+        .in('issue_key', targetKeys)
+        .is('jira_removed_at', null);
         .in('issue_key', targetKeys)
         .is('jira_removed_at', null);
       const targetMap = new Map((phTargets ?? []).map((t: any) => [t.issue_key, t]));
@@ -340,10 +342,11 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       const missingKeys = targetKeys.filter(k => !targetMap.has(k));
       if (missingKeys.length > 0) {
         const { data: catTargets } = await supabase.from('catalyst_issues')
-          .select('issue_key, title, status, issue_type, assignee_id, priority')
+          .select('id, issue_key, title, status, issue_type, assignee_id, priority, project_id')
           .in('issue_key', missingKeys);
         (catTargets ?? []).forEach((ct: any) => {
           targetMap.set(ct.issue_key, {
+            id: ct.id,
             issue_key: ct.issue_key,
             summary: ct.title,
             status: ct.status,
@@ -353,6 +356,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             assignee_display_name: null,
             priority: ct.priority,
             jira_updated_at: null,
+            project_id: ct.project_id,
           });
         });
       }
