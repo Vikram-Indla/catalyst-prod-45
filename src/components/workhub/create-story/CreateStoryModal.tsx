@@ -1163,6 +1163,13 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
     setLinkedItems(prev => prev.filter(i => i.key !== key));
   }, [lockedKeys]);
 
+  const handleAddLinkedItem = useCallback((item: { key: string; summary?: string; issueType?: string }) => {
+    setLinkedItems(prev => {
+      if (prev.some(i => i.key === item.key)) return prev;
+      return [...prev, item];
+    });
+  }, []);
+
   // Set reporter to current user on mount
   useEffect(() => {
     if (user?.id && !form.reporterId) {
