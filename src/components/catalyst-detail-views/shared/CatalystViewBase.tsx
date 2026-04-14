@@ -228,16 +228,19 @@ export function CatalystViewBase({
                 <ArrowLeft size={16} />
               </button>
             )}
-            {/* Project name — clickable, links to backlog based on item type */}
-            {projectName && projectKey && (
+            {/* Project — clickable, links to All Work in full-page mode, or type-specific backlog otherwise */}
+            {projectKey && (
               <>
                 <Link
-                  to={`/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`}
+                  to={fullPageMode
+                    ? `/project-hub/${projectKey}/hierarchy/allwork`
+                    : `/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`
+                  }
                   style={{ fontSize: 14, fontWeight: 400, color: '#6B778C', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
-                  {projectName}
+                  {projectName || projectKey}
                 </Link>
                 <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
               </>
