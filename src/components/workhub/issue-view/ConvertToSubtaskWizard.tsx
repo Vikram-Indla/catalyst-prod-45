@@ -205,7 +205,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
         </div>
 
         {/* Right content */}
-        <div style={{ flex: 1, padding: '24px 28px', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+        <div style={{ flex: 1, padding: '28px 36px', display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h2 style={{ fontSize: 20, fontWeight: 700, color: '#172B4D', margin: 0 }}>
               Convert Issue to Sub-task: {issueKey}
@@ -326,9 +326,6 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                   </SelectContent>
                 </Select>
               </div>
-              <p style={{ fontSize: 12, color: '#6B778C' }}>
-                (Workflow: Revamp Defect workflow 6.0)
-              </p>
             </div>
           )}
 
