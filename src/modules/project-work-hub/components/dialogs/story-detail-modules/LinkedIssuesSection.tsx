@@ -302,6 +302,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
   const [showAdd, setShowAdd] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [createLinkType, setCreateLinkType] = useState('relates to');
+  const [openedItem, setOpenedItem] = useState<{ id: string; issueKey: string; issueType: string; projectKey: string } | null>(null);
 
   // Resolve projectId (UUID) from projectKey for CreateWorkItemModal
   const derivedProjectKey = projectKey || issueKey.split('-')[0];
