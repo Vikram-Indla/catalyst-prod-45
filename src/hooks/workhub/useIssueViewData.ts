@@ -46,6 +46,8 @@ function workItemToAllWork(wi: any): AllWorkItem {
     icon_glyph: wi.icon_glyph ?? null,
     work_type_id: wi.work_type_id ?? null,
     rank: wi.rank ?? null,
+    is_flagged: wi.is_flagged ?? false,
+    flag_reason: wi.flag_reason ?? null,
     _source: wi._source,
   };
 }
