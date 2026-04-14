@@ -134,6 +134,7 @@ export function IssueListPanel({
     if (e.key === 'ArrowUp') { e.preventDefault(); if (idx > 0) onSelectIssue(sortedItems[idx - 1].issue_key); }
   }, [sortedItems, selectedIssueKey, onSelectIssue]);
 
+  return (
     <>
       {/* ── Header toolbar ── */}
       <div className="jlpHeader">
