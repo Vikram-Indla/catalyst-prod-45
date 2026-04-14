@@ -244,7 +244,7 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: str
 
       {/* + Create linked work item / Link / Cancel */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#6B778C', fontFamily: 'inherit', padding: 0 }}>
+        <button onClick={onCreateNew} style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#172B4D', fontFamily: 'inherit', fontWeight: 500, padding: 0 }}>
           <Plus size={14} /> Create linked work item
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
