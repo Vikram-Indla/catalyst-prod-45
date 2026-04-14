@@ -27,6 +27,7 @@ import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
+import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
