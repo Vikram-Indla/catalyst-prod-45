@@ -420,6 +420,8 @@
   color: var(--aw-text-subtle);
   text-align: center;
   border-top: 1px solid var(--aw-border);
+  flex-shrink: 0;
+  background: var(--aw-bg);
 }
 .jlpFooterCount strong { color: #0C66E4; }
 
