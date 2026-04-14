@@ -14,7 +14,40 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
-const SUBTASK_TYPES = ['Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration', 'QA Bug', 'API Requirement'];
+/** Context-aware sub-task types — varies based on what you're converting FROM */
+function getAvailableSubtaskTypes(sourceIssueType: string): string[] {
+  const t = (sourceIssueType ?? '').toLowerCase();
+
+  // Never show the source type itself as a conversion target
+  const ALL = ['Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration', 'QA Bug', 'API Requirement'];
+
+  if (t.includes('bug') || t.includes('defect') || t === 'qa bug') {
+    // Defect → Sub-task, Frontend, Backend (no QA Bug — already a defect, no Figma)
+    return ['Sub-task', 'Frontend', 'Backend'];
+  }
+  if (t.includes('incident')) {
+    // Incident → Sub-task, Backend (operational — no Frontend, Figma, QA Bug)
+    return ['Sub-task', 'Backend'];
+  }
+  if (t === 'task') {
+    // Task → Sub-task, Frontend, Backend (simpler — no Figma, Integration, QA Bug)
+    return ['Sub-task', 'Frontend', 'Backend'];
+  }
+  if (t.includes('epic')) {
+    // Epic → Sub-task, Frontend, Backend, Figma, Integration (no QA Bug, no API Req)
+    return ['Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration'];
+  }
+  if (t.includes('api requirement') || t.includes('api_requirement')) {
+    // API Requirement → Sub-task, Backend, Integration (no Frontend, Figma, QA Bug)
+    return ['Sub-task', 'Backend', 'Integration'];
+  }
+  if (t.includes('improvement')) {
+    // Improvement → Sub-task, Frontend, Backend, Integration (no QA Bug)
+    return ['Sub-task', 'Frontend', 'Backend', 'Integration'];
+  }
+  // Story, Feature, New Feature → Sub-task, Frontend, Backend, Figma, Integration (no QA Bug — use Defects section)
+  return ['Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration'];
+}
 
 interface Props {
   issueId: string;
@@ -214,7 +247,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
               <div>
                 <label style={{ fontSize: 13, fontWeight: 600, color: '#172B4D', display: 'block', marginBottom: 6 }}>Sub-task Type</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {SUBTASK_TYPES.map(t => (
+                  {getAvailableSubtaskTypes(issueType).map(t => (
                     <label key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer', background: subtaskType === t ? '#E9F2FF' : 'transparent' }}
                       onMouseOver={e => { if (subtaskType !== t) e.currentTarget.style.background = '#F4F5F7'; }}
                       onMouseOut={e => { if (subtaskType !== t) e.currentTarget.style.background = 'transparent'; }}
