@@ -79,7 +79,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
 }
 
 /* ── Add Link Row (Jira-parity, multi-select) ── */
-function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void }) {
+function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKeys = new Set() }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void; existingLinkedKeys?: Set<string> }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
@@ -126,8 +126,12 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: str
     enabled: true,
   });
 
-  // Filter out already-selected items from results
-  const filteredResults = results.filter((r: any) => !selectedItems.some(s => s.item_key === r.issue_key));
+  // Filter out already-selected AND already-linked items from results
+  const filteredResults = results.filter((r: any) =>
+    !selectedItems.some(s => s.item_key === r.issue_key) &&
+    r.issue_key !== issueId &&
+    !existingLinkedKeys.has(r.issue_key)
+  );
 
   const linkMutation = useMutation({
     mutationFn: async () => {
@@ -141,7 +145,11 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: str
           link_type: linkType,
           created_by: user.id,
         } as any);
-        if (error) throw error;
+        if (error) {
+          // Treat duplicate constraint violation as success (already linked)
+          if (error.code === '23505' || error.message?.includes('unique_link')) continue;
+          throw error;
+        }
       }
     },
     onSuccess: () => {
@@ -340,8 +348,15 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
         link_type: createLinkType,
         created_by: user.id,
       } as any);
-      if (error) throw error;
-      toast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+      if (error) {
+        if (error.code === '23505' || error.message?.includes('unique_link')) {
+          toast.info(`${newItemKey} already linked to ${issueId}`);
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success(`Linked ${newItemKey} to ${issueId}`, { description: `as "${createLinkType}"` });
+      }
       queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] });
     } catch (err: any) {
       toast.error(`Created ${newItemKey} but failed to link`, { description: err.message });
@@ -467,6 +482,7 @@ export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; 
           onClose={() => setShowAdd(false)}
           onSuccess={() => { queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueId] }); setShowAdd(false); }}
           onCreateNew={() => { setShowAdd(false); setShowCreateModal(true); }}
+          existingLinkedKeys={new Set(links.map((l: any) => l.target?.issue_key).filter(Boolean))}
         />
       )}
 
