@@ -15,14 +15,19 @@ const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#
 function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
 function initials(name: string) { return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
 
-/* ── Sort options (Jira parity) ── */
-type SortKey = 'updated' | 'created' | 'key' | 'priority' | 'status';
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: 'updated', label: 'Last viewed' },
-  { key: 'created', label: 'Created' },
-  { key: 'key', label: 'Key' },
-  { key: 'priority', label: 'Priority' },
-  { key: 'status', label: 'Status' },
+/* ── Sort options (Jira parity — full set) ── */
+type SortKey = 'updated' | 'created' | 'key' | 'priority' | 'status' | 'assignee' | 'reporter' | 'summary' | 'work_type' | 'resolution';
+const SORT_OPTIONS: { key: SortKey; label: string; group?: 'order' | 'extra' }[] = [
+  { key: 'updated', label: 'Last viewed', group: 'order' },
+  { key: 'created', label: 'Created', group: 'order' },
+  { key: 'key', label: 'Key', group: 'order' },
+  { key: 'priority', label: 'Priority', group: 'order' },
+  { key: 'resolution', label: 'Resolved', group: 'order' },
+  { key: 'status', label: 'Status', group: 'order' },
+  { key: 'work_type', label: 'Work type', group: 'extra' },
+  { key: 'assignee', label: 'Assignee', group: 'extra' },
+  { key: 'reporter', label: 'Reporter', group: 'extra' },
+  { key: 'summary', label: 'Summary', group: 'extra' },
 ];
 
 /* ── Avatar resolution hook (jira_identity_map → profiles fallback) ── */
