@@ -780,6 +780,42 @@ export function IssueContentView({
         {/* Status pill + watcher + share (copy link) + more menu */}
         <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <StatusPill status={item?.status ?? ''} statusCategory={item?.status_category} issueId={item?.id} onStatusChange={(s) => updateStatusMutation.mutate(s)} />
+          {/* Flag button — Jira parity: sits right next to status pill */}
+          <div style={{ position: 'relative' }}>
+            <button
+              ref={flagBtnRef}
+              onClick={() => setShowFlagPopover(o => !o)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
+                background: checkFlagged(item) ? '#FFEBE6' : '#fff', cursor: 'pointer',
+                padding: 0,
+              }}
+              title={checkFlagged(item) ? 'Remove flag' : 'Add flag'}
+            >
+              <Flag size={18} color="#DE350B" fill={checkFlagged(item) ? '#DE350B' : 'none'} />
+            </button>
+            {showFlagPopover && item?.id && (
+              <FlagPopover
+                issueId={item.id}
+                issueKey={issueKey ?? ''}
+                flagged={checkFlagged(item)}
+                anchorRef={flagBtnRef}
+                onClose={() => setShowFlagPopover(false)}
+              />
+            )}
+          </div>
+          {/* Automation / lightning icon */}
+          <button
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, border: '1px solid #DFE1E6', borderRadius: 4,
+              background: '#fff', cursor: 'pointer', padding: 0,
+            }}
+            title="Automation"
+          >
+            <Zap size={18} color="#172B4D" />
+          </button>
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             {/* Watcher count */}
             <button className="awPill" style={{ padding: '0 6px', height: 22, gap: 3 }}>
@@ -800,12 +836,12 @@ export function IssueContentView({
                   boxShadow: '0 8px 24px rgba(9,30,66,.25)', zIndex: 80,
                   border: '1px solid #DFE1E6', padding: '4px 0',
                 }}>
-                  {/* Add flag */}
-                  <button onClick={() => { setShowFlagDialog(true); setMoreMenuOpen(false); }}
+                  {/* Add/Remove flag in menu */}
+                  <button onClick={() => { setShowFlagPopover(true); setMoreMenuOpen(false); }}
                     style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', fontSize: 14, color: '#172B4D', background: 'transparent', border: 'none', cursor: 'pointer' }}
                     onMouseOver={e => (e.currentTarget.style.background = '#F4F5F7')}
                     onMouseOut={e => (e.currentTarget.style.background = 'transparent')}
-                  >Add flag</button>
+                  >{checkFlagged(item) ? 'Remove flag' : 'Add flag'}</button>
                   <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
                   {/* Convert to Subtask */}
                   {item?.issue_type && item.issue_type !== 'Sub-task' && (
