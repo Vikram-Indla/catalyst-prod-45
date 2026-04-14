@@ -94,6 +94,7 @@ export function IssueContentView({
   issueKey, item, parentItem, childItems = [], childrenLoading,
   links = [], linksLoading, comments = [], commentsLoading,
   historyItems = [], historyLoading, createComment, loading,
+  onPrev, onNext,
 }: Props) {
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
