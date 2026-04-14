@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Check, Loader2, ChevronDown, Sparkles, Minus } from 'lucide-react';
+import { Plus, Check, Loader2, ChevronDown, Sparkles, Minus, X } from 'lucide-react';
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
