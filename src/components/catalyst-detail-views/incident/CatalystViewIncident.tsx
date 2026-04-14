@@ -14,7 +14,7 @@ import {
   CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
-import { LinkedItemsSection } from '@/components/project-hub/work-items/detail/LinkedItemsSection';
+import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -48,7 +48,7 @@ export default function CatalystViewIncident({
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
-      <LinkedItemsSection itemId={itemId} projectId={projectId} onNavigate={onOpenItem} />
+      <LinkedIssuesSection issueId={itemId} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );

@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Check, Loader2, ChevronDown, Sparkles, Minus, X } from 'lucide-react';
+import { Plus, Check, Loader2, ChevronDown, Sparkles, Minus } from 'lucide-react';
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
@@ -102,7 +102,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  const { data: results = [], isLoading: searchLoading } = useQuery({
+  const { data: results = [] } = useQuery({
     queryKey: ['linkSearch', search],
     queryFn: async () => {
       if (!search.trim()) {
@@ -113,28 +113,12 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
           .limit(8);
         return data ?? [];
       }
-      const term = search.trim();
-      // Search by key prefix OR summary substring
-      let query = supabase.from('ph_issues')
+      const { data } = await supabase.from('ph_issues')
         .select('issue_key, summary, issue_type, status, status_category')
-        .is('jira_removed_at', null);
-      
-      // Use separate queries and merge to avoid or() syntax issues
-      const { data: byKey } = await supabase.from('ph_issues')
-        .select('issue_key, summary, issue_type, status, status_category')
+        .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
         .is('jira_removed_at', null)
-        .ilike('issue_key', `${term}%`)
         .limit(10);
-      const { data: bySummary } = await supabase.from('ph_issues')
-        .select('issue_key, summary, issue_type, status, status_category')
-        .is('jira_removed_at', null)
-        .ilike('summary', `%${term}%`)
-        .limit(10);
-      
-      // Merge and deduplicate
-      const map = new Map<string, any>();
-      [...(byKey ?? []), ...(bySummary ?? [])].forEach(r => map.set(r.issue_key, r));
-      return Array.from(map.values()).slice(0, 15);
+      return data ?? [];
     },
     enabled: true,
   });
@@ -257,7 +241,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
 
       {/* + Create linked work item / Link / Cancel */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#172B4D', fontWeight: 500, fontFamily: 'inherit', padding: 0 }}>
+        <button style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#6B778C', fontFamily: 'inherit', padding: 0 }}>
           <Plus size={14} /> Create linked work item
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -326,8 +310,8 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
   }, {} as Record<string, any[]>);
 
   return (
-    <SectionBlock title="Linked work items" count={links.length} defaultExpanded headerRight={
-      <button onClick={e => { e.stopPropagation(); setShowAdd(true); }} title="Link issue" style={{
+    <SectionBlock title="Linked work items" count={links.length} defaultExpanded={links.length > 0} headerRight={
+      <button onClick={() => setShowAdd(true)} title="Link issue" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
         cursor: 'pointer', color: '#6B778C', transition: 'background 0.15s, color 0.15s',
@@ -338,15 +322,26 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
         <Plus size={16} strokeWidth={2} />
       </button>
     }>
+      {/* AI suggest bar */}
+      {links.length > 0 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
+          border: '1px solid #DFE1E6', borderRadius: 8, margin: '0 0 8px 0',
+          background: '#FAFBFC',
+        }}>
+          <Sparkles size={16} color="#6B778C" />
+          <span style={{ fontSize: 13, color: '#172B4D', flex: 1 }}>Link similar work items</span>
+          <span style={{ fontSize: 12, color: '#36B37E', fontStyle: 'italic', marginRight: 8 }}>No results found.</span>
+          <button style={{
+            height: 28, padding: '0 12px', border: '1px solid #DFE1E6', borderRadius: 3,
+            background: '#fff', cursor: 'pointer', fontSize: 13, color: '#172B4D', fontFamily: 'inherit',
+          }}>Search again</button>
+        </div>
+      )}
 
       {isLoading && <SkeletonRows />}
       {!isLoading && links.length === 0 && !showAdd && (
-        <div style={{ padding: '8px 0', fontSize: 13, color: '#6B778C' }}>
-          No linked issues.{' '}
-          <button onClick={() => setShowAdd(true)} style={{ border: 'none', background: 'none', color: '#0052CC', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', padding: 0, fontWeight: 500 }}>
-            + Link issue
-          </button>
-        </div>
+        <EmptyState heading="No linked issues" sub="Link related, blocking, or duplicate issues" cta="+ Link issue" onCta={() => setShowAdd(true)} />
       )}
 
       {/* Grouped link display — Jira style */}
@@ -393,16 +388,16 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
                       flexShrink: 0,
                     }} />
                   )}
-                  {/* Remove button */}
+                  {/* Remove button — Jira uses orange "=" drag handle, we use minus */}
                   <button onClick={e => { e.stopPropagation(); removeMutation.mutate(link.id); }}
                     title="Remove link"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: '#6B778C', flexShrink: 0,
+                      cursor: 'pointer', color: '#FF991F', flexShrink: 0,
                     }}
                   >
-                    <X size={14} strokeWidth={2.5} />
+                    <Minus size={16} strokeWidth={2.5} />
                   </button>
                 </div>
               );

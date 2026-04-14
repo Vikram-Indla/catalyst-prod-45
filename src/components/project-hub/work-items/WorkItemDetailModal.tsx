@@ -7,7 +7,6 @@ import { StatusLozenge } from './detail/StatusLozenge';
 import { ActivityFeed } from './detail/ActivityFeed';
 import { AttachmentsSection } from './detail/AttachmentsSection';
 import { LinkedItemsSection } from './detail/LinkedItemsSection';
-import { CreateLinkedWorkItemModal } from './detail/CreateLinkedWorkItemModal';
 import { DetailRightSidebar } from './detail/DetailRightSidebar';
 import { useWorkItemDetail, type ChildItem } from '@/hooks/useWorkItemDetail';
 import {
@@ -45,7 +44,6 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
   const [subtaskTitle, setSubtaskTitle] = useState('');
   const [subtaskSubmitting, setSubtaskSubmitting] = useState(false);
   const [newCriterion, setNewCriterion] = useState('');
-  const [createLinkedOpen, setCreateLinkedOpen] = useState(false);
 
   const [statuses, setStatuses] = useState<{ id: string; name: string; category: string }[]>([]);
   const [workTypes, setWorkTypes] = useState<{ id: string; name: string }[]>([]);
@@ -258,22 +256,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
               </CollapsibleSection>
 
               {/* Linked Work Items */}
-              <LinkedItemsSection
-                itemId={item.id}
-                projectId={projectId}
-                onNavigate={onNavigate}
-                onCreateLinkedItem={() => setCreateLinkedOpen(true)}
-              />
-
-              {/* Create Linked Work Item Modal */}
-              <CreateLinkedWorkItemModal
-                open={createLinkedOpen}
-                onClose={() => setCreateLinkedOpen(false)}
-                sourceItemId={item.id}
-                sourceItemKey={item.item_key}
-                projectId={projectId}
-                projectKey={projectKey}
-              />
+              <LinkedItemsSection workItemId={item.id} projectId={projectId} linkedItems={item.linked_items} onNavigate={onNavigate} onInvalidate={invalidate} />
 
               {/* Activity Feed */}
               <ActivityFeed workItemId={item.id} />

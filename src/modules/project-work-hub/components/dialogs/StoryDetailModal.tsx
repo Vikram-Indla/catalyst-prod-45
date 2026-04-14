@@ -56,8 +56,7 @@ import { SubtasksPanel } from '../SubtasksPanel';
 import { DefectsSection } from './story-detail-modules';
 import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
-import { LinkedItemsSection } from '@/components/project-hub/work-items/detail/LinkedItemsSection';
-import { CreateLinkedWorkItemModal } from '@/components/project-hub/work-items/detail/CreateLinkedWorkItemModal';
+import { LinkedIssuesSection } from './story-detail-modules';
 import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './story-detail-modules';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
@@ -277,7 +276,6 @@ export default function StoryDetailModal({
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [parentPickerTrigger, setParentPickerTrigger] = useState(0);
   const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
-  const [createLinkedOpen, setCreateLinkedOpen] = useState(false);
   const [epicSearchTerm, setEpicSearchTerm] = useState('');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [descEditMode, setDescEditMode] = useState(false);
@@ -1321,20 +1319,7 @@ export default function StoryDetailModal({
                   {issue && (
                     <>
                       <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
-                      <LinkedItemsSection
-                        itemId={issue.id}
-                        projectId={projectId}
-                        onNavigate={onOpenItem}
-                        onCreateLinkedItem={() => setCreateLinkedOpen(true)}
-                      />
-                      <CreateLinkedWorkItemModal
-                        open={createLinkedOpen}
-                        onClose={() => setCreateLinkedOpen(false)}
-                        sourceItemId={issue.id}
-                        sourceItemKey={issue.issue_key}
-                        projectId={projectId}
-                        projectKey={issue.project_key || projectKey || ''}
-                      />
+                      <LinkedIssuesSection issueId={issue.id} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
                       <TestHubSection storyId={issue.id} />
