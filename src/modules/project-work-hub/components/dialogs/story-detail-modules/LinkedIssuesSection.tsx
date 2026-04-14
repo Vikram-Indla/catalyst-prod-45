@@ -16,6 +16,10 @@ import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
 import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
 
+const CatalystDetailRouter = lazy(
+  () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
+);
+
 /* ── Complete Jira link types ── */
 const JIRA_LINK_TYPES = [
   'is blocked by',
