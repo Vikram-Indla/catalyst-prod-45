@@ -118,6 +118,17 @@ These are hard-won lessons from the ECLIPSE pipeline. Violating them causes regr
 > **Rule:** Claude Code must use **hex literals only** — never HSL — in all style assignments.
 > Verify with: computed `rgb()` values in DevTools, not visual inspection.
 
+**L39 — CRITICAL: Supabase UUID Column Type Mismatch (Silent 400)**
+> When a Supabase `.neq('id', value)` or `.eq('id', value)` is called where `id` is a UUID column
+> but `value` is a non-UUID string (e.g. an issue key like "BAU-5389"), PostgreSQL rejects with
+> error `22P02: invalid input syntax for type uuid`. The Supabase JS client returns this as a
+> silent 400 — **no rows returned, no JS exception thrown, just empty `data`**.
+> **Rule:** NEVER pass issue keys, display names, or any non-UUID string to UUID-typed columns
+> (`id`, `user_id`, `project_id`, etc.). Always verify the prop name matches the actual value type.
+> If a prop is named `issueId` but receives `issue_key`, use `.neq('issue_key', value)` instead.
+> **Debug pattern:** If a Supabase query returns empty unexpectedly, check column types first.
+> RCA: BAU-5389 convert-to-subtask parent search returned 0 results for 6 consecutive fix attempts.
+
 ### ProjectHub Violation Pattern (S7 RCA)
 
 **Root cause:** Multiple `.dark .bg-white { background: ... !important }` blocks in `index.css` create elevation token conflicts.
