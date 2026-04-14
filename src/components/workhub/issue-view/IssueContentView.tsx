@@ -9,9 +9,20 @@ import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLef
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { formatDistanceToNow, format } from 'date-fns';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+
+// Story Detail Modal sections — identical components for AllWork mid-body
+import { AttachmentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection';
+import { ChildIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection';
+import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/LinkedIssuesSection';
+import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection';
+import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
+import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
+import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 
 
 interface Props {
@@ -119,6 +130,24 @@ export function IssueContentView({
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const toggle = (id: string) => setCollapsed(s => ({ ...s, [id]: !s[id] }));
 
+  // Derive project key from issue key (e.g. "BAU-5364" → "BAU")
+  const projectKey = issueKey?.split('-')[0] ?? '';
+
+  // Attachments query — wired to ph_attachments table
+  const { data: attachments = [] } = useQuery({
+    queryKey: ['ph-attachments', item?.id],
+    queryFn: async () => {
+      if (!item?.id) return [];
+      const { data, error } = await supabase.from('ph_attachments')
+        .select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at')
+        .eq('work_item_id', item.id)
+        .order('created_at', { ascending: false });
+      if (error) return [];
+      return data ?? [];
+    },
+    enabled: !!item?.id,
+  });
+
   const totalChildren = childItems.length || (item?.child_count ?? 0);
 
   const handleComment = async () => {
@@ -207,8 +236,8 @@ export function IssueContentView({
           </div>
         </div>
 
-        {/* Scrollable body */}
-        <div className="awBody">
+        {/* Scrollable body — data-sdm-scope enables ring-fenced CSS from Story Detail Modal */}
+        <div className="awBody" data-sdm-scope>
           {/* ── Key details (#26: show description content here, not just priority) ── */}
           <div className="awSection">
             <div className="awSectionHead" onClick={() => toggle('keydetails')}>
@@ -270,42 +299,31 @@ export function IssueContentView({
             )}
           </div>
 
-          {/* ── Subtasks Panel (#28: actions already in SubtasksPanel) ── */}
-          <SubtasksPanel
-            storyKey={issueKey!}
-            storyId={item?.id || ''}
-            projectKey={item?.project_key || ''}
+          {/* ── Attachments (from StoryDetailModal) ── */}
+          <AttachmentsSection
+            attachments={attachments}
+            itemId={item?.id ?? ''}
+            userId={user?.id ?? ''}
           />
 
-          {/* ── Linked work items (#29) ── */}
-          <div className="awSection">
-            <div className="awSectionHead" onClick={() => toggle('links')}>
-              <span className="awSectionLabel">
-                {collapsed.links ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-                Linked work items
-              </span>
-              <div className="awSectionActions">
-                <button className="awPill" style={{ height: 22 }}><Plus style={{ width: 12, height: 12 }} /></button>
-              </div>
-            </div>
-            {!collapsed.links && (
-              <div className="awSectionBody">
-                {links.length === 0 ? (
-                  <div className="awEmpty">No linked work items</div>
-                ) : links.map((link: any, i: number) => (
-                  <div key={link.id ?? i}>
-                    <div className="awLinkGroupLabel">{link.link_type_name ?? 'relates to'}</div>
-                    <div className="awLinkRow">
-                      <JiraIssueTypeIcon type={link.target_issue_type ?? link.source_issue_type ?? ''} size={14} />
-                      <span style={{ color: 'var(--aw-blue)', fontWeight: 500, fontSize: 12, fontFamily: "'JetBrains Mono', monospace" }}>{link.target_key ?? link.source_key ?? ''}</span>
-                      <span style={{ flex: 1, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{link.target_summary ?? link.source_summary ?? ''}</span>
-                      {(link.target_status ?? link.source_status) && <StatusLozenge status={link.target_status ?? link.source_status} />}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* ── Subtasks / Child Issues (from StoryDetailModal — ChildIssuesSection) ── */}
+          <ChildIssuesSection
+            storyKey={issueKey!}
+            storyId={item?.id ?? ''}
+            projectKey={projectKey}
+          />
+
+          {/* ── Linked work items (from StoryDetailModal — LinkedIssuesSection) ── */}
+          <LinkedIssuesSection issueId={item?.id ?? ''} />
+
+          {/* ── Defects (from StoryDetailModal) ── */}
+          <DefectsSection storyKey={issueKey!} projectKey={projectKey} />
+
+          {/* ── Production Incidents (from StoryDetailModal) ── */}
+          <IncidentsSection storyKey={issueKey!} />
+
+          {/* ── TestHub (from StoryDetailModal) ── */}
+          <TestHubSection storyId={item?.id ?? ''} />
 
           {/* ── Activity — Jira Cloud parity ── */}
           <div className="awSection" style={{ borderBottom: 'none' }}>
