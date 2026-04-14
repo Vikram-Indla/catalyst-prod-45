@@ -1,0 +1,538 @@
+/**
+ * EditableListClonePanel + EditableLineItemsTable — Jira-parity CSS
+ * Mirrors SubtasksPanel.css patterns: native <table>, border-collapse:separate,
+ * inline editing cells, row hover states, action menus.
+ *
+ * Prefixes:
+ *   elc-  → EditableListClonePanel (section/panel level)
+ *   elt-  → EditableLineItemsTable (table level)
+ */
+
+/* ═══════════════════════════════════════════
+   PANEL — elc-*
+   ═══════════════════════════════════════════ */
+
+.elc-panel {
+  margin-top: 0;
+}
+
+/* ── Section (Products / Raw Materials) ── */
+
+.elc-section {
+  margin-top: 12px;
+}
+
+.elc-section:first-child {
+  margin-top: 8px;
+}
+
+.elc-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.elc-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #29292E;
+}
+
+.elc-section-icon {
+  color: #6B778C;
+  flex-shrink: 0;
+}
+
+.elc-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: #F1F5F9;
+  color: #505258;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.elc-prefilled-badge {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 3px;
+  background: #E9F2FF;
+  color: #0747A6;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+.elc-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.elc-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6B778C;
+  border-radius: 3px;
+  padding: 0;
+  transition: background 0.12s, color 0.12s;
+}
+.elc-icon-btn:hover {
+  background: rgba(9, 30, 66, 0.08);
+  color: #172B4D;
+}
+
+.elc-section-body {
+  padding: 0;
+}
+
+/* ── Banner (status messages) ── */
+
+.elc-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.elc-banner--loading {
+  background: #F8F9FA;
+  color: #505258;
+  border: 1px solid #E2E8F0;
+}
+
+.elc-banner--success {
+  background: #E9F2FF;
+  color: #0747A6;
+  border: 1px solid #B3D4FF;
+}
+
+.elc-banner--info {
+  background: #FFF7E6;
+  color: #974F0C;
+  border: 1px solid #FFE0B2;
+}
+
+.elc-banner--error {
+  background: #FFEDEB;
+  color: #BF2600;
+  border: 1px solid #FFBDAD;
+}
+
+.elc-banner-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+
+.elc-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: 1px solid #FFBDAD;
+  border-radius: 3px;
+  background: #FFFFFF;
+  color: #BF2600;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.elc-retry-btn:hover {
+  background: #FFF5F5;
+}
+
+/* ── Audit log ── */
+
+.elc-audit {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #E2E8F0;
+  border-radius: 4px;
+  background: #FAFBFC;
+}
+
+.elc-audit-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6B778C;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.elc-audit-loading,
+.elc-audit-empty {
+  font-size: 12px;
+  color: #6B778C;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.elc-audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+}
+
+.elc-audit-table th {
+  text-align: left;
+  font-weight: 600;
+  color: #505258;
+  padding: 4px 8px;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.elc-audit-table td {
+  padding: 4px 8px;
+  color: #29292E;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.elc-audit-table code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  background: #F1F5F9;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   TABLE — elt-*
+   ═══════════════════════════════════════════ */
+
+.elt-scroll {
+  overflow-x: auto;
+}
+
+.elt-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: auto;
+  width: 100%;
+}
+
+/* ── Header ── */
+
+.elt-th {
+  padding: 0 8px;
+  height: 30px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #6B778C;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  border-bottom: 1.5px solid rgba(11, 18, 14, 0.14);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.elt-th--name { min-width: 180px; }
+.elt-th--qty { width: 90px; min-width: 70px; }
+.elt-th--unit { width: 90px; min-width: 70px; }
+.elt-th--desc { min-width: 140px; }
+.elt-th--actions { width: 40px; }
+
+/* ── Row ── */
+
+.elt-row {
+  height: 40px;
+  background: #FFFFFF;
+  transition: background 0.1s;
+}
+
+.elt-row:hover {
+  background: #F8F9FA;
+}
+
+.elt-row--prefilled {
+  background: #FAFCFF;
+}
+.elt-row--prefilled:hover {
+  background: #F0F5FF;
+}
+
+/* ── Cell ── */
+
+.elt-td {
+  vertical-align: middle;
+  padding: 0 4px;
+  border-top: 1px solid rgba(11, 18, 14, 0.08);
+  height: 40px;
+}
+
+.elt-row:first-child .elt-td {
+  border-top: none;
+}
+
+.elt-td--idx {
+  text-align: center;
+  width: 28px;
+  position: relative;
+}
+
+.elt-idx {
+  font-size: 11px;
+  font-weight: 600;
+  color: #8993A4;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.elt-cloned-icon {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  color: #0747A6;
+  opacity: 0.6;
+}
+
+.elt-td--actions {
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.elt-row:hover .elt-td--actions {
+  opacity: 1;
+}
+
+/* ── Inline text cell ── */
+
+.elt-cell-text {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 6px;
+  font-size: 13px;
+  color: #29292E;
+  cursor: text;
+  border-radius: 3px;
+  transition: background 0.12s;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.elt-cell-text:hover {
+  background: rgba(9, 30, 66, 0.04);
+}
+
+.elt-cell-number {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.elt-edit-icon {
+  opacity: 0;
+  color: #6B778C;
+  flex-shrink: 0;
+  transition: opacity 0.12s;
+}
+.elt-cell-text:hover .elt-edit-icon {
+  opacity: 1;
+}
+
+.elt-placeholder {
+  color: #B3BAC5;
+  font-style: italic;
+}
+
+/* ── Inline input ── */
+
+.elt-cell-input {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  font-size: 13px;
+  color: #172B4D;
+  border: 2px solid #4C9AFF;
+  border-radius: 3px;
+  outline: none;
+  background: #FFFFFF;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.elt-cell-input:focus {
+  box-shadow: 0 0 0 1px #4C9AFF;
+}
+
+/* ── Select button ── */
+
+.elt-select-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  color: #29292E;
+  font-family: inherit;
+  transition: background 0.12s, border-color 0.12s;
+  white-space: nowrap;
+}
+.elt-select-btn:hover {
+  background: rgba(9, 30, 66, 0.04);
+  border-color: #DFE1E6;
+}
+
+.elt-select-dropdown {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  min-width: 120px;
+  background: #FFFFFF;
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.25);
+  z-index: 60;
+  overflow: hidden;
+}
+
+.elt-select-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #172B4D;
+  transition: background 0.1s;
+}
+.elt-select-option:hover {
+  background: #F4F5F7;
+}
+.elt-select-option--active {
+  background: #DEEBFF;
+}
+.elt-select-option--active:hover {
+  background: #DEEBFF;
+}
+
+/* ── Row actions ── */
+
+.elt-row-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #6B778C;
+  border-radius: 3px;
+  padding: 0;
+  transition: background 0.12s;
+}
+.elt-row-action-btn:hover {
+  background: rgba(9, 30, 66, 0.08);
+  color: #172B4D;
+}
+
+.elt-row-menu {
+  position: absolute;
+  top: calc(100% + 2px);
+  right: 0;
+  min-width: 120px;
+  background: #FFFFFF;
+  border: 1px solid rgba(9, 30, 66, 0.24);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(9, 30, 66, 0.15);
+  z-index: 60;
+  overflow: hidden;
+}
+
+.elt-row-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: #172B4D;
+  font-family: inherit;
+  transition: background 0.1s;
+}
+.elt-row-menu-item:hover {
+  background: rgba(9, 30, 66, 0.04);
+}
+
+.elt-row-menu-item--danger {
+  color: #DE350B;
+}
+.elt-row-menu-item--danger:hover {
+  background: #FFEDEB;
+}
+
+/* ── Empty state ── */
+
+.elt-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.elt-empty-text {
+  font-size: 13px;
+  color: #6B778C;
+}
+
+.elt-empty-cta {
+  padding: 6px 14px;
+  border: 1px solid #DFE1E6;
+  border-radius: 3px;
+  background: #FFFFFF;
+  font-size: 13px;
+  color: #172B4D;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s;
+}
+.elt-empty-cta:hover {
+  background: #F4F5F7;
+}
