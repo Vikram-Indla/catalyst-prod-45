@@ -2610,6 +2610,21 @@ select:focus-visible,
   box-shadow: 0 0 0 3px hsl(var(--primary) / 0.1) !important;
 }
 
+/* Remove inner focus ring from inputs inside containers that provide their own border */
+input[style*="border: none"]:focus,
+input[style*="border: none"]:focus-visible,
+input[style*="outline: none"]:focus-visible,
+[data-sdm-scope] input:focus-visible,
+.awBody input:focus-visible,
+.sp-create-input:focus-visible,
+.att-section input:focus-visible,
+.jf-search-input:focus-visible,
+.sdm-create-input:focus-visible,
+.stCreateInput:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* ════════════════════════════════════════════════════════════════════════════
    CATALYST V5 — MICRO-INTERACTIONS (Final 10% Polish)
    Award-winning tactile feedback for buttons, cards, and checkboxes
