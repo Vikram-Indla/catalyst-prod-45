@@ -530,21 +530,16 @@ export function IssueContentView({
                     )}
                   </div>
                 </div>
-                {/* Parent — editable via canonical ParentFieldPicker */}
+                {/* Parent — canonical AddParentPicker (field variant) */}
                 <div className="awKeyDetailRow">
                   <div className="awKeyDetailLabel">Parent</div>
                   <div className="awKeyDetailValue" style={{ overflow: 'visible' }}>
-                    <ParentFieldPicker
-                      storyKey={issueKey ?? item?.issue_key ?? ''}
+                    <AddParentPicker
+                      issueKey={issueKey ?? item?.issue_key ?? ''}
                       parentKey={item?.parent_key ?? null}
                       projectKey={projectKey}
-                      onParentChange={async (newParentKey) => {
-                        await (supabase.from('ph_issues') as any)
-                          .update({ parent_key: newParentKey })
-                          .eq('issue_key', issueKey ?? item?.issue_key);
-                        queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
-                        queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                      }}
+                      onParentChange={handleBreadcrumbParentChange}
+                      variant="field"
                     />
                   </div>
                 </div>
