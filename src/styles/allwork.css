@@ -544,6 +544,7 @@
   flex: 1;
   min-height: 0;
   overflow: hidden;
+  background: #FFFFFF;
 }
 .awIssueContent {
   flex: 1 1 auto;
@@ -552,6 +553,7 @@
   flex-direction: column;
   overflow-y: auto;
   overscroll-behavior: contain;
+  background: #FFFFFF;
 }
 .awIssueContent > .awBody { flex: 1; }
 
