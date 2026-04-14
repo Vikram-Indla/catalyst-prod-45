@@ -90,6 +90,7 @@
 .awToolbarSearchInput:focus {
   outline: none;
   box-shadow: none;
+  border: none;
 }
 .awToolbarSearchInput::placeholder { color: var(--aw-text-subtle); }
 

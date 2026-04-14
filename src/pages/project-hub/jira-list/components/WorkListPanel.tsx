@@ -55,7 +55,7 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
             onChange={e => setQuery(e.target.value)}
             placeholder="Search work"
             style={{
-              border: 'none', outline: 'none', width: '100%', fontSize: 14,
+              border: 'none', outline: 'none', boxShadow: 'none', width: '100%', fontSize: 14,
               fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
               background: 'transparent', color: '#172B4D',
             }}
