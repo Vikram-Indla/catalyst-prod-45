@@ -69,8 +69,8 @@ function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; 
 }
 
 /* ── EditableAssignee ──────────────────────── */
-export function EditableAssignee({ issueId, projectId, currentAssigneeId, currentAssigneeName, onUpdate }: {
-  issueId: string; projectId: string; currentAssigneeId: string | null; currentAssigneeName: string | null; onUpdate: () => void;
+export function EditableAssignee({ issueId, issueKey, projectId, currentAssigneeId, currentAssigneeName, onUpdate }: {
+  issueId: string; issueKey?: string; projectId: string; currentAssigneeId: string | null; currentAssigneeName: string | null; onUpdate: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -113,10 +113,14 @@ export function EditableAssignee({ issueId, projectId, currentAssigneeId, curren
 
   const updateMutation = useMutation({
     mutationFn: async (userId: string | null) => {
-      const { error } = await supabase.from('ph_issues').update({
+      const updateData = {
         assignee_account_id: userId,
         assignee_display_name: members.find(m => m.user_id === userId)?.full_name ?? null,
-      }).eq('id', issueId);
+      };
+      const query = issueKey
+        ? supabase.from('ph_issues').update(updateData as any).eq('issue_key', issueKey)
+        : supabase.from('ph_issues').update(updateData as any).eq('id', issueId);
+      const { error } = await query;
       if (error) throw error;
     },
     onSuccess: () => { onUpdate(); setOpen(false); },
@@ -266,7 +270,7 @@ function getLabelColor(name: string) {
   return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length];
 }
 
-export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: string; currentLabels: string[]; onUpdate: () => void }) {
+export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: { issueId: string; issueKey?: string; currentLabels: string[]; onUpdate: () => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -274,7 +278,10 @@ export function EditableLabels({ issueId, currentLabels, onUpdate }: { issueId: 
 
   const updateMutation = useMutation({
     mutationFn: async (labels: string[]) => {
-      const { error } = await supabase.from('ph_issues').update({ labels: labels as any }).eq('id', issueId);
+      const query = issueKey
+        ? supabase.from('ph_issues').update({ labels: labels as any }).eq('issue_key', issueKey)
+        : supabase.from('ph_issues').update({ labels: labels as any }).eq('id', issueId);
+      const { error } = await query;
       if (error) throw error;
     },
     onSuccess: () => onUpdate(),
