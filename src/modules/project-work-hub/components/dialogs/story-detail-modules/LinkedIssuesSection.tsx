@@ -326,11 +326,35 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       if (error) throw error;
       if (!rawLinks?.length) return [];
       const targetKeys = rawLinks.map(l => l.source_id === issueKey ? l.target_id : l.source_id);
-      const { data: targets } = await supabase.from('ph_issues')
+
+      // Resolve targets from ph_issues first
+      const { data: phTargets } = await supabase.from('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at')
         .in('issue_key', targetKeys)
         .is('jira_removed_at', null);
-      const targetMap = new Map((targets ?? []).map((t: any) => [t.issue_key, t]));
+      const targetMap = new Map((phTargets ?? []).map((t: any) => [t.issue_key, t]));
+
+      // Fallback: resolve missing keys from catalyst_issues (locally-created items)
+      const missingKeys = targetKeys.filter(k => !targetMap.has(k));
+      if (missingKeys.length > 0) {
+        const { data: catTargets } = await supabase.from('catalyst_issues')
+          .select('issue_key, title, status, issue_type, assignee_id, priority')
+          .in('issue_key', missingKeys);
+        (catTargets ?? []).forEach((ct: any) => {
+          targetMap.set(ct.issue_key, {
+            issue_key: ct.issue_key,
+            summary: ct.title,
+            status: ct.status,
+            status_category: ct.status === 'Done' ? 'Done' : ct.status === 'In Progress' ? 'In Progress' : 'To Do',
+            issue_type: ct.issue_type,
+            assignee_account_id: ct.assignee_id,
+            assignee_display_name: null,
+            priority: ct.priority,
+            jira_updated_at: null,
+          });
+        });
+      }
+
       return rawLinks.map(l => {
         const key = l.source_id === issueKey ? l.target_id : l.source_id;
         return { ...l, target: targetMap.get(key) };
