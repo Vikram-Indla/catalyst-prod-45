@@ -178,6 +178,7 @@ export function IssueContentView({
   onPrev, onNext, projectId = '',
 }: Props) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
   const [commentText, setCommentText] = useState('');
@@ -185,6 +186,22 @@ export function IssueContentView({
   const [posting, setPosting] = useState(false);
   const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [descEditMode, setDescEditMode] = useState(false);
+
+  // Status update mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async (newStatus: string) => {
+      if (!item?.id) throw new Error('No item');
+      const { error } = await supabase.from('ph_issues').update({ status: newStatus, status_category: resolveStatusCategory(newStatus) } as any).eq('id', item.id);
+      if (error) throw error;
+      await supabase.from('jira_write_back_queue').insert({ ph_issue_id: item.id, field_name: 'status', new_value: newStatus, status: 'approved' } as any);
+    },
+    onSuccess: () => {
+      toast.success('Status updated');
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+    },
+    onError: () => toast.error('Failed to update status'),
+  });
 
   // Section collapse
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
