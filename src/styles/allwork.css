@@ -282,9 +282,9 @@
 
 /* ── Body (scrollable — always-visible scrollbar) ── */
 .jlpBody {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow-y: scroll;
+  flex: 1 1 0% !important;
+  min-height: 0 !important;
+  overflow-y: scroll !important;       /* always-visible left panel scrollbar */
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
   outline: none;
@@ -559,8 +559,9 @@
 .awIssueContent > .awBody {
   flex: 1 1 0%;
   min-height: 0 !important;
-  overflow-y: auto !important;         /* middle panel scrollbar */
+  overflow-y: scroll !important;       /* always-visible scrollbar */
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 .awIssueContent > .awBody::-webkit-scrollbar {
   width: 12px;
