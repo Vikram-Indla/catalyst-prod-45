@@ -294,6 +294,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
 
 /* ── Main Section ── */
 export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKey }: { issueId: string; issueKey?: string; projectKey?: string }) {
+  const navigate = useNavigate();
   // ph_issue_links stores issue_keys (e.g. "BAU-4511"), not UUIDs.
   // Use issueKey for all ph_issue_links operations; fall back to issueId for legacy callers.
   const issueKey = issueKeyProp || issueId;
