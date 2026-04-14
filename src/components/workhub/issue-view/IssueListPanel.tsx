@@ -15,14 +15,19 @@ const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#
 function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
 function initials(name: string) { return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
 
-/* ── Sort options (Jira parity) ── */
-type SortKey = 'updated' | 'created' | 'key' | 'priority' | 'status';
-const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-  { key: 'updated', label: 'Last viewed' },
-  { key: 'created', label: 'Created' },
-  { key: 'key', label: 'Key' },
-  { key: 'priority', label: 'Priority' },
-  { key: 'status', label: 'Status' },
+/* ── Sort options (Jira parity — full set) ── */
+type SortKey = 'updated' | 'created' | 'key' | 'priority' | 'status' | 'assignee' | 'reporter' | 'summary' | 'work_type' | 'resolution';
+const SORT_OPTIONS: { key: SortKey; label: string; group?: 'order' | 'extra' }[] = [
+  { key: 'updated', label: 'Last viewed', group: 'order' },
+  { key: 'created', label: 'Created', group: 'order' },
+  { key: 'key', label: 'Key', group: 'order' },
+  { key: 'priority', label: 'Priority', group: 'order' },
+  { key: 'resolution', label: 'Resolved', group: 'order' },
+  { key: 'status', label: 'Status', group: 'order' },
+  { key: 'work_type', label: 'Work type', group: 'extra' },
+  { key: 'assignee', label: 'Assignee', group: 'extra' },
+  { key: 'reporter', label: 'Reporter', group: 'extra' },
+  { key: 'summary', label: 'Summary', group: 'extra' },
 ];
 
 /* ── Avatar resolution hook (jira_identity_map → profiles fallback) ── */
@@ -130,6 +135,7 @@ export function IssueListPanel({
     const sorted = [...items];
     sorted.sort((a, b) => {
       let cmp = 0;
+      const collate = (a2: string | null, b2: string | null) => (a2 ?? '').localeCompare(b2 ?? '');
       switch (sortKey) {
         case 'updated':
           cmp = new Date(b.jira_updated_at ?? 0).getTime() - new Date(a.jira_updated_at ?? 0).getTime();
@@ -148,6 +154,21 @@ export function IssueListPanel({
           break;
         case 'status':
           cmp = (STATUS_CAT_ORDER[a.status_category ?? 'todo'] ?? 99) - (STATUS_CAT_ORDER[b.status_category ?? 'todo'] ?? 99);
+          break;
+        case 'assignee':
+          cmp = collate(a.assignee_display_name, b.assignee_display_name);
+          break;
+        case 'reporter':
+          cmp = collate(a.reporter_name, b.reporter_name);
+          break;
+        case 'summary':
+          cmp = collate(a.summary, b.summary);
+          break;
+        case 'work_type':
+          cmp = collate(a.issue_type, b.issue_type);
+          break;
+        case 'resolution':
+          cmp = collate(a.resolution, b.resolution);
           break;
       }
       return sortAsc ? cmp : -cmp;
@@ -182,14 +203,16 @@ export function IssueListPanel({
           {sortMenuOpen && (
             <div className="jlpSortMenu">
               <div className="jlpSortMenuTitle">Order work items by</div>
-              {SORT_OPTIONS.map(opt => (
+              {SORT_OPTIONS.filter(o => o.group === 'order').map(opt => (
                 <label key={opt.key} className="jlpSortOption">
-                  <input
-                    type="radio"
-                    name="sort"
-                    checked={sortKey === opt.key}
-                    onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }}
-                  />
+                  <input type="radio" name="sort" checked={sortKey === opt.key} onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }} />
+                  {opt.label}
+                </label>
+              ))}
+              <div style={{ height: 1, background: '#EBECF0', margin: '4px 0' }} />
+              {SORT_OPTIONS.filter(o => o.group === 'extra').map(opt => (
+                <label key={opt.key} className="jlpSortOption">
+                  <input type="radio" name="sort" checked={sortKey === opt.key} onChange={() => { setSortKey(opt.key); setSortMenuOpen(false); }} />
                   {opt.label}
                 </label>
               ))}
