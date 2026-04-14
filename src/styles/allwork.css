@@ -628,8 +628,13 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 0;
-  background: #FFFFFF;
+  background: #FFFFFF !important;
+  scrollbar-gutter: stable;
 }
+.awDetailsSidebar::-webkit-scrollbar { width: 8px; }
+.awDetailsSidebar::-webkit-scrollbar-track { background: #FFFFFF; }
+.awDetailsSidebar::-webkit-scrollbar-thumb { background: #C1C7D0; border-radius: 999px; border: 2px solid #FFFFFF; }
+.awDetailsSidebar::-webkit-scrollbar-thumb:hover { background: #7A869A; }
 .awDetailsSidebar.collapsed { display: none; }
 
 /* ── Issue header (breadcrumb + title + actions) ── */
