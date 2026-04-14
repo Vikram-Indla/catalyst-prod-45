@@ -527,7 +527,7 @@ export function IssueContentView({
               <span style={{ fontSize: 11, fontWeight: 600 }}>1</span>
             </button>
             {/* Share — copies current URL */}
-            <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); import('sonner').then(m => m.toast.success('Link copied')); }}><Share2 style={{ width: 14, height: 14 }} /></button>
+            <button className="awPill" style={{ padding: '0 4px', height: 22 }} onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}><Share2 style={{ width: 14, height: 14 }} /></button>
             {/* More menu */}
             <button className="awPill" style={{ padding: '0 4px', height: 22 }}><MoreHorizontal style={{ width: 14, height: 14 }} /></button>
           </span>
