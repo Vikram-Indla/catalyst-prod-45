@@ -5,7 +5,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Check, Loader2, ChevronDown, Sparkles, Minus } from 'lucide-react';
+import { Plus, Check, Loader2, ChevronDown, Sparkles } from 'lucide-react';
 import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
@@ -388,16 +388,30 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
                       flexShrink: 0,
                     }} />
                   )}
-                  {/* Remove button — Jira uses orange "=" drag handle, we use minus */}
+                  {/* Drag handle — orange "=" icon (Jira parity) */}
+                  <span style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: 24, height: 24, color: '#FF991F', flexShrink: 0, cursor: 'grab',
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <rect x="4" y="8" width="16" height="2.5" rx="1" fill="currentColor"/>
+                      <rect x="4" y="13.5" width="16" height="2.5" rx="1" fill="currentColor"/>
+                    </svg>
+                  </span>
+                  {/* Unlink — X cross (Jira parity) */}
                   <button onClick={e => { e.stopPropagation(); removeMutation.mutate(link.id); }}
-                    title="Remove link"
+                    title="Unlink work item"
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
-                      cursor: 'pointer', color: '#FF991F', flexShrink: 0,
+                      cursor: 'pointer', color: '#FF5630', flexShrink: 0, transition: 'color 0.15s',
                     }}
+                    onMouseEnter={e => (e.currentTarget.style.color = '#DE350B')}
+                    onMouseLeave={e => (e.currentTarget.style.color = '#FF5630')}
                   >
-                    <Minus size={16} strokeWidth={2.5} />
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                      <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"/>
+                    </svg>
                   </button>
                 </div>
               );
