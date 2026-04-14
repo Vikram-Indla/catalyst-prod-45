@@ -272,9 +272,11 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
 }
 
 /* ── Main Section ── */
-export function LinkedIssuesSection({ issueId }: { issueId: string }) {
+export function LinkedIssuesSection({ issueId, projectKey }: { issueId: string; projectKey?: string }) {
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createLinkType, setCreateLinkType] = useState('relates to');
 
   const { data: links = [], isLoading } = useQuery({
     queryKey: ['linkedIssues', issueId],
