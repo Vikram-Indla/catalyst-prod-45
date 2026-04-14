@@ -4,9 +4,9 @@
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,6 +24,7 @@ import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/st
 import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 
 
@@ -153,6 +154,57 @@ export function IssueContentView({
 
   const totalChildren = childItems.length || (item?.child_count ?? 0);
 
+  // Fix versions — editable dropdown pulling all releases
+  const { unreleased: unreleasedVersions, released: releasedVersions, isLoading: versionsLoading } = useFixVersions(projectKey || null);
+  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
+  const fixVersionDropdownRef = useRef<HTMLDivElement>(null);
+
+  const fixVersionNames: string[] = useMemo(() => {
+    if (!item?.fix_version_name) return [];
+    return item.fix_version_name.split(',').map(s => s.trim()).filter(Boolean);
+  }, [item?.fix_version_name]);
+
+  const handleToggleFixVersion = useCallback((versionName: string) => {
+    const current = fixVersionNames;
+    let updated: string[];
+    if (current.includes(versionName)) {
+      updated = current.filter(v => v !== versionName);
+    } else {
+      updated = [...current, versionName];
+    }
+    if (item?.id) {
+      supabase.from('ph_issues').update({ fix_version_name: updated.join(', ') || null }).eq('id', item.id).then(() => {});
+    }
+  }, [fixVersionNames, item?.id]);
+
+  // Close fix version dropdown on outside click
+  useEffect(() => {
+    if (!showFixVersionDropdown) return;
+    const handler = (e: MouseEvent) => {
+      if (fixVersionDropdownRef.current && !fixVersionDropdownRef.current.contains(e.target as Node)) {
+        setShowFixVersionDropdown(false);
+        setFixVersionSearch('');
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showFixVersionDropdown]);
+
+  // + Add menu state
+  const [showAddMenu, setShowAddMenu] = useState(false);
+  const [addMenuSearch, setAddMenuSearch] = useState('');
+  const addMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showAddMenu) return;
+    const handler = (e: MouseEvent) => {
+      if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) { setShowAddMenu(false); setAddMenuSearch(''); }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showAddMenu]);
+
   const handleComment = async () => {
     if (!commentText.trim() || !createComment) return;
     setPosting(true);
@@ -232,10 +284,71 @@ export function IssueContentView({
           {/* Title */}
           <div className="awIssueTitle">{item?.summary ?? 'Untitled'}</div>
 
-          {/* #13: Actions row: + and ⚙ buttons */}
-          <div className="awActions">
-            <button className="awPill" style={{ padding: '0 6px' }}><Plus style={{ width: 14, height: 14 }} /></button>
-            
+          {/* #13: Actions row: + menu (Story Detail Modal parity) */}
+          <div className="awActions" ref={addMenuRef} style={{ position: 'relative' }}>
+            <button
+              className="awPill"
+              style={{ padding: '0 6px' }}
+              onClick={() => setShowAddMenu(o => !o)}
+            >
+              <Plus style={{ width: 14, height: 14 }} />
+            </button>
+            {showAddMenu && (() => {
+              const atlText = '#292A2E';
+              const addMenuItems = [
+                { id: 'subtask', icon: <CheckSquare size={16} color={atlText} />, label: 'Create subtask', shortcut: '⇧ C', section: 'primary', action: () => { setShowAddMenu(false); toast('Use the Sub-tasks section below'); } },
+                { id: 'link', icon: <Link2 size={16} color={atlText} />, label: 'Link work item', shortcut: '⇧ K', section: 'primary', action: () => { setShowAddMenu(false); toast.info('Use the Linked Issues section below'); } },
+                { id: 'attachment', icon: <Paperclip size={16} color={atlText} />, label: 'Add attachment', section: 'secondary', action: () => { setShowAddMenu(false); toast.info('Use the Attachments section below'); } },
+                { id: 'weblink', icon: <Globe size={16} color={atlText} />, label: 'Add web link', section: 'secondary', action: () => { setShowAddMenu(false); toast.info('Web link — coming soon'); } },
+              ];
+              const q = addMenuSearch.toLowerCase();
+              const filtered = q ? addMenuItems.filter(i => i.label.toLowerCase().includes(q)) : addMenuItems;
+              const primary = filtered.filter(i => i.section === 'primary');
+              const secondary = filtered.filter(i => i.section === 'secondary');
+              return (
+                <div style={{ position: 'absolute', left: 0, top: 34, background: '#ffffff', borderRadius: 4, boxShadow: '0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)', width: 266, zIndex: 400, padding: 0 }}>
+                  <div style={{ margin: '4px 8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '0.556px solid #8C8F97', borderRadius: 3, padding: '1px 0' }}>
+                      <Search size={14} color={atlText} style={{ marginLeft: 8, flexShrink: 0 }} />
+                      <input type="text" placeholder="Find menu item" value={addMenuSearch} onChange={e => setAddMenuSearch(e.target.value)} autoFocus
+                        style={{ background: 'transparent', border: 'none', outline: 'none', padding: '4px 4px 4px 8px', fontSize: 14, color: atlText, width: '100%', height: 28, fontFamily: 'inherit' }} />
+                      {addMenuSearch && (
+                        <button onClick={() => setAddMenuSearch('')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: atlText, display: 'flex', alignItems: 'center', padding: 0, marginRight: 6 }}>
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {primary.length > 0 && (
+                    <div style={{ padding: 0 }}>
+                      {primary.map(mi => (
+                        <button key={mi.id} onClick={mi.action} style={{ width: '100%', display: 'flex', alignItems: 'center', height: 40, padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: atlText, fontFamily: 'inherit', transition: 'background 0.1s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F0F1F2')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{mi.icon}</span>
+                          <span style={{ flex: 1, textAlign: 'left' }}>{mi.label}</span>
+                          {mi.shortcut && <span style={{ fontSize: 13, color: atlText, opacity: 0.7 }}>{mi.shortcut}</span>}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {secondary.length > 0 && (
+                    <div style={{ borderTop: '1px solid #DDDEE1', padding: 0 }}>
+                      {secondary.map(mi => (
+                        <button key={mi.id} onClick={mi.action} style={{ width: '100%', display: 'flex', alignItems: 'center', height: 40, padding: '0 8px', border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: atlText, fontFamily: 'inherit', transition: 'background 0.1s' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = '#F0F1F2')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <span style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', flexShrink: 0, marginRight: 8 }}>{mi.icon}</span>
+                          <span style={{ flex: 1, textAlign: 'left' }}>{mi.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         </div>
 
@@ -546,18 +659,90 @@ export function IssueContentView({
           </div>
           {!collapsed.details && (
             <div>
-              {/* Fix versions */}
-              <div style={{ marginBottom: 14 }}>
+              {/* Fix versions — Jira-parity editable dropdown */}
+              <div style={{ marginBottom: 14, position: 'relative' }} ref={fixVersionDropdownRef}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Fix versions</div>
-                <div style={{ display: 'flex', alignItems: 'center', padding: '4px 6px', borderRadius: 4, minHeight: 32 }}>
-                  {fixVersionName ? (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6' }}>
-                      {fixVersionName}
-                    </span>
+                <div
+                  onClick={() => setShowFixVersionDropdown(!showFixVersionDropdown)}
+                  style={{
+                    display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center',
+                    padding: '4px 8px', borderRadius: 4, cursor: 'pointer',
+                    minHeight: 32, transition: 'background 0.12s',
+                    border: showFixVersionDropdown ? '2px solid #4C9AFF' : '2px solid transparent',
+                    background: showFixVersionDropdown ? '#FFFFFF' : 'transparent',
+                  }}
+                  onMouseEnter={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = '#F4F5F7'; }}
+                  onMouseLeave={e => { if (!showFixVersionDropdown) e.currentTarget.style.background = 'transparent'; }}
+                >
+                  {fixVersionNames.length > 0 ? (
+                    fixVersionNames.map((v, i) => (
+                      <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6' }}>
+                        {v}
+                        <button onClick={e => { e.stopPropagation(); handleToggleFixVersion(v); }} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', color: '#0747A6' }}>
+                          <X size={10} />
+                        </button>
+                      </span>
+                    ))
                   ) : (
                     <span style={{ color: '#6B778C', fontSize: 14 }}>None</span>
                   )}
                 </div>
+                {showFixVersionDropdown && (
+                  <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 100, maxHeight: 320, overflow: 'hidden' }}>
+                    <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+                      <input autoFocus value={fixVersionSearch} onChange={e => setFixVersionSearch(e.target.value)} placeholder="Search versions..."
+                        style={{ width: '100%', border: '1px solid #DFE1E6', borderRadius: 4, padding: '6px 10px', fontSize: 13, color: '#172B4D', outline: 'none', fontFamily: 'inherit' }}
+                        onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
+                        onBlur={e => { e.currentTarget.style.borderColor = '#DFE1E6'; }}
+                      />
+                    </div>
+                    <div style={{ maxHeight: 260, overflowY: 'auto' }}>
+                      {versionsLoading && <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>Loading...</div>}
+                      {(() => {
+                        const filtered = unreleasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                        if (filtered.length === 0) return null;
+                        return (
+                          <>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>Unreleased</div>
+                            {filtered.map(v => {
+                              const isSel = fixVersionNames.includes(v.name);
+                              return (
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: '#172B4D', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = '#F4F5F7'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
+                                >
+                                  <span>{v.name}</span>
+                                  {isSel && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0747A6" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                                </div>
+                              );
+                            })}
+                          </>
+                        );
+                      })()}
+                      {(() => {
+                        const filtered = releasedVersions.filter(v => v.name.toLowerCase().includes(fixVersionSearch.toLowerCase()));
+                        if (filtered.length === 0) return null;
+                        return (
+                          <>
+                            <div style={{ padding: '8px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em', borderTop: '1px solid #F4F5F7' }}>Released</div>
+                            {filtered.map(v => {
+                              const isSel = fixVersionNames.includes(v.name);
+                              return (
+                                <div key={v.name} onClick={() => handleToggleFixVersion(v.name)} style={{ padding: '8px 16px', fontSize: 14, color: '#172B4D', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: isSel ? '#DEEBFF' : 'transparent', transition: 'background 0.1s' }}
+                                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = '#F4F5F7'; }}
+                                  onMouseLeave={e => { e.currentTarget.style.background = isSel ? '#DEEBFF' : 'transparent'; }}
+                                >
+                                  <span>{v.name}</span>
+                                  {isSel && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0747A6" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                                </div>
+                              );
+                            })}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Assignee — Jira parity: avatar + name, click-to-edit dropdown */}

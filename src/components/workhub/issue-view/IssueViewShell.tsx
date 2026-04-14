@@ -79,6 +79,14 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     const PALETTE = ['#1868DB', '#E2631E', '#5E4DB2', '#1B3459', '#0D7C66', '#B34D00', '#943A79', '#0055CC'];
     const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
 
+    // Build assignee → avatar URL map from items
+    const assigneeAvatarMap = new Map<string, string | null>();
+    items.forEach(i => {
+      if (i.assignee_display_name && !assigneeAvatarMap.has(i.assignee_display_name)) {
+        assigneeAvatarMap.set(i.assignee_display_name, i.assignee_avatar ?? null);
+      }
+    });
+
     return [
       {
         id: 'status', label: 'Status', searchPlaceholder: 'Search status',
@@ -97,12 +105,16 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
       },
       {
         id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee',
-        options: assignees.map(name => ({
-          id: name, label: name,
-          avatarInitials: getInitials(name),
-          avatarColor: pickColor(name),
-          avatarType: 'initials' as const,
-        })),
+        options: assignees.map(name => {
+          const avatarUrl = assigneeAvatarMap.get(name) ?? null;
+          return {
+            id: name, label: name,
+            ...(avatarUrl
+              ? { avatarUrl, avatarType: 'photo' as const }
+              : { avatarInitials: getInitials(name), avatarColor: pickColor(name), avatarType: 'initials' as const }
+            ),
+          };
+        }),
       },
       {
         id: 'type', label: 'Type', searchPlaceholder: 'Search issue type',
