@@ -79,7 +79,7 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
 }
 
 /* ── Add Link Row (Jira-parity, multi-select) ── */
-function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void }) {
+function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKeys = new Set() }: { issueId: string; onClose: () => void; onSuccess: () => void; onCreateNew?: () => void; existingLinkedKeys?: Set<string> }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
