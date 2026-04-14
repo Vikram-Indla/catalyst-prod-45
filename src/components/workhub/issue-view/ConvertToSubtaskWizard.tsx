@@ -128,8 +128,8 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   const [inputFocused, setInputFocused] = useState(true);
   const showDropdown = !selectedParentId && inputFocused;
 
-  // All statuses from the STATUS_OPTION_GROUPS
-  const allStatuses = useMemo(() => STATUS_OPTION_GROUPS.flatMap(g => g.statuses), []);
+  // All statuses from SUBTASK_STATUS_GROUPS
+  const allStatuses = useMemo(() => SUBTASK_STATUS_GROUPS.flatMap(g => g.statuses), []);
   const statusNeedsMapping = !allStatuses.some(s => s.toLowerCase() === currentStatus.toLowerCase());
 
   const convertMutation = useMutation({
@@ -312,13 +312,19 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#172B4D', flexShrink: 0 }}>Select New Status:</div>
                 <span style={{ display: 'inline-block', height: 20, lineHeight: '20px', padding: '0 6px', borderRadius: 3, background: '#DFE1E6', color: '#253858', fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, letterSpacing: '0.03em', whiteSpace: 'nowrap', flexShrink: 0 }}>{currentStatus}</span>
                 <span style={{ color: '#6B778C', fontSize: 16 }}>→</span>
-                <select value={newStatus} onChange={e => setNewStatus(e.target.value)} style={{ padding: '6px 10px', border: '1px solid #DFE1E6', borderRadius: 4, fontSize: 13 }}>
-                  {STATUS_OPTION_GROUPS.map(g => (
-                    <optgroup key={g.groupLabel} label={g.groupLabel}>
-                      {g.statuses.map(s => <option key={s} value={s}>{s}</option>)}
-                    </optgroup>
-                  ))}
-                </select>
+                <Select value={newStatus} onValueChange={setNewStatus}>
+                  <SelectTrigger className="w-[200px] bg-white" style={{ fontSize: 13 }}>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {SUBTASK_STATUS_GROUPS.map(g => (
+                      <SelectGroup key={g.groupLabel}>
+                        <SelectLabel className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">{g.groupLabel}</SelectLabel>
+                        {g.statuses.map(s => <SelectItem key={s} value={s} style={{ fontSize: 13 }}>{s}</SelectItem>)}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <p style={{ fontSize: 12, color: '#6B778C' }}>
                 (Workflow: Revamp Defect workflow 6.0)
