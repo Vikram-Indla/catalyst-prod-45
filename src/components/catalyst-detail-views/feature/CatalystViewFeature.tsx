@@ -14,8 +14,9 @@ import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystChildWorkItemsTable,
+  CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -35,13 +36,13 @@ export default function CatalystViewFeature({
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
-      {/* FEATURE: Child work items table (Jira-parity, same as Epic) */}
+      {/* FEATURE: Child work items (canonical SubtasksPanel) */}
       {issue?.issue_key && (
-        <CatalystChildWorkItemsTable
-          parentKey={issue.issue_key}
-          parentId={issue.id}
+        <SubtasksPanel
+          storyKey={issue.issue_key}
+          storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
-          onOpenItem={onOpenItem}
+          onSubtaskClick={onOpenItem}
         />
       )}
 
