@@ -145,7 +145,11 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
           link_type: linkType,
           created_by: user.id,
         } as any);
-        if (error) throw error;
+        if (error) {
+          // Treat duplicate constraint violation as success (already linked)
+          if (error.code === '23505' || error.message?.includes('unique_link')) continue;
+          throw error;
+        }
       }
     },
     onSuccess: () => {
