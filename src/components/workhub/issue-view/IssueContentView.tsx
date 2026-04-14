@@ -414,29 +414,6 @@ export function IssueContentView({
           )}
         </div>
 
-        {/* #23: More fields collapsible */}
-        <div className="awDetailsSection">
-          <div className="awDetailsSectionHead" onClick={() => toggle('morefields')}>
-            {collapsed.morefields ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-            More fields
-            <span style={{ fontWeight: 400, fontSize: 12, color: 'var(--aw-text-subtle)', marginLeft: 6 }}>
-              Fix versions, Parent
-            </span>
-          </div>
-          {!collapsed.morefields && (
-            <div className="awDetailsSectionBody">
-              {(parentItem || item?.parent_key) && (
-                <div className="awFieldRow awFieldRowBorder">
-                  <div className="awFieldLabel">Parent</div>
-                  <div className="awFieldValue">
-                    {parentItem && <JiraIssueTypeIcon type={parentItem.issue_type} size={14} />}
-                    <span className="awParentLink">{parentItem?.issue_key ?? item?.parent_key}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
 
         {/* Timestamps */}
         <div className="awTimestamps">
