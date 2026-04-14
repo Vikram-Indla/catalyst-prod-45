@@ -4,7 +4,7 @@
  * Breadcrumb parent is clickable. Status pill + Link/Move actions.
  */
 import { useState, useMemo } from 'react';
-import { Link2, ArrowRightLeft, MoreHorizontal, Pencil, MessageSquare, History, Clock, FileText } from 'lucide-react';
+import { Link2, ArrowRightLeft, Pencil, MessageSquare, History, FileText } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';
@@ -16,7 +16,7 @@ interface Props {
   loading?: boolean;
 }
 
-type ActivityTab = 'all' | 'comments' | 'history' | 'worklog';
+type ActivityTab = 'all' | 'comments' | 'history';
 
 /** Split raw description into logical paragraphs for readable rendering */
 function DescriptionRenderer({ text }: { text: string }) {
