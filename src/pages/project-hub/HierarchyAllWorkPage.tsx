@@ -40,7 +40,7 @@ export default function HierarchyAllWorkPage() {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden" style={{ background: tk.pageBg }}>
+    <div className="h-full min-h-0 flex flex-col overflow-hidden" style={{ background: tk.pageBg }}>
       {/* ── Title + Subtitle (Story Backlog pattern) ── */}
       <div className="px-6 pt-5 pb-3 border-b flex-shrink-0" style={{ borderColor: tk.border }}>
         <h1 className="text-xl font-semibold" style={{ color: tk.t1, fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>
@@ -52,7 +52,7 @@ export default function HierarchyAllWorkPage() {
       </div>
 
       {/* ── 3-column split view ── */}
-      <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         <IssueViewShell
           projectKey={projectKey}
           storageKey={`allwork.${projectKey}.layoutWidths`}
