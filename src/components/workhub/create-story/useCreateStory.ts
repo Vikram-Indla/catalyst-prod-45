@@ -171,7 +171,7 @@ export function useCreateStoryMutation() {
 
       const { data, error } = await supabase
         .from('catalyst_issues')
-        .insert(insertData)
+        .insert(insertData as any)
         .select()
         .single();
 
