@@ -1252,7 +1252,7 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
       <div className={`csModal ${isExpanded ? 'csModal--expanded' : ''}`} ref={modalRef} onClick={e => e.stopPropagation()}>
         {/* ── Header ── */}
         <div className="csModalHeader">
-          <h2 className="csModalTitle">Create {workType}</h2>
+          <h2 className="csModalTitle">{isCreateLinkedMode ? 'Create linked work item' : `Create ${workType}`}</h2>
           <div className="csModalHeaderActions">
             <button type="button" className="csHeaderBtn" title="Full screen" onClick={() => setIsExpanded(e => !e)}><Maximize2 size={16} /></button>
             <button type="button" className="csHeaderBtn" onClick={handleClose} title="Close"><X size={18} /></button>
@@ -1295,7 +1295,17 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
           />
           <div className="csHelpText">This is the initial status upon creation</div>
 
-          {/* Summary */}
+          {/* Linked Work Items — shown only in createLinked mode */}
+          {isCreateLinkedMode && (
+            <LinkedWorkItemsField
+              linkType={linkedLinkType}
+              onLinkTypeChange={setLinkedLinkType}
+              linkedItems={linkedItems}
+              onRemoveItem={handleRemoveLinkedItem}
+              lockedKeys={lockedKeys}
+            />
+          )}
+
           <div className="csField">
             <label className="csLabel">Summary<span className="csRequired"> *</span></label>
             <input
