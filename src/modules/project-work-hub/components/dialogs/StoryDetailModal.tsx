@@ -614,7 +614,7 @@ export default function StoryDetailModal({
               )}
               <span style={{ color: '#C1C7D0', fontSize: 12 }}>/</span>
               <IssueIcon type={issue?.issue_type ?? 'Story'} size={14} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84' }}>{issue?.issue_key ?? '—'}</span>
+              <IssueKeyLink issueKey={issue?.issue_key ?? '—'} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#0052CC', textDecoration: 'none' }} />
             </div>
 
             {/* Right actions */}
