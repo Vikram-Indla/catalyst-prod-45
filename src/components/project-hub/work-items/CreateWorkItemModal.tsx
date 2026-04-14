@@ -39,7 +39,7 @@ const PRIORITIES = [
 ];
 
 // ─── Component ────────────────────────────────────────────
-export function CreateWorkItemModal({ open, onClose, projectId, projectKey }: CreateWorkItemModalProps) {
+export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCreated }: CreateWorkItemModalProps) {
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
 
