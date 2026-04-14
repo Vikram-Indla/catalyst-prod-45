@@ -549,6 +549,22 @@ export function IssueContentView({
                     />
                   </div>
                 </div>
+                {/* Labels */}
+                <div className="awKeyDetailRow">
+                  <div className="awKeyDetailLabel">Labels</div>
+                  <div className="awKeyDetailValue" style={{ overflow: 'visible' }}>
+                    {item?.id ? (
+                      <EditableLabels
+                        issueId={item.id}
+                        issueKey={issueKey ?? item.issue_key}
+                        currentLabels={item.labels ?? []}
+                        onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: 14, color: '#7A869A' }}>None</span>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -1105,22 +1121,6 @@ export function IssueContentView({
                 </div>
               </div>
 
-              {/* Labels — Jira parity: colored chips, click-to-edit */}
-              <div style={{ marginBottom: 14 }}>
-                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Labels</div>
-                {item?.id ? (
-                  <EditableLabels
-                    issueId={item.id}
-                    issueKey={issueKey ?? item.issue_key}
-                    currentLabels={item.labels ?? []}
-                    onUpdate={() => { queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); queryClient.invalidateQueries({ queryKey: ['allwork-items'] }); }}
-                  />
-                ) : (
-                  <div style={{ padding: '4px 8px' }}>
-                    <span style={{ fontSize: 14, color: '#7A869A' }}>None</span>
-                  </div>
-                )}
-              </div>
             </div>
           )}
         </div>
