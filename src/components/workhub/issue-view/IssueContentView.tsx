@@ -26,7 +26,8 @@ import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialo
 import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection';
 import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
-import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
@@ -180,44 +181,10 @@ export function IssueContentView({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
-  const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
-  const [epicSearchTerm, setEpicSearchTerm] = useState('');
 
   // Derive project key from issue key (e.g. "BAU-5364" → "BAU")
   const projectKey = issueKey?.split('-')[0] ?? '';
 
-  // Recent epics for breadcrumb "Add/Change parent"
-  const { data: recentEpics = [] } = useQuery({
-    queryKey: ['ph-recent-epics-aw', projectKey],
-    enabled: !!projectKey,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', projectKey)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .neq('status_category', 'done')
-        .order('jira_updated_at', { ascending: false })
-        .limit(5);
-      return data || [];
-    },
-    staleTime: 60000,
-  });
-
-  // All epics for "View all epics" panel
-  const { data: allEpics = [] } = useQuery({
-    queryKey: ['ph-all-epics-aw', projectKey],
-    enabled: !!projectKey && showAddEpicPanel,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', projectKey)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .order('jira_updated_at', { ascending: false })
-        .limit(100);
-      return data || [];
-    },
-    staleTime: 60000,
-  });
 
   const handleBreadcrumbParentChange = useCallback(async (newParentKey: string | null) => {
     if (!item?.id) return;
@@ -427,176 +394,14 @@ export function IssueContentView({
         <div className="awIssueHeader">
           {/* Breadcrumb — #11: Add parent link, #12: nav arrows */}
           <div className="awBreadcrumb">
-            {/* Parent breadcrumb — Add or Change parent popover */}
-            <Popover onOpenChange={(open) => { if (!open) { setShowAddEpicPanel(false); setEpicSearchTerm(''); } }}>
-              <PopoverTrigger asChild>
-                {(parentItem || item?.parent_key) ? (
-                  <button
-                    title="Change parent"
-                    style={{
-                      background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-                      padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 5,
-                      fontSize: 12, fontWeight: 500, color: '#5E6C84', transition: 'border-color 150ms, background 150ms',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
-                  >
-                    <JiraIssueTypeIcon type={parentItem?.issue_type ?? 'epic'} size={14} />
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{parentItem?.issue_key ?? item?.parent_key}</span>
-                    <SquarePen size={11} style={{ color: '#6B778C' }} />
-                  </button>
-                ) : (
-                  <button
-                    className="awAddParentLink"
-                    style={{
-                      background: 'none', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
-                      padding: '2px 6px', display: 'inline-flex', alignItems: 'center', gap: 4,
-                      fontSize: 13, fontWeight: 500, color: '#1868DB', transition: 'border-color 150ms, background 150ms',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#DEEBFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
-                  >
-                    <SquarePen size={13} />
-                    Add parent
-                  </button>
-                )}
-              </PopoverTrigger>
-              <PopoverContent align="start" sideOffset={4} className="p-0 z-[10001]" style={{ borderRadius: 8, boxShadow: '0 8px 16px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.12)', width: showAddEpicPanel ? 480 : 380 }}>
-                {!showAddEpicPanel ? (
-                  <>
-                    <div style={{ padding: '10px 16px 6px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                      Recent epics
-                    </div>
-                    <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-                      {recentEpics.map((epic: any) => (
-                        <button
-                          key={epic.id}
-                          onClick={() => handleBreadcrumbParentChange(epic.issue_key)}
-                          style={{
-                            width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                            textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                            fontSize: 14, color: '#172B4D', transition: 'background 100ms',
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                        >
-                          <JiraIssueTypeIcon type="epic" size={16} />
-                          <span>{epic.issue_key} {epic.summary}</span>
-                        </button>
-                      ))}
-                      {recentEpics.length === 0 && (
-                        <div style={{ padding: '12px 16px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
-                      )}
-                    </div>
-                    <div style={{ borderTop: '1px solid #EBECF0' }}>
-                      {(parentItem || item?.parent_key) && (
-                        <button
-                          onClick={() => handleBreadcrumbParentChange(null)}
-                          style={{
-                            width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                            textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 400,
-                            transition: 'background 100ms',
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                        >
-                          Unlink parent
-                        </button>
-                      )}
-                      <button
-                        onClick={() => setShowAddEpicPanel(true)}
-                        style={{
-                          width: '100%', padding: '10px 16px', border: 'none', background: 'transparent',
-                          textAlign: 'left', cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 500,
-                          transition: 'background 100ms',
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                      >
-                        View all epics
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div style={{ padding: '20px 24px' }}>
-                    <div style={{ fontSize: 18, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Change epic</div>
-                    <div style={{ fontSize: 13, color: '#6B778C', marginBottom: 4 }}>
-                      Select a parent work item. Work items can only belong to one parent at a time.
-                    </div>
-                    {(parentItem || item?.parent_key) && (
-                      <div style={{ fontSize: 13, color: '#172B4D', marginBottom: 16 }}>
-                        <strong>{issueKey}</strong> is currently assigned to <strong>{parentItem?.issue_key ?? item?.parent_key}</strong>.
-                      </div>
-                    )}
-                    <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 6 }}>Epic</div>
-                    <div style={{ position: 'relative' }}>
-                      <input
-                        type="text"
-                        placeholder="Choose parent"
-                        value={epicSearchTerm}
-                        onChange={e => setEpicSearchTerm(e.target.value)}
-                        autoFocus
-                        style={{
-                          width: '100%', padding: '8px 12px', border: '2px solid #4C9AFF', borderRadius: 4,
-                          fontSize: 14, color: '#172B4D', outline: 'none', background: '#FFF',
-                          boxSizing: 'border-box',
-                        }}
-                      />
-                      <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderTop: 'none', borderRadius: '0 0 4px 4px', background: '#FFF' }}>
-                        {(parentItem || item?.parent_key) && (
-                          <button
-                            onClick={() => {
-                              handleBreadcrumbParentChange(null);
-                              setShowAddEpicPanel(false);
-                              setEpicSearchTerm('');
-                            }}
-                            style={{
-                              width: '100%', padding: '10px 14px', border: 'none', background: '#F4F5F7',
-                              textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                              fontSize: 14, color: '#DE350B', fontWeight: 500, transition: 'background 100ms',
-                              borderBottom: '1px solid #EBECF0',
-                            }}
-                            onMouseEnter={e => (e.currentTarget.style.background = '#FFEBE6')}
-                            onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F7')}
-                          >
-                            Remove
-                          </button>
-                        )}
-                        {(allEpics as any[])
-                          .filter((epic: any) => {
-                            if (!epicSearchTerm) return true;
-                            const term = epicSearchTerm.toLowerCase();
-                            return epic.issue_key?.toLowerCase().includes(term) || epic.summary?.toLowerCase().includes(term);
-                          })
-                          .map((epic: any) => (
-                            <button
-                              key={epic.id}
-                              onClick={() => {
-                                handleBreadcrumbParentChange(epic.issue_key);
-                                setShowAddEpicPanel(false);
-                                setEpicSearchTerm('');
-                              }}
-                              style={{
-                                width: '100%', padding: '10px 14px', border: 'none', background: 'transparent',
-                                textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10,
-                                fontSize: 14, color: '#172B4D', transition: 'background 100ms',
-                              }}
-                              onMouseEnter={e => (e.currentTarget.style.background = '#DEEBFF')}
-                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                            >
-                              <JiraIssueTypeIcon type="epic" size={16} />
-                              <span>{epic.issue_key} {epic.summary}</span>
-                            </button>
-                          ))}
-                        {allEpics.length === 0 && (
-                          <div style={{ padding: '12px 14px', fontSize: 13, color: '#6B778C' }}>No epics found</div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </PopoverContent>
-            </Popover>
+            <AddParentPicker
+              issueKey={issueKey ?? item?.issue_key ?? ''}
+              parentKey={parentItem?.issue_key ?? item?.parent_key ?? null}
+              projectKey={projectKey}
+              parentIssueType={parentItem?.issue_type ?? 'epic'}
+              onParentChange={handleBreadcrumbParentChange}
+              variant="breadcrumb"
+            />
             <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
             <span>{issueKey}</span>
@@ -725,21 +530,16 @@ export function IssueContentView({
                     )}
                   </div>
                 </div>
-                {/* Parent — editable via canonical ParentFieldPicker */}
+                {/* Parent — canonical AddParentPicker (field variant) */}
                 <div className="awKeyDetailRow">
                   <div className="awKeyDetailLabel">Parent</div>
                   <div className="awKeyDetailValue" style={{ overflow: 'visible' }}>
-                    <ParentFieldPicker
-                      storyKey={issueKey ?? item?.issue_key ?? ''}
+                    <AddParentPicker
+                      issueKey={issueKey ?? item?.issue_key ?? ''}
                       parentKey={item?.parent_key ?? null}
                       projectKey={projectKey}
-                      onParentChange={async (newParentKey) => {
-                        await (supabase.from('ph_issues') as any)
-                          .update({ parent_key: newParentKey })
-                          .eq('issue_key', issueKey ?? item?.issue_key);
-                        queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
-                        queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                      }}
+                      onParentChange={handleBreadcrumbParentChange}
+                      variant="field"
                     />
                   </div>
                 </div>
