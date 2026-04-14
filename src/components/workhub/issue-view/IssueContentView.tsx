@@ -239,9 +239,9 @@ export function IssueContentView({
 
           {/* ── Subtasks Panel (#28: actions already in SubtasksPanel) ── */}
           <SubtasksPanel
-            parentKey={issueKey!}
-            provider={subtasksProvider}
-            externalChildren={childItems}
+            storyKey={issueKey!}
+            storyId={item?.id || ''}
+            projectKey={item?.project_key || ''}
           />
 
           {/* ── Linked work items (#29) ── */}
