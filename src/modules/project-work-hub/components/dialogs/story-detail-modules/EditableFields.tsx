@@ -389,9 +389,11 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
       {open && (() => {
         return (
           <div style={{
-            ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', right: 0, marginTop: 4,
+            ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
             width: Math.max(containerRef.current?.offsetWidth ?? 280, 280),
+            minWidth: 280,
             maxHeight: 380, display: 'flex', flexDirection: 'column', overflow: 'hidden',
+            zIndex: 1000,
           }}>
             {/* Search/create input */}
             <div style={{ padding: '8px 8px 4px' }}>

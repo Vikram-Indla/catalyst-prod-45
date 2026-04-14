@@ -361,7 +361,7 @@ export default function StoryDetailModal({
       setLocalPriority(issue.priority ?? 'Medium');
       setAcceptanceCriteria(issue.acceptance_criteria ?? '');
     }
-  }, [issue?.id]);
+  }, [issue?.id, issue?.priority, issue?.status]);
 
   /* ── MUTATIONS ─────────────────────────────── */
 
