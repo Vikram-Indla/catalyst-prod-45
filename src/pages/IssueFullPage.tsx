@@ -1,0 +1,164 @@
+/**
+ * IssueFullPage — Full-screen issue detail (no top nav, no sidebar).
+ * Route: /issue/:issueKey  (outside CatalystShell)
+ * 
+ * Resolves the issue key from ph_issues, renders CatalystDetailRouter
+ * in fullPageMode, and updates document.title to "[KEY] Summary".
+ */
+import { lazy, Suspense, useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useIssueDocumentTitle } from '@/hooks/useIssueDocumentTitle';
+import { Loader2 } from 'lucide-react';
+
+const CatalystDetailRouter = lazy(
+  () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
+);
+
+interface ResolvedIssue {
+  id: string;
+  issue_type: string;
+  project_key: string;
+  summary: string | null;
+}
+
+export default function IssueFullPage() {
+  const { issueKey } = useParams<{ issueKey: string }>();
+  const navigate = useNavigate();
+
+  const [issue, setIssue] = useState<ResolvedIssue | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [errorOccurred, setErrorOccurred] = useState(false);
+
+  // Dynamic document.title
+  useIssueDocumentTitle({
+    issueKey,
+    summary: issue?.summary,
+    isLoading: loading,
+    isError: errorOccurred,
+    isNotFound: notFound,
+  });
+
+  useEffect(() => {
+    if (!issueKey) {
+      setLoading(false);
+      setNotFound(true);
+      return;
+    }
+
+    let cancelled = false;
+    setIssue(null);
+    setLoading(true);
+    setNotFound(false);
+    setErrorOccurred(false);
+
+    async function resolve() {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('ph_issues')
+          .select('id, issue_type, project_key, summary')
+          .eq('issue_key', issueKey)
+          .maybeSingle();
+
+        if (cancelled) return;
+
+        if (error) {
+          console.error('[IssueFullPage] Supabase error:', error);
+          setErrorOccurred(true);
+          setLoading(false);
+          return;
+        }
+
+        if (!data) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        }
+
+        setIssue({
+          id: data.id,
+          issue_type: data.issue_type,
+          project_key: data.project_key,
+          summary: data.summary,
+        });
+        setLoading(false);
+      } catch (err: any) {
+        if (!cancelled) {
+          console.error('[IssueFullPage] Exception:', err);
+          setErrorOccurred(true);
+          setLoading(false);
+        }
+      }
+    }
+
+    resolve();
+    return () => { cancelled = true; };
+  }, [issueKey]);
+
+  const handleClose = () => {
+    // Close the tab — if opened via window.open or target="_blank",
+    // window.close() works. Fallback: navigate to home.
+    window.close();
+    // If window.close() didn't work (e.g., manually typed URL), navigate
+    setTimeout(() => navigate('/for-you', { replace: true }), 100);
+  };
+
+  if (loading) {
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        height: '100vh', fontFamily: 'Inter, sans-serif', color: '#5E6C84',
+        background: '#FFFFFF',
+      }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+          <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
+          <span style={{ fontSize: 14 }}>Loading {issueKey}…</span>
+        </div>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (notFound || errorOccurred || !issue) {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        height: '100vh', fontFamily: 'Inter, sans-serif', gap: 12,
+        background: '#FFFFFF',
+      }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>
+          {notFound ? 'Issue not found' : 'Error loading issue'}
+        </span>
+        <span style={{ fontSize: 13, color: '#5E6C84' }}>
+          {issueKey} could not be found or has been deleted.
+        </span>
+        <button
+          onClick={handleClose}
+          style={{
+            marginTop: 8, padding: '8px 16px', background: '#2563EB', color: '#FFFFFF',
+            border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer',
+            fontFamily: 'Inter, sans-serif',
+          }}
+        >
+          Close
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      <Suspense fallback={null}>
+        <CatalystDetailRouter
+          isOpen={true}
+          onClose={handleClose}
+          itemId={issue.id}
+          projectKey={issue.project_key}
+          itemType={issue.issue_type}
+          fullPageMode={true}
+        />
+      </Suspense>
+    </div>
+  );
+}
