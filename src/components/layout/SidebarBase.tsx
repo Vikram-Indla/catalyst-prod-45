@@ -125,8 +125,8 @@ export function SidebarBase({
     badgeText: isDark ? 'var(--cp-t2)' : '#94A3B8',
   };
 
-  const chevronColor = isDark ? 'var(--cp-t2)' : '#94A3B8';
-  const chevronHoverColor = isDark ? 'var(--cp-t1)' : '#334155';
+  const chevronColor = isDark ? 'var(--cp-blue)' : 'var(--cp-blue)';
+  const chevronHoverColor = isDark ? 'var(--cp-blue)' : 'var(--cp-blue)';
   const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const sidebarBorder = isDark ? '#2E2E2E' : '#E2E8F0';
   const dividerColor = isDark ? '#2E2E2E' : '#F1F5F9';
