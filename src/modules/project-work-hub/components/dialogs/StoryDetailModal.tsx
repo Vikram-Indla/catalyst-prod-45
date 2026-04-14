@@ -127,7 +127,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
 
 export default function StoryDetailModal({
   isOpen, onClose, itemId, projectId, projectKey, onOpenItem,
-  panelMode, onTogglePanelMode, navigationItems, onNavigate,
+  panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: StoryDetailModalProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -561,7 +561,7 @@ export default function StoryDetailModal({
   const navPrev = () => { if (canNavPrev && navigationItems) onNavigate?.(navigationItems[currentNavIndex - 1].id); };
   const navNext = () => { if (canNavNext && navigationItems) onNavigate?.(navigationItems[currentNavIndex + 1].id); };
 
-  const OVERLAY: React.CSSProperties = panelMode ? {
+  const OVERLAY: React.CSSProperties = (fullPageMode || panelMode) ? {
     position: 'relative', width: '100%', height: '100%',
     display: 'flex', flexDirection: 'column',
   } : {
@@ -573,7 +573,10 @@ export default function StoryDetailModal({
     animation: 'sdm-overlay-in 200ms ease-out',
   };
 
-  const MODAL: React.CSSProperties = panelMode ? {
+  const MODAL: React.CSSProperties = fullPageMode ? {
+    width: '100%', height: '100%', background: '#FFFFFF',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+  } : panelMode ? {
     width: '100%', height: '100%',
     background: '#FFFFFF',
     display: 'flex', flexDirection: 'column',
