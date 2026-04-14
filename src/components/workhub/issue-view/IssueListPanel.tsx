@@ -135,6 +135,7 @@ export function IssueListPanel({
     const sorted = [...items];
     sorted.sort((a, b) => {
       let cmp = 0;
+      const collate = (a2: string | null, b2: string | null) => (a2 ?? '').localeCompare(b2 ?? '');
       switch (sortKey) {
         case 'updated':
           cmp = new Date(b.jira_updated_at ?? 0).getTime() - new Date(a.jira_updated_at ?? 0).getTime();
@@ -153,6 +154,21 @@ export function IssueListPanel({
           break;
         case 'status':
           cmp = (STATUS_CAT_ORDER[a.status_category ?? 'todo'] ?? 99) - (STATUS_CAT_ORDER[b.status_category ?? 'todo'] ?? 99);
+          break;
+        case 'assignee':
+          cmp = collate(a.assignee_display_name, b.assignee_display_name);
+          break;
+        case 'reporter':
+          cmp = collate(a.reporter_name, b.reporter_name);
+          break;
+        case 'summary':
+          cmp = collate(a.summary, b.summary);
+          break;
+        case 'work_type':
+          cmp = collate(a.issue_type, b.issue_type);
+          break;
+        case 'resolution':
+          cmp = collate(a.resolution, b.resolution);
           break;
       }
       return sortAsc ? cmp : -cmp;
