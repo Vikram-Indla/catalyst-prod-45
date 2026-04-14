@@ -259,8 +259,13 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew, existingLinkedKe
 
       {/* + Create linked work item / Link / Cancel */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <button onClick={onCreateNew} style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#172B4D', fontFamily: 'inherit', fontWeight: 500, padding: 0 }}>
-          <Plus size={14} /> Create linked work item
+        <button
+          onClick={onCreateNew}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 14, color: '#44546F', fontFamily: 'inherit', fontWeight: 400, padding: 0, textDecoration: 'none' }}
+          onMouseEnter={e => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = '#172B4D'; }}
+          onMouseLeave={e => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = '#44546F'; }}
+        >
+          <Plus size={14} strokeWidth={1.5} /> Create linked work item
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
           <button
