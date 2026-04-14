@@ -326,8 +326,8 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
   }, {} as Record<string, any[]>);
 
   return (
-    <SectionBlock title="Linked work items" count={links.length} defaultExpanded={links.length > 0} headerRight={
-      <button onClick={() => setShowAdd(true)} title="Link issue" style={{
+    <SectionBlock title="Linked work items" count={links.length} defaultExpanded headerRight={
+      <button onClick={e => { e.stopPropagation(); setShowAdd(true); }} title="Link issue" style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
         cursor: 'pointer', color: '#6B778C', transition: 'background 0.15s, color 0.15s',
@@ -341,7 +341,12 @@ export function LinkedIssuesSection({ issueId }: { issueId: string }) {
 
       {isLoading && <SkeletonRows />}
       {!isLoading && links.length === 0 && !showAdd && (
-        <EmptyState heading="No linked issues" sub="Link related, blocking, or duplicate issues" cta="+ Link issue" onCta={() => setShowAdd(true)} />
+        <div style={{ padding: '8px 0', fontSize: 13, color: '#6B778C' }}>
+          No linked issues.{' '}
+          <button onClick={() => setShowAdd(true)} style={{ border: 'none', background: 'none', color: '#0052CC', cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', padding: 0, fontWeight: 500 }}>
+            + Link issue
+          </button>
+        </div>
       )}
 
       {/* Grouped link display — Jira style */}
