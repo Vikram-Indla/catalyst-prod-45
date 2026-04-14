@@ -23,6 +23,7 @@ import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialo
 import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection';
 import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
+import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 
 
@@ -533,64 +534,92 @@ export function IssueContentView({
           </span>
         </div>
 
-        {/* Details section */}
-        <div className="awDetailsSection">
-          <div className="awDetailsSectionHead" onClick={() => toggle('details')}>
-            {collapsed.details ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
-            Details
+        {/* Details section — identical to Story Detail Modal sidebar */}
+        <div style={{ marginBottom: 20, padding: '0 16px' }}>
+          <div onClick={() => toggle('details')} style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', marginBottom: 12, userSelect: 'none' }}>
+            {collapsed.details
+              ? <ChevronRight size={14} color="#42526E" />
+              : <ChevronDown size={14} color="#42526E" />
+            }
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
           </div>
           {!collapsed.details && (
-            <div className="awDetailsSectionBody">
+            <div>
               {/* Fix versions */}
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">Fix versions</div>
-                <div className="awFieldValue"><span className="awFieldNone">{fixVersionName || 'None'}</span></div>
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Fix versions</div>
+                <div style={{ display: 'flex', alignItems: 'center', padding: '4px 6px', borderRadius: 4, minHeight: 32 }}>
+                  {fixVersionName ? (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 12, fontWeight: 500, padding: '2px 8px', borderRadius: 3, background: '#DEEBFF', color: '#0747A6' }}>
+                      {fixVersionName}
+                    </span>
+                  ) : (
+                    <span style={{ color: '#6B778C', fontSize: 14 }}>None</span>
+                  )}
+                </div>
               </div>
-              {/* #20: Assignee + always show "Assign to me" */}
-              <div className="awFieldRow awFieldRowBorder awFieldRowTall">
-                <div className="awFieldLabel">Assignee</div>
-                <div className="awFieldValue" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    {item?.assignee_display_name ? <>
-                      <Avatar name={item.assignee_display_name} url={item.assignee_avatar} size={24} />
-                      <span>{item.assignee_display_name}</span>
-                    </> : (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B3BAC5" strokeWidth="1.5"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 10-16 0"/></svg>
-                        <span className="awFieldNone">Unassigned</span>
-                      </span>
-                    )}
+
+              {/* Assignee — Jira parity: avatar + name, click-to-edit dropdown */}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
+                {item?.id ? (
+                  <EditableAssignee
+                    issueId={item.id}
+                    projectId={projectKey}
+                    currentAssigneeId={item.assignee_id ?? null}
+                    currentAssigneeName={item.assignee_display_name ?? null}
+                    onUpdate={() => {}}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px' }}>
+                    <span style={{ fontSize: 14, color: '#97A0AF' }}>Unassigned</span>
                   </div>
-                  <span style={{ color: '#0C66E4', fontSize: 12, cursor: 'pointer', marginLeft: item?.assignee_display_name ? 30 : 26 }}>Assign to me</span>
+                )}
+              </div>
+
+              {/* Priority — Jira parity: SVG icon + dark text, click-to-edit */}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
+                {item?.id ? (
+                  <EditablePriority
+                    issueId={item.id}
+                    currentPriority={item.priority ?? 'Medium'}
+                    onUpdate={() => {}}
+                  />
+                ) : (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px' }}>
+                    <span style={{ fontSize: 14, color: '#172B4D' }}>Medium</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Reporter — Jira parity: 28px avatar + 14px name */}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
+                  {item?.reporter_name ? (
+                    <>
+                      <Avatar name={item.reporter_name} url={(item as any).reporter_avatar} size={28} />
+                      <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{item.reporter_name}</span>
+                    </>
+                  ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}
                 </div>
               </div>
-              {/* Priority */}
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">Priority</div>
-                <div className="awFieldValue">
-                  <PriorityIcon priority={item?.priority} />
-                  <span>{capitalize(item?.priority ?? 'Medium')}</span>
-                </div>
-              </div>
-              {/* #21: Reporter with photo avatar */}
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">Reporter</div>
-                <div className="awFieldValue">
-                  {item?.reporter_name ? <>
-                    <Avatar name={item.reporter_name} url={(item as any).reporter_avatar} size={24} />
-                    <span>{item.reporter_name}</span>
-                  </> : <span className="awFieldNone">None</span>}
-                </div>
-              </div>
-              {/* Labels */}
-              <div className="awFieldRow awFieldRowBorder">
-                <div className="awFieldLabel">Labels</div>
-                <div className="awFieldValue">
-                  {item?.labels && item.labels.length > 0
-                    ? item.labels.map((l, i) => <span key={i} className="awLabelChip">{l}</span>)
-                    : <span className="awFieldNone">None</span>
-                  }
-                </div>
+
+              {/* Labels — Jira parity: colored chips, click-to-edit */}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Labels</div>
+                {item?.id ? (
+                  <EditableLabels
+                    issueId={item.id}
+                    currentLabels={item.labels ?? []}
+                    onUpdate={() => {}}
+                  />
+                ) : (
+                  <div style={{ padding: '4px 8px' }}>
+                    <span style={{ fontSize: 14, color: '#7A869A' }}>None</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
