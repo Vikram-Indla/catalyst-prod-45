@@ -25122,8 +25122,10 @@ export type Database = {
           effective_due_source: string | null
           first_synced_at: string | null
           fix_versions: Json | null
+          flag_reason: string | null
           hierarchy_level: number | null
           id: string
+          is_flagged: boolean | null
           issue_key: string
           issue_type: string
           jira_created_at: string | null
@@ -25171,8 +25173,10 @@ export type Database = {
           effective_due_source?: string | null
           first_synced_at?: string | null
           fix_versions?: Json | null
+          flag_reason?: string | null
           hierarchy_level?: number | null
           id?: string
+          is_flagged?: boolean | null
           issue_key: string
           issue_type?: string
           jira_created_at?: string | null
@@ -25220,8 +25224,10 @@ export type Database = {
           effective_due_source?: string | null
           first_synced_at?: string | null
           fix_versions?: Json | null
+          flag_reason?: string | null
           hierarchy_level?: number | null
           id?: string
+          is_flagged?: boolean | null
           issue_key?: string
           issue_type?: string
           jira_created_at?: string | null
