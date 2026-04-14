@@ -1473,15 +1473,17 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             )}
           </div>
 
-          {/* Parent — canonical from View Story modal */}
-          <div className="csField">
-            <label className="csLabel">Parent</label>
-            <CreateParentPicker
-              projectKey={resolvedKey}
-              value={form.parentId ?? null}
-              onChange={(parentId) => updateField('parentId', parentId)}
-            />
-          </div>
+          {/* Parent — hidden in createLinked mode since linking replaces parent relationship */}
+          {!isCreateLinkedMode && (
+            <div className="csField">
+              <label className="csLabel">Parent</label>
+              <CreateParentPicker
+                projectKey={resolvedKey}
+                value={form.parentId ?? null}
+                onChange={(parentId) => updateField('parentId', parentId)}
+              />
+            </div>
+          )}
 
           {/* Priority — canonical from View Story modal */}
           <div className="csField">
