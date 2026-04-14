@@ -20,6 +20,7 @@ export default function CatalystViewStory({
   projectKey,
   onOpenItem,
   panelMode,
+  fullPageMode,
   onTogglePanelMode,
   navigationItems,
   onNavigate,
@@ -36,6 +37,7 @@ export default function CatalystViewStory({
         projectKey={projectKey}
         onOpenItem={onOpenItem}
         panelMode={panelMode}
+        fullPageMode={fullPageMode}
         onTogglePanelMode={onTogglePanelMode}
         navigationItems={navigationItems}
         onNavigate={onNavigate}

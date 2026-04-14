@@ -127,7 +127,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
 
 export default function StoryDetailModal({
   isOpen, onClose, itemId, projectId, projectKey, onOpenItem,
-  panelMode, onTogglePanelMode, navigationItems, onNavigate,
+  panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: StoryDetailModalProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -536,9 +536,9 @@ export default function StoryDetailModal({
     try { return JSON.parse(issue.labels as any); } catch { return []; }
   }, [issue?.labels]);
 
-  // Escape key to close modal
+  // Escape key to close modal (not in full-page mode)
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || fullPageMode) return;
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
         onClose();
@@ -546,7 +546,7 @@ export default function StoryDetailModal({
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+  }, [isOpen, fullPageMode, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
 
   if (!isOpen) return null;
 
@@ -561,7 +561,7 @@ export default function StoryDetailModal({
   const navPrev = () => { if (canNavPrev && navigationItems) onNavigate?.(navigationItems[currentNavIndex - 1].id); };
   const navNext = () => { if (canNavNext && navigationItems) onNavigate?.(navigationItems[currentNavIndex + 1].id); };
 
-  const OVERLAY: React.CSSProperties = panelMode ? {
+  const OVERLAY: React.CSSProperties = (fullPageMode || panelMode) ? {
     position: 'relative', width: '100%', height: '100%',
     display: 'flex', flexDirection: 'column',
   } : {
@@ -573,7 +573,10 @@ export default function StoryDetailModal({
     animation: 'sdm-overlay-in 200ms ease-out',
   };
 
-  const MODAL: React.CSSProperties = panelMode ? {
+  const MODAL: React.CSSProperties = fullPageMode ? {
+    width: '100%', height: '100%', background: '#FFFFFF',
+    display: 'flex', flexDirection: 'column', overflow: 'hidden',
+  } : panelMode ? {
     width: '100%', height: '100%',
     background: '#FFFFFF',
     display: 'flex', flexDirection: 'column',
@@ -593,7 +596,7 @@ export default function StoryDetailModal({
   return (
     <>
       {/* OVERLAY */}
-      <div style={OVERLAY} onClick={panelMode ? undefined : onClose}>
+      <div style={OVERLAY} onClick={(panelMode || fullPageMode) ? undefined : onClose}>
         <div data-sdm-scope style={MODAL} onClick={e => e.stopPropagation()}>
 
           {/* ── A. TOP BAR — Jira breadcrumb + actions ─────── */}
@@ -648,8 +651,8 @@ export default function StoryDetailModal({
                   </div>
                 )}
               </div>
-              {/* Expand/Collapse panel toggle */}
-              {onTogglePanelMode && (
+              {/* Expand/Collapse panel toggle — hidden in full-page mode */}
+              {onTogglePanelMode && !fullPageMode && (
                 <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
@@ -693,6 +696,8 @@ export default function StoryDetailModal({
                   </button>
                 </div>
               )}
+              {/* Close — hidden in full-page mode */}
+              {!fullPageMode && (
               <button onClick={onClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                 borderRadius: 4, color: '#5E6C84', fontSize: 16, display: 'flex', alignItems: 'center',
@@ -701,6 +706,7 @@ export default function StoryDetailModal({
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
               ><X size={16} /></button>
+              )}
             </div>
           </div>
 
