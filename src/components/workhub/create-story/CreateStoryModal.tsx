@@ -956,18 +956,16 @@ function LinkedWorkItemsField({
         .limit(25);
       if (searchQuery.trim()) {
         const term = searchQuery.trim();
-        // Check if it looks like an issue key (e.g. BAU-1234)
         if (/^[A-Z]+-\d+$/i.test(term)) {
           q = q.ilike('issue_key', `%${term}%`);
         } else if (term.includes('/browse/')) {
-          // Extract key from URL like .../browse/BAU-1234
           const match = term.match(/\/browse\/([A-Z]+-\d+)/i);
           if (match) q = q.ilike('issue_key', `%${match[1]}%`);
         } else {
           q = q.or(`issue_key.ilike.%${term}%,summary.ilike.%${term}%`);
         }
       }
-      const { data } = await q.order('updated_at', { ascending: false });
+      const { data } = await q.order('jira_updated_at', { ascending: false });
       return (data || []).filter(r => !linkedItems.some(li => li.key === r.issue_key));
     },
     enabled: pickerOpen,
