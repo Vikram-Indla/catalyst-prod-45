@@ -951,10 +951,10 @@ function LinkedWorkItemsField({
   const { data: searchResults = [], isFetching } = useQuery({
     queryKey: ['linked-item-search', searchQuery, projectKey],
     queryFn: async () => {
-      let q = supabase.from('ph_issues').select('issue_key, title, issue_type').limit(20);
+      let q = supabase.from('ph_issues').select('issue_key, summary, issue_type').limit(20);
       if (projectKey) q = q.eq('project_key', projectKey);
       if (searchQuery.trim()) {
-        q = q.or(`issue_key.ilike.%${searchQuery.trim()}%,title.ilike.%${searchQuery.trim()}%`);
+        q = q.or(`issue_key.ilike.%${searchQuery.trim()}%,summary.ilike.%${searchQuery.trim()}%`);
       }
       const { data } = await q.order('updated_at', { ascending: false });
       return (data || []).filter(r => !linkedItems.some(li => li.key === r.issue_key));
