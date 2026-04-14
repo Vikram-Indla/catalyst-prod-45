@@ -111,6 +111,7 @@ export function IssueContentView({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activityTab, setActivityTab] = useState<ActivityTab>('all');
   const [commentText, setCommentText] = useState('');
+  const [commentFocused, setCommentFocused] = useState(false);
   const [posting, setPosting] = useState(false);
   const [logWorkOpen, setLogWorkOpen] = useState(false);
   const [logHours, setLogHours] = useState('');
@@ -141,8 +142,15 @@ export function IssueContentView({
   const handleComment = async () => {
     if (!commentText.trim() || !createComment) return;
     setPosting(true);
-    try { await createComment.mutateAsync({ body: commentText.trim(), authorId: user?.id ?? '' }); setCommentText(''); }
-    catch {} finally { setPosting(false); }
+    try {
+      await createComment.mutateAsync({ body: commentText.trim(), authorId: user?.id ?? '' });
+      setCommentText('');
+      setCommentFocused(false);
+    } catch {
+      // Error toast handled by mutation onError
+    } finally {
+      setPosting(false);
+    }
   };
 
   const handleLogWork = async () => {
@@ -322,22 +330,53 @@ export function IssueContentView({
               </div>
             </div>
             <div className="awSectionBody">
-              {/* Comment box */}
-              <div className="awCommentBox">
-                {user && <Avatar name={user.email ?? 'You'} size={28} />}
-                <input
-                  placeholder="Add a comment..."
-                  value={commentText}
-                  onChange={e => setCommentText(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleComment(); }}
-                  disabled={posting}
-                />
-                {commentText.trim() && (
-                  <button onClick={handleComment} disabled={posting} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--aw-blue)' }}>
-                    <Send style={{ width: 16, height: 16 }} />
-                  </button>
-                )}
-              </div>
+              {/* Comment composer — Atlassian-style expand on focus */}
+              {!commentFocused ? (
+                <div className="awCommentBox" onClick={() => setCommentFocused(true)}>
+                  {user && <Avatar name={user.email ?? 'You'} size={28} />}
+                  <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13, cursor: 'text' }}>Add a comment...</span>
+                </div>
+              ) : (
+                <div className="awCommentEditor">
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                    {user && <Avatar name={user.email ?? 'You'} size={28} />}
+                    <textarea
+                      autoFocus
+                      rows={3}
+                      placeholder="What do you want to say?"
+                      value={commentText}
+                      onChange={e => setCommentText(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleComment(); }
+                        if (e.key === 'Escape') { if (!commentText.trim()) { setCommentFocused(false); } }
+                      }}
+                      disabled={posting}
+                      className="awCommentTextarea"
+                    />
+                  </div>
+                  <div className="awCommentActions">
+                    <span style={{ fontSize: 11, color: 'var(--aw-text-subtle)' }}>
+                      <strong style={{ color: 'var(--aw-text-subtle)' }}>Tip:</strong> press <kbd style={{ padding: '1px 4px', borderRadius: 3, border: '1px solid var(--aw-border)', fontSize: 10 }}>Ctrl+Enter</kbd> to save
+                    </span>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button
+                        className="awCommentCancel"
+                        onClick={() => { setCommentFocused(false); setCommentText(''); }}
+                        disabled={posting}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className="awCommentSave"
+                        onClick={handleComment}
+                        disabled={posting || !commentText.trim()}
+                      >
+                        {posting ? 'Saving...' : 'Save'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Log work form (toggle) — visible on Work log tab */}
               {activityTab === 'worklog' && (
