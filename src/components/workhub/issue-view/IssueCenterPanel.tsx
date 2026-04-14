@@ -4,7 +4,7 @@
  * Breadcrumb parent is clickable. Status pill + Link/Move actions.
  */
 import { useState, useMemo } from 'react';
-import { Link2, ArrowRightLeft, MoreHorizontal, Pencil, MessageSquare, History, Clock, FileText } from 'lucide-react';
+import { Link2, ArrowRightLeft, Pencil, MessageSquare, History, FileText } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import type { AllWorkItem } from '@/types/allwork.types';
@@ -16,7 +16,7 @@ interface Props {
   loading?: boolean;
 }
 
-type ActivityTab = 'all' | 'comments' | 'history' | 'worklog';
+type ActivityTab = 'all' | 'comments' | 'history';
 
 /** Split raw description into logical paragraphs for readable rendering */
 function DescriptionRenderer({ text }: { text: string }) {
@@ -103,7 +103,6 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
     { key: 'all', label: 'All', icon: <FileText style={{ width: 14, height: 14 }} /> },
     { key: 'comments', label: 'Comments', icon: <MessageSquare style={{ width: 14, height: 14 }} /> },
     { key: 'history', label: 'History', icon: <History style={{ width: 14, height: 14 }} /> },
-    { key: 'worklog', label: 'Work log', icon: <Clock style={{ width: 14, height: 14 }} /> },
   ];
 
   return (
@@ -129,9 +128,6 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
             <div style={{ minWidth: 0, flex: 1 }}>
               <div className="awCenterSummary">{item?.summary ?? 'Untitled'}</div>
             </div>
-            <button className="awPill" style={{ marginLeft: 'auto', flexShrink: 0 }}>
-              <MoreHorizontal style={{ width: 14, height: 14 }} />
-            </button>
           </div>
 
           {/* Action pills */}
