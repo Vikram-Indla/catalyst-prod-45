@@ -39,13 +39,15 @@ serve(async (req) => {
     }
 
     // 2. Fetch candidate pool (same project, recent, limit 200 for AI to rank)
-    const { data: candidates } = await supabase.from("ph_issues")
+    const { data: candidates, error: candError } = await supabase.from("ph_issues")
       .select("issue_key, summary, issue_type, status, status_category")
       .eq("project_key", source.project_key)
       .is("jira_removed_at", null)
       .neq("issue_key", issueKey)
-      .order("jira_updated_at", { ascending: false })
+      .order("jira_updated_at", { ascending: false, nullsFirst: false })
       .limit(200);
+
+    console.log("Candidates found:", candidates?.length, "Error:", candError?.message);
 
     if (!candidates?.length) {
       return new Response(JSON.stringify({ suggestions: [] }), {
