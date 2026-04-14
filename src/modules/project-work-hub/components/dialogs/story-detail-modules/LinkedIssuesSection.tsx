@@ -126,8 +126,12 @@ function AddLinkRow({ issueId, onClose, onSuccess, onCreateNew }: { issueId: str
     enabled: true,
   });
 
-  // Filter out already-selected items from results
-  const filteredResults = results.filter((r: any) => !selectedItems.some(s => s.item_key === r.issue_key));
+  // Filter out already-selected AND already-linked items from results
+  const filteredResults = results.filter((r: any) =>
+    !selectedItems.some(s => s.item_key === r.issue_key) &&
+    r.issue_key !== issueId &&
+    !existingLinkedKeys.has(r.issue_key)
+  );
 
   const linkMutation = useMutation({
     mutationFn: async () => {
