@@ -159,26 +159,7 @@
   display: flex;
   flex-direction: column;
   background: var(--aw-bg);
-  overflow-y: scroll;
-}
-.awCol::-webkit-scrollbar {
-  width: 8px;
-}
-.awCol::-webkit-scrollbar-track {
-  background: transparent;
-}
-.awCol::-webkit-scrollbar-thumb {
-  background: #C1C7CD;
-  border-radius: 4px;
-}
-.awCol::-webkit-scrollbar-thumb:hover {
-  background: #A8B0B8;
-}
-.dark .awCol::-webkit-scrollbar-thumb {
-  background: #454545;
-}
-.dark .awCol::-webkit-scrollbar-thumb:hover {
-  background: #5A5A5A;
+  overflow: hidden;
 }
 
 /* Column separator (static 1px line between list and content) */
@@ -290,12 +271,31 @@
   height: 16px;
 }
 
-/* ── Body (scrollable) ── */
+/* ── Body (scrollable — always-visible scrollbar) ── */
 .jlpBody {
   flex: 1 1 auto;
   min-height: 0;
-  overflow-y: auto;
+  overflow-y: scroll;
   outline: none;
+}
+.jlpBody::-webkit-scrollbar {
+  width: 8px;
+}
+.jlpBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+.jlpBody::-webkit-scrollbar-thumb {
+  background: #C1C7CD;
+  border-radius: 4px;
+}
+.jlpBody::-webkit-scrollbar-thumb:hover {
+  background: #A8B0B8;
+}
+.dark .jlpBody::-webkit-scrollbar-thumb {
+  background: #454545;
+}
+.dark .jlpBody::-webkit-scrollbar-thumb:hover {
+  background: #5A5A5A;
 }
 
 /* ── Card list ── */
