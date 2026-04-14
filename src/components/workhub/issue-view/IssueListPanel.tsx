@@ -25,25 +25,54 @@ const SORT_OPTIONS: { key: SortKey; label: string }[] = [
   { key: 'status', label: 'Status' },
 ];
 
-/* ── Avatar resolution hook ── */
+/* ── Avatar resolution hook (jira_identity_map → profiles fallback) ── */
 function useAvatarMap(items: AllWorkItem[]) {
-  // Collect unique assignee names that need avatar resolution
   const assigneeNames = useMemo(() => {
     const names = new Set<string>();
     items.forEach(i => { if (i.assignee_display_name) names.add(i.assignee_display_name); });
     return Array.from(names);
   }, [items]);
 
+  const assigneeIds = useMemo(() => {
+    const ids = new Set<string>();
+    items.forEach(i => { if (i.assignee_id) ids.add(i.assignee_id); });
+    return Array.from(ids);
+  }, [items]);
+
+  // Build name→id mapping for merging results
+  const nameToId = useMemo(() => {
+    const m: Record<string, string> = {};
+    items.forEach(i => { if (i.assignee_display_name && i.assignee_id) m[i.assignee_display_name] = i.assignee_id; });
+    return m;
+  }, [items]);
+
   const { data: profileMap } = useQuery({
-    queryKey: ['avatar-map-profiles', assigneeNames.join(',')],
+    queryKey: ['avatar-map-combined', assigneeNames.join(','), assigneeIds.join(',')],
     queryFn: async () => {
       if (assigneeNames.length === 0) return {};
-      const { data } = await supabase
-        .from('profiles')
-        .select('full_name, avatar_url')
-        .in('full_name', assigneeNames);
       const map: Record<string, string> = {};
-      (data ?? []).forEach((p: any) => { if (p.avatar_url) map[p.full_name] = p.avatar_url; });
+
+      // 1. Try jira_identity_map first (has Jira face avatars)
+      if (assigneeIds.length > 0) {
+        const { data: jiraRows } = await supabase
+          .from('jira_identity_map')
+          .select('jira_account_id, avatar_url, display_name')
+          .in('jira_account_id', assigneeIds);
+        (jiraRows ?? []).forEach((r: any) => {
+          if (r.avatar_url && r.display_name) map[r.display_name] = r.avatar_url;
+        });
+      }
+
+      // 2. Fallback: profiles table for any names still missing
+      const missing = assigneeNames.filter(n => !map[n]);
+      if (missing.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('full_name, avatar_url')
+          .in('full_name', missing);
+        (profiles ?? []).forEach((p: any) => { if (p.avatar_url) map[p.full_name] = p.avatar_url; });
+      }
+
       return map;
     },
     enabled: assigneeNames.length > 0,
