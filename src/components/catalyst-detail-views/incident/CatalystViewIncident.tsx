@@ -48,7 +48,7 @@ export default function CatalystViewIncident({
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
-      <LinkedIssuesSection issueId={itemId} />
+      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );
