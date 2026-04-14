@@ -26,7 +26,8 @@ import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialo
 import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection';
 import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
 import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/TestHubSection';
-import { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
@@ -180,44 +181,10 @@ export function IssueContentView({
   const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
-  const [showAddEpicPanel, setShowAddEpicPanel] = useState(false);
-  const [epicSearchTerm, setEpicSearchTerm] = useState('');
 
   // Derive project key from issue key (e.g. "BAU-5364" → "BAU")
   const projectKey = issueKey?.split('-')[0] ?? '';
 
-  // Recent epics for breadcrumb "Add/Change parent"
-  const { data: recentEpics = [] } = useQuery({
-    queryKey: ['ph-recent-epics-aw', projectKey],
-    enabled: !!projectKey,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', projectKey)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .neq('status_category', 'done')
-        .order('jira_updated_at', { ascending: false })
-        .limit(5);
-      return data || [];
-    },
-    staleTime: 60000,
-  });
-
-  // All epics for "View all epics" panel
-  const { data: allEpics = [] } = useQuery({
-    queryKey: ['ph-all-epics-aw', projectKey],
-    enabled: !!projectKey && showAddEpicPanel,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', projectKey)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .order('jira_updated_at', { ascending: false })
-        .limit(100);
-      return data || [];
-    },
-    staleTime: 60000,
-  });
 
   const handleBreadcrumbParentChange = useCallback(async (newParentKey: string | null) => {
     if (!item?.id) return;
