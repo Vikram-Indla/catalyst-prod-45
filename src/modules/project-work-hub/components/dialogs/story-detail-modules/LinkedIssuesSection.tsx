@@ -216,7 +216,7 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
 
       {/* Search results dropdown */}
       {showDropdown && filteredResults.length > 0 && (
-        <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
+        <div ref={dropdownRef} style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
