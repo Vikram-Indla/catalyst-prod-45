@@ -8,10 +8,10 @@
  */
 import { useState, useMemo } from 'react';
 import { X, Search, Loader2, AlertTriangle, Flag, Copy, ArrowRight, Archive, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { catalystToast } from '@/lib/catalystToast';
 import { STATUS_OPTION_GROUPS } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
 import { resolveStatusCategory } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
@@ -168,10 +168,10 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
       queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       queryClient.invalidateQueries({ queryKey: ['project-work-items'] });
-      toast.success(newFlagged ? 'Flag added' : 'Flag removed');
+      catalystToast.success(newFlagged ? 'Flag added' : 'Flag removed');
       onClose();
     },
-    onError: () => toast.error('Failed to update flag'),
+    onError: () => catalystToast.error('Failed to update flag'),
   });
 
   return (
@@ -273,12 +273,12 @@ export function CloneWizard({ issueId, issueKey, item, projectKey, onClose }: {
       return newKey;
     },
     onSuccess: (newKey) => {
-      toast.success(`Cloned as ${newKey}`, { duration: 5000 });
+      catalystToast.success('Issue cloned', `Cloned as ${newKey}`, undefined, 5000);
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       onClose();
     },
-    onError: () => toast.error('Clone failed'),
+    onError: () => catalystToast.error('Clone failed'),
   });
 
   return (
@@ -444,12 +444,12 @@ export function MoveWizard({ issueId, issueKey, item, projectKey, onClose }: {
       });
     },
     onSuccess: () => {
-      toast.success('Issue moved');
+      catalystToast.success('Issue moved');
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       onClose();
     },
-    onError: () => toast.error('Move failed'),
+    onError: () => catalystToast.error('Move failed'),
   });
 
   return (
@@ -573,15 +573,17 @@ export function ArchiveDialog({ issueId, issueKey, onClose }: {
       });
     },
     onSuccess: () => {
-      toast.success('Issue archived', {
-        description: `${issueKey} has been archived and hidden from default views.`,
-        duration: 5000,
-      });
+      catalystToast.success(
+        'Issue archived',
+        `${issueKey} has been archived and hidden from default views.`,
+        undefined,
+        5000
+      );
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       onClose();
     },
-    onError: () => toast.error('Archive failed'),
+    onError: () => catalystToast.error('Archive failed'),
   });
 
   return (
@@ -623,12 +625,12 @@ export function DeleteDialog({ issueId, issueKey, onClose }: {
       });
     },
     onSuccess: () => {
-      toast.success(`${issueKey} deleted`);
+      catalystToast.success('Issue deleted', issueKey);
       queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       onClose();
     },
-    onError: () => toast.error('Delete failed'),
+    onError: () => catalystToast.error('Delete failed'),
   });
 
   return (
