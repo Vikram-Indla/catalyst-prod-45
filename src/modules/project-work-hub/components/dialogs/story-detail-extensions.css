@@ -59,6 +59,7 @@
   display: flex;
   align-items: center;
   gap: 0;
+  margin-left: -4px;
 }
 
 [data-sdm-scope] .sdm-child-title {
@@ -66,7 +67,7 @@
   font-weight: 600;
   color: #29292E;
   margin: 0;
-  padding: 0 4px;
+  padding: 0 4px 0 0;
   line-height: 1.4;
   font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
 }
