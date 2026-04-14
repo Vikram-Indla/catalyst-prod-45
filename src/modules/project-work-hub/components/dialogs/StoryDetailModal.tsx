@@ -276,6 +276,16 @@ export default function StoryDetailModal({
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
+  const [descEditMode, setDescEditMode] = useState(false);
+  const [acEditMode, setAcEditMode] = useState(false);
+  const [descUnsaved, setDescUnsaved] = useState(false);
+  const [acUnsaved, setAcUnsaved] = useState(false);
+  const [titleFocused, setTitleFocused] = useState(false);
+  const [commentSummary, setCommentSummary] = useState<string | null>(null);
+  const [commentSummaryLoading, setCommentSummaryLoading] = useState(false);
+  const [showCommentSummary, setShowCommentSummary] = useState(true);
+  const [showFixVersionDropdown, setShowFixVersionDropdown] = useState(false);
+  const [fixVersionSearch, setFixVersionSearch] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const addMenuRef = useRef<HTMLDivElement>(null);
