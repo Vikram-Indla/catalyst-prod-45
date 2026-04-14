@@ -1,6 +1,6 @@
 /**
- * IssueFullPage — Full-screen issue detail (no top nav, no sidebar).
- * Route: /issue/:issueKey  (outside CatalystShell)
+ * IssueFullPage — Full-width issue detail inside CatalystShell.
+ * Route: /issue/:issueKey  (inside shell — top nav visible, sidebar hidden)
  * 
  * Resolves the issue key from ph_issues, renders CatalystDetailRouter
  * in fullPageMode, and updates document.title to "[KEY] Summary".
@@ -97,10 +97,9 @@ export default function IssueFullPage() {
   }, [issueKey]);
 
   const handleClose = () => {
-    // Close the tab — if opened via window.open or target="_blank",
-    // window.close() works. Fallback: navigate to home.
+    // Try closing the tab first (works when opened via target="_blank")
     window.close();
-    // If window.close() didn't work (e.g., manually typed URL), navigate
+    // Fallback: navigate to home if window.close() doesn't work
     setTimeout(() => navigate('/for-you', { replace: true }), 100);
   };
 
@@ -108,14 +107,12 @@ export default function IssueFullPage() {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100vh', fontFamily: 'Inter, sans-serif', color: '#5E6C84',
-        background: '#FFFFFF',
+        height: '100%', minHeight: 400, fontFamily: 'Inter, sans-serif', color: '#5E6C84',
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-          <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', color: '#2563EB' }} />
+          <Loader2 size={32} className="animate-spin" style={{ color: '#2563EB' }} />
           <span style={{ fontSize: 14 }}>Loading {issueKey}…</span>
         </div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -124,8 +121,7 @@ export default function IssueFullPage() {
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        height: '100vh', fontFamily: 'Inter, sans-serif', gap: 12,
-        background: '#FFFFFF',
+        height: '100%', minHeight: 400, fontFamily: 'Inter, sans-serif', gap: 12,
       }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>
           {notFound ? 'Issue not found' : 'Error loading issue'}
@@ -148,7 +144,7 @@ export default function IssueFullPage() {
   }
 
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ width: '100%', height: '100%', flex: 1, minHeight: 0, overflow: 'hidden' }}>
       <Suspense fallback={null}>
         <CatalystDetailRouter
           isOpen={true}
