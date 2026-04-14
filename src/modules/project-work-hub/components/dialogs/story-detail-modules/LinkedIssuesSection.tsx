@@ -75,21 +75,20 @@ function LinkTypeDropdown({ value, onChange }: { value: string; onChange: (v: st
   );
 }
 
-/* ── Add Link Row (Jira-parity) ── */
+/* ── Add Link Row (Jira-parity, multi-select) ── */
 function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose: () => void; onSuccess: () => void }) {
   const [linkType, setLinkType] = useState(JIRA_LINK_TYPES[0]);
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<{ id: string; item_key: string; summary: string; issue_type?: string } | null>(null);
+  const [selectedItems, setSelectedItems] = useState<{ id: string; item_key: string; summary: string; issue_type?: string }[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setTimeout(() => inputRef.current?.focus(), 50); }, []);
 
-  // Search ph_issues for display, then resolve UUID from ph_work_items
   const { data: results = [] } = useQuery({
     queryKey: ['linkSearch', search],
     queryFn: async () => {
       if (!search.trim()) {
-        // Show recently updated items when no search term
         const { data } = await supabase.from('ph_issues')
           .select('issue_key, summary, issue_type, status, status_category')
           .is('jira_removed_at', null)
@@ -107,59 +106,103 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
     enabled: true,
   });
 
+  // Filter out already-selected items from results
+  const filteredResults = results.filter((r: any) => !selectedItems.some(s => s.item_key === r.issue_key));
+
   const linkMutation = useMutation({
     mutationFn: async () => {
-      if (!selected) return;
-      const { error } = await supabase.from('ph_issue_links').insert({
-        source_id: issueId,
-        target_id: selected.id,
-        link_type: linkType,
-      });
-      if (error) throw error;
+      if (!selectedItems.length) return;
+      for (const item of selectedItems) {
+        const { error } = await supabase.from('ph_issue_links').insert({
+          source_id: issueId,
+          target_id: item.id,
+          link_type: linkType,
+        });
+        if (error) throw error;
+      }
     },
     onSuccess,
   });
 
   const handleSelect = async (r: any) => {
-    // Resolve UUID from ph_work_items
     const { data: workItem } = await supabase.from('ph_work_items')
       .select('id')
       .eq('item_key', r.issue_key)
       .limit(1)
       .maybeSingle();
-    setSelected({
+    setSelectedItems(prev => [...prev, {
       id: workItem?.id ?? r.issue_key,
       item_key: r.issue_key,
       summary: r.summary,
       issue_type: r.issue_type,
-    });
-    setSearch(r.issue_key + ' ' + r.summary);
+    }]);
+    setSearch('');
+    inputRef.current?.focus();
+  };
+
+  const removeSelected = (key: string) => {
+    setSelectedItems(prev => prev.filter(s => s.item_key !== key));
   };
 
   return (
     <div style={{ padding: '12px 0', borderTop: '1px solid #DFE1E6' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
         <LinkTypeDropdown value={linkType} onChange={setLinkType} />
-        <input
-          ref={inputRef}
-          value={search}
-          onChange={e => { setSearch(e.target.value); setSelected(null); }}
-          placeholder="Type, search or paste URL"
+        {/* Multi-select input area */}
+        <div
           style={{
-            flex: 1, height: 36, padding: '0 10px',
-            border: '2px solid #4C9AFF', borderRadius: 3,
-            fontSize: 14, fontFamily: 'inherit', outline: 'none', color: '#172B4D',
+            flex: 1, minHeight: 36, display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+            gap: 4, padding: '4px 8px',
+            border: '2px solid #4C9AFF', borderRadius: 3, background: '#fff',
+            cursor: 'text', position: 'relative',
           }}
-        />
+          onClick={() => inputRef.current?.focus()}
+        >
+          {selectedItems.map(item => {
+            const icon = WORK_ITEM_ICONS[item.issue_type?.toLowerCase() ?? ''] ?? WORK_ITEM_ICONS.story;
+            return (
+              <span key={item.item_key} style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4, height: 24,
+                padding: '0 6px', background: '#F4F5F7', borderRadius: 3, border: '1px solid #DFE1E6',
+                fontSize: 12, fontWeight: 500, color: '#172B4D', whiteSpace: 'nowrap',
+              }}>
+                <span dangerouslySetInnerHTML={{ __html: icon }} style={{ display: 'flex', width: 14, height: 14 }} />
+                {item.item_key}
+                <button onClick={e => { e.stopPropagation(); removeSelected(item.item_key); }}
+                  style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#6B778C', fontSize: 14, lineHeight: 1 }}
+                >×</button>
+              </span>
+            );
+          })}
+          <input
+            ref={inputRef}
+            value={search}
+            onChange={e => { setSearch(e.target.value); setShowDropdown(true); }}
+            onFocus={() => setShowDropdown(true)}
+            placeholder={selectedItems.length ? '' : 'Type, search or paste URL'}
+            style={{
+              flex: 1, minWidth: 120, height: 26, border: 'none', outline: 'none',
+              fontSize: 14, fontFamily: 'inherit', color: '#172B4D', background: 'transparent',
+            }}
+          />
+          {selectedItems.length > 0 && (
+            <button onClick={() => setSelectedItems([])}
+              style={{ display: 'flex', alignItems: 'center', border: 'none', background: 'none', cursor: 'pointer', padding: 0, color: '#6B778C', flexShrink: 0 }}
+              title="Clear all"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#DFE1E6"/><path d="M8 8l8 8M16 8l-8 8" stroke="#6B778C" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Search results dropdown */}
-      {results.length > 0 && !selected && (
+      {showDropdown && filteredResults.length > 0 && (
         <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', marginBottom: 8, boxShadow: '0 4px 8px rgba(9,30,66,.13)' }}>
           <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
             {search.trim() ? 'Search results' : 'Recently viewed'}
           </div>
-          {results.map((r: any) => {
+          {filteredResults.map((r: any) => {
             const issueIcon = WORK_ITEM_ICONS[r.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story;
             return (
               <div key={r.issue_key} onClick={() => handleSelect(r)}
@@ -180,25 +223,30 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
         </div>
       )}
 
-      {/* Link / Cancel buttons — right-aligned like Jira */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <button
-          onClick={() => linkMutation.mutate()}
-          disabled={!selected || linkMutation.isPending}
-          style={{
-            height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-            background: selected ? '#0052CC' : '#F4F5F7',
-            color: selected ? '#fff' : '#A5ADBA', fontSize: 14, fontWeight: 500,
-            cursor: selected ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
-          }}
-        >
-          {linkMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : 'Link'}
+      {/* + Create linked work item / Link / Cancel */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <button style={{ display: 'flex', alignItems: 'center', gap: 4, border: 'none', background: 'none', cursor: 'pointer', fontSize: 13, color: '#6B778C', fontFamily: 'inherit', padding: 0 }}>
+          <Plus size={14} /> Create linked work item
         </button>
-        <button onClick={onClose} style={{
-          height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
-          background: 'transparent', color: '#6B778C', fontSize: 14,
-          cursor: 'pointer', fontFamily: 'inherit',
-        }}>Cancel</button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => linkMutation.mutate()}
+            disabled={!selectedItems.length || linkMutation.isPending}
+            style={{
+              height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
+              background: selectedItems.length ? '#0052CC' : '#F4F5F7',
+              color: selectedItems.length ? '#fff' : '#A5ADBA', fontSize: 14, fontWeight: 500,
+              cursor: selectedItems.length ? 'pointer' : 'not-allowed', fontFamily: 'inherit',
+            }}
+          >
+            {linkMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : 'Link'}
+          </button>
+          <button onClick={onClose} style={{
+            height: 32, padding: '0 16px', border: 'none', borderRadius: 3,
+            background: 'transparent', color: '#6B778C', fontSize: 14,
+            cursor: 'pointer', fontFamily: 'inherit',
+          }}>Cancel</button>
+        </div>
       </div>
     </div>
   );
