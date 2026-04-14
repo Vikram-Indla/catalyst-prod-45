@@ -83,7 +83,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
       await (supabase.from('ph_issues') as any).update({
         is_flagged: newFlagged,
         flag_reason: newFlagged ? (note.trim() || null) : null,
-      }).eq('id', issueId);
+      }).eq('issue_key', issueKey);
 
       // Build Jira-format comment text
       const commentNote = newFlagged
