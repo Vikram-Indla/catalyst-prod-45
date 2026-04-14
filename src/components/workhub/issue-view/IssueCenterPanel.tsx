@@ -103,7 +103,6 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
     { key: 'all', label: 'All', icon: <FileText style={{ width: 14, height: 14 }} /> },
     { key: 'comments', label: 'Comments', icon: <MessageSquare style={{ width: 14, height: 14 }} /> },
     { key: 'history', label: 'History', icon: <History style={{ width: 14, height: 14 }} /> },
-    { key: 'worklog', label: 'Work log', icon: <Clock style={{ width: 14, height: 14 }} /> },
   ];
 
   return (
@@ -129,9 +128,6 @@ export function IssueCenterPanel({ issueKey, item, parentItem, loading = false }
             <div style={{ minWidth: 0, flex: 1 }}>
               <div className="awCenterSummary">{item?.summary ?? 'Untitled'}</div>
             </div>
-            <button className="awPill" style={{ marginLeft: 'auto', flexShrink: 0 }}>
-              <MoreHorizontal style={{ width: 14, height: 14 }} />
-            </button>
           </div>
 
           {/* Action pills */}
