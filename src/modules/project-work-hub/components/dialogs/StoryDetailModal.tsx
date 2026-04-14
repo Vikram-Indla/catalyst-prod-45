@@ -148,10 +148,10 @@ export default function StoryDetailModal({
     },
   });
 
-  // Recent epics for breadcrumb "Add parent" dropdown
+  // Recent epics for breadcrumb "Add parent" / "Change parent" dropdown
   const { data: recentEpics = [] } = useQuery({
     queryKey: ['ph-recent-epics', issue?.project_key],
-    enabled: !!issue?.project_key && !issue?.parent_key,
+    enabled: !!issue?.project_key,
     queryFn: async () => {
       const { data } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status_category')
