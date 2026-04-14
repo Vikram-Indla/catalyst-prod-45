@@ -45,15 +45,60 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
   // Build filter categories from items
   const filterCategories = useMemo<FilterCategory[]>(() => {
     const statuses = [...new Set(items.map(i => i.status).filter(Boolean))].sort();
-    const priorities = [...new Set(items.map(i => i.priority).filter(Boolean))].sort();
-    const assignees = [...new Set(items.map(i => i.assignee_display_name).filter(Boolean))].sort();
     const types = [...new Set(items.map(i => i.issue_type).filter(Boolean))].sort();
+    const assignees = [...new Set(items.map(i => i.assignee_display_name).filter(Boolean))].sort();
+
+    const PRIORITY_ICONS: Record<string, React.ReactNode> = {
+      Highest: <PriorityBars priority="critical" />,
+      High: <PriorityBars priority="high" />,
+      Medium: <PriorityBars priority="medium" />,
+      Low: <PriorityBars priority="low" />,
+      Lowest: <PriorityBars priority="low" />,
+    };
+    const canonical = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+    const seenPriorities = new Set<string>();
+    items.forEach(i => {
+      if (!i.priority) return;
+      const norm = i.priority.charAt(0).toUpperCase() + i.priority.slice(1).toLowerCase();
+      if (canonical.includes(norm)) seenPriorities.add(norm);
+    });
+
+    const getInitials = (name: string) => name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    const PALETTE = ['#1868DB', '#E2631E', '#5E4DB2', '#1B3459', '#0D7C66', '#B34D00', '#943A79', '#0055CC'];
+    const pickColor = (name: string) => { let h = 0; for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h); return PALETTE[Math.abs(h) % PALETTE.length]; };
 
     return [
-      { id: 'status', label: 'Status', options: statuses.map(s => ({ id: s, label: s })) },
-      { id: 'priority', label: 'Priority', options: priorities.map(p => ({ id: p, label: p })) },
-      { id: 'assignee', label: 'Assignee', options: assignees.map(a => ({ id: a, label: a })) },
-      { id: 'type', label: 'Type', options: types.map(t => ({ id: t, label: t })) },
+      {
+        id: 'status', label: 'Status', searchPlaceholder: 'Search status',
+        options: statuses.map(s => ({
+          id: s, label: s,
+          iconNode: <StatusLozenge status={s} />,
+          hideLabel: true,
+        })),
+      },
+      {
+        id: 'priority', label: 'Priority', searchPlaceholder: 'Search priority',
+        options: canonical.filter(p => seenPriorities.has(p)).map(p => ({
+          id: p, label: p,
+          iconNode: PRIORITY_ICONS[p],
+        })),
+      },
+      {
+        id: 'assignee', label: 'Assignee', searchPlaceholder: 'Search assignee',
+        options: assignees.map(name => ({
+          id: name, label: name,
+          avatarInitials: getInitials(name),
+          avatarColor: pickColor(name),
+          avatarType: 'initials' as const,
+        })),
+      },
+      {
+        id: 'type', label: 'Type', searchPlaceholder: 'Search issue type',
+        options: types.map(t => ({
+          id: t, label: t,
+          iconNode: <JiraIssueTypeIcon issueType={t} size={16} />,
+        })),
+      },
     ].filter(c => c.options.length > 0);
   }, [items]);
 
