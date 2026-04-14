@@ -310,7 +310,7 @@
   background: var(--aw-bg);
 }
 .jlpBody::-webkit-scrollbar {
-  width: 12px;
+  width: 20px;
 }
 .jlpBody::-webkit-scrollbar-track {
   background: #F1F2F4;
@@ -319,7 +319,7 @@
 .jlpBody::-webkit-scrollbar-thumb {
   background: #A5ADBA;
   border-radius: 999px;
-  border: 2px solid #F1F2F4;
+  border: 3px solid #F1F2F4;
 }
 .jlpBody::-webkit-scrollbar-thumb:hover {
   background: #7A869A;
@@ -583,6 +583,7 @@
   overflow-y: scroll !important;       /* always-visible scrollbar */
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
+  padding-bottom: 40px;
 }
 .awIssueContent > .awBody::-webkit-scrollbar {
   width: 12px;
@@ -649,7 +650,7 @@
   flex-shrink: 0;
   overflow-y: scroll;
   overscroll-behavior: contain;
-  padding: 0;
+  padding: 0 0 24px 0;
   background: #FFFFFF !important;
   scrollbar-gutter: stable;
 }
