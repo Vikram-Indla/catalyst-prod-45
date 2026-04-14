@@ -78,59 +78,31 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
   // Child types that cannot be parents — filtered client-side
   const CHILD_SET = new Set(['sub-task', 'frontend', 'backend', 'figma', 'integration']);
 
-  // Recent issues — simple query, no complex filters
+  // Recent issues — exact same pattern as LinkedIssuesSection (proven working)
   const { data: recentIssues = [] } = useQuery({
-    queryKey: ['convert-recent', projectKey, issueId],
+    queryKey: ['convert-recent', issueKey],
     queryFn: async () => {
-      // Minimal query — project_key match, no complex filters
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category')
-        .eq('project_key', projectKey)
-        .neq('issue_key', issueKey)
-        .is('deleted_at', null)
-        .limit(50);
-      if (error) console.error('[ConvertWizard] recent query error:', error);
+      const prefix = issueKey.split('-')[0]; // "BAU"
+      const { data } = await supabase.from('ph_issues').select('id, issue_key, summary, issue_type, status, status_category')
+        .or(`issue_key.ilike.${prefix}-%`)
+        .is('deleted_at', null).neq('id', issueId).limit(50);
       const rows = (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase()));
       return rows.slice(0, 10);
     },
-    enabled: !!projectKey,
+    enabled: !!issueKey,
     staleTime: 30_000,
   });
 
-  // Search parent issues
+  // Search — exact same pattern as LinkedIssuesSection.AddLinkRow (proven working)
   const { data: searchResults = [], isFetching: searchingParents } = useQuery({
-    queryKey: ['convert-search', projectKey, parentSearch],
+    queryKey: ['convert-search', parentSearch],
     queryFn: async () => {
       const q = parentSearch.trim();
-      // Key match
-      const { data: keyData } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category')
-        .eq('project_key', projectKey)
-        .neq('issue_key', issueKey)
-        .is('deleted_at', null)
-        .ilike('issue_key', `%${q}%`)
-        .limit(15);
-      // Summary match
-      const { data: sumData } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status, status_category')
-        .eq('project_key', projectKey)
-        .neq('issue_key', issueKey)
-        .is('deleted_at', null)
-        .ilike('summary', `%${q}%`)
-        .limit(15);
-      // Merge and dedupe
-      const seen = new Set<string>();
-      const merged: any[] = [];
-      for (const r of [...(keyData ?? []), ...(sumData ?? [])]) {
-        if (!seen.has(r.id) && !CHILD_SET.has((r.issue_type ?? '').toLowerCase())) {
-          seen.add(r.id);
-          merged.push(r);
-        }
-      }
-      return merged.slice(0, 15);
+      if (!q) return [];
+      const { data } = await supabase.from('ph_issues').select('id, issue_key, summary, issue_type, status, status_category')
+        .or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`)
+        .is('deleted_at', null).neq('id', issueId).limit(20);
+      return (data ?? []).filter((r: any) => !CHILD_SET.has((r.issue_type ?? '').toLowerCase())).slice(0, 15);
     },
     enabled: parentSearch.trim().length >= 1,
     staleTime: 10_000,
