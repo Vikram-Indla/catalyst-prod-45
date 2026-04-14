@@ -203,7 +203,7 @@ export function IssueContentView({
           {/* #13: Actions row: + and ⚙ buttons */}
           <div className="awActions">
             <button className="awPill" style={{ padding: '0 6px' }}><Plus style={{ width: 14, height: 14 }} /></button>
-            <button className="awPill" style={{ padding: '0 6px' }}><Settings style={{ width: 14, height: 14 }} /></button>
+            
           </div>
         </div>
 
@@ -591,12 +591,6 @@ export function IssueContentView({
           {item?.jira_updated_at && <div>Updated {fmtRel(item.jira_updated_at)}</div>}
         </div>
 
-        {/* Configure button */}
-        <div style={{ padding: '0 16px 16px', display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="awPill" style={{ fontSize: 12 }}>
-            <Settings style={{ width: 12, height: 12 }} /> Configure
-          </button>
-        </div>
       </div>
     </div>
   );
