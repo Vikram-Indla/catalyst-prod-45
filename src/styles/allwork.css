@@ -551,9 +551,25 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow-y: scroll;
   overscroll-behavior: contain;
   background: #FFFFFF;
+  scrollbar-gutter: stable;
+}
+.awIssueContent::-webkit-scrollbar {
+  width: 12px;
+}
+.awIssueContent::-webkit-scrollbar-track {
+  background: #F1F2F4;
+  border-left: 1px solid #EBECF0;
+}
+.awIssueContent::-webkit-scrollbar-thumb {
+  background: #A5ADBA;
+  border-radius: 999px;
+  border: 2px solid #F1F2F4;
+}
+.awIssueContent::-webkit-scrollbar-thumb:hover {
+  background: #7A869A;
 }
 .awIssueContent > .awBody { flex: 1; }
 
@@ -668,19 +684,19 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 10px 0 10px 0;
   cursor: pointer;
 }
 .awSectionHead:hover { background: var(--aw-hover); }
 .awSectionLabel {
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 20px;
-  font-family: system-ui, -apple-system, sans-serif;
-  color: #292A2E;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  color: #29292E;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 .awSectionLabel .awCount {
   font-weight: 400;
