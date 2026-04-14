@@ -76,7 +76,7 @@ function mapPhIssue(row: any): WorkItem {
   const assigneeId = row.assignee_account_id ?? null;
   const assigneeName = row.assignee_display_name ?? null;
   return {
-    id: row.id ?? row.issue_key,
+    id: row.issue_key,
     projectId: '',
     parentId: null,
     parentKey: row.parent_key ?? null,
@@ -112,7 +112,7 @@ function mapPhIssue(row: any): WorkItem {
   };
 }
 
-const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name';
+const PH_ISSUES_SELECT = 'issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name';
 
 /* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {
@@ -126,7 +126,7 @@ export function useProjectListItems(projectKey: string | undefined) {
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
-        .is('deleted_at', null)
+        .is('jira_removed_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(2000);
       if (error) throw error;
@@ -150,7 +150,7 @@ export function useProjectAllWorkItems(projectKey: string | undefined) {
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
-        .is('deleted_at', null)
+        .is('jira_removed_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(5000);
       if (error) throw error;
@@ -173,7 +173,7 @@ export function useWorkItemChildren(parentKey: string | undefined, enabled: bool
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('parent_key', parentKey)
-        .is('deleted_at', null)
+        .is('jira_removed_at', null)
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(500);
       if (error) throw error;
@@ -195,7 +195,7 @@ export function useWorkItem(itemId: string | undefined) {
       const { data, error } = await supabase
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
-        .eq('id', itemId)
+        .eq('issue_key', itemId)
         .maybeSingle();
       if (error) throw error;
       if (!data) return null;
@@ -218,7 +218,7 @@ export function useSearchWorkItems(projectKey: string | undefined, query: string
         .from('ph_issues')
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
-        .is('deleted_at', null)
+        .is('jira_removed_at', null)
         .or(`summary.ilike.%${query}%,issue_key.ilike.%${query}%`)
         .limit(20);
       if (error) throw error;
