@@ -129,11 +129,14 @@ function AddLinkRow({ issueId, onClose, onSuccess }: { issueId: string; onClose:
   const linkMutation = useMutation({
     mutationFn: async () => {
       if (!selectedItems.length) return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
       for (const item of selectedItems) {
         const { error } = await supabase.from('ph_issue_links').insert({
           source_id: issueId,
           target_id: item.item_key,
           link_type: linkType,
+          created_by: user.id,
         } as any);
         if (error) throw error;
       }
