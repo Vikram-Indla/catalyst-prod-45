@@ -1439,8 +1439,10 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
               linkType={linkedLinkType}
               onLinkTypeChange={setLinkedLinkType}
               linkedItems={linkedItems}
+              onAddItem={handleAddLinkedItem}
               onRemoveItem={handleRemoveLinkedItem}
               lockedKeys={lockedKeys}
+              projectKey={projectKey}
             />
           )}
 
