@@ -338,9 +338,11 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    // Epics are never shown as cards — they only appear as swimlane headers when grouped by epic.
-    // They remain in issuesById so the swimlane header can look up epic status.
-    let issues = rawIssues.filter(i => i.issueType !== 'Epic');
+    // By default show only Stories on board; Epics are metadata for swimlane headers.
+    // When advanced filter specifies issue types, use those instead of the default.
+    let issues = advancedFilters.issueTypes.length > 0
+      ? rawIssues
+      : rawIssues.filter(i => i.issueType !== 'Epic');
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
@@ -425,8 +427,13 @@ export default function KanbanBoardPage() {
       const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
       if (c && m[c]) m[c].push(i.id);
     });
-    setColMap(m);
-  }, [filtered, dragId, groupBy]);
+    setColMap(prev => {
+      // Only update if changed to prevent infinite loop
+      const prevStr = JSON.stringify(prev);
+      const newStr = JSON.stringify(m);
+      return prevStr === newStr ? prev : m;
+    });
+  }, [filtered, dragId, groupBy, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
 
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
