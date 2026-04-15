@@ -174,9 +174,9 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       ref={panelRef}
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
-        width: 380, background: tk.surfaceBg,
-        border: `1px solid ${tk.border}`, borderRadius: 8,
-        boxShadow: tk.cardDragShadow || '0 8px 24px rgba(0,0,0,0.12)',
+        width: 400, background: '#FFFFFF',
+        border: '1px solid #DDDEE1', borderRadius: 10,
+        boxShadow: '0 12px 36px rgba(9,30,66,0.15), 0 2px 8px rgba(9,30,66,0.08)',
         zIndex: 60, fontFamily: "'Inter', sans-serif",
         maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
       }}
@@ -184,35 +184,40 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
     >
       {/* Header */}
       <div className="flex items-center justify-between" style={{
-        padding: '12px 16px', borderBottom: `1px solid ${tk.border}`,
+        padding: '14px 20px', borderBottom: '1px solid #EBECF0',
+        background: '#FAFBFC',
+        borderTopLeftRadius: 10, borderTopRightRadius: 10,
       }}>
         <div className="flex items-center gap-2">
-          <Filter size={14} color={tk.textSecondary} />
-          <span style={{ fontSize: 13, fontWeight: 600, color: tk.textPrimary }}>
+          <Filter size={15} color="#42526E" />
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D', letterSpacing: '-0.01em' }}>
             Advanced Filters
           </span>
           {activeCount > 0 && (
             <span style={{
-              fontSize: 11, fontWeight: 600, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
-              lineHeight: '18px',
+              fontSize: 11, fontWeight: 700, color: '#fff',
+              background: '#2563EB', borderRadius: 10, padding: '2px 8px',
+              lineHeight: '16px',
             }}>{activeCount}</span>
           )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {activeCount > 0 && (
             <button onClick={clearAll} style={{
               fontSize: 12, color: '#DC2626', background: 'none', border: 'none',
-              cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4,
+              cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
             }}>
-              <Trash2 size={12} /> Clear all
+              <Trash2 size={13} /> Clear all
             </button>
           )}
           <button onClick={onClose} style={{
             width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: 'none', border: 'none', cursor: 'pointer', borderRadius: 4,
-          }}>
-            <X size={14} color={tk.textMuted} />
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <X size={15} color="#42526E" />
           </button>
         </div>
       </div>
