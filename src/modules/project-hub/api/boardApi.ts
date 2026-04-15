@@ -7,6 +7,9 @@ import type {
   BoardAnalyticsEvent,
 } from '../types/kanban';
 
+// The new tables/views/RPCs are not yet in the auto-generated types.
+// Use `as any` casts until the types file is regenerated.
+
 function toColumn(r: Record<string, unknown>): PhBoardColumn {
   return {
     id:            r.id as string,
@@ -41,7 +44,7 @@ function toIssue(r: Record<string, unknown>): BoardIssue {
 
 export const boardApi = {
   async fetchBoardConfig(boardId: string): Promise<PhBoard> {
-    const { data: board, error: bErr } = await supabase
+    const { data: board, error: bErr } = await (supabase as any)
       .from('ph_boards')
       .select('*')
       .eq('id', boardId)
@@ -49,7 +52,7 @@ export const boardApi = {
       .single();
     if (bErr) throw bErr;
 
-    const { data: cols, error: cErr } = await supabase
+    const { data: cols, error: cErr } = await (supabase as any)
       .from('ph_board_columns')
       .select('*')
       .eq('board_id', boardId)
@@ -61,7 +64,7 @@ export const boardApi = {
       projectId:    board.project_id ?? '',
       name:         board.name,
       boardType:    (board.board_type as 'kanban' | 'scrum') ?? 'kanban',
-      columnConfig: (cols ?? []).map((c) => toColumn(c as unknown as Record<string, unknown>)),
+      columnConfig: (cols ?? []).map((c: Record<string, unknown>) => toColumn(c)),
       isActive:     board.is_active ?? true,
       createdAt:    board.created_at ?? '',
       updatedAt:    board.updated_at ?? '',
@@ -69,20 +72,20 @@ export const boardApi = {
   },
 
   async fetchBoardIssues(boardId: string): Promise<BoardIssue[]> {
-    const { data, error } = await supabase
+    const { data, error } = await (supabase as any)
       .from('board_issues_view')
       .select('*')
       .eq('board_id', boardId)
       .is('deleted_at', null);
     if (error) throw error;
-    return (data ?? []).map((r) => toIssue(r as unknown as Record<string, unknown>));
+    return (data ?? []).map((r: Record<string, unknown>) => toIssue(r));
   },
 
   async fetchBoardUserPrefs(
     boardId: string,
     userId: string
   ): Promise<BoardUserPrefs | null> {
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from('ph_board_user_prefs')
       .select('*')
       .eq('board_id', boardId)
@@ -101,7 +104,7 @@ export const boardApi = {
     userId: string,
     prefs: BoardUserPrefs
   ): Promise<void> {
-    const { error } = await supabase.rpc('upsert_board_user_prefs', {
+    const { error } = await (supabase as any).rpc('upsert_board_user_prefs', {
       p_board_id: boardId,
       p_user_id:  userId,
       p_prefs: {
@@ -114,7 +117,7 @@ export const boardApi = {
   },
 
   async trackBoardEvent(event: BoardAnalyticsEvent): Promise<void> {
-    await supabase.from('ph_board_analytics').insert({
+    await (supabase as any).from('ph_board_analytics').insert({
       board_id:   event.boardId,
       event_type: event.eventType,
       issue_id:   event.issueId ?? null,

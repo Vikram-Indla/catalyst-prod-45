@@ -5,7 +5,7 @@ export async function moveIssueToColumn(
   columnId: string,
   userId: string
 ): Promise<void> {
-  const { error } = await supabase.rpc('move_issue_to_column', {
+  const { error } = await (supabase as any).rpc('move_issue_to_column', {
     p_issue_id:  issueId,
     p_column_id: columnId,
     p_user_id:   userId,
