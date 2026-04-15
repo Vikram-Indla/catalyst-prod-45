@@ -105,8 +105,8 @@ export function WorkItemOverflowMenu({
     <>
       <div ref={menuRef} style={menuStyle} onClick={e => e.stopPropagation()} role="menu">
         {/* Move work item */}
-        <MenuItem icon={<ArrowRightLeft size={14} />} label="Move work item" hasSubmenu
-          onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
+        <MenuItem icon={<ArrowRightLeft size={14} />} label="Move work item"
+          onClick={() => setShowMove(true)} tk={tk} />
 
         {/* Change status */}
         <div
