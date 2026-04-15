@@ -463,8 +463,14 @@ export default function KanbanBoardPage() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: '#F4F5F7' }}>
-      {/* Toolbar — minimal, matching reference: just search + "See older work items" links handled in columns */}
-      <div className="flex items-center gap-3 px-3 py-2" style={{ background: '#FFFFFF', borderBottom: '1px solid #DFE1E6' }}>
+      {/* Page header — matches Story Backlog pattern */}
+      <div className="px-6 pt-5 pb-3 border-b" style={{ borderColor: '#E2E8F0', background: '#FFFFFF' }}>
+        <h1 className="text-xl font-semibold" style={{ color: '#0F172A', fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>Board</h1>
+        <p className="text-sm mt-0.5" style={{ color: '#475569' }}>Visualize and track work items across workflow stages</p>
+      </div>
+
+      {/* Search bar */}
+      <div className="flex items-center gap-3 px-6 py-2.5" style={{ background: '#FFFFFF', borderBottom: '1px solid #E2E8F0' }}>
         <BoardSearch value={search} onChange={setSearch} />
       </div>
 
