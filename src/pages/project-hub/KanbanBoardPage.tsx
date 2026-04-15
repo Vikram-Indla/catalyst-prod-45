@@ -451,7 +451,6 @@ export default function KanbanBoardPage() {
       const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
       if (error) throw error;
       await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
-      toastSuccess(`Moved ${issue.issueKey} → ${newStatus}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.status = oldStatus;
