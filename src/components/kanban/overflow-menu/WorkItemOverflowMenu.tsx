@@ -166,7 +166,7 @@ export function WorkItemOverflowMenu({
 
         {/* Link work item */}
         <MenuItem icon={<LinkIcon size={14} />} label="Link work item"
-          onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
+          onClick={() => setShowLink(true)} tk={tk} />
 
         {/* Change parent */}
         <div
