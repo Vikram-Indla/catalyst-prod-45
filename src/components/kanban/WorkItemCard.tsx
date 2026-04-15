@@ -76,7 +76,7 @@ export function WorkItemCard({
   const fixVersionLabel = issue.fixVersion || issue.sprintName || null;
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       {/* ─── TITLE ROW ─── */}
       <div className="flex items-start" style={{ position: 'relative' }}>
         <div className="flex-1 min-w-0">
@@ -157,6 +157,9 @@ export function WorkItemCard({
         </div>
       )}
 
+      {/* spacer pushes footer to bottom */}
+      <div style={{ flex: 1 }} />
+
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
       <div className="flex items-center" style={{ gap: 4, minHeight: d.footerHeight }}>
         <JiraIssueTypeIcon type={issue.issueType} size={14} />
@@ -190,6 +193,6 @@ export function WorkItemCard({
           onDelete={onDelete}
         />
       )}
-    </>
+    </div>
   );
 }
