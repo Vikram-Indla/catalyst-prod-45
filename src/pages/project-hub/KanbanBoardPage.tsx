@@ -49,7 +49,7 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search, MoreHorizontal, Settings2, Map } from 'lucide-react';
+import { Search, MoreHorizontal, Settings2, Map as MapIcon } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
 import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
 
@@ -699,7 +699,7 @@ export default function KanbanBoardPage() {
                 onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <Map size={14} color={tk.textSecondary} />
+                <MapIcon size={14} color={tk.textSecondary} />
                 Map statuses
               </button>
             </div>
