@@ -81,6 +81,7 @@ export default function KanbanBoardPage() {
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
   const [showViewSettings, setShowViewSettings] = useState(false);
+  const [showBoardMenu, setShowBoardMenu] = useState(false);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
