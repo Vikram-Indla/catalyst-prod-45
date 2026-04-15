@@ -567,6 +567,8 @@ export default function KanbanBoardPage() {
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
                   onSaveSummary={handleSaveSummary}
+                  onChangeAssignee={handleChangeAssignee}
+                  assigneeOptions={assigneeOptions}
                 />
               ))}
               {groups.length === 0 && (
