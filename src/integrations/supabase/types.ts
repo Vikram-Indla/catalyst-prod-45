@@ -17688,6 +17688,42 @@ export type Database = {
           },
         ]
       }
+      kanban_view_settings: {
+        Row: {
+          created_at: string
+          id: string
+          open_in_sidebar: boolean
+          project_key: string
+          show_quick_filters: boolean
+          show_work_suggestions: boolean
+          updated_at: string
+          user_id: string
+          visible_fields: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          open_in_sidebar?: boolean
+          project_key: string
+          show_quick_filters?: boolean
+          show_work_suggestions?: boolean
+          updated_at?: string
+          user_id: string
+          visible_fields?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          open_in_sidebar?: boolean
+          project_key?: string
+          show_quick_filters?: boolean
+          show_work_suggestions?: boolean
+          updated_at?: string
+          user_id?: string
+          visible_fields?: Json
+        }
+        Relationships: []
+      }
       kb_access_matrix: {
         Row: {
           has_access: boolean
