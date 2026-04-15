@@ -69,6 +69,9 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
+  const KANBAN_COLUMNS = columns ?? DEFAULT_KANBAN_COLUMNS;
+  const STATUS_TO_COL_ID = statusToColId ?? DEFAULT_STATUS_TO_COL_ID;
+
   const colMap = useMemo(() => {
     const m: Record<string, string[]> = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
@@ -79,7 +82,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
       if (cid && m[cid]) m[cid].push(id);
     });
     return m;
-  }, [group.issueIds, issuesById]);
+  }, [group.issueIds, issuesById, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
 
   /* Look up epic BoardIssue for status lozenge */
   const epicIssue = useMemo(() => {
