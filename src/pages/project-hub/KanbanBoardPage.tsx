@@ -637,19 +637,60 @@ export default function KanbanBoardPage() {
         {/* Group by */}
         <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
 
-        {/* View settings ••• */}
+        {/* Board menu ••• */}
         <div style={{ position: 'relative' }}>
           <button
-            onClick={() => setShowViewSettings(v => !v)}
+            onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
               cursor: 'pointer',
             }}
-            aria-label="View settings"
+            aria-label="Board menu"
           >
             <MoreHorizontal size={16} color={tk.textSecondary} />
           </button>
+          {showBoardMenu && !showViewSettings && (
+            <div
+              style={{
+                position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                width: 200, background: tk.surfaceBg,
+                border: `1px solid ${tk.border}`, borderRadius: 8,
+                boxShadow: tk.cardDragShadow, zIndex: 50,
+                padding: '4px 0', fontFamily: "'Inter', sans-serif",
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => { setShowBoardMenu(false); setShowViewSettings(true); }}
+                className="flex items-center gap-2 w-full"
+                style={{
+                  padding: '8px 12px', background: 'transparent', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
+                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Settings2 size={14} color={tk.textSecondary} />
+                View settings
+              </button>
+              <button
+                onClick={() => { setShowBoardMenu(false); navigate(`/project-hub/${key}/boards/map-statuses`); }}
+                className="flex items-center gap-2 w-full"
+                style={{
+                  padding: '8px 12px', background: 'transparent', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
+                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Map size={14} color={tk.textSecondary} />
+                Map statuses
+              </button>
+            </div>
+          )}
           {showViewSettings && (
             <ViewSettingsPanel
               settings={viewSettings}
