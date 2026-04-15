@@ -585,9 +585,9 @@ export default function KanbanBoardPage() {
       statuses.set(i.status, (statuses.get(i.status) ?? 0) + 1);
     });
     return [
-      { key: 'type', label: 'Type', options: Array.from(types.entries()).map(([v, c]) => ({ value: v, label: v, count: c })) },
-      { key: 'priority', label: 'Priority', options: Array.from(priorities.entries()).map(([v, c]) => ({ value: v, label: v, count: c })) },
-      { key: 'status', label: 'Status', options: Array.from(statuses.entries()).map(([v, c]) => ({ value: v, label: v, count: c })) },
+      { key: 'type', label: 'Type', options: Array.from(types.entries()).map(([v, c]) => ({ id: v, value: v, label: v, count: c })) },
+      { key: 'priority', label: 'Priority', options: Array.from(priorities.entries()).map(([v, c]) => ({ id: v, value: v, label: v, count: c })) },
+      { key: 'status', label: 'Status', options: Array.from(statuses.entries()).map(([v, c]) => ({ id: v, value: v, label: v, count: c })) },
     ];
   }, [rawIssues]);
 
