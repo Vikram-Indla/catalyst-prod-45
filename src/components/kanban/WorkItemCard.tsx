@@ -157,6 +157,9 @@ export function WorkItemCard({
         </div>
       )}
 
+      {/* spacer pushes footer to bottom */}
+      <div style={{ flex: 1 }} />
+
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
       <div className="flex items-center" style={{ gap: 4, minHeight: d.footerHeight }}>
         <JiraIssueTypeIcon type={issue.issueType} size={14} />
@@ -190,6 +193,6 @@ export function WorkItemCard({
           onDelete={onDelete}
         />
       )}
-    </>
+    </div>
   );
 }
