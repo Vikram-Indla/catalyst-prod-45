@@ -1,6 +1,6 @@
 /**
- * KanbanSwimlane — Grouped swimlane row with expandable columns
- * Jira-parity: epic key, icon, summary, child count, status lozenge
+ * KanbanSwimlane — Grouped swimlane row with expandable columns.
+ * Jira-parity: epic key, icon, summary, child count, status lozenge.
  */
 
 import { useState, useMemo } from 'react';
