@@ -8,6 +8,7 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { SortableCard } from './SortableCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
+import type { AssigneeOption } from './AssigneePickerPopover';
 
 /* ═══ COLUMN HEADER ═══ */
 
@@ -41,7 +42,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
 
 /* ═══ DROPPABLE COLUMN ═══ */
 
-export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary }: {
+export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
@@ -56,6 +57,8 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
+  onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
+  assigneeOptions?: AssigneeOption[];
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
