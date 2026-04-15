@@ -19,7 +19,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTheme } from '@/hooks/useTheme';
-import { toast } from 'sonner';
+import { usePriToast } from '@/modules/priorities/hooks/usePriToast';
+import { PriToastContainer } from '@/modules/priorities/components/PriToastContainer';
 import {
   DndContext,
   DragEndEvent,
@@ -60,6 +61,7 @@ export default function KanbanBoardPage() {
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
   const qc = useQueryClient();
+  const { toasts, dismissToast, success: toastSuccess, error: toastError } = usePriToast();
 
   /* ═══ STATE ═══ */
   const [search, setSearch] = useState('');
@@ -265,18 +267,18 @@ export default function KanbanBoardPage() {
     issue.isFlagged = newFlag;
     try {
       await supabase.from('ph_issues').update({ is_flagged: newFlag } as any).eq('id', issueId);
-      toast.success(newFlag ? `Flagged ${issue.issueKey}` : `Unflagged ${issue.issueKey}`);
+      toastSuccess(newFlag ? `Flagged ${issue.issueKey}` : `Unflagged ${issue.issueKey}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.isFlagged = !newFlag;
-      toast.error('Failed to update flag');
+      toastError('Failed to update flag');
     }
-  }, [issuesById, key, qc]);
+  }, [issuesById, key, qc, toastSuccess, toastError]);
 
   const handleCopyLink = useCallback((issueKey: string) => {
     navigator.clipboard.writeText(`${window.location.origin}/project-hub/${key}/issue/${issueKey}`);
-    toast.success('Link copied');
-  }, [key]);
+    toastSuccess('Link copied');
+  }, [key, toastSuccess]);
 
   /* ═══ DND HANDLERS ═══ */
 
@@ -315,14 +317,14 @@ export default function KanbanBoardPage() {
       const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
       if (error) throw error;
       await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
-      toast.success(`Moved ${issue.issueKey} → ${newStatus}`);
+      toastSuccess(`Moved ${issue.issueKey} → ${newStatus}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.status = oldStatus;
-      toast.error(`Failed to move ${issue.issueKey}`, { description: 'Status reverted' });
+      toastError(`Failed to move ${issue.issueKey}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     }
-  }, [issuesById, key, qc]);
+  }, [issuesById, key, qc, toastSuccess, toastError]);
 
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
@@ -577,6 +579,7 @@ export default function KanbanBoardPage() {
           />
         </Suspense>
       )}
+      <PriToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
