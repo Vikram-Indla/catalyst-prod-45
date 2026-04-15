@@ -14,7 +14,7 @@
  * - All issue types (Story, Epic, Bug, Task, Subtask, Feature, Improvement, etc.)
  */
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
