@@ -45,6 +45,14 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
    DESIGN TOKENS — Light & Dark mode (Nocturne Geist)
    ═══════════════════════════════════════════════════════════════ */
 
+interface ThemeTokens {
+  pageBg: string; surfaceBg: string; surfaceHover: string; surfaceAlt: string; headerBg: string;
+  border: string; borderSubtle: string; textPrimary: string; textSecondary: string; textMuted: string;
+  textDisabled: string; badgeBg: string; cardBg: string; cardBorder: string; cardHoverBg: string;
+  cardHoverShadow: string; cardDragShadow: string; dropHighlight: string; selectedAccent: string;
+  chipBg: string; chipText: string; inputBg: string; inputBorder: string; overlay: string;
+}
+
 const T: { light: ThemeTokens; dark: ThemeTokens } = {
   light: {
     pageBg: '#F4F5F7',
