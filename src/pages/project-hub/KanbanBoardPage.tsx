@@ -273,12 +273,12 @@ export default function KanbanBoardPage() {
       issue.isFlagged = !newFlag;
       toastError('Failed to update flag');
     }
-  }, [issuesById, key, qc]);
+  }, [issuesById, key, qc, toastSuccess, toastError]);
 
   const handleCopyLink = useCallback((issueKey: string) => {
     navigator.clipboard.writeText(`${window.location.origin}/project-hub/${key}/issue/${issueKey}`);
     toastSuccess('Link copied');
-  }, [key]);
+  }, [key, toastSuccess]);
 
   /* ═══ DND HANDLERS ═══ */
 
