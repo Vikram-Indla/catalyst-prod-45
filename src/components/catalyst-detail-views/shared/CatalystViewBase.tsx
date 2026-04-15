@@ -232,7 +232,10 @@ export function CatalystViewBase({
             {projectKey && (
               <>
                 <Link
-                  to={`/project-hub/${projectKey}/hierarchy/allwork`}
+                  to={fullPageMode
+                    ? `/project-hub/${projectKey}/hierarchy/allwork`
+                    : `/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`
+                  }
                   style={{ fontSize: 14, fontWeight: 400, color: '#6B778C', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}

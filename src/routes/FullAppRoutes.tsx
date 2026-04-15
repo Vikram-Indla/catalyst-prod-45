@@ -900,14 +900,10 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
         <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
         <Route path="/project-hub/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
-        {/* Deprecated routes — redirect to All Work */}
-        <Route path="/project-hub/:key/backlog" element={<Navigate to="../hierarchy/allwork" replace />} />
-        <Route path="/project-hub/:key/epic-backlog" element={<Navigate to="../hierarchy/allwork" replace />} />
-        <Route path="/project-hub/:key/feature-backlog" element={<Navigate to="../hierarchy/allwork" replace />} />
-        <Route path="/project-hub/:key/story-backlog" element={<Navigate to="../hierarchy/allwork" replace />} />
-        <Route path="/project-hub/:key/list" element={<Navigate to="../hierarchy/allwork" replace />} />
-        <Route path="/project-hub/:key/allwork" element={<Navigate to="../hierarchy/allwork" replace />} />
-        {/* Active routes */}
+        <Route path="/project-hub/:key/backlog" element={<PHPlaceholder title="Backlog" phase="Phase 2" />} />
+        <Route path="/project-hub/:key/epic-backlog" element={<S><NativeEpicBacklogPageLazy /></S>} />
+        <Route path="/project-hub/:key/feature-backlog" element={<S><NativeFeatureBacklogPageLazy /></S>} />
+        <Route path="/project-hub/:key/story-backlog" element={<S><NativeStoryBacklogPageLazy /></S>} />
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/issue/:issueKey" element={<S><IssueDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
@@ -915,6 +911,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards/:boardId" element={<S><ProjectBoardCanvasPageLazy /></S>} />
         <Route path="/project-hub/:key/hierarchy/allwork" element={<S><HierarchyAllWorkPageLazy /></S>} />
         <Route path="/project-hub/:key/hierarchy" element={<Navigate to="allwork" replace />} />
+        <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
+        <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
         <Route path="/project-hub/:key/releases" element={<PHPlaceholder title="Releases" phase="Phase 3" />} />
         <Route path="/project-hub/:key/reports" element={<PHPlaceholder title="Reports" phase="Phase 4" />} />

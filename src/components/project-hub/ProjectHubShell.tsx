@@ -17,7 +17,7 @@ export function ProjectHubShell() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createWorkItemOpen, setCreateWorkItemOpen] = useState(false);
 
-  const isInProjectContext = !!params.key && /\/(list|board|backlog|epic-backlog|feature-backlog|story-backlog|hierarchy|timeline|releases|reports|sprint-predictor|risk-scanner|dashboard)/.test(location.pathname);
+  const isInProjectContext = !!params.key && /\/(list|board|backlog|epic-backlog|feature-backlog|story-backlog|timeline|releases|reports|sprint-predictor|risk-scanner|dashboard)/.test(location.pathname);
 
   useEffect(() => {
     const handleResize = () => {
