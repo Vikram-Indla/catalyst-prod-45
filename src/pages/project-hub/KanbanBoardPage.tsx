@@ -114,6 +114,19 @@ export default function KanbanBoardPage() {
     });
   }, []);
 
+  // Close board menu on outside click
+  const boardMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!showBoardMenu) return;
+    function handler(e: MouseEvent) {
+      if (boardMenuRef.current && !boardMenuRef.current.contains(e.target as Node)) {
+        setShowBoardMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showBoardMenu]);
+
   // Realtime subscription
   useKanbanRealtime(key, currentUserData ?? null);
 
