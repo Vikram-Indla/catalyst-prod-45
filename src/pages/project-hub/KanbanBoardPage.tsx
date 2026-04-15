@@ -203,10 +203,9 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    // Hide Epics as cards unless grouped by epic (they appear as swimlane headers)
-    let issues = groupBy === 'epic'
-      ? rawIssues.filter(i => i.issueType !== 'Epic')
-      : rawIssues.filter(i => i.issueType !== 'Epic');
+    // Epics are never shown as cards — they only appear as swimlane headers when grouped by epic.
+    // They remain in issuesById so the swimlane header can look up epic status.
+    let issues = rawIssues.filter(i => i.issueType !== 'Epic');
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
