@@ -708,12 +708,18 @@ export default function KanbanBoardPage() {
             style={{ width: '100%', height: 28, paddingLeft: 24, paddingRight: 6, border: '1px solid #DDDEE1', borderRadius: 3, fontSize: 12, color: '#172B4D', background: '#FAFBFC', outline: 'none', fontFamily: "'Inter', sans-serif" }} />
         </div>
 
-        {/* Assignee filter */}
-        <AssigneeFilter allAssignees={allAssignees} selected={selAssignees} onChange={setSelAssignees} avatarsByName={avatarsByName} />
+        {/* Avatar stack assignee filter */}
+        <AvatarStackFilter allAssignees={allAssignees} selected={selAssignees} onChange={setSelAssignees} avatarsByName={avatarsByName} />
 
-        {/* Advanced filters */}
+        {/* Epic filter */}
+        <EpicFilterDropdown epics={allEpics} selected={selEpics} onChange={setSelEpics} />
+
+        {/* Type filter */}
+        <TypeFilterDropdown types={allTypes} selected={selTypes} onChange={setSelTypes} />
+
+        {/* Quick filters (priority/status) */}
         <div style={{ position: 'relative', zIndex: 50 }}>
-          <FilterTriggerButton count={advCount} onClick={() => setFilterOpen(p => !p)} isOpen={filterOpen} />
+          <FilterTriggerButton count={advCount} onClick={() => setFilterOpen(p => !p)} isOpen={filterOpen} label="Quick filters" />
           {filterOpen && <JiraBasicFilter categories={filterCats} selected={advFilters} onSelectionChange={(c, v) => setAdvFilters(p => ({ ...p, [c]: v }))} onClearAll={() => setAdvFilters({})} onClose={() => setFilterOpen(false)} />}
         </div>
 
