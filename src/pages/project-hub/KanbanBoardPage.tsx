@@ -699,7 +699,7 @@ export default function KanbanBoardPage() {
                 onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
                 onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               >
-                <Map size={14} color={tk.textSecondary} />
+                <MapIcon size={14} color={tk.textSecondary} />
                 Map statuses
               </button>
             </div>
