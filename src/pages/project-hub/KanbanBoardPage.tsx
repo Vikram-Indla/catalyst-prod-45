@@ -719,7 +719,7 @@ export default function KanbanBoardPage() {
 
         {/* Quick filters (priority/status) */}
         <div style={{ position: 'relative', zIndex: 50 }}>
-          <FilterTriggerButton count={advCount} onClick={() => setFilterOpen(p => !p)} isOpen={filterOpen} label="Quick filters" />
+          <FilterTriggerButton count={advCount} onClick={() => setFilterOpen(p => !p)} isOpen={filterOpen} />
           {filterOpen && <JiraBasicFilter categories={filterCats} selected={advFilters} onSelectionChange={(c, v) => setAdvFilters(p => ({ ...p, [c]: v }))} onClearAll={() => setAdvFilters({})} onClose={() => setFilterOpen(false)} />}
         </div>
 
