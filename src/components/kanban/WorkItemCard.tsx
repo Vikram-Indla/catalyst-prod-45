@@ -127,8 +127,9 @@ export function WorkItemCard({
   }, [saveEditing, cancelEditing]);
 
   // Derive category/initiative from labels and parent
-  const epicLabel = issue.parentSummary || (issue.labels.length > 0 ? issue.labels[0] : null);
-  const fixVersionLabel = issue.fixVersion || issue.sprintName || null;
+  const vf = visibleFields;
+  const epicLabel = (vf?.epic !== false) ? (issue.parentSummary || (issue.labels.length > 0 ? issue.labels[0] : null)) : null;
+  const fixVersionLabel = (vf?.fixVersions !== false) ? (issue.fixVersion || issue.sprintName || null) : null;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
@@ -271,29 +272,33 @@ export function WorkItemCard({
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
       <div className="flex items-center" style={{ gap: 6, minHeight: d.footerHeight, marginTop: 6 }}>
-        <JiraIssueTypeIcon type={issue.issueType} size={14} />
-        <span style={{
-          fontSize: d.metaSize + 1, fontWeight: 500,
-          color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace",
-          lineHeight: '14px',
-        }}>
-          {issue.issueKey}
-        </span>
+        {vf?.workType !== false && <JiraIssueTypeIcon type={issue.issueType} size={14} />}
+        {vf?.workItemKey !== false && (
+          <span style={{
+            fontSize: d.metaSize + 1, fontWeight: 500,
+            color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace",
+            lineHeight: '14px',
+          }}>
+            {issue.issueKey}
+          </span>
+        )}
         <span className="flex-1" />
-        {issue.priority && (
+        {vf?.priority !== false && issue.priority && (
           <PriorityBars priority={issue.priority} />
         )}
-        {onChangeAssignee && assigneeOptions && avatarsByName ? (
-          <AssigneePickerPopover
-            currentAssignee={issue.assigneeName}
-            options={assigneeOptions}
-            avatarsByName={avatarsByName}
-            tk={tk}
-            avatarSize={d.avatarSize}
-            onSelect={(name) => onChangeAssignee(issue.id, name)}
-          />
-        ) : (
-          <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
+        {vf?.assignee !== false && (
+          onChangeAssignee && assigneeOptions && avatarsByName ? (
+            <AssigneePickerPopover
+              currentAssignee={issue.assigneeName}
+              options={assigneeOptions}
+              avatarsByName={avatarsByName}
+              tk={tk}
+              avatarSize={d.avatarSize}
+              onSelect={(name) => onChangeAssignee(issue.id, name)}
+            />
+          ) : (
+            <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
+          )
         )}
       </div>
 
