@@ -17,35 +17,40 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
     <button
       onClick={onClick}
       title={collapsed ? label : undefined}
-      className="flex items-center w-full rounded-md transition-colors duration-150"
+      className="flex items-center w-full transition-colors duration-100"
       style={{
-        height: 34,
+        height: 36,
         gap: collapsed ? 0 : 10,
-        padding: collapsed ? '0' : '0 10px',
+        padding: collapsed ? '0' : '0 12px',
         justifyContent: collapsed ? 'center' : 'flex-start',
-        width: collapsed ? 34 : '100%',
-        margin: collapsed ? '0 auto' : undefined,
-        fontSize: 13,
-        fontWeight: isActive ? 600 : 500,
+        width: collapsed ? 36 : '100%',
+        margin: collapsed ? '2px auto' : '1px 0',
+        fontSize: 13.5,
+        fontWeight: isActive ? 600 : 450,
         color: isActive
-          ? 'var(--cp-blue)'
-          : isDark ? '#A1A1A1' : 'var(--fg-2)',
+          ? '#0052CC'
+          : isDark ? '#A1A1A1' : '#42526E',
         backgroundColor: isActive
-          ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)')
+          ? (isDark ? 'rgba(0,82,204,0.08)' : '#E9F2FF')
           : 'transparent',
-        borderLeft: isActive && !collapsed ? '3px solid var(--cp-blue)' : '3px solid transparent',
+        borderRadius: collapsed ? 6 : '0 6px 6px 0',
+        borderLeft: isActive && !collapsed ? '3px solid #0052CC' : '3px solid transparent',
+        borderRight: 'none',
+        borderTop: 'none',
+        borderBottom: 'none',
         fontFamily: "'Inter', sans-serif",
-        border: 'none',
         cursor: 'pointer',
+        position: 'relative',
+        letterSpacing: '-0.01em',
       }}
       onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : 'var(--cp-bd-zone)';
+        if (!isActive) e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F4F5F7';
       }}
       onMouseLeave={(e) => {
         if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
       }}
     >
-      <Icon size={18} strokeWidth={1.75} />
+      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.75 }} />
       {!collapsed && (
         <>
           <span className="truncate">{label}</span>
@@ -56,11 +61,11 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 fontSize: 9,
                 fontWeight: 700,
                 color: '#FFFFFF',
-                backgroundColor: 'var(--cp-blue)',
+                backgroundColor: '#7C3AED',
                 borderRadius: 4,
-                padding: '1px 5px',
+                padding: '2px 6px',
                 lineHeight: '14px',
-                letterSpacing: '0.03em',
+                letterSpacing: '0.04em',
               }}
             >
               {badge}
@@ -72,11 +77,11 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
               style={{
                 fontSize: 11,
                 fontWeight: 600,
-                color: isDark ? '#878787' : 'var(--fg-4)',
+                color: isDark ? '#878787' : '#6B778C',
                 fontFamily: "'JetBrains Mono', monospace",
                 borderRadius: 12,
-                backgroundColor: isDark ? '#292929' : 'var(--cp-bd-zone)',
-                padding: '1px 6px',
+                backgroundColor: isDark ? '#292929' : '#EBECF0',
+                padding: '1px 7px',
               }}
             >
               {count}
