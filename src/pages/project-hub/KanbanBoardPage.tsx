@@ -49,7 +49,7 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search, MoreHorizontal } from 'lucide-react';
+import { Search, MoreHorizontal, Settings2, Map } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
 import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
 
