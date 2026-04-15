@@ -633,6 +633,17 @@ export default function KanbanBoardPage() {
   }, [rawIssues]);
 
   const advCount = Object.values(advFilters).reduce((a, v) => a + v.length, 0);
+  // Current user display name for "Assigned to me"
+  const { data: currentUserName } = useQuery({
+    queryKey: ['current-user-display-name'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data } = await supabase.from('profiles').select('display_name').eq('id', user.id).maybeSingle();
+      return data?.display_name ?? null;
+    },
+    staleTime: 300_000,
+  });
 
   const filtered = useMemo(() => {
     let issues = rawIssues;
@@ -642,8 +653,19 @@ export default function KanbanBoardPage() {
     if (selTypes.length > 0) issues = issues.filter(i => selTypes.includes(i.issueType));
     if (advFilters.priority?.length) issues = issues.filter(i => advFilters.priority.includes(i.priority));
     if (advFilters.status?.length) issues = issues.filter(i => advFilters.status.includes(i.status));
+    // Quick filters
+    if (quickFilters.has('assigned-to-me') && currentUserName) {
+      issues = issues.filter(i => i.assigneeName?.toLowerCase() === currentUserName.toLowerCase());
+    }
+    if (quickFilters.has('recently-updated')) {
+      const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      issues = issues.filter(i => {
+        // Use jira_updated_at from raw data — fallback: include all if no timestamp
+        return true; // Will refine once we have timestamp on BoardIssue
+      });
+    }
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, advFilters]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, advFilters, quickFilters, currentUserName]);
 
   useEffect(() => {
     if (dragId || groupBy !== 'none') return;
