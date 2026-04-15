@@ -377,6 +377,38 @@ export default function KanbanBoardPage() {
     qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
   }, [key, qc, toastSuccess]);
 
+  /* ═══ ARCHIVE ═══ */
+
+  const handleArchive = useCallback(async (issueId: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    try {
+      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      toastSuccess(`Archived ${issue.issueKey}`);
+      if (selIssueId === issueId) setSelIssueId(null);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      toastError(`Failed to archive ${issue.issueKey}`);
+    }
+  }, [issuesById, key, qc, toastSuccess, toastError, selIssueId]);
+
+  /* ═══ DELETE (soft) ═══ */
+
+  const handleDelete = useCallback(async (issueId: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    try {
+      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', issueId);
+      if (error) throw error;
+      toastSuccess(`Deleted ${issue.issueKey}`);
+      if (selIssueId === issueId) setSelIssueId(null);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      toastError(`Failed to delete ${issue.issueKey}`);
+    }
+  }, [issuesById, key, qc, toastSuccess, toastError, selIssueId]);
+
   /* ═══ DND HANDLERS ═══ */
 
   const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
@@ -628,6 +660,10 @@ export default function KanbanBoardPage() {
                   projectKey={key ?? ''}
                   onLabelsUpdated={handleLabelsUpdated}
                   onParentChange={handleParentChange}
+                  onArchive={handleArchive}
+                  onDelete={handleDelete}
+                  onMoved={handleMoved}
+                  onLinked={handleLinked}
                 />
               ))}
               {groups.length === 0 && (
@@ -666,6 +702,10 @@ export default function KanbanBoardPage() {
                   projectKey={key ?? ''}
                   onLabelsUpdated={handleLabelsUpdated}
                   onParentChange={handleParentChange}
+                  onArchive={handleArchive}
+                  onDelete={handleDelete}
+                  onMoved={handleMoved}
+                  onLinked={handleLinked}
                 />
               ))}
             </div>
