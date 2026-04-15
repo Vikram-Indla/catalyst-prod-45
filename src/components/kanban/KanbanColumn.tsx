@@ -115,6 +115,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 isFocused={focusedId === id}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
+                onCopyKey={onCopyKey}
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
                 onSaveSummary={onSaveSummary}
