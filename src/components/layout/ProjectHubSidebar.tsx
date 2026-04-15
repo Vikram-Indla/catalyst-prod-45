@@ -17,6 +17,7 @@ import {
   BookOpen,
   GitBranch,
   FolderKanban,
+  Columns3,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
@@ -89,6 +90,12 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'epic-backlog', title: 'Epic Backlog', path: `${base}/epic-backlog`, icon: Layers, exact: false },
             { id: 'feature-backlog', title: 'Feature Backlog', path: `${base}/feature-backlog`, icon: LayoutList, exact: false },
             { id: 'hierarchy-allwork', title: 'All Work', path: `${base}/hierarchy/allwork`, icon: GitBranch, exact: false },
+          ],
+        },
+        {
+          title: 'Boards',
+          items: [
+            { id: 'boards', title: 'Board 29 — SS', path: `${base}/boards`, icon: Columns3, exact: false },
           ],
         },
       ],
