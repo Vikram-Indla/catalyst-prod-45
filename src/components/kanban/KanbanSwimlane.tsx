@@ -14,7 +14,7 @@ import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -26,6 +26,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   selectedId?: string | null;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onCopyKey?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
@@ -99,6 +100,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 selectedId={selectedId}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
+                onCopyKey={onCopyKey}
                 onChangeStatus={onChangeStatus}
                 onSaveSummary={onSaveSummary}
                 onChangeAssignee={onChangeAssignee}
@@ -112,7 +114,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -120,6 +122,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   selectedId?: string | null;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onCopyKey?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
@@ -156,6 +159,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 isSelected={selectedId === id}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
+                onCopyKey={onCopyKey}
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
                 onSaveSummary={onSaveSummary}
