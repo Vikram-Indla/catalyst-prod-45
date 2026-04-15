@@ -81,6 +81,19 @@ export default function KanbanBoardPage() {
   // Persist density
   useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
 
+  // Current user ID for realtime suppression
+  const { data: currentUserData } = useQuery({
+    queryKey: ['current-user-id'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user?.id ?? null;
+    },
+    staleTime: 300_000,
+  });
+
+  // Realtime subscription
+  useKanbanRealtime(key, currentUserData ?? null);
+
   /* ═══ DATA QUERIES ═══ */
 
   const { data: projMeta } = useQuery({
