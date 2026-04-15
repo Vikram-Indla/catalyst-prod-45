@@ -753,17 +753,20 @@ export default function KanbanBoardPage() {
         paddingTop: 6, paddingBottom: 6,
       }}>
         {/* Search */}
-        <div className="relative" style={{ width: 180 }}>
-          <Search size={13} color={tk.textDisabled} className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="relative" style={{ width: 220 }}>
+          <Search size={14} color="#6B778C" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text" placeholder="Search board" value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
-              width: '100%', height: 28, paddingLeft: 24, paddingRight: 6,
-              border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
-              fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+              width: '100%', height: 34, paddingLeft: 30, paddingRight: 8,
+              border: '1px solid #DFE1E6', borderRadius: 4,
+              fontSize: 13.5, color: '#172B4D', background: '#FFFFFF',
               outline: 'none', fontFamily: "'Inter', sans-serif",
+              transition: 'border-color 120ms ease',
             }}
+            onFocus={e => e.currentTarget.style.borderColor = '#0052CC'}
+            onBlur={e => e.currentTarget.style.borderColor = '#DFE1E6'}
           />
         </div>
 

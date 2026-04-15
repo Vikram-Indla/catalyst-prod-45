@@ -1,5 +1,6 @@
 /**
  * KanbanToolbar — Search, filters, density, group by
+ * Styled to match Advanced Filter panel (high-contrast, #172B4D ink, 14px body)
  */
 import { useState, useRef, useEffect } from 'react';
 import { Search, ChevronDown, Check, Filter } from 'lucide-react';
@@ -8,6 +9,17 @@ import { PriorityBars, normalisePriority } from '@/components/shared/PriorityInd
 import { KanbanAvatar } from './KanbanAvatar';
 import type { GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, KanbanDensity } from './kanban-tokens';
+
+/* ═══ High-contrast style constants (matching AdvancedFilterPanel) ═══ */
+const INK = '#172B4D';
+const INK_SECONDARY = '#42526E';
+const INK_MUTED = '#6B778C';
+const BORDER_COLOR = '#DFE1E6';
+const HOVER_BG = '#F4F5F7';
+const SURFACE_BG = '#FFFFFF';
+const SELECTED_BG = '#DEEBFF';
+const ACCENT = '#0052CC';
+const CHECK_BORDER = '#C1C7D0';
 
 /* ═══ AVATAR STACK FILTER ═══ */
 
@@ -32,24 +44,24 @@ export function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByN
             title={a.name}
             style={{
               position: 'relative', marginLeft: i === 0 ? 0 : -6, zIndex: top.length - i,
-              width: 28, height: 28, borderRadius: '50%',
-              border: isSel ? `2px solid ${tk.selectedAccent}` : `2px solid ${tk.surfaceBg}`,
-              background: tk.surfaceBg, cursor: 'pointer', padding: 0,
+              width: 30, height: 30, borderRadius: '50%',
+              border: isSel ? `2px solid ${ACCENT}` : `2px solid ${SURFACE_BG}`,
+              background: SURFACE_BG, cursor: 'pointer', padding: 0,
               transition: 'transform 80ms', transform: isSel ? 'scale(1.15)' : 'scale(1)',
               outline: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.15)'; e.currentTarget.style.zIndex = '20'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = isSel ? 'scale(1.15)' : 'scale(1)'; e.currentTarget.style.zIndex = String(top.length - i); }}
           >
-            <KanbanAvatar name={a.name} url={url} size={24} tk={tk} />
+            <KanbanAvatar name={a.name} url={url} size={26} tk={tk} />
           </button>
         );
       })}
       {overflow > 0 && (
         <span style={{
-          marginLeft: 2, fontSize: 10, fontWeight: 600, color: tk.textMuted,
-          background: tk.badgeBg, borderRadius: 10, padding: '2px 6px',
-          lineHeight: '16px', whiteSpace: 'nowrap',
+          marginLeft: 4, fontSize: 11, fontWeight: 600, color: INK_MUTED,
+          background: '#EBECF0', borderRadius: 10, padding: '2px 8px',
+          lineHeight: '18px', whiteSpace: 'nowrap',
         }}>+{overflow}</span>
       )}
     </div>
@@ -87,30 +99,38 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
     <div ref={ref} style={{ position: 'relative' }}>
       <FilterTrigger label="Epic" count={active ? selected.length : 0} active={active} onClick={() => setOpen(p => !p)} tk={tk} />
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 340, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ padding: 8, borderBottom: `1px solid ${tk.borderSubtle}` }}>
+        <DropdownPanel width={360}>
+          <div style={{ padding: 10, borderBottom: `1px solid ${BORDER_COLOR}` }}>
             <div style={{ position: 'relative' }}>
-              <Search size={13} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: tk.textDisabled }} />
-              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics" autoFocus
-                style={{ width: '100%', height: 32, paddingLeft: 28, paddingRight: 8, border: `1px solid ${tk.inputBorder}`, borderRadius: 4, fontSize: 13, color: tk.textPrimary, background: tk.inputBg, outline: 'none' }} />
+              <Search size={14} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: INK_MUTED }} />
+              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics..." autoFocus
+                style={{
+                  width: '100%', height: 36, paddingLeft: 32, paddingRight: 10,
+                  border: `1.5px solid ${BORDER_COLOR}`, borderRadius: 4,
+                  fontSize: 13.5, color: INK, background: SURFACE_BG, outline: 'none',
+                  fontFamily: "'Inter', sans-serif",
+                }}
+                onFocus={e => e.currentTarget.style.borderColor = ACCENT}
+                onBlur={e => e.currentTarget.style.borderColor = BORDER_COLOR}
+              />
             </div>
           </div>
-          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+          <div style={{ maxHeight: 300, overflowY: 'auto' }}>
             {filtered.map(e => {
               const isSel = selected.includes(e.key);
               return (
-                <CheckRow key={e.key} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key])} tk={tk}>
+                <CheckRow key={e.key} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key])}>
                   <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: tk.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.summary || e.key}</div>
-                    <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{e.key}</div>
+                    <div style={{ fontSize: 13.5, color: INK, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{e.summary || e.key}</div>
+                    <div style={{ fontSize: 11, color: INK_MUTED, fontFamily: "'JetBrains Mono', monospace" }}>{e.key}</div>
                   </div>
                 </CheckRow>
               );
             })}
-            {filtered.length === 0 && <div style={{ padding: 12, fontSize: 12, color: tk.textDisabled, textAlign: 'center' }}>No epics found</div>}
+            {filtered.length === 0 && <div style={{ padding: 16, fontSize: 13, color: INK_MUTED, textAlign: 'center' }}>No epics found</div>}
           </div>
-          {active && <ClearAll onClick={() => onChange([])} tk={tk} />}
-        </div>
+          {active && <ClearAll onClick={() => onChange([])} />}
+        </DropdownPanel>
       )}
     </div>
   );
@@ -131,21 +151,21 @@ export function TypeFilterDropdown({ types, selected, onChange, tk }: {
     <div ref={ref} style={{ position: 'relative' }}>
       <FilterTrigger label="Type" count={active ? selected.length : 0} active={active} onClick={() => setOpen(p => !p)} tk={tk} />
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 220, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+        <DropdownPanel width={240}>
+          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
             {types.map(t => {
               const isSel = selected.includes(t.type);
               return (
-                <CheckRow key={t.type} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== t.type) : [...selected, t.type])} tk={tk}>
-                  <JiraIssueTypeIcon type={t.type} size={14} />
-                  <span style={{ flex: 1, fontSize: 13, color: tk.textPrimary }}>{t.type}</span>
-                  <span style={{ fontSize: 11, color: tk.textMuted }}>{t.count}</span>
+                <CheckRow key={t.type} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== t.type) : [...selected, t.type])}>
+                  <JiraIssueTypeIcon type={t.type} size={16} />
+                  <span style={{ flex: 1, fontSize: 13.5, color: INK, fontWeight: 450 }}>{t.type}</span>
+                  <span style={{ fontSize: 11, color: INK_MUTED, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{t.count}</span>
                 </CheckRow>
               );
             })}
           </div>
-          {active && <ClearAll onClick={() => onChange([])} tk={tk} />}
-        </div>
+          {active && <ClearAll onClick={() => onChange([])} />}
+        </DropdownPanel>
       )}
     </div>
   );
@@ -167,20 +187,20 @@ export function PriorityFilterDropdown({ selected, onChange, tk }: {
     <div ref={ref} style={{ position: 'relative' }}>
       <FilterTrigger label="Priority" count={active ? selected.length : 0} active={active} onClick={() => setOpen(p => !p)} tk={tk} />
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 200, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+        <DropdownPanel width={220}>
+          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
             {PRIORITY_OPTIONS.map(p => {
               const isSel = selected.includes(p);
               return (
-                <CheckRow key={p} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== p) : [...selected, p])} tk={tk}>
+                <CheckRow key={p} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== p) : [...selected, p])}>
                   <PriorityBars priority={normalisePriority(p)} />
-                  <span style={{ flex: 1, fontSize: 13, color: tk.textPrimary }}>{p}</span>
+                  <span style={{ flex: 1, fontSize: 13.5, color: INK, fontWeight: 450 }}>{p}</span>
                 </CheckRow>
               );
             })}
           </div>
-          {active && <ClearAll onClick={() => onChange([])} tk={tk} />}
-        </div>
+          {active && <ClearAll onClick={() => onChange([])} />}
+        </DropdownPanel>
       )}
     </div>
   );
@@ -205,25 +225,26 @@ export function QuickFilterDropdown({ selected, onChange, tk }: {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button onClick={() => setOpen(p => !p)} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-        borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
-        background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
-        fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+        display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
+        borderRadius: 4, border: active ? `2px solid ${ACCENT}` : `1px solid ${BORDER_COLOR}`,
+        background: active ? SELECTED_BG : SURFACE_BG, color: active ? ACCENT : INK_SECONDARY,
+        fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+        transition: 'all 120ms ease',
       }}>
-        <Filter size={13} />
-        Quick{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: tk.selectedAccent, color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.size}</span>}
+        <Filter size={14} />
+        Quick{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 20, height: 20, borderRadius: 10, background: ACCENT, color: '#FFFFFF', fontSize: 11, fontWeight: 700 }}>{selected.size}</span>}
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 220, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
+        <DropdownPanel width={240}>
           {QUICK_FILTER_OPTIONS.map(o => {
             const isSel = selected.has(o.key);
             return (
-              <CheckRow key={o.key} checked={isSel} onClick={() => { const next = new Set(selected); if (isSel) next.delete(o.key); else next.add(o.key); onChange(next); }} tk={tk}>
-                <span style={{ fontSize: 13, color: tk.textPrimary }}>{o.label}</span>
+              <CheckRow key={o.key} checked={isSel} onClick={() => { const next = new Set(selected); if (isSel) next.delete(o.key); else next.add(o.key); onChange(next); }}>
+                <span style={{ fontSize: 13.5, color: INK, fontWeight: 450 }}>{o.label}</span>
               </CheckRow>
             );
           })}
-        </div>
+        </DropdownPanel>
       )}
     </div>
   );
@@ -242,13 +263,14 @@ export function DensityToggle({ value, onChange, tk }: {
     { key: 'comfortable', label: 'Comfortable' },
   ];
   return (
-    <div className="flex" style={{ borderRadius: 4, border: `1px solid ${tk.border}`, overflow: 'hidden' }}>
+    <div className="flex" style={{ borderRadius: 4, border: `1px solid ${BORDER_COLOR}`, overflow: 'hidden' }}>
       {opts.map(o => (
         <button key={o.key} onClick={() => onChange(o.key)} style={{
-          padding: '0 10px', height: 28, fontSize: 11, fontWeight: value === o.key ? 600 : 400,
-          background: value === o.key ? tk.selectedAccent : tk.surfaceBg,
-          color: value === o.key ? '#FFFFFF' : tk.textSecondary,
+          padding: '0 12px', height: 30, fontSize: 12, fontWeight: value === o.key ? 600 : 450,
+          background: value === o.key ? ACCENT : SURFACE_BG,
+          color: value === o.key ? '#FFFFFF' : INK_SECONDARY,
           border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          transition: 'all 100ms ease',
         }}>{o.label}</button>
       ))}
     </div>
@@ -277,38 +299,40 @@ export function GroupByBtn({ value, onChange, tk }: {
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button onClick={() => setOpen(p => !p)} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px',
-        borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
-        background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
-        fontSize: 13, fontWeight: active ? 600 : 400, cursor: 'pointer',
-        fontFamily: "'Inter', sans-serif",
+        display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 14px',
+        borderRadius: 4, border: active ? `2px solid ${ACCENT}` : `1px solid ${BORDER_COLOR}`,
+        background: active ? SELECTED_BG : SURFACE_BG, color: active ? ACCENT : INK_SECONDARY,
+        fontSize: 13.5, fontWeight: active ? 600 : 500, cursor: 'pointer',
+        fontFamily: "'Inter', sans-serif", transition: 'all 120ms ease',
       }}>
-        {active ? `Group: ${lbl}` : 'Group'} <ChevronDown size={12} />
+        {active ? `Group: ${lbl}` : 'Group'} <ChevronDown size={13} />
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 100, width: 200, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ padding: '4px 8px 2px', fontSize: 10, fontWeight: 600, color: tk.textDisabled, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
+        <DropdownPanel width={220} align="right">
+          <div style={{ padding: '8px 12px 4px', fontSize: 11, fontWeight: 700, color: INK_MUTED, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
           {GRP_OPTS.map(o => {
             const sel = value === o.key;
             return (
               <button key={o.key} onClick={() => { onChange(o.key); setOpen(false); }}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 6, width: '100%',
-                  padding: '6px 8px', border: 'none',
-                  background: sel ? tk.dropHighlight : 'transparent',
-                  cursor: 'pointer', fontSize: 12,
-                  color: sel ? tk.selectedAccent : tk.textPrimary,
-                  fontWeight: sel ? 600 : 400,
+                  display: 'flex', alignItems: 'center', gap: 8, width: '100%',
+                  padding: '8px 12px', border: 'none',
+                  background: sel ? SELECTED_BG : 'transparent',
+                  cursor: 'pointer', fontSize: 13.5,
+                  color: sel ? ACCENT : INK,
+                  fontWeight: sel ? 600 : 450,
+                  fontFamily: "'Inter', sans-serif",
+                  transition: 'background 80ms ease',
                 }}
-                onMouseEnter={e => { if (!sel) e.currentTarget.style.background = tk.surfaceHover; }}
-                onMouseLeave={e => { e.currentTarget.style.background = sel ? tk.dropHighlight : 'transparent'; }}
+                onMouseEnter={e => { if (!sel) e.currentTarget.style.background = HOVER_BG; }}
+                onMouseLeave={e => { e.currentTarget.style.background = sel ? SELECTED_BG : 'transparent'; }}
               >
-                <div style={{ width: 14 }}>{sel && <Check size={12} color={tk.selectedAccent} />}</div>
+                <div style={{ width: 16 }}>{sel && <Check size={13} color={ACCENT} strokeWidth={2.5} />}</div>
                 {o.label}
               </button>
             );
           })}
-        </div>
+        </DropdownPanel>
       )}
     </div>
   );
@@ -316,67 +340,86 @@ export function GroupByBtn({ value, onChange, tk }: {
 
 /* ═══ SHARED PRIMITIVES ═══ */
 
+function DropdownPanel({ children, width, align }: { children: React.ReactNode; width: number; align?: 'right' }) {
+  return (
+    <div style={{
+      position: 'absolute', top: 'calc(100% + 6px)',
+      ...(align === 'right' ? { right: 0 } : { left: 0 }),
+      zIndex: 100, width, background: SURFACE_BG,
+      border: `1px solid ${BORDER_COLOR}`, borderRadius: 8,
+      boxShadow: '0 8px 24px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.2)',
+      overflow: 'hidden',
+    }}>
+      {children}
+    </div>
+  );
+}
+
 function FilterTrigger({ label, count, active, onClick, tk }: {
   label: string; count: number; active: boolean;
   onClick: () => void; tk: KanbanThemeTokens;
 }) {
   return (
     <button onClick={onClick} style={{
-      display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px',
-      borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
-      background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
-      fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+      display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
+      borderRadius: 4, border: active ? `2px solid ${ACCENT}` : `1px solid ${BORDER_COLOR}`,
+      background: active ? SELECTED_BG : SURFACE_BG, color: active ? ACCENT : INK_SECONDARY,
+      fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+      transition: 'all 120ms ease',
     }}>
       {label}
       {count > 0 && (
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          minWidth: 18, height: 18, borderRadius: 9,
-          background: tk.selectedAccent, color: '#FFFFFF', fontSize: 10, fontWeight: 700,
+          minWidth: 20, height: 20, borderRadius: 10,
+          background: ACCENT, color: '#FFFFFF', fontSize: 11, fontWeight: 700,
         }}>{count}</span>
       )}
-      <ChevronDown size={12} />
+      <ChevronDown size={13} />
     </button>
   );
 }
 
-function CheckRow({ checked, onClick, tk, children }: {
+function CheckRow({ checked, onClick, children }: {
   checked: boolean; onClick: () => void;
-  tk: KanbanThemeTokens; children: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
       style={{
-        display: 'flex', alignItems: 'center', gap: 8, width: '100%',
-        padding: '8px 12px', border: 'none',
-        background: checked ? tk.dropHighlight : 'transparent',
+        display: 'flex', alignItems: 'center', gap: 10, width: '100%',
+        padding: '9px 14px', border: 'none',
+        background: checked ? SELECTED_BG : 'transparent',
         cursor: 'pointer', textAlign: 'left',
+        transition: 'background 80ms ease',
       }}
-      onMouseEnter={ev => { if (!checked) (ev.currentTarget as HTMLElement).style.background = tk.surfaceHover; }}
-      onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = checked ? tk.dropHighlight : 'transparent'; }}
+      onMouseEnter={ev => { if (!checked) (ev.currentTarget as HTMLElement).style.background = HOVER_BG; }}
+      onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = checked ? SELECTED_BG : 'transparent'; }}
     >
       <div style={{
-        width: 16, height: 16,
-        border: checked ? 'none' : `1.5px solid ${tk.textDisabled}`,
+        width: 18, height: 18,
+        border: checked ? 'none' : `2px solid ${CHECK_BORDER}`,
         borderRadius: 3,
-        background: checked ? tk.selectedAccent : 'transparent',
+        background: checked ? ACCENT : 'transparent',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         flexShrink: 0,
+        transition: 'all 100ms ease',
       }}>
-        {checked && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
+        {checked && <Check size={12} color="#FFFFFF" strokeWidth={3} />}
       </div>
       {children}
     </button>
   );
 }
 
-function ClearAll({ onClick, tk }: { onClick: () => void; tk: KanbanThemeTokens }) {
+function ClearAll({ onClick }: { onClick: () => void }) {
   return (
-    <div style={{ padding: '6px 12px', borderTop: `1px solid ${tk.borderSubtle}` }}>
+    <div style={{ padding: '8px 14px', borderTop: `1px solid ${BORDER_COLOR}` }}>
       <button onClick={onClick} style={{
-        fontSize: 12, color: tk.selectedAccent,
-        background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500,
+        fontSize: 13, color: ACCENT,
+        background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
+        fontFamily: "'Inter', sans-serif",
       }}>Clear all</button>
     </div>
   );
