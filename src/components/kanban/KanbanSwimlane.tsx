@@ -172,7 +172,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -192,6 +192,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
+  visibleFields?: VisibleFields;
 }) {
   const droppableId = `${groupKey}::${colId}`;
   const { setNodeRef, isOver } = useDroppable({ id: droppableId });
@@ -238,6 +239,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 onDelete={onDelete}
                 onMoved={onMoved}
                 onLinked={onLinked}
+                visibleFields={visibleFields}
               />
             );
           })}
