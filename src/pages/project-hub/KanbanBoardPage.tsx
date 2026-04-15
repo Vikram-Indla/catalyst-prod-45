@@ -297,7 +297,7 @@ function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardCl
   );
 }
 
-/* ═══ SWIMLANE ROW (Jira parity: full-width band spanning ALL columns) ═══ */
+/* ═══ SWIMLANE ROW (Jira parity: full-width band spanning ALL columns, DnD enabled) ═══ */
 
 function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen }: {
   group: GroupBucket; mode: GroupByMode; issuesById: Map<string, BoardIssue>;
@@ -305,7 +305,6 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
-  // Build per-column issue lists for this group
   const colMap = useMemo(() => {
     const m: Record<string, string[]> = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
@@ -330,7 +329,6 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
 
   return (
     <div>
-      {/* Swimlane header — full width */}
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 w-full text-left"
@@ -350,25 +348,41 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
         )}
       </button>
 
-      {/* Expanded: columns grid spanning full width */}
       {open && (
         <div className="flex" style={{ borderBottom: '1px solid #DDDEE1' }}>
           {KANBAN_COLUMNS.map((col, i) => {
             const ids = colMap[col.id] ?? [];
-            return (
-              <div key={col.id} className="flex flex-col" style={{ flex: '1 1 0', minWidth: 180, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
-                <div className="flex flex-col gap-1 p-1" style={{ minHeight: 40, background: '#FFFFFF' }}>
-                  {ids.map(id => {
-                    const issue = issuesById.get(id);
-                    if (!issue) return null;
-                    return <JiraCard key={id} issue={issue} avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null} onClick={() => onCardClick(id)} />;
-                  })}
-                </div>
-              </div>
-            );
+            return <SwimlaneDndColumn key={col.id} colId={col.id} groupKey={group.groupKey} issueIds={ids} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={onCardClick} isFirst={i === 0} />;
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ═══ SWIMLANE DROPPABLE COLUMN CELL ═══ */
+
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst }: {
+  colId: string; groupKey: string; issueIds: string[]; issuesById: Map<string, BoardIssue>;
+  avatarsByName: Map<string, string>; onCardClick: (id: string) => void; isFirst: boolean;
+}) {
+  const droppableId = `${groupKey}::${colId}`;
+  const { setNodeRef, isOver } = useDroppable({ id: droppableId });
+
+  return (
+    <div className="flex flex-col" style={{ flex: '1 1 0', minWidth: 180, borderLeft: isFirst ? 'none' : '1px solid #DDDEE1' }}>
+      <div ref={setNodeRef} className="flex flex-col gap-1 p-1" style={{ minHeight: 40, background: isOver ? 'rgba(37,99,235,0.03)' : '#FFFFFF', transition: 'background 100ms' }}>
+        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
+          {issueIds.length === 0 && isOver && (
+            <div className="flex items-center justify-center" style={{ minHeight: 40, color: '#94A3B8', fontSize: 11 }}>Drop here</div>
+          )}
+          {issueIds.map(id => {
+            const issue = issuesById.get(id);
+            if (!issue) return null;
+            return <SortableCard key={id} issue={issue} avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null} onClick={() => onCardClick(id)} />;
+          })}
+        </SortableContext>
+      </div>
     </div>
   );
 }
