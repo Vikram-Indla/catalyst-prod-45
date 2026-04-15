@@ -59,6 +59,7 @@ const DENSITY_STORAGE_KEY = 'kanban-density';
 
 export default function KanbanBoardPage() {
   const { key } = useParams<{ key: string }>();
+  const navigate = useNavigate();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
