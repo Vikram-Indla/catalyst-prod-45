@@ -8,6 +8,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
+import type { AssigneeOption } from './AssigneePickerPopover';
 
 interface SortableCardProps {
   issue: BoardIssue;
@@ -22,9 +23,12 @@ interface SortableCardProps {
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onOpenDetail?: (id: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
+  onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
+  assigneeOptions?: AssigneeOption[];
+  avatarsByName?: Map<string, string>;
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onChangeStatus, onOpenDetail, onSaveSummary }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const cardStyle: React.CSSProperties = {
@@ -95,6 +99,9 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         onChangeStatus={onChangeStatus}
         onOpenDetail={onOpenDetail}
         onSaveSummary={onSaveSummary}
+        onChangeAssignee={onChangeAssignee}
+        assigneeOptions={assigneeOptions}
+        avatarsByName={avatarsByName}
       />
     </div>
   );
