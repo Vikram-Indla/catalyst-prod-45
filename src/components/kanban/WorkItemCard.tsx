@@ -63,7 +63,7 @@ interface WorkItemCardProps {
 export function WorkItemCard({
   issue, avatarUrl, d, tk, isSelected,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
-  onArchive, onDelete, onSaveSummary,
+  onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
