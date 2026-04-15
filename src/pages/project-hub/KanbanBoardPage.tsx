@@ -651,7 +651,7 @@ export default function KanbanBoardPage() {
         <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
 
         {/* Board menu ••• */}
-        <div style={{ position: 'relative' }}>
+        <div ref={boardMenuRef} style={{ position: 'relative' }}>
           <button
             onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
             style={{
