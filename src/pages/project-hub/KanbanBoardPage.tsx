@@ -116,7 +116,6 @@ export default function KanbanBoardPage() {
       const { data, error } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at')
         .eq('project_key', key.toUpperCase())
-        .in('issue_type', ['Epic', 'Story'])
         .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false })
         .limit(1000);
@@ -204,7 +203,10 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    let issues = rawIssues;
+    // Hide Epics as cards unless grouped by epic (they appear as swimlane headers)
+    let issues = groupBy === 'epic'
+      ? rawIssues.filter(i => i.issueType !== 'Epic')
+      : rawIssues.filter(i => i.issueType !== 'Epic');
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
