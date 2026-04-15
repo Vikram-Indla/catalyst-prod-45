@@ -659,7 +659,16 @@ export default function KanbanBoardPage() {
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
 
   const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
+
+  /* Parse composite droppable IDs: "groupKey::col-id" → colId, or plain col-id / issue-id */
+  const resolveColId = useCallback((overId: string): string | null => {
+    if (overId.includes('::')) return overId.split('::')[1] ?? null;
+    if (COLUMN_ID_SET.has(overId)) return overId;
+    return null;
+  }, []);
+
   const onDragOver = useCallback((e: DragOverEvent) => {
+    if (groupBy !== 'none') return; // grouped mode handles drop differently
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
     if (!oid) return;
     setColMap(prev => {
@@ -670,10 +679,40 @@ export default function KanbanBoardPage() {
       if (!isCol) { const oi = t.indexOf(oid); t.splice(oi >= 0 ? oi : 0, 0, aid); } else t.unshift(aid);
       return { ...prev, [from]: f, [to]: t };
     });
-  }, []);
+  }, [groupBy]);
+
+  /* Persist status update to ph_issues AND catalyst_issues for canonical sync */
+  const persistStatusChange = useCallback((issueId: string, newStatus: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue || issue.status === newStatus) return;
+    // Optimistic local update
+    issue.status = newStatus;
+    // Persist to ph_issues
+    Promise.resolve(supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId))
+      .then(() => {
+        // Also sync to catalyst_issues by issue_key for canonical status
+        return Promise.resolve(
+          supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey)
+        );
+      })
+      .then(() => qc.invalidateQueries({ queryKey: ['kanban-issues', key] }));
+  }, [issuesById, key, qc]);
+
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
-    setDragId(null); if (!oid) return;
+    setDragId(null);
+    if (!oid) return;
+
+    if (groupBy !== 'none') {
+      // Grouped mode: resolve target column from composite droppable ID
+      const targetColId = resolveColId(oid);
+      if (!targetColId) return;
+      const newStatus = COL_PRIMARY_STATUS[targetColId];
+      if (newStatus) persistStatusChange(aid, newStatus);
+      return;
+    }
+
+    // Flat mode: reorder within column
     setColMap(prev => {
       const c = findCol(prev, aid); if (!c) return prev;
       if (COLUMN_ID_SET.has(oid)) return prev;
@@ -681,15 +720,14 @@ export default function KanbanBoardPage() {
       if (oi < 0 || ni < 0 || oi === ni) return prev;
       return { ...prev, [c]: arrayMove(ids, oi, ni) };
     });
+    // Persist status change for flat mode
     setColMap(prev => {
       const c = findCol(prev, aid); if (!c) return prev;
-      const issue = issuesById.get(aid), ns = COL_PRIMARY_STATUS[c];
-      if (!issue || !ns || issue.status === ns) return prev;
-      issue.status = ns;
-      Promise.resolve(supabase.from('ph_issues').update({ status: ns }).eq('id', aid)).then(() => qc.invalidateQueries({ queryKey: ['kanban-issues', key] }));
+      const ns = COL_PRIMARY_STATUS[c];
+      if (ns) persistStatusChange(aid, ns);
       return prev;
     });
-  }, [issuesById, key, qc]);
+  }, [groupBy, resolveColId, persistStatusChange]);
 
   const dragIssue = dragId ? issuesById.get(dragId) : null;
 
