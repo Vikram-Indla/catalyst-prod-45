@@ -47,7 +47,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
 function ToggleRow({ label, checked, onChange, tk }: { label: string; checked: boolean; onChange: (v: boolean) => void; tk: KanbanThemeTokens }) {
   return (
     <div className="flex items-center justify-between" style={{ padding: '6px 0' }}>
-      <span style={{ fontSize: 13, color: tk.textSecondary, fontFamily: "'Inter', sans-serif" }}>{label}</span>
+      <span style={{ fontSize: 14, color: tk.textSecondary, fontFamily: "'Inter', sans-serif" }}>{label}</span>
       <Toggle checked={checked} onChange={onChange} tk={tk} />
     </div>
   );
@@ -100,7 +100,6 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
   }, [onUpdate, settings.visibleFields]);
 
   const FIELD_LABELS: { key: keyof VisibleFields; label: string }[] = [
-    { key: 'cardCover', label: 'Card cover' },
     { key: 'workType', label: 'Work type' },
     { key: 'workItemKey', label: 'Work item key' },
     { key: 'epic', label: 'Epic' },
@@ -138,13 +137,6 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
       }}>
         View settings
       </div>
-
-      <Divider tk={tk} />
-
-      {/* Top toggles */}
-      <ToggleRow label="Open work items in sidebar" checked={settings.openInSidebar} onChange={v => onUpdate({ openInSidebar: v })} tk={tk} />
-      <ToggleRow label="Quick filters" checked={settings.showQuickFilters} onChange={v => onUpdate({ showQuickFilters: v })} tk={tk} />
-      <ToggleRow label="Work suggestions" checked={settings.showWorkSuggestions} onChange={v => onUpdate({ showWorkSuggestions: v })} tk={tk} />
 
       <Divider tk={tk} />
 
