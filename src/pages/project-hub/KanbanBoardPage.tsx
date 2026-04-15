@@ -49,7 +49,9 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search } from 'lucide-react';
+import { Search, MoreHorizontal } from 'lucide-react';
+import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
+import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -77,6 +79,8 @@ export default function KanbanBoardPage() {
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
+  const [showViewSettings, setShowViewSettings] = useState(false);
+  const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const d = DENSITY_CONFIG[density];
