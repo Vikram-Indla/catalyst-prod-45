@@ -42,7 +42,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
 
 /* ═══ DROPPABLE COLUMN ═══ */
 
-export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked }: {
+export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
@@ -63,6 +63,8 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onArchive?: (id: string) => void;
+  onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
 }) {
@@ -130,6 +132,8 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 projectKey={projectKey}
                 onLabelsUpdated={onLabelsUpdated}
                 onParentChange={onParentChange}
+                onArchive={onArchive}
+                onDelete={onDelete}
                 onMoved={onMoved}
                 onLinked={onLinked}
               />

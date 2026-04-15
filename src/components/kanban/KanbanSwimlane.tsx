@@ -15,7 +15,7 @@ import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -35,6 +35,8 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onArchive?: (id: string) => void;
+  onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
 }) {
@@ -114,6 +116,8 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 projectKey={projectKey}
                 onLabelsUpdated={onLabelsUpdated}
                 onParentChange={onParentChange}
+                onArchive={onArchive}
+                onDelete={onDelete}
                 onMoved={onMoved}
                 onLinked={onLinked}
               />
@@ -125,7 +129,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -141,6 +145,8 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onArchive?: (id: string) => void;
+  onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
 }) {
@@ -185,6 +191,8 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 projectKey={projectKey}
                 onLabelsUpdated={onLabelsUpdated}
                 onParentChange={onParentChange}
+                onArchive={onArchive}
+                onDelete={onDelete}
                 onMoved={onMoved}
                 onLinked={onLinked}
               />
