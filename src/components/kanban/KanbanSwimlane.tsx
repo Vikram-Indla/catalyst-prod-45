@@ -34,6 +34,8 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -111,6 +113,8 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 projectKey={projectKey}
                 onLabelsUpdated={onLabelsUpdated}
                 onParentChange={onParentChange}
+                onMoved={onMoved}
+                onLinked={onLinked}
               />
             );
           })}
@@ -136,6 +140,8 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
 }) {
   const droppableId = `${groupKey}::${colId}`;
   const { setNodeRef, isOver } = useDroppable({ id: droppableId });
@@ -178,6 +184,8 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 projectKey={projectKey}
                 onLabelsUpdated={onLabelsUpdated}
                 onParentChange={onParentChange}
+                onMoved={onMoved}
+                onLinked={onLinked}
               />
             );
           })}

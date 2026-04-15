@@ -18,6 +18,8 @@ import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { StatusChangePanel } from './StatusChangePanel';
 import { LabelEditorPanel } from './LabelEditorPanel';
 import { ParentPickerPanel } from './ParentPickerPanel';
+import { MoveWorkItemModal } from './MoveWorkItemModal';
+import { LinkWorkItemModal } from './LinkWorkItemModal';
 
 interface WorkItemOverflowMenuProps {
   issue: BoardIssue;
@@ -34,17 +36,22 @@ interface WorkItemOverflowMenuProps {
   onDelete?: (id: string) => void;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
 }
 
 export function WorkItemOverflowMenu({
   issue, menuPos, tk, projectKey, onClose,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus,
   onOpenDetail, onArchive, onDelete, onLabelsUpdated, onParentChange,
+  onMoved, onLinked,
 }: WorkItemOverflowMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [activePanel, setActivePanel] = useState<'status' | 'label' | 'parent' | null>(null);
   const [showArchive, setShowArchive] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showMove, setShowMove] = useState(false);
+  const [showLink, setShowLink] = useState(false);
 
   // Close on outside click
   useEffect(() => {
@@ -98,8 +105,8 @@ export function WorkItemOverflowMenu({
     <>
       <div ref={menuRef} style={menuStyle} onClick={e => e.stopPropagation()} role="menu">
         {/* Move work item */}
-        <MenuItem icon={<ArrowRightLeft size={14} />} label="Move work item" hasSubmenu
-          onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
+        <MenuItem icon={<ArrowRightLeft size={14} />} label="Move work item"
+          onClick={() => setShowMove(true)} tk={tk} />
 
         {/* Change status */}
         <div
@@ -159,7 +166,7 @@ export function WorkItemOverflowMenu({
 
         {/* Link work item */}
         <MenuItem icon={<LinkIcon size={14} />} label="Link work item"
-          onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
+          onClick={() => setShowLink(true)} tk={tk} />
 
         {/* Change parent */}
         <div
@@ -208,6 +215,23 @@ export function WorkItemOverflowMenu({
           tk={tk}
           onConfirm={() => { onDelete?.(issue.id); onClose(); }}
           onCancel={() => setShowDelete(false)}
+        />
+      )}
+      {showMove && (
+        <MoveWorkItemModal
+          issue={issue}
+          currentProjectKey={projectKey}
+          tk={tk}
+          onClose={() => setShowMove(false)}
+          onMoved={(id, newKey) => { onMoved?.(id, newKey); onClose(); }}
+        />
+      )}
+      {showLink && (
+        <LinkWorkItemModal
+          issue={issue}
+          tk={tk}
+          onClose={() => setShowLink(false)}
+          onLinked={() => { onLinked?.(); onClose(); }}
         />
       )}
     </>
