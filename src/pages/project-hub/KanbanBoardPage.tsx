@@ -72,6 +72,7 @@ export default function KanbanBoardPage() {
   const [groupBy, setGroupBy] = useState<GroupByMode>('none');
   const [density, setDensity] = useState<KanbanDensity>(() => (localStorage.getItem(DENSITY_STORAGE_KEY) as KanbanDensity) || 'dense');
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
