@@ -20,10 +20,8 @@ import {
   Columns3,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
-import { supabase } from '@/integrations/supabase/client';
 
 const preloaded = { done: false };
 function preloadProjectHubChunks() {
