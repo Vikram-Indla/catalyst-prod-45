@@ -159,6 +159,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 isSelected={selectedId === id}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
+                onCopyKey={onCopyKey}
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
                 onSaveSummary={onSaveSummary}
