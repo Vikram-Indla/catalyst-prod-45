@@ -485,7 +485,7 @@ export default function KanbanBoardPage() {
       </div>
 
       {/* ── Board content ── */}
-      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden" style={{ scrollbarGutter: 'stable' as any }}>
+      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden" style={{ scrollbarGutter: 'stable' as any, display: 'flex', flexDirection: 'column' }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: tk.surfaceBg, minWidth: KANBAN_COLUMNS.length * 300 }}>
