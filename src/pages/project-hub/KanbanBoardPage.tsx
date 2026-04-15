@@ -486,7 +486,7 @@ export default function KanbanBoardPage() {
   const [search, setSearch] = useState('');
   const [debSearch, setDebSearch] = useState('');
   const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByMode>('none');
+  const [groupBy, setGroupBy] = useState<GroupByMode>('epic');
   const [filterOpen, setFilterOpen] = useState(false);
   const [advFilters, setAdvFilters] = useState<Record<string, string[]>>({});
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
@@ -506,7 +506,7 @@ export default function KanbanBoardPage() {
     queryKey: ['kanban-issues', key],
     queryFn: async () => {
       if (!key) return [];
-      const { data, error } = await supabase.from('ph_issues').select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, fix_versions').eq('project_key', key.toUpperCase()).is('deleted_at', null).order('jira_updated_at', { ascending: false }).limit(1000);
+      const { data, error } = await supabase.from('ph_issues').select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, fix_versions').eq('project_key', key.toUpperCase()).is('deleted_at', null).in('issue_type', ['Story', 'Epic', 'Feature', 'New Feature']).order('jira_updated_at', { ascending: false }).limit(1000);
       if (error) throw error;
       return (data ?? []).map((r): BoardIssue => {
         let fv: string | null = null;
