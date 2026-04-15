@@ -64,7 +64,6 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
         width: 300,
         minWidth: 300,
         maxWidth: 300,
-        height: '100%',
         background: tk.surfaceAlt,
         borderRight: `1px solid ${tk.border}`,
       }}
@@ -78,9 +77,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
         style={{
           padding: 6,
           gap: d.cardGap,
-          flex: '1 1 0',
-          minHeight: 0,
-          scrollbarGutter: 'stable' as any,
+          maxHeight: 'calc(100vh - 200px)',
           background: isOver ? tk.dropHighlight : 'transparent',
           transition: 'background 100ms',
         }}
