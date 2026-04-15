@@ -1,5 +1,6 @@
 /**
  * KanbanSwimlane — Grouped swimlane row with expandable columns
+ * Jira-parity: epic key, icon, summary, child count, status lozenge
  */
 
 import { useState, useMemo } from 'react';
@@ -14,6 +15,28 @@ import { KANBAN_COLUMNS, STATUS_TO_COL_ID } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
+
+/* ── Status Lozenge (3-color guardrail) ── */
+function StatusLozenge({ status, category, tk }: { status: string; category: string; tk: KanbanThemeTokens }) {
+  const cat = category?.toLowerCase() ?? 'todo';
+  let bg: string, fg: string;
+  if (cat === 'done') { bg = '#E3FCEF'; fg = '#006644'; }
+  else if (cat === 'indeterminate' || cat === 'in_progress' || cat === 'in progress') { bg = '#DEEBFF'; fg = '#0747A6'; }
+  else { bg = '#DFE1E6'; fg = '#253858'; }
+
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center',
+      height: 20, padding: '0 6px', borderRadius: 3,
+      background: bg, color: fg,
+      fontSize: 11, fontWeight: 700, letterSpacing: '0.03em',
+      textTransform: 'uppercase', whiteSpace: 'nowrap',
+      fontFamily: "'Inter', sans-serif",
+    }}>
+      {status}
+    </span>
+  );
+}
 
 export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
   group: GroupBucket;
@@ -54,6 +77,15 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
     return m;
   }, [group.issueIds, issuesById]);
 
+  /* Look up epic BoardIssue for status lozenge */
+  const epicIssue = useMemo(() => {
+    if (mode !== 'epic' || group.groupKey === 'NO_EPIC') return null;
+    for (const issue of issuesById.values()) {
+      if (issue.issueKey === group.groupKey && issue.issueType === 'Epic') return issue;
+    }
+    return null;
+  }, [mode, group.groupKey, issuesById]);
+
   const icon = () => {
     if (mode === 'assignee') {
       const name = group.groupKey === 'UNASSIGNED' ? null : group.groupLabel;
@@ -68,25 +100,33 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
     <div>
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-2 w-full text-left"
+        className="flex items-center w-full text-left"
         style={{
-          padding: '10px 16px',
+          gap: 8,
+          padding: '12px 16px',
           background: tk.surfaceAlt,
           border: 'none',
           borderBottom: `1px solid ${tk.border}`,
           cursor: 'pointer',
           fontFamily: "'Inter', sans-serif",
+          minHeight: 44,
         }}
         onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
         onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceAlt; }}
       >
-        {open ? <ChevronDown size={14} color={tk.textMuted} /> : <ChevronRight size={14} color={tk.textMuted} />}
+        {open ? <ChevronDown size={16} color={tk.textMuted} /> : <ChevronRight size={16} color={tk.textMuted} />}
         {icon()}
         {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
-          <span style={{ fontSize: 12, fontWeight: 600, color: tk.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{group.groupKey}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: tk.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{group.groupKey}</span>
         )}
-        <span style={{ fontSize: 13, fontWeight: 500, color: tk.textPrimary }}>{group.groupLabel}</span>
-        <span style={{ fontSize: 12, color: tk.textMuted }}>({group.issueIds.length})</span>
+        <span style={{ fontSize: 14, fontWeight: 500, color: tk.textPrimary }}>{group.groupLabel}</span>
+        <span style={{ fontSize: 12, color: tk.textMuted, marginLeft: -2 }}>({group.issueIds.length})</span>
+        {/* Epic status lozenge — Jira parity */}
+        {epicIssue && (
+          <span style={{ marginLeft: 4 }}>
+            <StatusLozenge status={epicIssue.status} category={epicIssue.statusCategory} tk={tk} />
+          </span>
+        )}
       </button>
 
       {open && (
