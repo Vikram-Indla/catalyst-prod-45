@@ -1,21 +1,22 @@
 /**
  * KanbanBoardPage — Enterprise-grade Kanban board for ProjectHub
- * Phase 1: Layout + DnD + Cards + Density + Dark Mode + Persistence
- * 
+ * Phase 1: Modular layout + DnD + Cards + Density + Dark Mode + Filters + Context Menu
+ *
  * Architecture:
+ * - Modular components: KanbanColumn, WorkItemCard, KanbanToolbar, KanbanSwimlane
  * - Dynamic columns from actual issue statuses
  * - DnD with optimistic updates + rollback + toast
  * - Card density toggle (compact/dense/comfortable)
- * - Dark mode via useTheme() + design tokens
- * - All filters: search, avatar stack, epic, type, quick filters, group by
+ * - Dark mode via useTheme() + Nocturne Geist hex tokens
+ * - Filters: search, avatar stack, epic, type, priority, quick filters, group by
+ * - Context menu on cards (⋯)
+ * - Selection state with left accent bar
+ * - All issue types (Story, Epic, Bug, Task, Subtask, Feature, Improvement, etc.)
  */
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, ChevronDown, ChevronRight, Check, User, Flag, MoreHorizontal } from 'lucide-react';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTheme } from '@/hooks/useTheme';
 import { toast } from 'sonner';
@@ -30,696 +31,66 @@ import {
   useSensors,
   closestCorners,
 } from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+
+// Kanban modules
+import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS, COL_PRIMARY_STATUS, STATUS_TO_COL_ID, COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
+import type { KanbanDensity } from '@/components/kanban/kanban-tokens';
+import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban-types';
+import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
+import { DroppableColumn } from '@/components/kanban/KanbanColumn';
+import { OverlayCard } from '@/components/kanban/SortableCard';
+import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { useDroppable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
+  AvatarStackFilter, EpicFilterDropdown, TypeFilterDropdown, PriorityFilterDropdown,
+  QuickFilterDropdown, DensityToggle, GroupByBtn,
+} from '@/components/kanban/KanbanToolbar';
+
+import { Search } from 'lucide-react';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
-/* ═══════════════════════════════════════════════════════════════
-   DESIGN TOKENS — Light & Dark mode (Nocturne Geist)
-   ═══════════════════════════════════════════════════════════════ */
-
-interface ThemeTokens {
-  pageBg: string; surfaceBg: string; surfaceHover: string; surfaceAlt: string; headerBg: string;
-  border: string; borderSubtle: string; textPrimary: string; textSecondary: string; textMuted: string;
-  textDisabled: string; badgeBg: string; cardBg: string; cardBorder: string; cardHoverBg: string;
-  cardHoverShadow: string; cardDragShadow: string; dropHighlight: string; selectedAccent: string;
-  chipBg: string; chipText: string; inputBg: string; inputBorder: string; overlay: string;
-}
-
-const T: { light: ThemeTokens; dark: ThemeTokens } = {
-  light: {
-    pageBg: '#F4F5F7',
-    surfaceBg: '#FFFFFF',
-    surfaceHover: '#F4F5F7',
-    surfaceAlt: '#FAFBFC',
-    headerBg: '#F4F5F7',
-    border: '#DDDEE1',
-    borderSubtle: '#EBECF0',
-    textPrimary: '#172B4D',
-    textSecondary: '#42526E',
-    textMuted: '#5E6C84',
-    textDisabled: '#94A3B8',
-    badgeBg: 'rgba(9,30,66,.08)',
-    cardBg: '#FFFFFF',
-    cardBorder: '#DDDEE1',
-    cardHoverBg: '#F4F5F7',
-    cardHoverShadow: '0 1px 4px rgba(9,30,66,.15)',
-    cardDragShadow: '0 8px 16px rgba(9,30,66,.25)',
-    dropHighlight: 'rgba(37,99,235,0.04)',
-    selectedAccent: '#2563EB',
-    chipBg: '#DFE1E6',
-    chipText: '#42526E',
-    inputBg: '#FAFBFC',
-    inputBorder: '#DDDEE1',
-    overlay: 'rgba(9,30,66,.08)',
-  },
-  dark: {
-    pageBg: '#0A0A0A',
-    surfaceBg: '#1A1A1A',
-    surfaceHover: '#1F1F1F',
-    surfaceAlt: '#111111',
-    headerBg: '#111111',
-    border: '#2E2E2E',
-    borderSubtle: '#292929',
-    textPrimary: '#EDEDED',
-    textSecondary: '#A1A1A1',
-    textMuted: '#878787',
-    textDisabled: '#7D7D7D',
-    badgeBg: 'rgba(255,255,255,.08)',
-    cardBg: '#1A1A1A',
-    cardBorder: '#2E2E2E',
-    cardHoverBg: '#1F1F1F',
-    cardHoverShadow: '0 1px 4px rgba(0,0,0,.4)',
-    cardDragShadow: '0 8px 16px rgba(0,0,0,.6)',
-    dropHighlight: 'rgba(37,99,235,0.06)',
-    selectedAccent: '#2563EB',
-    chipBg: '#292929',
-    chipText: '#A1A1A1',
-    inputBg: '#111111',
-    inputBorder: '#2E2E2E',
-    overlay: 'rgba(255,255,255,.04)',
-  },
-};
-
-/* ═══ DENSITY SYSTEM ═══ */
-
-type Density = 'compact' | 'dense' | 'comfortable';
-
-interface DensityConfig {
-  cardPad: string;
-  titleSize: number;
-  titleClamp: number;
-  metaSize: number;
-  avatarSize: number;
-  cardGap: number;
-  footerHeight: number;
-}
-
-const DENSITY: Record<Density, DensityConfig> = {
-  compact:     { cardPad: '4px 6px', titleSize: 11, titleClamp: 1, metaSize: 9, avatarSize: 20, cardGap: 2, footerHeight: 18 },
-  dense:       { cardPad: '6px 8px', titleSize: 12, titleClamp: 2, metaSize: 10, avatarSize: 22, cardGap: 4, footerHeight: 20 },
-  comfortable: { cardPad: '8px 10px', titleSize: 13, titleClamp: 3, metaSize: 10, avatarSize: 26, cardGap: 6, footerHeight: 22 },
-};
-
-/* ═══ TYPES ═══ */
-
-interface BoardIssue {
-  id: string;
-  issueKey: string;
-  summary: string;
-  issueType: string;
-  priority: string;
-  status: string;
-  assigneeName: string | null;
-  labels: string[];
-  sprintName: string | null;
-  storyPoints: number | null;
-  parentKey: string | null;
-  fixVersion: string | null;
-  isFlagged: boolean;
-}
-
-interface KanbanColumnDef {
-  id: string;
-  name: string;
-  statuses: string[];
-}
-
-type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
-
-interface GroupBucket {
-  groupKey: string;
-  groupLabel: string;
-  issueIds: string[];
-}
-
-/* ═══ COLUMN CONFIG ═══ */
-
-const KANBAN_COLUMNS: KanbanColumnDef[] = [
-  { id: 'col-requirements', name: 'IN REQUIREMENTS', statuses: ['In Requirements', 'In Design', 'Awaiting Info'] },
-  { id: 'col-ready-dev', name: 'READY FOR DEV', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
-  { id: 'col-dev', name: 'IN DEVELOPMENT', statuses: ['In Development', 'In Progress', 'Under Implementation'] },
-  { id: 'col-testing', name: 'IN TESTING', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA', 'In Testing'] },
-  { id: 'col-uat', name: 'IN UAT', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
-  { id: 'col-done', name: 'DONE', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
-];
-
-const COL_PRIMARY_STATUS: Record<string, string> = {};
-const STATUS_TO_COL_ID = new Map<string, string>();
-KANBAN_COLUMNS.forEach(col => {
-  COL_PRIMARY_STATUS[col.id] = col.statuses[0];
-  col.statuses.forEach(s => STATUS_TO_COL_ID.set(s.toLowerCase(), col.id));
-});
-const COLUMN_ID_SET = new Set(KANBAN_COLUMNS.map(c => c.id));
-
-/* ═══ GROUP BY LOGIC ═══ */
-
-const PRIORITY_ORDER = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
-
-function groupIssues(issues: BoardIssue[], mode: GroupByMode): GroupBucket[] {
-  if (mode === 'none') return [];
-  const buckets = new Map<string, { label: string; ids: string[] }>();
-  for (const issue of issues) {
-    let key: string, label: string;
-    switch (mode) {
-      case 'assignee': key = issue.assigneeName || 'UNASSIGNED'; label = issue.assigneeName || 'Unassigned'; break;
-      case 'epic': key = issue.parentKey || 'NO_EPIC'; label = issue.parentKey || 'No Epic'; break;
-      case 'priority': key = issue.priority || 'NO_PRIORITY'; label = issue.priority || 'No priority'; break;
-      case 'fixVersion': key = issue.fixVersion || 'NO_FIX_VERSION'; label = issue.fixVersion || 'No fix version'; break;
-      default: key = '__all__'; label = '';
-    }
-    if (!buckets.has(key)) buckets.set(key, { label, ids: [] });
-    buckets.get(key)!.ids.push(issue.id);
-  }
-  const entries = Array.from(buckets.entries());
-  if (mode === 'priority') entries.sort((a, b) => { const ai = PRIORITY_ORDER.indexOf(a[1].label), bi = PRIORITY_ORDER.indexOf(b[1].label); return (ai >= 0 ? ai : 999) - (bi >= 0 ? bi : 999); });
-  else if (mode === 'assignee') entries.sort((a, b) => { if (a[0] === 'UNASSIGNED') return 1; if (b[0] === 'UNASSIGNED') return -1; return a[1].label.localeCompare(b[1].label); });
-  else if (mode === 'epic') entries.sort((a, b) => { if (a[0] === 'NO_EPIC') return 1; if (b[0] === 'NO_EPIC') return -1; return b[1].ids.length - a[1].ids.length; });
-  else if (mode === 'fixVersion') entries.sort((a, b) => { if (a[0] === 'NO_FIX_VERSION') return 1; if (b[0] === 'NO_FIX_VERSION') return -1; return a[1].label.localeCompare(b[1].label); });
-  return entries.map(([key, val]) => ({ groupKey: key, groupLabel: val.label, issueIds: val.ids }));
-}
-
-/* ═══ AVATAR ═══ */
-
-function Av({ name, url, size = 24, tk }: { name?: string | null; url?: string | null; size?: number; tk?: ThemeTokens }) {
-  if (url) return <img src={url} alt={name || ''} className="rounded-full flex-shrink-0 object-cover" style={{ width: size, height: size }} />;
-  if (!name) return <span className="inline-flex items-center justify-center rounded-full flex-shrink-0" style={{ width: size, height: size, background: tk?.chipBg || '#DFE1E6' }}><User size={size * 0.55} color={tk?.textMuted || '#97A0AF'} /></span>;
-  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  const colors = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777', '#FF8B00'];
-  return <span className="inline-flex items-center justify-center rounded-full flex-shrink-0" style={{ width: size, height: size, background: colors[name.charCodeAt(0) % colors.length], fontSize: size * 0.42, fontWeight: 700, color: '#fff' }} title={name}>{initials}</span>;
-}
-
-/* ═══ WORK ITEM CARD ═══ */
-
-function CardContent({ issue, avatarUrl, d, tk }: { issue: BoardIssue; avatarUrl?: string | null; d: DensityConfig; tk: ThemeTokens }) {
-  return (
-    <>
-      {/* Summary */}
-      <div style={{
-        fontSize: d.titleSize, lineHeight: `${d.titleSize + 4}px`, color: tk.textPrimary,
-        fontWeight: 400, marginBottom: d.cardGap > 4 ? 4 : 2,
-        display: '-webkit-box', WebkitLineClamp: d.titleClamp, WebkitBoxOrient: 'vertical',
-        overflow: 'hidden', wordBreak: 'break-word',
-      }}>
-        {issue.summary}
-      </div>
-
-      {/* Labels + Sprint (inline, compact) */}
-      {(issue.labels.length > 0 || issue.sprintName) && (
-        <div className="flex items-center gap-1 mb-[2px]" style={{ overflow: 'hidden' }}>
-          {issue.labels.slice(0, 1).map(l => (
-            <span key={l} style={{
-              fontSize: d.metaSize, fontWeight: 700, textTransform: 'uppercase',
-              background: tk.chipBg, color: tk.chipText, padding: '0 4px', borderRadius: 2,
-              lineHeight: '16px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0,
-            }}>{l}</span>
-          ))}
-          {issue.labels.length > 1 && (
-            <span style={{ fontSize: d.metaSize - 1, color: tk.textMuted }}>+{issue.labels.length - 1}</span>
-          )}
-          {issue.sprintName && (
-            <span style={{
-              fontSize: d.metaSize, fontWeight: 600, color: tk.textMuted, lineHeight: '14px',
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-              border: `1px solid ${tk.borderSubtle}`, borderRadius: 2, padding: '0 4px',
-            }}>{issue.sprintName}</span>
-          )}
-        </div>
-      )}
-
-      {/* Footer: type + key + flag + priority + points ... avatar */}
-      <div className="flex items-center" style={{ gap: 4, minHeight: d.footerHeight }}>
-        <JiraIssueTypeIcon type={issue.issueType} size={d.avatarSize > 22 ? 16 : 14} />
-        <span style={{ fontSize: d.metaSize + 1, fontWeight: 500, color: tk.textSecondary, fontFamily: "'JetBrains Mono', monospace", lineHeight: '14px' }}>
-          {issue.issueKey}
-        </span>
-        {issue.isFlagged && <Flag size={12} color="#E5493A" fill="#E5493A" />}
-        <PriorityBars priority={normalisePriority(issue.priority)} />
-        {issue.storyPoints != null && (
-          <span style={{
-            fontSize: d.metaSize, fontWeight: 700, color: tk.textMuted,
-            background: tk.badgeBg, borderRadius: 10, padding: '0 5px', lineHeight: '16px',
-          }}>{issue.storyPoints}</span>
-        )}
-        <span className="flex-1" />
-        <Av name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
-      </div>
-    </>
-  );
-}
-
-/* ═══ SORTABLE CARD ═══ */
-
-function SortableCard({ issue, avatarUrl, onClick, d, tk }: {
-  issue: BoardIssue; avatarUrl?: string | null; onClick: () => void; d: DensityConfig; tk: ThemeTokens;
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
-  const cardStyle: React.CSSProperties = {
-    background: tk.cardBg, borderRadius: 3, border: `1px solid ${tk.cardBorder}`,
-    padding: d.cardPad, cursor: 'pointer', transition: 'background 80ms, box-shadow 80ms',
-    transform: CSS.Transform.toString(transform), opacity: isDragging ? 0.35 : 1,
-    zIndex: isDragging ? 999 : 'auto', boxShadow: isDragging ? tk.cardDragShadow : 'none',
-    ...(transition ? { transition } : {}),
-  };
-  return (
-    <div
-      ref={setNodeRef}
-      style={cardStyle}
-      {...attributes}
-      {...listeners}
-      onClick={() => { if (!isDragging) onClick(); }}
-      onMouseEnter={e => { if (!isDragging) { e.currentTarget.style.background = tk.cardHoverBg; e.currentTarget.style.boxShadow = tk.cardHoverShadow; } }}
-      onMouseLeave={e => { e.currentTarget.style.background = tk.cardBg; e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : 'none'; }}
-      tabIndex={0}
-      role="button"
-      aria-label={`${issue.issueKey}: ${issue.summary}`}
-    >
-      <CardContent issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} />
-    </div>
-  );
-}
-
-/* ═══ DRAG OVERLAY ═══ */
-
-function OverlayCard({ issue, avatarUrl, d, tk }: { issue: BoardIssue; avatarUrl?: string | null; d: DensityConfig; tk: ThemeTokens }) {
-  return (
-    <div style={{
-      background: tk.cardBg, borderRadius: 3, border: `1px solid ${tk.selectedAccent}`,
-      padding: d.cardPad, width: 220, boxShadow: tk.cardDragShadow,
-      transform: 'rotate(2deg)', cursor: 'grabbing',
-    }}>
-      <CardContent issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} />
-    </div>
-  );
-}
-
-/* ═══ COLUMN HEADER ═══ */
-
-function ColHeader({ name, count, tk }: { name: string; count: number; tk: ThemeTokens }) {
-  return (
-    <div className="flex items-center gap-1 px-2 sticky top-0 z-10" style={{ height: 32, background: tk.headerBg, borderBottom: `1px solid ${tk.border}` }}>
-      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: tk.textMuted, letterSpacing: '0.04em' }}>{name}</span>
-      <span style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, background: tk.badgeBg, borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
-    </div>
-  );
-}
-
-/* ═══ DROPPABLE COLUMN ═══ */
-
-function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk }: {
-  column: KanbanColumnDef; issueIds: string[]; issuesById: Map<string, BoardIssue>;
-  avatarsByName: Map<string, string>; onCardClick: (id: string) => void; isFirst: boolean;
-  d: DensityConfig; tk: ThemeTokens;
-}) {
-  const { setNodeRef, isOver } = useDroppable({ id: column.id });
-  return (
-    <div className="flex flex-col flex-shrink-0" style={{ flex: '1 1 0', minWidth: 180, borderLeft: isFirst ? 'none' : `1px solid ${tk.border}` }}>
-      <ColHeader name={column.name} count={issueIds.length} tk={tk} />
-      <div ref={setNodeRef} className="flex flex-col p-1 overflow-y-auto" style={{ gap: d.cardGap, minHeight: 60, maxHeight: 'calc(100vh - 180px)', background: isOver ? tk.dropHighlight : 'transparent', transition: 'background 100ms' }}>
-        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
-          {issueIds.length === 0 && (
-            <div className="flex items-center justify-center" style={{ minHeight: 40, color: tk.textDisabled, fontSize: 11 }}>{isOver ? 'Drop here' : ''}</div>
-          )}
-          {issueIds.map(id => {
-            const issue = issuesById.get(id);
-            if (!issue) return null;
-            return <SortableCard key={id} issue={issue} avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null} onClick={() => onCardClick(id)} d={d} tk={tk} />;
-          })}
-        </SortableContext>
-      </div>
-    </div>
-  );
-}
-
-/* ═══ SWIMLANE ROW ═══ */
-
-function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk }: {
-  group: GroupBucket; mode: GroupByMode; issuesById: Map<string, BoardIssue>;
-  avatarsByName: Map<string, string>; onCardClick: (id: string) => void; defaultOpen: boolean;
-  d: DensityConfig; tk: ThemeTokens;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-  const colMap = useMemo(() => {
-    const m: Record<string, string[]> = {};
-    KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
-    group.issueIds.forEach(id => {
-      const issue = issuesById.get(id);
-      if (!issue) return;
-      const cid = STATUS_TO_COL_ID.get(issue.status.toLowerCase());
-      if (cid && m[cid]) m[cid].push(id);
-    });
-    return m;
-  }, [group.issueIds, issuesById]);
-
-  const icon = () => {
-    if (mode === 'assignee') {
-      const name = group.groupKey === 'UNASSIGNED' ? null : group.groupLabel;
-      return <Av name={name} url={name ? avatarsByName.get(name.toLowerCase()) : null} size={24} tk={tk} />;
-    }
-    if (mode === 'epic' && group.groupKey !== 'NO_EPIC') return <JiraIssueTypeIcon type="Epic" size={16} />;
-    if (mode === 'priority') return <PriorityBars priority={normalisePriority(group.groupLabel)} />;
-    return null;
-  };
-
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-2 w-full text-left"
-        style={{ padding: '10px 16px', background: tk.surfaceAlt, border: 'none', borderBottom: `1px solid ${tk.border}`, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
-        onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
-        onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceAlt; }}
-      >
-        {open ? <ChevronDown size={14} color={tk.textMuted} /> : <ChevronRight size={14} color={tk.textMuted} />}
-        {icon()}
-        {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
-          <span style={{ fontSize: 12, fontWeight: 600, color: tk.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{group.groupKey}</span>
-        )}
-        <span style={{ fontSize: 13, fontWeight: 500, color: tk.textPrimary }}>{group.groupLabel}</span>
-        <span style={{ fontSize: 12, color: tk.textMuted }}>({group.issueIds.length})</span>
-      </button>
-
-      {open && (
-        <div className="flex" style={{ borderBottom: `1px solid ${tk.border}` }}>
-          {KANBAN_COLUMNS.map((col, i) => {
-            const ids = colMap[col.id] ?? [];
-            return <SwimlaneDndColumn key={col.id} colId={col.id} groupKey={group.groupKey} issueIds={ids} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={onCardClick} isFirst={i === 0} d={d} tk={tk} />;
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ═══ SWIMLANE DROPPABLE COLUMN CELL ═══ */
-
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk }: {
-  colId: string; groupKey: string; issueIds: string[]; issuesById: Map<string, BoardIssue>;
-  avatarsByName: Map<string, string>; onCardClick: (id: string) => void; isFirst: boolean;
-  d: DensityConfig; tk: ThemeTokens;
-}) {
-  const droppableId = `${groupKey}::${colId}`;
-  const { setNodeRef, isOver } = useDroppable({ id: droppableId });
-
-  return (
-    <div className="flex flex-col" style={{ flex: '1 1 0', minWidth: 180, borderLeft: isFirst ? 'none' : `1px solid ${tk.border}` }}>
-      <div ref={setNodeRef} className="flex flex-col p-1" style={{ gap: d.cardGap, minHeight: 40, background: isOver ? tk.dropHighlight : tk.surfaceBg, transition: 'background 100ms' }}>
-        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
-          {issueIds.length === 0 && isOver && (
-            <div className="flex items-center justify-center" style={{ minHeight: 40, color: tk.textDisabled, fontSize: 11 }}>Drop here</div>
-          )}
-          {issueIds.map(id => {
-            const issue = issuesById.get(id);
-            if (!issue) return null;
-            return <SortableCard key={id} issue={issue} avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null} onClick={() => onCardClick(id)} d={d} tk={tk} />;
-          })}
-        </SortableContext>
-      </div>
-    </div>
-  );
-}
-
-/* ═══ FILTER COMPONENTS ═══ */
-
-/* Avatar Stack Filter */
-function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByName, tk }: {
-  allAssignees: { name: string; count: number }[]; selected: Set<string>;
-  onChange: (s: Set<string>) => void; avatarsByName: Map<string, string>; tk: ThemeTokens;
-}) {
-  const top = allAssignees.filter(a => a.name !== 'Unassigned').slice(0, 6);
-  const overflow = allAssignees.filter(a => a.name !== 'Unassigned').length - 6;
-  return (
-    <div className="flex items-center" style={{ gap: 0 }}>
-      {top.map((a, i) => {
-        const isSel = selected.has(a.name);
-        const url = avatarsByName.get(a.name.toLowerCase());
-        return (
-          <button key={a.name} onClick={() => { const n = new Set(selected); if (isSel) n.delete(a.name); else n.add(a.name); onChange(n); }}
-            title={a.name}
-            style={{
-              position: 'relative', marginLeft: i === 0 ? 0 : -6, zIndex: top.length - i,
-              width: 28, height: 28, borderRadius: '50%',
-              border: isSel ? `2px solid ${tk.selectedAccent}` : `2px solid ${tk.surfaceBg}`,
-              background: tk.surfaceBg, cursor: 'pointer', padding: 0,
-              transition: 'transform 80ms', transform: isSel ? 'scale(1.15)' : 'scale(1)',
-              outline: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.15)'; e.currentTarget.style.zIndex = '20'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = isSel ? 'scale(1.15)' : 'scale(1)'; e.currentTarget.style.zIndex = String(top.length - i); }}
-          >
-            <Av name={a.name} url={url} size={24} tk={tk} />
-          </button>
-        );
-      })}
-      {overflow > 0 && <span style={{ marginLeft: -4, fontSize: 10, fontWeight: 600, color: tk.textMuted }}>+{overflow}</span>}
-    </div>
-  );
-}
-
-/* Epic Filter Dropdown */
-function EpicFilterDropdown({ epics, selected, onChange, tk }: {
-  epics: { key: string; summary: string | null; count: number }[]; selected: string[];
-  onChange: (v: string[]) => void; tk: ThemeTokens;
-}) {
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState('');
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
-  const filtered = epics.filter(e => e.key.toLowerCase().includes(q.toLowerCase()) || (e.summary && e.summary.toLowerCase().includes(q.toLowerCase())));
-  const active = selected.length > 0;
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`, background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-        Epic{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: tk.selectedAccent, color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.length}</span>}
-        <ChevronDown size={12} />
-      </button>
-      {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 340, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ padding: '8px', borderBottom: `1px solid ${tk.borderSubtle}` }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={13} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: tk.textDisabled }} />
-              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics" autoFocus style={{ width: '100%', height: 32, paddingLeft: 28, paddingRight: 8, border: `1px solid ${tk.inputBorder}`, borderRadius: 4, fontSize: 13, color: tk.textPrimary, background: tk.inputBg, outline: 'none' }} />
-            </div>
-          </div>
-          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
-            {filtered.map(e => {
-              const isSel = selected.includes(e.key);
-              return (
-                <button key={e.key} onClick={() => { onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key]); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', border: 'none', background: isSel ? tk.dropHighlight : 'transparent', cursor: 'pointer', textAlign: 'left' }}
-                  onMouseEnter={ev => { if (!isSel) (ev.currentTarget as HTMLElement).style.background = tk.surfaceHover; }}
-                  onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = isSel ? tk.dropHighlight : 'transparent'; }}>
-                  <div style={{ width: 16, height: 16, border: isSel ? 'none' : `1.5px solid ${tk.textDisabled}`, borderRadius: 3, background: isSel ? tk.selectedAccent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
-                  </div>
-                  <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
-                    <div style={{ fontSize: 13, color: tk.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.summary || e.key}</div>
-                    <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{e.key}</div>
-                  </div>
-                </button>
-              );
-            })}
-            {filtered.length === 0 && <div style={{ padding: '12px', fontSize: 12, color: tk.textDisabled, textAlign: 'center' }}>No epics found</div>}
-          </div>
-          {active && <div style={{ padding: '6px 12px', borderTop: `1px solid ${tk.borderSubtle}` }}><button onClick={() => onChange([])} style={{ fontSize: 12, color: tk.selectedAccent, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* Type Filter Dropdown */
-function TypeFilterDropdown({ types, selected, onChange, tk }: {
-  types: { type: string; count: number }[]; selected: string[];
-  onChange: (v: string[]) => void; tk: ThemeTokens;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
-  const active = selected.length > 0;
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`, background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-        Type{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: tk.selectedAccent, color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.length}</span>}
-        <ChevronDown size={12} />
-      </button>
-      {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 220, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-            {types.map(t => {
-              const isSel = selected.includes(t.type);
-              return (
-                <button key={t.type} onClick={() => { onChange(isSel ? selected.filter(k => k !== t.type) : [...selected, t.type]); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', border: 'none', background: isSel ? tk.dropHighlight : 'transparent', cursor: 'pointer', fontSize: 13, color: tk.textPrimary }}
-                  onMouseEnter={ev => { if (!isSel) (ev.currentTarget as HTMLElement).style.background = tk.surfaceHover; }}
-                  onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = isSel ? tk.dropHighlight : 'transparent'; }}>
-                  <div style={{ width: 16, height: 16, border: isSel ? 'none' : `1.5px solid ${tk.textDisabled}`, borderRadius: 3, background: isSel ? tk.selectedAccent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
-                  </div>
-                  <JiraIssueTypeIcon type={t.type} size={14} />
-                  <span style={{ flex: 1 }}>{t.type}</span>
-                  <span style={{ fontSize: 11, color: tk.textMuted }}>{t.count}</span>
-                </button>
-              );
-            })}
-          </div>
-          {active && <div style={{ padding: '6px 12px', borderTop: `1px solid ${tk.borderSubtle}` }}><button onClick={() => onChange([])} style={{ fontSize: 12, color: tk.selectedAccent, background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* Quick Filters Dropdown */
-const QUICK_FILTER_OPTIONS = [
-  { key: 'recently-updated', label: 'Recently Updated' },
-  { key: 'assigned-to-me', label: 'Assigned to me' },
-] as const;
-
-function QuickFilterDropdown({ selected, onChange, tk }: { selected: Set<string>; onChange: (v: Set<string>) => void; tk: ThemeTokens }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
-  const active = selected.size > 0;
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`, background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-        Quick filters <ChevronDown size={12} />
-      </button>
-      {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 220, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          {QUICK_FILTER_OPTIONS.map(o => {
-            const isSel = selected.has(o.key);
-            return (
-              <button key={o.key} onClick={() => { const next = new Set(selected); if (isSel) next.delete(o.key); else next.add(o.key); onChange(next); }}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 14px', border: 'none', background: isSel ? tk.dropHighlight : 'transparent', cursor: 'pointer', textAlign: 'left' }}
-                onMouseEnter={ev => { if (!isSel) (ev.currentTarget as HTMLElement).style.background = tk.surfaceHover; }}
-                onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = isSel ? tk.dropHighlight : 'transparent'; }}>
-                <div style={{ width: 16, height: 16, border: isSel ? 'none' : `1.5px solid ${tk.textDisabled}`, borderRadius: 3, background: isSel ? tk.selectedAccent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
-                </div>
-                <span style={{ fontSize: 13, color: tk.textPrimary }}>{o.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* Density Toggle */
-function DensityToggle({ value, onChange, tk }: { value: Density; onChange: (d: Density) => void; tk: ThemeTokens }) {
-  const opts: { key: Density; label: string }[] = [
-    { key: 'compact', label: 'Compact' },
-    { key: 'dense', label: 'Dense' },
-    { key: 'comfortable', label: 'Comfortable' },
-  ];
-  return (
-    <div className="flex" style={{ borderRadius: 4, border: `1px solid ${tk.border}`, overflow: 'hidden' }}>
-      {opts.map(o => (
-        <button key={o.key} onClick={() => onChange(o.key)} style={{
-          padding: '0 10px', height: 28, fontSize: 11, fontWeight: value === o.key ? 600 : 400,
-          background: value === o.key ? tk.selectedAccent : tk.surfaceBg,
-          color: value === o.key ? '#FFFFFF' : tk.textSecondary,
-          border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
-        }}>{o.label}</button>
-      ))}
-    </div>
-  );
-}
-
-/* Group By Button */
-const GRP_OPTS: { key: GroupByMode; label: string }[] = [
-  { key: 'none', label: 'None' }, { key: 'assignee', label: 'Assignee' },
-  { key: 'epic', label: 'Epic' }, { key: 'priority', label: 'Priority' },
-  { key: 'fixVersion', label: 'Fix Version' },
-];
-
-function GroupByBtn({ value, onChange, tk }: { value: GroupByMode; onChange: (v: GroupByMode) => void; tk: ThemeTokens }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
-  const active = value !== 'none';
-  const lbl = GRP_OPTS.find(o => o.key === value)?.label;
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 12px', borderRadius: 3, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`, background: tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary, fontSize: 13, fontWeight: active ? 600 : 400, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-        {active ? `Group: ${lbl}` : 'Group'} <ChevronDown size={12} />
-      </button>
-      {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', right: 0, zIndex: 100, width: 200, background: tk.surfaceBg, border: `1px solid ${tk.border}`, borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.18)' }}>
-          <div style={{ padding: '4px 8px 2px', fontSize: 10, fontWeight: 600, color: tk.textDisabled, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Group by</div>
-          {GRP_OPTS.map(o => {
-            const sel = value === o.key;
-            return (
-              <button key={o.key} onClick={() => { onChange(o.key); setOpen(false); }}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '6px 8px', border: 'none', background: sel ? tk.dropHighlight : 'transparent', cursor: 'pointer', fontSize: 12, color: sel ? tk.selectedAccent : tk.textPrimary, fontWeight: sel ? 600 : 400 }}
-                onMouseEnter={e => { if (!sel) e.currentTarget.style.background = tk.surfaceHover; }}
-                onMouseLeave={e => { e.currentTarget.style.background = sel ? tk.dropHighlight : 'transparent'; }}>
-                <div style={{ width: 14 }}>{sel && <Check size={12} color={tk.selectedAccent} />}</div>
-                {o.label}
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ═══ DND HELPERS ═══ */
-
-type ColMap = Record<string, string[]>;
-function findCol(m: ColMap, id: string): string | null { for (const c of Object.keys(m)) { if (m[c].includes(id)) return c; } return null; }
-
-/* ═══════════════════════════════════════════════════════════════
-   MAIN PAGE COMPONENT
-   ═══════════════════════════════════════════════════════════════ */
+const DENSITY_STORAGE_KEY = 'kanban-density';
 
 export default function KanbanBoardPage() {
   const { key } = useParams<{ key: string }>();
   const { isDark } = useTheme();
-  const tk = isDark ? T.dark : T.light;
-  const d_key = 'kanban-density';
+  const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
   const qc = useQueryClient();
 
+  /* ═══ STATE ═══ */
   const [search, setSearch] = useState('');
   const [debSearch, setDebSearch] = useState('');
   const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
   const [selEpics, setSelEpics] = useState<string[]>([]);
   const [selTypes, setSelTypes] = useState<string[]>([]);
+  const [selPriorities, setSelPriorities] = useState<string[]>([]);
   const [quickFilters, setQuickFilters] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByMode>('epic');
-  const [density, setDensity] = useState<Density>(() => (localStorage.getItem(d_key) as Density) || 'dense');
+  const [groupBy, setGroupBy] = useState<GroupByMode>('none');
+  const [density, setDensity] = useState<KanbanDensity>(() => (localStorage.getItem(DENSITY_STORAGE_KEY) as KanbanDensity) || 'dense');
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const d = DENSITY[density];
+  const d = DENSITY_CONFIG[density];
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-  // Persist density choice
-  useEffect(() => { localStorage.setItem(d_key, density); }, [density]);
+  // Persist density
+  useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
+
+  /* ═══ DATA QUERIES ═══ */
 
   const { data: projMeta } = useQuery({
     queryKey: ['ph-project-meta', key],
-    queryFn: async () => { if (!key) return null; const { data } = await supabase.from('ph_projects').select('id, key, name').eq('key', key.toUpperCase()).maybeSingle(); return data; },
-    enabled: !!key, staleTime: 60_000,
+    queryFn: async () => {
+      if (!key) return null;
+      const { data } = await supabase.from('ph_projects').select('id, key, name').eq('key', key.toUpperCase()).maybeSingle();
+      return data;
+    },
+    enabled: !!key,
+    staleTime: 60_000,
   });
 
   const { data: rawIssues = [], isLoading } = useQuery({
@@ -727,38 +98,65 @@ export default function KanbanBoardPage() {
     queryFn: async () => {
       if (!key) return [];
       const { data, error } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, fix_versions, is_flagged')
+        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at')
         .eq('project_key', key.toUpperCase())
         .is('deleted_at', null)
-        .in('issue_type', ['Story', 'Epic', 'Feature', 'New Feature'])
         .order('jira_updated_at', { ascending: false })
         .limit(1000);
       if (error) throw error;
-      return (data ?? []).map((r): BoardIssue => {
+      return (data ?? []).map((r: any): BoardIssue => {
         let fv: string | null = null;
-        if (r.fix_versions && Array.isArray(r.fix_versions) && (r.fix_versions as any[]).length > 0) {
-          const f = (r.fix_versions as any[])[0]; fv = typeof f === 'string' ? f : f?.name ?? null;
+        if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
+          const f = r.fix_versions[0];
+          fv = typeof f === 'string' ? f : f?.name ?? null;
         }
         return {
-          id: r.id, issueKey: r.issue_key, summary: r.summary ?? '',
-          issueType: r.issue_type ?? 'Task', priority: r.priority ?? 'Medium',
-          status: r.status ?? 'Backlog', assigneeName: r.assignee_display_name,
+          id: r.id,
+          issueKey: r.issue_key,
+          summary: r.summary ?? '',
+          issueType: r.issue_type ?? 'Task',
+          priority: r.priority ?? 'Medium',
+          status: r.status ?? 'Backlog',
+          statusCategory: r.status_category ?? 'todo',
+          assigneeName: r.assignee_display_name,
           labels: Array.isArray(r.labels) ? (r.labels as string[]) : [],
-          sprintName: r.sprint_name, storyPoints: r.story_points ? Number(r.story_points) : null,
-          parentKey: r.parent_key, fixVersion: fv, isFlagged: !!(r as any).is_flagged,
+          sprintName: r.sprint_name,
+          storyPoints: r.story_points ? Number(r.story_points) : null,
+          parentKey: r.parent_key,
+          parentSummary: r.parent_summary,
+          fixVersion: fv,
+          isFlagged: !!r.is_flagged,
+          updatedAt: r.jira_updated_at,
         };
       });
     },
-    enabled: !!key, staleTime: 30_000,
+    enabled: !!key,
+    staleTime: 30_000,
   });
 
-  const issuesById = useMemo(() => { const m = new Map<string, BoardIssue>(); rawIssues.forEach(i => m.set(i.id, i)); return m; }, [rawIssues]);
+  const issuesById = useMemo(() => {
+    const m = new Map<string, BoardIssue>();
+    rawIssues.forEach(i => m.set(i.id, i));
+    return m;
+  }, [rawIssues]);
 
-  // Debounced search
-  useEffect(() => { clearTimeout(timerRef.current); timerRef.current = setTimeout(() => setDebSearch(search), 250); return () => clearTimeout(timerRef.current); }, [search]);
+  // Debounce search
+  useEffect(() => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setDebSearch(search), 250);
+    return () => clearTimeout(timerRef.current);
+  }, [search]);
 
-  // Assignee + Epic + Type aggregations
-  const allAssignees = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { const n = i.assigneeName || 'Unassigned'; m.set(n, (m.get(n) ?? 0) + 1); }); return Array.from(m.entries()).map(([n, c]) => ({ name: n, count: c })).sort((a, b) => b.count - a.count); }, [rawIssues]);
+  /* ═══ AGGREGATIONS ═══ */
+
+  const allAssignees = useMemo(() => {
+    const m = new Map<string, number>();
+    rawIssues.forEach(i => {
+      const n = i.assigneeName || 'Unassigned';
+      m.set(n, (m.get(n) ?? 0) + 1);
+    });
+    return Array.from(m.entries()).map(([n, c]) => ({ name: n, count: c })).sort((a, b) => b.count - a.count);
+  }, [rawIssues]);
 
   const allEpics = useMemo(() => {
     const epicSummaryMap = new Map<string, string>();
@@ -768,7 +166,11 @@ export default function KanbanBoardPage() {
     return Array.from(m.entries()).map(([k, c]) => ({ key: k, summary: epicSummaryMap.get(k) ?? null, count: c })).sort((a, b) => b.count - a.count);
   }, [rawIssues]);
 
-  const allTypes = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { m.set(i.issueType, (m.get(i.issueType) ?? 0) + 1); }); return Array.from(m.entries()).map(([t, c]) => ({ type: t, count: c })); }, [rawIssues]);
+  const allTypes = useMemo(() => {
+    const m = new Map<string, number>();
+    rawIssues.forEach(i => { m.set(i.issueType, (m.get(i.issueType) ?? 0) + 1); });
+    return Array.from(m.entries()).map(([t, c]) => ({ type: t, count: c }));
+  }, [rawIssues]);
 
   // Current user for "Assigned to me"
   const { data: currentUserName } = useQuery({
@@ -782,33 +184,83 @@ export default function KanbanBoardPage() {
     staleTime: 300_000,
   });
 
-  // Filtering
+  /* ═══ FILTERING ═══ */
+
   const filtered = useMemo(() => {
     let issues = rawIssues;
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
-      issues = issues.filter(i => i.summary.toLowerCase().includes(q) || i.issueKey.toLowerCase().includes(q) || (i.assigneeName ?? '').toLowerCase().includes(q));
+      issues = issues.filter(i =>
+        i.summary.toLowerCase().includes(q) ||
+        i.issueKey.toLowerCase().includes(q) ||
+        (i.assigneeName ?? '').toLowerCase().includes(q) ||
+        i.labels.some(l => l.toLowerCase().includes(q))
+      );
     }
     if (selAssignees.size > 0) issues = issues.filter(i => selAssignees.has(i.assigneeName || 'Unassigned'));
     if (selEpics.length > 0) issues = issues.filter(i => i.parentKey && selEpics.includes(i.parentKey));
     if (selTypes.length > 0) issues = issues.filter(i => selTypes.includes(i.issueType));
+    if (selPriorities.length > 0) {
+      const normalised = new Set(selPriorities.map(p => p.toLowerCase()));
+      issues = issues.filter(i => {
+        const pri = (i.priority ?? '').toLowerCase();
+        if (normalised.has('critical') && (pri === 'highest' || pri === 'critical')) return true;
+        if (normalised.has('high') && pri === 'high') return true;
+        if (normalised.has('medium') && pri === 'medium') return true;
+        if (normalised.has('low') && (pri === 'low' || pri === 'lowest')) return true;
+        return false;
+      });
+    }
     if (quickFilters.has('assigned-to-me') && currentUserName) {
       issues = issues.filter(i => i.assigneeName?.toLowerCase() === currentUserName.toLowerCase());
     }
+    if (quickFilters.has('flagged')) {
+      issues = issues.filter(i => i.isFlagged);
+    }
+    if (quickFilters.has('recently-updated')) {
+      const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+      issues = issues.filter(i => i.updatedAt && new Date(i.updatedAt).getTime() > cutoff);
+    }
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, quickFilters, currentUserName]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName]);
 
-  // Column mapping for flat mode
+  /* ═══ COLUMN MAPPING ═══ */
+
   useEffect(() => {
     if (dragId || groupBy !== 'none') return;
     const m: ColMap = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
-    filtered.forEach(i => { const c = STATUS_TO_COL_ID.get(i.status.toLowerCase()); if (c && m[c]) m[c].push(i.id); });
+    filtered.forEach(i => {
+      const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
+      if (c && m[c]) m[c].push(i.id);
+    });
     setColMap(m);
   }, [filtered, dragId, groupBy]);
 
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
+
+  /* ═══ CARD ACTIONS ═══ */
+
+  const handleToggleFlag = useCallback(async (issueId: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    const newFlag = !issue.isFlagged;
+    issue.isFlagged = newFlag;
+    try {
+      await supabase.from('ph_issues').update({ is_flagged: newFlag } as any).eq('id', issueId);
+      toast.success(newFlag ? `Flagged ${issue.issueKey}` : `Unflagged ${issue.issueKey}`);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      issue.isFlagged = !newFlag;
+      toast.error('Failed to update flag');
+    }
+  }, [issuesById, key, qc]);
+
+  const handleCopyLink = useCallback((issueKey: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/project-hub/${key}/issue/${issueKey}`);
+    toast.success('Link copied');
+  }, [key]);
 
   /* ═══ DND HANDLERS ═══ */
 
@@ -825,33 +277,31 @@ export default function KanbanBoardPage() {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
     if (!oid) return;
     setColMap(prev => {
-      const from = findCol(prev, aid); if (!from) return prev;
-      const isCol = COLUMN_ID_SET.has(oid); const to = isCol ? oid : findCol(prev, oid);
+      const from = findCol(prev, aid);
+      if (!from) return prev;
+      const isCol = COLUMN_ID_SET.has(oid);
+      const to = isCol ? oid : findCol(prev, oid);
       if (!to || from === to) return prev;
-      const f = [...prev[from]], t = [...prev[to]], idx = f.indexOf(aid); if (idx < 0) return prev; f.splice(idx, 1);
+      const f = [...prev[from]], t = [...prev[to]], idx = f.indexOf(aid);
+      if (idx < 0) return prev;
+      f.splice(idx, 1);
       if (!isCol) { const oi = t.indexOf(oid); t.splice(oi >= 0 ? oi : 0, 0, aid); } else t.unshift(aid);
       return { ...prev, [from]: f, [to]: t };
     });
   }, [groupBy]);
 
-  /* Persist status update with optimistic rollback */
   const persistStatusChange = useCallback(async (issueId: string, newStatus: string) => {
     const issue = issuesById.get(issueId);
     if (!issue || issue.status === newStatus) return;
-
     const oldStatus = issue.status;
-    // Optimistic
     issue.status = newStatus;
-
     try {
       const { error } = await supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId);
       if (error) throw error;
-      // Sync to catalyst_issues
       await supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey);
       toast.success(`Moved ${issue.issueKey} → ${newStatus}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
-    } catch (err) {
-      // Rollback
+    } catch {
       issue.status = oldStatus;
       toast.error(`Failed to move ${issue.issueKey}`, { description: 'Status reverted' });
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
@@ -871,15 +321,15 @@ export default function KanbanBoardPage() {
       return;
     }
 
-    // Flat mode: reorder within column
+    // Flat mode: reorder + persist
     setColMap(prev => {
-      const c = findCol(prev, aid); if (!c) return prev;
+      const c = findCol(prev, aid);
+      if (!c) return prev;
       if (COLUMN_ID_SET.has(oid)) return prev;
       const ids = prev[c], oi = ids.indexOf(aid), ni = ids.indexOf(oid);
       if (oi < 0 || ni < 0 || oi === ni) return prev;
       return { ...prev, [c]: arrayMove(ids, oi, ni) };
     });
-    // Persist status change for cross-column drag
     const targetCol = findCol(colMap, aid);
     if (targetCol) {
       const ns = COL_PRIMARY_STATUS[targetCol];
@@ -888,6 +338,25 @@ export default function KanbanBoardPage() {
   }, [groupBy, resolveColId, persistStatusChange, colMap]);
 
   const dragIssue = dragId ? issuesById.get(dragId) : null;
+
+  /* ═══ ACTIVE FILTER COUNT ═══ */
+  const activeFilterCount = [
+    selAssignees.size > 0,
+    selEpics.length > 0,
+    selTypes.length > 0,
+    selPriorities.length > 0,
+    quickFilters.size > 0,
+    debSearch.trim().length > 0,
+  ].filter(Boolean).length;
+
+  const clearAllFilters = useCallback(() => {
+    setSearch(''); setDebSearch('');
+    setSelAssignees(new Set());
+    setSelEpics([]);
+    setSelTypes([]);
+    setSelPriorities([]);
+    setQuickFilters(new Set());
+  }, []);
 
   /* ═══ LOADING STATE ═══ */
 
@@ -912,39 +381,71 @@ export default function KanbanBoardPage() {
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
       {/* ── Page header ── */}
-      <div className="flex items-center px-6" style={{ height: 56, background: tk.surfaceBg, borderBottom: `1px solid ${tk.borderSubtle}`, flexShrink: 0 }}>
+      <div className="flex items-center px-6" style={{
+        height: 56, background: tk.surfaceBg,
+        borderBottom: `1px solid ${tk.borderSubtle}`, flexShrink: 0,
+      }}>
         <div>
-          <h1 style={{ fontSize: 18, fontWeight: 600, color: tk.textPrimary, lineHeight: '24px', margin: 0, fontFamily: "'Sora', sans-serif" }}>Board</h1>
-          <p style={{ fontSize: 12, color: tk.textMuted, lineHeight: '16px', margin: 0, fontFamily: "'Inter', sans-serif" }}>
-            {projMeta?.name || key?.toUpperCase()} — Stories, Features &amp; Epics
+          <h1 style={{
+            fontSize: 18, fontWeight: 600, color: tk.textPrimary,
+            lineHeight: '24px', margin: 0, fontFamily: "'Sora', sans-serif",
+          }}>Board</h1>
+          <p style={{
+            fontSize: 12, color: tk.textMuted,
+            lineHeight: '16px', margin: 0, fontFamily: "'Inter', sans-serif",
+          }}>
+            {projMeta?.name || key?.toUpperCase()} — All Work Items
           </p>
         </div>
       </div>
 
       {/* ── Toolbar ── */}
-      <div className="flex items-center gap-2 px-4" style={{ height: 44, background: tk.surfaceBg, borderBottom: `1px solid ${tk.border}`, flexShrink: 0 }}>
+      <div className="flex items-center gap-2 px-4 flex-wrap" style={{
+        minHeight: 44, background: tk.surfaceBg,
+        borderBottom: `1px solid ${tk.border}`, flexShrink: 0,
+        paddingTop: 6, paddingBottom: 6,
+      }}>
         {/* Search */}
         <div className="relative" style={{ width: 180 }}>
           <Search size={13} color={tk.textDisabled} className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input type="text" placeholder="Search board" value={search} onChange={e => setSearch(e.target.value)}
-            style={{ width: '100%', height: 28, paddingLeft: 24, paddingRight: 6, border: `1px solid ${tk.inputBorder}`, borderRadius: 3, fontSize: 12, color: tk.textPrimary, background: tk.inputBg, outline: 'none', fontFamily: "'Inter', sans-serif" }} />
+          <input
+            type="text" placeholder="Search board" value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{
+              width: '100%', height: 28, paddingLeft: 24, paddingRight: 6,
+              border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
+              fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+              outline: 'none', fontFamily: "'Inter', sans-serif",
+            }}
+          />
         </div>
 
         {/* Avatar stack */}
         <AvatarStackFilter allAssignees={allAssignees} selected={selAssignees} onChange={setSelAssignees} avatarsByName={avatarsByName} tk={tk} />
 
-        {/* Epic filter */}
+        {/* Filter dropdowns */}
         <EpicFilterDropdown epics={allEpics} selected={selEpics} onChange={setSelEpics} tk={tk} />
-
-        {/* Type filter */}
         <TypeFilterDropdown types={allTypes} selected={selTypes} onChange={setSelTypes} tk={tk} />
-
-        {/* Quick filters */}
+        <PriorityFilterDropdown selected={selPriorities} onChange={setSelPriorities} tk={tk} />
         <QuickFilterDropdown selected={quickFilters} onChange={setQuickFilters} tk={tk} />
+
+        {/* Clear filters */}
+        {activeFilterCount > 0 && (
+          <button
+            onClick={clearAllFilters}
+            style={{
+              fontSize: 12, color: tk.selectedAccent, background: 'none',
+              border: 'none', cursor: 'pointer', fontWeight: 500,
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            Clear ({activeFilterCount})
+          </button>
+        )}
 
         <div className="flex-1" />
 
-        <span style={{ fontSize: 12, color: tk.textMuted }}>{total} issues</span>
+        <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{total} issues</span>
 
         {/* Density toggle */}
         <DensityToggle value={density} onChange={setDensity} tk={tk} />
@@ -958,15 +459,20 @@ export default function KanbanBoardPage() {
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: tk.surfaceBg }}>
-              {/* Column headers */}
+              {/* Column headers for swimlane mode */}
               <div className="flex sticky top-0 z-20" style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.border}` }}>
                 {KANBAN_COLUMNS.map((col, i) => {
                   const count = groups.reduce((sum, g) => sum + g.issueIds.filter(id => {
                     const issue = issuesById.get(id);
                     return issue ? STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id : false;
                   }).length, 0);
+                  const categoryDot = col.category === 'done' ? '#006644' : col.category === 'in_progress' ? '#0747A6' : '#5E6C84';
                   return (
-                    <div key={col.id} className="flex items-center gap-1 px-2" style={{ flex: '1 1 0', minWidth: 180, height: 32, borderLeft: i === 0 ? 'none' : `1px solid ${tk.border}` }}>
+                    <div key={col.id} className="flex items-center gap-1.5 px-2" style={{
+                      flex: '1 1 0', minWidth: 180, height: 32,
+                      borderLeft: i === 0 ? 'none' : `1px solid ${tk.border}`,
+                    }}>
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: tk.textMuted, letterSpacing: '0.04em' }}>{col.name}</span>
                       <span style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, background: tk.badgeBg, borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
                     </div>
@@ -976,9 +482,26 @@ export default function KanbanBoardPage() {
 
               {/* Swimlane rows */}
               {groups.map(g => (
-                <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} d={d} tk={tk} />
+                <SwimlaneRow
+                  key={g.groupKey}
+                  group={g}
+                  mode={groupBy}
+                  issuesById={issuesById}
+                  avatarsByName={avatarsByName}
+                  onCardClick={id => setSelIssueId(id)}
+                  defaultOpen={true}
+                  d={d}
+                  tk={tk}
+                  selectedId={selIssueId}
+                  onToggleFlag={handleToggleFlag}
+                  onCopyLink={handleCopyLink}
+                />
               ))}
-              {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: tk.textDisabled, fontSize: 13 }}>No issues match filters</div>}
+              {groups.length === 0 && (
+                <div className="flex items-center justify-center py-12" style={{ color: tk.textDisabled, fontSize: 13 }}>
+                  No issues match filters
+                </div>
+              )}
             </div>
             <DragOverlay dropAnimation={null}>
               {dragIssue ? <OverlayCard issue={dragIssue} avatarUrl={dragIssue.assigneeName ? avatarsByName.get(dragIssue.assigneeName.toLowerCase()) : null} d={d} tk={tk} /> : null}
@@ -988,7 +511,20 @@ export default function KanbanBoardPage() {
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div className="flex h-full">
               {KANBAN_COLUMNS.map((col, i) => (
-                <DroppableColumn key={col.id} column={col} issueIds={colMap[col.id] ?? []} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} isFirst={i === 0} d={d} tk={tk} />
+                <DroppableColumn
+                  key={col.id}
+                  column={col}
+                  issueIds={colMap[col.id] ?? []}
+                  issuesById={issuesById}
+                  avatarsByName={avatarsByName}
+                  onCardClick={id => setSelIssueId(id)}
+                  isFirst={i === 0}
+                  d={d}
+                  tk={tk}
+                  selectedId={selIssueId}
+                  onToggleFlag={handleToggleFlag}
+                  onCopyLink={handleCopyLink}
+                />
               ))}
             </div>
             <DragOverlay dropAnimation={null}>
@@ -998,10 +534,16 @@ export default function KanbanBoardPage() {
         )}
       </div>
 
-      {/* Detail panel */}
+      {/* ── Detail panel ── */}
       {selIssueId && (
         <Suspense fallback={null}>
-          <CatalystDetailRouter isOpen={!!selIssueId} onClose={() => setSelIssueId(null)} itemId={selIssueId} projectId={projMeta?.id ?? ''} projectKey={key} />
+          <CatalystDetailRouter
+            isOpen={!!selIssueId}
+            onClose={() => setSelIssueId(null)}
+            itemId={selIssueId}
+            projectId={projMeta?.id ?? ''}
+            projectKey={key}
+          />
         </Suspense>
       )}
     </div>
