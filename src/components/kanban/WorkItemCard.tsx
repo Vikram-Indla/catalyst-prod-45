@@ -58,6 +58,8 @@ interface WorkItemCardProps {
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
   assigneeOptions?: AssigneeOption[];
   avatarsByName?: Map<string, string>;
@@ -67,7 +69,7 @@ export function WorkItemCard({
   issue, avatarUrl, d, tk, isSelected,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
   onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
-  projectKey, onLabelsUpdated, onParentChange,
+  projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
