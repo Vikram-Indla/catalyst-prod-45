@@ -20,10 +20,8 @@ import {
   Columns3,
 } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
-import { supabase } from '@/integrations/supabase/client';
 
 const preloaded = { done: false };
 function preloadProjectHubChunks() {
@@ -72,49 +70,8 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
     };
   }, [projects, favoriteIds]);
 
-  // Resolve project UUID from project_key for board queries
-  const currentProject = useMemo(
-    () => projects.find(p => p.project_key === projectKey),
-    [projects, projectKey]
-  );
-  const projectId = currentProject?.id;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dbAny = supabase as any;
-  const { data: boards = [] } = useQuery({
-    queryKey: ['project-boards', projectId],
-    queryFn: async () => {
-      const { data } = await dbAny
-        .from('boards')
-        .select('id, name')
-        .eq('project_id', projectId)
-        .is('deleted_at', null);
-      return (data ?? []) as { id: string; name: string }[];
-    },
-    enabled: !!projectId,
-  });
-
   if (projectKey) {
     const base = `/project-hub/${projectKey}`;
-
-    const boardItems = boards.map((board) => ({
-      id: `board-${board.id}`,
-      title: board.name,
-      path: `${base}/boards/${board.id}`,
-      icon: Columns3,
-      exact: false,
-    }));
-
-    // Fallback if boards haven't loaded yet
-    if (boardItems.length === 0) {
-      boardItems.push({
-        id: 'boards-placeholder',
-        title: 'Boards',
-        path: `${base}/boards`,
-        icon: Columns3,
-        exact: false,
-      });
-    }
 
     const projectConfig: SidebarConfig = {
       badge: projectKey.slice(0, 2).toUpperCase(),
@@ -138,7 +95,9 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         },
         {
           title: 'Boards',
-          items: boardItems,
+          items: [
+            { id: 'board', title: 'Board', path: `${base}/boards`, icon: Columns3, exact: false },
+          ],
         },
       ],
       footerItem: {
