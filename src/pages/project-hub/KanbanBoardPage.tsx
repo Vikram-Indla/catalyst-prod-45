@@ -14,7 +14,7 @@
  * - All issue types (Story, Epic, Bug, Task, Subtask, Feature, Improvement, etc.)
  */
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -49,7 +49,7 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search, MoreHorizontal } from 'lucide-react';
+import { Search, MoreHorizontal, Settings2, Map } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
 import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
 
@@ -59,6 +59,7 @@ const DENSITY_STORAGE_KEY = 'kanban-density';
 
 export default function KanbanBoardPage() {
   const { key } = useParams<{ key: string }>();
+  const navigate = useNavigate();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
@@ -80,6 +81,7 @@ export default function KanbanBoardPage() {
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
   const [showViewSettings, setShowViewSettings] = useState(false);
+  const [showBoardMenu, setShowBoardMenu] = useState(false);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -111,6 +113,19 @@ export default function KanbanBoardPage() {
       return next;
     });
   }, []);
+
+  // Close board menu on outside click
+  const boardMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!showBoardMenu) return;
+    function handler(e: MouseEvent) {
+      if (boardMenuRef.current && !boardMenuRef.current.contains(e.target as Node)) {
+        setShowBoardMenu(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showBoardMenu]);
 
   // Realtime subscription
   useKanbanRealtime(key, currentUserData ?? null);
@@ -635,19 +650,60 @@ export default function KanbanBoardPage() {
         {/* Group by */}
         <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
 
-        {/* View settings ••• */}
-        <div style={{ position: 'relative' }}>
+        {/* Board menu ••• */}
+        <div ref={boardMenuRef} style={{ position: 'relative' }}>
           <button
-            onClick={() => setShowViewSettings(v => !v)}
+            onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
             style={{
               width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
               borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
               cursor: 'pointer',
             }}
-            aria-label="View settings"
+            aria-label="Board menu"
           >
             <MoreHorizontal size={16} color={tk.textSecondary} />
           </button>
+          {showBoardMenu && !showViewSettings && (
+            <div
+              style={{
+                position: 'absolute', top: '100%', right: 0, marginTop: 4,
+                width: 200, background: tk.surfaceBg,
+                border: `1px solid ${tk.border}`, borderRadius: 8,
+                boxShadow: tk.cardDragShadow, zIndex: 50,
+                padding: '4px 0', fontFamily: "'Inter', sans-serif",
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => { setShowBoardMenu(false); setShowViewSettings(true); }}
+                className="flex items-center gap-2 w-full"
+                style={{
+                  padding: '8px 12px', background: 'transparent', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
+                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Settings2 size={14} color={tk.textSecondary} />
+                View settings
+              </button>
+              <button
+                onClick={() => { setShowBoardMenu(false); navigate(`/project-hub/${key}/boards/map-statuses`); }}
+                className="flex items-center gap-2 w-full"
+                style={{
+                  padding: '8px 12px', background: 'transparent', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
+                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Map size={14} color={tk.textSecondary} />
+                Map statuses
+              </button>
+            </div>
+          )}
           {showViewSettings && (
             <ViewSettingsPanel
               settings={viewSettings}
