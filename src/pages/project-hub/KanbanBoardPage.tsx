@@ -46,6 +46,7 @@ import {
   QuickFilterDropdown, DensityToggle, GroupByBtn,
 } from '@/components/kanban/KanbanToolbar';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
+import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
 import { Search } from 'lucide-react';
 
