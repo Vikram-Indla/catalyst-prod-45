@@ -21,9 +21,10 @@ interface SortableCardProps {
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onOpenDetail?: (id: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onChangeStatus, onOpenDetail }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onChangeStatus, onOpenDetail, onSaveSummary }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const cardStyle: React.CSSProperties = {
