@@ -313,6 +313,8 @@ export function WorkItemCard({
           onDelete={onDelete}
           onLabelsUpdated={onLabelsUpdated}
           onParentChange={onParentChange}
+          onMoved={onMoved}
+          onLinked={onLinked}
         />
       )}
     </div>
