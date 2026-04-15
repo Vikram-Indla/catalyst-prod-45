@@ -104,7 +104,7 @@ describe('Swimlane grouping (UC D01-D08)', () => {
   it('Issues without epicId grouped under __no_epic__', () => {
     const issues = [
       { ...makeIssue('1', 'e1', 'col-1') },
-      { ...makeIssue('2', 'e1', 'col-2'), epicId: undefined },
+      { ...makeIssue('2', 'e1', 'col-2'), epicId: undefined, epicKey: undefined, epicName: undefined },
     ];
     const lanes = buildSwimlanes(issues, cols);
     expect(lanes).toHaveLength(2);
