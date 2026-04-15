@@ -35,8 +35,8 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 
 // Kanban modules
-import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS, COL_PRIMARY_STATUS, STATUS_TO_COL_ID, COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
-import type { KanbanDensity } from '@/components/kanban/kanban-tokens';
+import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, COL_PRIMARY_STATUS as DEFAULT_COL_PRIMARY_STATUS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, COLUMN_ID_SET as DEFAULT_COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
+import type { KanbanDensity, KanbanColumnDef } from '@/components/kanban/kanban-tokens';
 import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban-types';
 import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
@@ -142,6 +142,91 @@ export default function KanbanBoardPage() {
     enabled: !!key,
     staleTime: 60_000,
   });
+
+  /* ═══ DYNAMIC BOARD COLUMNS FROM DB ═══ */
+
+  const { data: dynamicBoardData } = useQuery({
+    queryKey: ['kanban-board-columns', projMeta?.id],
+    queryFn: async () => {
+      if (!projMeta?.id) return null;
+      // Find the board for this project
+      const { data: boards } = await supabase
+        .from('boards')
+        .select('id')
+        .eq('project_id', projMeta.id)
+        .is('deleted_at', null)
+        .limit(1);
+      const boardId = boards?.[0]?.id;
+      if (!boardId) return null;
+
+      // Get columns
+      const { data: cols } = await supabase
+        .from('board_columns')
+        .select('id, name, position, status_ids, is_backlog, is_done')
+        .eq('board_id', boardId)
+        .order('position');
+
+      // Get status mappings
+      const { data: mappings } = await supabase
+        .from('board_status_mappings')
+        .select('status_id, status_name, bucket_type, column_id, order_index')
+        .eq('board_id', boardId)
+        .order('order_index');
+
+      if (!cols?.length) return null;
+      return { boardId, columns: cols, mappings: mappings ?? [] };
+    },
+    enabled: !!projMeta?.id,
+    staleTime: 60_000,
+  });
+
+  // Build dynamic columns, falling back to hardcoded defaults
+  const { KANBAN_COLUMNS, STATUS_TO_COL_ID, COL_PRIMARY_STATUS, COLUMN_ID_SET } = useMemo(() => {
+    if (dynamicBoardData?.columns?.length) {
+      const cols: KanbanColumnDef[] = dynamicBoardData.columns
+        .filter((c: any) => !c.is_backlog)
+        .map((c: any) => {
+          // Build status list from mappings or status_ids
+          const mappedStatuses = dynamicBoardData.mappings
+            .filter((m: any) => m.bucket_type === 'column' && m.column_id === c.id)
+            .map((m: any) => m.status_name);
+
+          // Fallback to status_ids if no mappings
+          let statuses = mappedStatuses.length > 0 ? mappedStatuses : [];
+          if (statuses.length === 0 && c.status_ids?.length) {
+            // status_ids are UUIDs, we need names — use mappings data
+            statuses = dynamicBoardData.mappings
+              .filter((m: any) => c.status_ids.includes(m.status_id))
+              .map((m: any) => m.status_name);
+          }
+
+          const category: 'todo' | 'in_progress' | 'done' = c.is_done ? 'done' : 'in_progress';
+          return {
+            id: c.id,
+            name: c.name.toUpperCase(),
+            statuses,
+            category,
+          };
+        });
+
+      const sToCId = new Map<string, string>();
+      const cPrimary: Record<string, string> = {};
+      cols.forEach(col => {
+        if (col.statuses.length > 0) cPrimary[col.id] = col.statuses[0];
+        col.statuses.forEach(s => sToCId.set(s.toLowerCase(), col.id));
+      });
+      const cIdSet = new Set(cols.map(c => c.id));
+      return { KANBAN_COLUMNS: cols, STATUS_TO_COL_ID: sToCId, COL_PRIMARY_STATUS: cPrimary, COLUMN_ID_SET: cIdSet };
+    }
+
+    // Fallback to defaults
+    return {
+      KANBAN_COLUMNS: DEFAULT_KANBAN_COLUMNS,
+      STATUS_TO_COL_ID: DEFAULT_STATUS_TO_COL_ID,
+      COL_PRIMARY_STATUS: DEFAULT_COL_PRIMARY_STATUS,
+      COLUMN_ID_SET: DEFAULT_COLUMN_ID_SET,
+    };
+  }, [dynamicBoardData]);
 
   const { data: rawIssues = [], isLoading } = useQuery({
     queryKey: ['kanban-issues', key],
@@ -777,6 +862,8 @@ export default function KanbanBoardPage() {
                   onMoved={handleMoved}
                   onLinked={handleLinked}
                   visibleFields={visibleFields}
+                  columns={KANBAN_COLUMNS}
+                  statusToColId={STATUS_TO_COL_ID}
                 />
               ))}
               {groups.length === 0 && (

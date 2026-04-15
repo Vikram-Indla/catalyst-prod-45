@@ -11,9 +11,9 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { KanbanAvatar } from './KanbanAvatar';
 import { SortableCard } from './SortableCard';
-import { KANBAN_COLUMNS, STATUS_TO_COL_ID } from './kanban-tokens';
+import { KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
-import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
+import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
@@ -39,7 +39,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
   );
 }
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields, columns, statusToColId }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -64,8 +64,13 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  columns?: KanbanColumnDef[];
+  statusToColId?: Map<string, string>;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+
+  const KANBAN_COLUMNS = columns ?? DEFAULT_KANBAN_COLUMNS;
+  const STATUS_TO_COL_ID = statusToColId ?? DEFAULT_STATUS_TO_COL_ID;
 
   const colMap = useMemo(() => {
     const m: Record<string, string[]> = {};
@@ -77,7 +82,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
       if (cid && m[cid]) m[cid].push(id);
     });
     return m;
-  }, [group.issueIds, issuesById]);
+  }, [group.issueIds, issuesById, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
 
   /* Look up epic BoardIssue for status lozenge */
   const epicIssue = useMemo(() => {
