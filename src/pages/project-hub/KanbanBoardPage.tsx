@@ -872,6 +872,15 @@ export default function KanbanBoardPage() {
               tk={tk}
             />
           )}
+          {showAdvancedFilter && (
+            <AdvancedFilterPanel
+              projectKey={key ?? ''}
+              filters={advancedFilters}
+              onChange={setAdvancedFilters}
+              onClose={() => setShowAdvancedFilter(false)}
+              tk={tk}
+            />
+          )}
         </div>
       </div>
 
