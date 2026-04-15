@@ -97,7 +97,7 @@ export function useMapStatuses(projectKey: string | undefined) {
     staleTime: 300_000,
   });
 
-  // 3. Get board + columns for this project
+  // 3. Get board + columns for this project (create board if none)
   const { data: boardData } = useQuery({
     queryKey: ['board-columns-for-map', projectId],
     queryFn: async () => {
@@ -109,8 +109,27 @@ export function useMapStatuses(projectKey: string | undefined) {
         .eq('project_id', projectId)
         .is('deleted_at', null)
         .limit(1);
-      const boardId = boards?.[0]?.id;
-      if (!boardId) return null;
+      let boardId = boards?.[0]?.id;
+
+      // Create board if none exists
+      if (!boardId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return null;
+        const { data: newBoard } = await supabase
+          .from('boards')
+          .insert({
+            name: `${projectKey ?? 'Project'} Board`,
+            project_id: projectId,
+            created_by: user.id,
+            board_type: 'kanban',
+            visibility: 'project',
+          })
+          .select('id')
+          .single();
+        boardId = newBoard?.id;
+        if (!boardId) return null;
+      }
+
       // Get columns
       const { data: cols } = await supabase
         .from('board_columns')
