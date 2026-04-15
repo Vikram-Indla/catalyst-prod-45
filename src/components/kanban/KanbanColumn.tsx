@@ -117,6 +117,9 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
                 onSaveSummary={onSaveSummary}
+                onChangeAssignee={onChangeAssignee}
+                assigneeOptions={assigneeOptions}
+                avatarsByName={avatarsByName}
               />
             );
           })}
