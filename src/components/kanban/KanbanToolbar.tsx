@@ -45,7 +45,13 @@ export function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByN
           </button>
         );
       })}
-      {overflow > 0 && <span style={{ marginLeft: -4, fontSize: 10, fontWeight: 600, color: tk.textMuted }}>+{overflow}</span>}
+      {overflow > 0 && (
+        <span style={{
+          marginLeft: 2, fontSize: 10, fontWeight: 600, color: tk.textMuted,
+          background: tk.badgeBg, borderRadius: 10, padding: '2px 6px',
+          lineHeight: '16px', whiteSpace: 'nowrap',
+        }}>+{overflow}</span>
+      )}
     </div>
   );
 }
