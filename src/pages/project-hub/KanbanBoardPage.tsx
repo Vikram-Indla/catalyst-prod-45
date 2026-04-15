@@ -238,15 +238,23 @@ export default function KanbanBoardPage() {
     queryKey: ['kanban-issues', key],
     queryFn: async () => {
       if (!key) return [];
-      const { data, error } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
-        .eq('project_key', key.toUpperCase())
-        .in('issue_type', ['Epic', 'Story'])
-        .is('deleted_at', null)
-        .order('jira_updated_at', { ascending: false })
-        .limit(1000);
-      if (error) throw error;
-      return (data ?? []).map((r: any): BoardIssue => {
+      const PAGE = 1000;
+      let all: any[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase.from('ph_issues')
+          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
+          .eq('project_key', key.toUpperCase())
+          .is('deleted_at', null)
+          .order('jira_updated_at', { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (!data?.length) break;
+        all = all.concat(data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      return all.map((r: any): BoardIssue => {
         let fv: string | null = null;
         if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
           const f = r.fix_versions[0];
