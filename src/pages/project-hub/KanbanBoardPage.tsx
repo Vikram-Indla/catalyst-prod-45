@@ -422,46 +422,49 @@ function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByName }: 
 /* ═══ EPIC FILTER DROPDOWN ═══ */
 
 function EpicFilterDropdown({ epics, selected, onChange }: {
-  epics: { key: string; count: number }[]; selected: string[];
+  epics: { key: string; summary: string | null; count: number }[]; selected: string[];
   onChange: (v: string[]) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
-  const filtered = epics.filter(e => e.key.toLowerCase().includes(q.toLowerCase()));
+  const filtered = epics.filter(e => e.key.toLowerCase().includes(q.toLowerCase()) || (e.summary && e.summary.toLowerCase().includes(q.toLowerCase())));
   const active = selected.length > 0;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? '2px solid #2563EB' : '1px solid #DDDEE1', background: '#FFFFFF', color: active ? '#2563EB' : '#42526E', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? '2px solid #2563EB' : '1px solid #DDDEE1', background: active ? '#E8F0FE' : '#FFFFFF', color: active ? '#2563EB' : '#42526E', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
         Epic{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: '#2563EB', color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.length}</span>}
         <ChevronDown size={12} />
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 280, background: '#FFFFFF', border: '1px solid #DDDEE1', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
-          <div style={{ padding: '6px 8px', borderBottom: '1px solid #EBECF0' }}>
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 340, background: '#FFFFFF', border: '1px solid #DDDEE1', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
+          <div style={{ padding: '8px 8px', borderBottom: '1px solid #EBECF0' }}>
             <div style={{ position: 'relative' }}>
-              <Search size={13} style={{ position: 'absolute', left: 6, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics" autoFocus style={{ width: '100%', height: 28, paddingLeft: 24, paddingRight: 6, border: '1px solid #DDDEE1', borderRadius: 3, fontSize: 12, color: '#0F172A', background: '#FFFFFF', outline: 'none' }} />
+              <Search size={13} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
+              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics" autoFocus style={{ width: '100%', height: 32, paddingLeft: 28, paddingRight: 8, border: '1px solid #DDDEE1', borderRadius: 4, fontSize: 13, color: '#0F172A', background: '#FFFFFF', outline: 'none' }} />
             </div>
           </div>
-          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
             {filtered.map(e => {
               const isSel = selected.includes(e.key);
               return (
                 <button key={e.key} onClick={() => { onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key]); }}
-                  style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '5px 8px', border: 'none', background: isSel ? 'rgba(37,99,235,0.06)' : 'transparent', cursor: 'pointer', fontSize: 12, color: '#0F172A' }}
-                  onMouseEnter={e => { if (!isSel) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
-                  <div style={{ width: 14 }}>{isSel && <Check size={12} color="#2563EB" />}</div>
-                  <JiraIssueTypeIcon type="Epic" size={14} />
-                  <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{e.key}</span>
-                  <span style={{ fontSize: 10, color: '#94A3B8' }}>{e.count}</span>
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', padding: '8px 12px', border: 'none', background: isSel ? 'rgba(37,99,235,0.06)' : 'transparent', cursor: 'pointer', textAlign: 'left' }}
+                  onMouseEnter={ev => { if (!isSel) (ev.currentTarget as HTMLElement).style.background = '#F4F5F7'; }} onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = isSel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
+                  <div style={{ width: 16, height: 16, border: isSel ? 'none' : '1.5px solid #C1C7D0', borderRadius: 3, background: isSel ? '#2563EB' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
+                  </div>
+                  <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 400, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{e.summary || e.key}</div>
+                    <div style={{ fontSize: 11, color: '#5E6C84', fontFamily: "'JetBrains Mono', monospace" }}>{e.key}</div>
+                  </div>
                 </button>
               );
             })}
           </div>
-          {active && <div style={{ padding: '4px 8px', borderTop: '1px solid #EBECF0' }}><button onClick={() => { onChange([]); }} style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
+          {active && <div style={{ padding: '6px 12px', borderTop: '1px solid #EBECF0' }}><button onClick={() => { onChange([]); }} style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
         </div>
       )}
     </div>
@@ -608,7 +611,15 @@ export default function KanbanBoardPage() {
 
   const allAssignees = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { const n = i.assigneeName || 'Unassigned'; m.set(n, (m.get(n) ?? 0) + 1); }); return Array.from(m.entries()).map(([n, c]) => ({ name: n, count: c })).sort((a, b) => b.count - a.count); }, [rawIssues]);
 
-  const allEpics = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { if (i.parentKey) m.set(i.parentKey, (m.get(i.parentKey) ?? 0) + 1); }); return Array.from(m.entries()).map(([k, c]) => ({ key: k, count: c })).sort((a, b) => b.count - a.count); }, [rawIssues]);
+  const allEpics = useMemo(() => {
+    // Build epic key → summary lookup from epics in the dataset
+    const epicSummaryMap = new Map<string, string>();
+    rawIssues.forEach(i => { if (i.issueType === 'Epic') epicSummaryMap.set(i.issueKey, i.summary); });
+    // Count children per parent key
+    const m = new Map<string, number>();
+    rawIssues.forEach(i => { if (i.parentKey) m.set(i.parentKey, (m.get(i.parentKey) ?? 0) + 1); });
+    return Array.from(m.entries()).map(([k, c]) => ({ key: k, summary: epicSummaryMap.get(k) ?? null, count: c })).sort((a, b) => b.count - a.count);
+  }, [rawIssues]);
   const allTypes = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { m.set(i.issueType, (m.get(i.issueType) ?? 0) + 1); }); return Array.from(m.entries()).map(([t, c]) => ({ type: t, count: c })); }, [rawIssues]);
 
   const filterCats = useMemo((): FilterCategory[] => {
