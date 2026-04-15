@@ -665,7 +665,7 @@ export default function KanbanBoardPage() {
   const { data: boardConfig, isLoading: configLoading, error: configError } =
     useBoardConfig(boardId ?? '');
   const { data: issues = [], isLoading: issuesLoading } =
-    useBoardIssues(boardId ?? '');
+    useBoardIssues(boardId ?? '', user?.id);
   const { prefs, savePrefs } =
     useBoardPrefs(boardId ?? '', user?.id ?? '');
   const { dragState, onDragStart, onDragEnd, onDrop } =

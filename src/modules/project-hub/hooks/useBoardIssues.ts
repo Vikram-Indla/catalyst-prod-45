@@ -5,7 +5,7 @@ import { boardApi } from '../api/boardApi';
 import { STALE_TIME_MS } from '../constants/kanban';
 import type { BoardIssue } from '../types/kanban';
 
-export function useBoardIssues(boardId: string) {
+export function useBoardIssues(boardId: string, currentUserId?: string) {
   const queryClient = useQueryClient();
   const channelRef  = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
@@ -32,11 +32,18 @@ export function useBoardIssues(boardId: string) {
         (payload) => {
           const updated = payload.new as Record<string, unknown>;
 
+          // UC-090: soft-delete — remove from cache directly, no re-fetch
           if (updated?.deleted_at) {
             queryClient.setQueryData<BoardIssue[]>(
               ['board-issues', boardId],
               (prev) => (prev ?? []).filter((i) => i.id !== updated.id)
             );
+            return;
+          }
+
+          // CHECK 10: Self-notification suppression — skip invalidation
+          // for changes made by the current user (optimistic update already applied)
+          if (currentUserId && updated?.updated_by === currentUserId) {
             return;
           }
 
@@ -53,7 +60,7 @@ export function useBoardIssues(boardId: string) {
       supabase.removeChannel(ch);
       channelRef.current = null;
     };
-  }, [boardId, queryClient]);
+  }, [boardId, queryClient, currentUserId]);
 
   return query;
 }
