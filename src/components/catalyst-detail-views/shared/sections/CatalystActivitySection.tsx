@@ -2,10 +2,13 @@
  * CANONICAL — Activity section (Comments + History tabs) for all CatalystView* components.
  * Change here → updates all work item types.
  *
- * Uses the production RichTextCommentEditor from StoryDetailModal for comment input
- * with image paste, @mentions, and rich formatting.
+ * Uses the canonical CatalystRichTextEditor in "comment" mode for rich text comments
+ * with image management, formatting, and ADF output.
+ *
+ * Comments are stored as ADF JSON in ph_comments.body. Legacy HTML comments are
+ * rendered as-is for backward compatibility.
  */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -13,7 +16,9 @@ import { MessageSquare, Clock, Pencil, MoreHorizontal, Copy, Trash2 } from 'luci
 import { toast } from 'sonner';
 import { useCatalystComments } from '../hooks/useCatalystComments';
 import { useCatalystActivity } from '../hooks/useCatalystActivity';
-import { RichTextCommentEditor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor';
+import { CatalystRichTextEditor } from '@/components/shared/rich-text';
+import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
+import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import {
   fmtDate, getInitials, getAvatarColor,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
@@ -23,12 +28,53 @@ interface CatalystActivitySectionProps {
   isOpen: boolean;
 }
 
+/* ── Detect if comment body is ADF JSON vs legacy HTML ── */
+function isAdfContent(body: string): boolean {
+  if (!body || !body.trim().startsWith('{')) return false;
+  try {
+    const parsed = JSON.parse(body);
+    return parsed?.type === 'doc' && parsed?.version !== undefined;
+  } catch { return false; }
+}
+
+/* ── Render a single comment body (ADF or legacy HTML) ── */
+function CommentBody({ body, issueKey }: { body: string; issueKey?: string }) {
+  if (isAdfContent(body)) {
+    const parsed = JSON.parse(body);
+    const html = adfToHtml(parsed);
+    if (html) {
+      return (
+        <div className="cv-desc-body" style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}>
+          <AdfDescriptionRenderer html={html} issueKey={issueKey} />
+        </div>
+      );
+    }
+  }
+  // Legacy HTML or plain text
+  return (
+    <div
+      className="catalyst-comment-body"
+      style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}
+      dangerouslySetInnerHTML={{ __html: body }}
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'IMG') {
+          const src = (target as HTMLImageElement).src;
+          if (src) window.open(src, '_blank', 'noopener,noreferrer');
+        }
+      }}
+    />
+  );
+}
+
 export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySectionProps) {
   const { data: comments = [] } = useCatalystComments(itemId, isOpen);
   const { data: activityLog = [] } = useCatalystActivity(itemId, isOpen);
   const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [commentMenuId, setCommentMenuId] = useState<string | null>(null);
+  // Key to force-remount the add-comment editor after submit
+  const [addEditorKey, setAddEditorKey] = useState(0);
 
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -43,17 +89,6 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  // Team members for @mention
-  const { data: mentionMembers = [] } = useQuery({
-    queryKey: ['team-members-mention-cv', itemId],
-    enabled: isOpen,
-    queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').limit(50);
-      return (data ?? []) as Array<{ id: string; full_name: string; avatar_url: string | null }>;
-    },
-    staleTime: 120000,
-  });
-
   // Add comment
   const addCommentMutation = useMutation({
     mutationFn: async (body: string) => {
@@ -61,6 +96,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cv-comments', itemId] });
+      // Reset the editor by remounting it
+      setAddEditorKey(k => k + 1);
       toast.success('Comment added');
     },
   });
@@ -111,7 +148,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
       {/* Comments tab */}
       {activeTab === 'comments' && (
         <div>
-          {/* Comment input — rich text with image paste */}
+          {/* Comment input — rich text with image management */}
           <div style={{ display: 'flex', gap: 8, marginBottom: 24, alignItems: 'flex-start' }}>
             {currentProfile?.avatar_url ? (
               <img src={currentProfile.avatar_url} alt="" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, marginTop: 4 }} />
@@ -121,12 +158,17 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
               </div>
             )}
             <div style={{ flex: 1 }}>
-              <RichTextCommentEditor
-                onSubmit={(html) => addCommentMutation.mutate(html)}
-                isSubmitting={addCommentMutation.isPending}
-                placeholder="Add a comment…"
-                teamMembers={mentionMembers}
+              <CatalystRichTextEditor
+                key={addEditorKey}
+                content=""
+                onSave={(adfJson) => addCommentMutation.mutate(adfJson)}
+                placeholder="Add a comment..."
+                mode="comment"
+                compact
+                minHeight={80}
                 workItemId={itemId}
+                storagePath="comment-images"
+                isSubmitting={addCommentMutation.isPending}
               />
             </div>
           </div>
@@ -156,27 +198,19 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
                 <div style={{ fontSize: 12, fontWeight: 400, color: '#292A2E', lineHeight: '16px' }}>{fmtDate(c.created_at)}</div>
 
                 {editingCommentId === c.id ? (
-                  <RichTextCommentEditor
-                    onSubmit={(html) => editCommentMutation.mutate({ commentId: c.id, body: html })}
+                  <CatalystRichTextEditor
+                    content={c.body}
+                    onSave={(adfJson) => editCommentMutation.mutate({ commentId: c.id, body: adfJson })}
                     onCancel={() => setEditingCommentId(null)}
-                    isSubmitting={editCommentMutation.isPending}
-                    initialValue={c.body}
-                    teamMembers={mentionMembers}
+                    mode="comment"
+                    compact
+                    minHeight={80}
                     workItemId={itemId}
+                    storagePath="comment-images"
+                    isSubmitting={editCommentMutation.isPending}
                   />
                 ) : (
-                  <div
-                    className="catalyst-comment-body"
-                    style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.6 }}
-                    dangerouslySetInnerHTML={{ __html: c.body }}
-                    onClick={(e) => {
-                      const target = e.target as HTMLElement;
-                      if (target.tagName === 'IMG') {
-                        const src = (target as HTMLImageElement).src;
-                        if (src) window.open(src, '_blank', 'noopener,noreferrer');
-                      }
-                    }}
-                  />
+                  <CommentBody body={c.body} />
                 )}
 
                 {/* Comment actions */}

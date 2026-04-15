@@ -5,12 +5,17 @@
  * Renders ADF (Atlassian Document Format) content with full Jira-parity
  * (headings, bold, numbered lists, tables with borders, media with lightbox).
  * Includes expand/collapse toggle matching Jira's collapsible sections.
+ * Click-to-edit: clicking the description or pencil icon enters edit mode
+ * with the canonical CatalystRichTextEditor (TipTap + image management).
  * Falls back to plain text. Shows placeholder when empty.
  */
-import React, { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { ChevronRight, Pencil } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
+import { CatalystRichTextEditor } from '@/components/shared/rich-text';
 import type { PhIssue } from '../types';
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
@@ -55,39 +60,130 @@ interface CatalystDescriptionSectionProps {
 
 export function CatalystDescriptionSection({ issue, label = 'Description', defaultCollapsed = false }: CatalystDescriptionSectionProps) {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
+  const [editing, setEditing] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Raw ADF content string for the editor (prefer description_adf_raw → description_adf → text)
+  const rawAdfContent = issue?.description_adf
+    ? (typeof issue.description_adf === 'string' ? issue.description_adf : JSON.stringify(issue.description_adf))
+    : (issue?.description_text || '');
+
   const descHtml = adfToHtml(issue?.description_adf) || issue?.description_text || '';
   const isEmpty = !descHtml.trim();
 
+  // Mutation to save description
+  const saveDescriptionMutation = useMutation({
+    mutationFn: async (adfJson: string) => {
+      const parsed = adfJson ? JSON.parse(adfJson) : null;
+      await supabase
+        .from('ph_issues')
+        .update({ description_adf: parsed })
+        .eq('id', issue!.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', issue?.id] });
+      setEditing(false);
+    },
+  });
+
+  const handleSave = useCallback((adfJson: string) => {
+    if (!issue) return;
+    saveDescriptionMutation.mutate(adfJson);
+  }, [issue, saveDescriptionMutation]);
+
+  const handleCancel = useCallback(() => {
+    setEditing(false);
+  }, []);
+
   return (
     <div style={{ marginBottom: 24 }}>
-      {/* Section header with expand/collapse */}
+      {/* Section header with expand/collapse + edit button */}
       <div
-        onClick={() => setCollapsed(!collapsed)}
         style={{
-          display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer',
-          fontSize: 14, fontWeight: 600, color: '#172B4D', marginBottom: collapsed ? 0 : 8,
-          userSelect: 'none',
+          display: 'flex', alignItems: 'center', gap: 4,
+          fontSize: 14, fontWeight: 600, color: '#172B4D',
+          marginBottom: collapsed ? 0 : 8, userSelect: 'none',
         }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        <ChevronRight
-          size={16}
-          style={{
-            transition: 'transform 0.15s ease',
-            transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-            color: '#5E6C84',
-          }}
-        />
-        {label}
+        <div
+          onClick={() => setCollapsed(!collapsed)}
+          style={{ display: 'flex', alignItems: 'center', gap: 4, cursor: 'pointer', flex: 1 }}
+        >
+          <ChevronRight
+            size={16}
+            style={{
+              transition: 'transform 0.15s ease',
+              transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+              color: '#5E6C84',
+            }}
+          />
+          {label}
+        </div>
+        {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
+        {!collapsed && !editing && issue && (
+          <button
+            onClick={() => setEditing(true)}
+            title="Edit description"
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              padding: '4px 6px', borderRadius: 4, color: '#6B778C',
+              display: 'flex', alignItems: 'center',
+              opacity: hovered ? 1 : 0,
+              transition: 'opacity 0.15s, color 0.1s, background 0.1s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#172B4D'; e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
+          >
+            <Pencil size={14} />
+          </button>
+        )}
       </div>
 
       {/* Collapsible body */}
       {!collapsed && (
-        isEmpty ? (
-          <div style={{ fontSize: 14, color: '#97A0AF', fontStyle: 'italic', minHeight: 40, paddingLeft: 20 }}>
-            Add a description…
+        editing && issue ? (
+          /* ── Edit mode: CatalystRichTextEditor ── */
+          <div style={{ paddingLeft: 20 }}>
+            <CatalystRichTextEditor
+              content={rawAdfContent}
+              onSave={handleSave}
+              onCancel={handleCancel}
+              placeholder="Add a description..."
+              minHeight={200}
+              mode="save"
+              workItemId={issue.id}
+              storagePath="description-images"
+            />
+          </div>
+        ) : isEmpty ? (
+          /* ── Empty placeholder — click to edit ── */
+          <div
+            onClick={() => { if (issue) setEditing(true); }}
+            style={{
+              fontSize: 14, color: '#97A0AF', fontStyle: 'italic',
+              minHeight: 40, paddingLeft: 20, cursor: issue ? 'pointer' : 'default',
+              borderRadius: 4, padding: '8px 20px',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => { if (issue) e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+          >
+            Add a description...
           </div>
         ) : (
-          <div className="cv-desc-body" style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, minHeight: 40, paddingLeft: 20 }}>
+          /* ── Read-only ADF render — click to edit ── */
+          <div
+            className="cv-desc-body"
+            style={{
+              fontSize: 14, color: '#172B4D', lineHeight: 1.7,
+              minHeight: 40, paddingLeft: 20, cursor: 'text',
+              borderRadius: 4, position: 'relative',
+            }}
+            onDoubleClick={() => { if (issue) setEditing(true); }}
+          >
             <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
           </div>
         )
