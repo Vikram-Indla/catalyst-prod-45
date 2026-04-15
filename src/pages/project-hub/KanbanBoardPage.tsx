@@ -97,6 +97,21 @@ export default function KanbanBoardPage() {
     staleTime: 300_000,
   });
 
+  // View settings
+  const { settings: viewSettings, updateSettings: updateViewSettings } = useKanbanViewSettings(key, currentUserData);
+  const visibleFields = viewSettings.visibleFields;
+
+  // Swimlane expand/collapse all handlers
+  const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
+  const handleCollapseAll = useCallback(() => {
+    // Will be populated with group keys when groups are available
+    setCollapsedSwimlanes(prev => {
+      const next = new Set(prev);
+      groups?.forEach((g: any) => next.add(g.groupKey));
+      return next;
+    });
+  }, []);
+
   // Realtime subscription
   useKanbanRealtime(key, currentUserData ?? null);
 
