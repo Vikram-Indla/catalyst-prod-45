@@ -324,7 +324,7 @@ export default function KanbanBoardPage() {
       toastError(`Failed to move ${issue.issueKey}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     }
-  }, [issuesById, key, qc]);
+  }, [issuesById, key, qc, toastSuccess, toastError]);
 
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
