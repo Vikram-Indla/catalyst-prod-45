@@ -18,7 +18,8 @@ import {
   Wallet,
   Calendar,
   Cable,
-  BookOpen
+  BookOpen,
+  GitBranch
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -81,6 +82,15 @@ const adminPockets = [
       { label: 'Announcements', path: '/admin/announcements' },
       { label: 'Notification Settings', path: '/admin/settings/notifications' },
       { label: 'Notification Triggers', path: '/admin/notification-triggers' },
+    ],
+  },
+  {
+    id: 'workflows',
+    label: 'Workflows',
+    icon: GitBranch,
+    path: '/admin/workflows',
+    children: [
+      { label: 'Status & Transitions', path: '/admin/workflows' },
     ],
   },
   {

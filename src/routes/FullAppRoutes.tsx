@@ -325,6 +325,7 @@ const RoutesComponentsRegistry = lazy(() => import("../pages/admin/RoutesCompone
 const EpicStatuses = lazy(() => import("../pages/admin/EpicStatuses"));
 const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
+const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const IncidentWorkgroups = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentWorkgroups })));
 const IncidentFieldsConfig = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentFieldsConfig })));
 const IncidentSLAPolicies = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentSLAPolicies })));
@@ -856,6 +857,7 @@ export default function FullAppRoutes() {
           <Route path="planhub/audit" element={<S><PlanHubActivityLog /></S>} />
           <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
           <Route path="slack" element={<S><SlackIntegrationPage /></S>} />
+          <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="task-list" element={<S><TaskListPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
