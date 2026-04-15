@@ -908,9 +908,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/issue/:issueKey" element={<S><IssueDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards" element={<S><ProjectBoardManagerPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId" element={<S><ProjectBoardCanvasPageLazy /></S>} />
-        <Route path="/project-hub/:key/boards/:boardId/kanban" element={<S><KanbanBoardPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards" element={<S><KanbanBoardPageLazy /></S>} />
+        <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/hierarchy/allwork" element={<S><HierarchyAllWorkPageLazy /></S>} />
         <Route path="/project-hub/:key/hierarchy" element={<Navigate to="allwork" replace />} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
