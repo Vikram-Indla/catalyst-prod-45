@@ -603,7 +603,7 @@ export default function KanbanBoardPage() {
     if (overId.includes('::')) return overId.split('::')[1] ?? null;
     if (COLUMN_ID_SET.has(overId)) return overId;
     return null;
-  }, []);
+  }, [COLUMN_ID_SET]);
 
   const onDragOver = useCallback((e: DragOverEvent) => {
     if (groupBy !== 'none') return;
