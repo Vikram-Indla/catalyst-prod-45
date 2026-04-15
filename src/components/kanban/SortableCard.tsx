@@ -27,9 +27,12 @@ interface SortableCardProps {
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
   assigneeOptions?: AssigneeOption[];
   avatarsByName?: Map<string, string>;
+  projectKey?: string;
+  onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
+  onParentChange?: (issueId: string, newParentKey: string | null) => void;
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const cardStyle: React.CSSProperties = {
@@ -104,6 +107,9 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         onChangeAssignee={onChangeAssignee}
         assigneeOptions={assigneeOptions}
         avatarsByName={avatarsByName}
+        projectKey={projectKey}
+        onLabelsUpdated={onLabelsUpdated}
+        onParentChange={onParentChange}
       />
     </div>
   );
