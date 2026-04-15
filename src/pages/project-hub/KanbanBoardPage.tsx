@@ -49,9 +49,13 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search, MoreHorizontal, Settings2, Map as MapIcon } from 'lucide-react';
+import { Search, MoreHorizontal, Settings2, Map as MapIcon, Filter } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
 import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
+import {
+  AdvancedFilterPanel, type AdvancedFilters,
+  EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
+} from '@/components/kanban/AdvancedFilterPanel';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -82,6 +86,8 @@ export default function KanbanBoardPage() {
   const [colMap, setColMap] = useState<ColMap>({});
   const [showViewSettings, setShowViewSettings] = useState(false);
   const [showBoardMenu, setShowBoardMenu] = useState(false);
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
