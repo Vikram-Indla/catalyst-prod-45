@@ -115,12 +115,52 @@ export function useStatusMappingLookup() {
 /**
  * Standalone (non-hook) function for use outside React components.
  * Uses the default mapping only (no DB fetch).
+ * Also checks the catalyst_workflow_statuses table if previously fetched.
  */
 const DEFAULT_LOOKUP = buildLookup(FULL_DEFAULT_MAPPING);
 
+// Cache from catalyst_workflow_statuses for static resolution
+let _workflowStatusCache: Record<string, StatusBucket> = {};
+let _workflowCacheLoaded = false;
+
+/** Pre-load workflow statuses for static resolution (call once at app init) */
+export async function preloadWorkflowStatusCache() {
+  try {
+    const { data } = await typedQuery('catalyst_workflow_statuses')
+      .select('name, category');
+    if (data && Array.isArray(data)) {
+      const cache: Record<string, StatusBucket> = {};
+      for (const row of data) {
+        const cat = row.category as string;
+        const bucket: StatusBucket = cat === 'done' ? 'done' : cat === 'in_progress' ? 'progress' : 'todo';
+        cache[row.name.toLowerCase().trim()] = bucket;
+      }
+      _workflowStatusCache = cache;
+      _workflowCacheLoaded = true;
+    }
+  } catch {
+    // Silently fail — fall back to default mapping
+  }
+}
+
+// Eagerly load on module import
+preloadWorkflowStatusCache();
+
 export function resolveStatusCategoryStatic(statusName: string, statusCategory?: string): CatalystCategory {
   const key = statusName.toLowerCase().trim();
+
+  // 1. Check workflow statuses cache first (most authoritative)
+  if (_workflowCacheLoaded && _workflowStatusCache[key]) {
+    const bucket = _workflowStatusCache[key];
+    if (bucket === 'done') return 'Done';
+    if (bucket === 'progress') return 'In Progress';
+    return 'To Do';
+  }
+
+  // 2. Check admin mapping
   if (DEFAULT_LOOKUP[key]) return DEFAULT_LOOKUP[key];
+
+  // 3. Fall back to Jira status_category
   if (statusCategory) {
     const cat = statusCategory.toLowerCase().trim();
     if (cat === 'done' || cat === 'complete') return 'Done';
