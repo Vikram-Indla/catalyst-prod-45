@@ -537,7 +537,7 @@ export default function KanbanBoardPage() {
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
-                />
+                  onSaveSummary={handleSaveSummary}
               ))}
               {groups.length === 0 && (
                 <div className="flex items-center justify-center py-12" style={{ color: tk.textDisabled, fontSize: 13 }}>
@@ -568,7 +568,7 @@ export default function KanbanBoardPage() {
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
-                />
+                  onSaveSummary={handleSaveSummary}
               ))}
             </div>
             <DragOverlay dropAnimation={null}>
