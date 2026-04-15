@@ -365,6 +365,42 @@ export default function KanbanBoardPage() {
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       issues = issues.filter(i => i.updatedAt && new Date(i.updatedAt).getTime() > cutoff);
     }
+
+    // ── Advanced filters ──
+    if (advancedFilters.fixVersions.length > 0) {
+      const fvSet = new Set(advancedFilters.fixVersions);
+      issues = issues.filter(i => i.fixVersion && fvSet.has(i.fixVersion));
+    }
+    if (advancedFilters.issueTypes.length > 0) {
+      const tSet = new Set(advancedFilters.issueTypes);
+      issues = issues.filter(i => tSet.has(i.issueType));
+    }
+    if (advancedFilters.statuses.length > 0) {
+      const sSet = new Set(advancedFilters.statuses.map(s => s.toLowerCase()));
+      issues = issues.filter(i => sSet.has(i.status.toLowerCase()));
+    }
+    if (advancedFilters.assignees.length > 0) {
+      const aSet = new Set(advancedFilters.assignees);
+      issues = issues.filter(i => {
+        const name = i.assigneeName || 'Unassigned';
+        return aSet.has(name);
+      });
+    }
+    if (advancedFilters.createdAfter) {
+      const afterDate = new Date(advancedFilters.createdAfter);
+      issues = issues.filter(i => {
+        if (!i.updatedAt) return false; // fallback — created_at not in BoardIssue, use updatedAt
+        return new Date(i.updatedAt) >= afterDate;
+      });
+    }
+    if (advancedFilters.createdBefore) {
+      const beforeDate = new Date(advancedFilters.createdBefore + 'T23:59:59');
+      issues = issues.filter(i => {
+        if (!i.updatedAt) return true;
+        return new Date(i.updatedAt) <= beforeDate;
+      });
+    }
+
     return issues;
   }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName]);
 
