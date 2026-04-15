@@ -702,7 +702,7 @@ export default function KanbanBoardPage() {
                   issuesById={issuesById}
                   avatarsByName={avatarsByName}
                   onCardClick={id => setSelIssueId(id)}
-                  defaultOpen={true}
+                  defaultOpen={!collapsedSwimlanes.has(g.groupKey)}
                   d={d}
                   tk={tk}
                   selectedId={selIssueId}
@@ -720,6 +720,7 @@ export default function KanbanBoardPage() {
                   onDelete={handleDelete}
                   onMoved={handleMoved}
                   onLinked={handleLinked}
+                  visibleFields={visibleFields}
                 />
               ))}
               {groups.length === 0 && (
@@ -762,6 +763,7 @@ export default function KanbanBoardPage() {
                   onDelete={handleDelete}
                   onMoved={handleMoved}
                   onLinked={handleLinked}
+                  visibleFields={visibleFields}
                 />
               ))}
             </div>
