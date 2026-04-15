@@ -1,21 +1,39 @@
 /**
  * KanbanBoardPage — Jira-style Kanban board for ProjectHub
  * Data: ph_issues (local DB), structure: Jira board layout
- * Header: matches StoryBacklogPage pattern
+ * DnD: @dnd-kit/core + @dnd-kit/sortable — cross-column + reorder
  */
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Search, Layers, Filter, ChevronDown, Check, X, User } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusBadge } from '@/components/ui/StatusBadge';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragStartEvent,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -37,7 +55,8 @@ interface BoardIssue {
   parentKey: string | null;
 }
 
-interface KanbanColumn {
+interface KanbanColumnDef {
+  id: string;       // stable droppable id
   name: string;
   statuses: string[];
 }
@@ -46,14 +65,25 @@ interface KanbanColumn {
    COLUMN CONFIG — derived from Jira board statuses
    ═══════════════════════════════════════════════ */
 
-const KANBAN_COLUMNS: KanbanColumn[] = [
-  { name: 'IN REQUIREMENTS', statuses: ['In Requirements', 'In Design', 'Awaiting Info'] },
-  { name: 'READY FOR DEVELOPMENT', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
-  { name: 'IN DEVELOPMENT', statuses: ['In Development', 'In Progress', 'Under Implementation'] },
-  { name: 'IN TESTING', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA'] },
-  { name: 'IN UAT', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
-  { name: 'DONE', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
+const KANBAN_COLUMNS: KanbanColumnDef[] = [
+  { id: 'col-requirements', name: 'IN REQUIREMENTS', statuses: ['In Requirements', 'In Design', 'Awaiting Info'] },
+  { id: 'col-ready-dev', name: 'READY FOR DEVELOPMENT', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
+  { id: 'col-dev', name: 'IN DEVELOPMENT', statuses: ['In Development', 'In Progress', 'Under Implementation'] },
+  { id: 'col-testing', name: 'IN TESTING', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA'] },
+  { id: 'col-uat', name: 'IN UAT', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
+  { id: 'col-done', name: 'DONE', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
 ];
+
+// Build reverse map: column id → primary status (first status in list, used when moving)
+const COL_PRIMARY_STATUS: Record<string, string> = {};
+const STATUS_TO_COL_ID: Map<string, string> = new Map();
+KANBAN_COLUMNS.forEach(col => {
+  COL_PRIMARY_STATUS[col.id] = col.statuses[0];
+  col.statuses.forEach(s => STATUS_TO_COL_ID.set(s.toLowerCase(), col.id));
+});
+
+// All column ids for quick lookup
+const COLUMN_ID_SET = new Set(KANBAN_COLUMNS.map(c => c.id));
 
 /* ═══════════════════════════════════════════════
    ASSIGNEE AVATAR
@@ -95,32 +125,54 @@ function AssigneeAvatar({ name, avatarUrl, size = 24 }: { name?: string | null; 
 }
 
 /* ═══════════════════════════════════════════════
-   ISSUE CARD
+   SORTABLE ISSUE CARD
    ═══════════════════════════════════════════════ */
 
-function IssueCard({ issue, avatarUrl, onCardClick }: { issue: BoardIssue; avatarUrl?: string | null; onCardClick: (id: string) => void }) {
+function SortableIssueCard({
+  issue,
+  avatarUrl,
+  onCardClick,
+}: {
+  issue: BoardIssue;
+  avatarUrl?: string | null;
+  onCardClick: (id: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: issue.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    background: '#FFFFFF',
+    borderRadius: 3,
+    padding: 8,
+    boxShadow: isDragging
+      ? '0 8px 24px rgba(9,30,66,.25)'
+      : '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)',
+    cursor: 'grab',
+    zIndex: isDragging ? 999 : 'auto',
+  };
+
   return (
     <div
-      className="cursor-pointer select-none transition-shadow duration-150"
-      style={{
-        background: '#FFFFFF',
-        borderRadius: 3,
-        padding: 8,
-        boxShadow: '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)',
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onClick={(e) => {
+        // Only fire click if not dragging
+        if (!isDragging) onCardClick(issue.id);
       }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLDivElement).style.background = '#FAFBFC';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 8px rgba(9,30,66,.2), 0 0 1px rgba(9,30,66,.31)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLDivElement).style.background = '#FFFFFF';
-        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)';
-      }}
-      onClick={() => onCardClick(issue.id)}
       tabIndex={0}
       role="button"
-      aria-label={`Open ${issue.issueKey}`}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onCardClick(issue.id); } }}
+      aria-label={`Drag ${issue.issueKey}`}
     >
       {/* Labels */}
       {issue.labels.length > 0 && (
@@ -163,10 +215,54 @@ function IssueCard({ issue, avatarUrl, onCardClick }: { issue: BoardIssue; avata
 }
 
 /* ═══════════════════════════════════════════════
-   COLUMN
+   OVERLAY CARD (static, no sortable hooks)
    ═══════════════════════════════════════════════ */
 
-function Column({ column, issues, avatarsByName, onCardClick }: { column: KanbanColumn; issues: BoardIssue[]; avatarsByName: Map<string, string>; onCardClick: (id: string) => void }) {
+function OverlayCard({ issue, avatarUrl }: { issue: BoardIssue; avatarUrl?: string | null }) {
+  return (
+    <div
+      style={{
+        width: 230,
+        background: '#FFFFFF',
+        borderRadius: 3,
+        padding: 8,
+        boxShadow: '0 8px 24px rgba(9,30,66,.25)',
+        cursor: 'grabbing',
+        transform: 'rotate(2deg)',
+      }}
+    >
+      <p style={{ fontSize: 13, lineHeight: 1.43, color: '#172B4D', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: 6 }}>
+        {issue.summary}
+      </p>
+      <div className="flex items-center gap-[5px]">
+        <JiraIssueTypeIcon type={issue.issueType} size={16} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#42526E', fontFamily: "'JetBrains Mono', monospace" }}>{issue.issueKey}</span>
+        <span className="flex-1" />
+        <AssigneeAvatar name={issue.assigneeName} avatarUrl={avatarUrl} size={24} />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   DROPPABLE COLUMN
+   ═══════════════════════════════════════════════ */
+
+function DroppableColumn({
+  column,
+  issueIds,
+  issuesById,
+  avatarsByName,
+  onCardClick,
+}: {
+  column: KanbanColumnDef;
+  issueIds: string[];
+  issuesById: Map<string, BoardIssue>;
+  avatarsByName: Map<string, string>;
+  onCardClick: (id: string) => void;
+}) {
+  const { setNodeRef, isOver } = useDroppable({ id: column.id });
+
   return (
     <div className="flex flex-col flex-shrink-0" style={{ width: 240, minWidth: 240 }}>
       {/* Column header */}
@@ -180,25 +276,56 @@ function Column({ column, issues, avatarsByName, onCardClick }: { column: Kanban
         <span
           style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.06)', borderRadius: 10, padding: '0 6px', lineHeight: '18px', minWidth: 18, textAlign: 'center' }}
         >
-          {issues.length}
+          {issueIds.length}
         </span>
       </div>
 
-      {/* Cards */}
-      <div className="flex flex-col gap-[6px] px-[5px] py-[6px] overflow-y-auto" style={{ minHeight: 80, maxHeight: 'calc(100vh - 200px)' }}>
-        {issues.length === 0 ? (
-          <div className="flex items-center justify-center" style={{ minHeight: 100, color: '#94A3B8', fontSize: 12 }}>
-            No issues
-          </div>
-        ) : (
-          issues.map((issue) => (
-            <IssueCard
-              key={issue.id}
-              issue={issue}
-              avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null}
-              onCardClick={onCardClick}
-            />
-          ))
+      {/* Droppable area + sortable cards */}
+      <div
+        ref={setNodeRef}
+        className="flex flex-col gap-[6px] px-[5px] py-[6px] overflow-y-auto transition-colors duration-150"
+        style={{
+          minHeight: 100,
+          maxHeight: 'calc(100vh - 200px)',
+          background: isOver ? 'rgba(37,99,235,0.04)' : 'transparent',
+          borderRadius: 4,
+        }}
+      >
+        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
+          {issueIds.length === 0 ? (
+            <div
+              className="flex items-center justify-center"
+              style={{
+                minHeight: 80,
+                color: '#94A3B8',
+                fontSize: 12,
+                border: isOver ? '1.5px dashed #2563EB' : '1.5px dashed #E2E8F0',
+                borderRadius: 4,
+                transition: 'all 150ms',
+              }}
+            >
+              {isOver ? 'Drop here' : 'No issues'}
+            </div>
+          ) : (
+            issueIds.map((id) => {
+              const issue = issuesById.get(id);
+              if (!issue) return null;
+              const avatarUrl = issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null;
+              return (
+                <SortableIssueCard
+                  key={id}
+                  issue={issue}
+                  avatarUrl={avatarUrl}
+                  onCardClick={onCardClick}
+                />
+              );
+            })
+          )}
+        </SortableContext>
+
+        {/* Drop indicator when cards exist */}
+        {issueIds.length > 0 && isOver && (
+          <div style={{ height: 2, background: '#2563EB', borderRadius: 1, boxShadow: '0 0 4px rgba(37,99,235,0.5)' }} />
         )}
       </div>
     </div>
@@ -241,7 +368,6 @@ function AssigneeFilterPopover({
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
-      {/* Trigger — show avatar stack when selected, else show button */}
       <button
         onClick={() => setOpen(p => !p)}
         className="inline-flex items-center gap-1"
@@ -315,7 +441,7 @@ function AssigneeFilterPopover({
                     transition: 'background 100ms',
                   }}
                   onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
-                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
+                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
                 >
                   <div style={{ width: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {isSelected && <Check size={14} color="#2563EB" />}
@@ -476,7 +602,7 @@ function BoardSkeleton() {
   return (
     <div className="flex gap-0 flex-1 min-h-0">
       {KANBAN_COLUMNS.map((col) => (
-        <div key={col.name} className="flex flex-col" style={{ width: 240, minWidth: 240 }}>
+        <div key={col.id} className="flex flex-col" style={{ width: 240, minWidth: 240 }}>
           <div className="h-10" style={{ background: '#F4F5F7' }} />
           <div className="flex flex-col gap-2 p-2">
             {[0, 1, 2].map((i) => (
@@ -490,6 +616,19 @@ function BoardSkeleton() {
 }
 
 /* ═══════════════════════════════════════════════
+   DND HELPERS
+   ═══════════════════════════════════════════════ */
+
+type ColumnIssueMap = Record<string, string[]>; // colId → issueId[]
+
+function findColumnByCardId(columns: ColumnIssueMap, cardId: string): string | null {
+  for (const colId of Object.keys(columns)) {
+    if (columns[colId].includes(cardId)) return colId;
+  }
+  return null;
+}
+
+/* ═══════════════════════════════════════════════
    MAIN PAGE
    ═══════════════════════════════════════════════ */
 
@@ -498,6 +637,7 @@ export default function KanbanBoardPage() {
   const { isDark } = useTheme();
   const tk = isDark ? DK : LK;
   const avatarsByName = useProfileAvatarsByName();
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -507,6 +647,14 @@ export default function KanbanBoardPage() {
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  // DnD state
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
+  const [columnIssueMap, setColumnIssueMap] = useState<ColumnIssueMap>({});
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+  );
 
   // Resolve projectId from key
   const { data: projectMeta } = useQuery({
@@ -555,6 +703,13 @@ export default function KanbanBoardPage() {
     staleTime: 30_000,
   });
 
+  // Build issuesById map
+  const issuesById = useMemo(() => {
+    const map = new Map<string, BoardIssue>();
+    rawIssues.forEach(i => map.set(i.id, i));
+    return map;
+  }, [rawIssues]);
+
   // Debounce search
   useEffect(() => {
     clearTimeout(searchTimerRef.current);
@@ -593,8 +748,8 @@ export default function KanbanBoardPage() {
 
   const advancedFilterCount = Object.values(advancedFilters).reduce((acc, v) => acc + v.length, 0);
 
-  // Filter + bucket into columns
-  const columnData = useMemo(() => {
+  // Filter issues and bucket into columns — rebuild columnIssueMap when data/filters change
+  const filteredIssues = useMemo(() => {
     let issues = rawIssues;
 
     // Search
@@ -627,25 +782,27 @@ export default function KanbanBoardPage() {
       issues = issues.filter(i => advancedFilters.status.includes(i.status));
     }
 
-    // Build status→column lookup
-    const statusToCol = new Map<string, number>();
-    KANBAN_COLUMNS.forEach((col, idx) => {
-      col.statuses.forEach((s) => statusToCol.set(s.toLowerCase(), idx));
-    });
+    return issues;
+  }, [rawIssues, debouncedSearch, selectedAssignees, advancedFilters]);
 
-    // Bucket issues
-    const buckets: BoardIssue[][] = KANBAN_COLUMNS.map(() => []);
-    issues.forEach((issue) => {
-      const colIdx = statusToCol.get(issue.status.toLowerCase());
-      if (colIdx !== undefined) {
-        buckets[colIdx].push(issue);
+  // Rebuild column map from filtered issues (only when not dragging)
+  useEffect(() => {
+    if (activeCardId) return; // don't reset during drag
+
+    const map: ColumnIssueMap = {};
+    KANBAN_COLUMNS.forEach(col => { map[col.id] = []; });
+
+    filteredIssues.forEach(issue => {
+      const colId = STATUS_TO_COL_ID.get(issue.status.toLowerCase());
+      if (colId && map[colId]) {
+        map[colId].push(issue.id);
       }
     });
 
-    return buckets;
-  }, [rawIssues, debouncedSearch, selectedAssignees, advancedFilters]);
+    setColumnIssueMap(map);
+  }, [filteredIssues, activeCardId]);
 
-  const totalVisible = columnData.reduce((acc, col) => acc + col.length, 0);
+  const totalVisible = Object.values(columnIssueMap).reduce((acc, ids) => acc + ids.length, 0);
 
   const handleFilterChange = useCallback((cat: string, values: string[]) => {
     setAdvancedFilters(prev => ({ ...prev, [cat]: values }));
@@ -655,10 +812,107 @@ export default function KanbanBoardPage() {
     setAdvancedFilters({});
   }, []);
 
+  /* ── DnD handlers ── */
+
+  const handleDragStart = useCallback((e: DragStartEvent) => {
+    setActiveCardId(String(e.active.id));
+  }, []);
+
+  const handleDragOver = useCallback((e: DragOverEvent) => {
+    const activeId = String(e.active.id);
+    const overId = e.over?.id ? String(e.over.id) : null;
+    if (!overId) return;
+
+    setColumnIssueMap(prev => {
+      const fromColId = findColumnByCardId(prev, activeId);
+      if (!fromColId) return prev;
+
+      // Determine target column
+      const overIsColumn = COLUMN_ID_SET.has(overId);
+      const toColId = overIsColumn ? overId : findColumnByCardId(prev, overId);
+      if (!toColId || fromColId === toColId) return prev;
+
+      const fromIds = [...prev[fromColId]];
+      const toIds = [...prev[toColId]];
+
+      const activeIdx = fromIds.indexOf(activeId);
+      if (activeIdx < 0) return prev;
+
+      // Remove from source
+      fromIds.splice(activeIdx, 1);
+
+      // Insert into target — if over a card, insert at that position; otherwise top
+      if (!overIsColumn) {
+        const overIdx = toIds.indexOf(overId);
+        toIds.splice(overIdx >= 0 ? overIdx : 0, 0, activeId);
+      } else {
+        toIds.unshift(activeId);
+      }
+
+      return { ...prev, [fromColId]: fromIds, [toColId]: toIds };
+    });
+  }, []);
+
+  const handleDragEnd = useCallback((e: DragEndEvent) => {
+    const activeId = String(e.active.id);
+    const overId = e.over?.id ? String(e.over.id) : null;
+
+    setActiveCardId(null);
+
+    if (!overId) return;
+
+    // Handle reorder within same column
+    setColumnIssueMap(prev => {
+      const colId = findColumnByCardId(prev, activeId);
+      if (!colId) return prev;
+
+      // If dropped over a column (not a card), no reorder needed
+      if (COLUMN_ID_SET.has(overId)) return prev;
+
+      const ids = prev[colId];
+      const oldIdx = ids.indexOf(activeId);
+      const newIdx = ids.indexOf(overId);
+
+      if (oldIdx < 0 || newIdx < 0 || oldIdx === newIdx) return prev;
+
+      return { ...prev, [colId]: arrayMove(ids, oldIdx, newIdx) };
+    });
+
+    // Persist status change to DB
+    setColumnIssueMap(prev => {
+      const colId = findColumnByCardId(prev, activeId);
+      if (!colId) return prev;
+
+      const issue = issuesById.get(activeId);
+      const newStatus = COL_PRIMARY_STATUS[colId];
+      if (!issue || !newStatus) return prev;
+
+      // Only update if status actually changed
+      if (issue.status !== newStatus) {
+        // Optimistic update local issue
+        issue.status = newStatus;
+
+        // Persist to DB (fire and forget, silent auto-save)
+        Promise.resolve(
+          supabase
+            .from('ph_issues')
+            .update({ status: newStatus })
+            .eq('id', activeId)
+        ).then(() => {
+          // Invalidate after persist
+          queryClient.invalidateQueries({ queryKey: ['kanban-issues', key] });
+        });
+      }
+
+      return prev;
+    });
+  }, [issuesById, key, queryClient]);
+
+  const activeIssue = activeCardId ? issuesById.get(activeCardId) : null;
+
   if (isLoading) {
     return (
       <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: '#F4F5F7' }}>
-        {/* Header skeleton */}
         <div className="px-6 pt-5 pb-3 border-b" style={{ borderColor: '#E2E8F0', background: '#FFFFFF' }}>
           <div className="h-7 w-32 rounded animate-pulse" style={{ background: '#EBECF0' }} />
           <div className="h-4 w-64 rounded animate-pulse mt-1.5" style={{ background: '#EBECF0' }} />
@@ -677,9 +931,8 @@ export default function KanbanBoardPage() {
         <p className="text-sm mt-0.5" style={{ color: tk.t2 }}>Visualize and track work items across workflow stages</p>
       </div>
 
-      {/* ── Toolbar: Search | Assignee | Filter | Group | Count ── */}
+      {/* ── Toolbar ── */}
       <div className="flex items-center gap-3 px-6 py-2.5" style={{ background: tk.pageBg, borderBottom: `1px solid ${tk.border}` }}>
-        {/* Search */}
         <div className="relative" style={{ width: 220 }}>
           <Search size={14} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -695,7 +948,6 @@ export default function KanbanBoardPage() {
           />
         </div>
 
-        {/* Assignee filter */}
         <AssigneeFilterPopover
           allAssignees={allAssignees}
           selected={selectedAssignees}
@@ -703,7 +955,6 @@ export default function KanbanBoardPage() {
           avatarsByName={avatarsByName}
         />
 
-        {/* Filter */}
         <div style={{ position: 'relative', zIndex: 50 }}>
           <FilterTriggerButton
             count={advancedFilterCount}
@@ -721,30 +972,46 @@ export default function KanbanBoardPage() {
           )}
         </div>
 
-        {/* Group By */}
         <GroupByPopover value={groupBy} onChange={setGroupBy} />
 
         <div className="flex-1" />
 
-        {/* Total count */}
         <span style={{ fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
           {totalVisible} issues
         </span>
       </div>
 
-      {/* ── Board columns ── */}
+      {/* ── Board with DnD ── */}
       <div className="flex-1 min-h-0 overflow-auto">
-        <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 240 }}>
-          {KANBAN_COLUMNS.map((col, i) => (
-            <Column
-              key={col.name}
-              column={col}
-              issues={columnData[i]}
-              avatarsByName={avatarsByName}
-              onCardClick={(id) => setSelectedIssueId(id)}
-            />
-          ))}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCorners}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 240 }}>
+            {KANBAN_COLUMNS.map((col) => (
+              <DroppableColumn
+                key={col.id}
+                column={col}
+                issueIds={columnIssueMap[col.id] ?? []}
+                issuesById={issuesById}
+                avatarsByName={avatarsByName}
+                onCardClick={(id) => setSelectedIssueId(id)}
+              />
+            ))}
+          </div>
+
+          <DragOverlay dropAnimation={null}>
+            {activeIssue ? (
+              <OverlayCard
+                issue={activeIssue}
+                avatarUrl={activeIssue.assigneeName ? avatarsByName.get(activeIssue.assigneeName.toLowerCase()) : null}
+              />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       </div>
 
       {/* Detail modal */}
