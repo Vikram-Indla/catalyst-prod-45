@@ -505,7 +505,7 @@ export function useMapStatuses(projectKey: string | undefined) {
     } finally {
       setSaving(false);
     }
-  }, [draft, boardData, qc]);
+  }, [draft, boardData, projectId, projectKey, qc]);
 
   const cancel = useCallback(() => {
     if (initialRef.current) {
