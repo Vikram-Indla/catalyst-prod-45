@@ -72,7 +72,7 @@ export default function KanbanBoardPage() {
   const [selPriorities, setSelPriorities] = useState<string[]>([]);
   const [quickFilters, setQuickFilters] = useState<Set<string>>(new Set());
   const [groupBy, setGroupBy] = useState<GroupByMode>('none');
-  const [density, setDensity] = useState<KanbanDensity>(() => (localStorage.getItem(DENSITY_STORAGE_KEY) as KanbanDensity) || 'dense');
+  const density: KanbanDensity = 'comfortable';
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
@@ -82,8 +82,6 @@ export default function KanbanBoardPage() {
   const d = DENSITY_CONFIG[density];
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-  // Persist density
-  useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
 
   // Current user ID for realtime suppression
   const { data: currentUserData } = useQuery({
@@ -477,8 +475,6 @@ export default function KanbanBoardPage() {
 
         <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{total} issues</span>
 
-        {/* Density toggle */}
-        <DensityToggle value={density} onChange={setDensity} tk={tk} />
 
         {/* Group by */}
         <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
