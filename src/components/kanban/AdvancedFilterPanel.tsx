@@ -402,16 +402,16 @@ function DateRangeFilterSection({
   const hasValue = !!after || !!before;
 
   return (
-    <div style={{ borderBottom: `1px solid ${tk.border}` }}>
+    <div style={{ borderBottom: '1px solid #EBECF0' }}>
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full"
         style={{
-          padding: '10px 16px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 12, fontWeight: 600, color: tk.textPrimary,
-          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.04em',
+          padding: '12px 20px', background: 'transparent', border: 'none',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#172B4D',
+          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <span className="flex items-center gap-2">
@@ -419,18 +419,18 @@ function DateRangeFilterSection({
           {hasValue && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '0px 6px',
+              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>1</span>
           )}
         </span>
         <ChevronDown
-          size={14} color={tk.textMuted}
+          size={14} color="#5E6C84"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}
         />
       </button>
       {open && (
-        <div style={{ padding: '0 12px 12px' }}>
+        <div style={{ padding: '0 16px 12px' }}>
           <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
             <DatePickerBtn
               label="After"
@@ -438,7 +438,7 @@ function DateRangeFilterSection({
               onChange={onChangeAfter}
               tk={tk}
             />
-            <span style={{ fontSize: 11, color: tk.textMuted }}>—</span>
+            <span style={{ fontSize: 12, color: '#5E6C84', fontWeight: 500 }}>—</span>
             <DatePickerBtn
               label="Before"
               value={before}
@@ -450,8 +450,8 @@ function DateRangeFilterSection({
             <button
               onClick={() => { onChangeAfter(null); onChangeBefore(null); }}
               style={{
-                fontSize: 11, color: '#DC2626', background: 'none', border: 'none',
-                cursor: 'pointer', padding: 0,
+                fontSize: 12, color: '#DC2626', background: 'none', border: 'none',
+                cursor: 'pointer', padding: 0, fontWeight: 500,
               }}
             >Clear dates</button>
           )}
