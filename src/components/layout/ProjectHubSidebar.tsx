@@ -97,7 +97,9 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         },
         {
           title: 'Boards',
-          items: boardItems,
+          items: [
+            { id: 'board', title: 'Board', path: `${base}/boards`, icon: Columns3, exact: false },
+          ],
         },
       ],
       footerItem: {
