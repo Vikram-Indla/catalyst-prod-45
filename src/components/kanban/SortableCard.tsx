@@ -62,15 +62,17 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         if (!isDragging) {
           e.currentTarget.style.background = tk.cardHoverBg;
           e.currentTarget.style.boxShadow = '0 2px 8px rgba(9,30,66,0.16)';
-          const menuBtn = e.currentTarget.querySelector('.kanban-card-menu-btn') as HTMLElement;
-          if (menuBtn) menuBtn.style.opacity = '1';
+          e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
+            (el as HTMLElement).style.opacity = '1';
+          });
         }
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = tk.cardBg;
         e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : '0 1px 2px rgba(9,30,66,0.08)';
-        const menuBtn = e.currentTarget.querySelector('.kanban-card-menu-btn') as HTMLElement;
-        if (menuBtn) menuBtn.style.opacity = '0';
+        e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
+          (el as HTMLElement).style.opacity = '0';
+        });
       }}
       tabIndex={-1}
       role="listitem"
