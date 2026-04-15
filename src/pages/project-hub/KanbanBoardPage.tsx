@@ -639,8 +639,8 @@ export default function KanbanBoardPage() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      const { data } = await supabase.from('profiles').select('display_name').eq('id', user.id).maybeSingle();
-      return data?.display_name ?? null;
+      const { data } = await supabase.from('profiles').select('full_name, jira_display_name').eq('id', user.id).maybeSingle();
+      return data?.jira_display_name ?? data?.full_name ?? null;
     },
     staleTime: 300_000,
   });
