@@ -297,7 +297,7 @@ function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardCl
   );
 }
 
-/* ═══ SWIMLANE ROW (Jira parity: full-width band spanning ALL columns) ═══ */
+/* ═══ SWIMLANE ROW (Jira parity: full-width band spanning ALL columns, DnD enabled) ═══ */
 
 function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen }: {
   group: GroupBucket; mode: GroupByMode; issuesById: Map<string, BoardIssue>;
@@ -305,7 +305,6 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
-  // Build per-column issue lists for this group
   const colMap = useMemo(() => {
     const m: Record<string, string[]> = {};
     KANBAN_COLUMNS.forEach(c => { m[c.id] = []; });
@@ -330,7 +329,6 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
 
   return (
     <div>
-      {/* Swimlane header — full width */}
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 w-full text-left"
@@ -350,25 +348,41 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
         )}
       </button>
 
-      {/* Expanded: columns grid spanning full width */}
       {open && (
         <div className="flex" style={{ borderBottom: '1px solid #DDDEE1' }}>
           {KANBAN_COLUMNS.map((col, i) => {
             const ids = colMap[col.id] ?? [];
-            return (
-              <div key={col.id} className="flex flex-col" style={{ flex: '1 1 0', minWidth: 180, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
-                <div className="flex flex-col gap-1 p-1" style={{ minHeight: 40, background: '#FFFFFF' }}>
-                  {ids.map(id => {
-                    const issue = issuesById.get(id);
-                    if (!issue) return null;
-                    return <JiraCard key={id} issue={issue} avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null} onClick={() => onCardClick(id)} />;
-                  })}
-                </div>
-              </div>
-            );
+            return <SwimlaneDndColumn key={col.id} colId={col.id} groupKey={group.groupKey} issueIds={ids} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={onCardClick} isFirst={i === 0} />;
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+/* ═══ SWIMLANE DROPPABLE COLUMN CELL ═══ */
+
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst }: {
+  colId: string; groupKey: string; issueIds: string[]; issuesById: Map<string, BoardIssue>;
+  avatarsByName: Map<string, string>; onCardClick: (id: string) => void; isFirst: boolean;
+}) {
+  const droppableId = `${groupKey}::${colId}`;
+  const { setNodeRef, isOver } = useDroppable({ id: droppableId });
+
+  return (
+    <div className="flex flex-col" style={{ flex: '1 1 0', minWidth: 180, borderLeft: isFirst ? 'none' : '1px solid #DDDEE1' }}>
+      <div ref={setNodeRef} className="flex flex-col gap-1 p-1" style={{ minHeight: 40, background: isOver ? 'rgba(37,99,235,0.03)' : '#FFFFFF', transition: 'background 100ms' }}>
+        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
+          {issueIds.length === 0 && isOver && (
+            <div className="flex items-center justify-center" style={{ minHeight: 40, color: '#94A3B8', fontSize: 11 }}>Drop here</div>
+          )}
+          {issueIds.map(id => {
+            const issue = issuesById.get(id);
+            if (!issue) return null;
+            return <SortableCard key={id} issue={issue} avatarUrl={issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null} onClick={() => onCardClick(id)} />;
+          })}
+        </SortableContext>
+      </div>
     </div>
   );
 }
@@ -645,7 +659,16 @@ export default function KanbanBoardPage() {
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
 
   const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
+
+  /* Parse composite droppable IDs: "groupKey::col-id" → colId, or plain col-id / issue-id */
+  const resolveColId = useCallback((overId: string): string | null => {
+    if (overId.includes('::')) return overId.split('::')[1] ?? null;
+    if (COLUMN_ID_SET.has(overId)) return overId;
+    return null;
+  }, []);
+
   const onDragOver = useCallback((e: DragOverEvent) => {
+    if (groupBy !== 'none') return; // grouped mode handles drop differently
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
     if (!oid) return;
     setColMap(prev => {
@@ -656,10 +679,40 @@ export default function KanbanBoardPage() {
       if (!isCol) { const oi = t.indexOf(oid); t.splice(oi >= 0 ? oi : 0, 0, aid); } else t.unshift(aid);
       return { ...prev, [from]: f, [to]: t };
     });
-  }, []);
+  }, [groupBy]);
+
+  /* Persist status update to ph_issues AND catalyst_issues for canonical sync */
+  const persistStatusChange = useCallback((issueId: string, newStatus: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue || issue.status === newStatus) return;
+    // Optimistic local update
+    issue.status = newStatus;
+    // Persist to ph_issues
+    Promise.resolve(supabase.from('ph_issues').update({ status: newStatus }).eq('id', issueId))
+      .then(() => {
+        // Also sync to catalyst_issues by issue_key for canonical status
+        return Promise.resolve(
+          supabase.from('catalyst_issues').update({ status: newStatus }).eq('issue_key', issue.issueKey)
+        );
+      })
+      .then(() => qc.invalidateQueries({ queryKey: ['kanban-issues', key] }));
+  }, [issuesById, key, qc]);
+
   const onDragEnd = useCallback((e: DragEndEvent) => {
     const aid = String(e.active.id), oid = e.over?.id ? String(e.over.id) : null;
-    setDragId(null); if (!oid) return;
+    setDragId(null);
+    if (!oid) return;
+
+    if (groupBy !== 'none') {
+      // Grouped mode: resolve target column from composite droppable ID
+      const targetColId = resolveColId(oid);
+      if (!targetColId) return;
+      const newStatus = COL_PRIMARY_STATUS[targetColId];
+      if (newStatus) persistStatusChange(aid, newStatus);
+      return;
+    }
+
+    // Flat mode: reorder within column
     setColMap(prev => {
       const c = findCol(prev, aid); if (!c) return prev;
       if (COLUMN_ID_SET.has(oid)) return prev;
@@ -667,15 +720,14 @@ export default function KanbanBoardPage() {
       if (oi < 0 || ni < 0 || oi === ni) return prev;
       return { ...prev, [c]: arrayMove(ids, oi, ni) };
     });
+    // Persist status change for flat mode
     setColMap(prev => {
       const c = findCol(prev, aid); if (!c) return prev;
-      const issue = issuesById.get(aid), ns = COL_PRIMARY_STATUS[c];
-      if (!issue || !ns || issue.status === ns) return prev;
-      issue.status = ns;
-      Promise.resolve(supabase.from('ph_issues').update({ status: ns }).eq('id', aid)).then(() => qc.invalidateQueries({ queryKey: ['kanban-issues', key] }));
+      const ns = COL_PRIMARY_STATUS[c];
+      if (ns) persistStatusChange(aid, ns);
       return prev;
     });
-  }, [issuesById, key, qc]);
+  }, [groupBy, resolveColId, persistStatusChange]);
 
   const dragIssue = dragId ? issuesById.get(dragId) : null;
 
@@ -730,33 +782,38 @@ export default function KanbanBoardPage() {
       {/* ── Board content ── */}
       <div className="flex-1 min-h-0 overflow-auto">
         {groupBy !== 'none' ? (
-          /* ── GROUPED: swimlane rows spanning all columns ── */
-          <div style={{ background: '#FFFFFF' }}>
-            {/* Column headers row (sticky) */}
-            <div className="flex sticky top-0 z-20" style={{ background: '#F4F5F7', borderBottom: '1px solid #DDDEE1' }}>
-              {KANBAN_COLUMNS.map((col, i) => {
-                const count = groups.reduce((sum, g) => {
-                  return sum + g.issueIds.filter(id => {
-                    const issue = issuesById.get(id);
-                    if (!issue) return false;
-                    return STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id;
-                  }).length;
-                }, 0);
-                return (
-                  <div key={col.id} className="flex items-center gap-1 px-2" style={{ flex: '1 1 0', minWidth: 180, height: 32, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>{col.name}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.08)', borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
-                  </div>
-                );
-              })}
-            </div>
+          /* ── GROUPED: swimlane rows with DnD ── */
+          <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
+            <div style={{ background: '#FFFFFF' }}>
+              {/* Column headers row (sticky) */}
+              <div className="flex sticky top-0 z-20" style={{ background: '#F4F5F7', borderBottom: '1px solid #DDDEE1' }}>
+                {KANBAN_COLUMNS.map((col, i) => {
+                  const count = groups.reduce((sum, g) => {
+                    return sum + g.issueIds.filter(id => {
+                      const issue = issuesById.get(id);
+                      if (!issue) return false;
+                      return STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id;
+                    }).length;
+                  }, 0);
+                  return (
+                    <div key={col.id} className="flex items-center gap-1 px-2" style={{ flex: '1 1 0', minWidth: 180, height: 32, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>{col.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.08)', borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
 
-            {/* Swimlane rows */}
-            {groups.map(g => (
-              <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} />
-            ))}
-            {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: '#94A3B8', fontSize: 13 }}>No issues match filters</div>}
-          </div>
+              {/* Swimlane rows */}
+              {groups.map(g => (
+                <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} />
+              ))}
+              {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: '#94A3B8', fontSize: 13 }}>No issues match filters</div>}
+            </div>
+            <DragOverlay dropAnimation={null}>
+              {dragIssue ? <OverlayCard issue={dragIssue} avatarUrl={dragIssue.assigneeName ? avatarsByName.get(dragIssue.assigneeName.toLowerCase()) : null} /> : null}
+            </DragOverlay>
+          </DndContext>
         ) : (
           /* ── FLAT BOARD with DnD ── */
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
