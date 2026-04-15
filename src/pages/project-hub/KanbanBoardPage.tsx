@@ -579,6 +579,7 @@ export default function KanbanBoardPage() {
           />
         </Suspense>
       )}
+      <PriToastContainer toasts={toasts} onDismiss={dismissToast} />
     </div>
   );
 }
