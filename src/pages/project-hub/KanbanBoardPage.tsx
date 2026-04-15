@@ -570,6 +570,7 @@ export default function KanbanBoardPage() {
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
                   onSaveSummary={handleSaveSummary}
+                />
               ))}
             </div>
             <DragOverlay dropAnimation={null}>
