@@ -485,7 +485,7 @@ export default function KanbanBoardPage() {
       </div>
 
       {/* ── Board content ── */}
-      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden" style={{ scrollbarGutter: 'stable' as any }}>
+      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden" style={{ scrollbarGutter: 'stable' as any, display: 'flex', flexDirection: 'column' }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: tk.surfaceBg, minWidth: KANBAN_COLUMNS.length * 300 }}>
@@ -540,7 +540,7 @@ export default function KanbanBoardPage() {
           </DndContext>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div className="flex h-full" style={{ minWidth: KANBAN_COLUMNS.length * 300 }}>
+            <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 300, height: '100%' }}>
               {KANBAN_COLUMNS.map((col, i) => (
                 <DroppableColumn
                   key={col.id}
