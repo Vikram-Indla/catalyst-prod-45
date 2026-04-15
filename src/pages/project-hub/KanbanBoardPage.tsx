@@ -239,7 +239,7 @@ export default function KanbanBoardPage() {
     queryFn: async () => {
       if (!key) return [];
       const { data, error } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at')
+        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
         .eq('project_key', key.toUpperCase())
         .in('issue_type', ['Epic', 'Story'])
         .is('deleted_at', null)

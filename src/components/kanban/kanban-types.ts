@@ -19,6 +19,7 @@ export interface BoardIssue {
   fixVersion: string | null;
   isFlagged: boolean;
   updatedAt: string | null;
+  createdAt: string | null;
 }
 
 export type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
