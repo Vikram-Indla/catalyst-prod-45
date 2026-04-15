@@ -357,11 +357,7 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
             const ids = colMap[col.id] ?? [];
             return (
               <div key={col.id} className="flex flex-col" style={{ flex: '1 1 0', minWidth: 180, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
-                {/* Per-column count header inside swimlane */}
-                <div className="flex items-center gap-1 px-2" style={{ height: 28, background: '#F4F5F7', borderBottom: '1px solid #EBECF0' }}>
-                  <span style={{ fontSize: 10, fontWeight: 600, color: '#5E6C84' }}>{ids.length}</span>
-                </div>
-                <div className="flex flex-col gap-1 p-1" style={{ minHeight: 40, background: '#F4F5F7' }}>
+                <div className="flex flex-col gap-1 p-1" style={{ minHeight: 40, background: '#FFFFFF' }}>
                   {ids.map(id => {
                     const issue = issuesById.get(id);
                     if (!issue) return null;
