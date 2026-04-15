@@ -364,12 +364,32 @@ export function useMapStatuses(projectKey: string | undefined) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const save = useCallback(async () => {
-    if (!draft || !boardData?.boardId) return;
+    if (!draft || !projectId) return;
     setSaving(true);
     setSaveError(null);
 
     try {
-      const boardId = boardData.boardId;
+      let boardId = boardData?.boardId ?? null;
+
+      // Create board on-the-fly if none exists
+      if (!boardId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+        const { data: newBoard, error: boardErr } = await supabase
+          .from('boards')
+          .insert({
+            name: `${projectKey ?? 'Project'} Board`,
+            project_id: projectId,
+            created_by: user.id,
+            board_type: 'kanban',
+            visibility: 'project',
+          })
+          .select('id')
+          .single();
+        if (boardErr || !newBoard) throw new Error(boardErr?.message ?? 'Failed to create board');
+        boardId = newBoard.id;
+      }
+
       const activeCols = draft.columns.filter(c => !c.isDeleted);
 
       // 1. Delete removed columns
