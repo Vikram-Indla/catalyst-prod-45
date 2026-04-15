@@ -112,26 +112,26 @@ export function SidebarBase({
   const { favorites, toggleFavorite, isFavorite } = useFavorites();
   const { isDark } = useTheme();
 
-  // Dark mode token helpers — ECLIPSE D8-R3
+  // Dark mode token helpers — ECLIPSE D8-R3 + Enterprise polish
   const tokens: DarkTokens = {
     isDark,
-    itemText: isDark ? 'var(--cp-t1)' : '#334155',
-    activeText: isDark ? '#7DB8FC' : '#2563EB',
-    activeBg: isDark ? 'rgba(59,130,246,0.10)' : '#EFF6FF',
-    hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F1F5F9',
-    hoverText: isDark ? 'var(--cp-t1)' : '#0F172A',
-    iconOpacityInactive: isDark ? 0.72 : 0.65,
-    badgeBg: isDark ? '#2E2E2E' : '#F1F5F9',
-    badgeText: isDark ? 'var(--cp-t2)' : '#94A3B8',
+    itemText: isDark ? 'var(--cp-t1)' : '#42526E',
+    activeText: isDark ? '#7DB8FC' : '#0052CC',
+    activeBg: isDark ? 'rgba(0,82,204,0.08)' : '#E9F2FF',
+    hoverBg: isDark ? 'rgba(59,130,246,0.06)' : '#F4F5F7',
+    hoverText: isDark ? 'var(--cp-t1)' : '#172B4D',
+    iconOpacityInactive: isDark ? 0.72 : 0.75,
+    badgeBg: isDark ? '#2E2E2E' : '#EBECF0',
+    badgeText: isDark ? 'var(--cp-t2)' : '#6B778C',
   };
 
-  const chevronColor = isDark ? 'var(--cp-blue)' : 'var(--cp-blue)';
-  const chevronHoverColor = isDark ? 'var(--cp-blue)' : 'var(--cp-blue)';
+  const chevronColor = isDark ? 'var(--cp-blue)' : '#0052CC';
+  const chevronHoverColor = isDark ? 'var(--cp-blue)' : '#0052CC';
   const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const sidebarBorder = isDark ? '#2E2E2E' : '#E2E8F0';
-  const dividerColor = isDark ? '#2E2E2E' : '#F1F5F9';
-  const sectionLabel = isDark ? 'var(--cp-t2)' : '#94A3B8';
-  const hubLabel = isDark ? 'var(--cp-t1)' : '#0F172A';
+  const dividerColor = isDark ? '#2E2E2E' : '#EBECF0';
+  const sectionLabel = isDark ? 'var(--cp-t2)' : '#6B778C';
+  const hubLabel = isDark ? 'var(--cp-t1)' : '#172B4D';
 
   const isActive = (path: string, exact: boolean = false, activeMatchPaths: string[] = []) => {
     if (activeMatchPaths.some((matchPath) => location.pathname === matchPath || location.pathname.startsWith(matchPath + '/'))) {
@@ -284,19 +284,19 @@ export function SidebarBase({
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 8px' }}>
+        <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 6px' }}>
           {/* Favorites Section */}
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
-            <div className="mb-4">
-              <div className="px-3 pt-3 pb-1.5">
+            <div className="mb-3">
+              <div style={{ padding: '8px 12px 6px' }}>
                 <span 
                   style={{ 
                     fontFamily: "'Sora', sans-serif",
                     color: sectionLabel,
-                    fontSize: '10px',
-                    fontWeight: 600,
-                    letterSpacing: '0.8px',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    letterSpacing: '0.06em',
                     textTransform: 'uppercase' as const,
                     lineHeight: 1,
                   }}
@@ -320,24 +320,23 @@ export function SidebarBase({
               return (
                 <div key={section.title}>
                   {sectionIndex > 0 && (
-                    <div style={{ borderTop: `1px solid ${dividerColor}`, marginTop: '6px', paddingTop: '6px' }} />
+                    <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 8px 6px' }} />
                   )}
-                  {/* Section Header — t2 in dark mode per D8-R3 Fix 5 */}
+                  {/* Section Header — enterprise high-contrast labels */}
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '14px 10px 6px 10px',
+                        padding: '6px 12px 6px',
                         lineHeight: 1,
-                        marginTop: sectionIndex > 0 ? '4px' : '0',
                       }}
                     >
                       <span 
                         style={{ 
                           fontFamily: "'Sora', sans-serif",
                           color: sectionLabel,
-                          fontSize: '10px',
-                          fontWeight: 600,
-                          letterSpacing: '0.8px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          letterSpacing: '0.06em',
                           textTransform: 'uppercase' as const,
                         }}
                       >
@@ -402,18 +401,19 @@ function renderMenuItem(
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
         height: '36px',
-        padding: expanded ? '0 10px' : '0',
+        padding: expanded ? '0 12px' : '0',
         gap: '10px',
         marginBottom: '1px',
-        fontSize: '13px',
-        fontWeight: active ? 600 : 500,
+        fontSize: '13.5px',
+        fontWeight: active ? 600 : 450,
         color: active ? tk.activeText : tk.itemText,
         fontFamily: "'Inter', sans-serif",
         outline: 'none',
         justifyContent: expanded ? 'flex-start' : 'center',
         background: active ? tk.activeBg : 'transparent',
         lineHeight: 1,
-        borderRadius: '6px',
+        borderRadius: expanded ? '0 6px 6px 0' : '6px',
+        letterSpacing: '-0.01em',
       }}
       onMouseEnter={(e) => {
         prefetchRoute(item.path);
@@ -445,18 +445,18 @@ function renderMenuItem(
       <span 
         className="flex items-center justify-center flex-shrink-0"
         style={{ 
-          width: '17px',
-          height: '17px',
+          width: '18px',
+          height: '18px',
           opacity: active ? 1.0 : tk.iconOpacityInactive,
           transition: 'opacity 150ms ease',
         }}
       >
         {CustomIcon && (
           <CustomIcon 
-            className="h-[17px] w-[17px]" 
+            className="h-[18px] w-[18px]" 
             style={{ 
               color: active ? tk.activeText : tk.itemText,
-              strokeWidth: 1.5,
+              strokeWidth: active ? 2 : 1.75,
             }}
           />
         )}
