@@ -269,7 +269,7 @@ export default function KanbanBoardPage() {
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.summary = oldSummary;
-      toast.error('Failed to update summary');
+      toastError('Failed to update summary');
     }
   }, [issuesById, key, qc]);
 
