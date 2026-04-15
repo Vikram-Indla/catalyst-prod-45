@@ -13,7 +13,7 @@ import { KANBAN_COLUMNS, STATUS_TO_COL_ID } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -26,6 +26,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -96,6 +97,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
                 onChangeStatus={onChangeStatus}
+                onSaveSummary={onSaveSummary}
               />
             );
           })}
@@ -105,7 +107,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -114,6 +116,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }) {
   const droppableId = `${groupKey}::${colId}`;
   const { setNodeRef, isOver } = useDroppable({ id: droppableId });
@@ -148,6 +151,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 onCopyLink={onCopyLink}
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
+                onSaveSummary={onSaveSummary}
               />
             );
           })}

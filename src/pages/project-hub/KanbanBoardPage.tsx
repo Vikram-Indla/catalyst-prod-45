@@ -258,6 +258,21 @@ export default function KanbanBoardPage() {
 
   /* ═══ CARD ACTIONS ═══ */
 
+  const handleSaveSummary = useCallback(async (issueId: string, newSummary: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    const oldSummary = issue.summary;
+    issue.summary = newSummary;
+    try {
+      await supabase.from('ph_issues').update({ summary: newSummary } as any).eq('id', issueId);
+      await supabase.from('catalyst_issues').update({ title: newSummary } as any).eq('issue_key', issue.issueKey);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      issue.summary = oldSummary;
+      toastError('Failed to update summary');
+    }
+  }, [issuesById, key, qc]);
+
   const handleToggleFlag = useCallback(async (issueId: string) => {
     const issue = issuesById.get(issueId);
     if (!issue) return;
@@ -522,6 +537,7 @@ export default function KanbanBoardPage() {
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
+                  onSaveSummary={handleSaveSummary}
                 />
               ))}
               {groups.length === 0 && (
@@ -553,6 +569,7 @@ export default function KanbanBoardPage() {
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
+                  onSaveSummary={handleSaveSummary}
                 />
               ))}
             </div>

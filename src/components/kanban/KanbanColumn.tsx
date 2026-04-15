@@ -41,7 +41,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
 
 /* ═══ DROPPABLE COLUMN ═══ */
 
-export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onChangeStatus }: {
+export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
@@ -55,6 +55,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
@@ -112,6 +113,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 onCopyLink={onCopyLink}
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
+                onSaveSummary={onSaveSummary}
               />
             );
           })}
