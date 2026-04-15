@@ -63,6 +63,8 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
@@ -128,6 +130,8 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 projectKey={projectKey}
                 onLabelsUpdated={onLabelsUpdated}
                 onParentChange={onParentChange}
+                onMoved={onMoved}
+                onLinked={onLinked}
               />
             );
           })}

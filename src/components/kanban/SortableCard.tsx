@@ -30,9 +30,11 @@ interface SortableCardProps {
   projectKey?: string;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const cardStyle: React.CSSProperties = {
@@ -110,6 +112,8 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         projectKey={projectKey}
         onLabelsUpdated={onLabelsUpdated}
         onParentChange={onParentChange}
+        onMoved={onMoved}
+        onLinked={onLinked}
       />
     </div>
   );
