@@ -69,6 +69,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
     onSuccess: (labels) => {
       onLabelsUpdated(labels);
       qc.invalidateQueries({ queryKey: ['ph-all-labels'] });
+      qc.invalidateQueries({ queryKey: ['kanban-issues'] });
     },
   });
 

@@ -76,7 +76,8 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
   const { data: searchResults = [], isFetching } = useQuery({
     queryKey: ['link-search', search],
     queryFn: async () => {
-      if (!search.trim()) {
+      const q = search.trim();
+      if (!q) {
         const { data } = await supabase.from('ph_issues')
           .select('issue_key, summary, issue_type, status')
           .is('deleted_at', null)
@@ -86,8 +87,8 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
       }
       const { data } = await supabase.from('ph_issues')
         .select('issue_key, summary, issue_type, status')
-        .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
         .is('deleted_at', null)
+        .or(`issue_key.ilike.%${q}%,summary.ilike.%${q}%`)
         .limit(10);
       return data ?? [];
     },
