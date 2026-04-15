@@ -347,7 +347,7 @@ function MultiSelectFilterSection({
                   onClick={() => toggle(opt)}
                   className="flex items-center gap-2 w-full"
                   style={{
-                    padding: '5px 8px', background: isSelected ? (tk.selectedBg || 'rgba(37,99,235,0.08)') : 'transparent',
+                    padding: '5px 8px', background: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
                     border: 'none', cursor: 'pointer', fontSize: 12,
                     color: tk.textPrimary, textAlign: 'left', borderRadius: 4,
                   }}
