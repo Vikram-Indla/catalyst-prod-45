@@ -290,9 +290,19 @@ export default function KanbanBoardPage() {
   }, [issuesById, key, qc, toastSuccess, toastError]);
 
   const handleCopyLink = useCallback((issueKey: string) => {
-    navigator.clipboard.writeText(`${window.location.origin}/project-hub/${key}/issue/${issueKey}`);
-    toastSuccess('Link copied');
-  }, [key, toastSuccess]);
+    const url = `${window.location.origin}/project-hub/${key}/issue/${issueKey}`;
+    navigator.clipboard.writeText(url).then(
+      () => toastSuccess('Link copied'),
+      () => toastError('Failed to copy link'),
+    );
+  }, [key, toastSuccess, toastError]);
+
+  const handleCopyKey = useCallback((issueKey: string) => {
+    navigator.clipboard.writeText(issueKey).then(
+      () => toastSuccess(`Copied ${issueKey}`),
+      () => toastError('Failed to copy key'),
+    );
+  }, [toastSuccess, toastError]);
 
   /* ═══ ASSIGNEE CHANGE ═══ */
 

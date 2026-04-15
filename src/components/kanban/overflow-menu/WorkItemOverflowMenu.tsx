@@ -62,8 +62,6 @@ export function WorkItemOverflowMenu({
   }, [onClose]);
 
   const handleCopyLink = useCallback(() => {
-    const url = `${window.location.origin}/project-hub/issue/${issue.issueKey}`;
-    navigator.clipboard.writeText(url).catch(() => {});
     onCopyLink?.(issue.issueKey);
     onClose();
   }, [issue.issueKey, onCopyLink, onClose]);
