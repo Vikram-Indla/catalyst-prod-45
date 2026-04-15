@@ -272,7 +272,7 @@ export default function KanbanBoardPage() {
       issue.summary = oldSummary;
       toastError('Failed to update summary');
     }
-  }, [issuesById, key, qc]);
+  }, [issuesById, key, qc, toastError]);
 
   const handleToggleFlag = useCallback(async (issueId: string) => {
     const issue = issuesById.get(issueId);
@@ -324,13 +324,12 @@ export default function KanbanBoardPage() {
     try {
       await supabase.from('ph_issues').update({ assignee_display_name: newAssignee } as any).eq('id', issueId);
       await supabase.from('catalyst_issues').update({ assignee_id: null } as any).eq('issue_key', issue.issueKey);
-      toastSuccess(`Assigned ${issue.issueKey} → ${newAssignee || 'Unassigned'}`);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.assigneeName = oldAssignee;
       toastError('Failed to update assignee');
     }
-  }, [issuesById, key, qc, toastSuccess, toastError]);
+  }, [issuesById, key, qc, toastError]);
 
   /* ═══ LABELS UPDATE ═══ */
 
@@ -352,16 +351,22 @@ export default function KanbanBoardPage() {
     issue.parentKey = newParentKey;
     issue.parentSummary = null;
     try {
-      await supabase.from('ph_issues').update({ parent_key: newParentKey, parent_summary: null } as any).eq('id', issueId);
-      await supabase.from('catalyst_issues').update({ parent_id: null } as any).eq('issue_key', issue.issueKey);
-      toastSuccess(newParentKey ? `Parent set to ${newParentKey}` : `Parent removed from ${issue.issueKey}`);
+      // Fetch parent summary if setting a parent
+      let parentSummary: string | null = null;
+      if (newParentKey) {
+        const { data: parentData } = await supabase.from('ph_issues')
+          .select('summary').eq('issue_key', newParentKey).maybeSingle();
+        parentSummary = parentData?.summary ?? null;
+        issue.parentSummary = parentSummary;
+      }
+      await supabase.from('ph_issues').update({ parent_key: newParentKey, parent_summary: parentSummary } as any).eq('id', issueId);
       qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
     } catch {
       issue.parentKey = oldParentKey;
       issue.parentSummary = oldParentSummary;
       toastError('Failed to update parent');
     }
-  }, [issuesById, key, qc, toastSuccess, toastError]);
+  }, [issuesById, key, qc, toastError]);
 
   /* ═══ MOVE WORK ITEM ═══ */
 
