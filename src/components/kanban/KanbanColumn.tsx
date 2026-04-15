@@ -115,6 +115,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 onOpenDetail={onCardClick}
                 onSaveSummary={onSaveSummary}
               />
+            );
           })}
         </SortableContext>
       </div>
