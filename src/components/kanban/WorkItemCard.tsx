@@ -76,7 +76,7 @@ export function WorkItemCard({
   const fixVersionLabel = issue.fixVersion || issue.sprintName || null;
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       {/* ─── TITLE ROW ─── */}
       <div className="flex items-start" style={{ position: 'relative' }}>
         <div className="flex-1 min-w-0">
