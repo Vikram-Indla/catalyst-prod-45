@@ -1,17 +1,20 @@
 /**
- * WorkItemCard — Enterprise-grade kanban card with context menu
+ * WorkItemCard — Enterprise-grade kanban card with enhanced context menu
  * 
  * Layout:
  *   HEADER: item_key (clickable) + priority + flag
  *   TITLE: line-clamped summary
  *   META: labels + sprint
  *   FOOTER: type icon + story points + assignee avatar
+ *
+ * Context menu: Open item, Copy link, Flag, Change Status, Move to top/bottom
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Flag, MoreHorizontal, ExternalLink, Link2, ArrowUpToLine, ArrowDownToLine } from 'lucide-react';
+import { Flag, MoreHorizontal, ExternalLink, Link2, ArrowUpToLine, ArrowDownToLine, ChevronRight, Check } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { KanbanAvatar } from './KanbanAvatar';
+import { KANBAN_COLUMNS } from './kanban-tokens';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 
@@ -23,10 +26,13 @@ interface WorkItemCardProps {
   isSelected?: boolean;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onOpenDetail?: (id: string) => void;
 }
 
-export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag, onCopyLink }: WorkItemCardProps) {
+export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag, onCopyLink, onChangeStatus, onOpenDetail }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
+  const [showStatusSub, setShowStatusSub] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -38,25 +44,33 @@ export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag
       if (menuRef.current && !menuRef.current.contains(e.target as Node) &&
           btnRef.current && !btnRef.current.contains(e.target as Node)) {
         setShowMenu(false);
+        setShowStatusSub(false);
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [showMenu]);
 
-  const handleContextMenu = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setMenuPos({ x: e.clientX, y: e.clientY });
-    setShowMenu(true);
-  }, []);
+  // Close on ESC
+  useEffect(() => {
+    if (!showMenu) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setShowMenu(false); setShowStatusSub(false); }
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [showMenu]);
 
   const handleMenuBtn = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     const rect = (e.target as HTMLElement).getBoundingClientRect();
     setMenuPos({ x: rect.right, y: rect.bottom + 4 });
     setShowMenu(prev => !prev);
+    setShowStatusSub(false);
   }, []);
+
+  // All available statuses from column config
+  const allStatuses = KANBAN_COLUMNS.flatMap(c => c.statuses);
 
   return (
     <>
@@ -165,16 +179,16 @@ export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag
         <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
       </div>
 
-      {/* CONTEXT MENU (Portal-positioned) */}
+      {/* CONTEXT MENU */}
       {showMenu && menuPos && (
         <div
           ref={menuRef}
           style={{
             position: 'fixed',
-            left: menuPos.x,
-            top: menuPos.y,
+            left: Math.min(menuPos.x, window.innerWidth - 220),
+            top: Math.min(menuPos.y, window.innerHeight - 300),
             zIndex: 9999,
-            width: 200,
+            width: 210,
             background: tk.surfaceBg,
             border: `1px solid ${tk.border}`,
             borderRadius: 8,
@@ -184,33 +198,116 @@ export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag
           onClick={e => e.stopPropagation()}
           onContextMenu={e => e.preventDefault()}
         >
-          {[
-            { icon: <ExternalLink size={14} />, label: 'Open item', action: () => {} },
-            { icon: <Link2 size={14} />, label: 'Copy link', action: () => { onCopyLink?.(issue.issueKey); setShowMenu(false); } },
-            { icon: <Flag size={14} color={issue.isFlagged ? '#E5493A' : undefined} />, label: issue.isFlagged ? 'Remove flag' : 'Add flag', action: () => { onToggleFlag?.(issue.id); setShowMenu(false); } },
-            { icon: <ArrowUpToLine size={14} />, label: 'Move to top', action: () => setShowMenu(false) },
-            { icon: <ArrowDownToLine size={14} />, label: 'Move to bottom', action: () => setShowMenu(false) },
-          ].map((item, i) => (
-            <button
-              key={i}
-              onClick={item.action}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                width: '100%', padding: '8px 12px', border: 'none',
-                background: 'transparent', cursor: 'pointer',
-                fontSize: 13, color: tk.textPrimary,
-                fontFamily: "'Inter', sans-serif",
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            >
-              <span style={{ color: tk.textMuted, flexShrink: 0 }}>{item.icon}</span>
-              {item.label}
-            </button>
-          ))}
+          <MenuItem icon={<ExternalLink size={14} />} label="Open item" onClick={() => { onOpenDetail?.(issue.id); setShowMenu(false); }} tk={tk} />
+          <MenuItem icon={<Link2 size={14} />} label="Copy link" onClick={() => { onCopyLink?.(issue.issueKey); setShowMenu(false); }} tk={tk} />
+          <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />
+          <MenuItem
+            icon={<Flag size={14} color={issue.isFlagged ? '#E5493A' : undefined} />}
+            label={issue.isFlagged ? 'Remove flag' : 'Add flag'}
+            onClick={() => { onToggleFlag?.(issue.id); setShowMenu(false); }}
+            tk={tk}
+          />
+          {/* Change Status submenu */}
+          <div
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setShowStatusSub(true)}
+            onMouseLeave={() => setShowStatusSub(false)}
+          >
+            <MenuItem
+              icon={<ChevronRight size={14} />}
+              label="Change status"
+              onClick={() => setShowStatusSub(prev => !prev)}
+              tk={tk}
+              hasSubmenu
+            />
+            {showStatusSub && (
+              <div style={{
+                position: 'absolute',
+                left: '100%',
+                top: 0,
+                zIndex: 10000,
+                width: 200,
+                maxHeight: 320,
+                overflowY: 'auto',
+                background: tk.surfaceBg,
+                border: `1px solid ${tk.border}`,
+                borderRadius: 8,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.24)',
+                padding: '4px 0',
+              }}>
+                {KANBAN_COLUMNS.map(col => (
+                  <div key={col.id}>
+                    <div style={{
+                      padding: '4px 12px 2px',
+                      fontSize: 10,
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      color: tk.textDisabled,
+                      letterSpacing: '0.05em',
+                    }}>{col.name}</div>
+                    {col.statuses.map(s => {
+                      const isCurrent = issue.status === s;
+                      return (
+                        <button
+                          key={s}
+                          onClick={() => {
+                            if (!isCurrent) onChangeStatus?.(issue.id, s);
+                            setShowMenu(false);
+                            setShowStatusSub(false);
+                          }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 8,
+                            width: '100%', padding: '6px 12px', border: 'none',
+                            background: isCurrent ? tk.dropHighlight : 'transparent',
+                            cursor: isCurrent ? 'default' : 'pointer',
+                            fontSize: 12, color: isCurrent ? tk.selectedAccent : tk.textPrimary,
+                            fontWeight: isCurrent ? 600 : 400,
+                            fontFamily: "'Inter', sans-serif",
+                            textAlign: 'left',
+                          }}
+                          onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = tk.surfaceHover; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = isCurrent ? tk.dropHighlight : 'transparent'; }}
+                        >
+                          {isCurrent && <Check size={12} color={tk.selectedAccent} />}
+                          <span style={{ marginLeft: isCurrent ? 0 : 20 }}>{s}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />
+          <MenuItem icon={<ArrowUpToLine size={14} />} label="Move to top" onClick={() => setShowMenu(false)} tk={tk} />
+          <MenuItem icon={<ArrowDownToLine size={14} />} label="Move to bottom" onClick={() => setShowMenu(false)} tk={tk} />
         </div>
       )}
     </>
+  );
+}
+
+function MenuItem({ icon, label, onClick, tk, hasSubmenu }: {
+  icon: React.ReactNode; label: string; onClick: () => void;
+  tk: KanbanThemeTokens; hasSubmenu?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        width: '100%', padding: '7px 12px', border: 'none',
+        background: 'transparent', cursor: 'pointer',
+        fontSize: 13, color: tk.textPrimary,
+        fontFamily: "'Inter', sans-serif",
+        textAlign: 'left',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
+      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+    >
+      <span style={{ color: tk.textMuted, flexShrink: 0 }}>{icon}</span>
+      <span className="flex-1">{label}</span>
+      {hasSubmenu && <ChevronRight size={12} color={tk.textMuted} />}
+    </button>
   );
 }

@@ -17,9 +17,11 @@ interface SortableCardProps {
   isSelected?: boolean;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onOpenDetail?: (id: string) => void;
 }
 
-export function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, onToggleFlag, onCopyLink }: SortableCardProps) {
+export function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, onToggleFlag, onCopyLink, onChangeStatus, onOpenDetail }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const cardStyle: React.CSSProperties = {
@@ -71,7 +73,17 @@ export function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, onT
       role="button"
       aria-label={`${issue.issueKey}: ${issue.summary}`}
     >
-      <WorkItemCard issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} isSelected={isSelected} onToggleFlag={onToggleFlag} onCopyLink={onCopyLink} />
+      <WorkItemCard
+        issue={issue}
+        avatarUrl={avatarUrl}
+        d={d}
+        tk={tk}
+        isSelected={isSelected}
+        onToggleFlag={onToggleFlag}
+        onCopyLink={onCopyLink}
+        onChangeStatus={onChangeStatus}
+        onOpenDetail={onOpenDetail}
+      />
     </div>
   );
 }
