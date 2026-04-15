@@ -281,7 +281,7 @@ export function useMapStatuses(projectKey: string | undefined) {
     const state = { columns: draftCols, mappings: draftMappings };
     setDraft(state);
     initialRef.current = JSON.parse(JSON.stringify(state));
-  }, [allStatuses, boardData, draft]);
+  }, [allStatuses, boardData, boardLoading, draft]);
 
   // ── Draft mutation helpers ──
 
