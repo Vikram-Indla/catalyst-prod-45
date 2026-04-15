@@ -265,8 +265,7 @@ export function WorkItemCard({
         </div>
       )}
 
-      {/* spacer pushes footer to bottom */}
-      <div style={{ flex: 1 }} />
+      {/* spacer — only used when card has explicit minHeight */}
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
       <div className="flex items-center" style={{ gap: 6, minHeight: d.footerHeight, marginTop: 6 }}>
