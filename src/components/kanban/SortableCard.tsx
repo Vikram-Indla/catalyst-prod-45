@@ -32,6 +32,9 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     border: `1px solid ${tk.cardBorder}`,
     borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : `1px solid ${tk.cardBorder}`,
     padding: d.cardPad,
+    height: d.cardFixedHeight,
+    display: 'flex',
+    flexDirection: 'column',
     cursor: 'pointer',
     transition: 'background 80ms, box-shadow 80ms',
     transform: CSS.Transform.toString(transform),
@@ -41,6 +44,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     ...(transition ? { transition } : {}),
     position: 'relative' as const,
     outline: 'none',
+    overflow: 'hidden',
   };
 
   const handleClick = useCallback(() => {
