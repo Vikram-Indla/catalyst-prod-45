@@ -709,7 +709,7 @@ export default function KanbanBoardPage() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   // ── Filtered issues ──
-  const filtered = useBoardSearch(issues, filters);
+  const filtered = useBoardSearch(issues, filters, user?.id);
 
   // ── Build swimlanes ──
   const swimlanes: Swimlane[] = useMemo(() => {
