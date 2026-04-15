@@ -32,7 +32,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     border: `1px solid ${tk.cardBorder}`,
     borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : `1px solid ${tk.cardBorder}`,
     padding: d.cardPad,
-    height: d.cardFixedHeight,
+    minHeight: d.cardMinHeight,
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
@@ -44,7 +44,6 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     ...(transition ? { transition } : {}),
     position: 'relative' as const,
     outline: 'none',
-    overflow: 'hidden',
   };
 
   const handleClick = useCallback(() => {
@@ -103,8 +102,8 @@ export const OverlayCard = memo(function OverlayCard({ issue, avatarUrl, d, tk }
   return (
     <div style={{
       background: tk.cardBg, borderRadius: 8, border: `1px solid ${tk.selectedAccent}`,
-      padding: d.cardPad, width: 280, height: d.cardFixedHeight, boxShadow: tk.cardDragShadow,
-      transform: 'rotate(2deg)', cursor: 'grabbing', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      padding: d.cardPad, width: 280, minHeight: d.cardMinHeight, boxShadow: tk.cardDragShadow,
+      transform: 'rotate(2deg)', cursor: 'grabbing', display: 'flex', flexDirection: 'column',
     }}>
       <WorkItemCard issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} />
     </div>
