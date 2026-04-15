@@ -69,6 +69,9 @@ interface KanbanColumnDef {
 
 type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
 
+/* Issue types visible on the board — Jira parity: Epics as swimlanes, Stories/Features as cards */
+const BOARD_ISSUE_TYPES = new Set(['Story', 'Epic', 'Feature', 'New Feature']);
+
 interface GroupBucket {
   groupKey: string;
   groupLabel: string;
