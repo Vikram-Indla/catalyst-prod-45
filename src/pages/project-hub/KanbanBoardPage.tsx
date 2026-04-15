@@ -45,7 +45,7 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
    DESIGN TOKENS — Light & Dark mode (Nocturne Geist)
    ═══════════════════════════════════════════════════════════════ */
 
-const T = {
+const T: { light: ThemeTokens; dark: ThemeTokens } = {
   light: {
     pageBg: '#F4F5F7',
     surfaceBg: '#FFFFFF',
@@ -98,9 +98,7 @@ const T = {
     inputBorder: '#2E2E2E',
     overlay: 'rgba(255,255,255,.04)',
   },
-} as const;
-
-type ThemeTokens = typeof T.light;
+};
 
 /* ═══ DENSITY SYSTEM ═══ */
 
