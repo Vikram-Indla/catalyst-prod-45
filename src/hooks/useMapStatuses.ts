@@ -162,10 +162,10 @@ export function useMapStatuses(projectKey: string | undefined) {
 
   // 5. Initialize draft from DB or hardcoded defaults
   useEffect(() => {
-    if (!allStatuses?.length || !boardData) return;
+    if (!allStatuses?.length || boardLoading) return;
     if (draft) return; // Already initialized
 
-    const { columns: dbCols, mappings: dbMappings } = boardData;
+    const { columns: dbCols, mappings: dbMappings } = boardData ?? { columns: [], mappings: [] };
 
     // If we have persisted mappings, use them
     if (dbMappings.length > 0) {
