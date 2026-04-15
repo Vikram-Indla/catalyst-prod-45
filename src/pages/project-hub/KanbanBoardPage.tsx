@@ -1,26 +1,9 @@
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
-import { useBoardConfig } from '@/modules/project-hub/hooks/useBoardConfig';
-import { useBoardIssues } from '@/modules/project-hub/hooks/useBoardIssues';
-import { useBoardPrefs } from '@/modules/project-hub/hooks/useBoardPrefs';
-import { useBoardSearch } from '@/modules/project-hub/hooks/useBoardSearch';
-import { useDragDrop } from '@/modules/project-hub/hooks/useDragDrop';
-import { boardApi } from '@/modules/project-hub/api/boardApi';
-import {
-  DEFAULT_BOARD_FILTERS,
-  BOARD_COLUMN_WIDTH,
-  SEARCH_DEBOUNCE_MS,
-} from '@/modules/project-hub/constants/kanban';
-import type {
-  BoardIssue,
-  BoardFilters,
-  Swimlane,
-  PhBoardColumn,
-  DragState,
-  MoveResult,
-} from '@/modules/project-hub/types/kanban';
-import { Search, ChevronDown, ChevronRight, Settings, Download, MoreHorizontal, Zap } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Search, ChevronDown } from 'lucide-react';
 
 const StoryDetailModal = lazy(
   () => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal')
@@ -60,25 +43,8 @@ function BugIcon({ size = 16 }: { size?: number }) {
 function EpicIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <path d="M8.5 1L4 9h4l-.5 6L12 7H8l.5-6z" fill="#6554C0" />
-    </svg>
-  );
-}
-
-function ImprovementIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8" />
-      <path d="M8 11V5M5.5 7.5L8 5l2.5 2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function NewFeatureIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <rect x="1" y="1" width="14" height="14" rx="2" fill="#36B37E" />
-      <path d="M8 3l1.76 3.56L14 7.27l-3 2.92.71 4.11L8 12.27 4.29 14.3 5 10.19 2 7.27l4.24-.71L8 3z" fill="#fff" />
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#904EE2" />
+      <path d="M9 3L6 8.5h4L7 13" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -87,19 +53,37 @@ function SubtaskIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
       <rect x="2" y="2" width="12" height="12" rx="2" fill="#4BADE8" />
-      <path d="M5.5 8.5L7 10l3.5-4" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M5.5 8.5L7 10l3.5-4" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-const TYPE_ICON_MAP: Record<string, React.FC<{ size?: number }>> = {
+function ImprovementIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#4BADE8" />
+      <path d="M8 12V5M5 7.5L8 4.5l3 3" stroke="#fff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function NewFeatureIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
+      <rect x="1" y="1" width="14" height="14" rx="2" fill="#36B37E" />
+      <path d="M8 4v8M4 8h8" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+const TYPE_ICON_MAP: Record<string, React.ComponentType<{ size?: number }>> = {
   Story: StoryIcon,
   Task: TaskIcon,
   Bug: BugIcon,
   Epic: EpicIcon,
+  Subtask: SubtaskIcon,
   Improvement: ImprovementIcon,
   'New Feature': NewFeatureIcon,
-  Subtask: SubtaskIcon,
 };
 
 function WorkItemTypeIcon({ type, size = 16 }: { type: string; size?: number }) {
@@ -108,7 +92,7 @@ function WorkItemTypeIcon({ type, size = 16 }: { type: string; size?: number }) 
 }
 
 /* ═══════════════════════════════════════════════
-   PRIORITY ICONS — INLINE SVG ARROWS
+   PRIORITY ICONS
    ═══════════════════════════════════════════════ */
 
 const PRIORITY_COLORS: Record<string, string> = {
@@ -121,22 +105,6 @@ const PRIORITY_COLORS: Record<string, string> = {
 
 function PriorityIcon({ priority, size = 14 }: { priority: string; size?: number }) {
   const color = PRIORITY_COLORS[priority] ?? '#8590A2';
-
-  if (priority === 'Highest') {
-    return (
-      <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-        <path d="M8 13V3M4 7l4-4 4 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M4 11l4-4 4 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity=".5" />
-      </svg>
-    );
-  }
-  if (priority === 'High') {
-    return (
-      <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-        <path d="M8 13V3M4 7l4-4 4 4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
   if (priority === 'Medium') {
     return (
       <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
@@ -144,39 +112,11 @@ function PriorityIcon({ priority, size = 14 }: { priority: string; size?: number
       </svg>
     );
   }
-  if (priority === 'Low') {
-    return (
-      <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-        <path d="M8 3v10M4 9l4 4 4-4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  // Lowest
+  const isUp = priority === 'Highest' || priority === 'High';
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-      <path d="M8 3v10M4 9l4 4 4-4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M4 5l4 4 4-4" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" opacity=".5" />
+      <path d={isUp ? 'M8 13V3M4 7l4-4 4 4' : 'M8 3v10M4 9l4 4 4-4'} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
-  );
-}
-
-/* ═══════════════════════════════════════════════
-   SP DOTS
-   ═══════════════════════════════════════════════ */
-
-function SpDots({ sp }: { sp?: number }) {
-  if (!sp) return null;
-  const filled = Math.min(sp, 4);
-  return (
-    <span className="inline-flex items-center gap-[2px]">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <span
-          key={i}
-          className="inline-block w-[6px] h-[6px] rounded-full"
-          style={{ background: i < filled ? '#FF8B00' : '#DFE1E6' }}
-        />
-      ))}
-    </span>
   );
 }
 
@@ -184,101 +124,98 @@ function SpDots({ sp }: { sp?: number }) {
    ASSIGNEE AVATAR
    ═══════════════════════════════════════════════ */
 
-function AssigneeAvatar({ name, avatar, size = 20 }: { name?: string; avatar?: string; size?: number }) {
-  if (!name) return null;
+function AssigneeAvatar({ name, size = 24 }: { name?: string | null; size?: number }) {
+  if (!name) {
+    return (
+      <span
+        className="inline-flex items-center justify-center rounded-full flex-shrink-0"
+        style={{ width: size, height: size, background: '#DFE1E6' }}
+      >
+        <svg width={size * 0.6} height={size * 0.6} viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="6" r="3" fill="#97A0AF" />
+          <path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6" fill="#97A0AF" />
+        </svg>
+      </span>
+    );
+  }
   const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   const colors = ['#FF5630', '#6554C0', '#36B37E', '#0052CC', '#FF8B00', '#00B8D9'];
   const bg = colors[name.charCodeAt(0) % colors.length];
   return (
     <span
       className="inline-flex items-center justify-center rounded-full flex-shrink-0"
-      style={{ width: size, height: size, background: avatar ? undefined : bg, fontSize: size * 0.45, fontWeight: 700, color: '#fff' }}
+      style={{ width: size, height: size, background: bg, fontSize: size * 0.42, fontWeight: 700, color: '#fff' }}
       title={name}
     >
-      {avatar ? <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" /> : initials}
+      {initials}
     </span>
   );
 }
 
 /* ═══════════════════════════════════════════════
-   STATUS LOZENGE — 3 COLORS ONLY
+   TYPES
    ═══════════════════════════════════════════════ */
 
-function StatusLozenge({ status }: { status: string }) {
-  const s = status.toLowerCase();
-  let bg = '#DFE1E6', text = '#42526E';
-  if (s.includes('progress') || s.includes('review') || s.includes('active')) {
-    bg = '#DEEBFF'; text = '#0747A6';
-  } else if (s.includes('done') || s.includes('approved') || s.includes('complete') || s.includes('closed')) {
-    bg = '#E3FCEF'; text = '#006644';
-  }
-  return (
-    <span
-      className="inline-flex items-center px-1.5 uppercase tracking-[0.03em]"
-      style={{ height: 20, borderRadius: 3, background: bg, color: text, fontSize: 11, fontWeight: 700, lineHeight: '20px', whiteSpace: 'nowrap' }}
-    >
-      {status}
-    </span>
-  );
+interface KanbanIssue {
+  id: string;
+  issueKey: string;
+  summary: string;
+  issueType: string;
+  priority: string;
+  status: string;
+  assigneeName: string | null;
+  labels: string[];
+  sprintName: string | null;
+  storyPoints: number | null;
+  parentKey: string | null;
+}
+
+interface KanbanColumn {
+  name: string;
+  statuses: string[];
 }
 
 /* ═══════════════════════════════════════════════
-   ISSUE CARD
+   COLUMN CONFIG — matches Jira reference
    ═══════════════════════════════════════════════ */
 
-interface IssueCardProps {
-  issue: BoardIssue;
-  isDragging: boolean;
-  onDragStart: (issueId: string, colId: string) => void;
-  onDragEnd: () => void;
-  onCardClick: (issueId: string) => void;
-}
+const KANBAN_COLUMNS: KanbanColumn[] = [
+  { name: 'IN REQUIREMENTS', statuses: ['In Requirements', 'In Design', 'Awaiting Info'] },
+  { name: 'READY FOR DEVELOPMENT', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
+  { name: 'IN DEVELOPMENT', statuses: ['In Development', 'In Progress', 'Under Implementation'] },
+  { name: 'IN TESTING', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA'] },
+  { name: 'IN UAT', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
+  { name: 'DONE', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
+];
 
-function IssueCard({ issue, isDragging, onDragStart, onDragEnd, onCardClick }: IssueCardProps) {
-  const wasDraggedRef = useRef(false);
+const COLUMN_WIDTH = 240;
 
+/* ═══════════════════════════════════════════════
+   ISSUE CARD — matches Jira reference
+   ═══════════════════════════════════════════════ */
+
+function IssueCard({ issue, onCardClick }: { issue: KanbanIssue; onCardClick: (id: string) => void }) {
   return (
     <div
-      draggable
-      className="group cursor-pointer select-none transition-shadow duration-150"
+      className="cursor-pointer select-none transition-shadow duration-150"
       style={{
-        background: isDragging ? '#FFFFFF' : '#FFFFFF',
+        background: '#FFFFFF',
         borderRadius: 3,
         padding: 8,
-        opacity: isDragging ? 0.35 : 1,
-        boxShadow: isDragging
-          ? '0 8px 16px rgba(9,30,66,.15), 0 0 1px rgba(9,30,66,.31)'
-          : '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)',
+        boxShadow: '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)',
       }}
       onMouseEnter={(e) => {
-        if (!isDragging) {
-          (e.currentTarget as HTMLDivElement).style.background = '#FAFBFC';
-          (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 8px rgba(9,30,66,.2), 0 0 1px rgba(9,30,66,.31)';
-        }
+        (e.currentTarget as HTMLDivElement).style.background = '#FAFBFC';
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 4px 8px rgba(9,30,66,.2), 0 0 1px rgba(9,30,66,.31)';
       }}
       onMouseLeave={(e) => {
         (e.currentTarget as HTMLDivElement).style.background = '#FFFFFF';
-        if (!isDragging) {
-          (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)';
-        }
+        (e.currentTarget as HTMLDivElement).style.boxShadow = '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)';
       }}
-      onDragStart={(e) => {
-        wasDraggedRef.current = true;
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('issueId', issue.id);
-        onDragStart(issue.id, issue.boardColumnId ?? '');
-      }}
-      onDragEnd={() => {
-        setTimeout(() => { wasDraggedRef.current = false; }, 80);
-        onDragEnd();
-      }}
-      onClick={() => {
-        if (wasDraggedRef.current) return;
-        onCardClick(issue.id);
-      }}
+      onClick={() => onCardClick(issue.id)}
       tabIndex={0}
       role="button"
-      aria-label={`Open issue ${issue.id}`}
+      aria-label={`Open ${issue.issueKey}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -286,14 +223,14 @@ function IssueCard({ issue, isDragging, onDragStart, onDragEnd, onCardClick }: I
         }
       }}
     >
-      {/* Row 1 — Labels */}
-      {issue.labels && Array.isArray(issue.labels) && (issue.labels as string[]).length > 0 && (
+      {/* Labels */}
+      {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-[3px] mb-[5px]">
-          {(issue.labels as string[]).map((label) => (
+          {issue.labels.map((label) => (
             <span
               key={label}
               className="uppercase"
-              style={{ height: 16, padding: '0 6px', borderRadius: 2, fontSize: 10, fontWeight: 700, background: '#DFE1E6', color: '#42526E', lineHeight: '16px', display: 'inline-block' }}
+              style={{ height: 16, padding: '0 6px', borderRadius: 2, fontSize: 10, fontWeight: 700, background: '#DFE1E6', color: '#42526E', lineHeight: '16px', display: 'inline-block', maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
             >
               {label}
             </span>
@@ -301,7 +238,19 @@ function IssueCard({ issue, isDragging, onDragStart, onDragEnd, onCardClick }: I
         </div>
       )}
 
-      {/* Row 2 — Summary */}
+      {/* Sprint name */}
+      {issue.sprintName && (
+        <div className="mb-[4px]">
+          <span
+            className="uppercase"
+            style={{ height: 16, padding: '0 6px', borderRadius: 2, fontSize: 10, fontWeight: 700, background: '#E9F2FF', color: '#0052CC', lineHeight: '16px', display: 'inline-block', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          >
+            {issue.sprintName}
+          </span>
+        </div>
+      )}
+
+      {/* Summary */}
       <p
         className="mb-[6px]"
         style={{ fontSize: 13, lineHeight: 1.43, color: '#172B4D', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
@@ -309,96 +258,53 @@ function IssueCard({ issue, isDragging, onDragStart, onDragEnd, onCardClick }: I
         {issue.summary}
       </p>
 
-      {/* Row 3 — Footer */}
+      {/* Footer row */}
       <div className="flex items-center gap-[5px]">
-        <WorkItemTypeIcon type={issue.type} size={16} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#0052CC' }}>{issue.id}</span>
-        <SpDots sp={issue.sp} />
+        <WorkItemTypeIcon type={issue.issueType} size={16} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#42526E' }}>{issue.issueKey}</span>
         <PriorityIcon priority={issue.priority} size={14} />
         <span className="flex-1" />
-        <AssigneeAvatar name={issue.assigneeName} avatar={issue.assigneeAvatar} size={20} />
+        <AssigneeAvatar name={issue.assigneeName} size={24} />
       </div>
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════
-   COLUMN CELL
+   COLUMN
    ═══════════════════════════════════════════════ */
 
-interface ColumnCellProps {
-  column: PhBoardColumn;
-  issues: BoardIssue[];
-  isLast: boolean;
-  isDragTarget: boolean;
-  epicId: string;
-  onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: () => void;
-  onDrop: (e: React.DragEvent) => void;
-  onCardClick: (issueId: string) => void;
-  draggingId: string | null;
-  onDragStart: (issueId: string, colId: string) => void;
-  onDragEnd: () => void;
-}
-
-function ColumnCell({
-  column, issues, isLast, isDragTarget, onDragOver, onDragLeave, onDrop, onCardClick, draggingId, onDragStart, onDragEnd,
-}: ColumnCellProps) {
+function Column({ column, issues, onCardClick }: { column: KanbanColumn; issues: KanbanIssue[]; onCardClick: (id: string) => void }) {
   return (
     <div
-      className="flex flex-col"
-      style={{
-        width: BOARD_COLUMN_WIDTH,
-        minWidth: BOARD_COLUMN_WIDTH,
-        borderRight: isLast ? 'none' : '1px solid #DFE1E6',
-        background: isDragTarget ? 'rgba(233,242,255,.35)' : 'transparent',
-      }}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
+      className="flex flex-col flex-shrink-0"
+      style={{ width: COLUMN_WIDTH, minWidth: COLUMN_WIDTH }}
     >
       {/* Column header */}
       <div
-        className="flex items-center justify-between px-2"
+        className="flex items-center gap-1.5 px-2 sticky top-0 z-10"
         style={{
-          height: 34,
-          background: '#F7F8F9',
-          borderBottom: isDragTarget ? '2px solid #388BFF' : '1px solid #DFE1E6',
+          height: 40,
+          background: '#F4F5F7',
         }}
       >
-        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#626F86', letterSpacing: '0.04em' }}>
+        <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>
           {column.name}
         </span>
         <span
-          style={{ fontSize: 11, fontWeight: 600, color: '#626F86', background: 'rgba(9,30,66,.06)', borderRadius: 3, padding: '0 4px', lineHeight: '18px' }}
+          style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.06)', borderRadius: 10, padding: '0 6px', lineHeight: '18px', minWidth: 18, textAlign: 'center' }}
         >
           {issues.length}
         </span>
       </div>
 
       {/* Cards */}
-      <div className="flex flex-col gap-2 p-2" style={{ minHeight: 80 }}>
-        {issues.length === 0 && isDragTarget ? (
-          <div
-            className="flex items-center justify-center"
-            style={{ border: '2px dashed #388BFF', borderRadius: 3, minHeight: 56, color: '#388BFF', fontSize: 12, fontWeight: 500 }}
-          >
-            Drop here
-          </div>
-        ) : issues.length === 0 ? (
-          <div className="flex items-center justify-center" style={{ minHeight: 56, color: '#626F86', fontSize: 12 }}>
-            Drop issues here
-          </div>
+      <div className="flex flex-col gap-[6px] px-[5px] py-[6px]" style={{ minHeight: 80 }}>
+        {issues.length === 0 ? (
+          <div className="flex items-center justify-center" style={{ minHeight: 200 }} />
         ) : (
           issues.map((issue) => (
-            <IssueCard
-              key={issue.id}
-              issue={issue}
-              isDragging={draggingId === issue.id}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-              onCardClick={onCardClick}
-            />
+            <IssueCard key={issue.id} issue={issue} onCardClick={onCardClick} />
           ))
         )}
       </div>
@@ -407,111 +313,38 @@ function ColumnCell({
 }
 
 /* ═══════════════════════════════════════════════
-   SWIMLANE ROW
+   SEARCH BAR — matching Jira reference (top right)
    ═══════════════════════════════════════════════ */
 
-interface SwimlaneRowProps {
-  lane: Swimlane;
-  collapsed: boolean;
-  onToggle: () => void;
-  dragState: DragState;
-  onDragStart: (issueId: string, colId: string) => void;
-  onDragEnd: () => void;
-  onDrop: (colId: string, epicId?: string) => Promise<MoveResult>;
-  onCardClick: (issueId: string) => void;
-}
-
-function SwimlaneRow({ lane, collapsed, onToggle, dragState, onDragStart, onDragEnd, onDrop, onCardClick }: SwimlaneRowProps) {
-  const [dropTargetCol, setDropTargetCol] = useState<string | null>(null);
-
-  const doneCount = lane.columns.reduce(
-    (acc, sc) => acc + (sc.column.isDoneColumn ? sc.issues.length : 0),
-    0
-  );
-  const progressPct = lane.totalCount > 0 ? (doneCount / lane.totalCount) * 100 : 0;
-
+function BoardSearch({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <div className="border border-[#DFE1E6]" style={{ borderRadius: collapsed ? 3 : '3px 3px 0 0' }}>
-      {/* Header */}
-      <div
-        className="flex items-center gap-2 px-3 cursor-pointer select-none"
-        style={{ height: 38, background: '#FFFFFF', borderBottom: collapsed ? 'none' : '1px solid #DFE1E6' }}
-        onClick={onToggle}
-      >
-        <span
-          className="transition-transform duration-200"
-          style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
-        >
-          <ChevronDown size={14} color="#626F86" />
-        </span>
-        <EpicIcon size={16} />
-        <span style={{ fontSize: 12, fontWeight: 500, color: '#44546F' }}>{lane.epicKey}</span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>{lane.epicName}</span>
-        <span style={{ fontSize: 12, color: '#626F86' }}>({lane.totalCount})</span>
-        <StatusLozenge status={lane.epicStatus} />
-        <span className="flex-1" />
-        <div className="flex items-center gap-1.5">
-          <div style={{ width: 60, height: 4, background: '#DFE1E6', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ width: `${progressPct}%`, height: '100%', background: '#00875A', borderRadius: 2 }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Column grid */}
-      {!collapsed && (
-        <div className="flex overflow-x-auto">
-          {lane.columns.map((sc, i) => (
-            <ColumnCell
-              key={sc.column.id}
-              column={sc.column}
-              issues={sc.issues}
-              isLast={i === lane.columns.length - 1}
-              isDragTarget={dropTargetCol === sc.column.id}
-              epicId={lane.epicId}
-              onDragOver={(e) => {
-                // FIX 2/5: only allow drop on same-epic swimlane
-                if (!dragState.sourceEpicId || dragState.sourceEpicId === lane.epicId) {
-                  e.preventDefault();
-                  setDropTargetCol(sc.column.id);
-                }
-                // else: browser shows not-allowed cursor naturally
-              }}
-              onDragLeave={() => setDropTargetCol(null)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setDropTargetCol(null);
-                onDrop(sc.column.id, lane.epicId);
-              }}
-              onCardClick={onCardClick}
-              draggingId={dragState.draggingId}
-              onDragStart={onDragStart}
-              onDragEnd={onDragEnd}
-            />
-          ))}
-        </div>
-      )}
+    <div className="relative">
+      <Search size={14} color="#626F86" className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+      <input
+        type="text"
+        placeholder="Search board"
+        className="pl-7 pr-2 py-1 border rounded text-sm outline-none"
+        style={{ width: 200, height: 32, borderColor: '#DFE1E6', fontSize: 13, color: '#172B4D', background: '#FAFBFC' }}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════
-   BOARD SKELETON
+   SKELETON
    ═══════════════════════════════════════════════ */
 
 function BoardSkeleton() {
   return (
-    <div className="flex flex-col gap-4">
-      {[0, 1].map((lane) => (
-        <div key={lane} className="border border-[#DFE1E6] rounded-[3px]">
-          <div className="h-[38px] bg-[#F7F8F9] animate-pulse rounded-t-[3px]" />
-          <div className="flex">
-            {Array.from({ length: 7 }).map((_, col) => (
-              <div key={col} className="flex flex-col gap-2 p-2" style={{ width: BOARD_COLUMN_WIDTH, minWidth: BOARD_COLUMN_WIDTH, borderRight: col < 6 ? '1px solid #DFE1E6' : 'none' }}>
-                <div className="h-[34px] bg-[#F7F8F9] rounded-[3px]" />
-                {[0, 1].map((card) => (
-                  <div key={card} className="h-[88px] bg-[#F4F5F7] rounded-[3px] animate-pulse" />
-                ))}
-              </div>
+    <div className="flex gap-0 flex-1 min-h-0">
+      {KANBAN_COLUMNS.map((col) => (
+        <div key={col.name} className="flex flex-col" style={{ width: COLUMN_WIDTH, minWidth: COLUMN_WIDTH }}>
+          <div className="h-10 bg-[#F4F5F7]" />
+          <div className="flex flex-col gap-2 p-2">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-[72px] bg-[#EBECF0] rounded-[3px] animate-pulse" />
             ))}
           </div>
         </div>
@@ -521,339 +354,142 @@ function BoardSkeleton() {
 }
 
 /* ═══════════════════════════════════════════════
-   BOARD EMPTY STATE
-   ═══════════════════════════════════════════════ */
-
-function BoardEmptyState({ hasSearch, onClear }: { hasSearch: boolean; onClear: () => void }) {
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center py-20">
-      <p style={{ fontSize: 16, color: '#44546F' }}>
-        {hasSearch ? 'No issues match your search' : 'No issues on this board yet'}
-      </p>
-      {hasSearch && (
-        <button
-          onClick={onClear}
-          className="mt-3 px-3 py-1.5 rounded text-sm font-medium"
-          style={{ background: '#0052CC', color: '#fff' }}
-        >
-          Clear search
-        </button>
-      )}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════
-   BOARD NAV TABS
-   ═══════════════════════════════════════════════ */
-
-function BoardNavTabs() {
-  const tabs = ['Backlog', 'Board', 'Roadmap', 'Reports', 'Settings'];
-  return (
-    <div className="flex items-center" style={{ height: 40, borderBottom: '1px solid #DFE1E6' }}>
-      {tabs.map((tab) => (
-        <button
-          key={tab}
-          className="relative px-4 h-full text-sm transition-colors"
-          style={{
-            fontWeight: tab === 'Board' ? 600 : 400,
-            color: tab === 'Board' ? '#0052CC' : '#44546F',
-          }}
-        >
-          {tab}
-          {tab === 'Board' && (
-            <span className="absolute bottom-0 left-0 right-0 h-[2px]" style={{ background: '#0052CC' }} />
-          )}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════
-   BOARD TOOLBAR
-   ═══════════════════════════════════════════════ */
-
-interface BoardToolbarProps {
-  searchRef: React.RefObject<HTMLInputElement | null>;
-  onSearch: (value: string) => void;
-  filters: BoardFilters;
-  setFilters: React.Dispatch<React.SetStateAction<BoardFilters>>;
-}
-
-function BoardToolbar({ searchRef, onSearch, filters, setFilters }: BoardToolbarProps) {
-  // FIX 3: local state for instant input, debounced filter update
-  const [searchInput, setSearchInput] = useState('');
-
-  const avatars = [
-    { name: 'AA', color: '#FF5630', userId: 'avatar-1' },
-    { name: 'AA', color: '#6554C0', userId: 'avatar-2' },
-    { name: 'H', color: '#36B37E', userId: 'avatar-3' },
-    { name: 'KA', color: '#0052CC', userId: 'avatar-4' },
-    { name: 'MA', color: '#FF8B00', userId: 'avatar-5' },
-  ];
-
-  return (
-    <div
-      className="flex items-center gap-3 px-4"
-      style={{ height: 52, borderBottom: '1px solid #DFE1E6', background: '#FFFFFF' }}
-    >
-      {/* Search */}
-      <div className="relative">
-        <Search size={14} color="#626F86" className="absolute left-2 top-1/2 -translate-y-1/2" />
-        <input
-          ref={searchRef}
-          type="text"
-          placeholder="Search board"
-          className="pl-7 pr-2 py-1 border rounded text-sm"
-          style={{ width: 200, height: 32, borderColor: '#DFE1E6', fontSize: 13, color: '#172B4D' }}
-          value={searchInput}
-          onChange={(e) => {
-            setSearchInput(e.target.value);
-            onSearch(e.target.value);
-          }}
-        />
-      </div>
-
-      {/* Avatar group — FIX 8: toggle filter on click */}
-      <div className="flex items-center -space-x-[5px]">
-        {avatars.map((a, i) => {
-          const isActive = filters.assigneeId === a.userId;
-          return (
-            <button
-              key={i}
-              className="inline-flex items-center justify-center rounded-full border-2 border-white cursor-pointer"
-              style={{
-                width: 28,
-                height: 28,
-                background: a.color,
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#fff',
-                boxShadow: isActive ? '0 0 0 2px #388BFF' : 'none',
-              }}
-              onClick={() => {
-                setFilters((f) => ({
-                  ...f,
-                  assigneeId: f.assigneeId === a.userId ? null : a.userId,
-                }));
-              }}
-            >
-              {a.name}
-            </button>
-          );
-        })}
-        <span
-          className="inline-flex items-center justify-center rounded-full border-2 border-white"
-          style={{ width: 28, height: 28, background: '#97A0AF', fontSize: 10, fontWeight: 700, color: '#fff' }}
-        >
-          +10
-        </span>
-      </div>
-
-      {/* Divider */}
-      <div style={{ width: 1, height: 24, background: '#DFE1E6' }} />
-
-      {/* Filter buttons */}
-      <button className="px-2.5 py-1 text-xs font-medium rounded border" style={{ borderColor: '#DFE1E6', color: '#44546F', background: '#fff', height: 32 }}>
-        Epic <ChevronDown size={12} className="inline ml-1" />
-      </button>
-      <button className="px-2.5 py-1 text-xs font-medium rounded border" style={{ borderColor: '#DFE1E6', color: '#44546F', background: '#fff', height: 32 }}>
-        Type <ChevronDown size={12} className="inline ml-1" />
-      </button>
-      <button className="px-2.5 py-1 text-xs font-medium rounded border" style={{ borderColor: '#DFE1E6', color: '#44546F', background: '#fff', height: 32 }}>
-        Quick filters <ChevronDown size={12} className="inline ml-1" />
-      </button>
-
-      <span className="flex-1" />
-
-      {/* Right side */}
-      <button
-        className="px-2.5 py-1 text-xs font-semibold rounded"
-        style={{ background: '#E9F2FF', border: '1.5px solid #0052CC', color: '#0052CC', height: 32 }}
-      >
-        Group: Epic
-      </button>
-      <button className="p-1.5 rounded hover:bg-[rgba(9,30,66,.04)]"><Download size={16} color="#44546F" /></button>
-      <button className="p-1.5 rounded hover:bg-[rgba(9,30,66,.04)]"><Settings size={16} color="#44546F" /></button>
-      <button className="p-1.5 rounded hover:bg-[rgba(9,30,66,.04)]"><MoreHorizontal size={16} color="#44546F" /></button>
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════
-   MAIN PAGE COMPONENT
+   MAIN PAGE
    ═══════════════════════════════════════════════ */
 
 export default function KanbanBoardPage() {
-  const { key, boardId } = useParams<{ key: string; boardId: string }>();
+  const { key } = useParams<{ key: string }>();
   const { user } = useAuth();
-
-  // ── Data hooks ──
-  const { data: boardConfig, isLoading: configLoading, error: configError } =
-    useBoardConfig(boardId ?? '');
-  const { data: issues = [], isLoading: issuesLoading } =
-    useBoardIssues(boardId ?? '', user?.id);
-  const { prefs, savePrefs } =
-    useBoardPrefs(boardId ?? '', user?.id ?? '');
-  const { dragState, onDragStart, onDragEnd, onDrop } =
-    useDragDrop(boardId ?? '', user?.id ?? '');
-
-  // ── Local state ──
-  const [filters, setFilters] = useState<BoardFilters>(DEFAULT_BOARD_FILTERS);
-  const [collapsedEpics, setCollapsedEpics] = useState<Set<string>>(
-    new Set(prefs?.collapsedEpics ?? [])
-  );
+  const [search, setSearch] = useState('');
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  // ── Filtered issues ──
-  const filtered = useBoardSearch(issues, filters, user?.id);
-
-  // ── Build swimlanes ──
-  const swimlanes: Swimlane[] = useMemo(() => {
-    const epicMap = new Map<string, BoardIssue[]>();
-    filtered.forEach((issue) => {
-      const k = issue.epicId ?? '__no_epic__';
-      if (!epicMap.has(k)) epicMap.set(k, []);
-      epicMap.get(k)!.push(issue);
-    });
-
-    return Array.from(epicMap.entries()).map(([epicId, epicIssues]) => {
-      const first = epicIssues[0];
-      return {
-        epicId,
-        epicKey: first?.epicKey ?? epicId,
-        epicName: first?.epicName ?? 'No Epic',
-        epicStatus: 'In Progress' as const,
-        totalCount: epicIssues.length,
-        columns: (boardConfig?.columnConfig ?? []).map((col) => ({
-          column: col,
-          issues: epicIssues.filter((i) => i.boardColumnId === col.id),
-        })),
-      };
-    });
-  }, [filtered, boardConfig]);
-
-  // ── Swimlane collapse ──
-  const toggleSwimlane = useCallback(
-    (epicId: string) => {
-      setCollapsedEpics((prev) => {
-        const next = new Set(prev);
-        next.has(epicId) ? next.delete(epicId) : next.add(epicId);
-        savePrefs({
-          collapsedEpics: Array.from(next),
-          assigneeFilter: prefs?.assigneeFilter ?? [],
-          typeFilter: prefs?.typeFilter ?? [],
-        });
-        return next;
-      });
-      boardApi.trackBoardEvent({
-        boardId: boardId ?? '',
-        eventType: 'swimlane_collapsed',
-        metadata: { epicId },
-      });
+  // Resolve projectId from key
+  const { data: projectMeta } = useQuery({
+    queryKey: ['ph-project-meta', key],
+    queryFn: async () => {
+      if (!key) return null;
+      const { data } = await supabase
+        .from('ph_projects')
+        .select('id, key, name')
+        .eq('key', key.toUpperCase())
+        .maybeSingle();
+      return data;
     },
-    [boardId, prefs, savePrefs]
-  );
+    enabled: !!key,
+    staleTime: 60_000,
+  });
 
-  // ── Debounced search ──
-  const handleSearch = useCallback((value: string) => {
+  // Fetch issues for this project
+  const { data: rawIssues = [], isLoading } = useQuery({
+    queryKey: ['kanban-issues', key],
+    queryFn: async () => {
+      if (!key) return [];
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key')
+        .eq('project_key', key.toUpperCase())
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false })
+        .limit(1000);
+      if (error) throw error;
+      return (data ?? []).map((r): KanbanIssue => ({
+        id: r.id,
+        issueKey: r.issue_key,
+        summary: r.summary ?? '',
+        issueType: r.issue_type ?? 'Task',
+        priority: r.priority ?? 'Medium',
+        status: r.status ?? 'Backlog',
+        assigneeName: r.assignee_display_name,
+        labels: Array.isArray(r.labels) ? (r.labels as string[]) : [],
+        sprintName: r.sprint_name,
+        storyPoints: r.story_points ? Number(r.story_points) : null,
+        parentKey: r.parent_key,
+      }));
+    },
+    enabled: !!key,
+    staleTime: 30_000,
+  });
+
+  // Debounced search
+  useEffect(() => {
     clearTimeout(searchTimerRef.current);
-    searchTimerRef.current = setTimeout(() => {
-      setFilters((f) => ({ ...f, search: value }));
-    }, SEARCH_DEBOUNCE_MS);
-  }, []);
+    searchTimerRef.current = setTimeout(() => setDebouncedSearch(search), 250);
+    return () => clearTimeout(searchTimerRef.current);
+  }, [search]);
 
-  // ── "/" shortcut ──
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === '/' && document.activeElement !== searchRef.current) {
-        e.preventDefault();
-        searchRef.current?.focus();
-      }
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, []);
+  // Filter + bucket into columns
+  const columnData = useMemo(() => {
+    let issues = rawIssues;
 
-  // ── Track board view ──
-  useEffect(() => {
-    if (boardId) {
-      boardApi.trackBoardEvent({ boardId, eventType: 'board_viewed' });
+    // Apply search
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.trim().toLowerCase();
+      issues = issues.filter(
+        (i) =>
+          i.summary.toLowerCase().includes(q) ||
+          i.issueKey.toLowerCase().includes(q) ||
+          (i.assigneeName ?? '').toLowerCase().includes(q)
+      );
     }
-  }, [boardId]);
 
-  // ── Error state ──
-  if (configError) {
+    // Build status→column lookup
+    const statusToCol = new Map<string, number>();
+    KANBAN_COLUMNS.forEach((col, idx) => {
+      col.statuses.forEach((s) => statusToCol.set(s.toLowerCase(), idx));
+    });
+
+    // Bucket issues
+    const buckets: KanbanIssue[][] = KANBAN_COLUMNS.map(() => []);
+    issues.forEach((issue) => {
+      const colIdx = statusToCol.get(issue.status.toLowerCase());
+      if (colIdx !== undefined) {
+        buckets[colIdx].push(issue);
+      }
+      // Skip issues with unmapped statuses
+    });
+
+    return buckets;
+  }, [rawIssues, debouncedSearch]);
+
+  if (isLoading) {
     return (
-      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p style={{ fontSize: 16, fontWeight: 600, color: '#172B4D' }}>Failed to load board</p>
-            <button
-              className="mt-3 px-4 py-1.5 rounded text-sm font-medium"
-              style={{ background: '#0052CC', color: '#fff' }}
-              onClick={() => window.location.reload()}
-            >
-              Retry
-            </button>
-          </div>
-        </div>
+      <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: '#F4F5F7' }}>
+        <BoardSkeleton />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: '#FFFFFF' }}>
-      {/* Board nav tabs */}
-      <BoardNavTabs />
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: '#F4F5F7' }}>
+      {/* Toolbar — minimal, matching reference: just search + "See older work items" links handled in columns */}
+      <div className="flex items-center gap-3 px-3 py-2" style={{ background: '#FFFFFF', borderBottom: '1px solid #DFE1E6' }}>
+        <BoardSearch value={search} onChange={setSearch} />
+      </div>
 
-      {/* Toolbar */}
-      <BoardToolbar
-        searchRef={searchRef}
-        onSearch={handleSearch}
-        filters={filters}
-        setFilters={setFilters}
-      />
-
-      {/* Board scroll area */}
-      <div className="flex-1 min-h-0 overflow-auto" style={{ background: '#F4F5F7' }}>
-        <div className="p-4 flex flex-col gap-3" style={{ minWidth: (boardConfig?.columnConfig?.length ?? 7) * BOARD_COLUMN_WIDTH + 32 }}>
-          {configLoading || issuesLoading ? (
-            <BoardSkeleton />
-          ) : swimlanes.length === 0 ? (
-            <BoardEmptyState
-              hasSearch={!!filters.search}
-              onClear={() => setFilters(DEFAULT_BOARD_FILTERS)}
+      {/* Board columns */}
+      <div className="flex-1 min-h-0 overflow-auto">
+        <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * COLUMN_WIDTH }}>
+          {KANBAN_COLUMNS.map((col, i) => (
+            <Column
+              key={col.name}
+              column={col}
+              issues={columnData[i]}
+              onCardClick={(id) => setSelectedIssueId(id)}
             />
-          ) : (
-            swimlanes.map((lane) => (
-              <SwimlaneRow
-                key={lane.epicId}
-                lane={lane}
-                collapsed={collapsedEpics.has(lane.epicId)}
-                onToggle={() => toggleSwimlane(lane.epicId)}
-                dragState={dragState}
-                onDragStart={onDragStart}
-                onDragEnd={onDragEnd}
-                onDrop={onDrop}
-                onCardClick={(issueId) => setSelectedIssueId(issueId)}
-              />
-            ))
-          )}
+          ))}
         </div>
       </div>
 
-      {/* StoryDetailModal — wired to card clicks */}
+      {/* StoryDetailModal */}
       {selectedIssueId && (
         <Suspense fallback={null}>
           <StoryDetailModal
             isOpen={!!selectedIssueId}
             onClose={() => setSelectedIssueId(null)}
             itemId={selectedIssueId}
-            projectId={boardConfig?.projectId ?? ''}
+            projectId={projectMeta?.id ?? ''}
             projectKey={key}
           />
         </Suspense>
