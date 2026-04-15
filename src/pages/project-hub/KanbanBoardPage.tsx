@@ -332,6 +332,37 @@ export default function KanbanBoardPage() {
     }
   }, [issuesById, key, qc, toastSuccess, toastError]);
 
+  /* ═══ LABELS UPDATE ═══ */
+
+  const handleLabelsUpdated = useCallback(async (issueId: string, newLabels: string[]) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    const oldLabels = issue.labels;
+    issue.labels = newLabels;
+    qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+  }, [issuesById, key, qc]);
+
+  /* ═══ PARENT CHANGE ═══ */
+
+  const handleParentChange = useCallback(async (issueId: string, newParentKey: string | null) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    const oldParentKey = issue.parentKey;
+    const oldParentSummary = issue.parentSummary;
+    issue.parentKey = newParentKey;
+    issue.parentSummary = null;
+    try {
+      await supabase.from('ph_issues').update({ parent_key: newParentKey, parent_summary: null } as any).eq('id', issueId);
+      await supabase.from('catalyst_issues').update({ parent_id: null } as any).eq('issue_key', issue.issueKey);
+      toastSuccess(newParentKey ? `Parent set to ${newParentKey}` : `Parent removed from ${issue.issueKey}`);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      issue.parentKey = oldParentKey;
+      issue.parentSummary = oldParentSummary;
+      toastError('Failed to update parent');
+    }
+  }, [issuesById, key, qc, toastSuccess, toastError]);
+
   /* ═══ DND HANDLERS ═══ */
 
   const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
@@ -580,6 +611,9 @@ export default function KanbanBoardPage() {
                   onSaveSummary={handleSaveSummary}
                   onChangeAssignee={handleChangeAssignee}
                   assigneeOptions={assigneeOptions}
+                  projectKey={key ?? ''}
+                  onLabelsUpdated={handleLabelsUpdated}
+                  onParentChange={handleParentChange}
                 />
               ))}
               {groups.length === 0 && (
@@ -615,6 +649,9 @@ export default function KanbanBoardPage() {
                   onSaveSummary={handleSaveSummary}
                   onChangeAssignee={handleChangeAssignee}
                   assigneeOptions={assigneeOptions}
+                  projectKey={key ?? ''}
+                  onLabelsUpdated={handleLabelsUpdated}
+                  onParentChange={handleParentChange}
                 />
               ))}
             </div>

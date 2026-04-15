@@ -55,6 +55,9 @@ interface WorkItemCardProps {
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
+  projectKey?: string;
+  onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
+  onParentChange?: (issueId: string, newParentKey: string | null) => void;
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
   assigneeOptions?: AssigneeOption[];
   avatarsByName?: Map<string, string>;
@@ -64,6 +67,7 @@ export function WorkItemCard({
   issue, avatarUrl, d, tk, isSelected,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
   onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
+  projectKey, onLabelsUpdated, onParentChange,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -296,6 +300,7 @@ export function WorkItemCard({
           issue={issue}
           menuPos={menuPos}
           tk={tk}
+          projectKey={projectKey ?? ''}
           onClose={() => setShowMenu(false)}
           onToggleFlag={onToggleFlag}
           onCopyLink={onCopyLink}
@@ -304,6 +309,8 @@ export function WorkItemCard({
           onOpenDetail={onOpenDetail}
           onArchive={onArchive}
           onDelete={onDelete}
+          onLabelsUpdated={onLabelsUpdated}
+          onParentChange={onParentChange}
         />
       )}
     </div>
