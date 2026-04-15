@@ -162,34 +162,27 @@ const CARD_REST: React.CSSProperties = {
 };
 const CARD_HOVER_SHADOW = '0 1px 4px rgba(9,30,66,.15)';
 
-function JiraCard({ issue, avatarUrl, onClick }: { issue: BoardIssue; avatarUrl?: string | null; onClick: () => void }) {
+function JiraCardContent({ issue, avatarUrl }: { issue: BoardIssue; avatarUrl?: string | null }) {
   return (
-    <div
-      style={CARD_REST}
-      onClick={onClick}
-      onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.boxShadow = CARD_HOVER_SHADOW; }}
-      onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.boxShadow = 'none'; }}
-    >
-      {/* Labels (compact chips) */}
-      {issue.labels.length > 0 && (
-        <div className="flex flex-wrap gap-[2px] mb-1">
-          {issue.labels.slice(0, 2).map(l => (
-            <span key={l} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: '#DFE1E6', color: '#42526E', padding: '0 4px', borderRadius: 2, lineHeight: '16px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{l}</span>
-          ))}
-        </div>
-      )}
-
-      {/* Sprint (compact) */}
-      {issue.sprintName && (
-        <div style={{ fontSize: 10, fontWeight: 600, color: '#5E6C84', lineHeight: '14px', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.sprintName}</div>
-      )}
-
-      {/* Summary — 2-line clamp */}
+    <>
+      {/* Row 1: Summary — 2-line clamp */}
       <div style={{ fontSize: 12, lineHeight: '16px', color: '#172B4D', fontWeight: 400, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}>
         {issue.summary}
       </div>
 
-      {/* Footer: type + key + priority + points ... avatar */}
+      {/* Row 2: Labels inline (max 1, truncated) + Sprint tag */}
+      {(issue.labels.length > 0 || issue.sprintName) && (
+        <div className="flex items-center gap-1 mb-1" style={{ overflow: 'hidden' }}>
+          {issue.labels.slice(0, 1).map(l => (
+            <span key={l} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: '#DFE1E6', color: '#42526E', padding: '0 4px', borderRadius: 2, lineHeight: '16px', maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block', flexShrink: 0 }}>{l}</span>
+          ))}
+          {issue.sprintName && (
+            <span style={{ fontSize: 10, fontWeight: 600, color: '#5E6C84', lineHeight: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', border: '1px solid #DFE1E6', borderRadius: 2, padding: '0 4px' }}>{issue.sprintName}</span>
+          )}
+        </div>
+      )}
+
+      {/* Row 3: Footer: type + key + priority + points ... avatar */}
       <div className="flex items-center" style={{ gap: 4, minHeight: 20 }}>
         <JiraIssueTypeIcon type={issue.issueType} size={14} />
         <span style={{ fontSize: 11, fontWeight: 500, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", lineHeight: '14px' }}>{issue.issueKey}</span>
@@ -200,6 +193,19 @@ function JiraCard({ issue, avatarUrl, onClick }: { issue: BoardIssue; avatarUrl?
         <span className="flex-1" />
         <Av name={issue.assigneeName} url={avatarUrl} size={22} />
       </div>
+    </>
+  );
+}
+
+function JiraCard({ issue, avatarUrl, onClick }: { issue: BoardIssue; avatarUrl?: string | null; onClick: () => void }) {
+  return (
+    <div
+      style={CARD_REST}
+      onClick={onClick}
+      onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.boxShadow = CARD_HOVER_SHADOW; }}
+      onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.boxShadow = 'none'; }}
+    >
+      <JiraCardContent issue={issue} avatarUrl={avatarUrl} />
     </div>
   );
 }
@@ -219,27 +225,7 @@ function SortableCard({ issue, avatarUrl, onClick }: { issue: BoardIssue; avatar
       role="button"
       aria-label={issue.issueKey}
     >
-      {issue.labels.length > 0 && (
-        <div className="flex flex-wrap gap-[2px] mb-1">
-          {issue.labels.slice(0, 2).map(l => (
-            <span key={l} style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: '#DFE1E6', color: '#42526E', padding: '0 4px', borderRadius: 2, lineHeight: '16px', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'inline-block' }}>{l}</span>
-          ))}
-        </div>
-      )}
-      {issue.sprintName && (
-        <div style={{ fontSize: 10, fontWeight: 600, color: '#5E6C84', lineHeight: '14px', marginBottom: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{issue.sprintName}</div>
-      )}
-      <div style={{ fontSize: 12, lineHeight: '16px', color: '#172B4D', fontWeight: 400, marginBottom: 4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', wordBreak: 'break-word' }}>{issue.summary}</div>
-      <div className="flex items-center" style={{ gap: 4, minHeight: 20 }}>
-        <JiraIssueTypeIcon type={issue.issueType} size={14} />
-        <span style={{ fontSize: 11, fontWeight: 500, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", lineHeight: '14px' }}>{issue.issueKey}</span>
-        <PriorityBars priority={normalisePriority(issue.priority)} />
-        {issue.storyPoints != null && (
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#5E6C84', background: '#EBECF0', borderRadius: 10, padding: '0 5px', lineHeight: '16px' }}>{issue.storyPoints}</span>
-        )}
-        <span className="flex-1" />
-        <Av name={issue.assigneeName} url={avatarUrl} size={22} />
-      </div>
+      <JiraCardContent issue={issue} avatarUrl={avatarUrl} />
     </div>
   );
 }
