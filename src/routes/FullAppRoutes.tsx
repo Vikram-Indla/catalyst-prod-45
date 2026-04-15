@@ -857,6 +857,7 @@ export default function FullAppRoutes() {
           <Route path="planhub/audit" element={<S><PlanHubActivityLog /></S>} />
           <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
           <Route path="slack" element={<S><SlackIntegrationPage /></S>} />
+          <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
           <Route path="task-list" element={<S><TaskListPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
