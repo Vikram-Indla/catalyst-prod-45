@@ -45,6 +45,7 @@ import {
   AvatarStackFilter, EpicFilterDropdown, TypeFilterDropdown, PriorityFilterDropdown,
   QuickFilterDropdown, DensityToggle, GroupByBtn,
 } from '@/components/kanban/KanbanToolbar';
+import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 
 import { Search } from 'lucide-react';
 
@@ -79,6 +80,19 @@ export default function KanbanBoardPage() {
 
   // Persist density
   useEffect(() => { localStorage.setItem(DENSITY_STORAGE_KEY, density); }, [density]);
+
+  // Current user ID for realtime suppression
+  const { data: currentUserData } = useQuery({
+    queryKey: ['current-user-id'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user?.id ?? null;
+    },
+    staleTime: 300_000,
+  });
+
+  // Realtime subscription
+  useKanbanRealtime(key, currentUserData ?? null);
 
   /* ═══ DATA QUERIES ═══ */
 
@@ -495,6 +509,7 @@ export default function KanbanBoardPage() {
                   selectedId={selIssueId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
+                  onChangeStatus={persistStatusChange}
                 />
               ))}
               {groups.length === 0 && (
@@ -524,6 +539,7 @@ export default function KanbanBoardPage() {
                   selectedId={selIssueId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
+                  onChangeStatus={persistStatusChange}
                 />
               ))}
             </div>

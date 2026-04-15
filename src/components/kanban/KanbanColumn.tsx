@@ -36,7 +36,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
 
 /* ═══ DROPPABLE COLUMN ═══ */
 
-export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink }: {
+export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
@@ -48,6 +48,7 @@ export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, o
   selectedId?: string | null;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onChangeStatus?: (issueId: string, newStatus: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
@@ -69,10 +70,14 @@ export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, o
       >
         <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
           {issueIds.length === 0 && (
-            <div className="flex items-center justify-center" style={{
-              minHeight: 40, color: tk.textDisabled, fontSize: 11,
+            <div className="flex flex-col items-center justify-center" style={{
+              minHeight: 80, color: tk.textDisabled, fontSize: 11, gap: 4,
             }}>
-              {isOver ? 'Drop here' : ''}
+              {isOver ? (
+                <span>Drop here</span>
+              ) : (
+                <span style={{ opacity: 0.6 }}>No items</span>
+              )}
             </div>
           )}
           {issueIds.map(id => {
@@ -89,6 +94,8 @@ export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, o
                 isSelected={selectedId === id}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
+                onChangeStatus={onChangeStatus}
+                onOpenDetail={onCardClick}
               />
             );
           })}
