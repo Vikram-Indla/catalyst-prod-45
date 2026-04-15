@@ -294,6 +294,34 @@ export default function KanbanBoardPage() {
     toastSuccess('Link copied');
   }, [key, toastSuccess]);
 
+  /* ═══ ASSIGNEE CHANGE ═══ */
+
+  const assigneeOptions = useMemo(() => {
+    return allAssignees
+      .filter(a => a.name !== 'Unassigned')
+      .map(a => ({
+        name: a.name,
+        avatarUrl: avatarsByName.get(a.name.toLowerCase()) || null,
+        email: null as string | null,
+      }));
+  }, [allAssignees, avatarsByName]);
+
+  const handleChangeAssignee = useCallback(async (issueId: string, newAssignee: string | null) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    const oldAssignee = issue.assigneeName;
+    issue.assigneeName = newAssignee;
+    try {
+      await supabase.from('ph_issues').update({ assignee_display_name: newAssignee } as any).eq('id', issueId);
+      await supabase.from('catalyst_issues').update({ assignee_id: null } as any).eq('issue_key', issue.issueKey);
+      toastSuccess(`Assigned ${issue.issueKey} → ${newAssignee || 'Unassigned'}`);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      issue.assigneeName = oldAssignee;
+      toastError('Failed to update assignee');
+    }
+  }, [issuesById, key, qc, toastSuccess, toastError]);
+
   /* ═══ DND HANDLERS ═══ */
 
   const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
@@ -539,6 +567,8 @@ export default function KanbanBoardPage() {
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
                   onSaveSummary={handleSaveSummary}
+                  onChangeAssignee={handleChangeAssignee}
+                  assigneeOptions={assigneeOptions}
                 />
               ))}
               {groups.length === 0 && (
@@ -571,6 +601,8 @@ export default function KanbanBoardPage() {
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
                   onSaveSummary={handleSaveSummary}
+                  onChangeAssignee={handleChangeAssignee}
+                  assigneeOptions={assigneeOptions}
                 />
               ))}
             </div>

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
+import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import { WorkItemOverflowMenu } from './overflow-menu/WorkItemOverflowMenu';
@@ -54,12 +55,15 @@ interface WorkItemCardProps {
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
+  onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
+  assigneeOptions?: AssigneeOption[];
+  avatarsByName?: Map<string, string>;
 }
 
 export function WorkItemCard({
   issue, avatarUrl, d, tk, isSelected,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
-  onArchive, onDelete, onSaveSummary,
+  onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -272,7 +276,18 @@ export function WorkItemCard({
         {issue.priority && (
           <PriorityBars priority={issue.priority} />
         )}
-        <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
+        {onChangeAssignee && assigneeOptions && avatarsByName ? (
+          <AssigneePickerPopover
+            currentAssignee={issue.assigneeName}
+            options={assigneeOptions}
+            avatarsByName={avatarsByName}
+            tk={tk}
+            avatarSize={d.avatarSize}
+            onSelect={(name) => onChangeAssignee(issue.id, name)}
+          />
+        ) : (
+          <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
+        )}
       </div>
 
       {/* ─── OVERFLOW MENU ─── */}
