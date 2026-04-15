@@ -217,6 +217,23 @@ export function WorkItemOverflowMenu({
           onCancel={() => setShowDelete(false)}
         />
       )}
+      {showMove && (
+        <MoveWorkItemModal
+          issue={issue}
+          currentProjectKey={projectKey}
+          tk={tk}
+          onClose={() => setShowMove(false)}
+          onMoved={(id, newKey) => { onMoved?.(id, newKey); onClose(); }}
+        />
+      )}
+      {showLink && (
+        <LinkWorkItemModal
+          issue={issue}
+          tk={tk}
+          onClose={() => setShowLink(false)}
+          onLinked={() => { onLinked?.(); onClose(); }}
+        />
+      )}
     </>
   );
 }
