@@ -14,7 +14,7 @@ import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -26,6 +26,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   selectedId?: string | null;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onCopyKey?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
