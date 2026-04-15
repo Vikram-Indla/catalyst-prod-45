@@ -20,6 +20,7 @@ interface SortableCardProps {
   isFocused?: boolean;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onCopyKey?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onOpenDetail?: (id: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
