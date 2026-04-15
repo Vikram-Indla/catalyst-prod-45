@@ -13,7 +13,37 @@
  * - Selection state with left accent bar
  * - All issue types (Story, Epic, Bug, Task, Subtask, Feature, Improvement, etc.)
  */
-import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
+
+/* ═══ Board Menu Item (enterprise styling) ═══ */
+function BoardMenuItem({ icon, label, badge, onClick }: {
+  icon: React.ReactNode; label: string; badge?: number; onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-3 w-full"
+      style={{
+        padding: '10px 16px', background: 'transparent', border: 'none',
+        cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 450,
+        textAlign: 'left', fontFamily: "'Inter', sans-serif",
+        transition: 'background 80ms ease',
+      }}
+      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+    >
+      {icon}
+      <span style={{ flex: 1 }}>{label}</span>
+      {badge !== undefined && badge > 0 && (
+        <span style={{
+          fontSize: 11, fontWeight: 700, color: '#FFFFFF',
+          background: '#0052CC', borderRadius: 10, padding: '1px 8px',
+          lineHeight: '18px',
+        }}>{badge}</span>
+      )}
+    </button>
+  );
+}
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
