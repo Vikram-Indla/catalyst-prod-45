@@ -97,6 +97,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
                 onChangeStatus={onChangeStatus}
+                onSaveSummary={onSaveSummary}
               />
             );
           })}
@@ -106,7 +107,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -115,6 +116,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }) {
   const droppableId = `${groupKey}::${colId}`;
   const { setNodeRef, isOver } = useDroppable({ id: droppableId });
