@@ -612,11 +612,13 @@ export default function KanbanBoardPage() {
 
   const allAssignees = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { const n = i.assigneeName || 'Unassigned'; m.set(n, (m.get(n) ?? 0) + 1); }); return Array.from(m.entries()).map(([n, c]) => ({ name: n, count: c })).sort((a, b) => b.count - a.count); }, [rawIssues]);
 
+  const allEpics = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { if (i.parentKey) m.set(i.parentKey, (m.get(i.parentKey) ?? 0) + 1); }); return Array.from(m.entries()).map(([k, c]) => ({ key: k, count: c })).sort((a, b) => b.count - a.count); }, [rawIssues]);
+  const allTypes = useMemo(() => { const m = new Map<string, number>(); rawIssues.forEach(i => { m.set(i.issueType, (m.get(i.issueType) ?? 0) + 1); }); return Array.from(m.entries()).map(([t, c]) => ({ type: t, count: c })); }, [rawIssues]);
+
   const filterCats = useMemo((): FilterCategory[] => {
-    const t = new Map<string, number>(), p = new Map<string, number>(), s = new Map<string, number>();
-    rawIssues.forEach(i => { t.set(i.issueType, (t.get(i.issueType) ?? 0) + 1); p.set(i.priority, (p.get(i.priority) ?? 0) + 1); s.set(i.status, (s.get(i.status) ?? 0) + 1); });
+    const p = new Map<string, number>(), s = new Map<string, number>();
+    rawIssues.forEach(i => { p.set(i.priority, (p.get(i.priority) ?? 0) + 1); s.set(i.status, (s.get(i.status) ?? 0) + 1); });
     return [
-      { id: 'type', label: 'Type', options: Array.from(t.entries()).map(([v, c]) => ({ id: v, value: v, label: v, count: c })) },
       { id: 'priority', label: 'Priority', options: Array.from(p.entries()).map(([v, c]) => ({ id: v, value: v, label: v, count: c })) },
       { id: 'status', label: 'Status', options: Array.from(s.entries()).map(([v, c]) => ({ id: v, value: v, label: v, count: c })) },
     ];
