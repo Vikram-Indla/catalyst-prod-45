@@ -325,6 +325,7 @@ const RoutesComponentsRegistry = lazy(() => import("../pages/admin/RoutesCompone
 const EpicStatuses = lazy(() => import("../pages/admin/EpicStatuses"));
 const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
+const WorkflowAdminPage = lazy(() => import("../pages/admin/workflows/WorkflowAdminPage"));
 const IncidentWorkgroups = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentWorkgroups })));
 const IncidentFieldsConfig = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentFieldsConfig })));
 const IncidentSLAPolicies = lazy(() => import("../pages/admin/incident").then(m => ({ default: m.IncidentSLAPolicies })));
