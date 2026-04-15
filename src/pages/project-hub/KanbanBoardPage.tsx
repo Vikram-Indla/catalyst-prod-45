@@ -832,6 +832,28 @@ export default function KanbanBoardPage() {
                 <MapIcon size={14} color={tk.textSecondary} />
                 Map statuses
               </button>
+              <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
+              <button
+                onClick={() => { setShowBoardMenu(false); setShowAdvancedFilter(true); }}
+                className="flex items-center gap-2 w-full"
+                style={{
+                  padding: '8px 12px', background: 'transparent', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
+                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Filter size={14} color={tk.textSecondary} />
+                Advanced filter
+                {advFilterCount > 0 && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, color: '#fff',
+                    background: '#2563EB', borderRadius: 10, padding: '0px 6px',
+                    lineHeight: '16px', marginLeft: 'auto',
+                  }}>{advFilterCount}</span>
+                )}
+              </button>
             </div>
           )}
           {showViewSettings && (
