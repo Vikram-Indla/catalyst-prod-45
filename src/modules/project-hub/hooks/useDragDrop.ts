@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { moveIssueToColumn, revertIssueMove } from '../api/moveIssue';
@@ -11,7 +11,8 @@ export function useDragDrop(boardId: string, userId: string) {
     targetColumnId: null,
   });
 
-  const originalIndexRef = { current: -1 };
+  // FIX 4: useRef so value persists across renders (plain object resets)
+  const originalIndexRef = useRef(-1);
   const queryClient = useQueryClient();
 
   const onDragStart = useCallback(
@@ -79,7 +80,7 @@ export function useDragDrop(boardId: string, userId: string) {
         ).length;
         if (currentCount >= targetCol.wipLimit) {
           toast.error('Column limit reached', {
-            description: `This column has a WIP limit of ${targetCol.wipLimit}.`,
+            description: `"${targetCol.name}" has a WIP limit of ${targetCol.wipLimit}. Remove an issue first.`,
           });
           setDragState((p) => ({ ...p, draggingId: null, sourceColumnId: null }));
           return { success: false };
