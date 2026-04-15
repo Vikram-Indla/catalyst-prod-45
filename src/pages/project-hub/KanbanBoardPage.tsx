@@ -258,7 +258,22 @@ export default function KanbanBoardPage() {
 
   /* ═══ CARD ACTIONS ═══ */
 
-  const handleToggleFlag = useCallback(async (issueId: string) => {
+  const handleSaveSummary = useCallback(async (issueId: string, newSummary: string) => {
+    const issue = issuesById.get(issueId);
+    if (!issue) return;
+    const oldSummary = issue.summary;
+    issue.summary = newSummary;
+    try {
+      await supabase.from('ph_issues').update({ summary: newSummary } as any).eq('id', issueId);
+      await supabase.from('catalyst_issues').update({ title: newSummary } as any).eq('issue_key', issue.issueKey);
+      qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+    } catch {
+      issue.summary = oldSummary;
+      toast.error('Failed to update summary');
+    }
+  }, [issuesById, key, qc]);
+
+
     const issue = issuesById.get(issueId);
     if (!issue) return;
     const newFlag = !issue.isFlagged;
