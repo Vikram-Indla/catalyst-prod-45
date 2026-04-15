@@ -103,7 +103,7 @@ export interface DensityConfig {
 export const DENSITY_CONFIG: Record<KanbanDensity, DensityConfig> = {
   compact:     { cardPad: '4px 6px', titleSize: 11, titleClamp: 1, metaSize: 9, avatarSize: 20, cardGap: 2, footerHeight: 18, cardMinHeight: 80 },
   dense:       { cardPad: '6px 8px', titleSize: 12, titleClamp: 2, metaSize: 10, avatarSize: 22, cardGap: 4, footerHeight: 20, cardMinHeight: 110 },
-  comfortable: { cardPad: '8px 10px', titleSize: 13, titleClamp: 3, metaSize: 10, avatarSize: 26, cardGap: 12, footerHeight: 22, cardMinHeight: 130 },
+  comfortable: { cardPad: '8px 10px', titleSize: 13, titleClamp: 3, metaSize: 10, avatarSize: 26, cardGap: 6, footerHeight: 22, cardMinHeight: 130 },
 };
 
 /* ═══ COLUMN CONFIG ═══ */

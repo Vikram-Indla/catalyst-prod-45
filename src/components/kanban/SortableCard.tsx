@@ -45,6 +45,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     border: `1px solid ${tk.cardBorder}`,
     borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : `1px solid ${tk.cardBorder}`,
     padding: d.cardPad,
+    marginBottom: 2,
     minHeight: d.cardMinHeight,
     display: 'flex',
     flexDirection: 'column',
