@@ -426,6 +426,7 @@ function AssigneeFilter({ allAssignees, selected, onChange, avatarsByName }: {
 /* ═══ GROUP BY BUTTON (Jira: right side, outlined when active) ═══ */
 
 const GRP_OPTS: { key: GroupByMode; label: string }[] = [
+  { key: 'none', label: 'None' },
   { key: 'assignee', label: 'Assignee' },
   { key: 'epic', label: 'Epic' },
   { key: 'priority', label: 'Priority' },
