@@ -174,9 +174,9 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
       ref={panelRef}
       style={{
         position: 'absolute', top: '100%', right: 0, marginTop: 4,
-        width: 380, background: tk.surfaceBg,
-        border: `1px solid ${tk.border}`, borderRadius: 8,
-        boxShadow: tk.cardDragShadow || '0 8px 24px rgba(0,0,0,0.12)',
+        width: 400, background: '#FFFFFF',
+        border: '1px solid #DDDEE1', borderRadius: 10,
+        boxShadow: '0 12px 36px rgba(9,30,66,0.15), 0 2px 8px rgba(9,30,66,0.08)',
         zIndex: 60, fontFamily: "'Inter', sans-serif",
         maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
       }}
@@ -184,35 +184,40 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
     >
       {/* Header */}
       <div className="flex items-center justify-between" style={{
-        padding: '12px 16px', borderBottom: `1px solid ${tk.border}`,
+        padding: '14px 20px', borderBottom: '1px solid #EBECF0',
+        background: '#FAFBFC',
+        borderTopLeftRadius: 10, borderTopRightRadius: 10,
       }}>
         <div className="flex items-center gap-2">
-          <Filter size={14} color={tk.textSecondary} />
-          <span style={{ fontSize: 13, fontWeight: 600, color: tk.textPrimary }}>
+          <Filter size={15} color="#42526E" />
+          <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D', letterSpacing: '-0.01em' }}>
             Advanced Filters
           </span>
           {activeCount > 0 && (
             <span style={{
-              fontSize: 11, fontWeight: 600, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
-              lineHeight: '18px',
+              fontSize: 11, fontWeight: 700, color: '#fff',
+              background: '#2563EB', borderRadius: 10, padding: '2px 8px',
+              lineHeight: '16px',
             }}>{activeCount}</span>
           )}
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {activeCount > 0 && (
             <button onClick={clearAll} style={{
               fontSize: 12, color: '#DC2626', background: 'none', border: 'none',
-              cursor: 'pointer', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4,
+              cursor: 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
             }}>
-              <Trash2 size={12} /> Clear all
+              <Trash2 size={13} /> Clear all
             </button>
           )}
           <button onClick={onClose} style={{
             width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
             background: 'none', border: 'none', cursor: 'pointer', borderRadius: 4,
-          }}>
-            <X size={14} color={tk.textMuted} />
+          }}
+          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+          >
+            <X size={15} color="#42526E" />
           </button>
         </div>
       </div>
@@ -294,16 +299,16 @@ function MultiSelectFilterSection({
   }, [selected, onChange]);
 
   return (
-    <div style={{ borderBottom: `1px solid ${tk.border}` }}>
+    <div style={{ borderBottom: '1px solid #EBECF0' }}>
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full"
         style={{
-          padding: '10px 16px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 12, fontWeight: 600, color: tk.textPrimary,
-          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.04em',
+          padding: '12px 20px', background: 'transparent', border: 'none',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#172B4D',
+          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <span className="flex items-center gap-2">
@@ -311,64 +316,68 @@ function MultiSelectFilterSection({
           {selected.length > 0 && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '0px 6px',
+              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>{selected.length}</span>
           )}
         </span>
         <ChevronDown
-          size={14} color={tk.textMuted}
+          size={14} color="#5E6C84"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}
         />
       </button>
       {open && (
-        <div style={{ padding: '0 12px 8px' }}>
+        <div style={{ padding: '0 16px 10px' }}>
           {options.length > 5 && (
-            <div className="relative" style={{ marginBottom: 6 }}>
-              <Search size={12} color={tk.textDisabled} className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <div className="relative" style={{ marginBottom: 8 }}>
+              <Search size={13} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder={placeholder}
                 style={{
-                  width: '100%', height: 28, paddingLeft: 24, paddingRight: 6,
-                  border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
-                  fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+                  width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
+                  border: '1px solid #DDDEE1', borderRadius: 4,
+                  fontSize: 13, color: '#172B4D', background: '#FAFBFC',
                   outline: 'none', fontFamily: "'Inter', sans-serif",
                 }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')}
               />
             </div>
           )}
-          <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
             {filtered.map(opt => {
               const isSelected = selected.includes(opt);
               return (
                 <button
                   key={opt}
                   onClick={() => toggle(opt)}
-                  className="flex items-center gap-2 w-full"
+                  className="flex items-center gap-3 w-full"
                   style={{
-                    padding: '5px 8px', background: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
-                    border: 'none', cursor: 'pointer', fontSize: 12,
-                    color: tk.textPrimary, textAlign: 'left', borderRadius: 4,
+                    padding: '7px 8px', background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                    border: 'none', cursor: 'pointer', fontSize: 13.5,
+                    color: '#172B4D', textAlign: 'left', borderRadius: 4,
+                    fontWeight: isSelected ? 600 : 400,
                   }}
-                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{
-                    width: 16, height: 16, borderRadius: 3,
-                    border: isSelected ? 'none' : `1.5px solid ${tk.border}`,
+                    width: 18, height: 18, borderRadius: 3,
+                    border: isSelected ? 'none' : '2px solid #C1C7D0',
                     background: isSelected ? '#2563EB' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
+                    transition: 'all 150ms',
                   }}>
-                    {isSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                    {isSelected && <Check size={12} color="#fff" strokeWidth={3} />}
                   </span>
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
                 </button>
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 4px', fontSize: 12, color: tk.textMuted }}>No results</div>
+              <div style={{ padding: '10px 4px', fontSize: 13, color: '#5E6C84' }}>No results</div>
             )}
           </div>
         </div>
@@ -393,16 +402,16 @@ function DateRangeFilterSection({
   const hasValue = !!after || !!before;
 
   return (
-    <div style={{ borderBottom: `1px solid ${tk.border}` }}>
+    <div style={{ borderBottom: '1px solid #EBECF0' }}>
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full"
         style={{
-          padding: '10px 16px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 12, fontWeight: 600, color: tk.textPrimary,
-          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.04em',
+          padding: '12px 20px', background: 'transparent', border: 'none',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#172B4D',
+          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <span className="flex items-center gap-2">
@@ -410,18 +419,18 @@ function DateRangeFilterSection({
           {hasValue && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '0px 6px',
+              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>1</span>
           )}
         </span>
         <ChevronDown
-          size={14} color={tk.textMuted}
+          size={14} color="#5E6C84"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}
         />
       </button>
       {open && (
-        <div style={{ padding: '0 12px 12px' }}>
+        <div style={{ padding: '0 16px 12px' }}>
           <div className="flex items-center gap-2" style={{ marginBottom: 8 }}>
             <DatePickerBtn
               label="After"
@@ -429,7 +438,7 @@ function DateRangeFilterSection({
               onChange={onChangeAfter}
               tk={tk}
             />
-            <span style={{ fontSize: 11, color: tk.textMuted }}>—</span>
+            <span style={{ fontSize: 12, color: '#5E6C84', fontWeight: 500 }}>—</span>
             <DatePickerBtn
               label="Before"
               value={before}
@@ -441,8 +450,8 @@ function DateRangeFilterSection({
             <button
               onClick={() => { onChangeAfter(null); onChangeBefore(null); }}
               style={{
-                fontSize: 11, color: '#DC2626', background: 'none', border: 'none',
-                cursor: 'pointer', padding: 0,
+                fontSize: 12, color: '#DC2626', background: 'none', border: 'none',
+                cursor: 'pointer', padding: 0, fontWeight: 500,
               }}
             >Clear dates</button>
           )}
