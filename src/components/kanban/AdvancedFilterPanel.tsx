@@ -63,7 +63,7 @@ interface Props {
   filters: AdvancedFilters;
   onChange: (f: AdvancedFilters) => void;
   onClose: () => void;
-  tk: Record<string, string>;
+  tk: KanbanThemeTokens;
 }
 
 export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk }: Props) {
@@ -273,7 +273,7 @@ function MultiSelectFilterSection({
   options: string[];
   selected: string[];
   onChange: (v: string[]) => void;
-  tk: Record<string, string>;
+  tk: KanbanThemeTokens;
   placeholder?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -387,7 +387,7 @@ function DateRangeFilterSection({
   before: string | null;
   onChangeAfter: (v: string | null) => void;
   onChangeBefore: (v: string | null) => void;
-  tk: Record<string, string>;
+  tk: KanbanThemeTokens;
 }) {
   const [open, setOpen] = useState(false);
   const hasValue = !!after || !!before;
@@ -458,7 +458,7 @@ function DatePickerBtn({
   label: string;
   value: string | null;
   onChange: (v: string | null) => void;
-  tk: Record<string, string>;
+  tk: KanbanThemeTokens;
 }) {
   const dateValue = value ? new Date(value) : undefined;
   return (
