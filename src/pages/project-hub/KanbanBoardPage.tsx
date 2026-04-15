@@ -659,7 +659,7 @@ export default function KanbanBoardPage() {
 
             {/* Swimlane rows */}
             {groups.map(g => (
-              <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={false} />
+              <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} />
             ))}
             {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: '#94A3B8', fontSize: 13 }}>No issues match filters</div>}
           </div>
