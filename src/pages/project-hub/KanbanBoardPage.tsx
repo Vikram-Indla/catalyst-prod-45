@@ -35,8 +35,8 @@ import {
 import { arrayMove } from '@dnd-kit/sortable';
 
 // Kanban modules
-import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS, COL_PRIMARY_STATUS, STATUS_TO_COL_ID, COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
-import type { KanbanDensity } from '@/components/kanban/kanban-tokens';
+import { KANBAN_TOKENS, DENSITY_CONFIG, KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, COL_PRIMARY_STATUS as DEFAULT_COL_PRIMARY_STATUS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID, COLUMN_ID_SET as DEFAULT_COLUMN_ID_SET } from '@/components/kanban/kanban-tokens';
+import type { KanbanDensity, KanbanColumnDef } from '@/components/kanban/kanban-tokens';
 import type { BoardIssue, GroupByMode, ColMap } from '@/components/kanban/kanban-types';
 import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
