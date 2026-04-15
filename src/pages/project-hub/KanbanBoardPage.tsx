@@ -69,6 +69,9 @@ interface KanbanColumnDef {
 
 type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
 
+/* Issue types visible on the board — Jira parity: Epics as swimlanes, Stories/Features as cards */
+const BOARD_ISSUE_TYPES = new Set(['Story', 'Epic', 'Feature', 'New Feature']);
+
 interface GroupBucket {
   groupKey: string;
   groupLabel: string;
@@ -483,7 +486,7 @@ export default function KanbanBoardPage() {
   const [search, setSearch] = useState('');
   const [debSearch, setDebSearch] = useState('');
   const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByMode>('none');
+  const [groupBy, setGroupBy] = useState<GroupByMode>('epic');
   const [filterOpen, setFilterOpen] = useState(false);
   const [advFilters, setAdvFilters] = useState<Record<string, string[]>>({});
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
@@ -503,7 +506,7 @@ export default function KanbanBoardPage() {
     queryKey: ['kanban-issues', key],
     queryFn: async () => {
       if (!key) return [];
-      const { data, error } = await supabase.from('ph_issues').select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, fix_versions').eq('project_key', key.toUpperCase()).is('deleted_at', null).order('jira_updated_at', { ascending: false }).limit(1000);
+      const { data, error } = await supabase.from('ph_issues').select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, fix_versions').eq('project_key', key.toUpperCase()).is('deleted_at', null).in('issue_type', ['Story', 'Epic', 'Feature', 'New Feature']).order('jira_updated_at', { ascending: false }).limit(1000);
       if (error) throw error;
       return (data ?? []).map((r): BoardIssue => {
         let fv: string | null = null;
@@ -601,7 +604,7 @@ export default function KanbanBoardPage() {
       <div className="flex items-center px-6" style={{ height: 56, background: '#FFFFFF', borderBottom: '1px solid #EBECF0', flexShrink: 0 }}>
         <div>
           <h1 style={{ fontSize: 18, fontWeight: 600, color: '#172B4D', lineHeight: '24px', margin: 0, fontFamily: "'Sora', sans-serif" }}>Board</h1>
-          <p style={{ fontSize: 12, color: '#6B778C', lineHeight: '16px', margin: 0, fontFamily: "'Inter', sans-serif" }}>Visualize and track work items across workflow stages</p>
+          <p style={{ fontSize: 12, color: '#6B778C', lineHeight: '16px', margin: 0, fontFamily: "'Inter', sans-serif" }}>Stories, Features &amp; Epics — grouped by Epic hierarchy</p>
         </div>
       </div>
       {/* ── Board chrome toolbar ── */}
@@ -656,7 +659,7 @@ export default function KanbanBoardPage() {
 
             {/* Swimlane rows */}
             {groups.map(g => (
-              <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={false} />
+              <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} />
             ))}
             {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: '#94A3B8', fontSize: 13 }}>No issues match filters</div>}
           </div>
