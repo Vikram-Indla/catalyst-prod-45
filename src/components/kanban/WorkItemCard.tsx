@@ -16,6 +16,7 @@ import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopo
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import { WorkItemOverflowMenu } from './overflow-menu/WorkItemOverflowMenu';
+import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
 /* ═══ PRIORITY ICON (= bars, Jira style) ═══ */
 
@@ -63,13 +64,14 @@ interface WorkItemCardProps {
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
   assigneeOptions?: AssigneeOption[];
   avatarsByName?: Map<string, string>;
+  visibleFields?: VisibleFields;
 }
 
 export function WorkItemCard({
   issue, avatarUrl, d, tk, isSelected,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
   onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
-  projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked,
+  projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked, visibleFields,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
