@@ -228,6 +228,7 @@ export default function KanbanBoardPage() {
     };
   }, [dynamicBoardData]);
 
+  const { data: rawIssues = [], isLoading } = useQuery({
     queryKey: ['kanban-issues', key],
     queryFn: async () => {
       if (!key) return [];
