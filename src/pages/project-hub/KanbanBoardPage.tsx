@@ -2,6 +2,7 @@
  * KanbanBoardPage — Jira-style Kanban board for ProjectHub
  * Data: ph_issues (local DB), structure: Jira board layout
  * DnD: @dnd-kit/core + @dnd-kit/sortable — cross-column + reorder
+ * Group By: None / Assignee / Epic / Priority / Fix Version
  */
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
@@ -53,16 +54,25 @@ interface BoardIssue {
   sprintName: string | null;
   storyPoints: number | null;
   parentKey: string | null;
+  fixVersion: string | null;
 }
 
 interface KanbanColumnDef {
-  id: string;       // stable droppable id
+  id: string;
   name: string;
   statuses: string[];
 }
 
+type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
+
+interface GroupBucket {
+  groupKey: string;
+  groupLabel: string;
+  issueIds: string[];
+}
+
 /* ═══════════════════════════════════════════════
-   COLUMN CONFIG — derived from Jira board statuses
+   COLUMN CONFIG
    ═══════════════════════════════════════════════ */
 
 const KANBAN_COLUMNS: KanbanColumnDef[] = [
@@ -74,16 +84,103 @@ const KANBAN_COLUMNS: KanbanColumnDef[] = [
   { id: 'col-done', name: 'DONE', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
 ];
 
-// Build reverse map: column id → primary status (first status in list, used when moving)
 const COL_PRIMARY_STATUS: Record<string, string> = {};
 const STATUS_TO_COL_ID: Map<string, string> = new Map();
 KANBAN_COLUMNS.forEach(col => {
   COL_PRIMARY_STATUS[col.id] = col.statuses[0];
   col.statuses.forEach(s => STATUS_TO_COL_ID.set(s.toLowerCase(), col.id));
 });
-
-// All column ids for quick lookup
 const COLUMN_ID_SET = new Set(KANBAN_COLUMNS.map(c => c.id));
+
+/* ═══════════════════════════════════════════════
+   GROUP BY LOGIC
+   ═══════════════════════════════════════════════ */
+
+const PRIORITY_ORDER = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
+
+function groupIssuesInColumn(
+  issueIds: string[],
+  issuesById: Map<string, BoardIssue>,
+  mode: GroupByMode,
+): GroupBucket[] {
+  if (mode === 'none') {
+    return [{ groupKey: '__all__', groupLabel: '', issueIds }];
+  }
+
+  const buckets = new Map<string, { label: string; ids: string[] }>();
+
+  for (const id of issueIds) {
+    const issue = issuesById.get(id);
+    if (!issue) continue;
+
+    let key: string;
+    let label: string;
+
+    switch (mode) {
+      case 'assignee':
+        key = issue.assigneeName || 'UNASSIGNED';
+        label = issue.assigneeName || 'Unassigned';
+        break;
+      case 'epic':
+        key = issue.parentKey || 'NO_EPIC';
+        label = issue.parentKey || 'No epic';
+        break;
+      case 'priority':
+        key = issue.priority || 'NO_PRIORITY';
+        label = issue.priority || 'No priority';
+        break;
+      case 'fixVersion':
+        key = issue.fixVersion || 'NO_FIX_VERSION';
+        label = issue.fixVersion || 'No fix version';
+        break;
+      default:
+        key = '__all__';
+        label = '';
+    }
+
+    if (!buckets.has(key)) {
+      buckets.set(key, { label, ids: [] });
+    }
+    buckets.get(key)!.ids.push(id);
+  }
+
+  // Sort buckets
+  const entries = Array.from(buckets.entries());
+
+  if (mode === 'priority') {
+    entries.sort((a, b) => {
+      const ai = PRIORITY_ORDER.indexOf(a[1].label);
+      const bi = PRIORITY_ORDER.indexOf(b[1].label);
+      const aidx = ai >= 0 ? ai : 999;
+      const bidx = bi >= 0 ? bi : 999;
+      return aidx - bidx;
+    });
+  } else if (mode === 'assignee') {
+    entries.sort((a, b) => {
+      if (a[0] === 'UNASSIGNED') return -1;
+      if (b[0] === 'UNASSIGNED') return 1;
+      return a[1].label.localeCompare(b[1].label);
+    });
+  } else if (mode === 'epic') {
+    entries.sort((a, b) => {
+      if (a[0] === 'NO_EPIC') return -1;
+      if (b[0] === 'NO_EPIC') return 1;
+      return a[1].label.localeCompare(b[1].label);
+    });
+  } else if (mode === 'fixVersion') {
+    entries.sort((a, b) => {
+      if (a[0] === 'NO_FIX_VERSION') return -1;
+      if (b[0] === 'NO_FIX_VERSION') return 1;
+      return a[1].label.localeCompare(b[1].label);
+    });
+  }
+
+  return entries.map(([key, val]) => ({
+    groupKey: key,
+    groupLabel: val.label,
+    issueIds: val.ids,
+  }));
+}
 
 /* ═══════════════════════════════════════════════
    ASSIGNEE AVATAR
@@ -125,7 +222,7 @@ function AssigneeAvatar({ name, avatarUrl, size = 24 }: { name?: string | null; 
 }
 
 /* ═══════════════════════════════════════════════
-   SORTABLE ISSUE CARD
+   SORTABLE ISSUE CARD — Jira reference parity
    ═══════════════════════════════════════════════ */
 
 function SortableIssueCard({
@@ -152,7 +249,7 @@ function SortableIssueCard({
     opacity: isDragging ? 0.5 : 1,
     background: '#FFFFFF',
     borderRadius: 3,
-    padding: 8,
+    padding: '8px 10px',
     boxShadow: isDragging
       ? '0 8px 24px rgba(9,30,66,.25)'
       : '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)',
@@ -166,22 +263,24 @@ function SortableIssueCard({
       style={style}
       {...attributes}
       {...listeners}
-      onClick={(e) => {
-        // Only fire click if not dragging
-        if (!isDragging) onCardClick(issue.id);
-      }}
+      onClick={(e) => { if (!isDragging) onCardClick(issue.id); }}
       tabIndex={0}
       role="button"
       aria-label={`Drag ${issue.issueKey}`}
     >
-      {/* Labels */}
+      {/* Labels row */}
       {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-[3px] mb-[5px]">
           {issue.labels.slice(0, 3).map((label) => (
             <span
               key={label}
               className="uppercase"
-              style={{ height: 16, padding: '0 6px', borderRadius: 2, fontSize: 10, fontWeight: 700, background: '#DFE1E6', color: '#42526E', lineHeight: '16px', display: 'inline-block', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+              style={{
+                height: 16, padding: '0 6px', borderRadius: 2, fontSize: 10, fontWeight: 700,
+                background: '#DFE1E6', color: '#42526E', lineHeight: '16px',
+                display: 'inline-block', maxWidth: 140, overflow: 'hidden',
+                textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              }}
             >
               {label}
             </span>
@@ -189,21 +288,36 @@ function SortableIssueCard({
         </div>
       )}
 
-      {/* Summary */}
-      <p
-        className="mb-[6px]"
-        style={{ fontSize: 13, lineHeight: 1.43, color: '#172B4D', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-      >
+      {/* Sprint name */}
+      {issue.sprintName && (
+        <div style={{
+          fontSize: 10, fontWeight: 600, color: '#5E6C84', marginBottom: 4,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {issue.sprintName}
+        </div>
+      )}
+
+      {/* Summary — 2 line clamp */}
+      <p style={{
+        fontSize: 13, lineHeight: 1.43, color: '#172B4D', marginBottom: 6,
+        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+      }}>
         {issue.summary}
       </p>
 
-      {/* Footer row */}
+      {/* Footer: type icon + key + priority + points + spacer + avatar */}
       <div className="flex items-center gap-[5px]">
         <JiraIssueTypeIcon type={issue.issueType} size={16} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#42526E', fontFamily: "'JetBrains Mono', monospace" }}>{issue.issueKey}</span>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#42526E', fontFamily: "'JetBrains Mono', monospace" }}>
+          {issue.issueKey}
+        </span>
         <PriorityBars priority={normalisePriority(issue.priority)} />
         {issue.storyPoints != null && (
-          <span style={{ fontSize: 10, fontWeight: 700, color: '#5E6C84', background: '#EBECF0', borderRadius: 10, padding: '0 6px', lineHeight: '18px', marginLeft: 2 }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: '#5E6C84', background: '#EBECF0',
+            borderRadius: 10, padding: '0 6px', lineHeight: '18px', marginLeft: 2,
+          }}>
             {issue.storyPoints}
           </span>
         )}
@@ -215,23 +329,20 @@ function SortableIssueCard({
 }
 
 /* ═══════════════════════════════════════════════
-   OVERLAY CARD (static, no sortable hooks)
+   OVERLAY CARD (drag preview)
    ═══════════════════════════════════════════════ */
 
 function OverlayCard({ issue, avatarUrl }: { issue: BoardIssue; avatarUrl?: string | null }) {
   return (
-    <div
-      style={{
-        width: 230,
-        background: '#FFFFFF',
-        borderRadius: 3,
-        padding: 8,
-        boxShadow: '0 8px 24px rgba(9,30,66,.25)',
-        cursor: 'grabbing',
-        transform: 'rotate(2deg)',
-      }}
-    >
-      <p style={{ fontSize: 13, lineHeight: 1.43, color: '#172B4D', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', marginBottom: 6 }}>
+    <div style={{
+      width: 230, background: '#FFFFFF', borderRadius: 3, padding: 8,
+      boxShadow: '0 8px 24px rgba(9,30,66,.25)', cursor: 'grabbing', transform: 'rotate(2deg)',
+    }}>
+      <p style={{
+        fontSize: 13, lineHeight: 1.43, color: '#172B4D',
+        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+        overflow: 'hidden', marginBottom: 6,
+      }}>
         {issue.summary}
       </p>
       <div className="flex items-center gap-[5px]">
@@ -245,7 +356,29 @@ function OverlayCard({ issue, avatarUrl }: { issue: BoardIssue; avatarUrl?: stri
 }
 
 /* ═══════════════════════════════════════════════
-   DROPPABLE COLUMN
+   GROUP SECTION HEADER
+   ═══════════════════════════════════════════════ */
+
+function GroupSectionHeader({ label, count, mode }: { label: string; count: number; mode: GroupByMode }) {
+  const prefix = mode === 'assignee' ? '' : mode === 'epic' ? 'Epic: ' : mode === 'priority' ? '' : mode === 'fixVersion' ? 'Version: ' : '';
+  return (
+    <div className="flex items-center gap-1.5 py-1.5 px-1" style={{ borderBottom: '1px solid #EBECF0' }}>
+      <span style={{ fontSize: 11, fontWeight: 700, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+        {prefix}{label}
+      </span>
+      <span style={{
+        fontSize: 10, fontWeight: 600, color: '#5E6C84',
+        background: 'rgba(9,30,66,.06)', borderRadius: 10,
+        padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center',
+      }}>
+        {count}
+      </span>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   DROPPABLE COLUMN (with Group By support)
    ═══════════════════════════════════════════════ */
 
 function DroppableColumn({
@@ -254,14 +387,20 @@ function DroppableColumn({
   issuesById,
   avatarsByName,
   onCardClick,
+  groupBy,
 }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
   avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void;
+  groupBy: GroupByMode;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
+  const groups = useMemo(() => groupIssuesInColumn(issueIds, issuesById, groupBy), [issueIds, issuesById, groupBy]);
+
+  // Flatten all issue ids for SortableContext (must match rendered order)
+  const flatIds = useMemo(() => groups.flatMap(g => g.issueIds), [groups]);
 
   return (
     <div className="flex flex-col flex-shrink-0" style={{ width: 240, minWidth: 240 }}>
@@ -273,14 +412,16 @@ function DroppableColumn({
         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>
           {column.name}
         </span>
-        <span
-          style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.06)', borderRadius: 10, padding: '0 6px', lineHeight: '18px', minWidth: 18, textAlign: 'center' }}
-        >
+        <span style={{
+          fontSize: 11, fontWeight: 600, color: '#5E6C84',
+          background: 'rgba(9,30,66,.06)', borderRadius: 10,
+          padding: '0 6px', lineHeight: '18px', minWidth: 18, textAlign: 'center',
+        }}>
           {issueIds.length}
         </span>
       </div>
 
-      {/* Droppable area + sortable cards */}
+      {/* Droppable area */}
       <div
         ref={setNodeRef}
         className="flex flex-col gap-[6px] px-[5px] py-[6px] overflow-y-auto transition-colors duration-150"
@@ -291,39 +432,44 @@ function DroppableColumn({
           borderRadius: 4,
         }}
       >
-        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
+        <SortableContext items={flatIds} strategy={verticalListSortingStrategy}>
           {issueIds.length === 0 ? (
             <div
               className="flex items-center justify-center"
               style={{
-                minHeight: 80,
-                color: '#94A3B8',
-                fontSize: 12,
+                minHeight: 80, color: '#94A3B8', fontSize: 12,
                 border: isOver ? '1.5px dashed #2563EB' : '1.5px dashed #E2E8F0',
-                borderRadius: 4,
-                transition: 'all 150ms',
+                borderRadius: 4, transition: 'all 150ms',
               }}
             >
               {isOver ? 'Drop here' : 'No issues'}
             </div>
           ) : (
-            issueIds.map((id) => {
-              const issue = issuesById.get(id);
-              if (!issue) return null;
-              const avatarUrl = issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null;
-              return (
-                <SortableIssueCard
-                  key={id}
-                  issue={issue}
-                  avatarUrl={avatarUrl}
-                  onCardClick={onCardClick}
-                />
-              );
-            })
+            groups.map((group) => (
+              <div key={group.groupKey}>
+                {groupBy !== 'none' && (
+                  <GroupSectionHeader label={group.groupLabel} count={group.issueIds.length} mode={groupBy} />
+                )}
+                <div className="flex flex-col gap-[6px]" style={{ marginTop: groupBy !== 'none' ? 4 : 0 }}>
+                  {group.issueIds.map((id) => {
+                    const issue = issuesById.get(id);
+                    if (!issue) return null;
+                    const avatarUrl = issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null;
+                    return (
+                      <SortableIssueCard
+                        key={id}
+                        issue={issue}
+                        avatarUrl={avatarUrl}
+                        onCardClick={onCardClick}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ))
           )}
         </SortableContext>
 
-        {/* Drop indicator when cards exist */}
         {issueIds.length > 0 && isOver && (
           <div style={{ height: 2, background: '#2563EB', borderRadius: 1, boxShadow: '0 0 4px rgba(37,99,235,0.5)' }} />
         )}
@@ -360,10 +506,7 @@ function AssigneeFilterPopover({
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const filtered = allAssignees.filter(a =>
-    a.name.toLowerCase().includes(search.toLowerCase())
-  );
-
+  const filtered = allAssignees.filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
   const isActive = selected.size > 0;
 
   return (
@@ -377,8 +520,7 @@ function AssigneeFilterPopover({
           background: isActive ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
           color: isActive ? '#2563EB' : '#0F172A',
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
-          transition: 'all 150ms',
+          fontFamily: "'Inter', sans-serif", transition: 'all 150ms',
         }}
       >
         <User size={14} />
@@ -397,8 +539,7 @@ function AssigneeFilterPopover({
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100,
           width: 280, background: '#FFFFFF',
           border: '1px solid #E2E8F0', borderRadius: 8,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-          overflow: 'hidden',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)', overflow: 'hidden',
         }}>
           <div style={{ padding: '8px 12px', borderBottom: '1px solid #F1F5F9' }}>
             <div style={{ position: 'relative' }}>
@@ -437,11 +578,10 @@ function AssigneeFilterPopover({
                     width: '100%', padding: '6px 12px', border: 'none',
                     background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
                     cursor: 'pointer', fontSize: 13, color: '#0F172A',
-                    fontFamily: "'Inter', sans-serif",
-                    transition: 'background 100ms',
+                    fontFamily: "'Inter', sans-serif", transition: 'background 100ms',
                   }}
                   onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
-                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
                 >
                   <div style={{ width: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {isSelected && <Check size={14} color="#2563EB" />}
@@ -476,17 +616,15 @@ function AssigneeFilterPopover({
    GROUP BY POPOVER
    ═══════════════════════════════════════════════ */
 
-type GroupByKey = 'none' | 'status' | 'assignee' | 'priority' | 'type';
-const GROUP_OPTIONS: { key: GroupByKey; label: string }[] = [
-  { key: 'status', label: 'Status' },
+const GROUP_OPTIONS: { key: GroupByMode; label: string }[] = [
   { key: 'assignee', label: 'Assignee' },
+  { key: 'epic', label: 'Epic' },
   { key: 'priority', label: 'Priority' },
-  { key: 'type', label: 'Issue Type' },
+  { key: 'fixVersion', label: 'Fix Version' },
 ];
 
-function GroupByPopover({ value, onChange }: { value: GroupByKey; onChange: (v: GroupByKey) => void }) {
+function GroupByPopover({ value, onChange }: { value: GroupByMode; onChange: (v: GroupByMode) => void }) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -498,11 +636,8 @@ function GroupByPopover({ value, onChange }: { value: GroupByKey; onChange: (v: 
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  const filtered = GROUP_OPTIONS.filter(o =>
-    o.label.toLowerCase().includes(search.toLowerCase())
-  );
-
   const isActive = value !== 'none';
+  const activeLabel = GROUP_OPTIONS.find(o => o.key === value)?.label;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
@@ -515,79 +650,58 @@ function GroupByPopover({ value, onChange }: { value: GroupByKey; onChange: (v: 
           background: isActive ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
           color: isActive ? '#2563EB' : '#0F172A',
           fontSize: 13, fontWeight: 500, cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
-          transition: 'all 150ms',
+          fontFamily: "'Inter', sans-serif", transition: 'all 150ms',
         }}
       >
         <Layers size={14} />
-        Group
-        {isActive && (
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            minWidth: 18, height: 18, borderRadius: 9,
-            background: '#2563EB', color: '#FFFFFF', fontSize: 10, fontWeight: 700,
-          }}>1</span>
-        )}
+        {isActive ? `Group: ${activeLabel}` : 'Group'}
+        <ChevronDown size={14} />
       </button>
 
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100,
-          width: 280, background: '#FFFFFF',
+          width: 220, background: '#FFFFFF',
           border: '1px solid #E2E8F0', borderRadius: 8,
-          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
-          overflow: 'hidden',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)', overflow: 'hidden',
         }}>
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F1F5F9' }}>
-            <div style={{ position: 'relative' }}>
-              <Search size={14} style={{ position: 'absolute', left: 8, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-              <input
-                type="text"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Search grouping options"
-                autoFocus
+          <div style={{ padding: '6px 8px 4px', fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Group by
+          </div>
+          {GROUP_OPTIONS.map(opt => {
+            const isSelected = value === opt.key;
+            return (
+              <button
+                key={opt.key}
+                onClick={() => { onChange(isSelected ? 'none' : opt.key); setOpen(false); }}
                 style={{
-                  width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
-                  border: '1.5px solid #E2E8F0', borderRadius: 6,
-                  fontSize: 13, color: '#0F172A', background: '#FFFFFF',
-                  outline: 'none', fontFamily: "'Inter', sans-serif",
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  width: '100%', padding: '7px 12px', border: 'none',
+                  background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                  cursor: 'pointer', fontSize: 13, color: isSelected ? '#2563EB' : '#0F172A',
+                  fontWeight: isSelected ? 600 : 400,
+                  fontFamily: "'Inter', sans-serif", transition: 'background 100ms',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
-                onBlur={e => (e.currentTarget.style.borderColor = '#E2E8F0')}
-              />
+                onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
+              >
+                <div style={{ width: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {isSelected && <Check size={14} color="#2563EB" />}
+                </div>
+                {opt.label}
+              </button>
+            );
+          })}
+          {isActive && (
+            <div style={{ padding: '6px 12px', borderTop: '1px solid #F1F5F9' }}>
+              <button
+                onClick={() => { onChange('none'); setOpen(false); }}
+                style={{ fontSize: 12, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}
+              >
+                Clear grouping
+              </button>
             </div>
-          </div>
-          <div style={{ padding: '4px 0', maxHeight: 240, overflowY: 'auto' }}>
-            <div style={{ padding: '4px 12px 2px', fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              All fields
-            </div>
-            {filtered.map(opt => {
-              const isSelected = value === opt.key;
-              return (
-                <button
-                  key={opt.key}
-                  onClick={() => { onChange(isSelected ? 'none' : opt.key); setOpen(false); }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    width: '100%', padding: '7px 12px', border: 'none',
-                    background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
-                    cursor: 'pointer', fontSize: 13, color: isSelected ? '#2563EB' : '#0F172A',
-                    fontWeight: isSelected ? 600 : 400,
-                    fontFamily: "'Inter', sans-serif",
-                    transition: 'background 100ms',
-                  }}
-                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F8FAFC'; }}
-                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? 'rgba(37,99,235,0.06)' : 'transparent'; }}
-                >
-                  <div style={{ width: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {isSelected && <Check size={14} color="#2563EB" />}
-                  </div>
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
+          )}
         </div>
       )}
     </div>
@@ -619,7 +733,7 @@ function BoardSkeleton() {
    DND HELPERS
    ═══════════════════════════════════════════════ */
 
-type ColumnIssueMap = Record<string, string[]>; // colId → issueId[]
+type ColumnIssueMap = Record<string, string[]>;
 
 function findColumnByCardId(columns: ColumnIssueMap, cardId: string): string | null {
   for (const colId of Object.keys(columns)) {
@@ -642,13 +756,12 @@ export default function KanbanBoardPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedAssignees, setSelectedAssignees] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByKey>('none');
+  const [groupBy, setGroupBy] = useState<GroupByMode>('none');
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // DnD state
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
   const [columnIssueMap, setColumnIssueMap] = useState<ColumnIssueMap>({});
 
@@ -656,7 +769,6 @@ export default function KanbanBoardPage() {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
   );
 
-  // Resolve projectId from key
   const { data: projectMeta } = useQuery({
     queryKey: ['ph-project-meta', key],
     queryFn: async () => {
@@ -672,52 +784,57 @@ export default function KanbanBoardPage() {
     staleTime: 60_000,
   });
 
-  // Fetch issues
   const { data: rawIssues = [], isLoading } = useQuery({
     queryKey: ['kanban-issues', key],
     queryFn: async () => {
       if (!key) return [];
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key')
+        .select('id, issue_key, summary, status, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, fix_versions')
         .eq('project_key', key.toUpperCase())
         .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false })
         .limit(1000);
       if (error) throw error;
-      return (data ?? []).map((r): BoardIssue => ({
-        id: r.id,
-        issueKey: r.issue_key,
-        summary: r.summary ?? '',
-        issueType: r.issue_type ?? 'Task',
-        priority: r.priority ?? 'Medium',
-        status: r.status ?? 'Backlog',
-        assigneeName: r.assignee_display_name,
-        labels: Array.isArray(r.labels) ? (r.labels as string[]) : [],
-        sprintName: r.sprint_name,
-        storyPoints: r.story_points ? Number(r.story_points) : null,
-        parentKey: r.parent_key,
-      }));
+      return (data ?? []).map((r): BoardIssue => {
+        // Extract first fix version name from JSON
+        let fixVersion: string | null = null;
+        if (r.fix_versions && Array.isArray(r.fix_versions) && (r.fix_versions as any[]).length > 0) {
+          const fv = (r.fix_versions as any[])[0];
+          fixVersion = typeof fv === 'string' ? fv : fv?.name ?? null;
+        }
+        return {
+          id: r.id,
+          issueKey: r.issue_key,
+          summary: r.summary ?? '',
+          issueType: r.issue_type ?? 'Task',
+          priority: r.priority ?? 'Medium',
+          status: r.status ?? 'Backlog',
+          assigneeName: r.assignee_display_name,
+          labels: Array.isArray(r.labels) ? (r.labels as string[]) : [],
+          sprintName: r.sprint_name,
+          storyPoints: r.story_points ? Number(r.story_points) : null,
+          parentKey: r.parent_key,
+          fixVersion,
+        };
+      });
     },
     enabled: !!key,
     staleTime: 30_000,
   });
 
-  // Build issuesById map
   const issuesById = useMemo(() => {
     const map = new Map<string, BoardIssue>();
     rawIssues.forEach(i => map.set(i.id, i));
     return map;
   }, [rawIssues]);
 
-  // Debounce search
   useEffect(() => {
     clearTimeout(searchTimerRef.current);
     searchTimerRef.current = setTimeout(() => setDebouncedSearch(search), 250);
     return () => clearTimeout(searchTimerRef.current);
   }, [search]);
 
-  // Build unique assignee list
   const allAssignees = useMemo(() => {
     const map = new Map<string, number>();
     rawIssues.forEach(i => {
@@ -729,7 +846,6 @@ export default function KanbanBoardPage() {
       .sort((a, b) => b.count - a.count);
   }, [rawIssues]);
 
-  // Build filter categories
   const filterCategories = useMemo((): FilterCategory[] => {
     const types = new Map<string, number>();
     const priorities = new Map<string, number>();
@@ -748,57 +864,36 @@ export default function KanbanBoardPage() {
 
   const advancedFilterCount = Object.values(advancedFilters).reduce((acc, v) => acc + v.length, 0);
 
-  // Filter issues and bucket into columns — rebuild columnIssueMap when data/filters change
   const filteredIssues = useMemo(() => {
     let issues = rawIssues;
-
-    // Search
     if (debouncedSearch.trim()) {
       const q = debouncedSearch.trim().toLowerCase();
-      issues = issues.filter(
-        (i) =>
-          i.summary.toLowerCase().includes(q) ||
-          i.issueKey.toLowerCase().includes(q) ||
-          (i.assigneeName ?? '').toLowerCase().includes(q)
+      issues = issues.filter(i =>
+        i.summary.toLowerCase().includes(q) ||
+        i.issueKey.toLowerCase().includes(q) ||
+        (i.assigneeName ?? '').toLowerCase().includes(q)
       );
     }
-
-    // Assignee filter
     if (selectedAssignees.size > 0) {
       issues = issues.filter(i => {
         const name = i.assigneeName || 'Unassigned';
         return selectedAssignees.has(name);
       });
     }
-
-    // Advanced filters
-    if (advancedFilters.type?.length) {
-      issues = issues.filter(i => advancedFilters.type.includes(i.issueType));
-    }
-    if (advancedFilters.priority?.length) {
-      issues = issues.filter(i => advancedFilters.priority.includes(i.priority));
-    }
-    if (advancedFilters.status?.length) {
-      issues = issues.filter(i => advancedFilters.status.includes(i.status));
-    }
-
+    if (advancedFilters.type?.length) issues = issues.filter(i => advancedFilters.type.includes(i.issueType));
+    if (advancedFilters.priority?.length) issues = issues.filter(i => advancedFilters.priority.includes(i.priority));
+    if (advancedFilters.status?.length) issues = issues.filter(i => advancedFilters.status.includes(i.status));
     return issues;
   }, [rawIssues, debouncedSearch, selectedAssignees, advancedFilters]);
 
-  // Rebuild column map from filtered issues (only when not dragging)
   useEffect(() => {
-    if (activeCardId) return; // don't reset during drag
-
+    if (activeCardId) return;
     const map: ColumnIssueMap = {};
     KANBAN_COLUMNS.forEach(col => { map[col.id] = []; });
-
     filteredIssues.forEach(issue => {
       const colId = STATUS_TO_COL_ID.get(issue.status.toLowerCase());
-      if (colId && map[colId]) {
-        map[colId].push(issue.id);
-      }
+      if (colId && map[colId]) map[colId].push(issue.id);
     });
-
     setColumnIssueMap(map);
   }, [filteredIssues, activeCardId]);
 
@@ -808,15 +903,9 @@ export default function KanbanBoardPage() {
     setAdvancedFilters(prev => ({ ...prev, [cat]: values }));
   }, []);
 
-  const handleClearAllFilters = useCallback(() => {
-    setAdvancedFilters({});
-  }, []);
+  const handleClearAllFilters = useCallback(() => { setAdvancedFilters({}); }, []);
 
-  /* ── DnD handlers ── */
-
-  const handleDragStart = useCallback((e: DragStartEvent) => {
-    setActiveCardId(String(e.active.id));
-  }, []);
+  const handleDragStart = useCallback((e: DragStartEvent) => { setActiveCardId(String(e.active.id)); }, []);
 
   const handleDragOver = useCallback((e: DragOverEvent) => {
     const activeId = String(e.active.id);
@@ -826,22 +915,16 @@ export default function KanbanBoardPage() {
     setColumnIssueMap(prev => {
       const fromColId = findColumnByCardId(prev, activeId);
       if (!fromColId) return prev;
-
-      // Determine target column
       const overIsColumn = COLUMN_ID_SET.has(overId);
       const toColId = overIsColumn ? overId : findColumnByCardId(prev, overId);
       if (!toColId || fromColId === toColId) return prev;
 
       const fromIds = [...prev[fromColId]];
       const toIds = [...prev[toColId]];
-
       const activeIdx = fromIds.indexOf(activeId);
       if (activeIdx < 0) return prev;
-
-      // Remove from source
       fromIds.splice(activeIdx, 1);
 
-      // Insert into target — if over a card, insert at that position; otherwise top
       if (!overIsColumn) {
         const overIdx = toIds.indexOf(overId);
         toIds.splice(overIdx >= 0 ? overIdx : 0, 0, activeId);
@@ -856,54 +939,35 @@ export default function KanbanBoardPage() {
   const handleDragEnd = useCallback((e: DragEndEvent) => {
     const activeId = String(e.active.id);
     const overId = e.over?.id ? String(e.over.id) : null;
-
     setActiveCardId(null);
-
     if (!overId) return;
 
-    // Handle reorder within same column
     setColumnIssueMap(prev => {
       const colId = findColumnByCardId(prev, activeId);
       if (!colId) return prev;
-
-      // If dropped over a column (not a card), no reorder needed
       if (COLUMN_ID_SET.has(overId)) return prev;
-
       const ids = prev[colId];
       const oldIdx = ids.indexOf(activeId);
       const newIdx = ids.indexOf(overId);
-
       if (oldIdx < 0 || newIdx < 0 || oldIdx === newIdx) return prev;
-
       return { ...prev, [colId]: arrayMove(ids, oldIdx, newIdx) };
     });
 
-    // Persist status change to DB
+    // Persist status change
     setColumnIssueMap(prev => {
       const colId = findColumnByCardId(prev, activeId);
       if (!colId) return prev;
-
       const issue = issuesById.get(activeId);
       const newStatus = COL_PRIMARY_STATUS[colId];
       if (!issue || !newStatus) return prev;
-
-      // Only update if status actually changed
       if (issue.status !== newStatus) {
-        // Optimistic update local issue
         issue.status = newStatus;
-
-        // Persist to DB (fire and forget, silent auto-save)
         Promise.resolve(
-          supabase
-            .from('ph_issues')
-            .update({ status: newStatus })
-            .eq('id', activeId)
+          supabase.from('ph_issues').update({ status: newStatus }).eq('id', activeId)
         ).then(() => {
-          // Invalidate after persist
           queryClient.invalidateQueries({ queryKey: ['kanban-issues', key] });
         });
       }
-
       return prev;
     });
   }, [issuesById, key, queryClient]);
@@ -925,13 +989,13 @@ export default function KanbanBoardPage() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden" style={{ background: '#F4F5F7' }}>
-      {/* ── Header — matches StoryBacklog pattern ── */}
+      {/* Header */}
       <div className="px-6 pt-5 pb-3 border-b" style={{ borderColor: tk.border, background: tk.pageBg }}>
         <h1 className="text-xl font-semibold" style={{ color: tk.t1, fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>Board</h1>
         <p className="text-sm mt-0.5" style={{ color: tk.t2 }}>Visualize and track work items across workflow stages</p>
       </div>
 
-      {/* ── Toolbar ── */}
+      {/* Toolbar */}
       <div className="flex items-center gap-3 px-6 py-2.5" style={{ background: tk.pageBg, borderBottom: `1px solid ${tk.border}` }}>
         <div className="relative" style={{ width: 220 }}>
           <Search size={14} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -981,7 +1045,7 @@ export default function KanbanBoardPage() {
         </span>
       </div>
 
-      {/* ── Board with DnD ── */}
+      {/* Board with DnD */}
       <div className="flex-1 min-h-0 overflow-auto">
         <DndContext
           sensors={sensors}
@@ -999,6 +1063,7 @@ export default function KanbanBoardPage() {
                 issuesById={issuesById}
                 avatarsByName={avatarsByName}
                 onCardClick={(id) => setSelectedIssueId(id)}
+                groupBy={groupBy}
               />
             ))}
           </div>
