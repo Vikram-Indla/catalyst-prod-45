@@ -4,20 +4,22 @@ import { toast } from 'sonner';
 import { moveIssueToColumn, revertIssueMove } from '../api/moveIssue';
 import type { DragState, BoardIssue, MoveResult, PhBoard } from '../types/kanban';
 
-export function useDragDrop(boardId: string, userId: string) {
-  const [dragState, setDragState] = useState<DragState>({
-    draggingId:     null,
-    sourceColumnId: null,
-    sourceEpicId:   null,
-    targetColumnId: null,
-  });
+const EMPTY_DRAG: DragState = {
+  draggingId: null,
+  sourceColumnId: null,
+  sourceEpicId: null,
+  targetColumnId: null,
+};
 
-  // FIX 4: useRef so value persists across renders (plain object resets)
+export function useDragDrop(boardId: string, userId: string) {
+  const [dragState, setDragState] = useState<DragState>(EMPTY_DRAG);
+
+  // FIX 4: useRef so value persists across renders
   const originalIndexRef = useRef(-1);
   const queryClient = useQueryClient();
 
   const onDragStart = useCallback(
-    (issueId: string, sourceColumnId: string) => {
+    (issueId: string, sourceColumnId: string, sourceEpicId?: string) => {
       const issues = queryClient.getQueryData<BoardIssue[]>([
         'board-issues',
         boardId,
@@ -25,9 +27,13 @@ export function useDragDrop(boardId: string, userId: string) {
       originalIndexRef.current =
         issues?.findIndex((i) => i.id === issueId) ?? -1;
 
+      // Derive epicId from issue data if not passed
+      const epic = sourceEpicId ?? issues?.find((i) => i.id === issueId)?.epicId ?? null;
+
       setDragState({
-        draggingId:     issueId,
+        draggingId: issueId,
         sourceColumnId,
+        sourceEpicId: epic,
         targetColumnId: null,
       });
     },
@@ -35,11 +41,7 @@ export function useDragDrop(boardId: string, userId: string) {
   );
 
   const onDragEnd = useCallback(() => {
-    setDragState({
-      draggingId:     null,
-      sourceColumnId: null,
-      targetColumnId: null,
-    });
+    setDragState(EMPTY_DRAG);
   }, []);
 
   const onDrop = useCallback(
@@ -72,7 +74,7 @@ export function useDragDrop(boardId: string, userId: string) {
         return { success: false };
       }
 
-      // CHECK 14: WIP limit enforcement
+      // WIP limit enforcement (FIX 10: toast names column)
       const boardConfig = queryClient.getQueryData<PhBoard>(['board-config', boardId]);
       const targetCol = boardConfig?.columnConfig?.find((c) => c.id === targetColumnId);
       if (targetCol?.wipLimit) {
@@ -99,11 +101,7 @@ export function useDragDrop(boardId: string, userId: string) {
           )
       );
 
-      setDragState({
-        draggingId:     null,
-        sourceColumnId: null,
-        targetColumnId: null,
-      });
+      setDragState(EMPTY_DRAG);
 
       try {
         await moveIssueToColumn(draggingId, targetColumnId, userId);
