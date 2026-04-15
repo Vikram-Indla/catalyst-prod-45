@@ -8,6 +8,7 @@ export function useDragDrop(boardId: string, userId: string) {
   const [dragState, setDragState] = useState<DragState>({
     draggingId:     null,
     sourceColumnId: null,
+    sourceEpicId:   null,
     targetColumnId: null,
   });
 
