@@ -15,6 +15,7 @@ import { KANBAN_COLUMNS, STATUS_TO_COL_ID } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
+import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
 /* ── Status Lozenge (3-color guardrail) ── */
 function StatusLozenge({ status, category, tk }: { status: string; category: string; tk: KanbanThemeTokens }) {
@@ -38,7 +39,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
   );
 }
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -62,6 +63,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
+  visibleFields?: VisibleFields;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -160,6 +162,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 onDelete={onDelete}
                 onMoved={onMoved}
                 onLinked={onLinked}
+                visibleFields={visibleFields}
               />
             );
           })}
