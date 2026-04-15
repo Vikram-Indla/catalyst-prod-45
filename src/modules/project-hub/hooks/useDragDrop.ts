@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { moveIssueToColumn, revertIssueMove } from '../api/moveIssue';
-import type { DragState, BoardIssue, MoveResult } from '../types/kanban';
+import type { DragState, BoardIssue, MoveResult, PhBoard } from '../types/kanban';
 
 export function useDragDrop(boardId: string, userId: string) {
   const [dragState, setDragState] = useState<DragState>({
@@ -61,12 +61,29 @@ export function useDragDrop(boardId: string, userId: string) {
       ]);
       const issue = issues?.find((i) => i.id === draggingId);
 
+      // UC-038: block cross-epic drops
       if (targetEpicId && issue?.epicId && issue.epicId !== targetEpicId) {
         toast.error('Cannot move between epics', {
           description: 'Cards must stay within their epic swimlane.',
         });
         setDragState((p) => ({ ...p, draggingId: null, sourceColumnId: null }));
         return { success: false };
+      }
+
+      // CHECK 14: WIP limit enforcement
+      const boardConfig = queryClient.getQueryData<PhBoard>(['board-config', boardId]);
+      const targetCol = boardConfig?.columnConfig?.find((c) => c.id === targetColumnId);
+      if (targetCol?.wipLimit) {
+        const currentCount = (issues ?? []).filter(
+          (i) => i.boardColumnId === targetColumnId
+        ).length;
+        if (currentCount >= targetCol.wipLimit) {
+          toast.error('Column limit reached', {
+            description: `This column has a WIP limit of ${targetCol.wipLimit}.`,
+          });
+          setDragState((p) => ({ ...p, draggingId: null, sourceColumnId: null }));
+          return { success: false };
+        }
       }
 
       // Optimistic update
