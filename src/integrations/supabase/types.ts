@@ -515,6 +515,64 @@ export type Database = {
           },
         ]
       }
+      board_status_mappings: {
+        Row: {
+          board_id: string
+          bucket_type: string
+          column_id: string | null
+          created_at: string
+          id: string
+          order_index: number
+          status_id: string
+          status_name: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          bucket_type?: string
+          column_id?: string | null
+          created_at?: string
+          id?: string
+          order_index?: number
+          status_id: string
+          status_name: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          bucket_type?: string
+          column_id?: string | null
+          created_at?: string
+          id?: string
+          order_index?: number
+          status_id?: string
+          status_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_status_mappings_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_status_mappings_column_id_fkey"
+            columns: ["column_id"]
+            isOneToOne: false
+            referencedRelation: "board_columns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_status_mappings_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       boards: {
         Row: {
           board_type: string
