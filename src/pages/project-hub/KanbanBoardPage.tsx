@@ -82,10 +82,10 @@ interface GroupBucket {
 
 const KANBAN_COLUMNS: KanbanColumnDef[] = [
   { id: 'col-requirements', name: 'IN REQUIREMENTS', statuses: ['In Requirements', 'In Design', 'Awaiting Info'] },
-  { id: 'col-ready-dev', name: 'READY FOR DEVELOPMENT', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
+  { id: 'col-ready-dev', name: 'READY FOR DEV', statuses: ['Ready for Development', 'Backlog', 'ToDo', 'To Do'] },
   { id: 'col-dev', name: 'IN DEVELOPMENT', statuses: ['In Development', 'In Progress', 'Under Implementation'] },
-  { id: 'col-testing', name: 'IN TESTING', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA'] },
-  { id: 'col-uat', name: 'IN UAT', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
+  { id: 'col-testing', name: 'IN QA', statuses: ['In QA', 'Ready for QA', 'Retest', 'Internal QA', 'Staging/QA'] },
+  { id: 'col-uat', name: 'READY FOR UAT', statuses: ['In UAT', 'UAT Ready', 'BETA READY', 'In BETA', 'In Integration'] },
   { id: 'col-done', name: 'DONE', statuses: ['Done', 'Closed', 'Resolved', 'In Production', 'ready for production', 'Rejected', 'Re-Open', 'Blocked'] },
 ];
 
@@ -377,49 +377,136 @@ function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defa
   );
 }
 
-/* ═══ ASSIGNEE FILTER POPOVER ═══ */
+/* ═══ AVATAR STACK FILTER (Jira parity: clickable team avatars) ═══ */
 
-function AssigneeFilter({ allAssignees, selected, onChange, avatarsByName }: {
+function AvatarStackFilter({ allAssignees, selected, onChange, avatarsByName }: {
   allAssignees: { name: string; count: number }[]; selected: Set<string>;
   onChange: (s: Set<string>) => void; avatarsByName: Map<string, string>;
+}) {
+  const top = allAssignees.filter(a => a.name !== 'Unassigned').slice(0, 6);
+  return (
+    <div className="flex items-center" style={{ gap: 0 }}>
+      {top.map((a, i) => {
+        const isSel = selected.has(a.name);
+        const url = avatarsByName.get(a.name.toLowerCase());
+        return (
+          <button
+            key={a.name}
+            onClick={() => { const n = new Set(selected); if (isSel) n.delete(a.name); else n.add(a.name); onChange(n); }}
+            title={a.name}
+            style={{
+              position: 'relative', marginLeft: i === 0 ? 0 : -6, zIndex: top.length - i,
+              width: 28, height: 28, borderRadius: '50%',
+              border: isSel ? '2px solid #2563EB' : '2px solid #FFFFFF',
+              background: '#FFFFFF', cursor: 'pointer', padding: 0,
+              transition: 'transform 80ms, border-color 80ms',
+              transform: isSel ? 'scale(1.15)' : 'scale(1)',
+              outline: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.15)'; e.currentTarget.style.zIndex = '20'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = isSel ? 'scale(1.15)' : 'scale(1)'; e.currentTarget.style.zIndex = String(top.length - i); }}
+          >
+            <Av name={a.name} url={url} size={24} />
+          </button>
+        );
+      })}
+      {/* Overflow count */}
+      {allAssignees.filter(a => a.name !== 'Unassigned').length > 6 && (
+        <span style={{ marginLeft: -4, width: 28, height: 28, borderRadius: '50%', background: '#EBECF0', border: '2px solid #FFFFFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#42526E', zIndex: 0 }}>
+          +{allAssignees.filter(a => a.name !== 'Unassigned').length - 6}
+        </span>
+      )}
+      {selected.size > 0 && (
+        <button onClick={() => onChange(new Set())} style={{ marginLeft: 4, fontSize: 10, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, whiteSpace: 'nowrap' }}>×</button>
+      )}
+    </div>
+  );
+}
+
+/* ═══ EPIC FILTER DROPDOWN ═══ */
+
+function EpicFilterDropdown({ epics, selected, onChange }: {
+  epics: { key: string; count: number }[]; selected: string[];
+  onChange: (v: string[]) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
-  const filtered = allAssignees.filter(a => a.name.toLowerCase().includes(q.toLowerCase()));
-  const active = selected.size > 0;
+  const filtered = epics.filter(e => e.key.toLowerCase().includes(q.toLowerCase()));
+  const active = selected.length > 0;
 
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? '2px solid #2563EB' : '1px solid #DDDEE1', background: '#FFFFFF', color: active ? '#2563EB' : '#42526E', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
-        <User size={14} />Assignee
-        {active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: '#2563EB', color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.size}</span>}
+        Epic{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: '#2563EB', color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.length}</span>}
+        <ChevronDown size={12} />
       </button>
       {open && (
-        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 260, background: '#FFFFFF', border: '1px solid #DDDEE1', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 280, background: '#FFFFFF', border: '1px solid #DDDEE1', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
           <div style={{ padding: '6px 8px', borderBottom: '1px solid #EBECF0' }}>
             <div style={{ position: 'relative' }}>
               <Search size={13} style={{ position: 'absolute', left: 6, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8' }} />
-              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search" autoFocus style={{ width: '100%', height: 28, paddingLeft: 24, paddingRight: 6, border: '1px solid #DDDEE1', borderRadius: 3, fontSize: 12, color: '#0F172A', background: '#FFFFFF', outline: 'none' }} onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')} onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')} />
+              <input type="text" value={q} onChange={e => setQ(e.target.value)} placeholder="Search epics" autoFocus style={{ width: '100%', height: 28, paddingLeft: 24, paddingRight: 6, border: '1px solid #DDDEE1', borderRadius: 3, fontSize: 12, color: '#0F172A', background: '#FFFFFF', outline: 'none' }} />
             </div>
           </div>
           <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-            {filtered.map(a => {
-              const isSel = selected.has(a.name);
+            {filtered.map(e => {
+              const isSel = selected.includes(e.key);
               return (
-                <button key={a.name} onClick={() => { const n = new Set(selected); if (isSel) n.delete(a.name); else n.add(a.name); onChange(n); }}
+                <button key={e.key} onClick={() => { onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key]); }}
                   style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '5px 8px', border: 'none', background: isSel ? 'rgba(37,99,235,0.06)' : 'transparent', cursor: 'pointer', fontSize: 12, color: '#0F172A' }}
-                  onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = isSel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
+                  onMouseEnter={e => { if (!isSel) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
                   <div style={{ width: 14 }}>{isSel && <Check size={12} color="#2563EB" />}</div>
-                  <Av name={a.name} url={avatarsByName.get(a.name.toLowerCase())} size={20} />
-                  <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.name}</span>
-                  <span style={{ fontSize: 10, color: '#94A3B8' }}>{a.count}</span>
+                  <JiraIssueTypeIcon type="Epic" size={14} />
+                  <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{e.key}</span>
+                  <span style={{ fontSize: 10, color: '#94A3B8' }}>{e.count}</span>
                 </button>
               );
             })}
           </div>
-          {active && <div style={{ padding: '4px 8px', borderTop: '1px solid #EBECF0' }}><button onClick={() => onChange(new Set())} style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
+          {active && <div style={{ padding: '4px 8px', borderTop: '1px solid #EBECF0' }}><button onClick={() => { onChange([]); }} style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══ TYPE FILTER DROPDOWN ═══ */
+
+function TypeFilterDropdown({ types, selected, onChange }: {
+  types: { type: string; count: number }[]; selected: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
+  const active = selected.length > 0;
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? '2px solid #2563EB' : '1px solid #DDDEE1', background: '#FFFFFF', color: active ? '#2563EB' : '#42526E', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+        Type{active && <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', minWidth: 18, height: 18, borderRadius: 9, background: '#2563EB', color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>{selected.length}</span>}
+        <ChevronDown size={12} />
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 200, background: '#FFFFFF', border: '1px solid #DDDEE1', borderRadius: 4, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
+          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
+            {types.map(t => {
+              const isSel = selected.includes(t.type);
+              return (
+                <button key={t.type} onClick={() => { onChange(isSel ? selected.filter(k => k !== t.type) : [...selected, t.type]); }}
+                  style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '5px 8px', border: 'none', background: isSel ? 'rgba(37,99,235,0.06)' : 'transparent', cursor: 'pointer', fontSize: 12, color: '#0F172A' }}
+                  onMouseEnter={e => { if (!isSel) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }} onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = isSel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
+                  <div style={{ width: 14 }}>{isSel && <Check size={12} color="#2563EB" />}</div>
+                  <JiraIssueTypeIcon type={t.type} size={14} />
+                  <span style={{ flex: 1, textAlign: 'left' }}>{t.type}</span>
+                  <span style={{ fontSize: 10, color: '#94A3B8' }}>{t.count}</span>
+                </button>
+              );
+            })}
+          </div>
+          {active && <div style={{ padding: '4px 8px', borderTop: '1px solid #EBECF0' }}><button onClick={() => { onChange([]); }} style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear all</button></div>}
         </div>
       )}
     </div>
