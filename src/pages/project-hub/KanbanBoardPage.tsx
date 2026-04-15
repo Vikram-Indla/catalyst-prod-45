@@ -782,33 +782,38 @@ export default function KanbanBoardPage() {
       {/* ── Board content ── */}
       <div className="flex-1 min-h-0 overflow-auto">
         {groupBy !== 'none' ? (
-          /* ── GROUPED: swimlane rows spanning all columns ── */
-          <div style={{ background: '#FFFFFF' }}>
-            {/* Column headers row (sticky) */}
-            <div className="flex sticky top-0 z-20" style={{ background: '#F4F5F7', borderBottom: '1px solid #DDDEE1' }}>
-              {KANBAN_COLUMNS.map((col, i) => {
-                const count = groups.reduce((sum, g) => {
-                  return sum + g.issueIds.filter(id => {
-                    const issue = issuesById.get(id);
-                    if (!issue) return false;
-                    return STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id;
-                  }).length;
-                }, 0);
-                return (
-                  <div key={col.id} className="flex items-center gap-1 px-2" style={{ flex: '1 1 0', minWidth: 180, height: 32, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>{col.name}</span>
-                    <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.08)', borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
-                  </div>
-                );
-              })}
-            </div>
+          /* ── GROUPED: swimlane rows with DnD ── */
+          <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
+            <div style={{ background: '#FFFFFF' }}>
+              {/* Column headers row (sticky) */}
+              <div className="flex sticky top-0 z-20" style={{ background: '#F4F5F7', borderBottom: '1px solid #DDDEE1' }}>
+                {KANBAN_COLUMNS.map((col, i) => {
+                  const count = groups.reduce((sum, g) => {
+                    return sum + g.issueIds.filter(id => {
+                      const issue = issuesById.get(id);
+                      if (!issue) return false;
+                      return STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id;
+                    }).length;
+                  }, 0);
+                  return (
+                    <div key={col.id} className="flex items-center gap-1 px-2" style={{ flex: '1 1 0', minWidth: 180, height: 32, borderLeft: i === 0 ? 'none' : '1px solid #DDDEE1' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>{col.name}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: '#5E6C84', background: 'rgba(9,30,66,.08)', borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
+                    </div>
+                  );
+                })}
+              </div>
 
-            {/* Swimlane rows */}
-            {groups.map(g => (
-              <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} />
-            ))}
-            {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: '#94A3B8', fontSize: 13 }}>No issues match filters</div>}
-          </div>
+              {/* Swimlane rows */}
+              {groups.map(g => (
+                <SwimlaneRow key={g.groupKey} group={g} mode={groupBy} issuesById={issuesById} avatarsByName={avatarsByName} onCardClick={id => setSelIssueId(id)} defaultOpen={true} />
+              ))}
+              {groups.length === 0 && <div className="flex items-center justify-center py-12" style={{ color: '#94A3B8', fontSize: 13 }}>No issues match filters</div>}
+            </div>
+            <DragOverlay dropAnimation={null}>
+              {dragIssue ? <OverlayCard issue={dragIssue} avatarUrl={dragIssue.assigneeName ? avatarsByName.get(dragIssue.assigneeName.toLowerCase()) : null} /> : null}
+            </DragOverlay>
+          </DndContext>
         ) : (
           /* ── FLAT BOARD with DnD ── */
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
