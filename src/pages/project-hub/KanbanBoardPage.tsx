@@ -238,15 +238,23 @@ export default function KanbanBoardPage() {
     queryKey: ['kanban-issues', key],
     queryFn: async () => {
       if (!key) return [];
-      const { data, error } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
-        .eq('project_key', key.toUpperCase())
-        .in('issue_type', ['Epic', 'Story'])
-        .is('deleted_at', null)
-        .order('jira_updated_at', { ascending: false })
-        .limit(1000);
-      if (error) throw error;
-      return (data ?? []).map((r: any): BoardIssue => {
+      const PAGE = 1000;
+      let all: any[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase.from('ph_issues')
+          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
+          .eq('project_key', key.toUpperCase())
+          .is('deleted_at', null)
+          .order('jira_updated_at', { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        if (!data?.length) break;
+        all = all.concat(data);
+        if (data.length < PAGE) break;
+        from += PAGE;
+      }
+      return all.map((r: any): BoardIssue => {
         let fv: string | null = null;
         if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
           const f = r.fix_versions[0];
@@ -330,9 +338,11 @@ export default function KanbanBoardPage() {
   /* ═══ FILTERING ═══ */
 
   const filtered = useMemo(() => {
-    // Epics are never shown as cards — they only appear as swimlane headers when grouped by epic.
-    // They remain in issuesById so the swimlane header can look up epic status.
-    let issues = rawIssues.filter(i => i.issueType !== 'Epic');
+    // By default show only Stories on board; Epics are metadata for swimlane headers.
+    // When advanced filter specifies issue types, use those instead of the default.
+    let issues = advancedFilters.issueTypes.length > 0
+      ? rawIssues
+      : rawIssues.filter(i => i.issueType !== 'Epic');
     if (debSearch.trim()) {
       const q = debSearch.trim().toLowerCase();
       issues = issues.filter(i =>
@@ -417,8 +427,13 @@ export default function KanbanBoardPage() {
       const c = STATUS_TO_COL_ID.get(i.status.toLowerCase());
       if (c && m[c]) m[c].push(i.id);
     });
-    setColMap(m);
-  }, [filtered, dragId, groupBy]);
+    setColMap(prev => {
+      // Only update if changed to prevent infinite loop
+      const prevStr = JSON.stringify(prev);
+      const newStr = JSON.stringify(m);
+      return prevStr === newStr ? prev : m;
+    });
+  }, [filtered, dragId, groupBy, KANBAN_COLUMNS, STATUS_TO_COL_ID]);
 
   const groups = useMemo(() => groupBy === 'none' ? [] : groupIssues(filtered, groupBy), [filtered, groupBy]);
   const total = groupBy === 'none' ? Object.values(colMap).reduce((a, ids) => a + ids.length, 0) : filtered.length;
@@ -588,7 +603,7 @@ export default function KanbanBoardPage() {
     if (overId.includes('::')) return overId.split('::')[1] ?? null;
     if (COLUMN_ID_SET.has(overId)) return overId;
     return null;
-  }, []);
+  }, [COLUMN_ID_SET]);
 
   const onDragOver = useCallback((e: DragOverEvent) => {
     if (groupBy !== 'none') return;
