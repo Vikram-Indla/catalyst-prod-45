@@ -259,7 +259,7 @@ export function WorkItemCard({
       <div style={{ flex: 1 }} />
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
-      <div className="flex items-center" style={{ gap: 4, minHeight: d.footerHeight }}>
+      <div className="flex items-center" style={{ gap: 6, minHeight: d.footerHeight, marginTop: 6 }}>
         <JiraIssueTypeIcon type={issue.issueType} size={14} />
         <span style={{
           fontSize: d.metaSize + 1, fontWeight: 500,
