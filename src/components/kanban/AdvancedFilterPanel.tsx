@@ -13,6 +13,7 @@ import {
   X, Search, Check, CalendarIcon, ChevronDown, Filter, Trash2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { KanbanThemeTokens } from '@/components/kanban/kanban-tokens';
 
 /* ═══ Types ═══ */
 
