@@ -269,6 +269,7 @@ export default function KanbanBoardPage() {
           fixVersion: fv,
           isFlagged: !!r.is_flagged,
           updatedAt: r.jira_updated_at,
+          createdAt: r.created_at ?? null,
         };
       });
     },
