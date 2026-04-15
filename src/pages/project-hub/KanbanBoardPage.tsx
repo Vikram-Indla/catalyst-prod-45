@@ -3,12 +3,13 @@
  * Data: ph_issues (local DB), structure: Jira board layout
  * DnD: @dnd-kit/core + @dnd-kit/sortable — cross-column + reorder
  * Group By: None / Assignee / Epic / Priority / Fix Version
+ * When grouped: full-width collapsible rows with kanban inside (Jira parity)
  */
 import { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Layers, Filter, ChevronDown, Check, X, User } from 'lucide-react';
+import { Search, Layers, Filter, ChevronDown, ChevronRight, Check, X, User } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -98,21 +99,15 @@ const COLUMN_ID_SET = new Set(KANBAN_COLUMNS.map(c => c.id));
 
 const PRIORITY_ORDER = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
-function groupIssuesInColumn(
-  issueIds: string[],
-  issuesById: Map<string, BoardIssue>,
+function groupIssues(
+  issues: BoardIssue[],
   mode: GroupByMode,
 ): GroupBucket[] {
-  if (mode === 'none') {
-    return [{ groupKey: '__all__', groupLabel: '', issueIds }];
-  }
+  if (mode === 'none') return [];
 
   const buckets = new Map<string, { label: string; ids: string[] }>();
 
-  for (const id of issueIds) {
-    const issue = issuesById.get(id);
-    if (!issue) continue;
-
+  for (const issue of issues) {
     let key: string;
     let label: string;
 
@@ -123,7 +118,7 @@ function groupIssuesInColumn(
         break;
       case 'epic':
         key = issue.parentKey || 'NO_EPIC';
-        label = issue.parentKey || 'No epic';
+        label = issue.parentKey || 'No Epic';
         break;
       case 'priority':
         key = issue.priority || 'NO_PRIORITY';
@@ -141,36 +136,33 @@ function groupIssuesInColumn(
     if (!buckets.has(key)) {
       buckets.set(key, { label, ids: [] });
     }
-    buckets.get(key)!.ids.push(id);
+    buckets.get(key)!.ids.push(issue.id);
   }
 
-  // Sort buckets
   const entries = Array.from(buckets.entries());
 
   if (mode === 'priority') {
     entries.sort((a, b) => {
       const ai = PRIORITY_ORDER.indexOf(a[1].label);
       const bi = PRIORITY_ORDER.indexOf(b[1].label);
-      const aidx = ai >= 0 ? ai : 999;
-      const bidx = bi >= 0 ? bi : 999;
-      return aidx - bidx;
+      return (ai >= 0 ? ai : 999) - (bi >= 0 ? bi : 999);
     });
   } else if (mode === 'assignee') {
     entries.sort((a, b) => {
-      if (a[0] === 'UNASSIGNED') return -1;
-      if (b[0] === 'UNASSIGNED') return 1;
+      if (a[0] === 'UNASSIGNED') return 1;
+      if (b[0] === 'UNASSIGNED') return -1;
       return a[1].label.localeCompare(b[1].label);
     });
   } else if (mode === 'epic') {
     entries.sort((a, b) => {
-      if (a[0] === 'NO_EPIC') return -1;
-      if (b[0] === 'NO_EPIC') return 1;
+      if (a[0] === 'NO_EPIC') return 1;
+      if (b[0] === 'NO_EPIC') return -1;
       return a[1].label.localeCompare(b[1].label);
     });
   } else if (mode === 'fixVersion') {
     entries.sort((a, b) => {
-      if (a[0] === 'NO_FIX_VERSION') return -1;
-      if (b[0] === 'NO_FIX_VERSION') return 1;
+      if (a[0] === 'NO_FIX_VERSION') return 1;
+      if (b[0] === 'NO_FIX_VERSION') return -1;
       return a[1].label.localeCompare(b[1].label);
     });
   }
@@ -222,7 +214,66 @@ function AssigneeAvatar({ name, avatarUrl, size = 24 }: { name?: string | null; 
 }
 
 /* ═══════════════════════════════════════════════
-   SORTABLE ISSUE CARD — Jira reference parity
+   ISSUE CARD (static — used in grouped view)
+   ═══════════════════════════════════════════════ */
+
+function IssueCard({
+  issue,
+  avatarUrl,
+  onCardClick,
+}: {
+  issue: BoardIssue;
+  avatarUrl?: string | null;
+  onCardClick: (id: string) => void;
+}) {
+  return (
+    <div
+      onClick={() => onCardClick(issue.id)}
+      style={{
+        background: '#FFFFFF', borderRadius: 3, padding: '8px 10px', cursor: 'pointer',
+        boxShadow: '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)',
+        transition: 'box-shadow 120ms, transform 120ms',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 4px 8px rgba(9,30,66,.25)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 1px 1px rgba(9,30,66,.25), 0 0 1px rgba(9,30,66,.31)'; e.currentTarget.style.transform = 'none'; }}
+    >
+      {issue.labels.length > 0 && (
+        <div className="flex flex-wrap gap-[3px] mb-[5px]">
+          {issue.labels.slice(0, 3).map((label) => (
+            <span key={label} className="uppercase" style={{
+              height: 16, padding: '0 6px', borderRadius: 2, fontSize: 10, fontWeight: 700,
+              background: '#DFE1E6', color: '#42526E', lineHeight: '16px',
+              display: 'inline-block', maxWidth: 140, overflow: 'hidden',
+              textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>{label}</span>
+          ))}
+        </div>
+      )}
+      {issue.sprintName && (
+        <div style={{ fontSize: 10, fontWeight: 600, color: '#5E6C84', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {issue.sprintName}
+        </div>
+      )}
+      <p style={{
+        fontSize: 13, lineHeight: 1.43, color: '#172B4D', marginBottom: 6,
+        display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+      }}>{issue.summary}</p>
+      <div className="flex items-center gap-[5px]">
+        <JiraIssueTypeIcon type={issue.issueType} size={16} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#42526E', fontFamily: "'JetBrains Mono', monospace" }}>{issue.issueKey}</span>
+        <PriorityBars priority={normalisePriority(issue.priority)} />
+        {issue.storyPoints != null && (
+          <span style={{ fontSize: 10, fontWeight: 700, color: '#5E6C84', background: '#EBECF0', borderRadius: 10, padding: '0 6px', lineHeight: '18px', marginLeft: 2 }}>{issue.storyPoints}</span>
+        )}
+        <span className="flex-1" />
+        <AssigneeAvatar name={issue.assigneeName} avatarUrl={avatarUrl} size={24} />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════
+   SORTABLE ISSUE CARD (DnD — used in flat board)
    ═══════════════════════════════════════════════ */
 
 function SortableIssueCard({
@@ -268,7 +319,6 @@ function SortableIssueCard({
       role="button"
       aria-label={`Drag ${issue.issueKey}`}
     >
-      {/* Labels row */}
       {issue.labels.length > 0 && (
         <div className="flex flex-wrap gap-[3px] mb-[5px]">
           {issue.labels.slice(0, 3).map((label) => (
@@ -287,8 +337,6 @@ function SortableIssueCard({
           ))}
         </div>
       )}
-
-      {/* Sprint name */}
       {issue.sprintName && (
         <div style={{
           fontSize: 10, fontWeight: 600, color: '#5E6C84', marginBottom: 4,
@@ -297,16 +345,12 @@ function SortableIssueCard({
           {issue.sprintName}
         </div>
       )}
-
-      {/* Summary — 2 line clamp */}
       <p style={{
         fontSize: 13, lineHeight: 1.43, color: '#172B4D', marginBottom: 6,
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
       }}>
         {issue.summary}
       </p>
-
-      {/* Footer: type icon + key + priority + points + spacer + avatar */}
       <div className="flex items-center gap-[5px]">
         <JiraIssueTypeIcon type={issue.issueType} size={16} />
         <span style={{ fontSize: 11, fontWeight: 600, color: '#42526E', fontFamily: "'JetBrains Mono', monospace" }}>
@@ -356,29 +400,148 @@ function OverlayCard({ issue, avatarUrl }: { issue: BoardIssue; avatarUrl?: stri
 }
 
 /* ═══════════════════════════════════════════════
-   GROUP SECTION HEADER
+   COLLAPSIBLE GROUP ROW — Jira parity
+   Full-width row with chevron + icon + label + count.
+   Expands to show kanban columns for that group.
    ═══════════════════════════════════════════════ */
 
-function GroupSectionHeader({ label, count, mode }: { label: string; count: number; mode: GroupByMode }) {
-  const prefix = mode === 'assignee' ? '' : mode === 'epic' ? 'Epic: ' : mode === 'priority' ? '' : mode === 'fixVersion' ? 'Version: ' : '';
-  return (
-    <div className="flex items-center gap-1.5 py-1.5 px-1" style={{ borderBottom: '1px solid #EBECF0' }}>
-      <span style={{ fontSize: 11, fontWeight: 700, color: '#5E6C84', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-        {prefix}{label}
-      </span>
+function GroupRow({
+  group,
+  mode,
+  issuesById,
+  avatarsByName,
+  onCardClick,
+  defaultOpen,
+}: {
+  group: GroupBucket;
+  mode: GroupByMode;
+  issuesById: Map<string, BoardIssue>;
+  avatarsByName: Map<string, string>;
+  onCardClick: (id: string) => void;
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+
+  const groupColumnMap = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    KANBAN_COLUMNS.forEach(col => { map[col.id] = []; });
+    group.issueIds.forEach(id => {
+      const issue = issuesById.get(id);
+      if (!issue) return;
+      const colId = STATUS_TO_COL_ID.get(issue.status.toLowerCase());
+      if (colId && map[colId]) map[colId].push(id);
+    });
+    return map;
+  }, [group.issueIds, issuesById]);
+
+  const renderGroupIcon = () => {
+    if (mode === 'assignee') {
+      const name = group.groupKey === 'UNASSIGNED' ? null : group.groupLabel;
+      const url = name ? avatarsByName.get(name.toLowerCase()) : null;
+      return <AssigneeAvatar name={name} avatarUrl={url} size={24} />;
+    }
+    if (mode === 'epic' && group.groupKey !== 'NO_EPIC') {
+      return <JiraIssueTypeIcon type="Epic" size={16} />;
+    }
+    if (mode === 'priority') {
+      return <PriorityBars priority={normalisePriority(group.groupLabel)} />;
+    }
+    return null;
+  };
+
+  const renderEpicStatus = () => {
+    if (mode !== 'epic' || group.groupKey === 'NO_EPIC') return null;
+    return (
       <span style={{
-        fontSize: 10, fontWeight: 600, color: '#5E6C84',
-        background: 'rgba(9,30,66,.06)', borderRadius: 10,
-        padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center',
+        fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
+        padding: '1px 6px', borderRadius: 3, lineHeight: '20px',
+        background: '#DEEBFF', color: '#0747A6',
       }}>
-        {count}
+        IN PROGRESS
       </span>
+    );
+  };
+
+  return (
+    <div>
+      {/* Group header row */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-2.5 w-full text-left"
+        style={{
+          padding: '14px 24px',
+          background: '#FFFFFF',
+          border: 'none',
+          borderBottom: '1px solid #E2E8F0',
+          cursor: 'pointer',
+          fontFamily: "'Inter', sans-serif",
+          transition: 'background 100ms',
+        }}
+        onMouseEnter={e => { e.currentTarget.style.background = '#FAFBFC'; }}
+        onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; }}
+      >
+        {open ? (
+          <ChevronDown size={16} color="#5E6C84" style={{ flexShrink: 0 }} />
+        ) : (
+          <ChevronRight size={16} color="#5E6C84" style={{ flexShrink: 0 }} />
+        )}
+        {renderGroupIcon()}
+        {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
+          <span style={{ fontSize: 13, fontWeight: 600, color: '#42526E', fontFamily: "'JetBrains Mono', monospace" }}>
+            {group.groupKey}
+          </span>
+        )}
+        <span style={{ fontSize: 14, fontWeight: 500, color: '#172B4D' }}>
+          {group.groupLabel}
+        </span>
+        <span style={{ fontSize: 13, color: '#5E6C84', fontWeight: 400 }}>
+          ({group.issueIds.length} work item{group.issueIds.length !== 1 ? 's' : ''})
+        </span>
+        {renderEpicStatus()}
+      </button>
+
+      {/* Expanded: kanban columns for this group */}
+      {open && (
+        <div className="overflow-x-auto" style={{ background: '#F4F5F7', borderBottom: '1px solid #E2E8F0' }}>
+          <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 240, padding: '0 24px 16px' }}>
+            {KANBAN_COLUMNS.map((col) => {
+              const colIssueIds = groupColumnMap[col.id] ?? [];
+              return (
+                <div key={col.id} className="flex flex-col flex-shrink-0" style={{ width: 240, minWidth: 240 }}>
+                  <div className="flex items-center gap-1.5 px-2" style={{ height: 40 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: '#5E6C84', letterSpacing: '0.04em' }}>
+                      {col.name}
+                    </span>
+                    <span style={{
+                      fontSize: 11, fontWeight: 600, color: '#5E6C84',
+                      background: 'rgba(9,30,66,.06)', borderRadius: 10,
+                      padding: '0 6px', lineHeight: '18px', minWidth: 18, textAlign: 'center',
+                    }}>
+                      {colIssueIds.length}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-[6px] px-[5px]" style={{ minHeight: 40 }}>
+                    {colIssueIds.map((id) => {
+                      const issue = issuesById.get(id);
+                      if (!issue) return null;
+                      const avatarUrl = issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null;
+                      return (
+                        <IssueCard key={id} issue={issue} avatarUrl={avatarUrl} onCardClick={onCardClick} />
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 /* ═══════════════════════════════════════════════
-   DROPPABLE COLUMN (with Group By support)
+   DROPPABLE COLUMN (flat board — no grouping)
    ═══════════════════════════════════════════════ */
 
 function DroppableColumn({
@@ -387,24 +550,17 @@ function DroppableColumn({
   issuesById,
   avatarsByName,
   onCardClick,
-  groupBy,
 }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
   avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void;
-  groupBy: GroupByMode;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
-  const groups = useMemo(() => groupIssuesInColumn(issueIds, issuesById, groupBy), [issueIds, issuesById, groupBy]);
-
-  // Flatten all issue ids for SortableContext (must match rendered order)
-  const flatIds = useMemo(() => groups.flatMap(g => g.issueIds), [groups]);
 
   return (
     <div className="flex flex-col flex-shrink-0" style={{ width: 240, minWidth: 240 }}>
-      {/* Column header */}
       <div
         className="flex items-center gap-1.5 px-2 sticky top-0 z-10"
         style={{ height: 40, background: '#F4F5F7' }}
@@ -421,7 +577,6 @@ function DroppableColumn({
         </span>
       </div>
 
-      {/* Droppable area */}
       <div
         ref={setNodeRef}
         className="flex flex-col gap-[6px] px-[5px] py-[6px] overflow-y-auto transition-colors duration-150"
@@ -432,7 +587,7 @@ function DroppableColumn({
           borderRadius: 4,
         }}
       >
-        <SortableContext items={flatIds} strategy={verticalListSortingStrategy}>
+        <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>
           {issueIds.length === 0 ? (
             <div
               className="flex items-center justify-center"
@@ -445,31 +600,16 @@ function DroppableColumn({
               {isOver ? 'Drop here' : 'No issues'}
             </div>
           ) : (
-            groups.map((group) => (
-              <div key={group.groupKey}>
-                {groupBy !== 'none' && (
-                  <GroupSectionHeader label={group.groupLabel} count={group.issueIds.length} mode={groupBy} />
-                )}
-                <div className="flex flex-col gap-[6px]" style={{ marginTop: groupBy !== 'none' ? 4 : 0 }}>
-                  {group.issueIds.map((id) => {
-                    const issue = issuesById.get(id);
-                    if (!issue) return null;
-                    const avatarUrl = issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null;
-                    return (
-                      <SortableIssueCard
-                        key={id}
-                        issue={issue}
-                        avatarUrl={avatarUrl}
-                        onCardClick={onCardClick}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            ))
+            issueIds.map((id) => {
+              const issue = issuesById.get(id);
+              if (!issue) return null;
+              const avatarUrl = issue.assigneeName ? avatarsByName.get(issue.assigneeName.toLowerCase()) : null;
+              return (
+                <SortableIssueCard key={id} issue={issue} avatarUrl={avatarUrl} onCardClick={onCardClick} />
+              );
+            })
           )}
         </SortableContext>
-
         {issueIds.length > 0 && isOver && (
           <div style={{ height: 2, background: '#2563EB', borderRadius: 1, boxShadow: '0 0 4px rgba(37,99,235,0.5)' }} />
         )}
@@ -645,22 +785,20 @@ function GroupByPopover({ value, onChange }: { value: GroupByMode; onChange: (v:
         onClick={() => setOpen(p => !p)}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 6,
-          height: 32, padding: '0 10px', borderRadius: 6,
-          border: isActive ? '1.5px solid #2563EB' : '1.5px solid #E2E8F0',
-          background: isActive ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
-          color: isActive ? '#2563EB' : '#0F172A',
-          fontSize: 13, fontWeight: 500, cursor: 'pointer',
+          height: 32, padding: '0 12px', borderRadius: 3,
+          border: isActive ? '2px solid #2563EB' : '1px solid #E2E8F0',
+          background: isActive ? '#FFFFFF' : '#FFFFFF',
+          color: isActive ? '#2563EB' : '#42526E',
+          fontSize: 13, fontWeight: isActive ? 600 : 400, cursor: 'pointer',
           fontFamily: "'Inter', sans-serif", transition: 'all 150ms',
         }}
       >
-        <Layers size={14} />
         {isActive ? `Group: ${activeLabel}` : 'Group'}
-        <ChevronDown size={14} />
       </button>
 
       {open && (
         <div style={{
-          position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100,
+          position: 'absolute', top: 'calc(100% + 6px)', right: 0, zIndex: 100,
           width: 220, background: '#FFFFFF',
           border: '1px solid #E2E8F0', borderRadius: 8,
           boxShadow: '0 4px 16px rgba(0,0,0,0.1)', overflow: 'hidden',
@@ -797,7 +935,6 @@ export default function KanbanBoardPage() {
         .limit(1000);
       if (error) throw error;
       return (data ?? []).map((r): BoardIssue => {
-        // Extract first fix version name from JSON
         let fixVersion: string | null = null;
         if (r.fix_versions && Array.isArray(r.fix_versions) && (r.fix_versions as any[]).length > 0) {
           const fv = (r.fix_versions as any[])[0];
@@ -886,8 +1023,9 @@ export default function KanbanBoardPage() {
     return issues;
   }, [rawIssues, debouncedSearch, selectedAssignees, advancedFilters]);
 
+  // Build column map for flat board view (no grouping)
   useEffect(() => {
-    if (activeCardId) return;
+    if (activeCardId || groupBy !== 'none') return;
     const map: ColumnIssueMap = {};
     KANBAN_COLUMNS.forEach(col => { map[col.id] = []; });
     filteredIssues.forEach(issue => {
@@ -895,9 +1033,17 @@ export default function KanbanBoardPage() {
       if (colId && map[colId]) map[colId].push(issue.id);
     });
     setColumnIssueMap(map);
-  }, [filteredIssues, activeCardId]);
+  }, [filteredIssues, activeCardId, groupBy]);
 
-  const totalVisible = Object.values(columnIssueMap).reduce((acc, ids) => acc + ids.length, 0);
+  // Grouped buckets
+  const groups = useMemo(() => {
+    if (groupBy === 'none') return [];
+    return groupIssues(filteredIssues, groupBy);
+  }, [filteredIssues, groupBy]);
+
+  const totalVisible = groupBy === 'none'
+    ? Object.values(columnIssueMap).reduce((acc, ids) => acc + ids.length, 0)
+    : filteredIssues.length;
 
   const handleFilterChange = useCallback((cat: string, values: string[]) => {
     setAdvancedFilters(prev => ({ ...prev, [cat]: values }));
@@ -1036,47 +1182,69 @@ export default function KanbanBoardPage() {
           )}
         </div>
 
-        <GroupByPopover value={groupBy} onChange={setGroupBy} />
-
         <div className="flex-1" />
 
         <span style={{ fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif" }}>
           {totalVisible} issues
         </span>
+
+        <GroupByPopover value={groupBy} onChange={setGroupBy} />
       </div>
 
-      {/* Board with DnD */}
+      {/* Board content */}
       <div className="flex-1 min-h-0 overflow-auto">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCorners}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 240 }}>
-            {KANBAN_COLUMNS.map((col) => (
-              <DroppableColumn
-                key={col.id}
-                column={col}
-                issueIds={columnIssueMap[col.id] ?? []}
+        {groupBy !== 'none' ? (
+          /* ── GROUPED VIEW: collapsible rows ── */
+          <div style={{ background: '#FFFFFF' }}>
+            {groups.map((group, idx) => (
+              <GroupRow
+                key={group.groupKey}
+                group={group}
+                mode={groupBy}
                 issuesById={issuesById}
                 avatarsByName={avatarsByName}
                 onCardClick={(id) => setSelectedIssueId(id)}
-                groupBy={groupBy}
+                defaultOpen={false}
               />
             ))}
+            {groups.length === 0 && (
+              <div className="flex items-center justify-center py-16" style={{ color: '#94A3B8', fontSize: 14 }}>
+                No issues match current filters
+              </div>
+            )}
           </div>
+        ) : (
+          /* ── FLAT KANBAN BOARD with DnD ── */
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCorners}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+          >
+            <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 240 }}>
+              {KANBAN_COLUMNS.map((col) => (
+                <DroppableColumn
+                  key={col.id}
+                  column={col}
+                  issueIds={columnIssueMap[col.id] ?? []}
+                  issuesById={issuesById}
+                  avatarsByName={avatarsByName}
+                  onCardClick={(id) => setSelectedIssueId(id)}
+                />
+              ))}
+            </div>
 
-          <DragOverlay dropAnimation={null}>
-            {activeIssue ? (
-              <OverlayCard
-                issue={activeIssue}
-                avatarUrl={activeIssue.assigneeName ? avatarsByName.get(activeIssue.assigneeName.toLowerCase()) : null}
-              />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+            <DragOverlay dropAnimation={null}>
+              {activeIssue ? (
+                <OverlayCard
+                  issue={activeIssue}
+                  avatarUrl={activeIssue.assigneeName ? avatarsByName.get(activeIssue.assigneeName.toLowerCase()) : null}
+                />
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        )}
       </div>
 
       {/* Detail modal */}
