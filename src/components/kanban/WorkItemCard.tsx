@@ -136,8 +136,8 @@ export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag
             <span style={{
               fontSize: 10,
               fontWeight: 600,
-              background: '#EDE9FE',
-              color: '#6D28D9',
+              background: '#E0F2FE',
+              color: '#0369A1',
               padding: '1px 6px',
               borderRadius: 10,
               lineHeight: '16px',
