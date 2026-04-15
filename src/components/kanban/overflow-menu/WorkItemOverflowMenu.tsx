@@ -18,6 +18,8 @@ import { DeleteConfirmDialog } from './DeleteConfirmDialog';
 import { StatusChangePanel } from './StatusChangePanel';
 import { LabelEditorPanel } from './LabelEditorPanel';
 import { ParentPickerPanel } from './ParentPickerPanel';
+import { MoveWorkItemModal } from './MoveWorkItemModal';
+import { LinkWorkItemModal } from './LinkWorkItemModal';
 
 interface WorkItemOverflowMenuProps {
   issue: BoardIssue;
@@ -34,17 +36,22 @@ interface WorkItemOverflowMenuProps {
   onDelete?: (id: string) => void;
   onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
   onParentChange?: (issueId: string, newParentKey: string | null) => void;
+  onMoved?: (issueId: string, newProjectKey: string) => void;
+  onLinked?: () => void;
 }
 
 export function WorkItemOverflowMenu({
   issue, menuPos, tk, projectKey, onClose,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus,
   onOpenDetail, onArchive, onDelete, onLabelsUpdated, onParentChange,
+  onMoved, onLinked,
 }: WorkItemOverflowMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [activePanel, setActivePanel] = useState<'status' | 'label' | 'parent' | null>(null);
   const [showArchive, setShowArchive] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
+  const [showMove, setShowMove] = useState(false);
+  const [showLink, setShowLink] = useState(false);
 
   // Close on outside click
   useEffect(() => {
