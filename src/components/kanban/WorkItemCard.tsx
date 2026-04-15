@@ -276,7 +276,18 @@ export function WorkItemCard({
         {issue.priority && (
           <PriorityBars priority={issue.priority} />
         )}
-        <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
+        {onChangeAssignee && assigneeOptions && avatarsByName ? (
+          <AssigneePickerPopover
+            currentAssignee={issue.assigneeName}
+            options={assigneeOptions}
+            avatarsByName={avatarsByName}
+            tk={tk}
+            avatarSize={d.avatarSize}
+            onSelect={(name) => onChangeAssignee(issue.id, name)}
+          />
+        ) : (
+          <KanbanAvatar name={issue.assigneeName} url={avatarUrl} size={d.avatarSize} tk={tk} />
+        )}
       </div>
 
       {/* ─── OVERFLOW MENU ─── */}
