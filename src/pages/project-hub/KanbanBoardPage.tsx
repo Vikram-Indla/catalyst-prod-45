@@ -551,6 +551,7 @@ export default function KanbanBoardPage() {
                   d={d}
                   tk={tk}
                   selectedId={selIssueId}
+                  focusedId={focusedId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
