@@ -13,7 +13,7 @@ import { KANBAN_COLUMNS, STATUS_TO_COL_ID } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 
-export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus }: {
+export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClick, defaultOpen, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary }: {
   group: GroupBucket;
   mode: GroupByMode;
   issuesById: Map<string, BoardIssue>;
@@ -26,6 +26,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
