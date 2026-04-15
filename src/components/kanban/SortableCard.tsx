@@ -103,8 +103,8 @@ export const OverlayCard = memo(function OverlayCard({ issue, avatarUrl, d, tk }
   return (
     <div style={{
       background: tk.cardBg, borderRadius: 8, border: `1px solid ${tk.selectedAccent}`,
-      padding: d.cardPad, width: 280, boxShadow: tk.cardDragShadow,
-      transform: 'rotate(2deg)', cursor: 'grabbing',
+      padding: d.cardPad, width: 280, height: d.cardFixedHeight, boxShadow: tk.cardDragShadow,
+      transform: 'rotate(2deg)', cursor: 'grabbing', display: 'flex', flexDirection: 'column', overflow: 'hidden',
     }}>
       <WorkItemCard issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} />
     </div>
