@@ -44,7 +44,7 @@ import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import {
   AvatarStackFilter, EpicFilterDropdown, TypeFilterDropdown, PriorityFilterDropdown,
-  QuickFilterDropdown, DensityToggle, GroupByBtn,
+  QuickFilterDropdown, GroupByBtn,
 } from '@/components/kanban/KanbanToolbar';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
