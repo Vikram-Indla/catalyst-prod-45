@@ -363,6 +363,20 @@ export default function KanbanBoardPage() {
     }
   }, [issuesById, key, qc, toastSuccess, toastError]);
 
+  /* ═══ MOVE WORK ITEM ═══ */
+
+  const handleMoved = useCallback((issueId: string, newProjectKey: string) => {
+    toastSuccess(`Moved ${issuesById.get(issueId)?.issueKey ?? 'item'} to ${newProjectKey}`);
+    qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+  }, [issuesById, key, qc, toastSuccess]);
+
+  /* ═══ LINK WORK ITEM ═══ */
+
+  const handleLinked = useCallback(() => {
+    toastSuccess('Work item linked');
+    qc.invalidateQueries({ queryKey: ['kanban-issues', key] });
+  }, [key, qc, toastSuccess]);
+
   /* ═══ DND HANDLERS ═══ */
 
   const onDragStart = useCallback((e: DragStartEvent) => setDragId(String(e.active.id)), []);
