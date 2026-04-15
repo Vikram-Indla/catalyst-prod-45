@@ -611,6 +611,9 @@ export default function KanbanBoardPage() {
                   onSaveSummary={handleSaveSummary}
                   onChangeAssignee={handleChangeAssignee}
                   assigneeOptions={assigneeOptions}
+                  projectKey={key ?? ''}
+                  onLabelsUpdated={handleLabelsUpdated}
+                  onParentChange={handleParentChange}
                 />
               ))}
               {groups.length === 0 && (
@@ -646,6 +649,9 @@ export default function KanbanBoardPage() {
                   onSaveSummary={handleSaveSummary}
                   onChangeAssignee={handleChangeAssignee}
                   assigneeOptions={assigneeOptions}
+                  projectKey={key ?? ''}
+                  onLabelsUpdated={handleLabelsUpdated}
+                  onParentChange={handleParentChange}
                 />
               ))}
             </div>
