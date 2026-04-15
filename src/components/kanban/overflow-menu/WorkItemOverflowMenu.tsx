@@ -3,24 +3,27 @@
  *
  * Actions (in order):
  *  Move work item >  |  Change status >  |  ---  |  Copy link  |  Copy key
- *  ---  |  Add/Remove flag  |  Add label  |  Link work item  |  Change parent
+ *  ---  |  Add/Remove flag  |  Add label >  |  Link work item  |  Change parent >
  *  ---  |  Archive  |  Delete
  */
 import { useRef, useEffect, useState, useCallback } from 'react';
 import {
   ArrowRightLeft, RefreshCw, Link2, Copy, Flag, Tag,
-  Link as LinkIcon, GitBranch, Archive, Trash2, ChevronRight, Check,
+  Link as LinkIcon, GitBranch, Archive, Trash2, ChevronRight,
 } from 'lucide-react';
-import { KANBAN_COLUMNS } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type { KanbanThemeTokens } from '../kanban-tokens';
 import { ArchiveConfirmDialog } from './ArchiveConfirmDialog';
 import { DeleteConfirmDialog } from './DeleteConfirmDialog';
+import { StatusChangePanel } from './StatusChangePanel';
+import { LabelEditorPanel } from './LabelEditorPanel';
+import { ParentPickerPanel } from './ParentPickerPanel';
 
 interface WorkItemOverflowMenuProps {
   issue: BoardIssue;
   menuPos: { x: number; y: number };
   tk: KanbanThemeTokens;
+  projectKey: string;
   onClose: () => void;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
@@ -29,15 +32,17 @@ interface WorkItemOverflowMenuProps {
   onOpenDetail?: (id: string) => void;
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onLabelsUpdated?: (issueId: string, newLabels: string[]) => void;
+  onParentChange?: (issueId: string, newParentKey: string | null) => void;
 }
 
 export function WorkItemOverflowMenu({
-  issue, menuPos, tk, onClose,
+  issue, menuPos, tk, projectKey, onClose,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus,
-  onOpenDetail, onArchive, onDelete,
+  onOpenDetail, onArchive, onDelete, onLabelsUpdated, onParentChange,
 }: WorkItemOverflowMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
-  const [showStatusSub, setShowStatusSub] = useState(false);
+  const [activePanel, setActivePanel] = useState<'status' | 'label' | 'parent' | null>(null);
   const [showArchive, setShowArchive] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -55,11 +60,14 @@ export function WorkItemOverflowMenu({
   // Close on ESC
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        if (activePanel) setActivePanel(null);
+        else onClose();
+      }
     };
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
-  }, [onClose]);
+  }, [onClose, activePanel]);
 
   const handleCopyLink = useCallback(() => {
     onCopyLink?.(issue.issueKey);
@@ -96,12 +104,19 @@ export function WorkItemOverflowMenu({
         {/* Change status */}
         <div
           style={{ position: 'relative' }}
-          onMouseEnter={() => setShowStatusSub(true)}
-          onMouseLeave={() => setShowStatusSub(false)}
+          onMouseEnter={() => setActivePanel('status')}
+          onMouseLeave={() => { if (activePanel === 'status') setActivePanel(null); }}
         >
           <MenuItem icon={<RefreshCw size={14} />} label="Change status" hasSubmenu
-            onClick={() => setShowStatusSub(p => !p)} tk={tk} />
-          {showStatusSub && <StatusSubmenu issue={issue} tk={tk} onChangeStatus={onChangeStatus} onClose={onClose} />}
+            onClick={() => setActivePanel(p => p === 'status' ? null : 'status')} tk={tk} />
+          {activePanel === 'status' && (
+            <StatusChangePanel
+              currentStatus={issue.status}
+              tk={tk}
+              onChangeStatus={(s) => onChangeStatus?.(issue.id, s)}
+              onClose={onClose}
+            />
+          )}
         </div>
 
         <Divider tk={tk} />
@@ -123,16 +138,50 @@ export function WorkItemOverflowMenu({
         />
 
         {/* Add label */}
-        <MenuItem icon={<Tag size={14} />} label="Add label"
-          onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
+        <div
+          style={{ position: 'relative' }}
+          onMouseEnter={() => setActivePanel('label')}
+          onMouseLeave={() => { if (activePanel === 'label') setActivePanel(null); }}
+        >
+          <MenuItem icon={<Tag size={14} />} label="Add label" hasSubmenu
+            onClick={() => setActivePanel(p => p === 'label' ? null : 'label')} tk={tk} />
+          {activePanel === 'label' && (
+            <LabelEditorPanel
+              issueId={issue.id}
+              issueKey={issue.issueKey}
+              currentLabels={issue.labels}
+              tk={tk}
+              onClose={onClose}
+              onLabelsUpdated={(labels) => onLabelsUpdated?.(issue.id, labels)}
+            />
+          )}
+        </div>
 
         {/* Link work item */}
         <MenuItem icon={<LinkIcon size={14} />} label="Link work item"
           onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
 
         {/* Change parent */}
-        <MenuItem icon={<GitBranch size={14} />} label="Change parent"
-          onClick={() => { onOpenDetail?.(issue.id); onClose(); }} tk={tk} />
+        <div
+          style={{ position: 'relative' }}
+          onMouseEnter={() => setActivePanel('parent')}
+          onMouseLeave={() => { if (activePanel === 'parent') setActivePanel(null); }}
+        >
+          <MenuItem icon={<GitBranch size={14} />} label="Change parent" hasSubmenu
+            onClick={() => setActivePanel(p => p === 'parent' ? null : 'parent')} tk={tk} />
+          {activePanel === 'parent' && (
+            <ParentPickerPanel
+              issueId={issue.id}
+              issueKey={issue.issueKey}
+              issueType={issue.issueType}
+              currentParentKey={issue.parentKey}
+              projectKey={projectKey}
+              tk={tk}
+              onClose={onClose}
+              onParentChange={(parentKey) => onParentChange?.(issue.id, parentKey)}
+            />
+          )}
+        </div>
 
         <Divider tk={tk} />
 
@@ -193,57 +242,5 @@ function MenuItem({ icon, label, onClick, tk, hasSubmenu, destructive }: {
       <span className="flex-1">{label}</span>
       {hasSubmenu && <ChevronRight size={12} color={tk.textMuted} />}
     </button>
-  );
-}
-
-function StatusSubmenu({ issue, tk, onChangeStatus, onClose }: {
-  issue: BoardIssue; tk: KanbanThemeTokens;
-  onChangeStatus?: (id: string, status: string) => void; onClose: () => void;
-}) {
-  return (
-    <div style={{
-      position: 'absolute', left: '100%', top: 0, zIndex: 10000,
-      width: 200, maxHeight: 320, overflowY: 'auto',
-      background: tk.surfaceBg, border: `1px solid ${tk.border}`,
-      borderRadius: 8, boxShadow: '0 4px 16px rgba(0,0,0,0.24)',
-      padding: '4px 0',
-    }}>
-      {KANBAN_COLUMNS.map(col => (
-        <div key={col.id}>
-          <div style={{
-            padding: '4px 12px 2px', fontSize: 10, fontWeight: 700,
-            textTransform: 'uppercase', color: tk.textDisabled,
-            letterSpacing: '0.05em',
-          }}>{col.name}</div>
-          {col.statuses.map(s => {
-            const isCurrent = issue.status === s;
-            return (
-              <button
-                key={s}
-                role="menuitem"
-                onClick={() => {
-                  if (!isCurrent) onChangeStatus?.(issue.id, s);
-                  onClose();
-                }}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  width: '100%', padding: '6px 12px', border: 'none',
-                  background: isCurrent ? tk.dropHighlight : 'transparent',
-                  cursor: isCurrent ? 'default' : 'pointer',
-                  fontSize: 12, color: isCurrent ? tk.selectedAccent : tk.textPrimary,
-                  fontWeight: isCurrent ? 600 : 400,
-                  fontFamily: "'Inter', sans-serif", textAlign: 'left',
-                }}
-                onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = tk.surfaceHover; }}
-                onMouseLeave={e => { e.currentTarget.style.background = isCurrent ? tk.dropHighlight : 'transparent'; }}
-              >
-                {isCurrent && <Check size={12} color={tk.selectedAccent} />}
-                <span style={{ marginLeft: isCurrent ? 0 : 20 }}>{s}</span>
-              </button>
-            );
-          })}
-        </div>
-      ))}
-    </div>
   );
 }
