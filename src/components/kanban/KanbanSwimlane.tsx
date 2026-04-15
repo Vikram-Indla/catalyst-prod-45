@@ -1,6 +1,7 @@
 /**
  * KanbanSwimlane — Grouped swimlane row with expandable columns
  */
+
 import { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { useDroppable } from '@dnd-kit/core';
