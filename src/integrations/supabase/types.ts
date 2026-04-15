@@ -1719,6 +1719,147 @@ export type Database = {
           },
         ]
       }
+      catalyst_workflow_schemes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_default: boolean
+          issue_type: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          issue_type: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          issue_type?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      catalyst_workflow_statuses: {
+        Row: {
+          category: string
+          color: string
+          created_at: string
+          id: string
+          is_final: boolean
+          is_initial: boolean
+          name: string
+          position: number
+          scheme_id: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_final?: boolean
+          is_initial?: boolean
+          name: string
+          position?: number
+          scheme_id: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string
+          created_at?: string
+          id?: string
+          is_final?: boolean
+          is_initial?: boolean
+          name?: string
+          position?: number
+          scheme_id?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalyst_workflow_statuses_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_workflow_schemes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalyst_workflow_transitions: {
+        Row: {
+          created_at: string
+          from_status_id: string | null
+          id: string
+          is_global: boolean
+          name: string | null
+          scheme_id: string
+          sort_order: number
+          to_status_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          from_status_id?: string | null
+          id?: string
+          is_global?: boolean
+          name?: string | null
+          scheme_id: string
+          sort_order?: number
+          to_status_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          from_status_id?: string | null
+          id?: string
+          is_global?: boolean
+          name?: string | null
+          scheme_id?: string
+          sort_order?: number
+          to_status_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalyst_workflow_transitions_from_status_id_fkey"
+            columns: ["from_status_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_workflow_transitions_scheme_id_fkey"
+            columns: ["scheme_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_workflow_schemes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "catalyst_workflow_transitions_to_status_id_fkey"
+            columns: ["to_status_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_workflow_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       caty_analytics: {
         Row: {
           conversation_id: string | null
