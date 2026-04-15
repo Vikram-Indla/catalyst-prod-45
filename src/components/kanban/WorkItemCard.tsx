@@ -8,7 +8,7 @@
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
-  Flag, MoreHorizontal, Pencil,
+  Flag, MoreHorizontal, Pencil, Check, X,
 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
@@ -53,16 +53,20 @@ interface WorkItemCardProps {
   onOpenDetail?: (id: string) => void;
   onArchive?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onSaveSummary?: (id: string, newSummary: string) => void;
 }
 
 export function WorkItemCard({
   issue, avatarUrl, d, tk, isSelected,
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
-  onArchive, onDelete,
+  onArchive, onDelete, onSaveSummary,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(issue.summary);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleMenuBtn = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,6 +74,45 @@ export function WorkItemCard({
     setMenuPos({ x: rect.right, y: rect.bottom + 4 });
     setShowMenu(prev => !prev);
   }, []);
+
+  const startEditing = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditValue(issue.summary);
+    setIsEditing(true);
+  }, [issue.summary]);
+
+  const cancelEditing = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setIsEditing(false);
+    setEditValue(issue.summary);
+  }, [issue.summary]);
+
+  const saveEditing = useCallback((e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    const trimmed = editValue.trim();
+    if (trimmed && trimmed !== issue.summary) {
+      onSaveSummary?.(issue.id, trimmed);
+    }
+    setIsEditing(false);
+  }, [editValue, issue.id, issue.summary, onSaveSummary]);
+
+  // Focus textarea when entering edit mode
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [isEditing]);
+
+  // Handle keyboard in edit mode
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      saveEditing();
+    } else if (e.key === 'Escape') {
+      cancelEditing();
+    }
+  }, [saveEditing, cancelEditing]);
 
   // Derive category/initiative from labels and parent
   const epicLabel = issue.parentSummary || (issue.labels.length > 0 ? issue.labels[0] : null);
@@ -80,52 +123,107 @@ export function WorkItemCard({
       {/* ─── TITLE ROW ─── */}
       <div className="flex items-start" style={{ position: 'relative' }}>
         <div className="flex-1 min-w-0">
-          <div style={{
-            fontSize: d.titleSize,
-            lineHeight: `${d.titleSize + 6}px`,
-            color: tk.textPrimary,
-            fontWeight: 500,
-            marginBottom: 4,
-            display: '-webkit-box',
-            WebkitLineClamp: d.titleClamp,
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden',
-            wordBreak: 'break-word',
-            fontFamily: "'Inter', sans-serif",
-          }}>
-            {issue.summary}
-          </div>
+          {isEditing ? (
+            <div onClick={e => e.stopPropagation()} style={{ marginBottom: 4 }}>
+              <textarea
+                ref={inputRef}
+                value={editValue}
+                onChange={e => setEditValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                style={{
+                  width: '100%',
+                  fontSize: d.titleSize,
+                  lineHeight: `${d.titleSize + 6}px`,
+                  color: tk.textPrimary,
+                  fontWeight: 500,
+                  fontFamily: "'Inter', sans-serif",
+                  background: tk.cardBg,
+                  border: `2px solid ${tk.selectedAccent}`,
+                  borderRadius: 4,
+                  padding: '4px 6px',
+                  resize: 'none',
+                  outline: 'none',
+                  minHeight: 40,
+                  maxHeight: 80,
+                }}
+                rows={2}
+              />
+              {/* Save / Cancel buttons */}
+              <div className="flex items-center justify-end" style={{ gap: 4, marginTop: 4 }}>
+                <button
+                  onClick={saveEditing}
+                  style={{
+                    width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 4, border: `1px solid ${tk.border}`, background: tk.cardBg,
+                    cursor: 'pointer', padding: 0,
+                  }}
+                  aria-label="Save"
+                >
+                  <Check size={14} color="#36B37E" />
+                </button>
+                <button
+                  onClick={cancelEditing}
+                  style={{
+                    width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    borderRadius: 4, border: `1px solid ${tk.border}`, background: tk.cardBg,
+                    cursor: 'pointer', padding: 0,
+                  }}
+                  aria-label="Cancel"
+                >
+                  <X size={14} color="#FF5630" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{
+              fontSize: d.titleSize,
+              lineHeight: `${d.titleSize + 6}px`,
+              color: tk.textPrimary,
+              fontWeight: 500,
+              marginBottom: 4,
+              display: '-webkit-box',
+              WebkitLineClamp: d.titleClamp,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              wordBreak: 'break-word',
+              fontFamily: "'Inter', sans-serif",
+            }}>
+              {issue.summary}
+            </div>
+          )}
         </div>
 
-        {/* Flag + hover-reveal edit + three-dots */}
-        <div className="flex items-center gap-0.5 flex-shrink-0" style={{ marginLeft: 4, marginTop: 1 }}>
-          {issue.isFlagged && <Flag size={12} color="#E5493A" fill="#E5493A" />}
-          <button
-            className="kanban-card-edit-btn"
-            onClick={(e) => { e.stopPropagation(); onOpenDetail?.(issue.id); }}
-            style={{
-              width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
-              opacity: 0, transition: 'opacity 80ms', flexShrink: 0, padding: 0,
-            }}
-            aria-label="Edit work item"
-          >
-            <Pencil size={12} color={tk.textMuted} />
-          </button>
-          <button
-            ref={btnRef}
-            onClick={handleMenuBtn}
-            className="kanban-card-menu-btn"
-            style={{
-              width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
-              opacity: 0, transition: 'opacity 80ms', flexShrink: 0, padding: 0,
-            }}
-            aria-label="More actions"
-          >
-            <MoreHorizontal size={14} color={tk.textMuted} />
-          </button>
-        </div>
+        {/* Flag + hover-reveal edit + three-dots (hidden during edit) */}
+        {!isEditing && (
+          <div className="flex items-center gap-0.5 flex-shrink-0" style={{ marginLeft: 4, marginTop: 1 }}>
+            {issue.isFlagged && <Flag size={12} color="#E5493A" fill="#E5493A" />}
+            <button
+              className="kanban-card-edit-btn"
+              onClick={startEditing}
+              style={{
+                width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
+                opacity: 0, transition: 'opacity 80ms', flexShrink: 0, padding: 0,
+              }}
+              aria-label="Edit title"
+            >
+              <Pencil size={12} color={tk.textMuted} />
+            </button>
+            <button
+              ref={btnRef}
+              onClick={handleMenuBtn}
+              className="kanban-card-menu-btn"
+              style={{
+                width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
+                opacity: 0, transition: 'opacity 80ms', flexShrink: 0, padding: 0,
+              }}
+              aria-label="More actions"
+            >
+              <MoreHorizontal size={14} color={tk.textMuted} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ─── BADGE ROW: Epic (dark charcoal) + Fix Version (bordered) ─── */}
