@@ -92,6 +92,12 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
             { id: 'hierarchy-allwork', title: 'All Work', path: `${base}/hierarchy/allwork`, icon: GitBranch, exact: false },
           ],
         },
+        {
+          title: 'Boards',
+          items: [
+            { id: 'boards', title: 'Board 29 — SS', path: `${base}/boards`, icon: Columns3, exact: false },
+          ],
+        },
       ],
       footerItem: {
         id: 'settings',
