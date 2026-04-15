@@ -151,6 +151,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
                 onCopyLink={onCopyLink}
                 onChangeStatus={onChangeStatus}
                 onOpenDetail={onCardClick}
+                onSaveSummary={onSaveSummary}
               />
             );
           })}
