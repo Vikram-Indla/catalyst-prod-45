@@ -32,6 +32,7 @@ const WorkItemsListPageLazy = lazy(() => import("../pages/project-hub/WorkItemsL
 const ProjectBoardPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardPage"));
 const ProjectBoardManagerPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardManagerPage"));
 const ProjectBoardCanvasPageLazy = lazy(() => import("../pages/project-hub/ProjectBoardCanvasPage"));
+const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
 const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
 const NativeEpicBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeEpicBacklogPage"));
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
