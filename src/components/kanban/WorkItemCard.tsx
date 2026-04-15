@@ -1,18 +1,16 @@
 /**
- * WorkItemCard — Enterprise-grade kanban card with enhanced context menu
+ * WorkItemCard — Enterprise-grade kanban card matching Jira Align density
  * 
- * Layout:
- *   HEADER: item_key (clickable) + priority + flag
- *   TITLE: line-clamped summary
- *   META: labels + sprint
- *   FOOTER: type icon + story points + assignee avatar
+ * Layout (top → bottom):
+ *   TITLE: line-clamped summary (bold)
+ *   BADGE ROW: grey category pill + purple initiative pill
+ *   DATE: subtle date range text
+ *   FOOTER: item_key (left) + assignee avatar (right)
  *
- * Context menu: Open item, Copy link, Flag, Change Status, Move to top/bottom
+ * Context menu: Open item, Copy link, Flag, Change Status
  */
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Flag, MoreHorizontal, ExternalLink, Link2, ArrowUpToLine, ArrowDownToLine, ChevronRight, Check } from 'lucide-react';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
+import { Flag, MoreHorizontal, ExternalLink, Link2, ChevronRight, Check } from 'lucide-react';
 import { KanbanAvatar } from './KanbanAvatar';
 import { KANBAN_COLUMNS } from './kanban-tokens';
 import type { BoardIssue } from './kanban-types';
@@ -69,101 +67,117 @@ export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag
     setShowStatusSub(false);
   }, []);
 
-  // All available statuses from column config
-  const allStatuses = KANBAN_COLUMNS.flatMap(c => c.statuses);
+  // Derive category/initiative from labels and parent
+  const categoryLabel = issue.labels.length > 0 ? issue.labels[0] : null;
+  const initiativeLabel = issue.parentSummary || (issue.labels.length > 1 ? issue.labels[1] : null);
 
   return (
     <>
-      {/* HEADER ROW: Key + Priority + Flag + Menu */}
-      <div className="flex items-center" style={{ gap: 4, marginBottom: 2 }}>
-        <JiraIssueTypeIcon type={issue.issueType} size={d.avatarSize > 22 ? 16 : 14} />
-        <span style={{
-          fontSize: d.metaSize + 1,
-          fontWeight: 500,
-          color: '#2563EB',
-          fontFamily: "'JetBrains Mono', monospace",
-          lineHeight: '14px',
-          cursor: 'pointer',
-        }}>
-          {issue.issueKey}
-        </span>
-        <span className="flex-1" />
-        {issue.isFlagged && <Flag size={12} color="#E5493A" fill="#E5493A" />}
-        <PriorityBars priority={normalisePriority(issue.priority)} />
-        <button
-          ref={btnRef}
-          onClick={handleMenuBtn}
-          className="kanban-card-menu-btn"
-          style={{
-            width: 18, height: 18, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
-            opacity: 0, transition: 'opacity 80ms',
-            flexShrink: 0, padding: 0,
-          }}
-        >
-          <MoreHorizontal size={14} color={tk.textMuted} />
-        </button>
+      {/* ─── MENU BUTTON (top-right, hover-reveal) ─── */}
+      <div className="flex items-start" style={{ position: 'relative' }}>
+        <div className="flex-1 min-w-0">
+          {/* TITLE */}
+          <div style={{
+            fontSize: d.titleSize,
+            lineHeight: `${d.titleSize + 6}px`,
+            color: tk.textPrimary,
+            fontWeight: 500,
+            marginBottom: 6,
+            display: '-webkit-box',
+            WebkitLineClamp: d.titleClamp,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            wordBreak: 'break-word',
+            fontFamily: "'Inter', sans-serif",
+          }}>
+            {issue.summary}
+          </div>
+        </div>
+
+        {/* Flag + Menu */}
+        <div className="flex items-center gap-1 flex-shrink-0" style={{ marginLeft: 4, marginTop: 1 }}>
+          {issue.isFlagged && <Flag size={12} color="#E5493A" fill="#E5493A" />}
+          <button
+            ref={btnRef}
+            onClick={handleMenuBtn}
+            className="kanban-card-menu-btn"
+            style={{
+              width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer',
+              opacity: 0, transition: 'opacity 80ms',
+              flexShrink: 0, padding: 0,
+            }}
+          >
+            <MoreHorizontal size={14} color={tk.textMuted} />
+          </button>
+        </div>
       </div>
 
-      {/* TITLE */}
-      <div style={{
-        fontSize: d.titleSize,
-        lineHeight: `${d.titleSize + 4}px`,
-        color: tk.textPrimary,
-        fontWeight: 400,
-        marginBottom: d.cardGap > 4 ? 4 : 2,
-        display: '-webkit-box',
-        WebkitLineClamp: d.titleClamp,
-        WebkitBoxOrient: 'vertical',
-        overflow: 'hidden',
-        wordBreak: 'break-word',
-      }}>
-        {issue.summary}
-      </div>
-
-      {/* META ROW: Labels + Sprint */}
-      {(issue.labels.length > 0 || issue.sprintName) && (
-        <div className="flex items-center gap-1 mb-[2px]" style={{ overflow: 'hidden' }}>
-          {issue.labels.slice(0, 2).map(l => (
-            <span key={l} style={{
-              fontSize: d.metaSize,
-              fontWeight: 700,
-              textTransform: 'uppercase',
+      {/* BADGE ROW: Category (grey) + Initiative (purple) */}
+      {(categoryLabel || initiativeLabel) && (
+        <div className="flex items-center flex-wrap" style={{ gap: 4, marginBottom: 4 }}>
+          {categoryLabel && (
+            <span style={{
+              fontSize: 10,
+              fontWeight: 600,
               background: tk.chipBg,
               color: tk.chipText,
-              padding: '0 4px',
-              borderRadius: 2,
+              padding: '1px 6px',
+              borderRadius: 10,
               lineHeight: '16px',
-              maxWidth: 100,
+              maxWidth: 140,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               display: 'inline-block',
-              flexShrink: 0,
-            }}>{l}</span>
-          ))}
-          {issue.labels.length > 2 && (
-            <span style={{ fontSize: d.metaSize - 1, color: tk.textMuted }}>+{issue.labels.length - 2}</span>
+            }}>{categoryLabel}</span>
           )}
-          {issue.sprintName && (
+          {initiativeLabel && (
             <span style={{
-              fontSize: d.metaSize,
+              fontSize: 10,
               fontWeight: 600,
-              color: tk.textMuted,
-              lineHeight: '14px',
+              background: '#EDE9FE',
+              color: '#6D28D9',
+              padding: '1px 6px',
+              borderRadius: 10,
+              lineHeight: '16px',
+              maxWidth: 140,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
-              border: `1px solid ${tk.borderSubtle}`,
-              borderRadius: 2,
-              padding: '0 4px',
-            }}>{issue.sprintName}</span>
+              display: 'inline-block',
+            }}>{initiativeLabel}</span>
           )}
         </div>
       )}
 
-      {/* FOOTER: Points + Assignee */}
+      {/* DATE RANGE (sprint as proxy) */}
+      {issue.sprintName && (
+        <div style={{
+          fontSize: 10,
+          color: tk.textMuted,
+          marginBottom: 6,
+          lineHeight: '14px',
+          fontFamily: "'Inter', sans-serif",
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {issue.sprintName}
+        </div>
+      )}
+
+      {/* FOOTER: Item Key (left) + Story Points + Assignee Avatar (right) */}
       <div className="flex items-center" style={{ gap: 4, minHeight: d.footerHeight }}>
+        <span style={{
+          fontSize: d.metaSize + 1,
+          fontWeight: 500,
+          color: tk.textMuted,
+          fontFamily: "'JetBrains Mono', monospace",
+          lineHeight: '14px',
+        }}>
+          {issue.issueKey}
+        </span>
         {issue.storyPoints != null && (
           <span style={{
             fontSize: d.metaSize,
@@ -278,9 +292,6 @@ export function WorkItemCard({ issue, avatarUrl, d, tk, isSelected, onToggleFlag
               </div>
             )}
           </div>
-          <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />
-          <MenuItem icon={<ArrowUpToLine size={14} />} label="Move to top" onClick={() => setShowMenu(false)} tk={tk} />
-          <MenuItem icon={<ArrowDownToLine size={14} />} label="Move to bottom" onClick={() => setShowMenu(false)} tk={tk} />
         </div>
       )}
     </>
