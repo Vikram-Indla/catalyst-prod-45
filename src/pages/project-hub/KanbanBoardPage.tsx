@@ -451,7 +451,7 @@ function GroupByBtn({ value, onChange }: { value: GroupByMode; onChange: (v: Gro
           {GRP_OPTS.map(o => {
             const sel = value === o.key;
             return (
-              <button key={o.key} onClick={() => { onChange(sel ? 'none' : o.key); setOpen(false); }}
+              <button key={o.key} onClick={() => { onChange(o.key); setOpen(false); }}
                 style={{ display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '6px 8px', border: 'none', background: sel ? 'rgba(37,99,235,0.06)' : 'transparent', cursor: 'pointer', fontSize: 12, color: sel ? '#2563EB' : '#0F172A', fontWeight: sel ? 600 : 400 }}
                 onMouseEnter={e => { if (!sel) e.currentTarget.style.background = '#F4F5F7'; }} onMouseLeave={e => { e.currentTarget.style.background = sel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
                 <div style={{ width: 14 }}>{sel && <Check size={12} color="#2563EB" />}</div>
