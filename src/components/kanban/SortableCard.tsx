@@ -1,5 +1,6 @@
 /**
  * SortableCard — DnD-enabled wrapper around WorkItemCard (memoized)
+ * Card radius: 8px per spec. Hover elevation. Selection accent bar.
  */
 import React, { useCallback, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
@@ -27,7 +28,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
 
   const cardStyle: React.CSSProperties = {
     background: tk.cardBg,
-    borderRadius: 3,
+    borderRadius: 8,
     border: `1px solid ${tk.cardBorder}`,
     borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : `1px solid ${tk.cardBorder}`,
     padding: d.cardPad,
@@ -36,7 +37,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     transform: CSS.Transform.toString(transform),
     opacity: isDragging ? 0.35 : 1,
     zIndex: isDragging ? 999 : 'auto',
-    boxShadow: isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : 'none',
+    boxShadow: isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : '0 1px 2px rgba(9,30,66,0.08)',
     ...(transition ? { transition } : {}),
     position: 'relative' as const,
     outline: 'none',
@@ -60,14 +61,14 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       onMouseEnter={e => {
         if (!isDragging) {
           e.currentTarget.style.background = tk.cardHoverBg;
-          e.currentTarget.style.boxShadow = tk.cardHoverShadow;
+          e.currentTarget.style.boxShadow = '0 2px 8px rgba(9,30,66,0.16)';
           const menuBtn = e.currentTarget.querySelector('.kanban-card-menu-btn') as HTMLElement;
           if (menuBtn) menuBtn.style.opacity = '1';
         }
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = tk.cardBg;
-        e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : 'none';
+        e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : '0 1px 2px rgba(9,30,66,0.08)';
         const menuBtn = e.currentTarget.querySelector('.kanban-card-menu-btn') as HTMLElement;
         if (menuBtn) menuBtn.style.opacity = '0';
       }}
@@ -95,8 +96,8 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
 export const OverlayCard = memo(function OverlayCard({ issue, avatarUrl, d, tk }: { issue: BoardIssue; avatarUrl?: string | null; d: DensityConfig; tk: KanbanThemeTokens }) {
   return (
     <div style={{
-      background: tk.cardBg, borderRadius: 3, border: `1px solid ${tk.selectedAccent}`,
-      padding: d.cardPad, width: 220, boxShadow: tk.cardDragShadow,
+      background: tk.cardBg, borderRadius: 8, border: `1px solid ${tk.selectedAccent}`,
+      padding: d.cardPad, width: 280, boxShadow: tk.cardDragShadow,
       transform: 'rotate(2deg)', cursor: 'grabbing',
     }}>
       <WorkItemCard issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} />
