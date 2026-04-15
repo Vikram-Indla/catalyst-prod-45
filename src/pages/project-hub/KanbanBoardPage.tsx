@@ -806,75 +806,49 @@ export default function KanbanBoardPage() {
           <button
             onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
             style={{
-              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
-              cursor: 'pointer',
+              width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 6, border: '1px solid #DFE1E6', background: '#FFFFFF',
+              cursor: 'pointer', transition: 'all 120ms ease',
             }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
             aria-label="Board menu"
           >
-            <MoreHorizontal size={16} color={tk.textSecondary} />
+            <MoreHorizontal size={16} color="#42526E" />
           </button>
           {showBoardMenu && !showViewSettings && (
             <div
               style={{
-                position: 'absolute', top: '100%', right: 0, marginTop: 4,
-                width: 200, background: tk.surfaceBg,
-                border: `1px solid ${tk.border}`, borderRadius: 8,
-                boxShadow: tk.cardDragShadow, zIndex: 50,
-                padding: '4px 0', fontFamily: "'Inter', sans-serif",
+                position: 'absolute', top: '100%', right: 0, marginTop: 6,
+                width: 240, background: '#FFFFFF',
+                border: '1px solid #DFE1E6', borderRadius: 8,
+                boxShadow: '0 8px 24px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.2)',
+                zIndex: 50,
+                padding: '6px 0', fontFamily: "'Inter', sans-serif",
               }}
               onClick={e => e.stopPropagation()}
             >
-              <button
+              {/* Section label */}
+              <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                Board Options
+              </div>
+              <BoardMenuItem
+                icon={<Settings2 size={16} color="#42526E" />}
+                label="View settings"
                 onClick={() => { setShowBoardMenu(false); setShowViewSettings(true); }}
-                className="flex items-center gap-2 w-full"
-                style={{
-                  padding: '8px 12px', background: 'transparent', border: 'none',
-                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
-                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <Settings2 size={14} color={tk.textSecondary} />
-                View settings
-              </button>
-              <button
+              />
+              <BoardMenuItem
+                icon={<MapIcon size={16} color="#42526E" />}
+                label="Map statuses"
                 onClick={() => { setShowBoardMenu(false); navigate(`/project-hub/${key}/boards/map-statuses`); }}
-                className="flex items-center gap-2 w-full"
-                style={{
-                  padding: '8px 12px', background: 'transparent', border: 'none',
-                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
-                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <MapIcon size={14} color={tk.textSecondary} />
-                Map statuses
-              </button>
-              <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
-              <button
+              />
+              <div style={{ height: 1, background: '#EBECF0', margin: '6px 12px' }} />
+              <BoardMenuItem
+                icon={<Filter size={16} color="#42526E" />}
+                label="Advanced filter"
+                badge={advFilterCount > 0 ? advFilterCount : undefined}
                 onClick={() => { setShowBoardMenu(false); setShowAdvancedFilter(true); }}
-                className="flex items-center gap-2 w-full"
-                style={{
-                  padding: '8px 12px', background: 'transparent', border: 'none',
-                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
-                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-              >
-                <Filter size={14} color={tk.textSecondary} />
-                Advanced filter
-                {advFilterCount > 0 && (
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, color: '#fff',
-                    background: '#2563EB', borderRadius: 10, padding: '0px 6px',
-                    lineHeight: '16px', marginLeft: 'auto',
-                  }}>{advFilterCount}</span>
-                )}
-              </button>
+              />
             </div>
           )}
           {showViewSettings && (
