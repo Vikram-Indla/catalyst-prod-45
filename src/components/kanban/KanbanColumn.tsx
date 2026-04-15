@@ -1,6 +1,7 @@
 /**
- * KanbanColumn — Column header + droppable area with sortable cards
+ * KanbanColumn — Column header + droppable area with sortable cards (memoized)
  */
+import { memo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableCard } from './SortableCard';
@@ -23,12 +24,14 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
       <span style={{
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
         color: tk.textMuted, letterSpacing: '0.04em',
+        fontFamily: "'Inter', sans-serif",
       }}>{name}</span>
       <span style={{
         fontSize: 11, fontWeight: 600, color: tk.textMuted,
         background: tk.badgeBg, borderRadius: 10,
         padding: '0 5px', lineHeight: '16px',
         minWidth: 16, textAlign: 'center',
+        fontFamily: "'JetBrains Mono', monospace",
       }}>{count}</span>
     </div>
   );
@@ -36,7 +39,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
 
 /* ═══ DROPPABLE COLUMN ═══ */
 
-export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus }: {
+export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onChangeStatus }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
@@ -46,16 +49,22 @@ export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, o
   d: DensityConfig;
   tk: KanbanThemeTokens;
   selectedId?: string | null;
+  focusedId?: string | null;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
-    <div className="flex flex-col flex-shrink-0" style={{
-      flex: '1 1 0', minWidth: 180,
-      borderLeft: isFirst ? 'none' : `1px solid ${tk.border}`,
-    }}>
+    <div
+      className="flex flex-col flex-shrink-0"
+      style={{
+        flex: '1 1 0', minWidth: 180,
+        borderLeft: isFirst ? 'none' : `1px solid ${tk.border}`,
+      }}
+      role="list"
+      aria-label={`${column.name} column, ${issueIds.length} items`}
+    >
       <ColHeader name={column.name} count={issueIds.length} category={column.category} tk={tk} />
       <div
         ref={setNodeRef}
@@ -92,6 +101,7 @@ export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, o
                 d={d}
                 tk={tk}
                 isSelected={selectedId === id}
+                isFocused={focusedId === id}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
                 onChangeStatus={onChangeStatus}
@@ -103,4 +113,4 @@ export function DroppableColumn({ column, issueIds, issuesById, avatarsByName, o
       </div>
     </div>
   );
-}
+});

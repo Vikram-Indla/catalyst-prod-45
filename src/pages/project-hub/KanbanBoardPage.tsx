@@ -46,6 +46,7 @@ import {
   QuickFilterDropdown, DensityToggle, GroupByBtn,
 } from '@/components/kanban/KanbanToolbar';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
+import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
 import { Search } from 'lucide-react';
 
@@ -71,6 +72,7 @@ export default function KanbanBoardPage() {
   const [groupBy, setGroupBy] = useState<GroupByMode>('none');
   const [density, setDensity] = useState<KanbanDensity>(() => (localStorage.getItem(DENSITY_STORAGE_KEY) as KanbanDensity) || 'dense');
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
+  const [focusedId, setFocusedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -372,6 +374,18 @@ export default function KanbanBoardPage() {
     setQuickFilters(new Set());
   }, []);
 
+  /* ═══ KEYBOARD NAVIGATION ═══ */
+  useKanbanKeyboard({
+    enabled: !dragId,
+    colMap,
+    issuesById,
+    selectedId: focusedId,
+    onSelect: setFocusedId,
+    onOpen: (id) => setSelIssueId(id),
+    onToggleFlag: handleToggleFlag,
+    groupByActive: groupBy !== 'none',
+  });
+
   /* ═══ LOADING STATE ═══ */
 
   if (isLoading) return (
@@ -537,6 +551,7 @@ export default function KanbanBoardPage() {
                   d={d}
                   tk={tk}
                   selectedId={selIssueId}
+                  focusedId={focusedId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
                   onChangeStatus={persistStatusChange}
