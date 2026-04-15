@@ -243,7 +243,7 @@ export default function KanbanBoardPage() {
       let from = 0;
       while (true) {
         const { data, error } = await supabase.from('ph_issues')
-          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
+          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at')
           .eq('project_key', key.toUpperCase())
           .is('deleted_at', null)
           .order('jira_updated_at', { ascending: false })
@@ -277,7 +277,7 @@ export default function KanbanBoardPage() {
           fixVersion: fv,
           isFlagged: !!r.is_flagged,
           updatedAt: r.jira_updated_at,
-          createdAt: r.created_at ?? null,
+          createdAt: r.jira_created_at ?? null,
         };
       });
     },
