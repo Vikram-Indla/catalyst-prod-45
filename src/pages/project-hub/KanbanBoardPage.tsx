@@ -374,6 +374,18 @@ export default function KanbanBoardPage() {
     setQuickFilters(new Set());
   }, []);
 
+  /* ═══ KEYBOARD NAVIGATION ═══ */
+  useKanbanKeyboard({
+    enabled: !dragId,
+    colMap,
+    issuesById,
+    selectedId: focusedId,
+    onSelect: setFocusedId,
+    onOpen: (id) => setSelIssueId(id),
+    onToggleFlag: handleToggleFlag,
+    groupByActive: groupBy !== 'none',
+  });
+
   /* ═══ LOADING STATE ═══ */
 
   if (isLoading) return (
