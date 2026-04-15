@@ -100,6 +100,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
                 selectedId={selectedId}
                 onToggleFlag={onToggleFlag}
                 onCopyLink={onCopyLink}
+                onCopyKey={onCopyKey}
                 onChangeStatus={onChangeStatus}
                 onSaveSummary={onSaveSummary}
                 onChangeAssignee={onChangeAssignee}
@@ -113,7 +114,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
   );
 }
 
-function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
+function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions }: {
   colId: string; groupKey: string; issueIds: string[];
   issuesById: Map<string, BoardIssue>; avatarsByName: Map<string, string>;
   onCardClick: (id: string) => void; isFirst: boolean;
@@ -121,6 +122,7 @@ function SwimlaneDndColumn({ colId, groupKey, issueIds, issuesById, avatarsByNam
   selectedId?: string | null;
   onToggleFlag?: (id: string) => void;
   onCopyLink?: (issueKey: string) => void;
+  onCopyKey?: (issueKey: string) => void;
   onChangeStatus?: (issueId: string, newStatus: string) => void;
   onSaveSummary?: (id: string, newSummary: string) => void;
   onChangeAssignee?: (issueId: string, newAssignee: string | null) => void;
