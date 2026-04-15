@@ -459,7 +459,7 @@ function GroupByBtn({ value, onChange }: { value: GroupByMode; onChange: (v: Gro
               </button>
             );
           })}
-          {active && <div style={{ padding: '4px 8px', borderTop: '1px solid #EBECF0' }}><button onClick={() => { onChange('none'); setOpen(false); }} style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear</button></div>}
+          {active && <div style={{ padding: '4px 8px', borderTop: '1px solid #EBECF0' }}><button onClick={() => { onChange('none'); setOpen(false); }} style={{ fontSize: 11, color: '#2563EB', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 500 }}>Clear grouping</button></div>}
         </div>
       )}
     </div>
