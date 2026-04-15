@@ -13,7 +13,7 @@ import { KanbanAvatar } from './KanbanAvatar';
 import { SortableCard } from './SortableCard';
 import { KANBAN_COLUMNS as DEFAULT_KANBAN_COLUMNS, STATUS_TO_COL_ID as DEFAULT_STATUS_TO_COL_ID } from './kanban-tokens';
 import type { BoardIssue, GroupBucket, GroupByMode } from './kanban-types';
-import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
+import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
 import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
