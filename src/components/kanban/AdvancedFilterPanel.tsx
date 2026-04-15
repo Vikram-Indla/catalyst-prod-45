@@ -299,16 +299,16 @@ function MultiSelectFilterSection({
   }, [selected, onChange]);
 
   return (
-    <div style={{ borderBottom: `1px solid ${tk.border}` }}>
+    <div style={{ borderBottom: '1px solid #EBECF0' }}>
       <button
         onClick={() => setOpen(v => !v)}
         className="flex items-center justify-between w-full"
         style={{
-          padding: '10px 16px', background: 'transparent', border: 'none',
-          cursor: 'pointer', fontSize: 12, fontWeight: 600, color: tk.textPrimary,
-          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.04em',
+          padding: '12px 20px', background: 'transparent', border: 'none',
+          cursor: 'pointer', fontSize: 13, fontWeight: 700, color: '#172B4D',
+          textAlign: 'left', textTransform: 'uppercase', letterSpacing: '0.05em',
         }}
-        onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+        onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
       >
         <span className="flex items-center gap-2">
@@ -316,64 +316,68 @@ function MultiSelectFilterSection({
           {selected.length > 0 && (
             <span style={{
               fontSize: 10, fontWeight: 700, color: '#fff',
-              background: '#2563EB', borderRadius: 10, padding: '0px 6px',
+              background: '#2563EB', borderRadius: 10, padding: '1px 7px',
               lineHeight: '16px',
             }}>{selected.length}</span>
           )}
         </span>
         <ChevronDown
-          size={14} color={tk.textMuted}
+          size={14} color="#5E6C84"
           style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms' }}
         />
       </button>
       {open && (
-        <div style={{ padding: '0 12px 8px' }}>
+        <div style={{ padding: '0 16px 10px' }}>
           {options.length > 5 && (
-            <div className="relative" style={{ marginBottom: 6 }}>
-              <Search size={12} color={tk.textDisabled} className="absolute left-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <div className="relative" style={{ marginBottom: 8 }}>
+              <Search size={13} color="#94A3B8" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder={placeholder}
                 style={{
-                  width: '100%', height: 28, paddingLeft: 24, paddingRight: 6,
-                  border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
-                  fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
+                  width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
+                  border: '1px solid #DDDEE1', borderRadius: 4,
+                  fontSize: 13, color: '#172B4D', background: '#FAFBFC',
                   outline: 'none', fontFamily: "'Inter', sans-serif",
                 }}
+                onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
+                onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')}
               />
             </div>
           )}
-          <div style={{ maxHeight: 180, overflowY: 'auto' }}>
+          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
             {filtered.map(opt => {
               const isSelected = selected.includes(opt);
               return (
                 <button
                   key={opt}
                   onClick={() => toggle(opt)}
-                  className="flex items-center gap-2 w-full"
+                  className="flex items-center gap-3 w-full"
                   style={{
-                    padding: '5px 8px', background: isSelected ? 'rgba(37,99,235,0.08)' : 'transparent',
-                    border: 'none', cursor: 'pointer', fontSize: 12,
-                    color: tk.textPrimary, textAlign: 'left', borderRadius: 4,
+                    padding: '7px 8px', background: isSelected ? 'rgba(37,99,235,0.06)' : 'transparent',
+                    border: 'none', cursor: 'pointer', fontSize: 13.5,
+                    color: '#172B4D', textAlign: 'left', borderRadius: 4,
+                    fontWeight: isSelected ? 600 : 400,
                   }}
-                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = 'transparent'; }}
                 >
                   <span style={{
-                    width: 16, height: 16, borderRadius: 3,
-                    border: isSelected ? 'none' : `1.5px solid ${tk.border}`,
+                    width: 18, height: 18, borderRadius: 3,
+                    border: isSelected ? 'none' : '2px solid #C1C7D0',
                     background: isSelected ? '#2563EB' : 'transparent',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
+                    transition: 'all 150ms',
                   }}>
-                    {isSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                    {isSelected && <Check size={12} color="#fff" strokeWidth={3} />}
                   </span>
                   <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{opt}</span>
                 </button>
               );
             })}
             {filtered.length === 0 && (
-              <div style={{ padding: '8px 4px', fontSize: 12, color: tk.textMuted }}>No results</div>
+              <div style={{ padding: '10px 4px', fontSize: 13, color: '#5E6C84' }}>No results</div>
             )}
           </div>
         </div>
