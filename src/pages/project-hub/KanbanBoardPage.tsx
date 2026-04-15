@@ -577,6 +577,7 @@ export default function KanbanBoardPage() {
   const [groupBy, setGroupBy] = useState<GroupByMode>('epic');
   const [filterOpen, setFilterOpen] = useState(false);
   const [advFilters, setAdvFilters] = useState<Record<string, string[]>>({});
+  const [quickFilters, setQuickFilters] = useState<Set<string>>(new Set());
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
   const [dragId, setDragId] = useState<string | null>(null);
