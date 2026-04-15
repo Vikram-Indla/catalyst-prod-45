@@ -12,16 +12,15 @@ import type {
 // are not yet reflected in the auto-generated Supabase types file.
 // We use typed helper functions to avoid `as any` while keeping type safety.
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 function fromTable(table: string) {
-  return (supabase as unknown as {
-    from: (t: string) => ReturnType<typeof supabase.from>;
-  }).from(table);
+  return db.from(table);
 }
 
 function rpc(name: string, params: Record<string, unknown>) {
-  return (supabase as unknown as {
-    rpc: (n: string, p: Record<string, unknown>) => ReturnType<typeof supabase.rpc>;
-  }).rpc(name, params);
+  return db.rpc(name, params);
 }
 
 function toColumn(r: Record<string, unknown>): PhBoardColumn {

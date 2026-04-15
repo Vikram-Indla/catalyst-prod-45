@@ -1,9 +1,10 @@
 import { supabase } from '@/integrations/supabase/client';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const db = supabase as any;
+
 function rpc(name: string, params: Record<string, unknown>) {
-  return (supabase as unknown as {
-    rpc: (n: string, p: Record<string, unknown>) => ReturnType<typeof supabase.rpc>;
-  }).rpc(name, params);
+  return db.rpc(name, params);
 }
 
 export async function moveIssueToColumn(
