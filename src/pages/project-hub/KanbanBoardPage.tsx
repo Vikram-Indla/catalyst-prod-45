@@ -862,6 +862,8 @@ export default function KanbanBoardPage() {
                   onMoved={handleMoved}
                   onLinked={handleLinked}
                   visibleFields={visibleFields}
+                  columns={KANBAN_COLUMNS}
+                  statusToColId={STATUS_TO_COL_ID}
                 />
               ))}
               {groups.length === 0 && (
