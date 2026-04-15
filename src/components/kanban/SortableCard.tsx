@@ -114,6 +114,8 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         projectKey={projectKey}
         onLabelsUpdated={onLabelsUpdated}
         onParentChange={onParentChange}
+        onArchive={onArchive}
+        onDelete={onDelete}
         onMoved={onMoved}
         onLinked={onLinked}
       />
