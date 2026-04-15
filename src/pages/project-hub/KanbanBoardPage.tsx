@@ -45,6 +45,7 @@ import {
   AvatarStackFilter, EpicFilterDropdown, TypeFilterDropdown, PriorityFilterDropdown,
   QuickFilterDropdown, DensityToggle, GroupByBtn,
 } from '@/components/kanban/KanbanToolbar';
+import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 
 import { Search } from 'lucide-react';
 
