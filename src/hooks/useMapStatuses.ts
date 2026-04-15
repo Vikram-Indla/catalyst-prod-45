@@ -150,13 +150,13 @@ export function useMapStatuses(projectKey: string | undefined) {
 
   // 4. Get issue counts per status for this project
   const { data: statusCounts } = useQuery({
-    queryKey: ['status-counts-for-map', projectKey],
+    queryKey: ['status-counts-for-map', projectId],
     queryFn: async () => {
-      if (!projectKey) return [];
+      if (!projectId) return [];
       const { data } = await supabase
         .from('catalyst_issues')
         .select('status')
-        .eq('project_id', projectKey === 'BAU' ? (projectId ?? '') : projectId ?? '');
+        .eq('project_id', projectId);
       if (!data) return [];
       const counts = new Map<string, number>();
       for (const row of data) {
