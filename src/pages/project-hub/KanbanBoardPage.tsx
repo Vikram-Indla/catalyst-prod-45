@@ -273,7 +273,7 @@ export default function KanbanBoardPage() {
     }
   }, [issuesById, key, qc]);
 
-
+  const handleToggleFlag = useCallback(async (issueId: string) => {
     const issue = issuesById.get(issueId);
     if (!issue) return;
     const newFlag = !issue.isFlagged;
