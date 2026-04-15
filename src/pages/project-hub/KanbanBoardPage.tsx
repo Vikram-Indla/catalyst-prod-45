@@ -597,6 +597,13 @@ export default function KanbanBoardPage() {
 
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: '#F4F5F7' }}>
+      {/* ── Page header ── */}
+      <div className="flex items-center px-6" style={{ height: 56, background: '#FFFFFF', borderBottom: '1px solid #EBECF0', flexShrink: 0 }}>
+        <div>
+          <h1 style={{ fontSize: 18, fontWeight: 600, color: '#172B4D', lineHeight: '24px', margin: 0, fontFamily: "'Sora', sans-serif" }}>Board</h1>
+          <p style={{ fontSize: 12, color: '#6B778C', lineHeight: '16px', margin: 0, fontFamily: "'Inter', sans-serif" }}>Visualize and track work items across workflow stages</p>
+        </div>
+      </div>
       {/* ── Board chrome toolbar ── */}
       <div className="flex items-center gap-2 px-4" style={{ height: 44, background: '#FFFFFF', borderBottom: '1px solid #DDDEE1', flexShrink: 0 }}>
         {/* Search */}
