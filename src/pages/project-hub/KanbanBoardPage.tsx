@@ -485,10 +485,10 @@ export default function KanbanBoardPage() {
       </div>
 
       {/* ── Board content ── */}
-      <div className="flex-1 min-h-0 overflow-auto">
+      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden" style={{ scrollbarGutter: 'stable' as any }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div style={{ background: tk.surfaceBg }}>
+            <div style={{ background: tk.surfaceBg, minWidth: KANBAN_COLUMNS.length * 300 }}>
               {/* Column headers for swimlane mode */}
               <div className="flex sticky top-0 z-20" style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.border}` }}>
                 {KANBAN_COLUMNS.map((col, i) => {
@@ -498,13 +498,13 @@ export default function KanbanBoardPage() {
                   }).length, 0);
                   const categoryDot = col.category === 'done' ? '#006644' : col.category === 'in_progress' ? '#0747A6' : '#5E6C84';
                   return (
-                    <div key={col.id} className="flex items-center gap-1.5 px-2" style={{
-                      flex: '1 1 0', minWidth: 180, height: 32,
-                      borderLeft: i === 0 ? 'none' : `1px solid ${tk.border}`,
+                    <div key={col.id} className="flex items-center gap-2 px-3" style={{
+                      width: 300, minWidth: 300, maxWidth: 300, height: 36, flexShrink: 0,
+                      borderRight: `1px solid ${tk.border}`,
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
                       <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: tk.textMuted, letterSpacing: '0.04em' }}>{col.name}</span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: tk.textMuted, background: tk.badgeBg, borderRadius: 10, padding: '0 5px', lineHeight: '16px', minWidth: 16, textAlign: 'center' }}>{count}</span>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: tk.textSecondary, background: tk.badgeBg, borderRadius: 10, padding: '1px 7px', lineHeight: '18px', minWidth: 20, textAlign: 'center' }}>{count}</span>
                     </div>
                   );
                 })}
@@ -540,7 +540,7 @@ export default function KanbanBoardPage() {
           </DndContext>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div className="flex h-full">
+            <div className="flex h-full" style={{ minWidth: KANBAN_COLUMNS.length * 300 }}>
               {KANBAN_COLUMNS.map((col, i) => (
                 <DroppableColumn
                   key={col.id}
