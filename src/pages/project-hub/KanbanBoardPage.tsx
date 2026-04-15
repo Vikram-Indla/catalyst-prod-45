@@ -539,6 +539,7 @@ export default function KanbanBoardPage() {
                   selectedId={selIssueId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
+                  onChangeStatus={persistStatusChange}
                 />
               ))}
             </div>
