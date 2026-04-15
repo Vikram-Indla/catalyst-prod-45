@@ -390,15 +390,17 @@ export default function KanbanBoardPage() {
     if (advancedFilters.createdAfter) {
       const afterDate = new Date(advancedFilters.createdAfter);
       issues = issues.filter(i => {
-        if (!i.updatedAt) return false; // fallback — created_at not in BoardIssue, use updatedAt
-        return new Date(i.updatedAt) >= afterDate;
+        const d = i.createdAt || i.updatedAt;
+        if (!d) return false;
+        return new Date(d) >= afterDate;
       });
     }
     if (advancedFilters.createdBefore) {
       const beforeDate = new Date(advancedFilters.createdBefore + 'T23:59:59');
       issues = issues.filter(i => {
-        if (!i.updatedAt) return true;
-        return new Date(i.updatedAt) <= beforeDate;
+        const d = i.createdAt || i.updatedAt;
+        if (!d) return true;
+        return new Date(d) <= beforeDate;
       });
     }
 
