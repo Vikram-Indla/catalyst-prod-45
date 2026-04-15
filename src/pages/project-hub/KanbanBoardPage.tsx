@@ -575,6 +575,7 @@ export default function KanbanBoardPage() {
                   selectedId={selIssueId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
+                  onCopyKey={handleCopyKey}
                   onChangeStatus={persistStatusChange}
                   onSaveSummary={handleSaveSummary}
                   onChangeAssignee={handleChangeAssignee}
@@ -609,6 +610,7 @@ export default function KanbanBoardPage() {
                   focusedId={focusedId}
                   onToggleFlag={handleToggleFlag}
                   onCopyLink={handleCopyLink}
+                  onCopyKey={handleCopyKey}
                   onChangeStatus={persistStatusChange}
                   onSaveSummary={handleSaveSummary}
                   onChangeAssignee={handleChangeAssignee}
