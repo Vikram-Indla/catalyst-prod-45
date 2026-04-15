@@ -469,8 +469,12 @@ function SwimlaneRow({ lane, collapsed, onToggle, dragState, onDragStart, onDrag
               isDragTarget={dropTargetCol === sc.column.id}
               epicId={lane.epicId}
               onDragOver={(e) => {
-                e.preventDefault();
-                setDropTargetCol(sc.column.id);
+                // FIX 2/5: only allow drop on same-epic swimlane
+                if (!dragState.sourceEpicId || dragState.sourceEpicId === lane.epicId) {
+                  e.preventDefault();
+                  setDropTargetCol(sc.column.id);
+                }
+                // else: browser shows not-allowed cursor naturally
               }}
               onDragLeave={() => setDropTargetCol(null)}
               onDrop={(e) => {
@@ -578,12 +582,15 @@ interface BoardToolbarProps {
 }
 
 function BoardToolbar({ searchRef, onSearch, filters, setFilters }: BoardToolbarProps) {
+  // FIX 3: local state for instant input, debounced filter update
+  const [searchInput, setSearchInput] = useState('');
+
   const avatars = [
-    { name: 'AA', color: '#FF5630' },
-    { name: 'AA', color: '#6554C0' },
-    { name: 'H', color: '#36B37E' },
-    { name: 'KA', color: '#0052CC' },
-    { name: 'MA', color: '#FF8B00' },
+    { name: 'AA', color: '#FF5630', userId: 'avatar-1' },
+    { name: 'AA', color: '#6554C0', userId: 'avatar-2' },
+    { name: 'H', color: '#36B37E', userId: 'avatar-3' },
+    { name: 'KA', color: '#0052CC', userId: 'avatar-4' },
+    { name: 'MA', color: '#FF8B00', userId: 'avatar-5' },
   ];
 
   return (
@@ -600,21 +607,42 @@ function BoardToolbar({ searchRef, onSearch, filters, setFilters }: BoardToolbar
           placeholder="Search board"
           className="pl-7 pr-2 py-1 border rounded text-sm"
           style={{ width: 200, height: 32, borderColor: '#DFE1E6', fontSize: 13, color: '#172B4D' }}
-          onChange={(e) => onSearch(e.target.value)}
+          value={searchInput}
+          onChange={(e) => {
+            setSearchInput(e.target.value);
+            onSearch(e.target.value);
+          }}
         />
       </div>
 
-      {/* Avatar group */}
+      {/* Avatar group — FIX 8: toggle filter on click */}
       <div className="flex items-center -space-x-[5px]">
-        {avatars.map((a, i) => (
-          <span
-            key={i}
-            className="inline-flex items-center justify-center rounded-full border-2 border-white"
-            style={{ width: 28, height: 28, background: a.color, fontSize: 10, fontWeight: 700, color: '#fff' }}
-          >
-            {a.name}
-          </span>
-        ))}
+        {avatars.map((a, i) => {
+          const isActive = filters.assigneeId === a.userId;
+          return (
+            <button
+              key={i}
+              className="inline-flex items-center justify-center rounded-full border-2 border-white cursor-pointer"
+              style={{
+                width: 28,
+                height: 28,
+                background: a.color,
+                fontSize: 10,
+                fontWeight: 700,
+                color: '#fff',
+                boxShadow: isActive ? '0 0 0 2px #388BFF' : 'none',
+              }}
+              onClick={() => {
+                setFilters((f) => ({
+                  ...f,
+                  assigneeId: f.assigneeId === a.userId ? null : a.userId,
+                }));
+              }}
+            >
+              {a.name}
+            </button>
+          );
+        })}
         <span
           className="inline-flex items-center justify-center rounded-full border-2 border-white"
           style={{ width: 28, height: 28, background: '#97A0AF', fontSize: 10, fontWeight: 700, color: '#fff' }}
