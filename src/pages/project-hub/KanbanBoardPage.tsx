@@ -522,6 +522,44 @@ const GRP_OPTS: { key: GroupByMode; label: string }[] = [
   { key: 'fixVersion', label: 'Fix Version' },
 ];
 
+const QUICK_FILTER_OPTIONS = [
+  { key: 'recently-updated', label: 'Recently Updated' },
+  { key: 'assigned-to-me', label: 'Assigned to me' },
+] as const;
+
+function QuickFilterDropdown({ selected, onChange }: { selected: Set<string>; onChange: (v: Set<string>) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (!open) return; const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, [open]);
+  const active = selected.size > 0;
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button onClick={() => setOpen(p => !p)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, height: 32, padding: '0 10px', borderRadius: 3, border: active ? '2px solid #2563EB' : '1px solid #DDDEE1', background: active ? '#E8F0FE' : '#FFFFFF', color: active ? '#2563EB' : '#42526E', fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+        Quick filters
+        <ChevronDown size={12} />
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, width: 220, background: '#FFFFFF', border: '1px solid #DDDEE1', borderRadius: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.12)' }}>
+          {QUICK_FILTER_OPTIONS.map(o => {
+            const isSel = selected.has(o.key);
+            return (
+              <button key={o.key} onClick={() => { const next = new Set(selected); if (isSel) next.delete(o.key); else next.add(o.key); onChange(next); }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '10px 14px', border: 'none', background: isSel ? 'rgba(37,99,235,0.06)' : 'transparent', cursor: 'pointer', textAlign: 'left' }}
+                onMouseEnter={ev => { if (!isSel) (ev.currentTarget as HTMLElement).style.background = '#F4F5F7'; }} onMouseLeave={ev => { (ev.currentTarget as HTMLElement).style.background = isSel ? 'rgba(37,99,235,0.06)' : 'transparent'; }}>
+                <div style={{ width: 16, height: 16, border: isSel ? 'none' : '1.5px solid #C1C7D0', borderRadius: 3, background: isSel ? '#2563EB' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  {isSel && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
+                </div>
+                <span style={{ fontSize: 14, fontWeight: 400, color: '#172B4D' }}>{o.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function GroupByBtn({ value, onChange }: { value: GroupByMode; onChange: (v: GroupByMode) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
