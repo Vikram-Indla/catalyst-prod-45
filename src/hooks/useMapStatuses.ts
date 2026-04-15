@@ -133,24 +133,32 @@ export function useMapStatuses(projectKey: string | undefined) {
     staleTime: 60_000,
   });
 
-  // 4. Get issue counts per status for this project
+  // 4. Get issue counts per status for this project (from ph_issues which uses project_key)
   const { data: statusCounts } = useQuery({
-    queryKey: ['status-counts-for-map', projectId],
+    queryKey: ['status-counts-for-map', projectKey],
     queryFn: async () => {
-      if (!projectId) return [];
-      const { data } = await supabase
-        .from('catalyst_issues')
-        .select('status')
-        .eq('project_id', projectId);
-      if (!data) return [];
+      if (!projectKey) return [];
+      // ph_issues can have many rows — fetch in pages to avoid the 1000-row limit
       const counts = new Map<string, number>();
-      for (const row of data) {
-        const s = row.status;
-        counts.set(s, (counts.get(s) ?? 0) + 1);
+      let from = 0;
+      const PAGE = 1000;
+      while (true) {
+        const { data } = await supabase
+          .from('ph_issues')
+          .select('status')
+          .eq('project_key', projectKey)
+          .range(from, from + PAGE - 1);
+        if (!data || data.length === 0) break;
+        for (const row of data) {
+          const s = (row as any).status as string;
+          if (s) counts.set(s, (counts.get(s) ?? 0) + 1);
+        }
+        if (data.length < PAGE) break;
+        from += PAGE;
       }
       return Array.from(counts.entries()).map(([status, count]) => ({ status, count }));
     },
-    enabled: !!projectId,
+    enabled: !!projectKey,
     staleTime: 60_000,
   });
 
