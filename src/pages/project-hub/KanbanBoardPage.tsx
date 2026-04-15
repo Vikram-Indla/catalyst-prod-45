@@ -634,6 +634,37 @@ export default function KanbanBoardPage() {
 
         {/* Group by */}
         <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
+
+        {/* View settings ••• */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowViewSettings(v => !v)}
+            style={{
+              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
+              cursor: 'pointer',
+            }}
+            aria-label="View settings"
+          >
+            <MoreHorizontal size={16} color={tk.textSecondary} />
+          </button>
+          {showViewSettings && (
+            <ViewSettingsPanel
+              settings={viewSettings}
+              onUpdate={updateViewSettings}
+              onExpandAll={handleExpandAll}
+              onCollapseAll={() => {
+                setCollapsedSwimlanes(() => {
+                  const next = new Set<string>();
+                  groups?.forEach((g: any) => next.add(g.groupKey));
+                  return next;
+                });
+              }}
+              onClose={() => setShowViewSettings(false)}
+              tk={tk}
+            />
+          )}
+        </div>
       </div>
 
       {/* ── Board content ── */}
