@@ -573,6 +573,8 @@ export default function KanbanBoardPage() {
   const [search, setSearch] = useState('');
   const [debSearch, setDebSearch] = useState('');
   const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
+  const [selEpics, setSelEpics] = useState<string[]>([]);
+  const [selTypes, setSelTypes] = useState<string[]>([]);
   const [groupBy, setGroupBy] = useState<GroupByMode>('epic');
   const [filterOpen, setFilterOpen] = useState(false);
   const [advFilters, setAdvFilters] = useState<Record<string, string[]>>({});
