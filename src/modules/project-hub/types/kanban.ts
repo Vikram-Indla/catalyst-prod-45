@@ -69,6 +69,7 @@ export interface BoardFilters {
 export interface DragState {
   draggingId: string | null;
   sourceColumnId: string | null;
+  sourceEpicId: string | null;
   targetColumnId: string | null;
 }
 

@@ -3,7 +3,8 @@ import type { BoardIssue, BoardFilters } from '../types/kanban';
 
 export function useBoardSearch(
   issues: BoardIssue[],
-  filters: BoardFilters
+  filters: BoardFilters,
+  currentUserId?: string
 ): BoardIssue[] {
   return useMemo(() => {
     let result = issues;
@@ -28,7 +29,11 @@ export function useBoardSearch(
     if (filters.quickFilter === 'unassigned') {
       result = result.filter((i) => !i.assigneeId);
     }
+    // FIX 9: "Only my issues" uses real auth user ID
+    if (filters.quickFilter === 'mine' && currentUserId) {
+      result = result.filter((i) => i.assigneeId === currentUserId);
+    }
 
     return result;
-  }, [issues, filters]);
+  }, [issues, filters, currentUserId]);
 }
