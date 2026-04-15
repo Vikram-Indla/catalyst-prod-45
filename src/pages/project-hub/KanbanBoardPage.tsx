@@ -49,9 +49,13 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search, MoreHorizontal, Settings2, Map as MapIcon } from 'lucide-react';
+import { Search, MoreHorizontal, Settings2, Map as MapIcon, Filter } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
 import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
+import {
+  AdvancedFilterPanel, type AdvancedFilters,
+  EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
+} from '@/components/kanban/AdvancedFilterPanel';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -82,6 +86,8 @@ export default function KanbanBoardPage() {
   const [colMap, setColMap] = useState<ColMap>({});
   const [showViewSettings, setShowViewSettings] = useState(false);
   const [showBoardMenu, setShowBoardMenu] = useState(false);
+  const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
@@ -233,7 +239,7 @@ export default function KanbanBoardPage() {
     queryFn: async () => {
       if (!key) return [];
       const { data, error } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at')
+        .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, created_at')
         .eq('project_key', key.toUpperCase())
         .in('issue_type', ['Epic', 'Story'])
         .is('deleted_at', null)
@@ -263,6 +269,7 @@ export default function KanbanBoardPage() {
           fixVersion: fv,
           isFlagged: !!r.is_flagged,
           updatedAt: r.jira_updated_at,
+          createdAt: r.created_at ?? null,
         };
       });
     },
@@ -359,8 +366,46 @@ export default function KanbanBoardPage() {
       const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
       issues = issues.filter(i => i.updatedAt && new Date(i.updatedAt).getTime() > cutoff);
     }
+
+    // ── Advanced filters ──
+    if (advancedFilters.fixVersions.length > 0) {
+      const fvSet = new Set(advancedFilters.fixVersions);
+      issues = issues.filter(i => i.fixVersion && fvSet.has(i.fixVersion));
+    }
+    if (advancedFilters.issueTypes.length > 0) {
+      const tSet = new Set(advancedFilters.issueTypes);
+      issues = issues.filter(i => tSet.has(i.issueType));
+    }
+    if (advancedFilters.statuses.length > 0) {
+      const sSet = new Set(advancedFilters.statuses.map(s => s.toLowerCase()));
+      issues = issues.filter(i => sSet.has(i.status.toLowerCase()));
+    }
+    if (advancedFilters.assignees.length > 0) {
+      const aSet = new Set(advancedFilters.assignees);
+      issues = issues.filter(i => {
+        const name = i.assigneeName || 'Unassigned';
+        return aSet.has(name);
+      });
+    }
+    if (advancedFilters.createdAfter) {
+      const afterDate = new Date(advancedFilters.createdAfter);
+      issues = issues.filter(i => {
+        const d = i.createdAt || i.updatedAt;
+        if (!d) return false;
+        return new Date(d) >= afterDate;
+      });
+    }
+    if (advancedFilters.createdBefore) {
+      const beforeDate = new Date(advancedFilters.createdBefore + 'T23:59:59');
+      issues = issues.filter(i => {
+        const d = i.createdAt || i.updatedAt;
+        if (!d) return true;
+        return new Date(d) <= beforeDate;
+      });
+    }
+
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters]);
 
   /* ═══ COLUMN MAPPING ═══ */
 
@@ -612,6 +657,7 @@ export default function KanbanBoardPage() {
   const dragIssue = dragId ? issuesById.get(dragId) : null;
 
   /* ═══ ACTIVE FILTER COUNT ═══ */
+  const advFilterCount = countAdvancedFilters(advancedFilters);
   const activeFilterCount = [
     selAssignees.size > 0,
     selEpics.length > 0,
@@ -619,6 +665,7 @@ export default function KanbanBoardPage() {
     selPriorities.length > 0,
     quickFilters.size > 0,
     debSearch.trim().length > 0,
+    advFilterCount > 0,
   ].filter(Boolean).length;
 
   const clearAllFilters = useCallback(() => {
@@ -628,6 +675,7 @@ export default function KanbanBoardPage() {
     setSelTypes([]);
     setSelPriorities([]);
     setQuickFilters(new Set());
+    setAdvancedFilters(EMPTY_ADVANCED_FILTERS);
   }, []);
 
   /* ═══ KEYBOARD NAVIGATION ═══ */
@@ -787,6 +835,28 @@ export default function KanbanBoardPage() {
                 <MapIcon size={14} color={tk.textSecondary} />
                 Map statuses
               </button>
+              <div style={{ height: 1, background: tk.border, margin: '4px 0' }} />
+              <button
+                onClick={() => { setShowBoardMenu(false); setShowAdvancedFilter(true); }}
+                className="flex items-center gap-2 w-full"
+                style={{
+                  padding: '8px 12px', background: 'transparent', border: 'none',
+                  cursor: 'pointer', fontSize: 13, color: tk.textPrimary,
+                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = tk.surfaceHover)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+              >
+                <Filter size={14} color={tk.textSecondary} />
+                Advanced filter
+                {advFilterCount > 0 && (
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, color: '#fff',
+                    background: '#2563EB', borderRadius: 10, padding: '0px 6px',
+                    lineHeight: '16px', marginLeft: 'auto',
+                  }}>{advFilterCount}</span>
+                )}
+              </button>
             </div>
           )}
           {showViewSettings && (
@@ -802,6 +872,15 @@ export default function KanbanBoardPage() {
                 });
               }}
               onClose={() => setShowViewSettings(false)}
+              tk={tk}
+            />
+          )}
+          {showAdvancedFilter && (
+            <AdvancedFilterPanel
+              projectKey={key ?? ''}
+              filters={advancedFilters}
+              onChange={setAdvancedFilters}
+              onClose={() => setShowAdvancedFilter(false)}
               tk={tk}
             />
           )}
