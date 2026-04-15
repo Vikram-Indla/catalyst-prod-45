@@ -402,7 +402,7 @@ export default function KanbanBoardPage() {
     }
 
     return issues;
-  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, selPriorities, quickFilters, currentUserName, advancedFilters]);
 
   /* ═══ COLUMN MAPPING ═══ */
 
@@ -654,6 +654,7 @@ export default function KanbanBoardPage() {
   const dragIssue = dragId ? issuesById.get(dragId) : null;
 
   /* ═══ ACTIVE FILTER COUNT ═══ */
+  const advFilterCount = countAdvancedFilters(advancedFilters);
   const activeFilterCount = [
     selAssignees.size > 0,
     selEpics.length > 0,
@@ -661,6 +662,7 @@ export default function KanbanBoardPage() {
     selPriorities.length > 0,
     quickFilters.size > 0,
     debSearch.trim().length > 0,
+    advFilterCount > 0,
   ].filter(Boolean).length;
 
   const clearAllFilters = useCallback(() => {
@@ -670,6 +672,7 @@ export default function KanbanBoardPage() {
     setSelTypes([]);
     setSelPriorities([]);
     setQuickFilters(new Set());
+    setAdvancedFilters(EMPTY_ADVANCED_FILTERS);
   }, []);
 
   /* ═══ KEYBOARD NAVIGATION ═══ */
