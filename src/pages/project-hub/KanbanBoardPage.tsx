@@ -630,11 +630,12 @@ export default function KanbanBoardPage() {
     let issues = rawIssues;
     if (debSearch.trim()) { const q = debSearch.trim().toLowerCase(); issues = issues.filter(i => i.summary.toLowerCase().includes(q) || i.issueKey.toLowerCase().includes(q) || (i.assigneeName ?? '').toLowerCase().includes(q)); }
     if (selAssignees.size > 0) issues = issues.filter(i => selAssignees.has(i.assigneeName || 'Unassigned'));
-    if (advFilters.type?.length) issues = issues.filter(i => advFilters.type.includes(i.issueType));
+    if (selEpics.length > 0) issues = issues.filter(i => i.parentKey && selEpics.includes(i.parentKey));
+    if (selTypes.length > 0) issues = issues.filter(i => selTypes.includes(i.issueType));
     if (advFilters.priority?.length) issues = issues.filter(i => advFilters.priority.includes(i.priority));
     if (advFilters.status?.length) issues = issues.filter(i => advFilters.status.includes(i.status));
     return issues;
-  }, [rawIssues, debSearch, selAssignees, advFilters]);
+  }, [rawIssues, debSearch, selAssignees, selEpics, selTypes, advFilters]);
 
   useEffect(() => {
     if (dragId || groupBy !== 'none') return;
