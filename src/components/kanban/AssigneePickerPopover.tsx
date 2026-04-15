@@ -104,7 +104,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
             boxShadow: '0 8px 24px rgba(9,30,66,0.25)',
             overflow: 'hidden',
           }}>
-            {/* Search header with current assignee */}
+            {/* Search header — Jira pattern: shows current assignee name as editable text, clears on type */}
             <div style={{
               display: 'flex', alignItems: 'center', gap: 8,
               padding: '8px 12px',
@@ -119,10 +119,9 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
               />
               <input
                 ref={inputRef}
-                value={search || currentAssignee || ''}
+                value={search}
                 onChange={e => setSearch(e.target.value)}
-                onFocus={() => { if (!search) setSearch(''); }}
-                placeholder="Search people..."
+                placeholder={currentAssignee || 'Search people...'}
                 style={{
                   flex: 1, border: 'none', outline: 'none',
                   fontSize: 14, fontWeight: 500, color: '#172B4D',
