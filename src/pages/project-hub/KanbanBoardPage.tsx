@@ -485,13 +485,13 @@ export default function KanbanBoardPage() {
       </div>
 
       {/* ── Board content ── */}
-      <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden" style={{ scrollbarGutter: 'stable' as any, display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: '1 1 0', minHeight: 0, overflow: 'auto', position: 'relative' }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
             <div style={{ background: tk.surfaceBg, minWidth: KANBAN_COLUMNS.length * 300 }}>
               {/* Column headers for swimlane mode */}
               <div className="flex sticky top-0 z-20" style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.border}` }}>
-                {KANBAN_COLUMNS.map((col, i) => {
+                {KANBAN_COLUMNS.map((col) => {
                   const count = groups.reduce((sum, g) => sum + g.issueIds.filter(id => {
                     const issue = issuesById.get(id);
                     return issue ? STATUS_TO_COL_ID.get(issue.status.toLowerCase()) === col.id : false;
@@ -540,7 +540,7 @@ export default function KanbanBoardPage() {
           </DndContext>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 300, height: '100%' }}>
+            <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 300, position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
               {KANBAN_COLUMNS.map((col, i) => (
                 <DroppableColumn
                   key={col.id}
