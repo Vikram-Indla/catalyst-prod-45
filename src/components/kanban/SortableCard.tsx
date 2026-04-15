@@ -9,6 +9,7 @@ import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
+import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
 interface SortableCardProps {
   issue: BoardIssue;
@@ -34,9 +35,10 @@ interface SortableCardProps {
   onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
+  visibleFields?: VisibleFields;
 }
 
-export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: SortableCardProps) {
+export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
   const cardStyle: React.CSSProperties = {
@@ -118,6 +120,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         onDelete={onDelete}
         onMoved={onMoved}
         onLinked={onLinked}
+        visibleFields={visibleFields}
       />
     </div>
   );

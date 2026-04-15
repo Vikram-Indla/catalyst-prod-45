@@ -9,6 +9,7 @@ import { SortableCard } from './SortableCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
 import type { AssigneeOption } from './AssigneePickerPopover';
+import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 
 /* ═══ COLUMN HEADER ═══ */
 
@@ -42,7 +43,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
 
 /* ═══ DROPPABLE COLUMN ═══ */
 
-export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked }: {
+export const DroppableColumn = memo(function DroppableColumn({ column, issueIds, issuesById, avatarsByName, onCardClick, isFirst, d, tk, selectedId, focusedId, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onSaveSummary, onChangeAssignee, assigneeOptions, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: {
   column: KanbanColumnDef;
   issueIds: string[];
   issuesById: Map<string, BoardIssue>;
@@ -67,6 +68,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
   onDelete?: (id: string) => void;
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
+  visibleFields?: VisibleFields;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: column.id });
   return (
@@ -136,6 +138,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
                 onDelete={onDelete}
                 onMoved={onMoved}
                 onLinked={onLinked}
+                visibleFields={visibleFields}
               />
             );
           })}

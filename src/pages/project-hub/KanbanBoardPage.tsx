@@ -49,7 +49,9 @@ import {
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search } from 'lucide-react';
+import { Search, MoreHorizontal } from 'lucide-react';
+import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
+import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -77,6 +79,8 @@ export default function KanbanBoardPage() {
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [colMap, setColMap] = useState<ColMap>({});
+  const [showViewSettings, setShowViewSettings] = useState(false);
+  const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const d = DENSITY_CONFIG[density];
@@ -92,6 +96,21 @@ export default function KanbanBoardPage() {
     },
     staleTime: 300_000,
   });
+
+  // View settings
+  const { settings: viewSettings, updateSettings: updateViewSettings } = useKanbanViewSettings(key, currentUserData);
+  const visibleFields = viewSettings.visibleFields;
+
+  // Swimlane expand/collapse all handlers
+  const handleExpandAll = useCallback(() => setCollapsedSwimlanes(new Set()), []);
+  const handleCollapseAll = useCallback(() => {
+    // Will be populated with group keys when groups are available
+    setCollapsedSwimlanes(prev => {
+      const next = new Set(prev);
+      groups?.forEach((g: any) => next.add(g.groupKey));
+      return next;
+    });
+  }, []);
 
   // Realtime subscription
   useKanbanRealtime(key, currentUserData ?? null);
@@ -615,6 +634,37 @@ export default function KanbanBoardPage() {
 
         {/* Group by */}
         <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
+
+        {/* View settings ••• */}
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => setShowViewSettings(v => !v)}
+            style={{
+              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
+              cursor: 'pointer',
+            }}
+            aria-label="View settings"
+          >
+            <MoreHorizontal size={16} color={tk.textSecondary} />
+          </button>
+          {showViewSettings && (
+            <ViewSettingsPanel
+              settings={viewSettings}
+              onUpdate={updateViewSettings}
+              onExpandAll={handleExpandAll}
+              onCollapseAll={() => {
+                setCollapsedSwimlanes(() => {
+                  const next = new Set<string>();
+                  groups?.forEach((g: any) => next.add(g.groupKey));
+                  return next;
+                });
+              }}
+              onClose={() => setShowViewSettings(false)}
+              tk={tk}
+            />
+          )}
+        </div>
       </div>
 
       {/* ── Board content ── */}
@@ -652,7 +702,7 @@ export default function KanbanBoardPage() {
                   issuesById={issuesById}
                   avatarsByName={avatarsByName}
                   onCardClick={id => setSelIssueId(id)}
-                  defaultOpen={true}
+                  defaultOpen={!collapsedSwimlanes.has(g.groupKey)}
                   d={d}
                   tk={tk}
                   selectedId={selIssueId}
@@ -670,6 +720,7 @@ export default function KanbanBoardPage() {
                   onDelete={handleDelete}
                   onMoved={handleMoved}
                   onLinked={handleLinked}
+                  visibleFields={visibleFields}
                 />
               ))}
               {groups.length === 0 && (
@@ -712,6 +763,7 @@ export default function KanbanBoardPage() {
                   onDelete={handleDelete}
                   onMoved={handleMoved}
                   onLinked={handleLinked}
+                  visibleFields={visibleFields}
                 />
               ))}
             </div>
