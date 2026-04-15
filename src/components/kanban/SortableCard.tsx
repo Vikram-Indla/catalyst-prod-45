@@ -94,6 +94,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
         onCopyLink={onCopyLink}
         onChangeStatus={onChangeStatus}
         onOpenDetail={onOpenDetail}
+        onSaveSummary={onSaveSummary}
       />
     </div>
   );
