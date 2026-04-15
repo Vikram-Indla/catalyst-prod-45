@@ -19,7 +19,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTheme } from '@/hooks/useTheme';
-import { toast } from 'sonner';
+import { usePriToast } from '@/modules/priorities/hooks/usePriToast';
+import { PriToastContainer } from '@/modules/priorities/components/PriToastContainer';
 import {
   DndContext,
   DragEndEvent,
