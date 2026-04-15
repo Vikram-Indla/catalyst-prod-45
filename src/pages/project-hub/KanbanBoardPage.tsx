@@ -116,6 +116,7 @@ export default function KanbanBoardPage() {
       const { data, error } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at')
         .eq('project_key', key.toUpperCase())
+        .not('issue_type', 'in', '("Sub-task","Production Incident","Change Request","API Requirement","Business Gap")')
         .is('deleted_at', null)
         .order('jira_updated_at', { ascending: false })
         .limit(1000);
