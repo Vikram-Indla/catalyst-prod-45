@@ -97,11 +97,11 @@ export function useMapStatuses(projectKey: string | undefined) {
     staleTime: 300_000,
   });
 
-  // 3. Get board + columns for this project (create board if none)
-  const { data: boardData } = useQuery({
+  // 3. Get board + columns for this project (do NOT auto-create — RLS may block inserts)
+  const { data: boardData, isLoading: boardLoading } = useQuery({
     queryKey: ['board-columns-for-map', projectId],
     queryFn: async () => {
-      if (!projectId) return null;
+      if (!projectId) return { boardId: null, columns: [], mappings: [] };
       // Find the board for this project
       const { data: boards } = await supabase
         .from('boards')
@@ -109,25 +109,10 @@ export function useMapStatuses(projectKey: string | undefined) {
         .eq('project_id', projectId)
         .is('deleted_at', null)
         .limit(1);
-      let boardId = boards?.[0]?.id;
+      const boardId = boards?.[0]?.id ?? null;
 
-      // Create board if none exists
       if (!boardId) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
-        const { data: newBoard } = await supabase
-          .from('boards')
-          .insert({
-            name: `${projectKey ?? 'Project'} Board`,
-            project_id: projectId,
-            created_by: user.id,
-            board_type: 'kanban',
-            visibility: 'project',
-          })
-          .select('id')
-          .single();
-        boardId = newBoard?.id;
-        if (!boardId) return null;
+        return { boardId: null, columns: [], mappings: [] };
       }
 
       // Get columns
@@ -177,10 +162,10 @@ export function useMapStatuses(projectKey: string | undefined) {
 
   // 5. Initialize draft from DB or hardcoded defaults
   useEffect(() => {
-    if (!allStatuses?.length || !boardData) return;
+    if (!allStatuses?.length || boardLoading) return;
     if (draft) return; // Already initialized
 
-    const { columns: dbCols, mappings: dbMappings } = boardData;
+    const { columns: dbCols, mappings: dbMappings } = boardData ?? { columns: [], mappings: [] };
 
     // If we have persisted mappings, use them
     if (dbMappings.length > 0) {
@@ -296,7 +281,7 @@ export function useMapStatuses(projectKey: string | undefined) {
     const state = { columns: draftCols, mappings: draftMappings };
     setDraft(state);
     initialRef.current = JSON.parse(JSON.stringify(state));
-  }, [allStatuses, boardData, draft]);
+  }, [allStatuses, boardData, boardLoading, draft]);
 
   // ── Draft mutation helpers ──
 
@@ -379,12 +364,32 @@ export function useMapStatuses(projectKey: string | undefined) {
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const save = useCallback(async () => {
-    if (!draft || !boardData?.boardId) return;
+    if (!draft || !projectId) return;
     setSaving(true);
     setSaveError(null);
 
     try {
-      const boardId = boardData.boardId;
+      let boardId = boardData?.boardId ?? null;
+
+      // Create board on-the-fly if none exists
+      if (!boardId) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Not authenticated');
+        const { data: newBoard, error: boardErr } = await supabase
+          .from('boards')
+          .insert({
+            name: `${projectKey ?? 'Project'} Board`,
+            project_id: projectId,
+            created_by: user.id,
+            board_type: 'kanban',
+            visibility: 'project',
+          })
+          .select('id')
+          .single();
+        if (boardErr || !newBoard) throw new Error(boardErr?.message ?? 'Failed to create board');
+        boardId = newBoard.id;
+      }
+
       const activeCols = draft.columns.filter(c => !c.isDeleted);
 
       // 1. Delete removed columns
@@ -500,7 +505,7 @@ export function useMapStatuses(projectKey: string | undefined) {
     } finally {
       setSaving(false);
     }
-  }, [draft, boardData, qc]);
+  }, [draft, boardData, projectId, projectKey, qc]);
 
   const cancel = useCallback(() => {
     if (initialRef.current) {
