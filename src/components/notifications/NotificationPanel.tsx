@@ -28,7 +28,7 @@ function useLastSyncTime() {
         .select('completed_at, projects_synced')
         .order('completed_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
       if (error || !data?.completed_at) return null;
       return data.completed_at as string;
     },

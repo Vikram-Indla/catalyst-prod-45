@@ -14,7 +14,7 @@ export default function NativeEpicBacklogPage() {
         .from('projects')
         .select('id, program_id')
         .eq('key', key!)
-        .single();
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
