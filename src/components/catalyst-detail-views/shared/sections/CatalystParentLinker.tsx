@@ -142,7 +142,7 @@ function BusinessRequestParentPicker({
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Parent</span>
+      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Parent</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* Current parent display */}
         {currentParent ? (
@@ -163,7 +163,7 @@ function BusinessRequestParentPicker({
           <button onClick={() => setShowPicker(!showPicker)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
             background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-            cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
+            cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap', transition: 'border-color 0.15s, background 0.15s',
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
@@ -311,7 +311,7 @@ function SingleParentPicker({
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Parent</span>
+      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Parent</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* Current parent display */}
         {currentParent ? (
@@ -332,7 +332,7 @@ function SingleParentPicker({
           <button onClick={() => setShowPicker(!showPicker)} style={{
             display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
             background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-            cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
+            cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap', transition: 'border-color 0.15s, background 0.15s',
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
@@ -477,7 +477,7 @@ function MultiLinkPicker({
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Linked to</span>
+      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Linked to</span>
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* Current links display */}
         {existingLinks.length > 0 && (
@@ -504,7 +504,7 @@ function MultiLinkPicker({
         <button onClick={() => setShowPicker(!showPicker)} style={{
           display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
           background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-          cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
+          cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap', transition: 'border-color 0.15s, background 0.15s',
         }}
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}

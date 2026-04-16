@@ -193,7 +193,7 @@ export function CatalystSidebarDetails({
 
           {/* ── Assignee ──── */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Assignee</span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Assignee</span>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               {issue && (
                 <EditableAssignee
@@ -227,7 +227,7 @@ export function CatalystSidebarDetails({
 
           {/* ── Priority ──── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Priority</span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Priority</span>
             <div style={{ flex: 1 }}>
               {issue && (
                 <EditablePriority
@@ -241,7 +241,7 @@ export function CatalystSidebarDetails({
 
           {/* ── Reporter ──── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '12px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Reporter</span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Reporter</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {issue?.reporter_display_name ? (
                 <>
@@ -263,7 +263,7 @@ export function CatalystSidebarDetails({
 
           {/* ── Labels ──── */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0, paddingTop: 2 }}>Labels</span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0, paddingTop: 2 }}>Labels</span>
             <div style={{ flex: 1 }}>
               {issue && (
                 <EditableLabels
@@ -277,7 +277,7 @@ export function CatalystSidebarDetails({
 
           {/* ── Fix Versions ──── */}
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0, paddingTop: 2 }}>Fix versions</span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0, paddingTop: 2 }}>Fix versions</span>
             <div style={{ flex: 1 }}>
               {issue && (
                 <EditableFixVersions
@@ -292,7 +292,7 @@ export function CatalystSidebarDetails({
 
           {/* ── Story Points ──── */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Story points</span>
+            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Story points</span>
             <div style={{ flex: 1 }}>
               {issue && (
                 <EditableStoryPoints
