@@ -23,12 +23,12 @@ export function formatRelativeTime(dateStr: string | null): string {
  *   GREEN → Done / Approved / Completed
  */
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  active:    { bg: '#DEEBFF', color: '#0747A6' },
-  on_hold:   { bg: '#DFE1E6', color: '#253858' },
-  planning:  { bg: '#DFE1E6', color: '#253858' },
-  completed: { bg: '#E3FCEF', color: '#006644' },
-  archived:  { bg: '#DFE1E6', color: '#253858' },
-  backlog:   { bg: '#DFE1E6', color: '#253858' },
+  active:    { bg: '#0C66E4', color: '#FFFFFF' },
+  on_hold:   { bg: '#42526E', color: '#FFFFFF' },
+  planning:  { bg: '#42526E', color: '#FFFFFF' },
+  completed: { bg: '#1B7F37', color: '#FFFFFF' },
+  archived:  { bg: '#42526E', color: '#FFFFFF' },
+  backlog:   { bg: '#42526E', color: '#FFFFFF' },
 };
 
 export function StatusBadge({ status }: { status: string }) {
