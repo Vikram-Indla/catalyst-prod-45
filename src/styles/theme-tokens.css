@@ -8,6 +8,7 @@
 :root, [data-theme="light"] {
   /* Surfaces */
   --cp-bg:              #FFFFFF;
+  --cp-bg-canvas:       #F7F8F9;
   --cp-bg-sidebar-hdr:  #F8FAFC;
   --cp-bg-sunken:       #F1F5F9;
   --cp-float:           #FFFFFF;
