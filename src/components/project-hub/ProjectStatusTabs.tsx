@@ -34,15 +34,20 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
           <button
             key={tab.key}
             onClick={() => onTabChange(tab.key)}
-            className="flex items-center gap-1.5 rounded-full transition-all"
+            className={`flex items-center gap-1.5 rounded-full transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] ${
+              isActive
+                ? isDark ? 'bg-[#0D1526] border-[#1E3A5F]' : 'bg-[#DEEBFF] border-[#B3D4FF]'
+                : 'bg-transparent border-transparent'
+            }`}
             style={{
               height: 32,
-              padding: '8px 12px',
+              padding: '0 12px',
+              lineHeight: '32px',
               fontSize: 13,
               fontWeight: isActive ? 600 : 500,
-              color: isActive ? (isDark ? 'var(--cp-blue-light)' : 'var(--cp-blue)') : (isDark ? '#878787' : 'var(--fg-3)'),
-              backgroundColor: isActive ? (isDark ? 'rgba(59,130,246,0.10)' : 'var(--cp-blue-wash)') : 'transparent',
-              border: isActive ? `1px solid ${isDark ? 'rgba(59,130,246,0.25)' : 'var(--cp-primary-20)'}` : '1px solid transparent',
+              color: isActive ? (isDark ? '#4C9AFF' : '#0052CC') : (isDark ? '#878787' : '#6B778C'),
+              borderWidth: 1,
+              borderStyle: 'solid',
               cursor: 'pointer',
               fontFamily: "'Inter', sans-serif",
             }}
@@ -51,8 +56,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               <Star
                 size={13}
                 strokeWidth={2}
-                fill={isActive ? 'var(--sem-star)' : 'none'}
-                color={isActive ? 'var(--sem-star)' : (isDark ? '#7D7D7D' : 'var(--fg-4)')}
+                fill={isActive ? '#FFAB00' : 'none'}
+                color={isActive ? '#FFAB00' : (isDark ? '#7D7D7D' : '#6B778C')}
               />
             )}
             {tab.label}
@@ -64,8 +69,8 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 padding: '0 5px',
                 fontSize: 11,
                 fontWeight: 600,
-                backgroundColor: isActive ? 'var(--cp-blue)' : (isDark ? '#2E2E2E' : 'var(--divider)'),
-                color: isActive ? 'var(--cp-float)' : (isDark ? '#878787' : 'var(--fg-3)'),
+                backgroundColor: isActive ? '#0052CC' : (isDark ? '#2E2E2E' : '#EBECF0'),
+                color: isActive ? '#FFFFFF' : (isDark ? '#878787' : '#6B778C'),
                 fontFamily: "'Inter', sans-serif",
               }}
             >

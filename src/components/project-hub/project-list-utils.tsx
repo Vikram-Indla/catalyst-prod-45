@@ -1,4 +1,4 @@
-// Shared display utilities for ProjectHub list views
+// Shared display utilities for ProjectHub list views — V12 StatusLozenge guardrail
 
 export function formatRelativeTime(dateStr: string | null): string {
   if (!dateStr) return '—';
@@ -16,11 +16,19 @@ export function formatRelativeTime(dateStr: string | null): string {
   return `${months}mo ago`;
 }
 
+/**
+ * StatusBadge — 3-colour guardrail ONLY:
+ *   GREY  → To Do / Backlog / On Hold / Archived / Planning
+ *   BLUE  → In Progress / In Review / Active
+ *   GREEN → Done / Approved / Completed
+ */
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  active: { bg: '#F0FDFA', color: '#0D9488' },
-  on_hold: { bg: '#FFFBEB', color: '#D97706' },
-  completed: { bg: '#F0FDF4', color: '#16A34A' },
-  archived: { bg: '#F1F5F9', color: '#64748B' },
+  active:    { bg: '#DEEBFF', color: '#0747A6' },
+  on_hold:   { bg: '#DFE1E6', color: '#253858' },
+  planning:  { bg: '#DFE1E6', color: '#253858' },
+  completed: { bg: '#E3FCEF', color: '#006644' },
+  archived:  { bg: '#DFE1E6', color: '#253858' },
+  backlog:   { bg: '#DFE1E6', color: '#253858' },
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -28,11 +36,17 @@ export function StatusBadge({ status }: { status: string }) {
   const label = status.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
     <span
-      className="inline-flex items-center rounded-full"
       style={{
+        display: 'inline-block',
+        height: 20,
+        lineHeight: '20px',
         fontSize: 11,
-        fontWeight: 500,
-        padding: '2px 8px',
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.03em',
+        borderRadius: 3,
+        padding: '0 6px',
+        whiteSpace: 'nowrap',
         backgroundColor: s.bg,
         color: s.color,
         fontFamily: "'Inter', sans-serif",
@@ -43,41 +57,49 @@ export function StatusBadge({ status }: { status: string }) {
   );
 }
 
-const HEALTH_STYLES: Record<string, { bg: string; color: string }> = {
-  on_track: { bg: '#F0FDF4', color: '#16A34A' },
-  at_risk: { bg: '#FFFBEB', color: '#D97706' },
-  off_track: { bg: '#FEF2F2', color: '#EF4444' },
+/**
+ * HealthBadge — semantic health indicator (On Track / At Risk / Off Track)
+ * Uses dot + label with muted backgrounds
+ */
+const HEALTH_STYLES: Record<string, { bg: string; color: string; dot: string }> = {
+  on_track:  { bg: '#E3FCEF', color: '#006644', dot: '#006644' },
+  at_risk:   { bg: '#FFF7E6', color: '#974F0C', dot: '#974F0C' },
+  off_track: { bg: '#FFEBE6', color: '#BF2600', dot: '#BF2600' },
 };
 
 export function HealthBadge({ health }: { health: string | null }) {
-  if (!health) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
+  if (!health) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
   const s = HEALTH_STYLES[health] || HEALTH_STYLES.on_track;
   const label = health.split('_').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-full"
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        height: 20,
+        lineHeight: '20px',
         fontSize: 11,
-        fontWeight: 500,
-        padding: '2px 8px',
+        fontWeight: 600,
+        borderRadius: 3,
+        padding: '0 6px',
         backgroundColor: s.bg,
         color: s.color,
         fontFamily: "'Inter', sans-serif",
       }}
     >
       <span
-        className="rounded-full"
-        style={{ width: 6, height: 6, backgroundColor: s.color, display: 'inline-block' }}
+        style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: s.dot, display: 'inline-block', flexShrink: 0 }}
       />
       {label}
     </span>
   );
 }
 
-const AVATAR_COLORS = ['#7C3AED', '#2563EB', '#0D9488', '#D97706', '#DC2626'];
+const AVATAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#7C3AED', '#D97706'];
 
 export function AvatarStack({ count }: { count: number }) {
-  if (count === 0) return <span style={{ fontSize: 12, color: 'var(--fg-4)' }}>—</span>;
+  if (count === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
 
   const show = Math.min(count, 3);
   const overflow = count - show;
@@ -104,11 +126,12 @@ export function AvatarStack({ count }: { count: number }) {
       ))}
       {overflow > 0 && (
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-bd-zone)]"
+          className="flex items-center justify-center rounded-full flex-shrink-0"
           style={{
             width: 24,
             height: 24,
-            color: 'var(--fg-3)',
+            backgroundColor: '#EBECF0',
+            color: '#6B778C',
             fontSize: 9,
             fontWeight: 600,
             border: '2px solid var(--cp-float)',

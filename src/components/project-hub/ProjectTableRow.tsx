@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { StarButton } from './StarButton';
 import { formatRelativeTime, StatusBadge, HealthBadge, AvatarStack } from './project-list-utils';
-import { DK, LK } from '@/utils/dark-mode-styles';
 
 export interface PHProject {
   id: string;
@@ -28,19 +27,16 @@ interface ProjectTableRowProps {
 
 export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMenu, isDark = false }: ProjectTableRowProps) {
   const navigate = useNavigate();
-  const T = isDark ? DK : LK;
 
   return (
     <tr
-      className="group cursor-pointer transition-colors"
-      style={{ height: 50 }}
+      className={`group cursor-pointer transition-colors duration-100 ${isDark ? 'hover:bg-[#1F1F1F]' : 'hover:bg-[#F4F5F7]'}`}
+      style={{ height: 36, maxHeight: 36 }}
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
       onContextMenu={e => onContextMenu(e, project)}
-      onMouseEnter={e => (e.currentTarget.style.backgroundColor = T.hoverBg)}
-      onMouseLeave={e => (e.currentTarget.style.backgroundColor = '')}
     >
       {/* Star */}
-      <td style={{ width: 40, padding: '0 4px' }}>
+      <td style={{ width: 36, padding: '0 8px' }}>
         <StarButton
           isStarred={isStarred}
           onClick={e => { e.stopPropagation(); onToggleStar(project.id); }}
@@ -48,63 +44,59 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
         />
       </td>
 
-      {/* Key */}
-      <td style={{ padding: '0 8px' }}>
-        <span
-          style={{
-            fontSize: 12,
-            fontFamily: "'JetBrains Mono', monospace",
-            fontWeight: 500,
-            color: T.blueKey,
-          }}
-        >
-          {project.key}
-        </span>
-      </td>
-
-      {/* Name */}
-      <td style={{ padding: '0 8px' }}>
+      {/* Name (with badge) */}
+      <td style={{ padding: '0 12px' }}>
         <div className="flex items-center gap-2.5 min-w-0">
           <div
             className="flex items-center justify-center rounded flex-shrink-0"
             style={{
-              width: 32,
-              height: 28,
-              backgroundColor: project.color || 'var(--cp-blue)',
+              width: 28,
+              height: 24,
+              backgroundColor: project.color || '#2563EB',
               color: '#FFFFFF',
               fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,
-              borderRadius: 6,
+              borderRadius: 4,
               fontFamily: "'Sora', sans-serif",
               letterSpacing: project.key.length > 2 ? '-0.02em' : undefined,
             }}
           >
             {project.key}
           </div>
-          <span className="truncate" style={{ fontSize: 14, fontWeight: 500, color: T.t1 }}>
+          <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A' }}>
             {project.name}
+          </span>
+          <span
+            style={{
+              fontSize: 11,
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 500,
+              color: isDark ? '#878787' : '#6B778C',
+            }}
+          >
+            {project.key}
           </span>
         </div>
       </td>
 
       {/* Status */}
-      <td style={{ padding: '0 8px' }}>
+      <td style={{ padding: '0 12px' }}>
         <StatusBadge status={project.status} />
       </td>
 
       {/* Members */}
-      <td style={{ padding: '0 8px' }}>
+      <td style={{ padding: '0 12px' }}>
         <AvatarStack count={project.member_count || 0} />
       </td>
 
       {/* Items */}
-      <td style={{ padding: '0 8px', textAlign: 'right' }}>
+      <td style={{ padding: '0 12px', textAlign: 'right' }}>
         <span
           style={{
             fontSize: 12,
             fontFamily: "'JetBrains Mono', monospace",
             fontWeight: 500,
-            color: T.t2,
+            color: isDark ? '#A1A1A1' : '#42526E',
           }}
         >
           {project.item_count ?? 0}
@@ -112,13 +104,13 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
       </td>
 
       {/* Health */}
-      <td style={{ padding: '0 8px' }}>
+      <td style={{ padding: '0 12px' }}>
         <HealthBadge health={project.health} />
       </td>
 
       {/* Updated */}
-      <td style={{ padding: '0 8px' }}>
-        <span style={{ fontSize: 12, color: T.t3 }}>
+      <td style={{ padding: '0 12px' }}>
+        <span style={{ fontSize: 12, color: isDark ? '#878787' : '#6B778C' }}>
           {formatRelativeTime(project.updated_at)}
         </span>
       </td>

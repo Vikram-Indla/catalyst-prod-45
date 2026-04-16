@@ -15,7 +15,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
   return (
     <button
       onClick={() => navigate(`/project-hub/${project.key}/dashboard`)}
-      className="relative flex flex-col text-left rounded-xl transition-all p-4 cursor-pointer bg-[#FFFFFF] dark:!bg-[#0A0A0A] border border-gray-200 dark:border-gray-700 shadow-sm dark:shadow-none hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-none"
+      className="relative flex flex-col text-left rounded-[6px] transition-shadow duration-150 p-4 cursor-pointer bg-white dark:bg-[#0A0A0A] border border-[#E2E8F0] dark:border-[#2E2E2E] shadow-sm dark:shadow-none hover:shadow-md dark:hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
     >
       {/* Star top-right */}
       <div className="absolute top-3 right-3">
@@ -32,7 +32,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           className="flex items-center justify-center rounded flex-shrink-0 h-8 text-white font-bold font-['Sora',sans-serif]"
           style={{
             width: 36,
-            backgroundColor: project.color || 'var(--cp-blue)',
+            backgroundColor: project.color || '#2563EB',
             borderRadius: 6,
             fontSize: project.key.length > 2 ? 10 : 11,
             letterSpacing: project.key.length > 2 ? '-0.02em' : undefined,
@@ -41,10 +41,10 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           {project.key}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-gray-900 dark:text-white">
+          <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-[#0F172A] dark:text-[#EDEDED]">
             {project.name}
           </div>
-          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-gray-400 dark:text-gray-500">
+          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[#6B778C] dark:text-[#878787]">
             {project.key}
           </span>
         </div>
@@ -56,15 +56,10 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
         <HealthBadge health={project.health} />
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full rounded-full mb-3 h-1.5 bg-gray-100 dark:bg-gray-700">
-        <div className="rounded-full h-1.5 bg-teal-600" style={{ width: '0%' }} />
-      </div>
-
       {/* Footer: avatars + updated */}
       <div className="flex items-center justify-between mt-auto">
         <AvatarStack count={project.member_count || 0} />
-        <span className="text-[11px] text-gray-500 dark:text-gray-500">
+        <span className="text-[11px] text-[#6B778C] dark:text-[#878787]">
           {formatRelativeTime(project.updated_at)}
         </span>
       </div>

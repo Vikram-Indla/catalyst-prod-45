@@ -206,7 +206,6 @@ export default function ProjectListPage() {
               view={view} onViewChange={setView}
               search={search} onSearchChange={s => { setSearch(s); setPage(0); }}
               filters={filters} onFilterChange={f => { setFilters(f); setPage(0); }}
-              onNewProject={onNewProject}
               isDark={isDark}
             />
           </div>

@@ -1,4 +1,5 @@
 import { LucideIcon } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
 
 export interface NavItemProps {
   icon: LucideIcon;
@@ -11,13 +12,17 @@ export interface NavItemProps {
 }
 
 export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge, count }: NavItemProps) {
-  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  const { isDark } = useTheme();
 
   return (
     <button
       onClick={onClick}
       title={collapsed ? label : undefined}
-      className="flex items-center w-full transition-colors duration-100"
+      className={`flex items-center w-full transition-colors duration-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 ${
+        isActive
+          ? isDark ? 'bg-[#0D1526]' : 'bg-[#E9F2FF]'
+          : isDark ? 'hover:bg-[#1F1F1F]' : 'hover:bg-[#F4F5F7]'
+      }`}
       style={{
         height: 36,
         gap: collapsed ? 0 : 10,
@@ -30,9 +35,6 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         color: isActive
           ? '#0052CC'
           : isDark ? '#A1A1A1' : '#42526E',
-        backgroundColor: isActive
-          ? (isDark ? 'rgba(0,82,204,0.08)' : '#E9F2FF')
-          : 'transparent',
         borderRadius: collapsed ? 6 : '0 6px 6px 0',
         borderLeft: isActive && !collapsed ? '3px solid #0052CC' : '3px solid transparent',
         borderRight: 'none',
@@ -43,14 +45,8 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
         position: 'relative',
         letterSpacing: '-0.01em',
       }}
-      onMouseEnter={(e) => {
-        if (!isActive) e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F4F5F7';
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
-      }}
     >
-      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.75 }} />
+      <Icon size={18} strokeWidth={isActive ? 2 : 1.75} style={{ flexShrink: 0, color: isActive ? '#0052CC' : isDark ? '#A1A1A1' : '#6B778C' }} />
       {!collapsed && (
         <>
           <span className="truncate">{label}</span>
@@ -79,7 +75,7 @@ export function NavItem({ icon: Icon, label, isActive, onClick, collapsed, badge
                 fontWeight: 600,
                 color: isDark ? '#878787' : '#6B778C',
                 fontFamily: "'JetBrains Mono', monospace",
-                borderRadius: 12,
+                borderRadius: 9999,
                 backgroundColor: isDark ? '#292929' : '#EBECF0',
                 padding: '1px 7px',
               }}

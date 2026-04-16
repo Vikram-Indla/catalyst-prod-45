@@ -13,9 +13,11 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
   return (
     <div
-      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
+      role="navigation"
+      aria-label="ProjectHub modules"
+      className="flex flex-col h-full flex-shrink-0 bg-white dark:bg-[#0A0A0A] border-r border-[#E2E8F0] dark:border-[#2E2E2E]"
       style={{
-        width: collapsed ? 56 : 192,
+        width: collapsed ? 56 : 220,
         transition: 'width 200ms ease',
         fontFamily: "'Inter', sans-serif",
         overflow: 'hidden',
@@ -23,12 +25,12 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
     >
       {/* Header */}
       <div
-        className="flex items-center gap-2 flex-shrink-0 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E]"
-        style={{ padding: collapsed ? '12px 10px' : '12px 10px' }}
+        className="flex items-center gap-2 flex-shrink-0 border-b border-[#E2E8F0] dark:border-[#2E2E2E]"
+        style={{ padding: '12px 10px' }}
       >
         <div
-          className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
-          style={{ width: 28, height: 28, color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}
+          className="flex items-center justify-center flex-shrink-0"
+          style={{ width: 28, height: 28, backgroundColor: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif", borderRadius: 6 }}
         >
           PH
         </div>
@@ -42,7 +44,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
         )}
         <button
           onClick={onToggle}
-          className="flex items-center justify-center rounded hover:bg-[#F1F5F9] dark:hover:bg-[#1F1F1F] transition-colors flex-shrink-0"
+          className="flex items-center justify-center rounded hover:bg-[#F4F5F7] dark:hover:bg-[#1F1F1F] transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
           style={{ width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer' }}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
@@ -57,14 +59,17 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       {/* Nav */}
       <div className="flex-1 py-2 px-1.5 space-y-0.5 overflow-y-auto">
         <NavItem icon={LayoutGrid} label="All Projects" isActive={location.pathname === '/project-hub/projects' || location.pathname === '/project-hub'} onClick={() => navigate('/project-hub/projects')} collapsed={collapsed} />
-        <NavItem icon={FolderKanban} label="All Projects v2" isActive={location.pathname === '/project/all-projects'} onClick={() => navigate('/project/all-projects')} collapsed={collapsed} />
+
         {/* Resource 360° Section */}
         {!collapsed && (
-          <div className="pt-3 pb-1">
-            <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
-              Resource 360°
+          <>
+            <div className="my-2 mx-2" style={{ height: 1, backgroundColor: '#EBECF0' }} />
+            <div className="pt-1 pb-1">
+              <div className="text-[#6B778C] dark:text-[#878787]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+                Resource 360°
+              </div>
             </div>
-          </div>
+          </>
         )}
         <NavItem icon={LayoutGrid} label="Dashboard" isActive={location.pathname === '/resource360' || location.pathname === '/project-hub/resource360'} onClick={() => navigate('/project-hub/resource360')} collapsed={collapsed} />
         <NavItem icon={Users} label="Resource 360™" isActive={location.pathname.startsWith('/project-hub/resources')} onClick={() => navigate('/project-hub/resources')} collapsed={collapsed} />
@@ -75,15 +80,23 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
 
         {/* Favorites section */}
         {!collapsed && (
-          <div className="pt-3">
-            <div className="text-[var(--fg-3)] dark:text-[#878787]" style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
-              Favorites
+          <>
+            <div className="my-2 mx-2" style={{ height: 1, backgroundColor: '#EBECF0' }} />
+            <div className="pt-1">
+              <div className="text-[#6B778C] dark:text-[#878787]" style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' as const, padding: '0 10px 4px' }}>
+                Favorites
+              </div>
+              <div
+                className="flex items-center gap-2 mx-2 my-1 rounded-[6px] border border-dashed border-[#DFE1E6] dark:border-[#454545]"
+                style={{ padding: '10px 12px' }}
+              >
+                <Star size={14} className="text-[#C1C7D0] dark:text-[#7D7D7D] flex-shrink-0" />
+                <span className="text-[#6B778C] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
+                  Star projects for quick access
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 px-[10px] py-2 text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 12 }}>
-              <Star size={14} />
-              <span>No starred projects</span>
-            </div>
-          </div>
+          </>
         )}
       </div>
     </div>
