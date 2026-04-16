@@ -169,9 +169,9 @@ export function CatalystViewBase({
   };
 
   const hoverBtn: React.CSSProperties = {
-    background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-    borderRadius: 4, color: '#5E6C84', fontSize: 13, display: 'flex', alignItems: 'center',
-    gap: 5, transition: 'background 0.15s',
+    background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
+    borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
+    gap: 6, transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
   };
 
   const menuItemStyle: React.CSSProperties = {
@@ -212,10 +212,11 @@ export function CatalystViewBase({
         {/* ── A. TOP BAR ─────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 16px 0 16px', minHeight: 40, flexShrink: 0,
+          padding: '10px 20px', minHeight: 44, flexShrink: 0,
+          borderBottom: '1px solid #EBECF0',
         }}>
           {/* Breadcrumb — Jira pattern: Project / ParentKey / ItemKey */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#6B778C', minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
             {/* Full-page back button */}
             {fullPageMode && (
               <button onClick={handleBack} style={{
@@ -236,9 +237,9 @@ export function CatalystViewBase({
                     ? `/project-hub/${projectKey}/hierarchy/allwork`
                     : `/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`
                   }
-                  style={{ fontSize: 14, fontWeight: 400, color: '#6B778C', textDecoration: 'none', cursor: 'pointer' }}
+                  style={{ fontSize: 14, fontWeight: 500, color: '#42526E', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   {projectName || projectKey}
                 </Link>
@@ -247,7 +248,7 @@ export function CatalystViewBase({
             )}
             {projectName && !projectKey && (
               <>
-                <span style={{ fontSize: 14, fontWeight: 400, color: '#6B778C' }}>{projectName}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#42526E' }}>{projectName}</span>
                 <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
               </>
             )}
@@ -255,10 +256,10 @@ export function CatalystViewBase({
               <>
                 <IssueIcon type={parentType || 'Epic'} size={16} />
                 <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#6B778C', cursor: onParentClick ? 'pointer' : 'default' }}
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#42526E', cursor: onParentClick ? 'pointer' : 'default' }}
                   onClick={onParentClick}
                   onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; }}
                 >{parentKey}</span>
                 <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
               </>
@@ -268,15 +269,15 @@ export function CatalystViewBase({
             {!fullPageMode && itemKey && projectKey ? (
               <Link
                 to={`/project-hub/${projectKey}/issue/${itemKey}`}
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#6B778C', textDecoration: 'none' }}
+                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}
                 title="Open full page view"
               >
                 {itemKey}
               </Link>
             ) : (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: fullPageMode ? 600 : 500, color: fullPageMode ? '#172B4D' : '#6B778C' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: fullPageMode ? '#172B4D' : '#0052CC' }}>
                 {itemKey ?? '—'}
               </span>
             )}
@@ -288,15 +289,17 @@ export function CatalystViewBase({
               onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
               onMouseLeave={e => (e.currentTarget.style.background = 'none')}
             >
-              <Share2 size={14} /> <span style={{ fontSize: 12 }}>Share</span>
+              <Share2 size={16} /> <span>Share</span>
             </button>
 
             {moreMenuItems && moreMenuItems.length > 0 && (
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
-                <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={hoverBtn}
+                <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
+                  ...hoverBtn, background: showDotsMenu ? '#F4F5F7' : 'none', padding: '6px 8px',
+                }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >···</button>
+                  onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
+                ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
                   <div style={{
                     position: 'absolute', right: 0, top: 32, background: '#FFF',
@@ -338,18 +341,18 @@ export function CatalystViewBase({
             {panelMode && navigationItems && navigationItems.length > 1 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <button onClick={navPrev} disabled={!canNavPrev} style={{
-                  ...hoverBtn, cursor: canNavPrev ? 'pointer' : 'default', color: canNavPrev ? '#5E6C84' : '#C1C7D0', padding: '6px 6px',
+                  ...hoverBtn, cursor: canNavPrev ? 'pointer' : 'default', color: canNavPrev ? '#42526E' : '#C1C7D0', padding: '6px 6px',
                 }}
                   onMouseEnter={e => { if (canNavPrev) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <span style={{ fontSize: 11, color: '#5E6C84', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
+                <span style={{ fontSize: 11, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
                   {currentNavIndex + 1} / {navigationItems.length}
                 </span>
                 <button onClick={navNext} disabled={!canNavNext} style={{
-                  ...hoverBtn, cursor: canNavNext ? 'pointer' : 'default', color: canNavNext ? '#5E6C84' : '#C1C7D0', padding: '6px 6px',
+                  ...hoverBtn, cursor: canNavNext ? 'pointer' : 'default', color: canNavNext ? '#42526E' : '#C1C7D0', padding: '6px 6px',
                 }}
                   onMouseEnter={e => { if (canNavNext) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -361,10 +364,10 @@ export function CatalystViewBase({
 
             {/* Close — hidden in full-page mode (back button replaces it) */}
             {!fullPageMode && (
-              <button onClick={onClose} style={{ ...hoverBtn, fontSize: 16 }}
+              <button onClick={onClose} style={{ ...hoverBtn, padding: '6px 8px' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
-              ><X size={16} /></button>
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
+              ><X size={18} /></button>
             )}
           </div>
         </div>

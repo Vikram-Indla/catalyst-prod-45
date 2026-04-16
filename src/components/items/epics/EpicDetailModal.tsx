@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
   X, ChevronDown, Plus, Share2, Trash2, Copy, Check, Loader2,
-  MessageSquare, Clock,
+  MessageSquare, Clock, MoreHorizontal,
 } from 'lucide-react';
 import {
   IssueIcon, Skel,
@@ -245,38 +245,39 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
           {/* ── A. TOP BAR ── */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '12px 16px 0 16px', minHeight: 40, flexShrink: 0,
+            padding: '10px 20px', minHeight: 44, flexShrink: 0,
+            borderBottom: '1px solid #EBECF0',
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#5E6C84' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#42526E' }}>
                 {program?.name ?? 'Program'}
               </span>
               <span style={{ color: '#C1C7D0' }}>/</span>
-              <IssueIcon type="Epic" size={14} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#5E6C84' }}>
+              <IssueIcon type="Epic" size={16} />
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
                 {epic?.epic_key ?? '—'}
               </span>
-              <span style={{ fontSize: 11, color: '#97A0AF', fontWeight: 500 }}>· Epic</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <button onClick={handleShare} style={{
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                borderRadius: 4, color: '#5E6C84', fontSize: 13, display: 'flex', alignItems: 'center', gap: 5,
-                transition: 'background 0.15s',
+                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
+                borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
               }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-              ><Share2 size={14} /> <span style={{ fontSize: 12 }}>Share</span></button>
+              ><Share2 size={16} /> <span>Share</span></button>
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                  borderRadius: 4, color: '#5E6C84', transition: 'background 0.15s',
+                  background: showDotsMenu ? '#F4F5F7' : 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
+                  borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
+                  transition: 'background 0.15s',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >···</button>
+                  onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
+                ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
-                  <div style={{ position: 'absolute', right: 0, top: 32, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 50, minWidth: 200, animation: 'edm-slide-down 0.15s ease-out' }}>
+                  <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200, animation: 'edm-slide-down 0.15s ease-out' }}>
                     <button onClick={() => { setShowDotsMenu(false); duplicateMutation.mutate(); }} style={menuItemStyle}
                       onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -291,12 +292,12 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
               </div>
               <button onClick={onClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                borderRadius: 4, color: '#5E6C84', display: 'flex', alignItems: 'center',
+                borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
                 transition: 'background 0.15s',
               }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
-              ><X size={16} /></button>
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
+              ><X size={18} /></button>
             </div>
           </div>
 
