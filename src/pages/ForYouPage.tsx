@@ -4,7 +4,9 @@
  */
 
 import React, { useState, useEffect, useCallback, lazy, Suspense, useRef, useMemo } from 'react';
-import { MessageSquare, AlertCircle, FileText, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon, Layers, Search, Check } from 'lucide-react';
+import { MessageSquare, AlertCircle, FileText, Folder, LayoutGrid, Bug as BugIcon, CheckSquare, Zap, BookOpen, AlertTriangle as AlertTriangleIcon } from 'lucide-react';
+import { GroupByPopover } from '@/components/shared/GroupByPopover';
+import type { GroupByOption } from '@/components/shared/GroupByPopover';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
