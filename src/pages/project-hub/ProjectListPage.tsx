@@ -72,16 +72,28 @@ export default function ProjectListPage() {
     },
   });
 
-  // Fetch member counts
-  const { data: memberCounts = {} } = useQuery({
-    queryKey: ['ph-member-counts', rawProjects.map(p => p.id)],
+  // Fetch real member data from ph_issues assignees
+  const { data: membersByProject = {} } = useQuery({
+    queryKey: ['ph-member-data', rawProjects.map(p => p.key)],
     queryFn: async () => {
       if (rawProjects.length === 0) return {};
-      const { data, error } = await supabase.from('ph_project_members').select('project_id');
+      const keys = rawProjects.map(p => p.key);
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('project_key, assignee_display_name')
+        .in('project_key', keys)
+        .is('deleted_at', null)
+        .not('assignee_display_name', 'is', null);
       if (error) return {};
-      const counts: Record<string, number> = {};
-      (data || []).forEach(m => { counts[m.project_id] = (counts[m.project_id] || 0) + 1; });
-      return counts;
+      const map: Record<string, Set<string>> = {};
+      (data || []).forEach((r: any) => {
+        if (!r.assignee_display_name) return;
+        if (!map[r.project_key]) map[r.project_key] = new Set();
+        map[r.project_key].add(r.assignee_display_name);
+      });
+      const result: Record<string, string[]> = {};
+      Object.entries(map).forEach(([k, v]) => { result[k] = Array.from(v).sort(); });
+      return result;
     },
     enabled: rawProjects.length > 0,
   });
