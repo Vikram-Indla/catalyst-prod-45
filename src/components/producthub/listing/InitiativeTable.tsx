@@ -408,9 +408,9 @@ export function InitiativeTable({
                             <div style={{
                               position: 'absolute', left: 3, top: 4, bottom: 4,
                               width: 1, borderRadius: 1,
-                              background: header.column.getIsResizing() ? '#93C5FD' : 'transparent',
+                              background: header.column.getIsResizing() ? 'var(--cp-primary-60)' : 'transparent',
                               transition: 'background 120ms',
-                            }} className="group-hover/resize:!bg-slate-300" />
+                            }} className="group-hover/resize:!bg-[var(--cp-border-strong)]" />
                           </div>
                         )}
                       </th>
