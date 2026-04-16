@@ -65,13 +65,6 @@ export default function IncidentsDashboard() {
           </Link>
         </div>
       </div>
-          <Link to="/release/incidents">
-            <Button variant="outline" className="border-border text-muted-foreground">
-              View List
-            </Button>
-          </Link>
-        </div>
-      </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-4 sm:p-6">
