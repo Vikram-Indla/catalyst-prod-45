@@ -34,8 +34,12 @@ export function useProjects() {
         .order('name', { ascending: true });
 
       if (error) throw new Error(`Failed to fetch projects: ${error.message}`);
-      // Exclude the TestHub default project from ProjectHub listing
-      return ((data ?? []) as ProjectListItem[]).filter(p => p.project_key !== 'TH-DEFAULT');
+      // Exclude non-ProjectHub/legacy keys from the ProjectHub listing
+      const excludedProjectKeys = new Set(['TH-DEFAULT', 'MDT']);
+
+      return ((data ?? []) as ProjectListItem[]).filter(
+        (p) => !excludedProjectKeys.has(p.project_key)
+      );
     },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
