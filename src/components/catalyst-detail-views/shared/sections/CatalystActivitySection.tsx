@@ -12,7 +12,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { MessageSquare, Clock, Pencil, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
+import { MessageSquare, Clock, List, Pencil, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCatalystComments } from '../hooks/useCatalystComments';
 import { useCatalystActivity } from '../hooks/useCatalystActivity';
@@ -70,7 +70,7 @@ function CommentBody({ body, issueKey }: { body: string; issueKey?: string }) {
 export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySectionProps) {
   const { data: comments = [] } = useCatalystComments(itemId, isOpen);
   const { data: activityLog = [] } = useCatalystActivity(itemId, isOpen);
-  const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
+  const [activeTab, setActiveTab] = useState<'comments' | 'history' | 'all'>('comments');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [commentMenuId, setCommentMenuId] = useState<string | null>(null);
   // Key to force-remount the add-comment editor after submit
