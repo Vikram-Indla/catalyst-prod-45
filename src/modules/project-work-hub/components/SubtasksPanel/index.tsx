@@ -1,41 +1,45 @@
 /**
- * SubtasksPanel — Pixel-perfect Jira native-issue-table parity
+ * SubtasksPanel — Atlaskit-parity subtasks table + end-to-end CRUD.
  *
- * Layout: [Header: ▼ Subtasks ... ··· ⊞ +] → [Progress bar + % Done] → [HTML <table>]
- * Uses real <table> with border-collapse:separate, NOT div-based grid
+ * Layout (match Jira):
+ *   [▼ Subtasks]                                             [···]  [⊞]  [+]
+ *   [════════════════════════════════════════════════════]   X% Done
+ *   ┌──────────────────────────────────────────────────────────────────────┐
+ *   │ Work                              Priority    Assignee       Status  │
+ *   │ 🟦 BAU-5091  Enable AD SSO…       ═ Medium    👤 Hassan R…   [DONE ▾] │
+ *   └──────────────────────────────────────────────────────────────────────┘
  *
- * Replaces both the inline subtasks in StoryDetailView and ChildIssuesSection in StoryDetailModal
+ * Interactions:
+ *   • Click status  → grouped popover (To Do / In Progress / Done)
+ *   • Click priority → 4-level popover
+ *   • Click assignee → search typeahead against jira_identity_map
+ *   • Hover row → ··· row-actions (open / rename / delete)
+ *   • Header ··· → Collapse / Clear completed
+ *   • ⊞ → toggle list ↔ board (kanban by status category)
+ *   • + → inline create row with type selector
  */
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { toast } from 'sonner';
 import {
-  ChevronDown, ChevronRight, Plus, MoreHorizontal, LayoutGrid,
+  ChevronDown, ChevronRight, Plus, LayoutGrid,
   Check, Loader2, CornerDownLeft,
 } from 'lucide-react';
-import { nextPos } from '../dialogs/story-detail-modules/helpers';
+import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkCell } from './cells/WorkCell';
 import { PriorityCell } from './cells/PriorityCell';
 import { AssigneeCell } from './cells/AssigneeCell';
 import { StatusCell } from './cells/StatusCell';
+import { RowActionsMenu } from './RowActionsMenu';
+import { HeaderOverflowMenu } from './HeaderOverflowMenu';
+import { ViewToggle, type SubtaskView } from './ViewToggle';
+import { BoardView } from './BoardView';
+import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import './SubtasksPanel.css';
-
-// ─── Types ──────────────────────────────────────────────
-interface SubtaskRow {
-  id: string;
-  issue_key: string;
-  summary: string;
-  status: string;
-  status_category: string;
-  issue_type: string;
-  assignee_display_name: string | null;
-  assignee_account_id: string | null;
-  priority: string;
-  position: number;
-  deleted_at: string | null;
-}
 
 type VisibleColumn = 'priority' | 'assignee' | 'status';
 
@@ -65,30 +69,18 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
 
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
-      <button type="button" onClick={() => setOpen(o => !o)} style={{
-        display: 'flex', alignItems: 'center', gap: 4, height: 32, padding: '0 8px',
-        border: '1px solid #DFE1E6', borderRadius: 3, background: '#fff', cursor: 'pointer',
-        fontSize: 13, color: '#172B4D', fontFamily: 'inherit',
-      }}>
+      <button type="button" onClick={() => setOpen(o => !o)} className="sp-type-selector-btn">
         <span style={{ display: 'flex', width: 16, height: 16 }}>{current.icon}</span>
         <span>{current.label}</span>
         <ChevronDown size={12} color="#6B778C" />
       </button>
       {open && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 2px)', left: 0, minWidth: 160,
-          background: '#fff', border: '1px solid #DFE1E6', borderRadius: 4,
-          boxShadow: '0 4px 8px rgba(9,30,66,.25)', zIndex: 60, overflow: 'hidden',
-        }}>
+        <div className="sp-type-selector-dropdown">
           {TYPE_OPTIONS.map(opt => (
-            <div key={opt.key} onClick={() => { onChange(opt.key); setOpen(false); }}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, height: 36, padding: '0 12px',
-                cursor: 'pointer', fontSize: 13, color: '#172B4D',
-                background: opt.key === value ? '#DEEBFF' : 'transparent',
-              }}
-              onMouseEnter={e => { if (opt.key !== value) e.currentTarget.style.background = '#F4F5F7'; }}
-              onMouseLeave={e => { if (opt.key !== value) e.currentTarget.style.background = 'transparent'; }}
+            <div
+              key={opt.key}
+              onClick={() => { onChange(opt.key); setOpen(false); }}
+              className={`sp-type-selector-item ${opt.key === value ? 'is-active' : ''}`}
             >
               <span style={{ display: 'flex', width: 16, height: 16 }}>{opt.icon}</span>
               <span>{opt.label}</span>
@@ -148,20 +140,66 @@ function ColumnPicker({ columns, onChange }: {
   );
 }
 
+// ─── Inline summary editor ──────────────────────────────
+function InlineSummaryEditor({
+  value,
+  onSave,
+  onCancel,
+}: {
+  value: string;
+  onSave: (v: string) => void;
+  onCancel: () => void;
+}) {
+  const [draft, setDraft] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+    inputRef.current?.select();
+  }, []);
+
+  const commit = () => {
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== value) onSave(trimmed);
+    else onCancel();
+  };
+
+  return (
+    <input
+      ref={inputRef}
+      type="text"
+      className="sp-inline-summary-input"
+      value={draft}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        if (e.key === 'Escape') { e.preventDefault(); onCancel(); }
+      }}
+      onClick={(e) => e.stopPropagation()}
+      maxLength={255}
+    />
+  );
+}
+
 // ─── Main component ─────────────────────────────────────
 export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }: SubtasksPanelProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [expanded, setExpanded] = useState(true);
+  const [view, setView] = useState<SubtaskView>('list');
   const [creating, setCreating] = useState(false);
   const [draftSummary, setDraftSummary] = useState('');
   const [draftType, setDraftType] = useState('Sub-task');
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
     priority: true,
     assignee: true,
     status: true,
   });
   const createRef = useRef<HTMLInputElement>(null);
+
+  const { update, remove, bulkRemoveDone } = useSubtaskMutations(storyKey);
 
   // ─── Data query ───────────────────────────────
   const { data: children = [], isLoading } = useQuery({
@@ -205,7 +243,11 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   });
 
   // ─── Progress calc ────────────────────────────
-  const doneCount = children.filter(c => c.status_category === 'done').length;
+  const doneRows = useMemo(
+    () => children.filter(c => (c.status_category ?? '').toLowerCase() === 'done'),
+    [children]
+  );
+  const doneCount = doneRows.length;
   const totalCount = children.length;
   const percentage = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
 
@@ -233,29 +275,90 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
       setDraftSummary('');
       setTimeout(() => createRef.current?.focus(), 50);
     },
+    onError: (err) => toast.error('Failed to create subtask', { description: (err as Error).message }),
   });
 
   useEffect(() => {
     if (creating) setTimeout(() => createRef.current?.focus(), 50);
   }, [creating]);
 
+  // ─── Handlers ─────────────────────────────────
+  const handleStatusChange = (row: SubtaskRow) => (status: string, category: 'todo' | 'in_progress' | 'done') => {
+    if (row.status === status) return;
+    update.mutate({
+      id: row.id,
+      patch: { status, status_category: category || resolveStatusCategory(status) },
+    });
+  };
+
+  const handlePriorityChange = (row: SubtaskRow) => (priority: 'Critical' | 'High' | 'Medium' | 'Low') => {
+    if ((row.priority ?? '').toLowerCase() === priority.toLowerCase()) return;
+    update.mutate({ id: row.id, patch: { priority } });
+  };
+
+  const handleAssigneeChange = (row: SubtaskRow) => (a: { accountId: string | null; displayName: string | null }) => {
+    if (row.assignee_account_id === a.accountId) return;
+    update.mutate({
+      id: row.id,
+      patch: {
+        assignee_account_id: a.accountId,
+        assignee_display_name: a.displayName,
+      },
+    });
+  };
+
+  const handleSummarySave = (row: SubtaskRow) => (summary: string) => {
+    setEditingId(null);
+    update.mutate({ id: row.id, patch: { summary } });
+  };
+
+  const handleDelete = (row: SubtaskRow) => {
+    if (!window.confirm(`Delete subtask "${row.summary}"?`)) return;
+    remove.mutate(row.id);
+  };
+
+  const handleClearDone = () => {
+    if (doneRows.length === 0) return;
+    if (!window.confirm(`Clear ${doneRows.length} completed subtask${doneRows.length === 1 ? '' : 's'}? They will be removed from this parent.`)) return;
+    bulkRemoveDone.mutate(doneRows.map(r => r.id));
+  };
+
   return (
     <div className="sp-panel">
       {/* ═══ Header ═══ */}
       <div className="sp-header">
         <div className="sp-header-left">
-          <button type="button" className="sp-collapse-btn" onClick={() => setExpanded(e => !e)} aria-expanded={expanded}>
+          <button
+            type="button"
+            className="sp-collapse-btn"
+            onClick={() => setExpanded(e => !e)}
+            aria-expanded={expanded}
+            aria-label={expanded ? 'Collapse subtasks' : 'Expand subtasks'}
+          >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
           <span className="sp-title">Subtasks</span>
+          {totalCount > 0 && (
+            <span className="sp-title-count">{doneCount}/{totalCount}</span>
+          )}
         </div>
         {expanded && (
           <div className="sp-header-right">
-            <button type="button" className="sp-icon-btn" title="Work item actions">
-              <MoreHorizontal size={16} />
-            </button>
+            <HeaderOverflowMenu
+              expanded={expanded}
+              onToggleExpand={() => setExpanded(e => !e)}
+              doneCount={doneCount}
+              onClearDone={handleClearDone}
+            />
             <ColumnPicker columns={columns} onChange={setColumns} />
-            <button type="button" className="sp-icon-btn" title="Create subtask" onClick={() => setCreating(true)}>
+            <ViewToggle view={view} onChange={setView} />
+            <button
+              type="button"
+              className="sp-icon-btn sp-icon-btn--add"
+              title="Create subtask"
+              aria-label="Create subtask"
+              onClick={() => setCreating(true)}
+            >
               <Plus size={16} />
             </button>
           </div>
@@ -266,7 +369,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
         <>
           {/* ═══ Progress bar ═══ */}
           {totalCount > 0 && (
-            <div className="sp-progress" role="progressbar" aria-valuemax={totalCount} aria-valuenow={doneCount} aria-label="Child work progress">
+            <div className="sp-progress" role="progressbar" aria-valuemax={totalCount} aria-valuenow={doneCount} aria-label="Subtask progress">
               <div className="sp-progress-track">
                 <div className="sp-progress-fill" style={{ width: `${percentage}%` }} />
               </div>
@@ -294,13 +397,22 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
           {!isLoading && children.length === 0 && !creating && (
             <div className="sp-empty">
               <div className="sp-empty-heading">No subtasks yet</div>
-              <div className="sp-empty-sub">Break this story into subtasks to track progress</div>
+              <div className="sp-empty-sub">Break this item into subtasks to track progress</div>
               <button type="button" className="sp-empty-cta" onClick={() => setCreating(true)}>+ Create subtask</button>
             </div>
           )}
 
-          {/* ═══ Native HTML table ═══ */}
-          {!isLoading && children.length > 0 && (
+          {/* ═══ Board view ═══ */}
+          {!isLoading && children.length > 0 && view === 'board' && (
+            <BoardView
+              subtasks={children}
+              avatarMap={avatarMap}
+              onCardClick={(id) => onSubtaskClick?.(id)}
+            />
+          )}
+
+          {/* ═══ List (native HTML table) view ═══ */}
+          {!isLoading && children.length > 0 && view === 'list' && (
             <div className="sp-scroll-container">
               <table className="sp-table">
                 <thead className="sp-thead">
@@ -309,6 +421,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                     {columns.priority && <th className="sp-th sp-th--priority">Priority</th>}
                     {columns.assignee && <th className="sp-th sp-th--assignee">Assignee</th>}
                     {columns.status && <th className="sp-th sp-th--status">Status</th>}
+                    <th className="sp-th sp-th--actions" aria-label="Row actions" />
                   </tr>
                 </thead>
                 <tbody>
@@ -319,23 +432,42 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                       onClick={() => onSubtaskClick?.(child.id)}
                     >
                       <td className="sp-td">
-                        <WorkCell
-                          issueType={child.issue_type}
-                          issueKey={child.issue_key}
-                          summary={child.summary}
-                          onClick={() => onSubtaskClick?.(child.id)}
-                        />
+                        {editingId === child.id ? (
+                          <div className="sp-work-cell" onClick={(e) => e.stopPropagation()}>
+                            <span className="sp-type-icon">
+                              <JiraIssueTypeIcon type={child.issue_type} size={16} />
+                            </span>
+                            <span className="sp-issue-key">{child.issue_key}</span>
+                            <InlineSummaryEditor
+                              value={child.summary}
+                              onSave={handleSummarySave(child)}
+                              onCancel={() => setEditingId(null)}
+                            />
+                          </div>
+                        ) : (
+                          <WorkCell
+                            issueType={child.issue_type}
+                            issueKey={child.issue_key}
+                            summary={child.summary}
+                            onClick={() => onSubtaskClick?.(child.id)}
+                          />
+                        )}
                       </td>
                       {columns.priority && (
                         <td className="sp-td">
-                          <PriorityCell priority={child.priority} />
+                          <PriorityCell
+                            priority={child.priority}
+                            onChange={handlePriorityChange(child)}
+                          />
                         </td>
                       )}
                       {columns.assignee && (
                         <td className="sp-td">
                           <AssigneeCell
                             displayName={child.assignee_display_name}
+                            accountId={child.assignee_account_id}
                             avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                            onChange={handleAssigneeChange(child)}
                           />
                         </td>
                       )}
@@ -344,9 +476,17 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                           <StatusCell
                             status={child.status}
                             statusCategory={child.status_category}
+                            onChange={handleStatusChange(child)}
                           />
                         </td>
                       )}
+                      <td className="sp-td sp-td--actions" onClick={(e) => e.stopPropagation()}>
+                        <RowActionsMenu
+                          onOpen={() => onSubtaskClick?.(child.id)}
+                          onRename={() => setEditingId(child.id)}
+                          onDelete={() => handleDelete(child)}
+                        />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -384,11 +524,10 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                     onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
                     disabled={!draftSummary.trim() || createMutation.isPending}
                     title="Create (Enter)"
+                    className="sp-create-submit"
                     style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      width: 28, height: 28, border: '1px solid #DFE1E6', borderRadius: 3,
-                      background: '#F4F5F7', cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
-                      color: '#6B778C', opacity: draftSummary.trim() ? 1 : 0.5,
+                      cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
+                      opacity: draftSummary.trim() ? 1 : 0.5,
                     }}
                   >
                     {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}
@@ -396,8 +535,11 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                 </div>
               </div>
               <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
-                <button type="button" onClick={() => { setCreating(false); setDraftSummary(''); }}
-                  style={{ background: 'none', border: 'none', fontSize: 13, color: '#6B778C', cursor: 'pointer', fontFamily: 'inherit' }}>
+                <button
+                  type="button"
+                  onClick={() => { setCreating(false); setDraftSummary(''); }}
+                  className="sp-create-cancel"
+                >
                   Cancel
                 </button>
               </div>
@@ -408,3 +550,5 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
     </div>
   );
 }
+
+export type { SubtasksPanelProps };
