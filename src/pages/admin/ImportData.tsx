@@ -14,6 +14,7 @@ import { ImportStepMapValues } from '@/components/admin/import/ImportStepMapValu
 import { ImportStepValidation } from '@/components/admin/import/ImportStepValidation';
 import { ImportStepConfirm } from '@/components/admin/import/ImportStepConfirm';
 import { importModuleConfigs, ImportModuleType, getModuleConfig } from '@/lib/import/importModuleConfig';
+import { NotionImportWizard } from '@/components/admin/import/NotionImportWizard';
 import { validateAllRows, RowValidationResult } from '@/lib/import/importValidator';
 
 const wizardSteps: WizardStep[] = [
