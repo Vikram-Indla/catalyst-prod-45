@@ -28,7 +28,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
     queryKey: ['audit-logs', objectiveId],
     enabled: !!objectiveId,
     queryFn: async () => {
-      const { data: objLogs } = await supabase.from('activity_logs')
+      const { data: objLogs } = await (supabase as any).from('activity_logs')
         .select('*, profiles:actor_id(full_name, avatar_url)')
         .eq('entity_type', 'objective').eq('entity_id', objectiveId)
         .order('created_at', { ascending: false });
@@ -38,7 +38,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
 
       let krLogs: any[] = [];
       if (krIds.length > 0) {
-        const { data } = await supabase.from('activity_logs')
+        const { data } = await (supabase as any).from('activity_logs')
           .select('*, profiles:actor_id(full_name, avatar_url)')
           .eq('entity_type', 'key_result').in('entity_id', krIds)
           .order('created_at', { ascending: false });
@@ -48,7 +48,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
       const allLogs = [...(objLogs || []), ...krLogs];
       allLogs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-      const result: CdsActivityItem[] = allLogs.flatMap((log: any) => {
+      const result: CdsActivityItem[] = allLogs.flatMap((log: any): CdsActivityItem[] => {
         const actorName = log.profiles?.full_name || 'System';
         const action = log.action;
         let type: CdsActivityItem['type'] = 'update';
@@ -64,14 +64,14 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
             actor: { id: log.actor_id || 'system', name: actorName, avatarUrl: log.profiles?.avatar_url },
             timestamp: log.created_at,
             description: `${action.toLowerCase()} ${entityLabel}`,
-          }];
+          } as CdsActivityItem];
         }
 
         return changes.map((c, i) => ({
-          id: `${log.id}-${i}`, type: type as CdsActivityItem['type'],
+          id: `${log.id}-${i}`, type,
           actor: { id: log.actor_id || 'system', name: actorName, avatarUrl: log.profiles?.avatar_url },
           timestamp: log.created_at, fieldChange: c,
-        }));
+        } as CdsActivityItem));
       });
 
       return result;

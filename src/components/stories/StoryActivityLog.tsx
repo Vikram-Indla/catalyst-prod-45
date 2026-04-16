@@ -31,7 +31,7 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
     queryKey: ['story-activity', storyId],
     enabled: !!storyId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('activity_logs')
         .select('*, profiles:actor_id(full_name, email)')
         .eq('entity_type', 'stories')
@@ -39,11 +39,11 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
         .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 
-  const items: CdsActivityItem[] = rawLogs.flatMap((log: any) => {
+  const items: CdsActivityItem[] = (rawLogs as any[]).flatMap((log: any): CdsActivityItem[] => {
     const actorName = log.profiles?.full_name || log.profiles?.email || 'System';
     const action = log.action;
     let type: CdsActivityItem['type'] = 'update';
@@ -59,16 +59,16 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
         actor: { id: log.actor_id || 'system', name: actorName },
         timestamp: log.created_at,
         description: type === 'create' ? 'created this story' : type === 'delete' ? 'deleted this story' : 'updated this story',
-      }];
+      } as CdsActivityItem];
     }
 
     return changes.map((c, i) => ({
       id: `${log.id}-${i}`,
-      type: type as CdsActivityItem['type'],
+      type,
       actor: { id: log.actor_id || 'system', name: actorName },
       timestamp: log.created_at,
       fieldChange: c,
-    }));
+    } as CdsActivityItem));
   });
 
   return <ActivityFeed items={items} isLoading={isLoading} emptyMessage="No activity recorded" />;

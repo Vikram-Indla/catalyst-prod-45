@@ -37,20 +37,20 @@ export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
         .limit(50);
       if (error) throw error;
 
-      const result: CdsActivityItem[] = (data || []).flatMap((log: any) => {
+      const result: CdsActivityItem[] = (data || []).flatMap((log: any): CdsActivityItem[] => {
         let type: CdsActivityItem['type'] = 'update';
         if (log.action === 'INSERT') type = 'create';
         else if (log.action === 'DELETE') type = 'delete';
 
         const changes = diffFields(log.before_json, log.after_json);
         if (changes.length === 0) {
-          return [{ id: log.id, type, actor: { id: log.actor_id || 'system', name: 'System' }, timestamp: log.created_at, description: `${log.action?.toLowerCase()} this feature` }];
+          return [{ id: log.id, type, actor: { id: log.actor_id || 'system', name: 'System' }, timestamp: log.created_at, description: `${log.action?.toLowerCase()} this feature` } as CdsActivityItem];
         }
         return changes.map((c, i) => ({
-          id: `${log.id}-${i}`, type: type as CdsActivityItem['type'],
+          id: `${log.id}-${i}`, type,
           actor: { id: log.actor_id || 'system', name: 'System' },
           timestamp: log.created_at, fieldChange: c,
-        }));
+        } as CdsActivityItem));
       });
       return result;
     },
