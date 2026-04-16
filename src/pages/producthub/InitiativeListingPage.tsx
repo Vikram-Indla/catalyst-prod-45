@@ -614,11 +614,8 @@ export default function InitiativeListingPage() {
 
   return (
     <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-      {/* ── Page Header (For You pattern) ── */}
-      <ProductHubPageHeader
-        title="Product Backlog"
-        subtitle="Strategic initiative portfolio & prioritization"
-      />
+      {/* ── Page Header (Canonical) ── */}
+      <CatalystPageHeader title="Product Backlog" />
 
       {/* ── Primary Tabs (All / My Items / Starred) + Overdue + Filter ── */}
       <div style={{
