@@ -33,17 +33,17 @@
 :root {
   --status-todo-bg: #42526E;
   --status-todo-text: #FFFFFF;
-  --status-inprogress-bg: #0052CC;
+  --status-inprogress-bg: #0C66E4;
   --status-inprogress-text: #FFFFFF;
-  --status-done-bg: #14892C;
+  --status-done-bg: #1B7F37;
   --status-done-text: #FFFFFF;
 }
 .dark {
   --status-todo-bg: #42526E;
   --status-todo-text: #FFFFFF;
-  --status-inprogress-bg: #0052CC;
+  --status-inprogress-bg: #0C66E4;
   --status-inprogress-text: #FFFFFF;
-  --status-done-bg: #14892C;
+  --status-done-bg: #1B7F37;
   --status-done-text: #FFFFFF;
 }
 .status-badge-base {

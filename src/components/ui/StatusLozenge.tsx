@@ -30,9 +30,9 @@ function getStatusCategory(status: string): StatusCategory {
 
 function getLozengeTokens(category: StatusCategory): { bg: string; text: string } {
   const map: Record<StatusCategory, { bg: string; text: string }> = {
-    todo:       { bg: '#42526E', text: '#FFFFFF' },
-    inprogress: { bg: '#0C66E4', text: '#FFFFFF' },
-    done:       { bg: '#1B7F37', text: '#FFFFFF' },
+    todo:       { bg: 'var(--status-todo-bg)', text: 'var(--status-todo-text)' },
+    inprogress: { bg: 'var(--status-inprogress-bg)', text: 'var(--status-inprogress-text)' },
+    done:       { bg: 'var(--status-done-bg)', text: 'var(--status-done-text)' },
   };
   return map[category];
 }
