@@ -54,11 +54,11 @@ const SORTABLE_KEYS = new Set(['key', 'summary', 'status', 'parent', 'assignee',
 
 // ── Group By options ──
 type GroupByKey = 'none' | 'status' | 'priority' | 'assignee' | 'parent';
-const GROUP_OPTIONS: { key: GroupByKey; label: string }[] = [
-  { key: 'status', label: 'Status' },
-  { key: 'priority', label: 'Priority' },
-  { key: 'assignee', label: 'Assignee' },
-  { key: 'parent', label: 'Parent' },
+const GROUP_OPTIONS: GroupByOption<GroupByKey>[] = [
+  { key: 'status', label: 'Status', icon: 'status' },
+  { key: 'priority', label: 'Priority', icon: 'priority' },
+  { key: 'assignee', label: 'Assignee', icon: 'assignee' },
+  { key: 'parent', label: 'Parent', icon: 'parent' },
 ];
 
 const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
