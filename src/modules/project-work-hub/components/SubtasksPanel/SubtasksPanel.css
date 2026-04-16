@@ -1108,6 +1108,169 @@
 }
 
 /* ════════════════════════════════════════════════════════════════
+   ECLIPSE — NOCTURNE DARK MODE OVERRIDES
+   Last consolidated: 2026-04-16
+   Palette: CLAUDE.md Section 18 — all hex literals, no var(), no HSL.
+   Activated by `html.dark` (ThemeProvider adds class to documentElement).
+   Scoped exclusively to .sp-panel + its popovers/bulk bar to keep the
+   override surface minimal and prevent cascade leakage.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Panel surface + typography ─────────────── */
+.dark .sp-panel { color: #EDEDED; }
+.dark .sp-title { color: #EDEDED; }
+.dark .sp-title-count { background: #292929; color: #A1A1A1; }
+
+/* ── Header icon buttons ─────────────────────── */
+.dark .sp-collapse-btn { color: #878787; }
+.dark .sp-collapse-btn:hover { background: #1F1F1F; }
+.dark .sp-icon-btn { color: #878787; }
+.dark .sp-icon-btn:hover { background: #1F1F1F; color: #EDEDED; }
+.dark .sp-icon-btn--add { color: #878787; }
+.dark .sp-icon-btn--add:hover { background: #1F2937; color: #5B9AFF; }
+
+/* ── Progress bar ────────────────────────────── */
+.dark .sp-progress-track { background: #292929; }
+.dark .sp-progress-label { color: #878787; }
+
+/* ── Table scaffolding ───────────────────────── */
+.dark .sp-panel .sp-thead { border-color: #2E2E2E; }
+.dark .sp-panel .sp-th { color: #878787; border-bottom-color: #2E2E2E; }
+.dark .sp-panel .sp-td { border-top-color: #2E2E2E; }
+.dark .sp-panel .sp-row { background: #0A0A0A; }
+.dark .sp-panel .sp-row:hover { background: #1F1F1F; }
+.dark .sp-panel .sp-row--selected,
+.dark .sp-panel .sp-row--selected:hover { background: #1C2A4A; }
+.dark .sp-panel .sp-row--focused { outline-color: #5B9AFF; background: #1F1F1F; }
+.dark .sp-panel .sp-row--dragging { background: #1A1A1A; box-shadow: 0 4px 14px rgba(0,0,0,0.55); }
+.dark .sp-drag-handle { color: #878787; }
+.dark .sp-drag-handle:hover { color: #EDEDED; }
+
+/* ── Work / key / summary ───────────────────── */
+.dark .sp-issue-key { color: #5B9AFF; }
+.dark .sp-issue-key:hover { color: #8BB8FF; }
+.dark .sp-issue-summary { color: #EDEDED; }
+.dark .sp-priority-label { color: #A1A1A1; }
+.dark .sp-assignee-name { color: #A1A1A1; }
+
+/* ── Inline triggers / hover ────────────────── */
+.dark .sp-inline-trigger:hover:not(:disabled) { background: rgba(255, 255, 255, 0.05); }
+.dark .sp-inline-summary-input {
+  background: #1A1A1A; color: #EDEDED; border-color: #5B9AFF;
+}
+.dark .sp-row-actions-btn { color: #878787; }
+.dark .sp-row-actions-btn:hover,
+.dark .sp-row-actions-btn[data-state="open"] {
+  background: #1F1F1F; color: #EDEDED;
+}
+
+/* ── Checkbox ───────────────────────────────── */
+.dark .sp-checkbox-box {
+  background: #0A0A0A;
+  border-color: #454545;
+}
+.dark .sp-checkbox:hover .sp-checkbox-box { border-color: #5B9AFF; }
+.dark .sp-checkbox input:checked + .sp-checkbox-box,
+.dark .sp-row--selected .sp-checkbox-box {
+  background: #0055CC; border-color: #0055CC;
+}
+.dark .sp-check { background: #0A0A0A; border-color: #454545; }
+.dark .sp-check--on { background: #0055CC; border-color: #0055CC; }
+
+/* ── Popovers (shared) ──────────────────────── */
+.dark .sp-pop {
+  background: #1A1A1A;
+  border-color: #2E2E2E;
+  color: #EDEDED;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+.dark .sp-pop-label { color: #EDEDED; }
+.dark .sp-pop-hint { color: #878787; }
+.dark .sp-pop-divider { background: #2E2E2E; }
+.dark .sp-pop-search { border-bottom-color: #2E2E2E; }
+.dark .sp-pop-search-input { color: #EDEDED; }
+.dark .sp-pop-search-input::placeholder { color: #878787; }
+.dark .sp-pop-row { color: #EDEDED; }
+.dark .sp-pop-row:hover:not(:disabled) { background: #292929; }
+.dark .sp-pop-row--danger:hover { background: #2A1515; }
+.dark .sp-pop-group + .sp-pop-group { border-top-color: #2E2E2E; }
+.dark .sp-pop-group-label { color: #878787; }
+
+/* ── Type selector (inline create) ──────────── */
+.dark .sp-type-selector-btn {
+  background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED;
+}
+.dark .sp-type-selector-btn:hover { background: #292929; }
+.dark .sp-type-selector-dropdown {
+  background: #1A1A1A; border-color: #2E2E2E;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+}
+.dark .sp-type-selector-item { color: #EDEDED; }
+.dark .sp-type-selector-item:hover { background: #292929; }
+.dark .sp-type-selector-item.is-active { background: #1C2A4A; }
+
+/* ── Column picker (legacy shared styles) ───── */
+.dark .sp-colpicker-dropdown {
+  background: #1A1A1A; border-color: #2E2E2E;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+}
+.dark .sp-colpicker-title { color: #878787; border-bottom-color: #2E2E2E; }
+.dark .sp-colpicker-item { color: #EDEDED; }
+.dark .sp-colpicker-item:hover { background: #292929; }
+.dark .sp-colpicker-check { border-color: #454545; }
+.dark .sp-colpicker-check--active { background: #0055CC; border-color: #0055CC; }
+
+/* ── Inline create ──────────────────────────── */
+.dark .sp-create-row {
+  background: #1A1A1A; border-color: #5B9AFF;
+}
+.dark .sp-create-input { color: #EDEDED; }
+.dark .sp-create-input::placeholder { color: #878787; }
+.dark .sp-create-actions { border-left-color: #2E2E2E; }
+.dark .sp-create-submit { background: #292929; border-color: #2E2E2E; color: #A1A1A1; }
+.dark .sp-create-cancel { color: #A1A1A1; }
+.dark .sp-create-cancel:hover { color: #EDEDED; }
+
+/* ── Fix versions ───────────────────────────── */
+.dark .sp-fixv-chip { background: #1C2A4A; color: #8BB8FF; }
+.dark .sp-fixv-more { color: #878787; }
+.dark .sp-fixv-empty { color: #7D7D7D; }
+
+/* ── Board view ─────────────────────────────── */
+.dark .sp-board-col { background: #111111; border-color: #2E2E2E; }
+.dark .sp-board-col-header { background: #1A1A1A; border-bottom-color: #2E2E2E; }
+.dark .sp-board-count { background: #292929; color: #A1A1A1; }
+.dark .sp-board-empty { color: #7D7D7D; }
+.dark .sp-board-card {
+  background: #1A1A1A; border-color: #2E2E2E;
+}
+.dark .sp-board-card:hover {
+  border-color: #454545; box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+.dark .sp-board-card-summary { color: #EDEDED; }
+.dark .sp-board-card-key { color: #5B9AFF; }
+
+/* ── Empty state / skeleton ─────────────────── */
+.dark .sp-empty-heading { color: #EDEDED; }
+.dark .sp-empty-sub { color: #878787; }
+.dark .sp-empty-cta {
+  background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED;
+}
+.dark .sp-empty-cta:hover { background: #292929; }
+.dark .sp-skeleton-pulse { background: #292929; }
+
+/* ── Bulk edit bar — already dark in light mode;
+      tighten contrast on deep-dark surface ───── */
+.dark .sp-bulkbar { background: #111111; box-shadow: 0 4px 12px rgba(0,0,0,0.7); }
+.dark .sp-bulkbar-btn { border-color: #454545; color: #EDEDED; }
+.dark .sp-bulkbar-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.06); border-color: #878787;
+}
+.dark .sp-bulkbar-cancel { color: #A1A1A1; }
+.dark .sp-bulkbar-cancel:hover { background: rgba(255,255,255,0.06); color: #EDEDED; }
+.dark .sp-bulkbar-count { border-right-color: #2E2E2E; }
+
+/* ════════════════════════════════════════════════════════════════
    ADF RICH TEXT TABLE STYLES — Jira parity (full-page view)
    Applied to .adf-editor-content outside [data-sdm-scope]
    ════════════════════════════════════════════════════════════════ */
