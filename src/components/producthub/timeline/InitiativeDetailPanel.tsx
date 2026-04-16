@@ -19,7 +19,6 @@ import { DetailTabRisks } from './DetailTabRisks';
 import { DetailTabMilestones } from './DetailTabMilestones';
 import { DetailTabAttachments } from './DetailTabAttachments';
 import { DetailTabActivity } from './DetailTabActivity';
-import { ActivityTab } from '@/components/business-requests/drawer-tabs/ActivityTab';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -355,11 +354,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           {activeTab === 'risks' && <DetailTabRisks initiativeId={initiative.id} />}
           {activeTab === 'milestones' && <DetailTabMilestones initiativeId={initiative.id} />}
           {activeTab === 'attachments' && <DetailTabAttachments initiativeId={initiative.id} />}
-          {activeTab === 'activity' && (
-            initiative.initiative_type_key === 'business_request'
-              ? <ActivityTab requestId={initiative.id} />
-              : <DetailTabActivity initiativeId={initiative.id} />
-          )}
+          {activeTab === 'activity' && <DetailTabActivity initiativeId={initiative.id} />}
         </div>
       </div>
 
