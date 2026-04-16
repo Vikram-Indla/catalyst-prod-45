@@ -73,7 +73,9 @@ function groupForYouItems(items: WorkItem[], groupBy: ForYouGroupByKey): { label
 
   return entries.map(([label, items]) => ({ label, items }));
 }
-
+// ─── Heavy panels: lazy-loaded so they never block initial render ────
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
+const CatalystAIPanel = lazy(() => import('@/components/catalyst-ai/CatalystAIPanel').then(m => ({ default: m.CatalystAIPanel })));
 
 
 export default function ForYouPage() {
