@@ -779,7 +779,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
         </div>
 
         {/* Group By */}
-        <GroupByPopover value={groupBy} onChange={setGroupBy} />
+        <SharedGroupByPopover<GroupByKey> value={groupBy} onChange={setGroupBy} options={GROUP_OPTIONS} noneKey="none" />
 
         <div className="flex-1" />
 
