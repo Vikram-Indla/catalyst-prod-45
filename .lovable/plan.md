@@ -1,141 +1,54 @@
 
 
-# Business Request Detail: Drawer → Story Modal Conversion
+# ADF Table Rendering — CSS Class Mismatch Fix
 
-## Summary
+## Root Cause Identified
 
-Convert the Business Request from a right-side `Sheet` (drawer) with tab-based content into the canonical `StoryDetailModal` two-column layout. Additionally, migrate the status system from the legacy `demand_process_steps` table to the `catalyst_workflow_schemes/statuses/transitions` system already used by Stories, Epics, etc.
+The `AdfDescriptionRenderer` component wraps its output in a `<div className="adf-description-content">` but all table CSS styles in the codebase are scoped to different class names:
 
----
+| CSS selector scope | Where defined | Status |
+|---|---|---|
+| `.adf-content table` | `src/index.css:5185` | **Never applied** — no component uses `adf-content` wrapper class |
+| `.adf-editor-content table` | `story-detail-extensions.css:985` + `SubtasksPanel.css:478` | Applied only inside TipTap editor containers |
+| `[data-sdm-scope] .adf-editor-content table` | `story-detail-extensions.css:985` | Applied only inside StoryDetailModal scope |
+| `.adf-description-content table` | **NOWHERE** | ← The actual class used by `AdfDescriptionRenderer` — **zero CSS rules exist** |
 
-## Current State
+**Result:** Tables rendered by `adfToHtml()` inside `AdfDescriptionRenderer` have **no borders, no padding, no header backgrounds, no cell styling**. They render as raw unstyled HTML tables — which is exactly what screenshot 1 shows (cramped, no structure, unreadable).
 
-- **BusinessRequestDrawer.tsx** (900 lines): Uses `Sheet` component, tab-based layout (Details, Scoring, Planning, Links, History, Budget, Risks, Milestones)
-- **Status system**: Uses `demand_process_steps` table + hardcoded `DRAWER_PROCESS_STEPS` in `StatusDropdown.tsx` — completely separate from the `catalyst_workflow_*` tables used by all other issue types
-- **Admin panel**: "Business Request" tab exists in `/admin/workflows` but uses a generic 3-status scheme (Backlog/In Progress/Done), not the actual demand process steps
-
-## Target State
-
-A two-column modal matching `StoryDetailModal` exactly, with:
-- Left panel: scrollable content (title, description, sections, activity)
-- Right panel: resizable sidebar with all field properties
-- Top bar: breadcrumb + share + dots menu + close
-- Status powered by `catalyst_workflow_statuses` (same as Story)
-
----
+Screenshot 2 (Jira) shows the correct rendering: clean borders, grey header row, proper cell padding, readable column widths.
 
 ## Implementation Plan
 
-### Phase 1: Database — Migrate Status System
+### Single Fix — Add `.adf-description-content` table styles to `index.css`
 
-**Migration**: Populate `catalyst_workflow_statuses` for the "Business Request" workflow scheme with the actual demand process steps:
+Add a new CSS block in `src/index.css` (right after the existing `.adf-content` block at line ~5252) that targets `.adf-description-content table` with Jira-exact parity:
 
+**Styles to apply (matching Jira screenshot 2):**
+- `border-collapse: collapse` + `width: 100%`
+- `border: 0.556px solid #DDDEE1` (Jira's thin border)
+- Header cells (`th`): `background: #F4F5F7`, `font-weight: 600`, `color: #172B4D`
+- Body cells (`td`): `background: #FFFFFF`, `padding: 8px 10px`, `vertical-align: top`
+- `table-layout: auto` (not `fixed`) so columns size to content naturally — matching Jira's proportional column widths
+- `word-wrap: break-word` for long Arabic/English text
+- Hover: `tr:hover td { background: #FAFBFC }`
+- Dark mode variants using NOCTURNE tokens
+
+### Alternative approach (also do)
+
+Additionally, add `adf-content` as a **second** className to the `AdfDescriptionRenderer` wrapper div so that the existing `.adf-content` styles in `index.css` also apply. This provides immediate coverage without duplicating CSS:
+
+```tsx
+// In AdfDescriptionRenderer.tsx — change className from:
+className="adf-description-content"
+// to:
+className="adf-description-content adf-content"
 ```
-New Demand (todo) → In Review (in_progress) → EA Review (in_progress) → 
-Analyse (in_progress) → Approved (in_progress) → Ready to Implement (in_progress) → 
-Implement (in_progress) → Closed (done) → Rejected (done) → On Hold (todo)
-```
 
-Plus create appropriate transitions in `catalyst_workflow_transitions`.
+This is a **one-line change** in `AdfDescriptionRenderer.tsx` (applied at lines 253, 271, 303) plus minor CSS refinements in `index.css` to ensure `table-layout: auto` (not `fixed`) for natural column sizing.
 
-The existing `demand_process_steps` table and `process_step` column on `business_requests` remain untouched for backward compatibility — the new modal reads from `catalyst_workflow_statuses` and writes `process_step` using the slug.
+### Files to Touch
+1. `src/modules/project-work-hub/components/AdfDescriptionRenderer.tsx` — Add `adf-content` class (3 occurrences)
+2. `src/index.css` — Change `table-layout: fixed` → `table-layout: auto` in `.adf-content table` block (line 5191) for proper column proportions matching Jira
 
-### Phase 2: New Modal Component
-
-**Create** `src/components/business-requests/BusinessRequestDetailModal.tsx`
-
-Structure (matching StoryDetailModal exactly):
-- **Top bar**: `request_key` breadcrumb + Share + MoreHorizontal dots menu + X close
-- **Left panel** (scrollable):
-  1. **Title** — inline-editable (contentEditable)
-  2. **Quick actions bar** — `+` menu (Create subtask, Link work item, Add attachment) + AI sparkle menu
-  3. **Description** — TipTap rich text editor with ADF support, view/edit toggle
-  4. **Acceptance Criteria** — rich text, view/edit toggle
-  5. **Attachments** — reuse `AttachmentsSection` pattern
-  6. **Linked Issues** — reuse `LinkedIssuesSection` pattern (epics, features, stories from `business_request_links`)
-  7. **Defects** — linked defects section
-  8. **Production Incidents** — linked incidents section
-  9. **Scoring & Review** — collapsible accordion (Business Score + EA Review combined)
-  10. **Budget** — collapsible accordion
-  11. **Milestones** — collapsible accordion
-  12. **Risks** — collapsible accordion
-  13. **Activity** — Comments/History/All tabs (Jira-parity interleaved feed with `RichTextCommentEditor`)
-
-- **Right panel** (resizable sidebar, 280px default):
-  - Status dropdown (3-color lozenge from `catalyst_workflow_statuses`)
-  - Priority (auto-calculated score pill)
-  - Rank badge
-  - Assignee (editable avatar picker)
-  - Requestor
-  - Business Owner
-  - Department
-  - Delivery Platform
-  - Delivery Track
-  - Complexity
-  - Urgency
-  - Risk Rating
-  - Health (RAG indicator)
-  - Start Date / End Date
-  - Planned Quarter (multi-select)
-  - Estimated Effort
-  - Estimated Cost
-  - Labels
-  - Created / Updated timestamps
-
-### Phase 3: Status Dropdown Refactor
-
-Replace the legacy `StatusDropdown` (which reads from `DRAWER_PROCESS_STEPS` hardcoded array) with a new dropdown that reads from `useCatalystWorkflow('Business Request')`, grouped by category (To Do / In Progress / Done) with the 3-color lozenge system (Grey/Blue/Green).
-
-### Phase 4: Admin Panel — Workflow Statuses
-
-The "Business Request" tab in `/admin/workflows` already exists and uses `useCatalystWorkflow('Business Request')`. After Phase 1 populates the real statuses, the admin panel will automatically show the correct statuses + transition matrix. No code changes needed — only the database migration.
-
-### Phase 5: Swap Drawer for Modal
-
-Update all consumer pages:
-- `src/modules/product-backlog/pages/CatalystDemandList.tsx`
-- `src/modules/kanban/pages/CatalystDemandKanban.tsx`
-- `src/pages/industry/IndustryRoadmapPage.tsx`
-
-Replace `<BusinessRequestDrawer>` with `<BusinessRequestDetailModal>` using the same props pattern.
-
-### Phase 6: Existing Tab Components as Accordion Sections
-
-Extract and wrap existing tab components into collapsible sections:
-- `BusinessScoreViewTab` + `EAReviewTab` → `ScoringAccordion`
-- `BudgetViewTab` → `BudgetAccordion`
-- `MilestonesViewTab` → `MilestonesAccordion`
-- `RisksViewTab` → `RisksAccordion`
-
-These reuse the existing tab component internals but wrap them in a `ChevronRight/ChevronDown` collapsible pattern matching StoryDetailModal's `SectionBlock`.
-
----
-
-## Files to Create
-1. `src/components/business-requests/BusinessRequestDetailModal.tsx` — Main two-column modal
-2. `src/components/business-requests/detail-sections/ScoringAccordion.tsx`
-3. `src/components/business-requests/detail-sections/BudgetAccordion.tsx`
-4. `src/components/business-requests/detail-sections/MilestonesAccordion.tsx`
-5. `src/components/business-requests/detail-sections/RisksAccordion.tsx`
-6. `src/components/business-requests/detail-sections/BRLinkedIssuesSection.tsx`
-7. `src/components/business-requests/detail-sections/BRActivitySection.tsx`
-
-## Files to Modify
-1. `src/modules/product-backlog/pages/CatalystDemandList.tsx` — Swap drawer for modal
-2. `src/modules/kanban/pages/CatalystDemandKanban.tsx` — Swap drawer for modal
-3. `src/pages/industry/IndustryRoadmapPage.tsx` — Swap drawer for modal
-
-## Database Migration
-1. Replace the 3 placeholder statuses in `catalyst_workflow_statuses` for scheme `a0000005-...` with the 10 actual demand process steps
-2. Create corresponding transitions in `catalyst_workflow_transitions`
-
-## Components Reused from StoryDetailModal
-- `RichTextCommentEditor` (comment input)
-- `StoryRichTextEditor` / `AdfDescriptionRenderer` (description rendering)
-- `AddParentPicker` pattern (breadcrumb)
-- `IssueKeyLink` (key display)
-- `WorkItemStarButton` (star button)
-- Resizable splitter pattern
-- 3-color status lozenge system
-- `SectionBlock` pattern for collapsible sections
+### No New Files, No Schema Changes
 
