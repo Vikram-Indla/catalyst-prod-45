@@ -29,7 +29,7 @@ import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from 'lucide-react';
 import { PriorityBars } from '@/components/shared/PriorityIndicator';
-import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
 import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
 import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
@@ -614,11 +614,8 @@ export default function InitiativeListingPage() {
 
   return (
     <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-      {/* ── Page Header (For You pattern) ── */}
-      <ProductHubPageHeader
-        title="Product Backlog"
-        subtitle="Strategic initiative portfolio & prioritization"
-      />
+      {/* ── Page Header (Canonical) ── */}
+      <CatalystPageHeader title="Product Backlog" />
 
       {/* ── Primary Tabs (All / My Items / Starred) + Overdue + Filter ── */}
       <div style={{

@@ -9,7 +9,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import { Search, Download, Plus } from 'lucide-react';
-import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,
@@ -137,10 +137,9 @@ export default function IdeationPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* ─── Page Header (For You pattern) ─── */}
-      <ProductHubPageHeader
+      {/* ─── Page Header (Canonical) ─── */}
+      <CatalystPageHeader
         title={pageTitle}
-        subtitle="Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence"
         actions={
           <>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />

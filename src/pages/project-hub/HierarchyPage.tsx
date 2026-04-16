@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo, useCallback, useRef } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -372,15 +373,7 @@ export default function HierarchyPage() {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
       {/* PAGE HEADER */}
-      <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
-        <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, letterSpacing: '-0.025em', lineHeight: 1.2 }}>
-          All Work Items
-        </h1>
-        <p style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', margin: '4px 0 0' }}>
-          {projectKey?.toUpperCase() || 'Project'} · {totalItems} items · {completedItems} completed
-          <span style={{ marginLeft: 8, fontSize: 11, color: isDark ? '#878787' : '#94A3B8' }}>Source: Jira Sync</span>
-        </p>
-      </div>
+      <CatalystPageHeader title="All Work Items" />
 
       {/* TOOLBAR — Search + Filter + Spacer + View Toggle ONLY */}
       <div style={{

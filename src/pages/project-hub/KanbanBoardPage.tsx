@@ -14,6 +14,7 @@
  * - All issue types (Story, Epic, Bug, Task, Subtask, Feature, Improvement, etc.)
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
 /* ═══ Board Menu Item (enterprise styling) ═══ */
 function BoardMenuItem({ icon, label, badge, onClick }: {
@@ -823,23 +824,7 @@ export default function KanbanBoardPage() {
   return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
       {/* ── Page header ── */}
-      <div className="flex items-center px-6" style={{
-        height: 56, background: tk.surfaceBg,
-        borderBottom: `1px solid ${tk.borderSubtle}`, flexShrink: 0,
-      }}>
-        <div>
-          <h1 style={{
-            fontSize: 18, fontWeight: 600, color: tk.textPrimary,
-            lineHeight: '24px', margin: 0, fontFamily: "'Sora', sans-serif",
-          }}>Board</h1>
-          <p style={{
-            fontSize: 12, color: tk.textMuted,
-            lineHeight: '16px', margin: 0, fontFamily: "'Inter', sans-serif",
-          }}>
-            {projMeta?.name || key?.toUpperCase()} — All Work Items
-          </p>
-        </div>
-      </div>
+      <CatalystPageHeader title="Board" />
 
       {/* ── Toolbar ── */}
       <div className="flex items-center gap-2 px-4 flex-wrap" style={{

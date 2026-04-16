@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -182,16 +183,7 @@ export default function ProjectListPage() {
   return (
     <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="ph-inner-content">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-1 mb-1">
-          <span style={{ fontSize: 13, color: T.t3, fontWeight: 500 }}>ProjectHub</span>
-          <ChevronRight size={14} style={{ color: T.t3 }} />
-          <span style={{ fontSize: 13, color: T.t1, fontWeight: 500 }}>All Projects</span>
-        </div>
-
-        <h1 className="mb-5" style={{ fontSize: 20, fontWeight: 700, color: T.t1, fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>
-          All Projects
-        </h1>
+        <CatalystPageHeader title="All Projects" />
 
         {/* Status Tabs */}
         <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">

@@ -2,6 +2,7 @@
  * ProjectDashboard V4 — 11 widget dashboard with V12 Hybrid Precision tokens
  */
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,30 +77,25 @@ export default function ProjectDashboardPage() {
         ) : (
           <>
             {/* Management Bar */}
-            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-heading)' }}>
-                  Dashboard
+            <CatalystPageHeader
+              title="Dashboard"
+              actions={
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setGalleryOpen(true)} style={btnStyle}>
+                    <Plus size={13} />
+                    Add Widget
+                  </button>
+                  <button style={btnStyle}>
+                    <LayoutGrid size={13} />
+                    Edit Layout
+                  </button>
+                  <button onClick={resetToDefaults} style={{ ...btnStyle, color: 'var(--cp-text-tertiary)' }}>
+                    <RotateCcw size={13} />
+                    Reset
+                  </button>
                 </div>
-                <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', marginTop: 2 }}>
-                  Showing {visibleCount} of 11 widgets
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => setGalleryOpen(true)} style={btnStyle}>
-                  <Plus size={13} />
-                  Add Widget
-                </button>
-                <button style={btnStyle}>
-                  <LayoutGrid size={13} />
-                  Edit Layout
-                </button>
-                <button onClick={resetToDefaults} style={{ ...btnStyle, color: 'var(--cp-text-tertiary)' }}>
-                  <RotateCcw size={13} />
-                  Reset
-                </button>
-              </div>
-            </div>
+              }
+            />
 
             {/* Widget Grid — always render; hooks gracefully handle missing projectId */}
             <DashboardWidgetGrid projectId={projectId || pKey} projectKey={pKey} />

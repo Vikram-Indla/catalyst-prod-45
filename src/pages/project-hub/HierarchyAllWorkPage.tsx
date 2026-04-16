@@ -3,6 +3,7 @@
  * Header pattern from StoryBacklogPage (title + subtitle)
  */
 import { useParams } from 'react-router-dom';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
@@ -41,15 +42,8 @@ export default function HierarchyAllWorkPage() {
 
   return (
     <div className="h-full min-h-0 flex flex-col overflow-hidden" style={{ background: tk.pageBg }}>
-      {/* ── Title + Subtitle (Story Backlog pattern) ── */}
-      <div className="px-6 pt-5 pb-3 border-b flex-shrink-0" style={{ borderColor: tk.border }}>
-        <h1 className="text-xl font-semibold" style={{ color: tk.t1, fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>
-          {projectName} All Work
-        </h1>
-        <p className="text-sm mt-0.5" style={{ color: tk.t2 }}>
-          All issues and work items across the project
-        </p>
-      </div>
+      {/* ── Title ── */}
+      <CatalystPageHeader title={`${projectName} All Work`} />
 
       {/* ── 3-column split view ── */}
       <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
