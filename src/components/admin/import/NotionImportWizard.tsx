@@ -205,40 +205,37 @@ export function NotionImportWizard() {
 
       {/* ─── Content ─── */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-3xl mx-auto py-8 px-6">
+        <div className="max-w-[560px] mx-auto py-6 px-6">
 
           {/* ═══ STEP 1: CONNECT ═══ */}
           {step === 1 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Connect to Notion</h2>
-                <p className="text-sm text-[#64748B]">
-                  Provide your integration token and database URL to begin importing work items.
+            <div className="space-y-4">
+              <div className="mb-1">
+                <h2 className="text-[15px] font-semibold text-[#0F172A]">Connect to Notion</h2>
+                <p className="text-[13px] text-[#64748B] mt-0.5">
+                  Enter your integration token and database URL to start.
                 </p>
               </div>
 
-              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
                 {/* Token */}
-                <div className="p-5 space-y-2 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-2">
-                    <KeyRound className="h-4 w-4 text-[#64748B]" />
-                    <Label htmlFor="notion-token" className="text-sm font-semibold text-[#0F172A]">
-                      Integration Token
-                    </Label>
-                  </div>
+                <div className="px-4 pt-3.5 pb-3 border-b border-[#F1F5F9]">
+                  <Label htmlFor="notion-token" className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                    <KeyRound className="h-3.5 w-3.5 text-[#94A3B8]" />
+                    Integration Token
+                  </Label>
                   <Input
                     id="notion-token"
                     type="password"
                     placeholder="secret_..."
                     value={token}
                     onChange={e => setToken(e.target.value)}
-                    className="h-10 bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white transition-colors"
+                    className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white"
                   />
-                  <p className="text-xs text-[#94A3B8] flex items-center gap-1">
-                    <Info className="h-3 w-3" />
+                  <p className="text-[11px] text-[#94A3B8] mt-1.5">
                     Create at{' '}
                     <a href="https://www.notion.so/my-integrations" target="_blank" rel="noopener noreferrer"
-                       className="underline text-[#2563EB] hover:text-[#1D4ED8]">
+                       className="underline text-[#2563EB]">
                       notion.so/my-integrations
                     </a>
                     {' '}→ copy Internal Integration Secret
@@ -246,37 +243,34 @@ export function NotionImportWizard() {
                 </div>
 
                 {/* Database URL */}
-                <div className="p-5 space-y-2 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-2">
-                    <Link2 className="h-4 w-4 text-[#64748B]" />
-                    <Label htmlFor="notion-db-url" className="text-sm font-semibold text-[#0F172A]">
-                      Database URL
-                    </Label>
-                  </div>
+                <div className="px-4 pt-3.5 pb-3 border-b border-[#F1F5F9]">
+                  <Label htmlFor="notion-db-url" className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                    <Link2 className="h-3.5 w-3.5 text-[#94A3B8]" />
+                    Database URL
+                  </Label>
                   <Input
                     id="notion-db-url"
                     type="text"
                     placeholder="https://www.notion.so/workspace/..."
                     value={dbUrl}
                     onChange={e => setDbUrl(e.target.value)}
-                    className="h-10 bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white transition-colors"
+                    className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white"
                   />
-                  <p className="text-xs text-[#94A3B8] flex items-center gap-1">
-                    <Info className="h-3 w-3" />
-                    Open your database in Notion and copy the URL from the browser
+                  <p className="text-[11px] text-[#94A3B8] mt-1.5">
+                    Open your database in Notion, copy the full URL from the browser bar
                   </p>
                 </div>
 
-                {/* Project + Type — side by side */}
-                <div className="p-5 grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <FolderKanban className="h-4 w-4 text-[#64748B]" />
-                      <Label className="text-sm font-semibold text-[#0F172A]">Target Project</Label>
-                    </div>
+                {/* Project + Type */}
+                <div className="px-4 pt-3.5 pb-3.5 grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                      <FolderKanban className="h-3.5 w-3.5 text-[#94A3B8]" />
+                      Target Project
+                    </Label>
                     <Select value={projectId} onValueChange={setProjectId}>
-                      <SelectTrigger className="h-10 bg-[#F8FAFC] border-[#E2E8F0]">
-                        <SelectValue placeholder="Select a project…" />
+                      <SelectTrigger className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0]">
+                        <SelectValue placeholder="Select project…" />
                       </SelectTrigger>
                       <SelectContent>
                         {(projects || []).map(p => (
@@ -285,13 +279,13 @@ export function NotionImportWizard() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Layers className="h-4 w-4 text-[#64748B]" />
-                      <Label className="text-sm font-semibold text-[#0F172A]">Default Type</Label>
-                    </div>
+                  <div>
+                    <Label className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                      <Layers className="h-3.5 w-3.5 text-[#94A3B8]" />
+                      Default Type
+                    </Label>
                     <Select value={itemType} onValueChange={setItemType}>
-                      <SelectTrigger className="h-10 bg-[#F8FAFC] border-[#E2E8F0]">
+                      <SelectTrigger className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -306,13 +300,11 @@ export function NotionImportWizard() {
 
               {/* Error */}
               {fetchError && (
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FEF2F2] border border-[#FECACA]">
-                  <div className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center shrink-0">
-                    <XCircle className="h-4 w-4 text-[#DC2626]" />
-                  </div>
+                <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
+                  <XCircle className="h-4 w-4 text-[#DC2626] mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-[#DC2626]">Connection failed</p>
-                    <p className="text-sm text-[#DC2626]/80 mt-0.5">{fetchError}</p>
+                    <p className="text-[13px] font-semibold text-[#DC2626]">Connection failed</p>
+                    <p className="text-[12px] text-[#DC2626]/80 mt-0.5">{fetchError}</p>
                   </div>
                 </div>
               )}
