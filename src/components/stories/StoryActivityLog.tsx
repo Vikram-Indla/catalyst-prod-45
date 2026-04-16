@@ -43,7 +43,7 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
     },
   });
 
-  const items: CdsActivityItem[] = rawLogs.flatMap((log: any) => {
+  const items: CdsActivityItem[] = (rawLogs as any[]).flatMap((log: any): CdsActivityItem[] => {
     const actorName = log.profiles?.full_name || log.profiles?.email || 'System';
     const action = log.action;
     let type: CdsActivityItem['type'] = 'update';
@@ -59,16 +59,16 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
         actor: { id: log.actor_id || 'system', name: actorName },
         timestamp: log.created_at,
         description: type === 'create' ? 'created this story' : type === 'delete' ? 'deleted this story' : 'updated this story',
-      }];
+      } as CdsActivityItem];
     }
 
     return changes.map((c, i) => ({
       id: `${log.id}-${i}`,
-      type: type as CdsActivityItem['type'],
+      type,
       actor: { id: log.actor_id || 'system', name: actorName },
       timestamp: log.created_at,
       fieldChange: c,
-    }));
+    } as CdsActivityItem));
   });
 
   return <ActivityFeed items={items} isLoading={isLoading} emptyMessage="No activity recorded" />;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { CircleUser } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { getAvatarColor } from '@/utils/avatarColor';
+import { getAvatarColor, getUserInitials } from '@/utils/avatarColor';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 export function UserAvatar() {
