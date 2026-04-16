@@ -31,7 +31,7 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
     queryKey: ['story-activity', storyId],
     enabled: !!storyId,
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('activity_logs')
         .select('*, profiles:actor_id(full_name, email)')
         .eq('entity_type', 'stories')
@@ -39,7 +39,7 @@ export function StoryActivityLog({ storyId }: StoryActivityLogProps) {
         .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
-      return data || [];
+      return (data || []) as any[];
     },
   });
 

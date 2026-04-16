@@ -28,7 +28,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
     queryKey: ['audit-logs', objectiveId],
     enabled: !!objectiveId,
     queryFn: async () => {
-      const { data: objLogs } = await supabase.from('activity_logs')
+      const { data: objLogs } = await (supabase as any).from('activity_logs')
         .select('*, profiles:actor_id(full_name, avatar_url)')
         .eq('entity_type', 'objective').eq('entity_id', objectiveId)
         .order('created_at', { ascending: false });
@@ -38,7 +38,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
 
       let krLogs: any[] = [];
       if (krIds.length > 0) {
-        const { data } = await supabase.from('activity_logs')
+        const { data } = await (supabase as any).from('activity_logs')
           .select('*, profiles:actor_id(full_name, avatar_url)')
           .eq('entity_type', 'key_result').in('entity_id', krIds)
           .order('created_at', { ascending: false });
