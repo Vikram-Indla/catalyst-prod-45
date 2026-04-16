@@ -64,11 +64,11 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
 
   return (
     <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
-      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
-        <CatalystPageHeader title="Feature Backlog" actions={
+      <CatalystPageHeader title="Feature Backlog" actions={
+        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Feature
         </Button>
-      </div>
+      } />
 
       <div className="flex-1 overflow-auto">
         {total === 0 ? (

@@ -81,11 +81,11 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
 
   return (
     <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
-      <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
-        <CatalystPageHeader title="Epic Backlog" actions={
+      <CatalystPageHeader title="Epic Backlog" actions={
+        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Epic
         </Button>
-      </div>
+      } />
 
       <div className="flex-1 overflow-auto">
         {totalEpics === 0 ? (
