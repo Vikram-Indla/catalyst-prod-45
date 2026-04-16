@@ -120,6 +120,7 @@ export default function KanbanBoardPage() {
   const [showViewSettings, setShowViewSettings] = useState(false);
   const [showBoardMenu, setShowBoardMenu] = useState(false);
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
+  const [showBasicFilter, setShowBasicFilter] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
