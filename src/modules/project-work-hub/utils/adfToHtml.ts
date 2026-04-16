@@ -182,8 +182,11 @@ function renderNode(node: AdfNode): string {
       return '<hr/>';
 
     /* ── Tables ── */
-    case 'table':
-      return `<table>${(node.content ?? []).map(renderNode).join('')}</table>`;
+    case 'table': {
+      // ADF tables may carry layout info; always render with a wrapper class
+      const tableAttrs = node.attrs?.layout ? ` data-layout="${escapeAttr(node.attrs.layout)}"` : '';
+      return `<table class="adf-table"${tableAttrs}>${(node.content ?? []).map(renderNode).join('')}</table>`;
+    }
 
     case 'tableRow':
       return `<tr>${(node.content ?? []).map(renderNode).join('')}</tr>`;
@@ -191,15 +194,21 @@ function renderNode(node: AdfNode): string {
     case 'tableHeader': {
       const colspan = node.attrs?.colspan && node.attrs.colspan > 1 ? ` colspan="${node.attrs.colspan}"` : '';
       const rowspan = node.attrs?.rowspan && node.attrs.rowspan > 1 ? ` rowspan="${node.attrs.rowspan}"` : '';
-      const bg = node.attrs?.background ? ` style="background:${escapeAttr(node.attrs.background)}"` : '';
-      return `<th${colspan}${rowspan}${bg}>${(node.content ?? []).map(renderNode).join('')}</th>`;
+      const styles: string[] = [];
+      if (node.attrs?.background) styles.push(`background:${escapeAttr(node.attrs.background)}`);
+      if (node.attrs?.colwidth?.[0]) styles.push(`width:${node.attrs.colwidth[0]}px`);
+      const styleAttr = styles.length > 0 ? ` style="${styles.join(';')}"` : '';
+      return `<th${colspan}${rowspan}${styleAttr}>${(node.content ?? []).map(renderNode).join('')}</th>`;
     }
 
     case 'tableCell': {
       const colspan = node.attrs?.colspan && node.attrs.colspan > 1 ? ` colspan="${node.attrs.colspan}"` : '';
       const rowspan = node.attrs?.rowspan && node.attrs.rowspan > 1 ? ` rowspan="${node.attrs.rowspan}"` : '';
-      const bg = node.attrs?.background ? ` style="background:${escapeAttr(node.attrs.background)}"` : '';
-      return `<td${colspan}${rowspan}${bg}>${(node.content ?? []).map(renderNode).join('')}</td>`;
+      const styles: string[] = [];
+      if (node.attrs?.background) styles.push(`background:${escapeAttr(node.attrs.background)}`);
+      if (node.attrs?.colwidth?.[0]) styles.push(`width:${node.attrs.colwidth[0]}px`);
+      const styleAttr = styles.length > 0 ? ` style="${styles.join(';')}"` : '';
+      return `<td${colspan}${rowspan}${styleAttr}>${(node.content ?? []).map(renderNode).join('')}</td>`;
     }
 
     /* ── Task lists (checkboxes) ── */
