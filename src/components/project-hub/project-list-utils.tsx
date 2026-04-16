@@ -113,26 +113,29 @@ function hashName(name: string): number {
 export function AvatarStack({ names }: { names: string[] }) {
   if (names.length === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
 
-  const show = Math.min(names.length, 5);
+  const show = Math.min(names.length, 4);
   const overflow = names.length - show;
 
   return (
-    <div className="flex items-center -space-x-1.5">
+    <div className="flex items-center" style={{ paddingLeft: 2 }}>
       {names.slice(0, show).map((name, i) => (
         <div
           key={name}
           title={name}
           className="flex items-center justify-center rounded-full flex-shrink-0"
           style={{
-            width: 26,
-            height: 26,
+            width: 28,
+            height: 28,
+            marginLeft: i > 0 ? -6 : 0,
             backgroundColor: AVATAR_COLORS[hashName(name) % AVATAR_COLORS.length],
             color: '#FFFFFF',
-            fontSize: 9,
+            fontSize: 10,
             fontWeight: 600,
-            border: '2px solid var(--cp-float)',
+            border: '2px solid #FFFFFF',
             fontFamily: "'Inter', sans-serif",
             zIndex: show - i,
+            position: 'relative',
+            boxShadow: '0 0 0 1px rgba(0,0,0,0.06)',
           }}
         >
           {getInitials(name)}
@@ -140,16 +143,19 @@ export function AvatarStack({ names }: { names: string[] }) {
       ))}
       {overflow > 0 && (
         <div
+          title={names.slice(show).join(', ')}
           className="flex items-center justify-center rounded-full flex-shrink-0"
           style={{
-            width: 26,
-            height: 26,
+            width: 28,
+            height: 28,
+            marginLeft: -6,
             backgroundColor: '#EBECF0',
-            color: '#6B778C',
-            fontSize: 9,
-            fontWeight: 600,
-            border: '2px solid var(--cp-float)',
+            color: '#42526E',
+            fontSize: 10,
+            fontWeight: 700,
+            border: '2px solid #FFFFFF',
             fontFamily: "'Inter', sans-serif",
+            boxShadow: '0 0 0 1px rgba(0,0,0,0.06)',
           }}
         >
           +{overflow}
