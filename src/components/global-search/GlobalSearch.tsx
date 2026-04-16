@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Loader2 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { Search, ChevronDown, X, Clock, Check, CornerDownLeft, FolderKanban, User } from "lucide-react";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
@@ -107,27 +108,28 @@ function HighlightTitle({ text, query }: { text: string; query: string }) {
 }
 
 /* ── Result Row — Enterprise high-density (42px) ── */
-function ResultRow({ item, isSelected, onHover, onClick, query }: {
+function ResultRow({ item, isSelected, onHover, onClick, query, isLoading: rowLoading }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
-  query: string;
+  query: string; isLoading?: boolean;
 }) {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
 
   return (
     <div
-      onClick={onClick}
+      onClick={rowLoading ? undefined : onClick}
       onMouseEnter={onHover}
       role="option"
       aria-selected={isSelected}
       style={{
         display: "flex", alignItems: "center",
         margin: "0 8px", padding: "0 10px", height: 42,
-        borderRadius: 6, cursor: "pointer",
-        backgroundColor: isSelected ? "#F4F5F7" : "transparent",
+        borderRadius: 6, cursor: rowLoading ? "wait" : "pointer",
+        backgroundColor: rowLoading ? "#E9F2FF" : isSelected ? "#F4F5F7" : "transparent",
+        opacity: rowLoading ? 0.85 : 1,
         transition: "background 60ms ease",
       }}
-      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+      onMouseLeave={e => { if (!isSelected && !rowLoading) e.currentTarget.style.backgroundColor = "transparent"; }}
     >
       {/* Icon */}
       <span
@@ -167,13 +169,18 @@ function ResultRow({ item, isSelected, onHover, onClick, query }: {
         </div>
       </div>
 
-      {/* Timestamp */}
+      {/* Timestamp or spinner */}
       <div style={{
         flexShrink: 0, marginLeft: 12,
-        fontSize: 11, fontWeight: 500, color: "#94A3B8",
+        fontSize: 11, fontWeight: 500, color: rowLoading ? "#0052CC" : "#94A3B8",
         fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap",
+        display: "flex", alignItems: "center",
       }}>
-        {formatViewedDate(item.viewed_at)}
+        {rowLoading ? (
+          <Loader2 size={14} className="animate-spin" style={{ color: "#0052CC" }} />
+        ) : (
+          formatViewedDate(item.viewed_at)
+        )}
       </div>
     </div>
   );
@@ -382,6 +389,7 @@ export function GlobalSearch() {
   const [openFilter, setOpenFilter] = useState<"project" | "assignee" | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
 
   const projectBtnRef = useRef<HTMLButtonElement>(null);
   const assigneeBtnRef = useRef<HTMLButtonElement>(null);
@@ -449,6 +457,7 @@ export function GlobalSearch() {
       setQuery(""); setDebouncedQuery(""); setSelectedIdx(0);
       setFilters({ hub: null, project: null, assignee: null, type: null });
       setOpenFilter(null); setSelectedProjects([]); setSelectedAssignees([]);
+      setLoadingItemId(null);
     }
   }, [isOpen]);
 
@@ -483,15 +492,20 @@ export function GlobalSearch() {
   }, [openFilter]);
 
   const handleSelect = useCallback((item: SearchResult) => {
+    if (loadingItemId) return; // prevent double-click
+    setLoadingItemId(item.id);
     trackView.mutate(item);
     if (debouncedQuery) saveSearch.mutate(debouncedQuery);
-    const { openDetail } = useGlobalSearchStore.getState();
-    openDetail({
-      id: item.id,
-      projectKey: item.project_key || undefined,
-      itemType: item.item_type,
-    });
-  }, [debouncedQuery, trackView, saveSearch]);
+    // Brief delay so user sees the loading indicator before modal closes search
+    setTimeout(() => {
+      const { openDetail } = useGlobalSearchStore.getState();
+      openDetail({
+        id: item.id,
+        projectKey: item.project_key || undefined,
+        itemType: item.item_type,
+      });
+    }, 300);
+  }, [debouncedQuery, trackView, saveSearch, loadingItemId]);
 
   if (!isOpen) return null;
 
@@ -642,6 +656,7 @@ export function GlobalSearch() {
                       isSelected={selectedIdx === idx}
                       onHover={() => setSelectedIdx(idx)}
                       onClick={() => handleSelect(item)}
+                      isLoading={loadingItemId === item.id}
                     />
                   ))}
                 </>
@@ -685,6 +700,7 @@ export function GlobalSearch() {
                         isSelected={selectedIdx === idx}
                         onHover={() => setSelectedIdx(idx)}
                         onClick={() => handleSelect(item)}
+                        isLoading={loadingItemId === item.id}
                       />
                     ))}
                   </>
