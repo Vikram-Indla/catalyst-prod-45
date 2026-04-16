@@ -128,6 +128,7 @@ const adminPockets = [
       { label: 'User Mapping', path: '/admin/workhub/user-mapping' },
       { label: 'Data Scope', path: '/admin/workhub/data-scope' },
       { label: 'Sync & Logs', path: '/admin/workhub/sync-logs' },
+      { label: 'Jira Activity Sync', path: '/admin/workhub/activity-sync' },
     ],
   },
   {

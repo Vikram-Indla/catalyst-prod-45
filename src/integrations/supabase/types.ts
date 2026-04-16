@@ -16427,6 +16427,78 @@ export type Database = {
           },
         ]
       }
+      jira_sync_activity: {
+        Row: {
+          actor_name: string | null
+          attempt_count: number
+          catalyst_changed_at: string | null
+          change_summary: string | null
+          change_type: string
+          changed_fields: Json | null
+          conflict_detected: boolean
+          conflict_resolution: string | null
+          created_at: string
+          direction: string
+          error_message: string | null
+          id: string
+          project_key: string | null
+          sync_completed_at: string | null
+          sync_source: string | null
+          sync_started_at: string | null
+          sync_status: string
+          work_item_id: string | null
+          work_item_key: string
+          work_item_title: string | null
+          work_item_type: string | null
+        }
+        Insert: {
+          actor_name?: string | null
+          attempt_count?: number
+          catalyst_changed_at?: string | null
+          change_summary?: string | null
+          change_type: string
+          changed_fields?: Json | null
+          conflict_detected?: boolean
+          conflict_resolution?: string | null
+          created_at?: string
+          direction: string
+          error_message?: string | null
+          id?: string
+          project_key?: string | null
+          sync_completed_at?: string | null
+          sync_source?: string | null
+          sync_started_at?: string | null
+          sync_status?: string
+          work_item_id?: string | null
+          work_item_key: string
+          work_item_title?: string | null
+          work_item_type?: string | null
+        }
+        Update: {
+          actor_name?: string | null
+          attempt_count?: number
+          catalyst_changed_at?: string | null
+          change_summary?: string | null
+          change_type?: string
+          changed_fields?: Json | null
+          conflict_detected?: boolean
+          conflict_resolution?: string | null
+          created_at?: string
+          direction?: string
+          error_message?: string | null
+          id?: string
+          project_key?: string | null
+          sync_completed_at?: string | null
+          sync_source?: string | null
+          sync_started_at?: string | null
+          sync_status?: string
+          work_item_id?: string | null
+          work_item_key?: string
+          work_item_title?: string | null
+          work_item_type?: string | null
+        }
+        Relationships: []
+      }
       jira_sync_changelog: {
         Row: {
           author_account_id: string | null
@@ -74351,6 +74423,7 @@ export type Database = {
         Returns: Json
       }
       publish_ai_brief: { Args: { brief_id: string }; Returns: undefined }
+      purge_old_sync_activity: { Args: never; Returns: undefined }
       quick_create_defect_v2: {
         Args: {
           p_assigned_to?: string
