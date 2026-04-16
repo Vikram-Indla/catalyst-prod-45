@@ -10,7 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
   X, ChevronDown, Plus, Share2, Trash2, Copy, Check, Loader2,
-  MessageSquare, Clock,
+  MessageSquare, Clock, MoreHorizontal,
 } from 'lucide-react';
 import {
   IssueIcon, Skel,
