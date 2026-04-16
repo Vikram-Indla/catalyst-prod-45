@@ -154,8 +154,12 @@ export default function ProjectListPage() {
   }, [queryClient]);
 
   const projectsWithMembers = useMemo(
-    () => rawProjects.map(p => ({ ...p, member_count: memberCounts[p.id] || 0 })),
-    [rawProjects, memberCounts]
+    () => rawProjects.map(p => ({
+      ...p,
+      member_count: (membersByProject[p.key] || []).length,
+      member_names: membersByProject[p.key] || [],
+    })),
+    [rawProjects, membersByProject]
   );
 
   const tabCounts = useMemo(() => ({
