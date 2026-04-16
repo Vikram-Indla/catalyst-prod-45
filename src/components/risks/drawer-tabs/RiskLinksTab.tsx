@@ -44,7 +44,7 @@ import { cn } from '@/lib/utils';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { CatalystThemeDrawer } from '@/components/backlog/CatalystThemeDrawer';
 import { ObjectiveAnalyticsDrawer } from '@/modules/okr-v2';
-import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
+import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
 
 interface RiskLinksTabProps {
   riskId: string;
@@ -864,8 +864,8 @@ export function RiskLinksTab({ riskId, businessRequestId, relatedItemId, relatio
       onClose={() => setOpenObjectiveId(null)}
     />
 
-    {/* Business Request Drawer */}
-    <BusinessRequestDrawer
+    {/* Business Request Detail Modal */}
+    <BusinessRequestDetailModal
       isOpen={!!openBusinessRequestId}
       onClose={() => setOpenBusinessRequestId(null)}
       requestId={openBusinessRequestId}
