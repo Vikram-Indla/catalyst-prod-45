@@ -14,6 +14,7 @@
  * - All issue types (Story, Epic, Bug, Task, Subtask, Feature, Improvement, etc.)
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
 /* ═══ Board Menu Item (enterprise styling) ═══ */
 function BoardMenuItem({ icon, label, badge, onClick }: {
