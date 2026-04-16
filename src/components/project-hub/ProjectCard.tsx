@@ -58,7 +58,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
 
       {/* Footer: avatars + updated */}
       <div className="flex items-center justify-between mt-auto">
-        <AvatarStack count={project.member_count || 0} />
+        <AvatarStack names={project.member_names || []} />
         <span className="text-[11px] text-[#6B778C] dark:text-[#878787]">
           {formatRelativeTime(project.updated_at)}
         </span>
