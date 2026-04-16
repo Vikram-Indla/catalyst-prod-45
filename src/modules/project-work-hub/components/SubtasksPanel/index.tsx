@@ -41,6 +41,15 @@ import { BoardView } from './BoardView';
 import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
+import { computeNewPosition } from './reorder';
+import { SortableRow } from './SortableRow';
+import {
+  DndContext, PointerSensor, useSensor, useSensors, closestCenter,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext, verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import './SubtasksPanel.css';
 
 type VisibleColumn = 'priority' | 'assignee' | 'status' | 'fixVersions';
@@ -233,14 +242,38 @@ export function SubtasksPanel({
   const [hideDone, setHideDone] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [sort, setSort] = useState<SortState>({ field: null, dir: 'asc' });
+  // Sort state — rehydrated from localStorage per parent on mount.
+  const sortStorageKey = `sp.sort.${storyKey}`;
+  const [sort, setSort] = useState<SortState>(() => {
+    if (typeof window === 'undefined') return { field: null, dir: 'asc' };
+    try {
+      const raw = window.localStorage.getItem(sortStorageKey);
+      if (!raw) return { field: null, dir: 'asc' };
+      const parsed = JSON.parse(raw);
+      if (parsed && (parsed.field === null || typeof parsed.field === 'string')
+          && (parsed.dir === 'asc' || parsed.dir === 'desc')) {
+        return parsed as SortState;
+      }
+    } catch { /* ignore bad storage */ }
+    return { field: null, dir: 'asc' };
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try { window.localStorage.setItem(sortStorageKey, JSON.stringify(sort)); } catch { /* quota */ }
+  }, [sort, sortStorageKey]);
+
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
     priority: true,
     assignee: true,
     status: true,
     fixVersions: false,
   });
+  const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
   const createRef = useRef<HTMLInputElement>(null);
+
+  // DnD sensors — require 6px drag before engaging so clicks still work.
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   const { update, remove, bulkUpdate, bulkRemove } = useSubtaskMutations(storyKey);
 
@@ -443,8 +476,60 @@ export function SubtasksPanel({
     window.location.href = `/project-hub/${pk}/hierarchy/allwork?parent=${encodeURIComponent(storyKey)}`;
   };
 
+  // ─── DnD reorder ────────────────────────────────
+  // Jira-parity: DnD disabled while a sort is active OR hide-done is on.
+  const dndEnabled = !sort.field && !hideDone && !bulkEditMode && view === 'list';
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const fromIndex = visibleRows.findIndex(r => r.id === active.id);
+    const toIndex = visibleRows.findIndex(r => r.id === over.id);
+    if (fromIndex === -1 || toIndex === -1) return;
+    const newPos = computeNewPosition(
+      visibleRows.map(r => ({ id: r.id, position: r.position ?? 0 })),
+      String(active.id),
+      toIndex,
+    );
+    if (newPos == null) return;
+    update.mutate({ id: String(active.id), patch: { position: newPos } });
+  };
+
+  // ─── Keyboard navigation ─────────────────────────
+  const handlePanelKeyDown = (e: React.KeyboardEvent) => {
+    // ⇧C → create subtask (Jira parity)
+    if (e.shiftKey && (e.key === 'C' || e.key === 'c')
+        && !creating && !editingId
+        && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
+      e.preventDefault();
+      setCreating(true);
+      return;
+    }
+    if (visibleRows.length === 0) return;
+    const currentIdx = focusedRowId
+      ? visibleRows.findIndex(r => r.id === focusedRowId)
+      : -1;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      const next = visibleRows[Math.min(currentIdx + 1, visibleRows.length - 1)];
+      if (next) setFocusedRowId(next.id);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prev = visibleRows[Math.max(currentIdx - 1, 0)];
+      if (prev) setFocusedRowId(prev.id);
+    } else if (e.key === 'Enter' && focusedRowId && !editingId) {
+      e.preventDefault();
+      onSubtaskClick?.(focusedRowId);
+    }
+  };
+
   return (
-    <div className="sp-panel">
+    <div
+      className="sp-panel"
+      tabIndex={-1}
+      ref={tableContainerRef}
+      onKeyDown={handlePanelKeyDown}
+    >
       {/* ═══ Header ═══ */}
       <div className="sp-header">
         <div className="sp-header-left">
@@ -545,46 +630,65 @@ export function SubtasksPanel({
 
           {/* ═══ List (native HTML table) view ═══ */}
           {!isLoading && visibleRows.length > 0 && view === 'list' && (
-            <div className="sp-scroll-container">
-              <table className="sp-table">
-                <thead className="sp-thead">
-                  <tr>
-                    {bulkEditMode && (
-                      <th className="sp-th sp-th--select">
-                        <label className="sp-checkbox" aria-label="Select all">
-                          <input
-                            type="checkbox"
-                            checked={allVisibleSelected}
-                            ref={(el) => { if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected; }}
-                            onChange={toggleSelectAll}
-                          />
-                          <span className="sp-checkbox-box">
-                            {allVisibleSelected && <Check size={10} color="#fff" strokeWidth={3} />}
-                            {!allVisibleSelected && someVisibleSelected && <span className="sp-checkbox-dash" />}
-                          </span>
-                        </label>
-                      </th>
-                    )}
-                    <th className="sp-th" style={{ width: 'auto' }}>Work</th>
-                    {columns.priority && <th className="sp-th sp-th--priority">Priority</th>}
-                    {columns.assignee && <th className="sp-th sp-th--assignee">Assignee</th>}
-                    {columns.status && <th className="sp-th sp-th--status">Status</th>}
-                    {columns.fixVersions && <th className="sp-th sp-th--fixv">Fix versions</th>}
-                    <th className="sp-th sp-th--actions" aria-label="Row actions" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleRows.map(child => {
-                    const checked = selectedIds.has(child.id);
-                    return (
-                      <tr
-                        key={child.id}
-                        className={`sp-row ${checked ? 'sp-row--selected' : ''}`}
-                        onClick={() => {
-                          if (bulkEditMode) toggleSelected(child.id);
-                          else onSubtaskClick?.(child.id);
-                        }}
-                      >
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={visibleRows.map(r => r.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="sp-scroll-container">
+                  <table className="sp-table">
+                    <thead className="sp-thead">
+                      <tr>
+                        <th className="sp-th sp-th--drag" aria-label="Reorder" />
+                        {bulkEditMode && (
+                          <th className="sp-th sp-th--select">
+                            <label className="sp-checkbox" aria-label="Select all">
+                              <input
+                                type="checkbox"
+                                checked={allVisibleSelected}
+                                ref={(el) => { if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected; }}
+                                onChange={toggleSelectAll}
+                              />
+                              <span className="sp-checkbox-box">
+                                {allVisibleSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                                {!allVisibleSelected && someVisibleSelected && <span className="sp-checkbox-dash" />}
+                              </span>
+                            </label>
+                          </th>
+                        )}
+                        <th className="sp-th" style={{ width: 'auto' }}>Work</th>
+                        {columns.priority && <th className="sp-th sp-th--priority">Priority</th>}
+                        {columns.assignee && <th className="sp-th sp-th--assignee">Assignee</th>}
+                        {columns.status && <th className="sp-th sp-th--status">Status</th>}
+                        {columns.fixVersions && <th className="sp-th sp-th--fixv">Fix versions</th>}
+                        <th className="sp-th sp-th--actions" aria-label="Row actions" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {visibleRows.map(child => {
+                        const checked = selectedIds.has(child.id);
+                        const focused = focusedRowId === child.id;
+                        return (
+                          <SortableRow
+                            key={child.id}
+                            id={child.id}
+                            disabled={!dndEnabled}
+                            selected={checked}
+                            className={[
+                              'sp-row',
+                              checked ? 'sp-row--selected' : '',
+                              focused ? 'sp-row--focused' : '',
+                            ].join(' ')}
+                            onRowClick={() => {
+                              if (bulkEditMode) toggleSelected(child.id);
+                              else onSubtaskClick?.(child.id);
+                              setFocusedRowId(child.id);
+                            }}
+                          >
                         {bulkEditMode && (
                           <td className="sp-td sp-td--select" onClick={(e) => e.stopPropagation()}>
                             <label className="sp-checkbox" aria-label={`Select ${child.issue_key}`}>
@@ -665,12 +769,14 @@ export function SubtasksPanel({
                             />
                           )}
                         </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          </SortableRow>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </SortableContext>
+            </DndContext>
           )}
 
           {/* ═══ Bulk edit bar ═══ */}

@@ -209,6 +209,12 @@
   text-align: left;
 }
 
+.sp-panel .sp-th--drag {
+  width: 20px;
+  min-width: 20px;
+  padding: 0;
+}
+
 /* ── Table row ──────────────────────────────── */
 .sp-panel .sp-row {
   height: 40px;
@@ -241,6 +247,50 @@
   width: 36px;
   padding: 0 8px;
   text-align: left;
+}
+
+.sp-panel .sp-td--drag {
+  width: 20px;
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* ── Drag handle + sort states ───────────────────────── */
+.sp-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #9AA3B2;
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.12s, color 0.12s;
+}
+.sp-panel .sp-row:hover .sp-drag-handle {
+  opacity: 1;
+}
+.sp-drag-handle:hover {
+  color: #44546F;
+}
+.sp-drag-handle:active {
+  cursor: grabbing;
+}
+
+.sp-panel .sp-row--dragging {
+  box-shadow: 0 2px 10px rgba(9, 30, 66, 0.12);
+  background: #FFFFFF;
+  z-index: 10;
+}
+
+.sp-panel .sp-row--focused {
+  outline: 2px solid #4C9AFF;
+  outline-offset: -2px;
+  background: #F4F5F7;
 }
 
 /* ── Checkbox ──────────────────────────────── */
