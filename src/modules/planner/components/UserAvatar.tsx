@@ -1,8 +1,9 @@
 // ============================================================
 // USER AVATAR WITH TOOLTIP
-// Shows initials with rich hover tooltip showing full name, role, status
+// GUARDRAIL: Renders CircleUser face icon (never bare initials)
 // ============================================================
 
+import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { PlannerUser } from '../types';
 
@@ -14,10 +15,12 @@ interface UserAvatarProps {
 }
 
 const sizeClasses = {
-  sm: 'w-6 h-6 text-[9px]',
-  md: 'w-8 h-8 text-[10px]',
-  lg: 'w-10 h-10 text-xs',
+  sm: 'w-6 h-6',
+  md: 'w-8 h-8',
+  lg: 'w-10 h-10',
 };
+
+const iconSizes = { sm: 18, md: 22, lg: 28 };
 
 const statusSizeClasses = {
   sm: 'w-2 h-2 -bottom-0 -right-0 border',
@@ -25,23 +28,23 @@ const statusSizeClasses = {
   lg: 'w-3 h-3 -bottom-0.5 -right-0.5 border-2',
 };
 
-export function UserAvatar({ 
-  user, 
-  size = 'md', 
+export function UserAvatar({
+  user,
+  size = 'md',
   showStatus = true,
-  className 
+  className
 }: UserAvatarProps) {
   return (
     <div className="relative group">
       {/* Avatar */}
-      <div 
+      <div
         className={cn(
           "rounded-full bg-primary flex items-center justify-center text-primary-foreground font-medium",
           sizeClasses[size],
           className
         )}
       >
-        {user.initials}
+        <CircleUser size={iconSizes[size]} strokeWidth={1.5} />
       </div>
       
       {/* Online Status Indicator */}

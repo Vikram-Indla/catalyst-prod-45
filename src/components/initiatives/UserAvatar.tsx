@@ -1,4 +1,5 @@
-import { getAvatarColor, getInitials } from '@/types/initiative';
+import { CircleUser } from 'lucide-react';
+import { getAvatarColor } from '@/types/initiative';
 import { formatShortName } from '@/lib/format-name';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
@@ -9,15 +10,9 @@ interface UserAvatarProps {
   showTooltip?: boolean;
 }
 
-const FONT_SIZE: Record<number, string> = {
-  16: 'text-[8px]',
-  20: 'text-[9px]',
-  24: 'text-[10px]',
-  28: 'text-[11px]',
-  32: 'text-[12px]',
-  36: 'text-[13px]',
-};
-
+/**
+ * GUARDRAIL: Renders CircleUser face icon (never bare initials).
+ */
 export function UserAvatar({ name, size = 24, showName = false, showTooltip = true }: UserAvatarProps) {
   const px = `${size}px`;
 
@@ -25,9 +20,11 @@ export function UserAvatar({ name, size = 24, showName = false, showTooltip = tr
     const unassigned = (
       <div className="flex items-center gap-2">
         <div
-          className="rounded-full flex-shrink-0"
+          className="rounded-full flex-shrink-0 flex items-center justify-center"
           style={{ width: px, height: px, border: '2px dashed #d4d4d8', background: 'transparent' }}
-        />
+        >
+          <CircleUser size={size * 0.7} color="#d4d4d8" strokeWidth={1.5} />
+        </div>
         {showName && <span className="text-[13px] text-zinc-400 italic truncate">Unassigned</span>}
       </div>
     );
@@ -38,10 +35,10 @@ export function UserAvatar({ name, size = 24, showName = false, showTooltip = tr
 
   const avatar = (
     <div
-      className={`rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0 ${FONT_SIZE[size] || 'text-[10px]'}`}
+      className="rounded-full flex items-center justify-center text-white font-semibold flex-shrink-0"
       style={{ width: px, height: px, backgroundColor: getAvatarColor(name) }}
     >
-      {getInitials(name)}
+      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
     </div>
   );
 

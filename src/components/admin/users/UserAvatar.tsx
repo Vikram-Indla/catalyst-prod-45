@@ -5,6 +5,7 @@
  */
 
 import { useState } from 'react';
+import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Avatar colors — neutral blue-gray palette + approved Catalyst hues (no purple/pink/magenta)
@@ -118,7 +119,7 @@ export function UserAvatar({
           )}
         />
       ) : (
-        <div 
+        <div
           className={cn(
             "rounded-full flex items-center justify-center font-semibold text-white transition-transform",
             sizeClasses[size],
@@ -126,7 +127,7 @@ export function UserAvatar({
           )}
           style={{ backgroundColor: bgColor }}
         >
-          {initials}
+          <CircleUser className="w-[70%] h-[70%]" strokeWidth={1.5} />
         </div>
       )}
       {(flagUrl || flag) && (

@@ -1,7 +1,8 @@
 /**
  * KanbanAvatar — Reusable avatar component for kanban board
+ * GUARDRAIL: Always renders CircleUser face icon when no photo is available.
  */
-import { User } from 'lucide-react';
+import { CircleUser } from 'lucide-react';
 import type { KanbanThemeTokens } from './kanban-tokens';
 
 const AVATAR_COLORS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777', '#FF8B00'];
@@ -23,33 +24,17 @@ export function KanbanAvatar({ name, url, size = 24, tk }: {
     );
   }
 
-  if (!name) {
-    return (
-      <span
-        className="inline-flex items-center justify-center rounded-full flex-shrink-0"
-        style={{ width: size, height: size, background: tk.chipBg }}
-      >
-        <User size={size * 0.55} color={tk.textMuted} />
-      </span>
-    );
-  }
-
-  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  const bg = AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
+  const bg = name
+    ? AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length]
+    : tk.chipBg;
 
   return (
     <span
       className="inline-flex items-center justify-center rounded-full flex-shrink-0"
-      style={{
-        width: size, height: size,
-        background: bg,
-        fontSize: size * 0.42,
-        fontWeight: 700,
-        color: '#FFFFFF',
-      }}
-      title={name}
+      style={{ width: size, height: size, background: bg }}
+      title={name || undefined}
     >
-      {initials}
+      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
     </span>
   );
 }

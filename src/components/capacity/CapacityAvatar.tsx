@@ -4,6 +4,7 @@
  * With optional country flag overlay
  */
 
+import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -74,7 +75,7 @@ export function CapacityAvatar({
         {avatarUrl ? (
           <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
         ) : (
-          initials
+          <CircleUser className="w-[60%] h-[60%]" color="var(--cp-blue)" strokeWidth={1.5} />
         )}
       </div>
       

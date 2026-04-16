@@ -1,6 +1,8 @@
 /**
- * PersonAvatar — Deterministic gradient circle with initials
+ * PersonAvatar — Deterministic gradient circle with face icon
+ * GUARDRAIL: Always renders CircleUser face icon (never bare initials).
  */
+import { CircleUser } from 'lucide-react';
 
 const GRADIENTS = [
   ['#2563EB', '#1D4ED8'],
@@ -21,8 +23,6 @@ function hashName(name: string): number {
 
 export default function PersonAvatar({ name, size = 18 }: { name: string; size?: number }) {
   const [c1, c2] = GRADIENTS[hashName(name) % GRADIENTS.length];
-  const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  const fs = Math.max(8, Math.round(size * 0.42));
 
   return (
     <div
@@ -32,18 +32,13 @@ export default function PersonAvatar({ name, size = 18 }: { name: string; size?:
         height: size,
         minWidth: size,
         borderRadius: '50%',
-        background: `linear-gradient(135deg, ${c1}, ${c2})`,  /* gradient requires background shorthand */
+        background: `linear-gradient(135deg, ${c1}, ${c2})`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: '#FFFFFF',
-        fontSize: fs,
-        fontWeight: 700,
-        fontFamily: "'Inter', sans-serif",
-        lineHeight: 1,
       }}
     >
-      {initials}
+      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
     </div>
   );
 }

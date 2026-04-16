@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { CircleUser } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -103,14 +104,14 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
                   />
                 ) : (
                   <div
-                    className="flex h-[26px] w-[26px] shrink-0 cursor-default items-center justify-center rounded-full border-[1.5px] border-background text-[9px] font-bold text-white"
+                    className="flex h-[26px] w-[26px] shrink-0 cursor-default items-center justify-center rounded-full border-[1.5px] border-background"
                     style={{
                       background: `linear-gradient(135deg, ${from}, ${to})`,
                       marginLeft: i > 0 ? -8 : 0,
                       zIndex: max - i,
                     }}
                   >
-                    {initials}
+                    <CircleUser size={18} color="#FFFFFF" strokeWidth={1.5} />
                   </div>
                 )}
               </TooltipTrigger>
