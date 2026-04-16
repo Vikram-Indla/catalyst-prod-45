@@ -57,12 +57,10 @@ function StatPill({ icon: Icon, label, value, color = '#2563EB' }: {
   icon: any; label: string; value: string | number; color?: string;
 }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-      <Icon className="h-4 w-4 shrink-0" style={{ color }} />
-      <div className="flex flex-col">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-[#94A3B8]">{label}</span>
-        <span className="text-sm font-semibold text-[#0F172A]">{value}</span>
-      </div>
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0]">
+      <Icon className="h-3.5 w-3.5 shrink-0" style={{ color }} />
+      <span className="text-[10px] uppercase tracking-wider font-semibold text-[#94A3B8]">{label}</span>
+      <span className="text-[13px] font-semibold text-[#0F172A]">{value}</span>
     </div>
   );
 }
