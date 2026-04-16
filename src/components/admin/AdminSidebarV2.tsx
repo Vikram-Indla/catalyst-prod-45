@@ -138,7 +138,7 @@ const adminPockets = [
     path: '/admin/integrations-hub',
     children: [
       { label: 'Slack', path: '/admin/slack' },
-      { label: 'Import Data', path: '/admin/import-data' },
+      { label: 'Notion', path: '/admin/notion' },
     ],
   },
   {

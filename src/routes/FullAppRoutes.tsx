@@ -834,7 +834,7 @@ export default function FullAppRoutes() {
           <Route path="jira-config" element={<S><JiraIntegrationConfig /></S>} />
           
           <Route path="product-settings" element={<S><ProductSettings /></S>} />
-          <Route path="import-data" element={<S><ImportData /></S>} />
+          <Route path="notion" element={<S><ImportData /></S>} />
           <Route path="data-hygiene" element={<S><DataHygiene /></S>} />
           <Route path="design-audit" element={<S><DesignAuditPage /></S>} />
           <Route path="theme-audit" element={<S><ThemeAuditPage /></S>} />
