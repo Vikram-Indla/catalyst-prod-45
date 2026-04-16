@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Loader2 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { Search, ChevronDown, X, Clock, Check, CornerDownLeft, FolderKanban, User } from "lucide-react";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
@@ -107,9 +108,9 @@ function HighlightTitle({ text, query }: { text: string; query: string }) {
 }
 
 /* ── Result Row — Enterprise high-density (42px) ── */
-function ResultRow({ item, isSelected, onHover, onClick, query }: {
+function ResultRow({ item, isSelected, onHover, onClick, query, isLoading: rowLoading }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
-  query: string;
+  query: string; isLoading?: boolean;
 }) {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
