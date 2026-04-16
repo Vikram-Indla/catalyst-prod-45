@@ -656,10 +656,7 @@ export default function QualityGatesPage() {
       <div className="border-b border-border bg-card">
         <div className="max-w-[1600px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <CatalystPageHeader title="Quality Gates" />
-            </div>
-            </div>
+            <CatalystPageHeader title="Quality Gates" />
             <div className="flex items-center gap-3">
               <Select value={selectedReleaseId} onValueChange={setSelectedReleaseId}>
                 <SelectTrigger className="w-[220px]">
