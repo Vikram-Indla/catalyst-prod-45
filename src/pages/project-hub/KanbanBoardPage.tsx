@@ -1,6 +1,4 @@
 /**
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-/**
  * KanbanBoardPage — Enterprise-grade Kanban board for ProjectHub
  * Phase 1: Modular layout + DnD + Cards + Density + Dark Mode + Filters + Context Menu
  *
