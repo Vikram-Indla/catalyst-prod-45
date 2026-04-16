@@ -80,21 +80,33 @@ export function useSyncMDTToInitiatives() {
           return;
         }
 
-        // 2. Get existing initiatives with jira_issue_key set
+        // 2. Resolve Jira account IDs → Catalyst profile UUIDs
+        const uniqueAccountIds = [...new Set(filteredIssues.map((i: any) => i.assignee_account_id).filter(Boolean))];
+        const { data: identityRows } = await supabase
+          .from('jira_identity_map')
+          .select('jira_account_id, catalyst_user_id')
+          .in('jira_account_id', uniqueAccountIds);
+
+        const assigneeMap = new Map<string, string>();
+        (identityRows || []).forEach((r: any) => {
+          if (r.catalyst_user_id) assigneeMap.set(r.jira_account_id, r.catalyst_user_id);
+        });
+
+        // 3. Get existing initiatives with jira_issue_key set
         const { data: existing } = await typedQuery('ph_initiatives')
           .select('jira_issue_key')
           .not('jira_issue_key', 'is', null);
 
         const existingKeys = new Set((existing || []).map((r: any) => r.jira_issue_key));
 
-        // 3. Filter to only new issues
+        // 4. Filter to only new issues
         const newIssues = filteredIssues.filter((i: any) => !existingKeys.has(i.issue_key));
         if (!newIssues.length) {
           console.log('[MDT Sync] All qualifying issues already synced');
           return;
         }
 
-        // 4. Insert as ph_initiatives
+        // 5. Insert as ph_initiatives with resolved assignee
         const rows = newIssues.map((issue: any) => ({
           initiative_key: issue.issue_key,
           title: issue.summary,
@@ -103,6 +115,7 @@ export function useSyncMDTToInitiatives() {
           jira_issue_key: issue.issue_key,
           initiative_type_id: BUSINESS_REQUEST_TYPE_ID,
           priority: issue.priority?.toLowerCase() || null,
+          assignee_id: assigneeMap.get(issue.assignee_account_id) || null,
         }));
 
         // Batch insert in chunks of 50
