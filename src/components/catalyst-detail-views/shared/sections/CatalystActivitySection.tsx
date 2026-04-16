@@ -128,7 +128,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20, marginTop: 8 }}>
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: 0, marginBottom: 16 }}>
-        {(['comments', 'history'] as const).map(tab => (
+        {(['comments', 'history', 'all'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             style={{
               padding: '6px 12px', fontSize: 14,
@@ -139,8 +139,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
             }}
           >
-            {tab === 'comments' ? <MessageSquare size={14} /> : <Clock size={14} />}
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'comments' ? <MessageSquare size={14} /> : tab === 'history' ? <Clock size={14} /> : <List size={14} />}
+            {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
