@@ -197,6 +197,11 @@
   min-width: 110px;
 }
 
+.sp-panel .sp-th--fixv {
+  width: 140px;
+  min-width: 100px;
+}
+
 .sp-panel .sp-th--select {
   width: 36px;
   min-width: 36px;
@@ -756,6 +761,55 @@
   height: 1px;
   background: rgba(9, 30, 66, 0.1);
   margin: 4px 0;
+}
+
+.sp-pop-hint {
+  font-size: 11px;
+  color: #6B778C;
+  padding: 4px 10px 6px;
+  line-height: 1.35;
+}
+
+/* ── Fix versions cell ──────────────────────── */
+.sp-fixv-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0 8px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.sp-fixv-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  background: #DEEBFF;
+  color: #0747A6;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 3px;
+  white-space: nowrap;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sp-fixv-more {
+  font-size: 11px;
+  color: #6B778C;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.sp-fixv-empty {
+  display: inline-block;
+  padding: 0 8px;
+  color: #97A0AF;
+  font-size: 14px;
+  line-height: 40px;
 }
 
 /* ── Type selector (inline create) ───────────── */

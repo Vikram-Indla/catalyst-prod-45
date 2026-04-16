@@ -40,15 +40,18 @@ import { ViewToggle, type SubtaskView } from './ViewToggle';
 import { BoardView } from './BoardView';
 import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
+import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import './SubtasksPanel.css';
 
-type VisibleColumn = 'priority' | 'assignee' | 'status';
+type VisibleColumn = 'priority' | 'assignee' | 'status' | 'fixVersions';
 
 interface SubtasksPanelProps {
   storyKey: string;
   storyId: string;
   projectKey: string;
   onSubtaskClick?: (subtaskId: string) => void;
+  /** Section title — defaults to "Subtasks". Epic/Feature parents pass "Child work items". */
+  title?: string;
 }
 
 // ─── Type selector for inline create ────────────────────
@@ -99,6 +102,7 @@ const ALL_COLUMNS: { key: VisibleColumn; label: string }[] = [
   { key: 'priority', label: 'Priority' },
   { key: 'assignee', label: 'Assignee' },
   { key: 'status', label: 'Status' },
+  { key: 'fixVersions', label: 'Fix versions' },
 ];
 
 function ColumnPicker({ columns, onChange }: {
@@ -136,6 +140,37 @@ function ColumnPicker({ columns, onChange }: {
             </div>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Fix versions cell ──────────────────────────────────
+function fixVersionNames(raw: unknown): string[] {
+  if (!raw) return [];
+  // Stored as Json on ph_issues. Tolerate: string[], { name: string }[], comma-separated string.
+  if (Array.isArray(raw)) {
+    return raw
+      .map((v) => (typeof v === 'string' ? v : (v as { name?: string })?.name ?? ''))
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  if (typeof raw === 'string') {
+    return raw.split(',').map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
+function FixVersionsCell({ value }: { value: unknown }) {
+  const names = fixVersionNames(value);
+  if (names.length === 0) return <span className="sp-fixv-empty">—</span>;
+  return (
+    <div className="sp-fixv-cell" title={names.join(', ')}>
+      {names.slice(0, 2).map((n) => (
+        <span key={n} className="sp-fixv-chip">{n}</span>
+      ))}
+      {names.length > 2 && (
+        <span className="sp-fixv-more">+{names.length - 2}</span>
       )}
     </div>
   );
@@ -184,7 +219,9 @@ function InlineSummaryEditor({
 }
 
 // ─── Main component ─────────────────────────────────────
-export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }: SubtasksPanelProps) {
+export function SubtasksPanel({
+  storyKey, storyId, projectKey, onSubtaskClick, title = 'Subtasks',
+}: SubtasksPanelProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [expanded, setExpanded] = useState(true);
@@ -196,10 +233,12 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   const [hideDone, setHideDone] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [sort, setSort] = useState<SortState>({ field: null, dir: 'asc' });
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
     priority: true,
     assignee: true,
     status: true,
+    fixVersions: false,
   });
   const createRef = useRef<HTMLInputElement>(null);
 
@@ -211,7 +250,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at')
+        .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,fix_versions,jira_created_at')
         .eq('parent_key', storyKey)
         .is('deleted_at', null)
         .order('position', { ascending: true });
@@ -255,11 +294,13 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   const totalCount = children.length;
   const percentage = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
 
-  // ─── Hide-done filter applied to visible rows ───
-  const visibleRows = useMemo(
-    () => hideDone ? children.filter(c => (c.status_category ?? '').toLowerCase() !== 'done') : children,
-    [children, hideDone]
-  );
+  // ─── Hide-done filter + sort applied to visible rows ───
+  const visibleRows = useMemo(() => {
+    const filtered = hideDone
+      ? children.filter(c => (c.status_category ?? '').toLowerCase() !== 'done')
+      : children;
+    return sortRows(filtered, sort);
+  }, [children, hideDone, sort]);
 
   // Keep selection clean if hideDone removes rows or a row is deleted elsewhere.
   useEffect(() => {
@@ -416,7 +457,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
           >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          <span className="sp-title">Subtasks</span>
+          <span className="sp-title">{title}</span>
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}
@@ -429,6 +470,8 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
               bulkEditMode={bulkEditMode}
               onEnterBulkEdit={enterBulkEdit}
               onViewInSearch={handleViewInSearch}
+              sort={sort}
+              onCycleSort={(field: SortField) => setSort(s => cycleSort(s, field))}
             />
             <ColumnPicker columns={columns} onChange={setColumns} />
             <ViewToggle view={view} onChange={setView} />
@@ -526,6 +569,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                     {columns.priority && <th className="sp-th sp-th--priority">Priority</th>}
                     {columns.assignee && <th className="sp-th sp-th--assignee">Assignee</th>}
                     {columns.status && <th className="sp-th sp-th--status">Status</th>}
+                    {columns.fixVersions && <th className="sp-th sp-th--fixv">Fix versions</th>}
                     <th className="sp-th sp-th--actions" aria-label="Row actions" />
                   </tr>
                 </thead>
@@ -605,6 +649,11 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                               onChange={handleStatusChange(child)}
                               readOnly={bulkEditMode}
                             />
+                          </td>
+                        )}
+                        {columns.fixVersions && (
+                          <td className="sp-td">
+                            <FixVersionsCell value={child.fix_versions} />
                           </td>
                         )}
                         <td className="sp-td sp-td--actions" onClick={(e) => e.stopPropagation()}>

@@ -14,6 +14,8 @@ export interface SubtaskRow {
   priority: string;
   position: number;
   deleted_at: string | null;
+  fix_versions?: unknown;
+  jira_created_at?: string | null;
 }
 
 interface UpdateArgs {
