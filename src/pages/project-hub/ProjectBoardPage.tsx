@@ -3,6 +3,7 @@
  * Uses real data from ph_sdlc_issues, ph_sdlc_releases, ph_boards
  */
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams } from 'react-router-dom';
 import {
   Columns3, Kanban, GanttChart,
