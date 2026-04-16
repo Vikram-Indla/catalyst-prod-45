@@ -198,11 +198,11 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   figma: { label: 'Figma', color: '#2684FF', iconFile: 'subtask' },
   'entity figma': { label: 'Entity FIGMA', color: '#2684FF', iconFile: 'subtask' },
 
-  // ── Business Request: uses story ──
+  // ── Business Request: amber lightbulb ──
   'business request': {
     label: 'Business Request',
-    color: '#36B37E',
-    iconFile: 'story',
+    color: '#FFAB00',
+    iconFile: 'business-request',
   },
 };
 
