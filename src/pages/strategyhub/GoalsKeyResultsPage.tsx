@@ -3,6 +3,7 @@
  * ECLIPSE D8: Dark mode parity
  */
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Download } from 'lucide-react';
 import { useGoals, useAllKeyResults, useThemes } from '@/hooks/useGoals';
@@ -123,7 +124,7 @@ export default function GoalsKeyResultsPage() {
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-        <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A', margin: 0 }}>Goals &amp; Key Results</h1>
+        <CatalystPageHeader title="Goals & Key Results" />
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={exportCSV} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', fontSize: 13, fontWeight: 500, color: isDark ? DK.t2 : '#64748B', background: isDark ? 'transparent' : '#FFFFFF', border: `1px solid ${isDark ? DK.border : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer', boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)' }}>
             <Download size={14} /> Export

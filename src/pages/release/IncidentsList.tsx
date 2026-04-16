@@ -1,4 +1,5 @@
 import { useState, useMemo, lazy, Suspense } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2, Loader2 } from 'lucide-react';
 import { StatusBadge } from '@/components/release/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -175,12 +176,9 @@ export default function IncidentsList() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
-        <div className="h-full px-4 sm:px-6 flex items-center">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Incidents</h1>
-            <p className="text-sm text-muted-foreground truncate">Manage and track all incidents</p>
-          </div>
+      <div className="border-b border-border bg-card flex-shrink-0">
+        <div className="px-4 sm:px-6">
+          <CatalystPageHeader title="Incidents" />
         </div>
       </div>
 

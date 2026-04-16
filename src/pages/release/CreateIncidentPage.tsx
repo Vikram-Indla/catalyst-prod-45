@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Paperclip, X, Search, Loader2, AlertTriangle, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -306,7 +307,7 @@ export default function CreateIncidentPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h1 className="text-base font-semibold text-foreground">Create Incident</h1>
+        <CatalystPageHeader title="Create Incident" />
       </div>
 
       {/* Form Content - Full width JSM style */}

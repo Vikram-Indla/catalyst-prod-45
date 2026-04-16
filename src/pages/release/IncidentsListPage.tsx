@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -239,7 +240,7 @@ export default function IncidentsListPage() {
       {/* Compact Header */}
       <div className="h-12 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-base font-semibold text-foreground">Incidents</h1>
+          <CatalystPageHeader title="Incidents" />
           
           {/* Quick Filters */}
           <div className="flex items-center gap-1 ml-4">

@@ -4,6 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useTheme } from '@/hooks/useTheme';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Edit, Plus, RefreshCw, Zap, Layers, Users, Calendar, ExternalLink, X, GripVertical, Clock } from 'lucide-react';
@@ -142,7 +143,7 @@ export default function TestSetDetailPage() {
                 </Badge>
               )}
             </div>
-            <h1 className="text-2xl font-bold text-foreground">{testSet.name}</h1>
+            <CatalystPageHeader title={testSet.name} />
           </div>
         </div>
         <div className="flex items-center gap-2">

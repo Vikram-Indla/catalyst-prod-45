@@ -3,6 +3,7 @@
  * Route: /testhub/releases/command-center
  */
 import { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Activity, BarChart3, Package, CheckCircle2, XCircle,
@@ -75,13 +76,7 @@ export default function CommandCenterPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-foreground flex items-center gap-2.5">
-            <BarChart3 className="w-[22px] h-[22px] text-primary" />
-            Command Center
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Real-time quality visibility across all active releases
-          </p>
+          <CatalystPageHeader title="Command Center" />
         </div>
         <span className="text-xs text-muted-foreground flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">

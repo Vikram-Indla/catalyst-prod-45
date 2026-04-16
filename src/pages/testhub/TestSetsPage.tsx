@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Plus, Layers, MoreHorizontal, Play, RefreshCw, Zap, TestTubes, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -76,8 +77,7 @@ export default function TestSetsPage() {
             <Layers className="h-5 w-5 text-primary" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Test Sets</h1>
-            <p className="text-sm text-muted-foreground">Reusable test case collections</p>
+            <CatalystPageHeader title="Test Sets" />
           </div>
         </div>
         <Button onClick={() => setIsCreateOpen(true)}>

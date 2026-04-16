@@ -3,6 +3,7 @@
  * Route: /testhub/defects/:defectId
  */
 import { useState, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ChevronLeft, Edit, MoreVertical, Trash2, Bug, Play } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -78,7 +79,7 @@ export default function DefectDetailPage() {
             <div className="flex items-center gap-2 mb-2">
               <span className="font-mono text-sm text-primary">{defect.defect_key}</span>
             </div>
-            <h1 className="text-xl font-semibold mb-3">{defect.title}</h1>
+            <CatalystPageHeader title={defect.title} />
             <div className="flex items-center gap-2">
               <SeverityBadge severity={defect.severity} />
               <PriorityBadge priority={defect.priority} />

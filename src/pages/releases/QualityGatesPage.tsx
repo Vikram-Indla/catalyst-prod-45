@@ -4,6 +4,7 @@
 // =====================================================
 
 import React, { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import {
   CheckCircle, XCircle, Clock, AlertTriangle, ChevronDown, ChevronRight,
   RefreshCw, Plus, Shield, TrendingUp, TrendingDown, Minus,
@@ -656,11 +657,8 @@ export default function QualityGatesPage() {
         <div className="max-w-[1600px] mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-                <Shield className="w-6 h-6 text-primary" />
-                Quality Gates
-              </h1>
-              <p className="text-sm text-muted-foreground">Release readiness criteria and automated evaluation</p>
+              <CatalystPageHeader title="Quality Gates" />
+            </div>
             </div>
             <div className="flex items-center gap-3">
               <Select value={selectedReleaseId} onValueChange={setSelectedReleaseId}>

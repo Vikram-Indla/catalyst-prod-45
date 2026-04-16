@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import {
   Play, CheckCircle2, XCircle, AlertTriangle, Clock,
@@ -138,10 +139,7 @@ export default function ExecutionHubPage() {
     <div className="flex-1 p-6 overflow-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <Play className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-semibold text-foreground">Execution Hub</h1>
-        </div>
+        <CatalystPageHeader title="Execution Hub" />
       </div>
 
       {/* KPI Cards */}

@@ -3,6 +3,7 @@
  * Route: /testhub/test-plans
  */
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, Plus, Search, X, ChevronDown, Trash2, Loader2, Sparkles, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -81,8 +82,7 @@ export default function TestPlansListPage() {
             <ClipboardList className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">Test Plans</h1>
-            <p className="text-sm text-muted-foreground">Organize and track testing efforts across releases</p>
+            <CatalystPageHeader title="Test Plans" />
           </div>
         </div>
         <div className="flex items-center gap-2">
