@@ -186,10 +186,10 @@ export function CatalystHeader() {
           paddingTop: 'var(--app-safe-top)',
           paddingLeft: '20px',
           paddingRight: '20px',
-          borderBottom: '1px solid var(--cp-bd)',
+          borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          backgroundColor: 'var(--cp-bg)',
-          boxShadow: 'none',
+          backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF',
+          boxShadow: isDark ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(15,23,42,0.06)',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
         }}
@@ -213,7 +213,7 @@ export function CatalystHeader() {
         </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
-        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '4px', marginRight: '8px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
+        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '2px', marginRight: '12px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
           <TooltipProvider>
             {navItems.map((item) => {
               if (!item.isEnabled) {
@@ -227,7 +227,7 @@ export function CatalystHeader() {
                           padding: '0 14px',
                           fontSize: '14px',
                           fontWeight: 500,
-                          color: 'var(--cp-t3)',
+                          color: '#6B778C',
                           borderRadius: '6px',
                           gap: '4px',
                           border: 'none',
@@ -250,16 +250,16 @@ export function CatalystHeader() {
               }
 
               const isActive = item.label === activeNavItem;
-              const activeColor = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
-              const inactiveColor = isDark ? '#A1A1A1' : 'var(--cp-t3)';
-              const hoverColor = isDark ? '#FFFFFF' : 'var(--cp-t1)';
-              const activeUnderline = '#3B82F6';
-              const hoverUnderline = isDark ? '#484F58' : 'var(--cp-bd)';
+              const activeColor = isDark ? '#FFFFFF' : '#0052CC';
+              const inactiveColor = isDark ? '#878787' : '#6B778C';
+              const hoverColor = isDark ? '#EDEDED' : '#172B4D';
+              const activeUnderline = '#0052CC';
+              const hoverUnderline = isDark ? '#454545' : '#C1C7D0';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
-                fontSize: '13px',
-                fontWeight: isActive ? 600 : 500,
+                fontSize: '13.5px',
+                fontWeight: isActive ? 600 : 450,
                 color: isActive ? activeColor : inactiveColor,
                 display: 'flex',
                 alignItems: 'center',
@@ -271,15 +271,15 @@ export function CatalystHeader() {
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
-                letterSpacing: '-0.1px',
+                letterSpacing: '-0.01em',
                 borderRadius: '0',
-                borderBottom: isActive ? `2px solid ${activeUnderline}` : '2px solid transparent',
+                borderBottom: isActive ? `3px solid ${activeUnderline}` : '3px solid transparent',
               };
               
               const handleHover = (e: React.MouseEvent<HTMLButtonElement>, isEnter: boolean) => {
                 if (!isActive) {
                   e.currentTarget.style.color = isEnter ? hoverColor : inactiveColor;
-                  e.currentTarget.style.borderBottom = isEnter ? `2px solid ${hoverUnderline}` : '2px solid transparent';
+                  e.currentTarget.style.borderBottom = isEnter ? `3px solid ${hoverUnderline}` : '3px solid transparent';
                   e.currentTarget.style.background = 'transparent';
                 }
               };
@@ -396,12 +396,12 @@ export function CatalystHeader() {
                       <button
                         style={{
                           ...navButtonStyle,
-                          color: location.pathname.startsWith('/release') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                          color: location.pathname.startsWith('/release') ? '#0052CC' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                          borderBottom: location.pathname.startsWith('/release') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                          borderBottom: location.pathname.startsWith('/release') ? '3px solid #0052CC' : '3px solid transparent',
                         }}
-                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                        onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#172B4D'; }}
+                        onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#6B778C'; }}
                         onClick={() => navigate(singleItemNav.release.directPath!)}
                       >
                         {item.label}
@@ -415,12 +415,12 @@ export function CatalystHeader() {
                           <button 
                             style={{
                               ...navButtonStyle,
-                              color: location.pathname.startsWith('/release') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                              color: location.pathname.startsWith('/release') ? '#0052CC' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                              borderBottom: location.pathname.startsWith('/release') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                              borderBottom: location.pathname.startsWith('/release') ? '3px solid #0052CC' : '3px solid transparent',
                             }}
-                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                            onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#172B4D'; }}
+                            onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#6B778C'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -437,12 +437,12 @@ export function CatalystHeader() {
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/taskhub') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/taskhub') ? '#0052CC' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/taskhub') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/taskhub') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                        borderBottom: location.pathname.startsWith('/taskhub') ? '3px solid #0052CC' : '3px solid transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#172B4D'; }}
+                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#6B778C'; }}
                       onClick={() => navigate('/taskhub/boards')}
                     >
                       {item.label}
@@ -451,12 +451,12 @@ export function CatalystHeader() {
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/releases') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/releases') ? '#0052CC' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/releases') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/releases') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                        borderBottom: location.pathname.startsWith('/releases') ? '3px solid #0052CC' : '3px solid transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#172B4D'; }}
+                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#6B778C'; }}
                       onClick={() => navigate('/releases/command-center')}
                     >
                       {item.label}
@@ -469,7 +469,7 @@ export function CatalystHeader() {
                         fontSize: '0.84rem',
                         fontWeight: 500,
                         fontFamily: "'Inter', sans-serif",
-                        color: 'var(--cp-t3)',
+                        color: '#6B778C',
                         borderRadius: '6px',
                         display: 'flex',
                         alignItems: 'center',
@@ -518,19 +518,19 @@ export function CatalystHeader() {
                     style={{
                       width: '36px',
                       height: '50px',
-                      color: location.pathname.startsWith('/admin') ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
+                      color: location.pathname.startsWith('/admin') ? '#0052CC' : '#6B778C',
                       background: location.pathname.startsWith('/admin') ? 'var(--cp-hover)' : 'transparent',
                       border: 'none',
                       cursor: 'pointer',
                       borderRadius: '8px',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'var(--cp-t1)';
+                      e.currentTarget.style.color = '#172B4D';
                       e.currentTarget.style.background = 'var(--cp-hover)';
                     }}
                     onMouseLeave={(e) => {
                       const isOnAdmin = location.pathname.startsWith('/admin');
-                      e.currentTarget.style.color = isOnAdmin ? 'var(--cp-blue-text)' : 'var(--cp-t3)';
+                      e.currentTarget.style.color = isOnAdmin ? '#0052CC' : '#6B778C';
                       e.currentTarget.style.background = isOnAdmin ? 'var(--cp-hover)' : 'transparent';
                     }}
                     onClick={() => navigate('/admin/users')}
@@ -553,25 +553,26 @@ export function CatalystHeader() {
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
               className="hidden sm:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
               style={{
-                minWidth: '200px',
-                height: '32px',
-                padding: '0 10px',
-                background: isDark ? '#1A1A1A' : '#F8FAFC',
-                border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                minWidth: '220px',
+                height: '34px',
+                padding: '0 12px',
+                background: isDark ? '#1A1A1A' : '#F4F5F7',
+                border: `1.5px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
                 gap: '8px',
                 alignItems: 'center',
+                transition: 'border-color 120ms ease, background 120ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#EBECF0'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#DFE1E6'; e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F4F5F7'; }}
             >
-              <Search style={{ width: '14px', height: '14px', color: isDark ? '#878787' : '#94A3B8', flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? '#878787' : '#94A3B8', textAlign: 'left' }}>
+              <Search style={{ width: '14px', height: '14px', color: isDark ? '#878787' : '#6B778C', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '13px', fontFamily: "'Inter', sans-serif", color: isDark ? '#878787' : '#6B778C', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#F1F5F9', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? '#878787' : '#64748B' }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#F1F5F9', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? '#878787' : '#64748B' }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '4px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '4px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
@@ -589,29 +590,26 @@ export function CatalystHeader() {
               aria-label={`Notifications${debouncedUnreadCount > 0 ? `, ${debouncedUnreadCount} unread` : ''}`}
               style={{
                 position: 'relative',
-                width: '36px', height: '50px',
+                width: '36px', height: '36px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent', border: 'none', borderRadius: '8px',
                 cursor: 'pointer',
-                color: isDark ? '#A1A1A1' : '#64748B',
-                transition: 'color 150ms ease',
+                color: isDark ? '#A1A1A1' : '#6B778C',
+                transition: 'color 150ms ease, background 120ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#0F172A'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#64748B'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#172B4D'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F4F5F7'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#6B778C'; e.currentTarget.style.background = 'transparent'; }}
             >
               <Bell style={{ width: '18px', height: '18px' }} />
               {debouncedUnreadCount > 0 && (
                 <span style={{
                   position: 'absolute', top: '4px', right: '4px',
-                  minWidth: '16px', height: '16px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: '#EF4444', color: '#FFFFFF',
-                  borderRadius: '8px', padding: '0 4px',
-                  fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
-                  lineHeight: 1,
-                }}>
-                  {debouncedUnreadCount > 99 ? '99+' : String(debouncedUnreadCount)}
-                </span>
+                  width: '8px', height: '8px',
+                  background: '#EF4444',
+                  borderRadius: '50%',
+                  border: `2px solid ${isDark ? '#0A0A0A' : '#FFFFFF'}`,
+                  boxSizing: 'content-box',
+                }} />
               )}
             </button>
 
@@ -624,13 +622,17 @@ export function CatalystHeader() {
                   aria-expanded={userMenuOpen}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   style={{
-                    background: 'linear-gradient(135deg, var(--cp-blue), #6366F1)',
+                    background: 'linear-gradient(135deg, #0052CC, #6366F1)',
                     color: '#FFFFFF',
+                    border: '3px solid transparent',
+                    transition: 'border-color 150ms ease, box-shadow 150ms ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-blue-wash)';
+                    e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0';
+                    e.currentTarget.style.boxShadow = `0 0 0 2px ${isDark ? 'rgba(0,82,204,0.2)' : 'rgba(0,82,204,0.15)'}`;
                   }}
                   onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'transparent';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                   title="Profile"
@@ -657,8 +659,8 @@ export function CatalystHeader() {
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px' }}>
-                    <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
-                    <p style={{ fontSize: '12px', color: 'var(--cp-t3)' }}>User Account</p>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
+                    <p style={{ fontSize: '12px', color: '#6B778C' }}>User Account</p>
                   </div>
 
                   {[
