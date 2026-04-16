@@ -9,7 +9,7 @@
  * with the canonical CatalystRichTextEditor (TipTap + image management).
  * Falls back to plain text. Shows placeholder when empty.
  */
-import React, { useState, useCallback } from 'react';
+import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,30 @@ import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { CatalystRichTextEditor } from '@/components/shared/rich-text';
 import type { PhIssue } from '../types';
+
+/* Atlaskit pilot — Epic only.
+   Lazy-loaded so the @atlaskit/editor-core + renderer bundle (~1MB) is only
+   fetched when an Epic description is actually viewed/edited. All other
+   issue types continue to use the existing TipTap-based path with zero
+   bundle impact. */
+const EpicDescriptionEditor = lazy(() =>
+  import('@/components/shared/rich-text/atlaskit').then((m) => ({ default: m.EpicDescriptionEditor }))
+);
+const EpicDescriptionRenderer = lazy(() =>
+  import('@/components/shared/rich-text/atlaskit').then((m) => ({ default: m.EpicDescriptionRenderer }))
+);
+
+function isEpic(issue: PhIssue | null): boolean {
+  return (issue?.issue_type ?? '').toLowerCase() === 'epic';
+}
+
+function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
+  return (
+    <div style={{ minHeight, paddingLeft: 20, color: '#97A0AF', fontSize: 13 }}>
+      Loading editor…
+    </div>
+  );
+}
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 const STYLE_ID = 'cv-desc-styles';
@@ -145,19 +169,33 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
       {/* Collapsible body */}
       {!collapsed && (
         editing && issue ? (
-          /* ── Edit mode: CatalystRichTextEditor ── */
-          <div style={{ paddingLeft: 20 }}>
-            <CatalystRichTextEditor
-              content={rawAdfContent}
-              onSave={handleSave}
-              onCancel={handleCancel}
-              placeholder="Add a description..."
-              minHeight={200}
-              mode="save"
-              workItemId={issue.id}
-              storagePath="description-images"
-            />
-          </div>
+          /* ── Edit mode ── */
+          isEpic(issue) ? (
+            <div style={{ paddingLeft: 20 }}>
+              <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
+                <EpicDescriptionEditor
+                  initialContent={issue.description_adf ?? issue.description_text ?? null}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                  workItemId={issue.id}
+                  placeholder="Add a description..."
+                />
+              </Suspense>
+            </div>
+          ) : (
+            <div style={{ paddingLeft: 20 }}>
+              <CatalystRichTextEditor
+                content={rawAdfContent}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                placeholder="Add a description..."
+                minHeight={200}
+                mode="save"
+                workItemId={issue.id}
+                storagePath="description-images"
+              />
+            </div>
+          )
         ) : isEmpty ? (
           /* ── Empty placeholder — click to edit ── */
           <div
@@ -175,17 +213,31 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
           </div>
         ) : (
           /* ── Read-only ADF render — click to edit ── */
-          <div
-            className="cv-desc-body"
-            style={{
-              fontSize: 14, color: '#172B4D', lineHeight: 1.7,
-              minHeight: 40, paddingLeft: 20, cursor: 'text',
-              borderRadius: 4, position: 'relative',
-            }}
-            onDoubleClick={() => { if (issue) setEditing(true); }}
-          >
-            <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
-          </div>
+          isEpic(issue) ? (
+            <div
+              style={{
+                paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
+                position: 'relative',
+              }}
+              onDoubleClick={() => { if (issue) setEditing(true); }}
+            >
+              <Suspense fallback={<AtlaskitFallback minHeight={40} />}>
+                <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} />
+              </Suspense>
+            </div>
+          ) : (
+            <div
+              className="cv-desc-body"
+              style={{
+                fontSize: 14, color: '#172B4D', lineHeight: 1.7,
+                minHeight: 40, paddingLeft: 20, cursor: 'text',
+                borderRadius: 4, position: 'relative',
+              }}
+              onDoubleClick={() => { if (issue) setEditing(true); }}
+            >
+              <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
+            </div>
+          )
         )
       )}
     </div>
