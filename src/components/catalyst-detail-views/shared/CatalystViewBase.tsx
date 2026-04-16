@@ -341,18 +341,18 @@ export function CatalystViewBase({
             {panelMode && navigationItems && navigationItems.length > 1 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <button onClick={navPrev} disabled={!canNavPrev} style={{
-                  ...hoverBtn, cursor: canNavPrev ? 'pointer' : 'default', color: canNavPrev ? '#5E6C84' : '#C1C7D0', padding: '6px 6px',
+                  ...hoverBtn, cursor: canNavPrev ? 'pointer' : 'default', color: canNavPrev ? '#42526E' : '#C1C7D0', padding: '6px 6px',
                 }}
                   onMouseEnter={e => { if (canNavPrev) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => (e.currentTarget.style.background = 'none')}
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                 </button>
-                <span style={{ fontSize: 11, color: '#5E6C84', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
+                <span style={{ fontSize: 11, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
                   {currentNavIndex + 1} / {navigationItems.length}
                 </span>
                 <button onClick={navNext} disabled={!canNavNext} style={{
-                  ...hoverBtn, cursor: canNavNext ? 'pointer' : 'default', color: canNavNext ? '#5E6C84' : '#C1C7D0', padding: '6px 6px',
+                  ...hoverBtn, cursor: canNavNext ? 'pointer' : 'default', color: canNavNext ? '#42526E' : '#C1C7D0', padding: '6px 6px',
                 }}
                   onMouseEnter={e => { if (canNavNext) e.currentTarget.style.background = '#F4F5F7'; }}
                   onMouseLeave={e => (e.currentTarget.style.background = 'none')}
