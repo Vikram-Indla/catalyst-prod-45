@@ -9,7 +9,6 @@ interface ProjectToolbarProps {
   onSearchChange: (s: string) => void;
   filters: FilterState;
   onFilterChange: (f: FilterState) => void;
-  onNewProject?: () => void;
   isDark?: boolean;
 }
 
