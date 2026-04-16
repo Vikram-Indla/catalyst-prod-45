@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -106,12 +107,9 @@ export default function PortfolioKanban() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+      <div className="border-b bg-card px-6 flex items-center">
         <div className="flex items-center justify-between w-full">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold truncate">Portfolio Kanban</h1>
-            <p className="text-sm text-muted-foreground truncate">Visualize portfolio work flow</p>
-          </div>
+          <CatalystPageHeader title="Portfolio Kanban" />
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
             <Button className="flex-shrink-0">
               <Plus className="h-4 w-4 mr-2" />

@@ -4,6 +4,7 @@
  */
 
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,10 +33,7 @@ export function SettingsPage() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">Project Settings</h1>
-          <p className="text-text-secondary mt-1">Configure your project settings and integrations</p>
-        </div>
+          <CatalystPageHeader title="Project Settings" />
       </div>
 
       <Tabs defaultValue="general" className="space-y-6">

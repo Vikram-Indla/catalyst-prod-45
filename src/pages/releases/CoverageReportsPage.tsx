@@ -7,6 +7,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -686,12 +687,7 @@ export default function CoverageReportsPage() {
       <div className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
         {/* Page Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Coverage Reports</h1>
-            <p className="text-sm text-muted-foreground">
-              Requirements traceability, coverage analytics, and gap analysis
-            </p>
-          </div>
+          <CatalystPageHeader title="Coverage Reports" />
           <div className="flex items-center gap-3">
             <Select value={selectedRelease} onValueChange={setSelectedRelease}>
               <SelectTrigger className="w-48">

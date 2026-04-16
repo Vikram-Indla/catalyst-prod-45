@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, FileText, FolderOpen, Search, MoreVertical, Trash2, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -134,12 +135,7 @@ export default function KnowledgeHubSpacePage() {
             </Button>
             <div className="flex items-center gap-3">
               <FolderOpen className="h-6 w-6 text-brand-primary" />
-              <div>
-                <h1 className="text-xl font-semibold">{space.name}</h1>
-                {space.description && (
-                  <p className="text-sm text-muted-foreground">{space.description}</p>
-                )}
-              </div>
+              <CatalystPageHeader title={space.name} />
             </div>
           </div>
           <Button onClick={() => setCreateDocOpen(true)}>

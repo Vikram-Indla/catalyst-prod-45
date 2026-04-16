@@ -4,6 +4,7 @@
  */
 
 import { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Info, Download, RefreshCw, BarChart3, AlertTriangle, Eye, EyeOff } from 'lucide-react';
@@ -85,19 +86,7 @@ export default function BudgetGovernancePage() {
           <div className="flex items-center justify-between px-5 h-16 border-b border-border/40">
             {/* Left: Title + Live Badge Inline */}
             <div className="flex items-center gap-4">
-              <div className="flex flex-col gap-0.5">
-                {/* Breadcrumb - Shows active tab */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-slate-500">Enterprise / Capacity</span>
-                  <span className="text-xs text-slate-400">•</span>
-                  <span className="text-xs font-medium text-blue-600">Budget</span>
-                </div>
-                
-                {/* Title */}
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-[var(--text-primary)] tracking-tight">
-                  Budget Governance
-                </h1>
-              </div>
+              <CatalystPageHeader title="Budget Governance" />
               
               {/* Live Badge - Inline with title */}
               <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-200">

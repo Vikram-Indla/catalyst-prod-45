@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useRaDocument } from '@/hooks/useRaDocuments';
 import { GenerationOverlay } from '@/components/requirement-assist/GenerationOverlay';
 import { BrdEditorView } from '@/components/requirement-assist/BrdEditorView';
@@ -42,10 +43,7 @@ export default function RequirementAssistOutput() {
           }}
         />
         <div className="max-w-[1400px] mx-auto">
-          <h1 className="text-2xl font-bold text-foreground">{doc.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            {doc.brd_number} · Generating…
-          </p>
+          <CatalystPageHeader title={doc.title} />
         </div>
       </div>
     );

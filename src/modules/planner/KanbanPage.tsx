@@ -4,6 +4,7 @@
 // ============================================================
 
 import { useState, useCallback } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Plus } from 'lucide-react';
 import { KanbanBoard, CreateTaskModal, TaskDetailDrawer } from './components/kanban';
 import type { KanbanTask } from './types/kanban';
@@ -45,17 +46,13 @@ export function KanbanPage() {
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Kanban Board</h1>
-          <p className="text-sm text-muted-foreground">
-            Drag and drop tasks between columns to update their status
-          </p>
-        </div>
-        <Button onClick={() => { setCreateStatusId(undefined); setIsCreateOpen(true); }}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Task
-        </Button>
+      <div className="px-6 border-b border-border">
+        <CatalystPageHeader title="Kanban Board" actions={
+          <Button onClick={() => { setCreateStatusId(undefined); setIsCreateOpen(true); }}>
+            <Plus className="w-4 h-4 mr-2" />
+            New Task
+          </Button>
+        } />
       </div>
 
       {/* Board */}

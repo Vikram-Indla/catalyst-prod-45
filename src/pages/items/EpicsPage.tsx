@@ -4,6 +4,7 @@
  * Uses canonical EpicDetailsPanel for details drawer.
  */
 import { useState, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useSearchParams, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -505,14 +506,9 @@ export default function EpicsPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
+      <div className="bg-card px-[var(--s4)] sm:px-[var(--s6)]">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Epics</h1>
-            <p className="text-sm text-muted-foreground">
-              Large initiatives broken into capabilities and features
-            </p>
-          </div>
+          <CatalystPageHeader title="Epics" />
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
               <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import DOMPurify from 'dompurify';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -215,11 +216,7 @@ export default function IncidentViewPage() {
 
         {/* Title Row */}
         <div className="flex items-start justify-between gap-4">
-          <h1 className="text-xl font-semibold text-foreground">
-            <span className="text-brand-primary">{incident.incident_key}</span>
-            <span className="mx-2 text-muted-foreground">—</span>
-            {incident.title}
-          </h1>
+          <CatalystPageHeader title={`${incident.incident_key} — ${incident.title}`} />
           <div className="flex items-center gap-2 flex-shrink-0">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               <Eye className="h-4 w-4 mr-1.5" />

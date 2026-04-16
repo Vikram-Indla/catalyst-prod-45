@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigation } from '@/contexts/NavigationContext';
@@ -257,15 +258,8 @@ export default function PortfolioRoadmap() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header with responsive padding and design tokens */}
-      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
-          <div>
-            <h1 className="text-2xl font-bold">Portfolio Roadmap</h1>
-            <p className="text-sm text-muted-foreground">
-              Strategic timeline view of initiatives, epics, and features
-            </p>
-          </div>
-        </div>
+      <div className="bg-card px-[var(--s4)] sm:px-[var(--s6)]">
+          <CatalystPageHeader title="Portfolio Roadmap" />
       </div>
 
       {/* Content with responsive padding */}
