@@ -6,7 +6,7 @@
  * - Project nav with PLANNING sections when inside a project
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LayoutGrid,
   LayoutDashboard,
@@ -18,10 +18,17 @@ import {
   GitBranch,
   FolderKanban,
   Columns3,
+  ChevronRight,
+  Clock,
+  X,
 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { useTheme } from '@/hooks/useTheme';
 
 const preloaded = { done: false };
 function preloadProjectHubChunks() {
@@ -111,7 +118,52 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
     return <SidebarBase config={projectConfig} expanded={expanded} onToggle={onToggle} className={className} />;
   }
 
-  // Module-level: All Projects + Resource 360 + Portfolio Health + Favourites
+  return <ModuleLevelSidebar expanded={expanded} onToggle={onToggle} className={className} favouritesSection={favouritesSection} />;
+}
+
+/* ═══ Module-level sidebar with RECENTS ═══ */
+function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }: {
+  expanded: boolean; onToggle: () => void; className?: string; favouritesSection: SidebarSection | null;
+}) {
+  const navigate = useNavigate();
+  const { isDark } = useTheme();
+  const [recentsExpanded, setRecentsExpanded] = useState(true);
+
+  // Fetch global recent items (across all projects)
+  const { data: recentItems = [] } = useQuery({
+    queryKey: ['global-recent-items'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+      const { data, error } = await supabase
+        .from('user_recent_items')
+        .select('id, issue_id, issue_key, issue_type, summary, visited_at, project_id')
+        .eq('user_id', user.id)
+        .order('visited_at', { ascending: false })
+        .limit(10);
+      if (error) { console.warn('global recents error:', error.message); return []; }
+      return data ?? [];
+    },
+    staleTime: 30_000,
+  });
+
+  const removeRecent = async (itemId: string) => {
+    await supabase.from('user_recent_items').delete().eq('id', itemId);
+  };
+
+  const handleRecentClick = (item: typeof recentItems[0]) => {
+    const { openDetail } = useGlobalSearchStore.getState();
+    openDetail({ id: item.issue_id, itemType: item.issue_type as any });
+  };
+
+  const issueTypeColor = (t: string) => {
+    const lower = t.toLowerCase();
+    if (lower.includes('bug') || lower.includes('defect')) return '#E5493A';
+    if (lower.includes('story')) return '#63BA3C';
+    if (lower.includes('epic')) return '#904EE2';
+    return '#4BADE8';
+  };
+
   const sections: SidebarSection[] = [
     {
       title: '',
@@ -133,5 +185,67 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
     sections,
   };
 
-  return <SidebarBase config={moduleConfig} expanded={expanded} onToggle={onToggle} className={className} />;
+  const recentsSection = expanded && recentItems.length > 0 ? (
+    <div style={{ marginTop: 8 }}>
+      <div style={{ height: 1, background: isDark ? '#2E2E2E' : '#EBECF0', margin: '4px 12px 8px' }} />
+      <button
+        onClick={() => setRecentsExpanded(p => !p)}
+        className="flex items-center w-full"
+        style={{ padding: '6px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
+      >
+        <ChevronRight
+          size={12}
+          style={{ color: isDark ? '#7D7D7D' : '#6B778C', transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms ease' }}
+        />
+        <Clock size={12} style={{ color: isDark ? '#7D7D7D' : '#6B778C' }} />
+        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: isDark ? '#7D7D7D' : '#6B778C' }}>
+          Recents
+        </span>
+        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+          {recentItems.length}
+        </span>
+      </button>
+
+      {recentsExpanded && (
+        <div style={{ padding: '2px 0' }}>
+          {recentItems.map(item => (
+            <div
+              key={item.id}
+              onClick={() => handleRecentClick(item)}
+              className="group"
+              style={{
+                display: 'flex', alignItems: 'center', gap: 8,
+                padding: '5px 12px 5px 28px', cursor: 'pointer',
+                borderRadius: 4, margin: '0 4px',
+                transition: 'background 80ms ease',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F4F5F7'}
+              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: 2, background: issueTypeColor(item.issue_type), flexShrink: 0 }} />
+              <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>
+                {item.issue_key}
+              </span>
+              <span style={{
+                fontSize: 12, color: isDark ? '#A1A1A1' : '#172B4D', fontWeight: 450,
+                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
+              }}>
+                {item.summary}
+              </span>
+              <button
+                className="opacity-0 group-hover:opacity-100"
+                onClick={(e) => { e.stopPropagation(); removeRecent(item.id); }}
+                style={{ width: 18, height: 18, borderRadius: 4, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: isDark ? '#878787' : '#6B778C' }}
+                title="Remove from recents"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  ) : null;
+
+  return <SidebarBase config={moduleConfig} expanded={expanded} onToggle={onToggle} className={className}>{recentsSection}</SidebarBase>;
 }
