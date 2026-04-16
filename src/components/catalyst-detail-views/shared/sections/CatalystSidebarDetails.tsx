@@ -125,16 +125,16 @@ export function CatalystSidebarDetails({
         {showStatusDropdown && (
           <div style={{
             position: 'absolute', left: 0, top: '100%', marginTop: 4,
-            background: '#FFFFFF', borderRadius: 4,
-            boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
-            padding: '4px 0', zIndex: 9999, minWidth: 220, maxHeight: 340, overflowY: 'auto',
+            background: '#FFFFFF', borderRadius: 8,
+            boxShadow: '0 4px 24px rgba(30,31,33,0.16), 0 0 1px rgba(30,31,33,0.31)',
+            padding: '6px 0', zIndex: 9999, minWidth: 240, maxHeight: 420, overflowY: 'auto',
             animation: 'cv-slide-down 0.15s ease-out',
           }}>
             {STATUS_OPTION_GROUPS.map(group => (
               <div key={group.category}>
                 <div style={{
-                  fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase',
-                  letterSpacing: '0.06em', padding: '8px 12px 4px', marginTop: 4,
+                  fontSize: 11, fontWeight: 600, color: '#6B778C', textTransform: 'uppercase',
+                  letterSpacing: '0.06em', padding: '10px 16px 6px',
                 }}>{group.groupLabel}</div>
                 {group.statuses.map(st => {
                   const isActive = statusValue === st;
@@ -147,7 +147,7 @@ export function CatalystSidebarDetails({
                   return (
                     <div key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); onStatusChange(st); }}
                       style={{
-                        height: 36, padding: '0 12px', display: 'flex', alignItems: 'center',
+                        height: 36, padding: '0 16px', display: 'flex', alignItems: 'center',
                         justifyContent: 'space-between', cursor: 'pointer',
                         background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
                       }}
@@ -156,7 +156,7 @@ export function CatalystSidebarDetails({
                     >
                       <span style={{
                         ...lozengeStyle, display: 'inline-flex', alignItems: 'center',
-                        height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11,
+                        height: 20, padding: '0 8px', borderRadius: 3, fontSize: 11,
                         fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
                       }}>{st}</span>
                       {isActive && (
@@ -169,6 +169,10 @@ export function CatalystSidebarDetails({
                 })}
               </div>
             ))}
+            {/* View workflow link */}
+            <div style={{ borderTop: '1px solid #EBECF0', marginTop: 4, padding: '8px 16px' }}>
+              <span style={{ fontSize: 13, color: '#505258', cursor: 'default' }}>View workflow</span>
+            </div>
           </div>
         )}
       </div>
