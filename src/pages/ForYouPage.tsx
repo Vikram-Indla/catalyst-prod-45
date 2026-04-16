@@ -346,7 +346,7 @@ export default function ForYouPage() {
                     />
                   )}
                 </div>
-                <GroupByPopover value={fyGroupBy} onChange={setFyGroupBy} options={FY_GROUP_OPTIONS} noneKey="none" />
+                <GroupByPopover<ForYouGroupByKey> value={fyGroupBy} onChange={setFyGroupBy} options={FY_GROUP_OPTIONS} noneKey="none" />
               </div>
             }
           />
