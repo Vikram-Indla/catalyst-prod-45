@@ -184,7 +184,7 @@ export default function ImportData() {
         <div className="px-6 pt-4 bg-white border-b border-[#E2E8F0]">
           {sourceTabs}
         </div>
-        <div className="flex-1 min-h-0">
+        <div className="flex-1 min-h-0 overflow-auto">
           <NotionImportWizard />
         </div>
       </div>
