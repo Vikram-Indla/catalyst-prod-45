@@ -3,6 +3,7 @@
  * With Jira-style Group By dropdown + Filter
  */
 import React, { useState, useMemo, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
 import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
