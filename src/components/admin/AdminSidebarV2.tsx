@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { 
+import {
   LayoutDashboard,
   Users,
   Settings,
@@ -11,12 +11,7 @@ import {
   Search,
   Pin,
   Code2,
-  Map,
-  Flag,
-  Wand2,
-  Bell,
   Wallet,
-  Calendar,
   Cable,
   BookOpen,
   GitBranch
@@ -144,41 +139,10 @@ const adminPockets = [
   {
     id: 'developer',
     label: 'Developer',
-    icon: Map,
-    path: '/admin/routes-registry',
+    icon: Code2,
+    path: '/admin/feature-flags',
     children: [
       { label: 'Feature Flags', path: '/admin/feature-flags' },
-      { label: 'Deployment Health', path: '/admin/deployment-health' },
-      { label: 'Publish Diagnostics', path: '/admin/publish-diagnostics' },
-      { label: 'Routes & Components', path: '/admin/routes-registry' },
-      { label: 'Mock Data Generator', path: '/admin/mock-data' },
-      { label: 'System Diagnostic', path: '/admin/diagnostic' },
-    ],
-  },
-  {
-    id: 'planhub',
-    label: 'Plan Hub™',
-    icon: Calendar,
-    path: '/admin/planhub',
-    children: [
-      { label: 'General Settings', path: '/admin/planhub/general' },
-      { label: 'Plan Templates', path: '/admin/planhub/templates' },
-      { label: 'AI Configuration', path: '/admin/planhub/ai' },
-      { label: 'Activity Log', path: '/admin/planhub/audit' },
-    ],
-  },
-  {
-    id: 'requirement-assist',
-    label: 'Requirement Assist',
-    icon: Wand2,
-    path: '/admin/requirement-assist',
-    children: [
-      { label: 'AI Configuration', path: '/admin/requirement-assist/ai-configuration' },
-      { label: 'Templates', path: '/admin/requirement-assist/templates' },
-      { label: 'Compliance', path: '/admin/requirement-assist/compliance' },
-      { label: 'Translation', path: '/admin/requirement-assist/translation' },
-      { label: 'Analytics', path: '/admin/requirement-assist/analytics' },
-      { label: 'Permissions', path: '/admin/requirement-assist/permissions' },
     ],
   },
   {

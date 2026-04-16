@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as AvatarPrimitive from "@radix-ui/react-avatar";
 import { cva, type VariantProps } from "class-variance-authority";
+import { CircleUser } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -83,6 +84,13 @@ export interface AvatarFallbackProps
   name?: string;
 }
 
+/**
+ * CANONICAL GUARDRAIL: All avatar fallbacks render a CircleUser face icon.
+ * This ensures every avatar in Catalyst shows a face silhouette (never bare
+ * initials or generic icons). The face icon inherits the deterministic color
+ * from the user's name. Explicit children override the face icon for
+ * special cases (AI Bot, System gear, +N overflow).
+ */
 const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,
   AvatarFallbackProps
@@ -96,7 +104,7 @@ const AvatarFallback = React.forwardRef<
     )}
     {...props}
   >
-    {children || (name ? getInitials(name) : null)}
+    {children ?? <CircleUser className="h-[70%] w-[70%]" strokeWidth={1.5} />}
   </AvatarPrimitive.Fallback>
 ));
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;

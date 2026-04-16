@@ -1,8 +1,9 @@
 // ============================================================
 // ASSIGNEE AVATAR COMPONENT
-// Displays user avatar with initials fallback
+// GUARDRAIL: Renders CircleUser face icon (never bare initials)
 // ============================================================
 
+import { CircleUser } from 'lucide-react';
 import type { KanbanProfile, KanbanWorkstream } from '../../types/kanban';
 import { cn } from '@/lib/utils';
 import { getWorkstreamColor } from '@/lib/workstream-colors';
@@ -49,7 +50,7 @@ export function AssigneeAvatar({ profile, size = 'md', showName = true, classNam
           )}
           style={{ backgroundColor: colors.hex }}
         >
-          {initials}
+          <CircleUser size={size === 'sm' ? 14 : 18} color="#FFFFFF" strokeWidth={1.5} />
         </div>
       )}
       {showName && (

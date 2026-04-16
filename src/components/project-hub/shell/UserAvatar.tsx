@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import { CircleUser } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { getAvatarColor, getUserInitials } from '@/utils/avatarColor';
+import { getAvatarColor } from '@/utils/avatarColor';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 
 export function UserAvatar() {
@@ -59,17 +60,7 @@ export function UserAvatar() {
                 }}
               />
             ) : (
-              <span
-                style={{
-                  color: '#FFFFFF',
-                  fontSize: 12,
-                  fontWeight: 700,
-                  fontFamily: "'Inter', sans-serif",
-                  lineHeight: 1,
-                }}
-              >
-                {initials}
-              </span>
+              <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
             )}
           </button>
         </TooltipTrigger>

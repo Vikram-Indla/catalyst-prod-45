@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, CircleUser } from 'lucide-react';
 import type { ProjectMember, ParentIssue } from './types';
 import { PRIORITY_LIST, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
@@ -56,14 +56,14 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
   ),
 };
 
-/* ── Avatar helper — prioritises real image ── */
+/* ── Avatar helper — prioritises real image, falls back to face icon (GUARDRAIL) ── */
 function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
   if (avatarUrl) {
     return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   }
   return (
-    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: Math.round(size * 0.39), fontWeight: 700, color: '#fff', flexShrink: 0 }}>
-      {name.charAt(0).toUpperCase()}
+    <div style={{ width: size, height: size, borderRadius: '50%', background: getAvatarColor(userId), display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
     </div>
   );
 }

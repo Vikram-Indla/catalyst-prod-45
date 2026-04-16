@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bot, Settings, User } from 'lucide-react';
+import { Bot, CircleUser, Settings } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
@@ -95,10 +95,8 @@ export function CatalystOwnerAvatar({
           <Bot className={iconSizeMap[size]} />
         ) : type === 'system' ? (
           <Settings className={iconSizeMap[size]} />
-        ) : type === 'placeholder' ? (
-          <User className={iconSizeMap[size]} />
         ) : (
-          displayInitials
+          <CircleUser className={iconSizeMap[size]} strokeWidth={1.5} />
         )}
       </AvatarFallback>
     </Avatar>

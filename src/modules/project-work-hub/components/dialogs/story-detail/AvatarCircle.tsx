@@ -1,8 +1,9 @@
 /**
- * AvatarCircle — Colored initials avatar
+ * AvatarCircle — Colored face icon avatar
+ * GUARDRAIL: Always renders CircleUser face icon (never bare initials).
  */
 import React from 'react';
-import { getInitials } from './helpers';
+import { CircleUser } from 'lucide-react';
 
 export function AvatarCircle({ name, size = 24 }: { name?: string | null; size?: number }) {
   let hash = 0;
@@ -13,10 +14,10 @@ export function AvatarCircle({ name, size = 24 }: { name?: string | null; size?:
   return (
     <div title={name || undefined} style={{
       width: size, height: size, borderRadius: '50%', background: bg,
-      color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: size * 0.42, fontWeight: 600, flexShrink: 0,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      flexShrink: 0,
     }}>
-      {getInitials(name)}
+      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
     </div>
   );
 }

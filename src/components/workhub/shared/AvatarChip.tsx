@@ -1,6 +1,8 @@
 /**
- * AvatarChip — User avatar with photo or initials fallback
+ * AvatarChip — User avatar with photo or face icon fallback
+ * GUARDRAIL: Always renders CircleUser face icon when no photo (never bare initials).
  */
+import { CircleUser } from 'lucide-react';
 
 interface AvatarChipProps {
   name: string;
@@ -10,9 +12,6 @@ interface AvatarChipProps {
 }
 
 export function AvatarChip({ name, color = 'var(--cp-blue)', size = 28, avatarUrl }: AvatarChipProps) {
-  const parts = name.trim().split(/\s+/);
-  const initials = parts.length >= 2 ? `${parts[0][0]}${parts[parts.length - 1][0]}` : parts[0]?.[0] || '?';
-
   if (avatarUrl) {
     return (
       <img
@@ -26,7 +25,6 @@ export function AvatarChip({ name, color = 'var(--cp-blue)', size = 28, avatarUr
           flexShrink: 0,
         }}
         onError={(e) => {
-          // Fallback to initials on error
           const el = e.currentTarget;
           el.style.display = 'none';
           const fallback = el.nextElementSibling as HTMLElement;
@@ -38,16 +36,15 @@ export function AvatarChip({ name, color = 'var(--cp-blue)', size = 28, avatarUr
 
   return (
     <div
-      className="inline-flex items-center justify-center font-semibold rounded-full text-white"
+      className="inline-flex items-center justify-center font-semibold rounded-full"
       style={{
         width: `${size}px`,
         height: `${size}px`,
         backgroundColor: color,
-        fontSize: `${size * 0.4}px`,
         flexShrink: 0,
       }}
     >
-      {initials.toUpperCase()}
+      <CircleUser size={size * 0.7} color="#FFFFFF" strokeWidth={1.5} />
     </div>
   );
 }
