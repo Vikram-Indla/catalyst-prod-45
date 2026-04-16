@@ -46,18 +46,13 @@ export function KanbanPage() {
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 border-b border-border">
+      <div className="px-6 border-b border-border">
         <CatalystPageHeader title="Kanban Board" actions={
           <Button onClick={() => { setCreateStatusId(undefined); setIsCreateOpen(true); }}>
             <Plus className="w-4 h-4 mr-2" />
             New Task
           </Button>
         } />
-      </div>
-        <Button onClick={() => { setCreateStatusId(undefined); setIsCreateOpen(true); }}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Task
-        </Button>
       </div>
 
       {/* Board */}

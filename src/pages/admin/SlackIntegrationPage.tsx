@@ -99,8 +99,7 @@ export function SlackIntegrationPage() {
         >
           <SlackIcon className="w-6 h-6 text-white" />
         </div>
-        <div>
-          <CatalystPageHeader title="Slack Integration" />
+        <CatalystPageHeader title="Slack Integration" />
       </div>
 
       {/* Processing callback */}

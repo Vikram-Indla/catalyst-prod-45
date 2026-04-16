@@ -259,9 +259,7 @@ export default function CreateMenuConfig() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
           <CatalystPageHeader title="Create Menu Configuration" />
-        <div className="flex items-center gap-2">
           <Button 
             variant="outline"
             onClick={handleRestoreDefaults} 
