@@ -250,7 +250,7 @@ export function AdfDescriptionRenderer({ html, issueKey, attachments: preloadedA
       <>
         <div
           dangerouslySetInnerHTML={{ __html: html }}
-          className="adf-description-content"
+          className="adf-description-content adf-content"
           style={{
             fontSize: 14, fontWeight: 400, lineHeight: '24px', color: '#292A2E',
             wordBreak: 'break-word', margin: 0, padding: 0,
@@ -268,7 +268,7 @@ export function AdfDescriptionRenderer({ html, issueKey, attachments: preloadedA
       <>
         <div
           ref={containerRef}
-          className="adf-description-content"
+          className="adf-description-content adf-content"
           style={{
             fontSize: 14, fontWeight: 400, lineHeight: '24px', color: '#292A2E',
             wordBreak: 'break-word', margin: 0, padding: 0,
@@ -299,7 +299,7 @@ export function AdfDescriptionRenderer({ html, issueKey, attachments: preloadedA
     <>
       <div
         ref={containerRef}
-        className="adf-description-content"
+        className="adf-description-content adf-content"
         style={{
           fontSize: 14, fontWeight: 400, lineHeight: '24px', color: '#292A2E',
           wordBreak: 'break-word', margin: 0, padding: 0,
