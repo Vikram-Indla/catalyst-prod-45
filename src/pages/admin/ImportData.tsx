@@ -151,6 +151,38 @@ export default function ImportData() {
     }
   };
   
+  // ─── Source tabs (shown before module selection and during wizard) ───
+  const sourceTabs = (
+    <div className="flex gap-1 mb-6">
+      <button
+        onClick={() => { setImportSource('csv'); setSelectedModule(null); }}
+        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+          importSource === 'csv'
+            ? 'bg-[#2563EB] text-white'
+            : 'bg-[#F1F5F9] text-muted-foreground hover:bg-[#E2E8F0]'
+        }`}
+      >
+        CSV Import
+      </button>
+      <button
+        onClick={() => setImportSource('notion')}
+        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+          importSource === 'notion'
+            ? 'bg-[#2563EB] text-white'
+            : 'bg-[#F1F5F9] text-muted-foreground hover:bg-[#E2E8F0]'
+        }`}
+      >
+        Notion Import
+      </button>
+    </div>
+  );
+
+  // ─── Notion source: render dedicated wizard ───
+  if (importSource === 'notion') {
+    return <NotionImportWizard />;
+  }
+
+  // ─── CSV source: existing module selection ───
   if (!selectedModule) {
     return (
       <div className="p-6">
@@ -158,6 +190,8 @@ export default function ImportData() {
           <h1 className="text-2xl font-semibold text-foreground">Import Data</h1>
         </div>
         
+        {sourceTabs}
+
         <div className="max-w-2xl">
           <p className="text-muted-foreground mb-6">What would you like to import?</p>
           
