@@ -269,15 +269,15 @@ export function CatalystViewBase({
             {!fullPageMode && itemKey && projectKey ? (
               <Link
                 to={`/project-hub/${projectKey}/issue/${itemKey}`}
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#6B778C', textDecoration: 'none' }}
+                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}
                 title="Open full page view"
               >
                 {itemKey}
               </Link>
             ) : (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: fullPageMode ? 600 : 500, color: fullPageMode ? '#172B4D' : '#6B778C' }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: fullPageMode ? '#172B4D' : '#0052CC' }}>
                 {itemKey ?? '—'}
               </span>
             )}
