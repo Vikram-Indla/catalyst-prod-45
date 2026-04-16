@@ -73,8 +73,7 @@ import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import {
-  AvatarStackFilter, EpicFilterDropdown, TypeFilterDropdown, PriorityFilterDropdown,
-  QuickFilterDropdown, GroupByBtn,
+  AvatarStackFilter,
 } from '@/components/kanban/KanbanToolbar';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
@@ -86,6 +85,10 @@ import {
   AdvancedFilterPanel, type AdvancedFilters,
   EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
 } from '@/components/kanban/AdvancedFilterPanel';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
+import { GroupByPopover } from '@/components/shared/GroupByPopover';
+import type { GroupByOption } from '@/components/shared/GroupByPopover';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
