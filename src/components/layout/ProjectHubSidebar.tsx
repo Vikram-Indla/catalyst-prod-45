@@ -6,7 +6,7 @@
  * - Project nav with PLANNING sections when inside a project
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LayoutGrid,
   LayoutDashboard,
@@ -18,10 +18,17 @@ import {
   GitBranch,
   FolderKanban,
   Columns3,
+  ChevronRight,
+  Clock,
+  X,
 } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { SidebarBase, SidebarConfig, SidebarSection } from './SidebarBase';
 import { useProjectFavorites, useProjects } from '@/hooks/useProjectHub';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { useTheme } from '@/hooks/useTheme';
 
 const preloaded = { done: false };
 function preloadProjectHubChunks() {
