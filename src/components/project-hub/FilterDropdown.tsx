@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, Check } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 
 export interface FilterState {
@@ -19,7 +19,6 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { isDark: dark } = useTheme();
-  
 
   useEffect(() => {
     if (!open) return;
@@ -44,14 +43,14 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className={`flex items-center gap-1.5 rounded-md transition-colors ${
+        className={`flex items-center gap-1.5 rounded-[6px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] ${
           hasFilters
-            ? 'bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] border-[var(--cp-blue)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]'
-            : 'bg-[var(--bg-app)] dark:bg-transparent border-[var(--divider)] dark:border-[#454545] text-[var(--fg-2)] dark:text-[#A1A1A1]'
+            ? dark ? 'bg-[#0D1526] border-[#1E3A5F] text-[#4C9AFF]' : 'bg-[#DEEBFF] border-[#B3D4FF] text-[#0052CC]'
+            : dark ? 'bg-transparent border-[#2E2E2E] text-[#A1A1A1]' : 'bg-white border-[#E2E8F0] text-[#42526E]'
         }`}
         style={{
-          height: 34,
-          padding: '8px 12px',
+          height: 32,
+          padding: '0 12px',
           borderWidth: 1,
           borderStyle: 'solid',
           fontSize: 13,
@@ -64,8 +63,8 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
         Filter
         {hasFilters && (
           <span
-            className="flex items-center justify-center rounded-full bg-[var(--cp-blue)]"
-            style={{ width: 18, height: 18, color: '#FFF', fontSize: 10, fontWeight: 600 }}
+            className="flex items-center justify-center rounded-full"
+            style={{ width: 18, height: 18, backgroundColor: '#0052CC', color: '#FFF', fontSize: 10, fontWeight: 600 }}
           >
             {filters.statuses.length + filters.healths.length}
           </span>
@@ -74,11 +73,13 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1 z-50 bg-[var(--bg-app)] dark:bg-[#1A1A1A] border border-[var(--divider)] dark:border-[#454545]"
+          className={`absolute top-full left-0 mt-1 z-50 ${dark ? 'bg-[#1A1A1A] border-[#2E2E2E]' : 'bg-white border-[#E2E8F0]'}`}
           style={{
             width: 280,
             borderRadius: 8,
-            boxShadow: dark ? 'none' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
+            borderWidth: 1,
+            borderStyle: 'solid',
+            boxShadow: dark ? '0 2px 8px rgba(0,0,0,0.4)' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
             fontFamily: "'Inter', sans-serif",
           }}
         >
@@ -101,20 +102,20 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             />
           </div>
 
-          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? '#2E2E2E' : 'var(--divider)'}` }}>
+          <div className="flex items-center justify-between px-3 py-2" style={{ borderTop: `1px solid ${dark ? '#2E2E2E' : '#E2E8F0'}` }}>
             <button
               onClick={() => onChange({ statuses: [], healths: [] })}
-              style={{ fontSize: 12, color: dark ? '#7D7D7D' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+              style={{ fontSize: 12, color: dark ? '#7D7D7D' : '#6B778C', background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
               Clear all
             </button>
             <button
               onClick={() => setOpen(false)}
-              className="rounded-md bg-[var(--cp-blue)]"
               style={{
                 height: 28,
-                padding: '8px 12px',
+                padding: '0 12px',
                 color: '#FFF',
+                backgroundColor: '#0052CC',
                 border: 'none',
                 borderRadius: 6,
                 fontSize: 12,
@@ -147,12 +148,12 @@ function FilterSection({
   dark: boolean;
 }) {
   return (
-    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? '#292929' : 'var(--cp-bd-zone)'}` }}>
+    <div className="px-3 py-2" style={{ borderBottom: `1px solid ${dark ? '#292929' : '#EBECF0'}` }}>
       <div
         style={{
           fontSize: 10,
           fontWeight: 600,
-          color: dark ? '#7D7D7D' : 'var(--fg-3)',
+          color: dark ? '#7D7D7D' : '#6B778C',
           letterSpacing: '0.05em',
           textTransform: 'uppercase',
           marginBottom: 6,
@@ -160,24 +161,31 @@ function FilterSection({
       >
         {title}
       </div>
-      {options.map(opt => (
-        <label
-          key={opt}
-          className="flex items-center gap-2 py-1 cursor-pointer rounded px-1"
-          style={{ fontSize: 12, color: dark ? '#EDEDED' : 'var(--fg-2)' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = dark ? '#1F1F1F' : 'var(--bg-1)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = ''; }}
-        >
-          <input
-            type="checkbox"
-            checked={selected.includes(opt)}
-            onChange={() => onToggle(opt)}
-            className="rounded"
-            style={{ accentColor: 'var(--cp-blue)' }}
-          />
-          {formatLabel ? formatLabel(opt) : opt}
-        </label>
-      ))}
+      {options.map(opt => {
+        const checked = selected.includes(opt);
+        return (
+          <button
+            key={opt}
+            onClick={() => onToggle(opt)}
+            className={`flex items-center gap-2 w-full py-1.5 cursor-pointer rounded px-2 transition-colors ${dark ? 'hover:bg-[#1F1F1F]' : 'hover:bg-[#F4F5F7]'}`}
+            style={{ fontSize: 12, color: dark ? '#EDEDED' : '#42526E', background: 'transparent', border: 'none', fontFamily: "'Inter', sans-serif", textAlign: 'left' }}
+          >
+            <div
+              className="flex items-center justify-center rounded flex-shrink-0"
+              style={{
+                width: 16,
+                height: 16,
+                borderRadius: 3,
+                border: checked ? 'none' : `1.5px solid ${dark ? '#454545' : '#C1C7D0'}`,
+                backgroundColor: checked ? '#0052CC' : 'transparent',
+              }}
+            >
+              {checked && <Check size={11} color="#FFFFFF" strokeWidth={3} />}
+            </div>
+            {formatLabel ? formatLabel(opt) : opt}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -198,7 +206,7 @@ export function FilterChips({
   onChange: (f: FilterState) => void;
 }) {
   const { isDark: dark } = useTheme();
-  
+
   const chips: { label: string; remove: () => void }[] = [];
   filters.statuses.forEach(s =>
     chips.push({
@@ -220,7 +228,7 @@ export function FilterChips({
       {chips.map((c, i) => (
         <span
           key={i}
-          className="inline-flex items-center gap-1 rounded-full bg-[var(--cp-blue-wash)] dark:bg-[rgba(37,99,235,0.15)] text-[var(--cp-blue)] dark:text-[var(--cp-blue-light)]"
+          className={`inline-flex items-center gap-1 rounded-full ${dark ? 'bg-[#0D1526] text-[#4C9AFF]' : 'bg-[#DEEBFF] text-[#0052CC]'}`}
           style={{
             fontSize: 11,
             fontWeight: 500,
@@ -232,13 +240,13 @@ export function FilterChips({
             onClick={c.remove}
             style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex' }}
           >
-            <X size={12} color={dark ? 'var(--cp-blue-light)' : 'var(--cp-blue)'} />
+            <X size={12} color={dark ? '#4C9AFF' : '#0052CC'} />
           </button>
         </span>
       ))}
       <button
         onClick={() => onChange({ statuses: [], healths: [] })}
-        style={{ fontSize: 11, color: dark ? '#7D7D7D' : 'var(--fg-3)', background: 'transparent', border: 'none', cursor: 'pointer' }}
+        style={{ fontSize: 11, color: dark ? '#7D7D7D' : '#6B778C', background: 'transparent', border: 'none', cursor: 'pointer' }}
       >
         Clear all
       </button>

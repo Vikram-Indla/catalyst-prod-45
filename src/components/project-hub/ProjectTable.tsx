@@ -1,9 +1,7 @@
 import { ProjectTableRow, PHProject } from './ProjectTableRow';
-import { DK, LK } from '@/utils/dark-mode-styles';
 
 const COLUMNS = [
-  { key: 'star', label: '', width: 40 },
-  { key: 'key', label: 'KEY', width: 80 },
+  { key: 'star', label: '', width: 36 },
   { key: 'name', label: 'PROJECT NAME', width: undefined },
   { key: 'status', label: 'STATUS', width: 100 },
   { key: 'members', label: 'MEMBERS', width: 100 },
@@ -21,17 +19,15 @@ interface ProjectTableProps {
 }
 
 export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu, isDark = false }: ProjectTableProps) {
-  const T = isDark ? DK : LK;
-
   return (
     <div
-      className={`overflow-x-auto rounded-lg border ${isDark ? 'bg-transparent border-[#454545]' : 'bg-white border-[#E2E8F0]'}`}
+      className={`overflow-x-auto rounded-[6px] border ${isDark ? 'bg-transparent border-[#2E2E2E]' : 'bg-white border-[#E2E8F0]'}`}
     >
       <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
         <thead>
           <tr
-            className={isDark ? 'bg-[#1F1F1F]' : 'bg-[#F8FAFC]'}
-            style={{ height: 50, position: 'sticky', top: 0, zIndex: 1 }}
+            className={isDark ? 'bg-[#111111]' : 'bg-[#F8FAFC]'}
+            style={{ height: 36, maxHeight: 36, position: 'sticky', top: 0, zIndex: 1 }}
           >
             {COLUMNS.map(col => (
               <th
@@ -39,14 +35,16 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
                 className={`border-b ${isDark ? 'border-[#2E2E2E]' : 'border-[#E2E8F0]'}`}
                 style={{
                   width: col.width,
-                  padding: '0 8px',
+                  padding: '0 12px',
                   fontSize: 10.5,
                   fontWeight: 600,
-                  color: T.t3,
+                  color: isDark ? '#7D7D7D' : '#6B778C',
                   letterSpacing: '0.06em',
                   textTransform: 'uppercase',
                   textAlign: col.key === 'items' ? 'right' : 'left',
                   whiteSpace: 'nowrap',
+                  height: 36,
+                  maxHeight: 36,
                 }}
               >
                 {col.label}
