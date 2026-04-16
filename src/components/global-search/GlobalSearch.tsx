@@ -457,6 +457,7 @@ export function GlobalSearch() {
       setQuery(""); setDebouncedQuery(""); setSelectedIdx(0);
       setFilters({ hub: null, project: null, assignee: null, type: null });
       setOpenFilter(null); setSelectedProjects([]); setSelectedAssignees([]);
+      setLoadingItemId(null);
     }
   }, [isOpen]);
 
@@ -491,15 +492,20 @@ export function GlobalSearch() {
   }, [openFilter]);
 
   const handleSelect = useCallback((item: SearchResult) => {
+    if (loadingItemId) return; // prevent double-click
+    setLoadingItemId(item.id);
     trackView.mutate(item);
     if (debouncedQuery) saveSearch.mutate(debouncedQuery);
-    const { openDetail } = useGlobalSearchStore.getState();
-    openDetail({
-      id: item.id,
-      projectKey: item.project_key || undefined,
-      itemType: item.item_type,
-    });
-  }, [debouncedQuery, trackView, saveSearch]);
+    // Brief delay so user sees the loading indicator before modal closes search
+    setTimeout(() => {
+      const { openDetail } = useGlobalSearchStore.getState();
+      openDetail({
+        id: item.id,
+        projectKey: item.project_key || undefined,
+        itemType: item.item_type,
+      });
+    }, 300);
+  }, [debouncedQuery, trackView, saveSearch, loadingItemId]);
 
   if (!isOpen) return null;
 
