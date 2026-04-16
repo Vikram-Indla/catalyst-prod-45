@@ -101,9 +101,10 @@ function ChangeTypeBadge({ type }: { type: string }) {
 
 /* ── Changed fields detail ───────────────────────────────── */
 function ChangedFieldsDetail({ fields }: { fields: Record<string, { from?: string; to?: string }> | null }) {
+  const [open, setOpen] = useState(false);
+
   if (!fields || Object.keys(fields).length === 0) return null;
 
-  const [open, setOpen] = useState(false);
   const entries = Object.entries(fields);
 
   return (
