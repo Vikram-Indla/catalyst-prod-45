@@ -1,7 +1,9 @@
 /**
- * Auto-syncs MDT Jira issues (non-Done) into ph_initiatives.
+ * Auto-syncs MDT Jira issues into ph_initiatives.
+ * HARD GUARDRAIL: Only issues assigned to the 5 approved assignees are synced.
  * Runs once per session on the backlog page.
  * Skips issues that already have a matching ph_initiative (by jira_issue_key).
+ * Subtasks are explicitly excluded.
  */
 import { useEffect, useRef } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -9,7 +11,19 @@ import { useQueryClient } from '@tanstack/react-query';
 
 const BUSINESS_REQUEST_TYPE_ID = '0bd8d5df-70e1-4f1c-8db1-f9b217fac1de';
 
-/** Map Jira status to initiative_status enum (valid: new_demand, under_review, approved, in_progress, on_hold, delivered, closed, cancelled) */
+/**
+ * HARD GUARDRAIL — Only these 5 Jira account IDs are allowed into the Product Backlog.
+ * Abdullah Alshamari, Neda/Nada, Yahya, Vikram, Yazid
+ */
+const ALLOWED_ASSIGNEE_IDS = [
+  '557058:93d1c663-e044-429d-b230-0be303c91a83',
+  '712020:551b810b-5bca-4eb9-8f8c-c4dc7305e177',
+  '70121:cda609ff-0c5b-4c06-8b1c-1ef1634e55e4',
+  '5be3fef965364b69de240fe8',
+  '712020:e7978026-c881-4f7b-9014-73ca62c41b0a',
+];
+
+/** Map Jira status to initiative_status enum */
 function mapJiraStatus(status: string, statusCategory: string): string {
   const s = status.toLowerCase();
   if (statusCategory === 'Done') return 'closed';
@@ -34,30 +48,37 @@ export function useSyncMDTToInitiatives() {
 
     (async () => {
       try {
-        // 1. Get all MDT issues from Jira (exclude Done Business Requests only)
+        // 1. Get MDT issues ONLY for allowed assignees, exclude Sub-tasks
         const { data: mdtIssues, error: issErr } = await supabase
           .from('ph_issues')
-          .select('issue_key, summary, status, status_category, priority, assignee_display_name, issue_type, jira_created_at, jira_updated_at')
+          .select('issue_key, summary, status, status_category, priority, assignee_display_name, assignee_account_id, issue_type, jira_created_at, jira_updated_at')
           .eq('project_key', 'MDT')
-          .limit(2000);
+          .in('assignee_account_id', ALLOWED_ASSIGNEE_IDS)
+          .is('jira_removed_at', null)
+          .limit(5000);
 
-        if (issErr || !mdtIssues?.length) return;
+        if (issErr || !mdtIssues?.length) {
+          console.log('[MDT Sync] No qualifying issues found for allowed assignees');
+          return;
+        }
 
-        // ── 2026 GUARDRAIL — only sync items created or updated in 2026+ ──
-        const YEAR_2026 = 2026;
-        const issues2026 = mdtIssues.filter((i: any) => {
-          const createdYear = i.jira_created_at ? new Date(i.jira_created_at).getFullYear() : null;
-          const updatedYear = i.jira_updated_at ? new Date(i.jira_updated_at).getFullYear() : null;
-          return (createdYear !== null && createdYear >= YEAR_2026) ||
-                 (updatedYear !== null && updatedYear >= YEAR_2026);
+        // Filter out Sub-tasks (only parent-level items)
+        const parentIssues = mdtIssues.filter((i: any) => {
+          const type = (i.issue_type || '').toLowerCase();
+          return type !== 'sub-task' && type !== 'subtask';
         });
 
         // Filter out Done Business Requests only
-        const filteredIssues = issues2026.filter((i: any) => {
+        const filteredIssues = parentIssues.filter((i: any) => {
           const isDoneBusinessRequest = i.status_category === 'Done' &&
             (i.issue_type || '').toLowerCase().includes('business request');
           return !isDoneBusinessRequest;
         });
+
+        if (!filteredIssues.length) {
+          console.log('[MDT Sync] All qualifying issues already filtered out');
+          return;
+        }
 
         // 2. Get existing initiatives with jira_issue_key set
         const { data: existing } = await typedQuery('ph_initiatives')
@@ -68,7 +89,10 @@ export function useSyncMDTToInitiatives() {
 
         // 3. Filter to only new issues
         const newIssues = filteredIssues.filter((i: any) => !existingKeys.has(i.issue_key));
-        if (!newIssues.length) return;
+        if (!newIssues.length) {
+          console.log('[MDT Sync] All qualifying issues already synced');
+          return;
+        }
 
         // 4. Insert as ph_initiatives
         const rows = newIssues.map((issue: any) => ({
@@ -91,10 +115,13 @@ export function useSyncMDTToInitiatives() {
         queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
         queryClient.invalidateQueries({ queryKey: ['backlog-initiatives'] });
 
-        console.log(`[MDT Sync] Created ${newIssues.length} initiatives from Jira MDT issues`);
+        console.log(`[MDT Sync] Created ${newIssues.length} initiatives from MDT (guardrail: ${ALLOWED_ASSIGNEE_IDS.length} assignees)`);
       } catch (err) {
         console.error('[MDT Sync] Error:', err);
       }
     })();
   }, [queryClient]);
 }
+
+/** Export for use in other modules */
+export { ALLOWED_ASSIGNEE_IDS };
