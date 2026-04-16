@@ -85,6 +85,7 @@ interface SidebarBaseProps {
   onToggle: () => void;
   className?: string;
   iconResolver?: (itemId: string) => React.ComponentType<{ className?: string }> | undefined;
+  children?: React.ReactNode;
 }
 
 /** Dark mode token set — passed to renderMenuItem */
@@ -105,7 +106,8 @@ export function SidebarBase({
   expanded, 
   onToggle, 
   className,
-  iconResolver 
+  iconResolver,
+  children,
 }: SidebarBaseProps) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -357,6 +359,9 @@ export function SidebarBase({
               false, isFavorite, toggleFavorite, tokens
             ))
           )}
+
+          {/* Injected children (e.g. Recents section) */}
+          {children}
         </nav>
 
         {/* Footer Item (e.g., Settings) — t2 in dark mode per D8-R3 Fix 7 */}
