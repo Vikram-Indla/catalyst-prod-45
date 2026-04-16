@@ -3,6 +3,7 @@
  * With Jira-style Group By dropdown + Filter
  */
 import React, { useState, useMemo, useRef, useEffect, useCallback, lazy, Suspense } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useStarredItemIds, useToggleStar } from '@/hooks/home/useStarredItems';
 import { useParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
@@ -740,11 +741,8 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   return (
     <div ref={containerRef} className="h-full flex flex-col" style={{ background: tk.pageBg }}>
-      {/* ── Title + Subtitle ── */}
-      <div className="px-6 pt-5 pb-3 border-b" style={{ borderColor: tk.border }}>
-        <h1 className="text-xl font-semibold" style={{ color: tk.t1, fontFamily: "'Sora', sans-serif", fontWeight: 650 }}>Story Backlog</h1>
-        <p className="text-sm mt-0.5" style={{ color: tk.t2 }}>Track and manage user stories across your project</p>
-      </div>
+      {/* ── Title ── */}
+      <CatalystPageHeader title="Story Backlog" />
 
       {/* ── Search + Group + Filter bar ── */}
       <div className="flex items-center gap-3 px-6 py-2.5" style={{ borderColor: tk.border }}>
