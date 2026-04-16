@@ -364,10 +364,10 @@ export function CatalystViewBase({
 
             {/* Close — hidden in full-page mode (back button replaces it) */}
             {!fullPageMode && (
-              <button onClick={onClose} style={{ ...hoverBtn, fontSize: 16 }}
+              <button onClick={onClose} style={{ ...hoverBtn, padding: '6px 8px' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
-              ><X size={16} /></button>
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
+              ><X size={18} /></button>
             )}
           </div>
         </div>
