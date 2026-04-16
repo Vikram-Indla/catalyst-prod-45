@@ -12,7 +12,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { MessageSquare, Clock, Pencil, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
+import { MessageSquare, Clock, List, Pencil, MoreHorizontal, Copy, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCatalystComments } from '../hooks/useCatalystComments';
 import { useCatalystActivity } from '../hooks/useCatalystActivity';
@@ -70,7 +70,7 @@ function CommentBody({ body, issueKey }: { body: string; issueKey?: string }) {
 export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySectionProps) {
   const { data: comments = [] } = useCatalystComments(itemId, isOpen);
   const { data: activityLog = [] } = useCatalystActivity(itemId, isOpen);
-  const [activeTab, setActiveTab] = useState<'comments' | 'history'>('comments');
+  const [activeTab, setActiveTab] = useState<'comments' | 'history' | 'all'>('comments');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [commentMenuId, setCommentMenuId] = useState<string | null>(null);
   // Key to force-remount the add-comment editor after submit
@@ -128,7 +128,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20, marginTop: 8 }}>
       {/* Tab bar */}
       <div style={{ display: 'flex', gap: 0, marginBottom: 16 }}>
-        {(['comments', 'history'] as const).map(tab => (
+        {(['comments', 'history', 'all'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             style={{
               padding: '6px 12px', fontSize: 14,
@@ -139,8 +139,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
             }}
           >
-            {tab === 'comments' ? <MessageSquare size={14} /> : <Clock size={14} />}
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'comments' ? <MessageSquare size={14} /> : tab === 'history' ? <Clock size={14} /> : <List size={14} />}
+            {tab === 'all' ? 'All' : tab.charAt(0).toUpperCase() + tab.slice(1)}
           </button>
         ))}
       </div>
@@ -287,6 +287,85 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* All tab — interleaved comments + history, chronological */}
+      {activeTab === 'all' && (
+        <div>
+          {(() => {
+            type AllItem =
+              | { kind: 'comment'; id: string; created_at: string; node: React.ReactNode }
+              | { kind: 'history'; id: string; created_at: string; node: React.ReactNode };
+
+            const items: AllItem[] = [
+              ...comments.map((c): AllItem => ({
+                kind: 'comment', id: `c-${c.id}`, created_at: c.created_at,
+                node: (
+                  <div key={`c-${c.id}`} style={{ display: 'flex', gap: 8, margin: '8px 0 24px 0', minHeight: 40 }}>
+                    {c.author?.avatar_url ? (
+                      <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={c.author.avatar_url} alt="" style={{ width: 32, height: 32, borderRadius: 9999, objectFit: 'cover', border: '2px solid #FFFFFF' }} />
+                      </div>
+                    ) : (
+                      <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: getAvatarColor(c.author_id), color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2px solid #FFFFFF' }}>
+                          {getInitials(c.author?.full_name)}
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'baseline' }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: '#292A2E' }}>{c.author?.full_name ?? 'Unknown'}</span>
+                        <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>commented</span>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 400, color: '#292A2E', lineHeight: '16px' }}>{fmtDate(c.created_at)}</div>
+                      <CommentBody body={c.body} />
+                    </div>
+                  </div>
+                ),
+              })),
+              ...activityLog.map((entry): AllItem => ({
+                kind: 'history', id: `h-${entry.id}`, created_at: entry.created_at,
+                node: (
+                  <div key={`h-${entry.id}`} style={{ display: 'flex', gap: 8, margin: '8px 0 24px 0', minHeight: 40, fontSize: 14, lineHeight: '20px', color: '#292A2E' }}>
+                    {entry.actor?.avatar_url ? (
+                      <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={entry.actor.avatar_url} alt="" style={{ width: 32, height: 32, borderRadius: 9999, objectFit: 'cover', border: '2px solid #FFFFFF' }} />
+                      </div>
+                    ) : (
+                      <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#0052CC', color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, border: '2px solid #FFFFFF' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFF" strokeWidth="2"><rect x="8" y="2" width="8" height="4" rx="1"/><rect x="4" y="4" width="16" height="18" rx="2"/></svg>
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'baseline' }}>
+                        <span style={{ fontSize: 14, fontWeight: 700, color: '#292A2E' }}>{entry.actor?.full_name ?? 'System'}</span>
+                        <span style={{ fontSize: 14, fontWeight: 400, color: '#292A2E' }}>
+                          {entry.action === 'field_updated' ? <>changed the <span style={{ fontWeight: 500 }}>{entry.field_name}</span></> : entry.action}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 400, color: '#292A2E', lineHeight: '16px' }}>{fmtDate(entry.created_at)}</div>
+                      {(entry.old_value || entry.new_value) && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginTop: 4, fontSize: 14, color: '#505258' }}>
+                          {entry.old_value && <span style={{ color: '#292A2E', fontWeight: 400 }}>{entry.old_value}</span>}
+                          {entry.old_value && entry.new_value && <span style={{ color: '#505258' }}>→</span>}
+                          {entry.new_value && <span style={{ color: '#292A2E', fontWeight: 400 }}>{entry.new_value}</span>}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ),
+              })),
+            ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+            if (items.length === 0) {
+              return <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No activity yet</div>;
+            }
+            return <>{items.map(it => it.node)}</>;
+          })()}
         </div>
       )}
     </div>
