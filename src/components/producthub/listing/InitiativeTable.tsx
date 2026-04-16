@@ -199,7 +199,7 @@ export function InitiativeTable({
             style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
             title={row.original.is_favorited ? 'Unstar' : 'Star'}
           >
-            <Star size={14} fill={row.original.is_favorited ? '#FACC15' : 'none'} stroke={row.original.is_favorited ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+            <Star size={14} fill={row.original.is_favorited ? '#FACC15' : 'none'} stroke={row.original.is_favorited ? '#FACC15' : 'var(--cp-border-strong)'} strokeWidth={2} />
           </button>
         </div>
       ),
@@ -360,7 +360,7 @@ export function InitiativeTable({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '0.555556px solid rgba(11, 18, 14, 0.14)', borderRadius: 8, background: 'transparent', boxShadow: 'none' }}>
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '1px solid var(--cp-border-default)', borderRadius: 8, background: 'transparent', boxShadow: 'none' }}>
         <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, scrollbarWidth: 'thin', scrollbarColor: 'var(--pb-border-strong) transparent' }}>
           <table className="pb-table" style={{ tableLayout: 'fixed', minWidth: totalSize }}>
             <colgroup>
