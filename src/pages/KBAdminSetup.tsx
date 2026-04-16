@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
 interface TrainStatus {
   total_questions: number;
@@ -67,8 +68,7 @@ export default function KBAdminSetup() {
 
   return (
     <div className="max-w-3xl mx-auto p-8 space-y-6">
-      <h1 className="text-2xl font-bold">KB Admin — Training Setup</h1>
-      <p className="text-sm text-muted-foreground">Temporary utility page for triggering training operations.</p>
+      <CatalystPageHeader title="KB Admin — Training Setup" />
 
       {/* Status Card */}
       <div className="border rounded-lg p-6 space-y-4 bg-card">

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { cn } from '@/lib/utils';
@@ -138,8 +139,7 @@ export default function RequirementAssistCompose() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">{config.title}</h1>
-        <p className="text-sm text-muted-foreground mt-1">{config.description}</p>
+        <CatalystPageHeader title={config.title} />
       </div>
 
       {/* Two-column layout */}

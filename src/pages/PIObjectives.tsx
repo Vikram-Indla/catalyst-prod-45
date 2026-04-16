@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useNavigation } from '@/contexts/NavigationContext';
@@ -142,14 +143,9 @@ export default function PIObjectives() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+      <div className="border-b bg-card px-6 flex items-center">
         <div className="flex items-center justify-between w-full">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold truncate">PI Objectives</h1>
-            <p className="text-sm text-muted-foreground truncate">
-              {pi?.name} • {(pi as any)?.programs?.name}
-            </p>
-          </div>
+          <CatalystPageHeader title="PI Objectives" />
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
             <Button
               onClick={() => {

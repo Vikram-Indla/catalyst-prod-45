@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -259,11 +260,7 @@ export default function CreateMenuConfig() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Create Menu Configuration</h1>
-          <p className="text-muted-foreground">
-            Control work item visibility and icon styles across Catalyst.
-          </p>
-        </div>
+          <CatalystPageHeader title="Create Menu Configuration" />
         <div className="flex items-center gap-2">
           <Button 
             variant="outline"

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -311,11 +312,8 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-[#0A0A0A]">
-      <div className="border-b border-border px-6 py-4">
-        <h1 className="text-xl font-semibold text-foreground">Issue Navigator</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Search and filter work items across all projects
-        </p>
+      <div className="border-b border-border px-6">
+        <CatalystPageHeader title="Issue Navigator" />
       </div>
 
       <div className="border-b border-border px-6 py-4">

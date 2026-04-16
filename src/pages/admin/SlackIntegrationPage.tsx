@@ -3,6 +3,7 @@
 // ============================================================
 
 import React, { useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useSearchParams } from 'react-router-dom';
 import {
   useSlackConfig,
@@ -99,13 +100,7 @@ export function SlackIntegrationPage() {
           <SlackIcon className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Slack Integration</h1>
-          <p className="text-slate-500">
-            {showWizard
-              ? 'Set up Slack notifications for your workspace'
-              : 'Manage Slack notification settings and connected users'}
-          </p>
-        </div>
+          <CatalystPageHeader title="Slack Integration" />
       </div>
 
       {/* Processing callback */}

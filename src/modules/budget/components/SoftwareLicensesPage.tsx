@@ -3,6 +3,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Plus, Search, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -110,16 +111,14 @@ export function SoftwareLicensesPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-10 min-h-[72px] border-b bg-card px-6 py-4 flex items-center">
+      <div className="sticky top-0 z-10 border-b bg-card px-6 flex items-center">
         <div className="flex items-center justify-between w-full gap-4">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold truncate">Software Licenses</h1>
-            <p className="text-sm text-muted-foreground truncate">Manage software licenses and track allocation</p>
-          </div>
-          <Button onClick={handleCreate} size="default" className="flex-shrink-0">
-            <Plus className="h-4 w-4 mr-2" />
-            Add License
-          </Button>
+          <CatalystPageHeader title="Software Licenses" actions={
+            <Button onClick={handleCreate} size="default" className="flex-shrink-0">
+              <Plus className="h-4 w-4 mr-2" />
+              Add License
+            </Button>
+          } />
         </div>
       </div>
 

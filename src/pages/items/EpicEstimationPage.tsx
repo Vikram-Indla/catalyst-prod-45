@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -204,12 +205,7 @@ export default function EpicEstimationPage() {
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Epic Estimation</h1>
-              <p className="text-sm text-muted-foreground">
-                Technical Scoring for Epics
-              </p>
-            </div>
+            <CatalystPageHeader title="Epic Estimation" />
           </div>
           <Button onClick={handleManageBacklog}>
             Manage Backlog

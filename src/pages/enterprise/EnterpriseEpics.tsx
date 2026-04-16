@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -105,12 +106,7 @@ export default function EnterpriseEpics() {
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Enterprise Epics</h1>
-          <p className="text-sm text-muted-foreground">
-            View and manage epics across all portfolios
-          </p>
-        </div>
+          <CatalystPageHeader title="Enterprise Epics" />
         <div className="flex items-center gap-2">
           <Button onClick={() => navigate('/items/epics?create=true')}>
             <Plus className="h-4 w-4 mr-2" />

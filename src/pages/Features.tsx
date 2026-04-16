@@ -1,4 +1,5 @@
 import { lazy, Suspense, useState, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -113,18 +114,16 @@ export default function Features() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="h-[72px] border-b bg-card flex-shrink-0">
+      <div className="border-b bg-card flex-shrink-0">
         <div className="h-full px-3 sm:px-[var(--s6)] flex items-center">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
-            <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Features</h1>
-              <p className="text-sm text-muted-foreground truncate">Program-level features driving epic delivery</p>
-            </div>
-            <PermissionGuard requiredRole="team_lead" showMessage={false}>
-              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm px-3">
-                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </Button>
-            </PermissionGuard>
+          <div className="flex sm:items-center sm:justify-between gap-3 w-full">
+            <CatalystPageHeader title="Features" actions={
+              <PermissionGuard requiredRole="team_lead" showMessage={false}>
+                <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm px-3">
+                  <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                </Button>
+              </PermissionGuard>
+            } />
           </div>
         </div>
       </div>

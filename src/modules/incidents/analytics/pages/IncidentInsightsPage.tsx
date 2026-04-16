@@ -5,6 +5,7 @@
  */
 
 import { useNavigate } from 'react-router-dom';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useState, useRef, lazy, Suspense } from 'react';
 import { 
   Printer, Loader2, AlertTriangle, TrendingUp, TrendingDown, Minus, 
@@ -1009,12 +1010,7 @@ function PrintHeader({ periodLabel }: PrintHeaderProps) {
           />
           <div className="h-10 w-px bg-border" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">
-              Incident Insights Report
-            </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Executive Operational Report
-            </p>
+            <CatalystPageHeader title="Incident Insights Report" />
           </div>
         </div>
         <div className="text-right">

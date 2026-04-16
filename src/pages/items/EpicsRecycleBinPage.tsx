@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -94,12 +95,7 @@ export default function EpicsRecycleBinPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div>
-              <h1 className="text-2xl font-bold">Epics Recycle Bin</h1>
-              <p className="text-sm text-muted-foreground">
-                Restore or permanently delete epics
-              </p>
-            </div>
+            <CatalystPageHeader title="Epics Recycle Bin" />
           </div>
           <Badge variant="secondary">
             {deletedEpics?.length || 0} deleted items
