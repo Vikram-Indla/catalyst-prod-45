@@ -16,7 +16,7 @@ export function useCatalystIssue(itemId: string, isOpen: boolean) {
         .select('*')
         .eq('id', itemId)
         .is('deleted_at', null)
-        .single();
+        .maybeSingle();
       return data as unknown as PhIssue | null;
     },
   });
