@@ -169,13 +169,19 @@ function ResultRow({ item, isSelected, onHover, onClick, query, isLoading: rowLo
         </div>
       </div>
 
-      {/* Timestamp */}
+      {/* Timestamp or spinner */}
       <div style={{
         flexShrink: 0, marginLeft: 12,
-        fontSize: 11, fontWeight: 500, color: "#94A3B8",
+        fontSize: 11, fontWeight: 500, color: rowLoading ? "#0052CC" : "#94A3B8",
         fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap",
+        display: "flex", alignItems: "center",
       }}>
-        {formatViewedDate(item.viewed_at)}
+        {rowLoading ? (
+          <Loader2 size={14} className="animate-spin" style={{ color: "#0052CC" }} />
+        ) : (
+          formatViewedDate(item.viewed_at)
+        )}
+      </div>
       </div>
     </div>
   );
