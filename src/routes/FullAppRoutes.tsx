@@ -15,7 +15,6 @@ const KBDataAuditPage = ENABLE_AI ? lazy(() => import("../pages/KBDataAudit")) :
 const RAGAuditPage = ENABLE_AI ? lazy(() => import("../pages/RAGAuditPage")) : () => <FeatureComingSoon title="RAG Audit" />;
 const WikiAdminPage = ENABLE_WIKI ? lazy(() => import("../pages/admin/WikiAdminPage")) : () => <FeatureComingSoon title="Wiki Admin" />;
 const WikiDiagnosticPage = ENABLE_WIKI ? lazy(() => import("../pages/admin/WikiDiagnosticPage")) : () => <FeatureComingSoon title="Wiki Diagnostic" />;
-const AdminDiagnosticPage = lazy(() => import("../pages/admin/AdminDiagnosticPage"));
 const JiraActivitySyncPage = lazy(() => import("../pages/admin/JiraActivitySyncPage"));
 
 const Resource360PageNew = lazy(() => import("../components/resource360/Resource360PageNew"));
@@ -241,34 +240,10 @@ const ReleaseDashboardV5Page = lazy(() => import("../pages/releases/ReleaseDashb
 
 const AdminLayout = lazy(() => import('../pages/admin/AdminLayout').then(m => ({ default: m.AdminLayout })));
 const AdminGuard = lazy(() => import("../components/admin/AdminGuard").then(m => ({ default: m.AdminGuard })));
-const OrgSetup = lazy(() => import("../pages/admin/OrgSetup"));
-const HierarchyConfig = lazy(() => import("../pages/admin/HierarchyConfig"));
-const CustomFields = lazy(() => import("../pages/admin/CustomFields"));
-const BoardConfig = lazy(() => import("../pages/admin/BoardConfig"));
-const Permissions = lazy(() => import("../pages/admin/Permissions"));
-const Integrations = lazy(() => import("../pages/admin/Integrations"));
-const JiraIntegrationConfig = lazy(() => import("../pages/admin/JiraIntegrationConfig"));
 
 const StoriesPage = lazy(() => import('../pages/stories/StoriesPage').then(m => ({ default: m.StoriesPage })));
-const Activity = lazy(() => import("../pages/admin/Activity"));
-const Changes = lazy(() => import("../pages/admin/Changes"));
-const UseTrend = lazy(() => import("../pages/admin/UseTrend"));
-const UsageTrends = lazy(() => import("../pages/admin/UsageTrends"));
-const ChangesLog = lazy(() => import("../pages/admin/ChangesLog"));
-const DesignAuditPage = lazy(() => import("../pages/admin/DesignAuditPage").then(m => ({ default: m.DesignAuditPage })));
-const ThemeAuditPage = lazy(() => import("../pages/admin/ThemeAuditPage"));
-const ProgressBarsConfig = lazy(() => import("../pages/admin/ProgressBarsConfig"));
-const GeneralConfig = lazy(() => import("../pages/admin/GeneralConfig"));
-const WorkCodes = lazy(() => import("../pages/admin/WorkCodes"));
 const DetailsPanels = lazy(() => import("../pages/admin/DetailsPanels"));
-const Terminology = lazy(() => import("../pages/admin/Terminology"));
-const TeamSettings = lazy(() => import("../pages/admin/TeamSettings"));
-const ProgramSettings = lazy(() => import("../pages/admin/ProgramSettings"));
-const PortfolioSettings = lazy(() => import("../pages/admin/PortfolioSettings"));
-const ProgressBars = lazy(() => import("../pages/admin/ProgressBars"));
-const EstimationSettings = lazy(() => import("../pages/admin/EstimationSettings"));
 const GeneralSettings = lazy(() => import("../pages/admin/GeneralSettings"));
-const SecuritySettings = lazy(() => import("../pages/admin/SecuritySettings"));
 const Announcements = lazy(() => import("../pages/admin/Announcements"));
 const UsersManagement = lazy(() => import("../pages/admin/UsersManagement"));
 const RolesPermissions = lazy(() => import("../pages/admin/RolesPermissions"));
@@ -285,37 +260,18 @@ const JiraUserSyncPage = lazy(() => import("../pages/admin/JiraUserSync"));
 const BusinessOwnersAdmin = lazy(() => import("../pages/admin/BusinessOwners"));
 const BusinessProcesses = lazy(() => import("../pages/admin/BusinessProcesses"));
 const Portfolios = lazy(() => import("../pages/admin/Portfolios"));
-const Estimation = lazy(() => import("../pages/admin/Estimation"));
-const Security = lazy(() => import("../pages/admin/Security"));
-const ActivityLog = lazy(() => import("../pages/admin/ActivityLog"));
 const ModulesPackages = lazy(() => import("../pages/admin/ModulesPackages"));
-const UserRoles = lazy(() => import("../pages/admin/UserRoles"));
-const ReportsDiscovery = lazy(() => import("../pages/admin/ReportsDiscovery"));
-const PIWizard = lazy(() => import("../pages/admin/PIWizard"));
-const JiraIntegration = lazy(() => import("../pages/admin/JiraIntegration"));
 const ImportData = lazy(() => import("../pages/admin/ImportData"));
-const DataHygiene = lazy(() => import("../pages/admin/DataHygiene"));
 const ProductSettings = lazy(() => import("../pages/admin/ProductSettings"));
 const AdminOverview = lazy(() => import("../pages/admin/AdminOverview"));
-const AuditActivityPage = lazy(() => import("../pages/admin/AuditActivityPage"));
-const KanbanSettings = lazy(() => import("../pages/admin/KanbanSettings"));
 const ResourceUtilizationPage = lazy(() => import("../pages/admin/ResourceUtilization"));
 const UserAccessPage = lazy(() => import("../pages/admin/UserAccessPage"));
-const MockDataGenerator = lazy(() => import("../pages/admin/MockDataGenerator"));
-const AiIntegrationPage = lazy(() => import("../pages/admin/AiIntegrationPage"));
 const ProcessSteps = lazy(() => import("../pages/admin/ProcessSteps"));
 const SlackIntegrationPage = lazy(() => import("../pages/admin/SlackIntegrationPage"));
-const TaskListPage = lazy(() => import("../modules/planner/pages/TaskListPage"));
 const CreateMenuConfig = lazy(() => import("../pages/admin/CreateMenuConfig"));
 const DeliveryPlatforms = lazy(() => import("../pages/admin/DeliveryPlatforms"));
 const RiskSeverityLevels = lazy(() => import("../pages/admin/RiskSeverityLevels"));
-const PlanHubGeneralSettings = lazy(() => import("../pages/admin/planhub").then(m => ({ default: m.PlanHubGeneralSettings })));
-const PlanHubTemplates = lazy(() => import("../pages/admin/planhub").then(m => ({ default: m.PlanHubTemplates })));
-const PlanHubAIConfig = lazy(() => import("../pages/admin/planhub").then(m => ({ default: m.PlanHubAIConfig })));
-const PlanHubActivityLog = lazy(() => import("../pages/admin/planhub").then(m => ({ default: m.PlanHubActivityLog })));
 const WorkHubAdminPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubAdmin"));
-const WorkHubSettingsLayout = lazy(() => import("../modules/workhub/admin/pages/WorkHubSettingsLayout"));
-const WorkHubComingSoon = lazy(() => import("../modules/workhub/admin/pages/WorkHubComingSoon"));
 const WorkHubHierarchyPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubHierarchyPage"));
 const WorkHubSchedulingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubSchedulingPage"));
 const WorkHubStatusMappingPage = lazy(() => import("../modules/workhub/admin/pages/WorkHubStatusMappingPage"));
@@ -323,7 +279,6 @@ const WorkHubUserMappingPage = lazy(() => import("../modules/workhub/admin/pages
 const WorkHubDataScopePage = lazy(() => import("../modules/workhub/admin/pages/WorkHubDataScopePage"));
 const WorkHubSyncLogs = lazy(() => import("../modules/workhub/admin/pages/WorkHubSyncLogsPage"));
 const SoftwareLicensesPage = lazy(() => import("../modules/budget/components/SoftwareLicensesPage").then(m => ({ default: m.SoftwareLicensesPage })));
-const RoutesComponentsRegistry = lazy(() => import("../pages/admin/RoutesComponentsRegistry"));
 const EpicStatuses = lazy(() => import("../pages/admin/EpicStatuses"));
 const FeatureStatuses = lazy(() => import("../pages/admin/FeatureStatuses"));
 const ThemeStatuses = lazy(() => import("../pages/admin/ThemeStatuses"));
@@ -775,36 +730,13 @@ export default function FullAppRoutes() {
         <Route path="/insights/predictability" element={<S><EnterpriseComingSoon /></S>} />
         <Route path="/insights/dependency-risk" element={<S><EnterpriseComingSoon /></S>} />
 
-        <Route path="/admin/org-setup" element={<S><AdminGuard><OrgSetup /></AdminGuard></S>} />
-        <Route path="/admin/hierarchy" element={<S><AdminGuard><HierarchyConfig /></AdminGuard></S>} />
-        <Route path="/admin/custom-fields" element={<S><AdminGuard><CustomFields /></AdminGuard></S>} />
-        <Route path="/admin/boards" element={<S><AdminGuard><BoardConfig /></AdminGuard></S>} />
-        <Route path="/admin/user-roles" element={<S><AdminGuard><UserRoles /></AdminGuard></S>} />
-        <Route path="/admin/permissions" element={<S><AdminGuard><Permissions /></AdminGuard></S>} />
-        <Route path="/admin/integrations" element={<S><AdminGuard><Integrations /></AdminGuard></S>} />
-        <Route path="/admin/activity-log" element={<S><AdminGuard><ActivityLog /></AdminGuard></S>} />
 
         <Route path="/admin" element={<S><AdminLayout /></S>}>
           <Route index element={<Navigate to="/admin/overview" replace />} />
           <Route path="overview" element={<S><AdminOverview /></S>} />
-          <Route path="activity" element={<S><AuditActivityPage /></S>} />
-          <Route path="changes" element={<S><Changes /></S>} />
-          <Route path="changes-log" element={<S><ChangesLog /></S>} />
-          <Route path="use-trend" element={<S><UseTrend /></S>} />
-          <Route path="usage-trends" element={<S><UsageTrends /></S>} />
-          <Route path="work-codes" element={<S><WorkCodes /></S>} />
           <Route path="modules-packages" element={<S><ModulesPackages /></S>} />
           <Route path="details-panels" element={<S><DetailsPanels /></S>} />
-          <Route path="terminology" element={<S><Terminology /></S>} />
-          <Route path="team-settings" element={<S><TeamSettings /></S>} />
-          <Route path="program-settings" element={<S><ProgramSettings /></S>} />
-          <Route path="portfolio-settings" element={<S><PortfolioSettings /></S>} />
-          <Route path="progress-bars" element={<S><ProgressBars /></S>} />
-          <Route path="progress-bars-config" element={<S><ProgressBarsConfig /></S>} />
-          <Route path="estimation-settings" element={<S><EstimationSettings /></S>} />
           <Route path="general-settings" element={<S><GeneralSettings /></S>} />
-          <Route path="general-config" element={<S><GeneralConfig /></S>} />
-          <Route path="security-settings" element={<S><SecuritySettings /></S>} />
           <Route path="announcements" element={<S><Announcements /></S>} />
           <Route path="user-access" element={<S><UserAccessPage /></S>} />
           <Route path="users" element={<S><UsersManagement /></S>} />
@@ -829,20 +761,10 @@ export default function FullAppRoutes() {
           <Route path="create-menu-config" element={<S><CreateMenuConfig /></S>} />
           <Route path="business/RiskSeverity" element={<S><RiskSeverityLevels /></S>} />
           <Route path="business/DeliveryPlatforms" element={<S><DeliveryPlatforms /></S>} />
-          <Route path="estimation" element={<S><Estimation /></S>} />
-          <Route path="security" element={<S><Security /></S>} />
-          <Route path="jira-config" element={<S><JiraIntegrationConfig /></S>} />
-          
           <Route path="product-settings" element={<S><ProductSettings /></S>} />
           <Route path="notion" element={<S><ImportData /></S>} />
-          <Route path="data-hygiene" element={<S><DataHygiene /></S>} />
-          <Route path="design-audit" element={<S><DesignAuditPage /></S>} />
-          <Route path="theme-audit" element={<S><ThemeAuditPage /></S>} />
-          <Route path="kanban-settings" element={<S><KanbanSettings /></S>} />
           <Route path="resource-utilization" element={<S><ResourceUtilizationPage /></S>} />
           <Route path="software-licenses" element={<S><SoftwareLicensesPage /></S>} />
-          <Route path="routes-registry" element={<S><RoutesComponentsRegistry /></S>} />
-          <Route path="snapshots" element={<S><PlaceholderPage /></S>} />
           <Route path="incidents/workgroups" element={<S><IncidentWorkgroups /></S>} />
           <Route path="incidents/fields" element={<S><IncidentFieldsConfig /></S>} />
           <Route path="incidents/sla" element={<S><IncidentSLAPolicies /></S>} />
@@ -850,17 +772,8 @@ export default function FullAppRoutes() {
           <Route path="incidents/conversion" element={<S><IncidentConversionRules /></S>} />
           <Route path="incidents/audit" element={<S><IncidentAuditCompliance /></S>} />
           <Route path="incidents/owning-teams" element={<S><IncidentOwningTeams /></S>} />
-          <Route path="mock-data" element={<S><MockDataGenerator /></S>} />
-          <Route path="ai-integration" element={<S><AiIntegrationPage /></S>} />
-          <Route path="planhub" element={<Navigate to="/admin/planhub/general" replace />} />
-          <Route path="planhub/general" element={<S><PlanHubGeneralSettings /></S>} />
-          <Route path="planhub/templates" element={<S><PlanHubTemplates /></S>} />
-          <Route path="planhub/ai" element={<S><PlanHubAIConfig /></S>} />
-          <Route path="planhub/audit" element={<S><PlanHubActivityLog /></S>} />
-          <Route path="planhub/*" element={<Navigate to="/admin/planhub/general" replace />} />
           <Route path="slack" element={<S><SlackIntegrationPage /></S>} />
           <Route path="workflows" element={<S><WorkflowAdminPage /></S>} />
-          <Route path="task-list" element={<S><TaskListPage /></S>} />
           <Route path="workhub-connection" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="workhub/jira-connection" element={<S><WorkHubAdminPage /></S>} />
@@ -876,17 +789,13 @@ export default function FullAppRoutes() {
           <Route path="kb/*" element={<S><KBAdminPage /></S>} />
           <Route path="wiki" element={<S><WikiAdminPage /></S>} />
           <Route path="wiki-diagnostic" element={<S><WikiDiagnosticPage /></S>} />
-          <Route path="diagnostic" element={<S><AdminDiagnosticPage /></S>} />
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
+          <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
         </Route>
 
-        <Route path="/reports-discovery" element={<S><AdminGuard><ReportsDiscovery /></AdminGuard></S>} />
-        <Route path="/pi-wizard" element={<S><AdminGuard><PIWizard /></AdminGuard></S>} />
-        <Route path="/jira-integration" element={<S><AdminGuard><JiraIntegration /></AdminGuard></S>} />
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
         <Route path="/profile" element={<S><UserProfile /></S>} />
-        <Route path="/admin/settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
         <Route path="/items/:type" element={<S><PlaceholderPage /></S>} />
 
         <Route path="/project-hub" element={<Navigate to="/project-hub/projects" replace />} />
