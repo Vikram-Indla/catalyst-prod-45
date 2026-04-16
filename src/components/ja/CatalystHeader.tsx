@@ -186,10 +186,10 @@ export function CatalystHeader() {
           paddingTop: 'var(--app-safe-top)',
           paddingLeft: '20px',
           paddingRight: '20px',
-          borderBottom: '1px solid var(--cp-bd)',
+          borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          backgroundColor: 'var(--cp-bg)',
-          boxShadow: 'none',
+          backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF',
+          boxShadow: isDark ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(15,23,42,0.06)',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
         }}
@@ -213,7 +213,7 @@ export function CatalystHeader() {
         </a>
         
         {/* ===== NAVIGATION ZONE ===== */}
-        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '4px', marginRight: '8px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
+        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '2px', marginRight: '12px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
           <TooltipProvider>
             {navItems.map((item) => {
               if (!item.isEnabled) {
@@ -250,16 +250,16 @@ export function CatalystHeader() {
               }
 
               const isActive = item.label === activeNavItem;
-              const activeColor = isDark ? '#FFFFFF' : 'var(--cp-blue-text)';
-              const inactiveColor = isDark ? '#A1A1A1' : 'var(--cp-t3)';
-              const hoverColor = isDark ? '#FFFFFF' : 'var(--cp-t1)';
-              const activeUnderline = '#3B82F6';
-              const hoverUnderline = isDark ? '#484F58' : 'var(--cp-bd)';
+              const activeColor = isDark ? '#FFFFFF' : '#0052CC';
+              const inactiveColor = isDark ? '#878787' : '#6B778C';
+              const hoverColor = isDark ? '#EDEDED' : '#172B4D';
+              const activeUnderline = '#0052CC';
+              const hoverUnderline = isDark ? '#454545' : '#C1C7D0';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
                 padding: '0 14px',
-                fontSize: '13px',
-                fontWeight: isActive ? 600 : 500,
+                fontSize: '13.5px',
+                fontWeight: isActive ? 600 : 450,
                 color: isActive ? activeColor : inactiveColor,
                 display: 'flex',
                 alignItems: 'center',
@@ -271,15 +271,15 @@ export function CatalystHeader() {
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
-                letterSpacing: '-0.1px',
+                letterSpacing: '-0.01em',
                 borderRadius: '0',
-                borderBottom: isActive ? `2px solid ${activeUnderline}` : '2px solid transparent',
+                borderBottom: isActive ? `3px solid ${activeUnderline}` : '3px solid transparent',
               };
               
               const handleHover = (e: React.MouseEvent<HTMLButtonElement>, isEnter: boolean) => {
                 if (!isActive) {
                   e.currentTarget.style.color = isEnter ? hoverColor : inactiveColor;
-                  e.currentTarget.style.borderBottom = isEnter ? `2px solid ${hoverUnderline}` : '2px solid transparent';
+                  e.currentTarget.style.borderBottom = isEnter ? `3px solid ${hoverUnderline}` : '3px solid transparent';
                   e.currentTarget.style.background = 'transparent';
                 }
               };
