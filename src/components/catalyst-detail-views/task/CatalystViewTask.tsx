@@ -1,9 +1,5 @@
 /**
  * CatalystViewTask — Task detail overlay.
- *
- * Canonical sections: Title, Description, Acceptance Criteria, Priority,
- * Activity, Sidebar.
- * Task-unique: (none currently — all sections are canonical)
  */
 import React from 'react';
 import { toast } from 'sonner';
@@ -27,7 +23,6 @@ export default function CatalystViewTask({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="task" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
@@ -37,7 +32,9 @@ export default function CatalystViewTask({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="task" />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="task">
+      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="task" projectKey={projectKey} onOpenItem={onOpenItem} />
+    </CatalystSidebarDetails>
   );
 
   return (
@@ -50,8 +47,6 @@ export default function CatalystViewTask({
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
         { label: 'Clone', onClick: () => toast('Clone — coming soon') },
-        { label: 'Move', onClick: () => toast('Move — coming soon') },
-        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
