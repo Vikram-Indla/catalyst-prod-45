@@ -389,6 +389,7 @@ export function GlobalSearch() {
   const [openFilter, setOpenFilter] = useState<"project" | "assignee" | null>(null);
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
   const [selectedAssignees, setSelectedAssignees] = useState<string[]>([]);
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
 
   const projectBtnRef = useRef<HTMLButtonElement>(null);
   const assigneeBtnRef = useRef<HTMLButtonElement>(null);
