@@ -1,6 +1,6 @@
 // Import Module Configuration - Dynamic field mappings per module type
 
-export type ImportModuleType = 'demands' | 'epics' | 'features' | 'stories' | 'risks' | 'milestones';
+export type ImportModuleType = 'demands' | 'epics' | 'features' | 'stories' | 'risks' | 'milestones' | 'notion';
 
 export interface ImportFieldConfig {
   key: string;
