@@ -199,7 +199,7 @@ export function InitiativeTable({
             style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
             title={row.original.is_favorited ? 'Unstar' : 'Star'}
           >
-            <Star size={14} fill={row.original.is_favorited ? '#FACC15' : 'none'} stroke={row.original.is_favorited ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+            <Star size={14} fill={row.original.is_favorited ? '#FACC15' : 'none'} stroke={row.original.is_favorited ? '#FACC15' : 'var(--cp-border-strong)'} strokeWidth={2} />
           </button>
         </div>
       ),
@@ -235,7 +235,7 @@ export function InitiativeTable({
         const attCount = attachmentCounts.get(attKey) || 0;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
+            {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--cp-text-muted)', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
             <IDCell value={key} />
           </div>
         );
@@ -244,7 +244,7 @@ export function InitiativeTable({
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',
       cell: ({ getValue }) => (
-        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--pb-ink)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {getValue()}
         </span>
       ),
@@ -336,9 +336,9 @@ export function InitiativeTable({
     return (
       <div style={{ flex: 1, overflow: 'hidden' }}>
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{ height: 50, display: 'flex', alignItems: 'center', gap: 16, padding: '8px 12px', borderBottom: '1px solid var(--pb-border)' }}>
+          <div key={i} style={{ height: 36, display: 'flex', alignItems: 'center', gap: 16, padding: '8px 12px', borderBottom: '1px solid var(--cp-border-subtle)' }}>
             {Array.from({ length: 6 }).map((_, j) => (
-              <div key={j} style={{ height: 12, borderRadius: 4, background: 'var(--pb-surface-tertiary)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
+              <div key={j} style={{ height: 12, borderRadius: 4, background: 'var(--cp-bg-sunken)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
             ))}
           </div>
         ))}
@@ -360,7 +360,7 @@ export function InitiativeTable({
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '0.555556px solid rgba(11, 18, 14, 0.14)', borderRadius: 8, background: 'transparent', boxShadow: 'none' }}>
+      <div style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', border: '1px solid var(--cp-border-default)', borderRadius: 8, background: 'transparent', boxShadow: 'none' }}>
         <div style={{ overflowX: 'auto', overflowY: 'auto', flex: 1, scrollbarWidth: 'thin', scrollbarColor: 'var(--pb-border-strong) transparent' }}>
           <table className="pb-table" style={{ tableLayout: 'fixed', minWidth: totalSize }}>
             <colgroup>
@@ -408,9 +408,9 @@ export function InitiativeTable({
                             <div style={{
                               position: 'absolute', left: 3, top: 4, bottom: 4,
                               width: 1, borderRadius: 1,
-                              background: header.column.getIsResizing() ? '#93C5FD' : 'transparent',
+                              background: header.column.getIsResizing() ? 'var(--cp-primary-60)' : 'transparent',
                               transition: 'background 120ms',
-                            }} className="group-hover/resize:!bg-slate-300" />
+                            }} className="group-hover/resize:!bg-[var(--cp-border-strong)]" />
                           </div>
                         )}
                       </th>

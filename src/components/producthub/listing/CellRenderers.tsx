@@ -1,5 +1,6 @@
 /**
  * CellRenderers — V12 Hybrid Precision with canonical Jira SVG icons
+ * All colors use CSS custom properties for dark mode compliance
  */
 
 import React from 'react';
@@ -72,13 +73,13 @@ export const StatusCell = React.memo(function StatusCell({ status }: { status: I
 export const PriorityCell = React.memo(function PriorityCell({ score }: { score: number | null }) {
   const filled = score === null ? 0 : score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : score >= 1.0 ? 1 : 0;
   const colors = ['#4ADE80', '#FBBF24', '#F97316', '#EF4444'];
-  const fillColor = filled === 0 ? '#E2E8F0' : colors[Math.min(filled - 1, 3)];
+  const fillColor = filled === 0 ? 'var(--cp-border-default)' : colors[Math.min(filled - 1, 3)];
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
       {[1, 2, 3, 4].map(i => (
         <span key={i} style={{
           width: 14, height: 3, borderRadius: 2,
-          background: i <= filled ? fillColor : '#E2E8F0',
+          background: i <= filled ? fillColor : 'var(--cp-border-default)',
         }} />
       ))}
     </div>
@@ -94,7 +95,7 @@ export const ScoreCell = React.memo(function ScoreCell({ score }: { score: numbe
       {[1, 2, 3, 4, 5, 6].map(i => (
         <span key={i} style={{
           width: 4, height: heights[i - 1], borderRadius: '2px 2px 0 0',
-          background: i <= filled ? '#22C55E' : '#E2E8F0',
+          background: i <= filled ? 'var(--cp-success-60)' : 'var(--cp-border-default)',
         }} />
       ))}
     </div>
@@ -106,8 +107,8 @@ export const AssigneeCell = React.memo(function AssigneeCell({ name, avatarUrl }
   if (!name) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px dashed #CBD5E1', background: 'transparent', flexShrink: 0 }} />
-        <span style={{ fontSize: 13, color: '#94A3B8' }}>Unassigned</span>
+        <div style={{ width: 22, height: 22, borderRadius: '50%', border: '1.5px dashed var(--cp-border-strong)', background: 'transparent', flexShrink: 0 }} />
+        <span style={{ fontSize: 13, color: 'var(--cp-text-muted)' }}>Unassigned</span>
       </div>
     );
   }
@@ -127,18 +128,18 @@ export const AssigneeCell = React.memo(function AssigneeCell({ name, avatarUrl }
 
 /* ── Date Cell ── */
 export const DateCell = React.memo(function DateCell({ date, status }: { date: string | null; status?: InitiativeStatus }) {
-  if (!date) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
+  if (!date) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
   const parsed = new Date(date);
-  if (isNaN(parsed.getTime())) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
+  if (isNaN(parsed.getTime())) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
   const formatted = format(parsed, 'MMM dd, yyyy');
 
   const terminalStatuses: InitiativeStatus[] = ['done', 'cancelled'];
   const isOverdue = status && !terminalStatuses.includes(status) && parsed < new Date();
   const isSoon = status && !terminalStatuses.includes(status) && !isOverdue && differenceInDays(parsed, new Date()) <= 14;
 
-  let color = 'var(--pb-ink-tertiary)';
-  if (isOverdue) color = 'var(--pb-danger)';
-  else if (isSoon) color = 'var(--pb-warning)';
+  let color = 'var(--cp-text-tertiary)';
+  if (isOverdue) color = 'var(--cp-danger-60)';
+  else if (isSoon) color = 'var(--cp-warning-60)';
 
   return (
     <span className="pb-date" style={{ color, fontWeight: isOverdue || isSoon ? 500 : 400, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
@@ -160,24 +161,24 @@ export const ProgressCell = React.memo(function ProgressCell({ value, status }: 
   const done = status === 'done' || clamped >= 100;
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-      <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--pb-surface-tertiary)', overflow: 'hidden', flexShrink: 0 }}>
-        <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 4, background: done ? 'var(--pb-success)' : 'var(--pb-primary)', transition: 'width 300ms ease' }} />
+      <div style={{ width: 40, height: 4, borderRadius: 4, background: 'var(--cp-bg-sunken)', overflow: 'hidden', flexShrink: 0 }}>
+        <div style={{ width: `${clamped}%`, height: '100%', borderRadius: 4, background: done ? 'var(--cp-success-60)' : 'var(--cp-primary-60)', transition: 'width 300ms ease' }} />
       </div>
-      <span className="pb-progress-label" style={{ minWidth: 28 }}>{clamped}%</span>
+      <span className="pb-progress-label" style={{ minWidth: 28, fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontVariantNumeric: 'tabular-nums', color: 'var(--cp-text-tertiary)' }}>{clamped}%</span>
     </div>
   );
 });
 
 /* ── EA Review Cell ── */
 export const EACell = React.memo(function EACell({ value }: { value?: boolean | null }) {
-  if (value === true) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-danger)', background: 'var(--pb-danger-bg)', padding: '2px 8px', borderRadius: 4 }}>Required</span>;
-  if (value === false) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-success)', background: 'var(--pb-success-bg)', padding: '2px 8px', borderRadius: 4 }}>Not Required</span>;
-  return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-warning)', background: 'var(--pb-warning-bg)', padding: '2px 8px', borderRadius: 4 }}>Pending</span>;
+  if (value === true) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-danger-60)', background: 'var(--cp-danger-10)', padding: '2px 8px', borderRadius: 4 }}>Required</span>;
+  if (value === false) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-success-60)', background: 'var(--cp-success-10)', padding: '2px 8px', borderRadius: 4 }}>Not Required</span>;
+  return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--cp-warning-60)', background: 'var(--cp-warning-10)', padding: '2px 8px', borderRadius: 4 }}>Pending</span>;
 });
 
 /* ── Quarter Cell ── */
 export const QuarterCell = React.memo(function QuarterCell({ value }: { value: string | null }) {
-  if (!value) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
+  if (!value) return <span style={{ color: 'var(--cp-text-muted)', fontSize: 13 }}>—</span>;
   return <span className="pb-quarter">{value}</span>;
 });
 
