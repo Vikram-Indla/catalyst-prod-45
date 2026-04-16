@@ -282,7 +282,7 @@ function SingleParentPicker({
         .select('id, issue_key, summary, issue_type, status, status_category')
         .eq('issue_key', issue!.parent_key!)
         .is('deleted_at', null)
-        .single();
+        .maybeSingle();
       return data as CandidateItem | null;
     },
   });
