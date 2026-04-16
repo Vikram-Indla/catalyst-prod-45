@@ -76,25 +76,25 @@ export default function ProjectDashboardPage() {
         ) : (
           <>
             {/* Management Bar */}
-            <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-              <CatalystPageHeader
-                title="Dashboard"
-                actions={
-              <div className="flex items-center gap-2">
-                <button onClick={() => setGalleryOpen(true)} style={btnStyle}>
-                  <Plus size={13} />
-                  Add Widget
-                </button>
-                <button style={btnStyle}>
-                  <LayoutGrid size={13} />
-                  Edit Layout
-                </button>
-                <button onClick={resetToDefaults} style={{ ...btnStyle, color: 'var(--cp-text-tertiary)' }}>
-                  <RotateCcw size={13} />
-                  Reset
-                </button>
-              </div>
-            </div>
+            <CatalystPageHeader
+              title="Dashboard"
+              actions={
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setGalleryOpen(true)} style={btnStyle}>
+                    <Plus size={13} />
+                    Add Widget
+                  </button>
+                  <button style={btnStyle}>
+                    <LayoutGrid size={13} />
+                    Edit Layout
+                  </button>
+                  <button onClick={resetToDefaults} style={{ ...btnStyle, color: 'var(--cp-text-tertiary)' }}>
+                    <RotateCcw size={13} />
+                    Reset
+                  </button>
+                </div>
+              }
+            />
 
             {/* Widget Grid — always render; hooks gracefully handle missing projectId */}
             <DashboardWidgetGrid projectId={projectId || pKey} projectKey={pKey} />
