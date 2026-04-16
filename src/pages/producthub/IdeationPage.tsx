@@ -137,10 +137,9 @@ export default function IdeationPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* ─── Page Header (For You pattern) ─── */}
-      <ProductHubPageHeader
+      {/* ─── Page Header (Canonical) ─── */}
+      <CatalystPageHeader
         title={pageTitle}
-        subtitle="Capture, evaluate, and promote ideas into initiatives — powered by IMPACT scoring & AI Intelligence"
         actions={
           <>
             <AIIntelligenceButton label="Intelligence" onClick={() => setIntelligenceOpen(true)} />
