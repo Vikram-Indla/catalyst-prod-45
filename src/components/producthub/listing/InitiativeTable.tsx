@@ -336,9 +336,9 @@ export function InitiativeTable({
     return (
       <div style={{ flex: 1, overflow: 'hidden' }}>
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} style={{ height: 50, display: 'flex', alignItems: 'center', gap: 16, padding: '8px 12px', borderBottom: '1px solid var(--pb-border)' }}>
+          <div key={i} style={{ height: 36, display: 'flex', alignItems: 'center', gap: 16, padding: '8px 12px', borderBottom: '1px solid var(--cp-border-subtle)' }}>
             {Array.from({ length: 6 }).map((_, j) => (
-              <div key={j} style={{ height: 12, borderRadius: 4, background: 'var(--pb-surface-tertiary)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
+              <div key={j} style={{ height: 12, borderRadius: 4, background: 'var(--cp-bg-sunken)', width: `${60 + Math.random() * 80}px` }} className="animate-pulse" />
             ))}
           </div>
         ))}
