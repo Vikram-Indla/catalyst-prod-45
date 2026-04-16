@@ -64,6 +64,7 @@ export function CatalystHeader() {
   }, []);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [avatarImgError, setAvatarImgError] = useState(false);
   const [notifPanelOpen, setNotifPanelOpen] = useState(false);
   const { data: rawUnreadCount = 0 } = useUnreadCount();
   const debouncedUnreadCount = useDebouncedValue(rawUnreadCount, BADGE_DEBOUNCE_MS);
@@ -90,6 +91,20 @@ export function CatalystHeader() {
       const { data: { user } } = await supabase.auth.getUser();
       return user;
     },
+  });
+
+  const { data: userProfile } = useQuery({
+    queryKey: ['current-user-profile', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user!.id)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
   const handleCreateSuccess = (entity: { id: string; name: string; key?: string }) => {
@@ -620,25 +635,37 @@ export function CatalystHeader() {
                   onClick={() => setUserMenuOpen((v) => !v)}
                   aria-haspopup="menu"
                   aria-expanded={userMenuOpen}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden"
                   style={{
-                    background: 'linear-gradient(135deg, #0052CC, #6366F1)',
+                    background: (userProfile?.avatar_url && !avatarImgError) ? 'transparent' : 'linear-gradient(135deg, #0052CC, #6366F1)',
                     color: '#FFFFFF',
-                    border: '3px solid transparent',
+                    border: '2px solid',
+                    borderColor: isDark ? '#454545' : '#E2E8F0',
                     transition: 'border-color 150ms ease, box-shadow 150ms ease',
+                    padding: 0,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0';
-                    e.currentTarget.style.boxShadow = `0 0 0 2px ${isDark ? 'rgba(0,82,204,0.2)' : 'rgba(0,82,204,0.15)'}`;
+                    e.currentTarget.style.borderColor = isDark ? '#6B7280' : '#C1C7D0';
+                    e.currentTarget.style.boxShadow = `0 0 0 2px ${isDark ? '#1E3A5F' : '#DEEBFF'}`;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'transparent';
+                    e.currentTarget.style.borderColor = isDark ? '#454545' : '#E2E8F0';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
-                  title="Profile"
+                  title={userProfile?.full_name || user?.email || 'Profile'}
                 >
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
-              </button>
+                  {userProfile?.avatar_url && !avatarImgError ? (
+                    <img
+                      src={userProfile.avatar_url}
+                      alt={userProfile.full_name || 'Profile'}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover rounded-full"
+                      onError={() => setAvatarImgError(true)}
+                    />
+                  ) : (
+                    <span>{user?.email?.charAt(0).toUpperCase() || 'U'}</span>
+                  )}
+               </button>
 
               {userMenuOpen && (
                 <div
@@ -659,8 +686,8 @@ export function CatalystHeader() {
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px' }}>
-                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
-                    <p style={{ fontSize: '12px', color: '#6B778C' }}>User Account</p>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: isDark ? '#EDEDED' : '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userProfile?.full_name || user?.email}</p>
+                    <p style={{ fontSize: '12px', color: isDark ? '#878787' : '#6B778C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
                   </div>
 
                   {[
