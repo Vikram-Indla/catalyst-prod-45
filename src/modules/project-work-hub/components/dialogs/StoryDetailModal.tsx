@@ -633,10 +633,11 @@ export default function StoryDetailModal({
           {/* ── A. TOP BAR — Jira breadcrumb + actions ─────── */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '12px 16px 0 16px', minHeight: 40, flexShrink: 0,
+            padding: '10px 20px', minHeight: 44, flexShrink: 0,
+            borderBottom: '1px solid #EBECF0',
           }}>
             {/* Breadcrumb */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#5E6C84', minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
               {/* Parent breadcrumb — canonical AddParentPicker */}
               {issue && (
                 <AddParentPicker
@@ -647,34 +648,34 @@ export default function StoryDetailModal({
                   variant="breadcrumb"
                 />
               )}
-              <span style={{ color: '#C1C7D0', fontSize: 12 }}>/</span>
-              <IssueIcon type={issue?.issue_type ?? 'Story'} size={14} />
-              <IssueKeyLink issueKey={issue?.issue_key ?? '—'} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#0052CC', textDecoration: 'none' }} />
+              <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
+              <IssueIcon type={issue?.issue_type ?? 'Story'} size={16} />
+              <IssueKeyLink issueKey={issue?.issue_key ?? '—'} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }} />
             </div>
 
             {/* Right actions */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <button onClick={handleShare} style={{
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                borderRadius: 4, color: '#5E6C84', fontSize: 13, display: 'flex', alignItems: 'center', gap: 5,
-                transition: 'background 0.15s',
+                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
+                borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6,
+                transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
               }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >
-                <Share2 size={14} /> <span style={{ fontSize: 12 }}>Share</span>
+                <Share2 size={16} /> <span>Share</span>
               </button>
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
                 <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                  borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
+                  background: showDotsMenu ? '#F4F5F7' : 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
+                  borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
                   transition: 'background 0.15s',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >···</button>
+                  onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
+                ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
-                  <div style={{ position: 'absolute', right: 0, top: 32, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 4, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '8px 0', zIndex: 50, minWidth: 200 }}>
+                  <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200 }}>
                     <button onClick={() => { setShowDotsMenu(false); toast('Ticket cloned'); }} style={menuItemStyle}>Clone ticket</button>
                     <button onClick={() => { setShowDotsMenu(false); toast('Move to project — coming soon'); }} style={menuItemStyle}>Move to project</button>
                     <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
@@ -686,7 +687,7 @@ export default function StoryDetailModal({
               {onTogglePanelMode && !fullPageMode && (
                 <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                  borderRadius: 4, color: '#5E6C84', fontSize: 14, display: 'flex', alignItems: 'center',
+                  borderRadius: 4, color: '#42526E', fontSize: 14, display: 'flex', alignItems: 'center',
                   transition: 'background 0.15s',
                 }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
@@ -704,7 +705,7 @@ export default function StoryDetailModal({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <button onClick={navPrev} disabled={!canNavPrev} style={{
                     background: 'none', border: 'none', cursor: canNavPrev ? 'pointer' : 'default',
-                    padding: '6px 6px', borderRadius: 4, color: canNavPrev ? '#5E6C84' : '#C1C7D0',
+                    padding: '6px 6px', borderRadius: 4, color: canNavPrev ? '#42526E' : '#C1C7D0',
                     display: 'flex', alignItems: 'center', transition: 'background 0.15s',
                   }}
                     onMouseEnter={e => { if (canNavPrev) e.currentTarget.style.background = '#F4F5F7'; }}
@@ -712,12 +713,12 @@ export default function StoryDetailModal({
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                   </button>
-                  <span style={{ fontSize: 11, color: '#5E6C84', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
+                  <span style={{ fontSize: 11, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
                     {currentNavIndex + 1} / {navigationItems.length}
                   </span>
                   <button onClick={navNext} disabled={!canNavNext} style={{
                     background: 'none', border: 'none', cursor: canNavNext ? 'pointer' : 'default',
-                    padding: '6px 6px', borderRadius: 4, color: canNavNext ? '#5E6C84' : '#C1C7D0',
+                    padding: '6px 6px', borderRadius: 4, color: canNavNext ? '#42526E' : '#C1C7D0',
                     display: 'flex', alignItems: 'center', transition: 'background 0.15s',
                   }}
                     onMouseEnter={e => { if (canNavNext) e.currentTarget.style.background = '#F4F5F7'; }}
@@ -731,12 +732,12 @@ export default function StoryDetailModal({
               {!fullPageMode && (
               <button onClick={onClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                borderRadius: 4, color: '#5E6C84', fontSize: 16, display: 'flex', alignItems: 'center',
+                borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
                 transition: 'background 0.15s',
               }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#5E6C84'; }}
-              ><X size={16} /></button>
+                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
+              ><X size={18} /></button>
               )}
             </div>
           </div>

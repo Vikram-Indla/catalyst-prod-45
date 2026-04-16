@@ -169,9 +169,9 @@ export function CatalystViewBase({
   };
 
   const hoverBtn: React.CSSProperties = {
-    background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-    borderRadius: 4, color: '#5E6C84', fontSize: 13, display: 'flex', alignItems: 'center',
-    gap: 5, transition: 'background 0.15s',
+    background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
+    borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
+    gap: 6, transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
   };
 
   const menuItemStyle: React.CSSProperties = {
