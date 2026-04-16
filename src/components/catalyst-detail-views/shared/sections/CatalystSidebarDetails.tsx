@@ -6,7 +6,6 @@
  *   - EditableAssignee (Jira-parity user picker with avatars)
  *   - EditablePriority (Jira-native priority SVGs with dropdown)
  *   - EditableLabels (add/remove labels with suggestions)
- *   - EditableStoryPoints (Fibonacci picker with None option)
  *   - EditableFixVersions (multi-select with unreleased/released groups)
  *
  * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Fix Versions → Timestamps
