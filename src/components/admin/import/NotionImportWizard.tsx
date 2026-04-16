@@ -365,60 +365,41 @@ export function NotionImportWizard() {
 
           {/* ═══ STEP 3: MAP FIELDS ═══ */}
           {step === 3 && (
-            <div className="space-y-6">
-              <div className="flex items-start justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Map Fields</h2>
-                  <p className="text-sm text-[#64748B]">
-                    Map each Notion column to a Catalyst field, or skip it.
+                  <h2 className="text-[15px] font-semibold text-[#0F172A]">Map Fields</h2>
+                  <p className="text-[13px] text-[#64748B] mt-0.5">
+                    Map each Notion column to a Catalyst field.
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <StatPill icon={ArrowLeftRight} label="Mapped" value={mappedCount} color="#16A34A" />
-                  <StatPill icon={SkipForward} label="Skipped" value={skippedCount} color="#94A3B8" />
+                <div className="flex gap-2 text-[11px]">
+                  <span className="px-2 py-1 rounded bg-[#DCFCE7] text-[#16A34A] font-semibold">{mappedCount} mapped</span>
+                  <span className="px-2 py-1 rounded bg-[#F1F5F9] text-[#94A3B8] font-semibold">{skippedCount} skipped</span>
                 </div>
               </div>
 
-              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
-                {/* Header row */}
-                <div className="flex items-center px-5 py-2.5 bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">
-                    Notion Column
-                  </span>
-                  <span className="w-6 flex justify-center">
-                    <ArrowRight className="h-3 w-3 text-[#CBD5E1]" />
-                  </span>
-                  <span className="w-52 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">
-                    Catalyst Field
-                  </span>
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+                <div className="flex items-center px-4 py-2 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Notion Column</span>
+                  <ArrowRight className="h-3 w-3 text-[#CBD5E1] mx-2" />
+                  <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Catalyst Field</span>
                 </div>
-                {/* Mapping rows */}
-                {notionProps.map((p, i) => {
+                {notionProps.map(p => {
                   const mapped = mappings[p.name] || '__skip__';
                   const isSkip = mapped === '__skip__';
                   const isSummary = mapped === 'summary';
                   return (
-                    <div key={p.id} className={`flex items-center px-5 py-3 gap-3 border-b border-[#F1F5F9] last:border-b-0 transition-colors ${
-                      isSkip ? 'bg-[#FAFBFC]' : ''
-                    }`}>
-                      <div className="flex-1 flex items-center gap-2.5 min-w-0">
-                        <span className={`text-sm font-medium truncate ${isSkip ? 'text-[#94A3B8]' : 'text-[#0F172A]'}`}>
-                          {p.name}
-                        </span>
-                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0]">
-                          {p.type}
-                        </span>
+                    <div key={p.id} className={`flex items-center px-4 py-2 gap-2 border-b border-[#F1F5F9] last:border-b-0 ${isSkip ? 'bg-[#FAFBFC]' : ''}`}>
+                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                        <span className={`text-[13px] font-medium truncate ${isSkip ? 'text-[#94A3B8]' : 'text-[#0F172A]'}`}>{p.name}</span>
+                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1 py-px rounded bg-[#F1F5F9] text-[#94A3B8]">{p.type}</span>
                       </div>
-                      <ArrowRight className={`h-3.5 w-3.5 shrink-0 ${isSkip ? 'text-[#E2E8F0]' : 'text-[#94A3B8]'}`} />
-                      <div className="w-52 shrink-0">
-                        <Select
-                          value={mapped}
-                          onValueChange={val => setMappings(prev => ({ ...prev, [p.name]: val }))}
-                        >
-                          <SelectTrigger className={`h-8 text-sm border ${
-                            isSummary ? 'border-[#16A34A] bg-[#F0FDF4]' :
-                            isSkip ? 'border-[#E2E8F0] text-[#94A3B8]' :
-                            'border-[#E2E8F0]'
+                      <ArrowRight className={`h-3 w-3 shrink-0 ${isSkip ? 'text-[#E2E8F0]' : 'text-[#94A3B8]'}`} />
+                      <div className="w-44 shrink-0">
+                        <Select value={mapped} onValueChange={val => setMappings(prev => ({ ...prev, [p.name]: val }))}>
+                          <SelectTrigger className={`h-7 text-[13px] border ${
+                            isSummary ? 'border-[#16A34A] bg-[#F0FDF4]' : isSkip ? 'border-[#E2E8F0] text-[#94A3B8]' : 'border-[#E2E8F0]'
                           }`}>
                             <SelectValue />
                           </SelectTrigger>
@@ -435,14 +416,9 @@ export function NotionImportWizard() {
               </div>
 
               {mapError && !summaryMapped && (
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FEF2F2] border border-[#FECACA]">
-                  <div className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center shrink-0">
-                    <AlertCircle className="h-4 w-4 text-[#DC2626]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#DC2626]">Summary required</p>
-                    <p className="text-sm text-[#DC2626]/80 mt-0.5">Map at least one Notion column to the <strong>Summary</strong> field to proceed.</p>
-                  </div>
+                <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
+                  <AlertCircle className="h-4 w-4 text-[#DC2626] mt-0.5 shrink-0" />
+                  <p className="text-[13px] text-[#DC2626]">Map at least one column to <strong>Summary</strong> to proceed.</p>
                 </div>
               )}
             </div>
