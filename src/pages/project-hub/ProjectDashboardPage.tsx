@@ -77,14 +77,9 @@ export default function ProjectDashboardPage() {
           <>
             {/* Management Bar */}
             <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
-              <div>
-                <div style={{ fontSize: 16, fontWeight: 650, color: 'var(--cp-text-primary)', fontFamily: 'var(--cp-font-heading)' }}>
-                  Dashboard
-                </div>
-                <div style={{ fontSize: 11, color: 'var(--cp-text-tertiary)', marginTop: 2 }}>
-                  Showing {visibleCount} of 11 widgets
-                </div>
-              </div>
+              <CatalystPageHeader
+                title="Dashboard"
+                actions={
               <div className="flex items-center gap-2">
                 <button onClick={() => setGalleryOpen(true)} style={btnStyle}>
                   <Plus size={13} />

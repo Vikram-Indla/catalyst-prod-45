@@ -71,10 +71,7 @@ export default function ProjectSettingsPageNew() {
           <span style={{ fontSize: 13, color: 'var(--fg-1, #0F172A)', fontWeight: 500 }}>Settings</span>
         </div>
 
-        <div className="flex items-center gap-3 mb-5">
-          <Settings size={20} color="#2563EB" strokeWidth={1.75} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>Project Settings</h1>
-        </div>
+        <CatalystPageHeader title="Project Settings" />
 
         <SettingsTabs active={activeTab} onChange={setActiveTab} />
 

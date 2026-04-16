@@ -14,18 +14,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
   return (
     <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
       <div className="ph-inner-content">
-        <div className="flex items-center gap-3 mb-6">
-          <Icon size={22} color="#2563EB" strokeWidth={1.75} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', fontFamily: "'Sora', sans-serif", letterSpacing: '-0.3px' }}>
-            {title}
-          </h1>
-          <span
-            className="rounded"
-            style={{ fontSize: 11, fontWeight: 600, color: '#64748B', background: '#F1F5F9', padding: '2px 8px' }}
-          >
-            {key?.toUpperCase()}
-          </span>
-        </div>
+        <CatalystPageHeader title={title} />
 
         <div
           className="flex flex-col items-center justify-center ph-card"
