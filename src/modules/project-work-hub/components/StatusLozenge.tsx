@@ -12,17 +12,34 @@ const formatStatus = (status: string): string => {
     .replace(/\b\w/g, l => l.toUpperCase());
 };
 
+type BadgeCategory = 'todo' | 'inprogress' | 'done';
+
+function resolveCategory(statusCategory?: string, status?: string): BadgeCategory {
+  const cat = statusCategory?.toLowerCase() || '';
+  if (cat === 'done') return 'done';
+  if (cat === 'in_progress' || cat === 'inprogress' || cat === 'indeterminate') return 'inprogress';
+  if (cat === 'todo') return 'todo';
+  // Fallback: derive from status string
+  const s = (status || '').toLowerCase();
+  if (/done|closed|resolved|completed|shipped/.test(s)) return 'done';
+  if (/progress|review|active|dev|testing|qa/.test(s)) return 'inprogress';
+  return 'todo';
+}
+
+const CATEGORY_CLASSES: Record<BadgeCategory, string> = {
+  todo: 'status-badge-todo',
+  inprogress: 'status-badge-inprogress',
+  done: 'status-badge-done',
+};
+
 /**
- * StatusLozenge - Neutral status display component
- * HARD RULE: No colored text/background - all statuses use neutral styling
+ * StatusLozenge — Uses canonical 3-color CSS vars from index.css
  */
-export const StatusLozenge: React.FC<StatusLozengeProps> = ({ status }) => {
+export const StatusLozenge: React.FC<StatusLozengeProps> = ({ status, statusCategory }) => {
+  const category = resolveCategory(statusCategory, status);
+
   return (
-    <span className={cn(
-      "catalyst-status",
-      "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium uppercase border",
-      "bg-muted/50 text-foreground border-border"
-    )}>
+    <span className={cn('status-badge-base', CATEGORY_CLASSES[category])}>
       {formatStatus(status)}
     </span>
   );
