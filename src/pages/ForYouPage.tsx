@@ -30,13 +30,13 @@ import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '
 // ─── Group By ────────────────────────────────────────────────
 type ForYouGroupByKey = 'none' | 'status' | 'priority' | 'hub' | 'project' | 'reporter' | 'type';
 
-const FY_GROUP_OPTIONS: { key: ForYouGroupByKey; label: string }[] = [
-  { key: 'status', label: 'Status' },
-  { key: 'priority', label: 'Priority' },
-  { key: 'hub', label: 'Hub' },
-  { key: 'project', label: 'Project' },
-  { key: 'reporter', label: 'Reporter' },
-  { key: 'type', label: 'Type' },
+const FY_GROUP_OPTIONS: GroupByOption<ForYouGroupByKey>[] = [
+  { key: 'status', label: 'Status', icon: 'status' },
+  { key: 'priority', label: 'Priority', icon: 'priority' },
+  { key: 'hub', label: 'Hub', icon: 'hub' },
+  { key: 'project', label: 'Project', icon: 'project' },
+  { key: 'reporter', label: 'Reporter', icon: 'reporter' },
+  { key: 'type', label: 'Type', icon: 'type' },
 ];
 
 const PRIORITY_ORDER_FY = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
