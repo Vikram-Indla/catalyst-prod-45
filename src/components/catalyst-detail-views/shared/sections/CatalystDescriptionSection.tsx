@@ -47,12 +47,17 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
 }
 
 /* Visible marker — emitted next to the Description heading when the
-   Atlaskit pilot is active for this issue. Lets reviewers verify at a glance
-   without DevTools. Removed once pilot is promoted across all issue types. */
+   Epic-only pilot molecule is active. Pilot currently routes through
+   the existing TipTap editor + AdfDescriptionRenderer pair (Atlaskit
+   editor-core/renderer cannot resolve their transitive dep tree in
+   Catalyst's npm registry — see EpicDescriptionEditor / Renderer files
+   for the rationale). The molecule still owns the Epic edit/view
+   contract so it can be re-pointed at Atlaskit later without touching
+   any caller. Removed when pilot promotes to all issue types. */
 function AtlaskitPilotBadge() {
   return (
     <span
-      title="Atlaskit pilot — @atlaskit/editor-core + renderer"
+      title="Epic description pilot — owns the Epic edit/view contract for future Atlaskit promotion"
       style={{
         marginLeft: 6, padding: '1px 6px', borderRadius: 3,
         fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
@@ -60,7 +65,7 @@ function AtlaskitPilotBadge() {
         textTransform: 'uppercase',
       }}
     >
-      Atlaskit
+      Epic Pilot
     </span>
   );
 }
@@ -282,7 +287,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
                 }
               >
                 <Suspense fallback={<AtlaskitFallback minHeight={40} />}>
-                  <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} />
+                  <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} issueKey={issue?.issue_key} />
                 </Suspense>
               </AtlaskitBoundary>
             </div>
