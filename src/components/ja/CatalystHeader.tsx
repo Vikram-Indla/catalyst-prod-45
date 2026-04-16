@@ -227,7 +227,7 @@ export function CatalystHeader() {
                           padding: '0 14px',
                           fontSize: '14px',
                           fontWeight: 500,
-                          color: 'var(--cp-t3)',
+                          color: '#6B778C',
                           borderRadius: '6px',
                           gap: '4px',
                           border: 'none',
@@ -396,12 +396,12 @@ export function CatalystHeader() {
                       <button
                         style={{
                           ...navButtonStyle,
-                          color: location.pathname.startsWith('/release') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                          color: location.pathname.startsWith('/release') ? '#0052CC' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                          borderBottom: location.pathname.startsWith('/release') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                          borderBottom: location.pathname.startsWith('/release') ? '3px solid #0052CC' : '3px solid transparent',
                         }}
-                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                        onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                        onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#172B4D'; }}
+                        onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#6B778C'; }}
                         onClick={() => navigate(singleItemNav.release.directPath!)}
                       >
                         {item.label}
@@ -415,12 +415,12 @@ export function CatalystHeader() {
                           <button 
                             style={{
                               ...navButtonStyle,
-                              color: location.pathname.startsWith('/release') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                              color: location.pathname.startsWith('/release') ? '#0052CC' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                              borderBottom: location.pathname.startsWith('/release') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                              borderBottom: location.pathname.startsWith('/release') ? '3px solid #0052CC' : '3px solid transparent',
                             }}
-                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                            onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                            onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#172B4D'; }}
+                            onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#6B778C'; }}
                           >
                             {item.label}
                             <ChevronDown style={{ width: '16px', height: '16px' }} />
@@ -437,12 +437,12 @@ export function CatalystHeader() {
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/taskhub') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/taskhub') ? '#0052CC' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/taskhub') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/taskhub') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                        borderBottom: location.pathname.startsWith('/taskhub') ? '3px solid #0052CC' : '3px solid transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#172B4D'; }}
+                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#6B778C'; }}
                       onClick={() => navigate('/taskhub/boards')}
                     >
                       {item.label}
@@ -451,12 +451,12 @@ export function CatalystHeader() {
                     <button
                       style={{
                         ...navButtonStyle,
-                        color: location.pathname.startsWith('/releases') ? 'var(--cp-blue-text)' : navButtonStyle.color,
+                        color: location.pathname.startsWith('/releases') ? '#0052CC' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/releases') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/releases') ? '2px solid var(--cp-blue-text)' : '2px solid transparent',
+                        borderBottom: location.pathname.startsWith('/releases') ? '3px solid #0052CC' : '3px solid transparent',
                       }}
-                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--cp-t1)'; }}
-                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = 'var(--cp-t3)'; }}
+                      onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#172B4D'; }}
+                      onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#6B778C'; }}
                       onClick={() => navigate('/releases/command-center')}
                     >
                       {item.label}
@@ -469,7 +469,7 @@ export function CatalystHeader() {
                         fontSize: '0.84rem',
                         fontWeight: 500,
                         fontFamily: "'Inter', sans-serif",
-                        color: 'var(--cp-t3)',
+                        color: '#6B778C',
                         borderRadius: '6px',
                         display: 'flex',
                         alignItems: 'center',
@@ -518,19 +518,19 @@ export function CatalystHeader() {
                     style={{
                       width: '36px',
                       height: '50px',
-                      color: location.pathname.startsWith('/admin') ? 'var(--cp-blue-text)' : 'var(--cp-t3)',
+                      color: location.pathname.startsWith('/admin') ? '#0052CC' : '#6B778C',
                       background: location.pathname.startsWith('/admin') ? 'var(--cp-hover)' : 'transparent',
                       border: 'none',
                       cursor: 'pointer',
                       borderRadius: '8px',
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = 'var(--cp-t1)';
+                      e.currentTarget.style.color = '#172B4D';
                       e.currentTarget.style.background = 'var(--cp-hover)';
                     }}
                     onMouseLeave={(e) => {
                       const isOnAdmin = location.pathname.startsWith('/admin');
-                      e.currentTarget.style.color = isOnAdmin ? 'var(--cp-blue-text)' : 'var(--cp-t3)';
+                      e.currentTarget.style.color = isOnAdmin ? '#0052CC' : '#6B778C';
                       e.currentTarget.style.background = isOnAdmin ? 'var(--cp-hover)' : 'transparent';
                     }}
                     onClick={() => navigate('/admin/users')}
@@ -624,7 +624,7 @@ export function CatalystHeader() {
                   style={{
                     background: 'linear-gradient(135deg, #0052CC, #6366F1)',
                     color: '#FFFFFF',
-                    border: '2px solid transparent',
+                    border: '3px solid transparent',
                     transition: 'border-color 150ms ease, box-shadow 150ms ease',
                   }}
                   onMouseEnter={(e) => {
@@ -659,8 +659,8 @@ export function CatalystHeader() {
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px' }}>
-                    <p style={{ fontSize: '14px', fontWeight: 500, color: 'var(--cp-t1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
-                    <p style={{ fontSize: '12px', color: 'var(--cp-t3)' }}>User Account</p>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
+                    <p style={{ fontSize: '12px', color: '#6B778C' }}>User Account</p>
                   </div>
 
                   {[
