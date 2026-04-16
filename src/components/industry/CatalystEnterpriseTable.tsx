@@ -556,20 +556,19 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
           />
         </td>
       )}
-      {/* Checkbox - NO visible divider in dark mode */}
       {showCheckboxes && (
         <td className="py-3 px-4 w-12" onClick={(e) => e.stopPropagation()}>
-          <input
-            type="checkbox"
+          <Checkbox
             checked={selectedRows.includes(row.id)}
-            onChange={(e) => handleCheckboxChange(e, row.id)}
-            className={cn(
-              "w-4 h-4 rounded transition-all cursor-pointer",
-              "border-[var(--table-container-border)] text-[var(--brand-primary-hex)]",
-              "focus:ring-[var(--brand-primary-hex)] focus:ring-offset-0",
-              "bg-[var(--table-toolbar-input-bg)]",
-              "hover:border-[var(--brand-primary-hex)]"
-            )}
+            onCheckedChange={(checked) => {
+              if (onSelectionChange) {
+                const newSelection = checked
+                  ? [...selectedRows, row.id]
+                  : selectedRows.filter(id => id !== row.id);
+                onSelectionChange(newSelection);
+              }
+            }}
+            className="border-[#2E2E2E] data-[state=checked]:bg-[#2563eb] data-[state=checked]:border-[#2563eb]"
           />
         </td>
       )}
@@ -703,16 +702,14 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
                 )}
                 {showCheckboxes && (
                   <th className="py-3 px-4 w-12 text-center">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={processedData.length > 0 && selectedRows.length === processedData.length}
-                      onChange={handleSelectAll}
-                      className={cn(
-                        "w-4 h-4 rounded transition-all cursor-pointer",
-                        "border-[var(--table-container-border)] text-[var(--brand-primary-hex)]",
-                        "focus:ring-[var(--brand-primary-hex)] focus:ring-offset-0",
-                        "bg-[var(--table-toolbar-input-bg)]"
-                      )}
+                      onCheckedChange={(checked) => {
+                        if (onSelectionChange) {
+                          onSelectionChange(checked ? processedData.map(row => row.id) : []);
+                        }
+                      }}
+                      className="border-[#2E2E2E] data-[state=checked]:bg-[#2563eb] data-[state=checked]:border-[#2563eb]"
                     />
                   </th>
                 )}
