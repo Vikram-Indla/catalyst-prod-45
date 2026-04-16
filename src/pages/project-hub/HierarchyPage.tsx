@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo, useCallback, useRef } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import {

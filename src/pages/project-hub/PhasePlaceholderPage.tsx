@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { LucideIcon, List } from 'lucide-react';
 
 interface PhasePageProps {
