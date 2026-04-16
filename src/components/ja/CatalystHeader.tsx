@@ -64,6 +64,7 @@ export function CatalystHeader() {
   }, []);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [avatarImgError, setAvatarImgError] = useState(false);
   const [notifPanelOpen, setNotifPanelOpen] = useState(false);
   const { data: rawUnreadCount = 0 } = useUnreadCount();
   const debouncedUnreadCount = useDebouncedValue(rawUnreadCount, BADGE_DEBOUNCE_MS);
