@@ -16,7 +16,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 

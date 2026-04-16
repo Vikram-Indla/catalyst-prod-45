@@ -16,7 +16,7 @@ import { PageChrome } from '@/components/layout/PageChrome';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AlertTriangle, Search, Wallet, BarChart3, GitBranch, Lock, Home, Calendar } from 'lucide-react';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { cn } from '@/lib/utils';
 import { useBudgetData, formatCurrency, type BudgetPeriod } from '@/hooks/budget/useBudgetData';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -241,10 +241,7 @@ export default function BudgetPlannerPage() {
     <PageChrome hideHeader>
       <div className="budget-module flex flex-col h-full bg-[hsl(var(--background))]">
         {/* Header — matches Risk Register pattern */}
-        <CommandCenterHeader
-          title="Budget Planner"
-          subtitle={`Financial planning & scenario modeling — ${getPeriodLabel()}`}
-        />
+        <CatalystPageHeader title="Budget Planner" />
 
         {/* Floating strip: Tabs + Search */}
         <div className="px-6 pt-3 pb-1" style={{ backgroundColor: 'hsl(var(--muted))' }}>
