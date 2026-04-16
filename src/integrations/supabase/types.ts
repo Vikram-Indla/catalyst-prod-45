@@ -1542,6 +1542,7 @@ export type Database = {
           id: string
           issue_key: string
           issue_type: string
+          jira_last_modified_at: string | null
           last_modified_by_system: string
           parent_id: string | null
           priority: string | null
@@ -1570,6 +1571,7 @@ export type Database = {
           id?: string
           issue_key: string
           issue_type?: string
+          jira_last_modified_at?: string | null
           last_modified_by_system?: string
           parent_id?: string | null
           priority?: string | null
@@ -1598,6 +1600,7 @@ export type Database = {
           id?: string
           issue_key?: string
           issue_type?: string
+          jira_last_modified_at?: string | null
           last_modified_by_system?: string
           parent_id?: string | null
           priority?: string | null
