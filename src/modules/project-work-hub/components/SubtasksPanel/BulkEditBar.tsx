@@ -35,19 +35,19 @@ export function BulkEditBar({
         {selectedCount} of {totalCount} selected
       </div>
 
-      <StatusPopover status="" statusCategory="" onChange={onStatusChange}>
+      <StatusPopover status="" statusCategory="" showActive={false} onChange={onStatusChange}>
         <button type="button" className="sp-bulkbar-btn" disabled={disabled}>
           Change status
         </button>
       </StatusPopover>
 
-      <PriorityPopover priority="" onChange={onPriorityChange}>
+      <PriorityPopover priority="" showActive={false} onChange={onPriorityChange}>
         <button type="button" className="sp-bulkbar-btn" disabled={disabled}>
           Change priority
         </button>
       </PriorityPopover>
 
-      <AssigneePopover currentAccountId={null} onChange={onAssigneeChange}>
+      <AssigneePopover currentAccountId={null} showActive={false} onChange={onAssigneeChange}>
         <button type="button" className="sp-bulkbar-btn" disabled={disabled}>
           Change assignee
         </button>

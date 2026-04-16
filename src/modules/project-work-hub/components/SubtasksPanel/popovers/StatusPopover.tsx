@@ -8,6 +8,8 @@ interface StatusPopoverProps {
   statusCategory: string;
   onChange: (status: string, category: 'todo' | 'in_progress' | 'done') => void;
   children: React.ReactNode;
+  /** When false, no "current value" check mark is rendered — use in bulk-edit contexts. */
+  showActive?: boolean;
 }
 
 const CATEGORY_TO_CHIP: Record<string, string> = {
@@ -16,7 +18,7 @@ const CATEGORY_TO_CHIP: Record<string, string> = {
   done: 'sp-status-btn--done',
 };
 
-export function StatusPopover({ status, onChange, children }: StatusPopoverProps) {
+export function StatusPopover({ status, onChange, children, showActive = true }: StatusPopoverProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -33,7 +35,7 @@ export function StatusPopover({ status, onChange, children }: StatusPopoverProps
           <div key={group.category} className="sp-pop-group">
             <div className="sp-pop-group-label">{group.groupLabel}</div>
             {group.statuses.map((s) => {
-              const active = s === status;
+              const active = showActive && s === status;
               return (
                 <button
                   key={s}

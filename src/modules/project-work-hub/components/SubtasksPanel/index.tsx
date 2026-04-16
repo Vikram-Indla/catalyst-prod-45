@@ -399,7 +399,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   const handleViewInSearch = () => {
     const pk = projectKey || storyKey.split('-')[0];
     if (!pk) return;
-    window.location.href = `/project-hub/${pk}/hierarchy/allwork`;
+    window.location.href = `/project-hub/${pk}/hierarchy/allwork?parent=${encodeURIComponent(storyKey)}`;
   };
 
   return (
