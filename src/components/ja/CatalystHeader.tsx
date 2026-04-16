@@ -686,8 +686,8 @@ export function CatalystHeader() {
                   }}
                 >
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '8px' }}>
-                    <p style={{ fontSize: '14px', fontWeight: 500, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
-                    <p style={{ fontSize: '12px', color: '#6B778C' }}>User Account</p>
+                    <p style={{ fontSize: '14px', fontWeight: 500, color: isDark ? '#EDEDED' : '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{userProfile?.full_name || user?.email}</p>
+                    <p style={{ fontSize: '12px', color: isDark ? '#878787' : '#6B778C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.email}</p>
                   </div>
 
                   {[
