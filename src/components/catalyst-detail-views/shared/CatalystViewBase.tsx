@@ -212,10 +212,11 @@ export function CatalystViewBase({
         {/* ── A. TOP BAR ─────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '12px 16px 0 16px', minHeight: 40, flexShrink: 0,
+          padding: '10px 20px', minHeight: 44, flexShrink: 0,
+          borderBottom: '1px solid #EBECF0',
         }}>
           {/* Breadcrumb — Jira pattern: Project / ParentKey / ItemKey */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#6B778C', minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
             {/* Full-page back button */}
             {fullPageMode && (
               <button onClick={handleBack} style={{
