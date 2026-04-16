@@ -16,6 +16,7 @@ const RAGAuditPage = ENABLE_AI ? lazy(() => import("../pages/RAGAuditPage")) : (
 const WikiAdminPage = ENABLE_WIKI ? lazy(() => import("../pages/admin/WikiAdminPage")) : () => <FeatureComingSoon title="Wiki Admin" />;
 const WikiDiagnosticPage = ENABLE_WIKI ? lazy(() => import("../pages/admin/WikiDiagnosticPage")) : () => <FeatureComingSoon title="Wiki Diagnostic" />;
 const AdminDiagnosticPage = lazy(() => import("../pages/admin/AdminDiagnosticPage"));
+const JiraActivitySyncPage = lazy(() => import("../pages/admin/JiraActivitySyncPage"));
 
 const Resource360PageNew = lazy(() => import("../components/resource360/Resource360PageNew"));
 const Resource360MemberDetail = lazy(() => import("../pages/Resource360MemberDetail"));
@@ -869,6 +870,7 @@ export default function FullAppRoutes() {
           <Route path="workhub/user-mapping" element={<S><WorkHubUserMappingPage /></S>} />
           <Route path="workhub/data-scope" element={<S><WorkHubDataScopePage /></S>} />
           <Route path="workhub/sync-logs" element={<S><WorkHubSyncLogs /></S>} />
+          <Route path="workhub/activity-sync" element={<S><JiraActivitySyncPage /></S>} />
           <Route path="workhub/*" element={<Navigate to="/admin/workhub/jira-connection" replace />} />
           <Route path="kb" element={<S><KBAdminPage /></S>} />
           <Route path="kb/*" element={<S><KBAdminPage /></S>} />
