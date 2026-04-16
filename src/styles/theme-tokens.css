@@ -89,6 +89,7 @@
 [data-theme="dark"] {
   /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
   --cp-bg:              #0A0A0A;
+  --cp-bg-canvas:       #0A0A0A;
   --cp-bg-sidebar-hdr:  #0A0A0A;
   --cp-bg-sunken:       #0A0A0A;
   --cp-float:           #1A1A1A;
