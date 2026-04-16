@@ -51,8 +51,12 @@ export function UserAvatar() {
               <img
                 src={profile!.avatarUrl!}
                 alt={name}
+                referrerPolicy="no-referrer"
                 className="w-full h-full object-cover rounded-full"
-                onError={() => setImgError(true)}
+                onError={(e) => {
+                  console.warn('[UserAvatar] Image failed to load:', profile!.avatarUrl, e);
+                  setImgError(true);
+                }}
               />
             ) : (
               <span
