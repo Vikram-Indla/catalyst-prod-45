@@ -106,7 +106,9 @@ export default function KanbanPage() {
     return result;
   }, [initiatives, searchTerm, activeFilter, currentUserId]);
 
-  const selectedInitiative = selectedId ? initiatives.find(i => i.id === selectedId) : null;
+  const selectedInitiative = useMemo(() => selectedId ? initiatives.find(i => i.id === selectedId) : null, [selectedId, initiatives]);
+
+  const memoizedTimelineInitiatives = useMemo(() => filtered.map(toTimelineInitiative), [filtered]);
 
   const handleCardClick = useCallback((initiative: Initiative) => {
     setSelectedId(initiative.id);
@@ -164,7 +166,7 @@ export default function KanbanPage() {
       {selectedInitiative && (
         <InitiativeDetailPanel
           initiative={toTimelineInitiative(selectedInitiative)}
-          initiatives={filtered.map(toTimelineInitiative)}
+          initiatives={memoizedTimelineInitiatives}
           onClose={handleCloseDetail}
         />
       )}

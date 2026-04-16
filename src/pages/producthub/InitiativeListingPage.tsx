@@ -602,6 +602,8 @@ export default function InitiativeListingPage() {
     invalidateAll();
   }, [invalidateAll]);
 
+  const memoizedTimelineInitiatives = useMemo(() => filtered.map(toTimelineInitiative), [filtered]);
+
   const handleRoadmapToggle = useCallback(async (id: string, currentValue: boolean) => {
     if (isNative(id)) {
       await typedQuery('ph_initiatives').update({ on_roadmap: !currentValue, updated_at: new Date().toISOString() }).eq('id', id);
@@ -725,7 +727,7 @@ export default function InitiativeListingPage() {
       {detailOpen && detailInitiative && (
         <InitiativeDetailPanel
           initiative={toTimelineInitiative(detailInitiative)}
-          initiatives={filtered.map(toTimelineInitiative)}
+          initiatives={memoizedTimelineInitiatives}
           onClose={() => setDetailOpen(false)}
         />
       )}

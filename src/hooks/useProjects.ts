@@ -41,6 +41,8 @@ export function useProject(projectId: string) {
       return data as Project;
     },
     enabled: !!projectId,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
   });
 }
 
@@ -58,6 +60,8 @@ export function useProjects() {
       if (error) throw error;
       return data as Project[];
     },
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
   });
 }
 

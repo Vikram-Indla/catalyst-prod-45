@@ -311,6 +311,27 @@ export function InitiativeTable({
 
   useEffect(() => { return () => { if (clickTimerRef.current) clearTimeout(clickTimerRef.current); }; }, []);
 
+  // Pre-compute group headers (O(n) single pass instead of O(n²) inside render)
+  const memoizedGroupHeaders = useMemo(() => {
+    const headers = new Map<number, { label: string; count: number }>();
+    if (!groupBy || groupBy === 'none') return headers;
+    const rows = data; // use source data since row order mirrors table
+    let lastKey = '';
+    let groupStart = 0;
+    for (let i = 0; i <= rows.length; i++) {
+      const key = i < rows.length ? getGroupKey(rows[i], groupBy) : '';
+      if (key !== lastKey && i > 0) {
+        headers.set(groupStart, { label: getGroupLabel(groupBy, lastKey), count: i - groupStart });
+        groupStart = i;
+      }
+      if (i === 0 || key !== lastKey) {
+        lastKey = key;
+        groupStart = i;
+      }
+    }
+    return headers;
+  }, [data, groupBy]);
+
   if (loading) {
     return (
       <div style={{ flex: 1, overflow: 'hidden' }}>
@@ -402,21 +423,6 @@ export function InitiativeTable({
             <Droppable droppableId="initiative-table" type="ROW">
               {(provided) => {
                 const rows = table.getRowModel().rows;
-                const groupHeaders: globalThis.Map<number, { label: string; count: number }> = new globalThis.Map();
-                if (groupBy && groupBy !== 'none') {
-                  let lastKey = '';
-                  rows.forEach((row, idx) => {
-                    const key = getGroupKey(row.original, groupBy);
-                    if (key !== lastKey) {
-                      let count = 0;
-                      for (let j = idx; j < rows.length; j++) {
-                        if (getGroupKey(rows[j].original, groupBy) === key) count++; else break;
-                      }
-                      groupHeaders.set(idx, { label: getGroupLabel(groupBy, key), count });
-                      lastKey = key;
-                    }
-                  });
-                }
                 const visibleColCount = table.getVisibleFlatColumns().length;
 
                 return (
@@ -425,7 +431,7 @@ export function InitiativeTable({
                       const selected = row.getIsSelected();
                       const isCancelled = row.original.status === 'cancelled';
                       const isFocused = idx === focusedRowIndex;
-                      const groupHeader = groupHeaders.get(idx);
+                      const groupHeader = memoizedGroupHeaders.get(idx);
                       return (
                         <Draggable key={row.id} draggableId={row.id} index={idx}>
                           {(dragProvided, snapshot) => (

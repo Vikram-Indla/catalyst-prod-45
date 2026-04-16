@@ -2,6 +2,7 @@
  * CellRenderers — V12 Hybrid Precision with canonical Jira SVG icons
  */
 
+import React from 'react';
 import { format, differenceInDays } from 'date-fns';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
@@ -60,15 +61,15 @@ const DEFAULT_TYPE_SVG = (
 );
 
 /* ── Status Cell ── */
-export function StatusCell({ status }: { status: InitiativeStatus }) {
+export const StatusCell = React.memo(function StatusCell({ status }: { status: InitiativeStatus }) {
   const s = STATUS_DISPLAY[status];
   return (
     <StatusBadge status={s.label} />
   );
-}
+});
 
 /* ── Priority Cell — V12: Colored horizontal bars ── */
-export function PriorityCell({ score }: { score: number | null }) {
+export const PriorityCell = React.memo(function PriorityCell({ score }: { score: number | null }) {
   const filled = score === null ? 0 : score >= 4.0 ? 4 : score >= 3.0 ? 3 : score >= 2.0 ? 2 : score >= 1.0 ? 1 : 0;
   const colors = ['#4ADE80', '#FBBF24', '#F97316', '#EF4444'];
   const fillColor = filled === 0 ? '#E2E8F0' : colors[Math.min(filled - 1, 3)];
@@ -82,10 +83,10 @@ export function PriorityCell({ score }: { score: number | null }) {
       ))}
     </div>
   );
-}
+});
 
 /* ── Score Cell — V12: Green vertical bars ── */
-export function ScoreCell({ score }: { score: number | null }) {
+export const ScoreCell = React.memo(function ScoreCell({ score }: { score: number | null }) {
   const filled = score === null ? 0 : Math.min(5, Math.max(0, Math.round(score)));
   const heights = [4, 6, 8, 10, 13, 16];
   return (
@@ -98,10 +99,10 @@ export function ScoreCell({ score }: { score: number | null }) {
       ))}
     </div>
   );
-}
+});
 
 /* ── Assignee Cell ── */
-export function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarUrl?: string }) {
+export const AssigneeCell = React.memo(function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarUrl?: string }) {
   if (!name) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -122,10 +123,10 @@ export function AssigneeCell({ name, avatarUrl }: { name: string | null; avatarU
       <span className="pb-assignee-name">{name}</span>
     </div>
   );
-}
+});
 
 /* ── Date Cell ── */
-export function DateCell({ date, status }: { date: string | null; status?: InitiativeStatus }) {
+export const DateCell = React.memo(function DateCell({ date, status }: { date: string | null; status?: InitiativeStatus }) {
   if (!date) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
   const parsed = new Date(date);
   if (isNaN(parsed.getTime())) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
@@ -151,10 +152,10 @@ export function DateCell({ date, status }: { date: string | null; status?: Initi
       {formatted}
     </span>
   );
-}
+});
 
 /* ── Progress Cell ── */
-export function ProgressCell({ value, status }: { value: number; status?: InitiativeStatus }) {
+export const ProgressCell = React.memo(function ProgressCell({ value, status }: { value: number; status?: InitiativeStatus }) {
   const clamped = Math.min(Math.max(value, 0), 100);
   const done = status === 'done' || clamped >= 100;
   return (
@@ -165,32 +166,32 @@ export function ProgressCell({ value, status }: { value: number; status?: Initia
       <span className="pb-progress-label" style={{ minWidth: 28 }}>{clamped}%</span>
     </div>
   );
-}
+});
 
 /* ── EA Review Cell ── */
-export function EACell({ value }: { value?: boolean | null }) {
+export const EACell = React.memo(function EACell({ value }: { value?: boolean | null }) {
   if (value === true) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-danger)', background: 'var(--pb-danger-bg)', padding: '2px 8px', borderRadius: 4 }}>Required</span>;
   if (value === false) return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-success)', background: 'var(--pb-success-bg)', padding: '2px 8px', borderRadius: 4 }}>Not Required</span>;
   return <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--pb-warning)', background: 'var(--pb-warning-bg)', padding: '2px 8px', borderRadius: 4 }}>Pending</span>;
-}
+});
 
 /* ── Quarter Cell ── */
-export function QuarterCell({ value }: { value: string | null }) {
+export const QuarterCell = React.memo(function QuarterCell({ value }: { value: string | null }) {
   if (!value) return <span style={{ color: '#94A3B8', fontSize: 14 }}>—</span>;
   return <span className="pb-quarter">{value}</span>;
-}
+});
 
 /* ── ID Cell ── */
-export function IDCell({ value }: { value: string }) {
+export const IDCell = React.memo(function IDCell({ value }: { value: string }) {
   return <span className="pb-id">{value}</span>;
-}
+});
 
 /* ── Type Icon Cell — canonical Jira SVGs ── */
-export function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
+export const TypeIconCell = React.memo(function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
   const config = TYPE_SVG_MAP[typeKey || ''];
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, width: 16, height: 16 }} title={config?.label || typeKey?.replace(/_/g, ' ') || 'Unknown'}>
       {config?.svg || DEFAULT_TYPE_SVG}
     </span>
   );
-}
+});
