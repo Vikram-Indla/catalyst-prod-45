@@ -289,15 +289,17 @@ export function CatalystViewBase({
               onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
               onMouseLeave={e => (e.currentTarget.style.background = 'none')}
             >
-              <Share2 size={14} /> <span style={{ fontSize: 12 }}>Share</span>
+              <Share2 size={16} /> <span>Share</span>
             </button>
 
             {moreMenuItems && moreMenuItems.length > 0 && (
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
-                <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={hoverBtn}
+                <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
+                  ...hoverBtn, background: showDotsMenu ? '#F4F5F7' : 'none', padding: '6px 8px',
+                }}
                   onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >···</button>
+                  onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
+                ><MoreHorizontal size={18} /></button>
                 {showDotsMenu && (
                   <div style={{
                     position: 'absolute', right: 0, top: 32, background: '#FFF',
