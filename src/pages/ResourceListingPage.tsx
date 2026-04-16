@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import ExportWorkItems from '@/components/resources/ExportWorkItems';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useIsDark } from '@/components/strategy/themes/useIsDark';
 
 /* ── Types ── */
@@ -73,11 +74,11 @@ function useTokens(dk: boolean) {
     pageBg:       dk ? '#0A0A0A' : '#F8FAFC',
     surfaceBg:    dk ? '#0A0A0A' : '#FFFFFF',
     elevatedBg:   dk ? '#1A1A1A' : '#FFFFFF',
-    headerBg:     dk ? '#1A1A1A' : '#FAFAFA',
+    headerBg:     dk ? '#111111' : '#FAFAFA',
     hoverBg:      dk ? '#1F1F1F' : '#F8FAFC',
     border:       dk ? '#2E2E2E' : '#E2E8F0',
     borderSubtle: dk ? '#292929' : '#f3f4f6',
-    borderInput:  dk ? '#454545' : '#B0B8C4',
+    borderInput:  dk ? '#454545' : '#DDDEE1',
     borderFocus:  '#2563EB',
     text1:        dk ? '#EDEDED' : '#0F172A',
     text2:        dk ? '#A1A1A1' : '#475569',
@@ -88,13 +89,13 @@ function useTokens(dk: boolean) {
     badgeBg:      dk ? '#1A1A1A' : '#F1F5F9',
     badgeText:    dk ? '#A1A1A1' : '#475569',
     pillBg:       dk ? '#1A1A1A' : '#FFFFFF',
-    pillBorder:   dk ? '#454545' : '#e5e7eb',
+    pillBorder:   dk ? '#454545' : '#DDDEE1',
     pillActiveBorder: dk ? '#EDEDED' : '#111',
     pillActiveText:   dk ? '#EDEDED' : '#111',
     pillInactiveText: dk ? '#A1A1A1' : '#6b7280',
-    pillHoverBg:  dk ? '#1A1A1A' : '#E2E8F0',
+    pillHoverBg:  dk ? '#1A1A1A' : '#F1F5F9',
     pillHoverText: dk ? '#EDEDED' : '#1E293B',
-    typePillBg:       dk ? '#1A1A1A' : '#F1F5F9',
+    typePillBg:       dk ? '#1A1A1A' : '#F8FAFC',
     typePillActiveBg: dk ? '#1A1A1A' : '#FFFFFF',
     shimmerFrom:  dk ? '#1A1A1A' : '#F1F5F9',
     shimmerMid:   dk ? '#1A1A1A' : '#E2E8F0',
@@ -102,8 +103,6 @@ function useTokens(dk: boolean) {
     tooltipText:  dk ? '#EDEDED' : '#f1f5f9',
     divider:      dk ? '#292929' : '#E2E8F0',
     focusShadow:  dk ? '0 0 0 3px rgba(37,99,235,.2)' : '0 0 0 3px rgba(37,99,235,.1)',
-    onsite:       dk ? '#4ade80' : '#16a34a',
-    offShore:     dk ? '#fbbf24' : '#d97706',
   }), [dk]);
 }
 
@@ -240,339 +239,326 @@ export default function ResourceListingPage() {
   };
 
   return (
-    <div style={{ padding: '24px 28px', fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: t.pageBg }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
-        <h1 style={{ fontSize: '20px', fontWeight: 800, color: t.text1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Resources</h1>
-        <span style={{
-          fontSize: '12px', fontWeight: 700, color: t.badgeText,
-          background: t.badgeBg, borderRadius: '12px', padding: '3px 10px',
-        }}>
-          {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
-        </span>
-      </div>
+    <div style={{ fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: t.pageBg }}>
+      {/* ═══ Canonical Header ═══ */}
+      <CatalystPageHeader
+        title="Resources"
+        actions={<ExportWorkItems deptFilter={deptFilter} />}
+      />
 
-      {/* Toolbar: Search + Dept Pills + Export */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        {/* Search */}
-        <div style={{ position: 'relative', width: '100%', maxWidth: '420px' }}>
-          <Search size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: t.text3 }} />
-          <input
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search by name, role, or department..."
-            style={{
-              width: '100%', padding: '10px 14px 10px 40px',
-              fontSize: '13.5px', fontWeight: 500,
-              background: t.inputBg, border: `1.5px solid ${t.borderInput}`,
-              borderRadius: '8px', outline: 'none', color: t.text1,
-            }}
-            onFocus={e => { e.currentTarget.style.borderColor = t.borderFocus; e.currentTarget.style.boxShadow = t.focusShadow; }}
-            onBlur={e => { e.currentTarget.style.borderColor = t.borderInput; e.currentTarget.style.boxShadow = 'none'; }}
-          />
-        </div>
-
-        {/* Department pills */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); setPage(1); }}
-            label="All" tokens={t} />
-          {deptNames.map(d => (
-            <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); setPage(1); }}
-              label={`${d} (${deptCounts[d]})`} tokens={t} />
-          ))}
-
-          <div style={{ width: 1, height: 24, background: t.divider, margin: '0 4px' }} />
-
-          <ExportWorkItems deptFilter={deptFilter} />
-        </div>
-      </div>
-
-      {/* Resource Type Filter Pills */}
-      <div style={{ display: 'flex', gap: 8, padding: '12px 0 4px 0', alignItems: 'center' }}>
-        <span style={{
-          fontSize: 11, fontWeight: 600, color: t.text2,
-          textTransform: 'uppercase', letterSpacing: '0.05em',
-          marginRight: 4, alignSelf: 'center',
-        }}>
-          Resource Type
-        </span>
-        {([
-          { key: 'all' as const, label: 'All', accentColor: isDark ? '#EDEDED' : '#1E293B', tooltip: 'Show all resource types' },
-          { key: 'core' as const, label: 'Core', accentColor: '#0D9488', tooltip: 'Variable + Permanent (org headcount)' },
-          { key: 'project' as const, label: 'Project', accentColor: '#2563EB', tooltip: 'Fixed-term project resources' },
-          { key: 'temporary' as const, label: 'Temporary', accentColor: isDark ? '#A1A1A1' : '#64748B', tooltip: 'Freelance / time-bounded engagements' },
-        ] as const).map(pill => {
-          const isActive = resourceTypeFilter === pill.key;
-          const count = resourceTypeCounts[pill.key];
-          const showBadge = pill.key !== 'all' && count > 0;
-          return (
-            <button
-              key={pill.key}
-              title={pill.tooltip}
-              onClick={() => { setResourceTypeFilter(pill.key); setPage(1); }}
+      <div style={{ padding: '0 24px 24px', flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minHeight: 0 }}>
+        {/* ═══ Search + Department Pills ═══ */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
+          {/* Search — 36px height, 4px radius */}
+          <div style={{ position: 'relative', width: '100%', maxWidth: '320px' }}>
+            <Search size={14} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: t.text3 }} />
+            <input
+              value={search}
+              onChange={e => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search by name, role, or department..."
               style={{
-                height: 28, padding: '8px 12px', borderRadius: 14,
-                fontSize: 13, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
-                transition: 'all 150ms ease',
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                border: isActive ? `1.5px solid ${pill.accentColor}` : `1px solid ${t.pillBorder}`,
-                background: isActive ? t.typePillActiveBg : t.typePillBg,
-                color: isActive ? pill.accentColor : t.text2,
+                width: '100%', height: 36, padding: '0 12px 0 32px',
+                fontSize: '13px', fontWeight: 500,
+                background: t.inputBg, border: `1px solid ${t.borderInput}`,
+                borderRadius: '4px', outline: 'none', color: t.text1,
+                boxSizing: 'border-box',
               }}
-              onMouseEnter={e => {
-                if (!isActive) {
-                  e.currentTarget.style.background = t.pillHoverBg;
-                  e.currentTarget.style.color = t.pillHoverText;
-                }
-              }}
-              onMouseLeave={e => {
-                if (!isActive) {
-                  e.currentTarget.style.background = t.typePillBg;
-                  e.currentTarget.style.color = t.text2;
-                }
-              }}
-            >
-              {pill.label}
-              {showBadge && (
-                <span style={{
-                  background: isActive ? (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)') : t.badgeBg,
-                  color: isActive ? 'inherit' : t.text3,
-                  borderRadius: 12, padding: '1px 6px',
-                  fontSize: 11, fontWeight: 600, marginLeft: 4,
-                }}>
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+              onFocus={e => { e.currentTarget.style.borderColor = t.borderFocus; e.currentTarget.style.boxShadow = t.focusShadow; }}
+              onBlur={e => { e.currentTarget.style.borderColor = t.borderInput; e.currentTarget.style.boxShadow = 'none'; }}
+            />
+          </div>
 
-      {/* Table */}
-      <div style={{
-        border: `1px solid ${t.border}`, borderRadius: '8px', overflow: 'hidden',
-        background: t.surfaceBg, marginTop: '16px', flex: 1, minHeight: 0,
-        display: 'flex', flexDirection: 'column',
-      }}>
-        <div style={{ overflowX: 'auto', flex: 1, minHeight: 0 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                {COLUMNS.map(col => (
-                  <th
-                    key={col.key}
-                    onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
-                    style={{
-                      background: t.headerBg, padding: '0 16px', height: '40px',
-                      fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
-                      letterSpacing: '0.07em', color: t.text2,
-                      borderBottom: `0.75px solid ${t.border}`,
-                      cursor: col.key !== 'actions' ? 'pointer' : 'default',
-                      textAlign: col.center ? 'center' : 'left',
-                      minWidth: col.minWidth, width: col.width,
-                      userSelect: 'none', whiteSpace: 'nowrap',
-                    }}
-                  >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                      {col.label}
-                      {col.key !== 'actions' && sortKey === col.key && (
-                        sortDir === 'asc'
-                          ? <ChevronUp size={12} strokeWidth={2.5} />
-                          : <ChevronDown size={12} strokeWidth={2.5} />
-                      )}
-                    </span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <tr key={i}>
-                    {COLUMNS.map(col => (
-                      <td key={col.key} style={{ padding: '8px 12px', height: '50px', maxHeight: '50px' }}>
-                        <div style={{
-                          height: '14px', borderRadius: '4px',
-                          background: `linear-gradient(90deg, ${t.shimmerFrom} 25%, ${t.shimmerMid} 50%, ${t.shimmerFrom} 75%)`,
-                          backgroundSize: '200% 100%',
-                          animation: 'r360shimmer 1.5s infinite',
-                          width: col.key === 'actions' ? '100px' : '60%',
-                        }} />
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              ) : sorted.length === 0 ? (
-                <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
-                    <Search size={32} style={{ color: t.textDim, margin: '0 auto 12px' }} />
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: t.text1, marginBottom: '4px' }}>No resources match your search.</div>
-                    <div style={{ fontSize: '12px', color: t.text3 }}>Try adjusting your search or filters</div>
-                  </td>
-                </tr>
-              ) : pageData.map(r => (
-                <tr
-                  key={r.rid}
-                  className="r360-row"
-                  style={{ borderBottom: `0.75px solid ${t.borderSubtle}`, cursor: 'pointer', height: '48px' }}
-                  onClick={() => navTo(r.id, 'ring')}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = t.hoverBg; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                >
-                  {/* RESOURCE */}
-                  <td style={{ padding: '8px 16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{
-                          fontSize: '13px', fontWeight: 600, color: t.text1,
-                          lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                          maxWidth: '220px',
-                        }}>{r.full_name}</div>
-                        <div style={{ fontSize: '11px', color: t.textMuted, marginTop: 2 }}>RID: {r.rid}</div>
-                      </div>
-                    </div>
-                  </td>
-                  {/* DEPARTMENT */}
-                  <td style={{ padding: '8px 16px' }}>
-                    {r.dept_name ? (
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '6px',
-                        fontSize: '13px', fontWeight: 500, color: t.text2,
-                      }}>
-                        <span style={{
-                          width: '6px', height: '6px', borderRadius: '50%',
-                          background: DEPT_COLORS[r.dept_name] || '#2563EB', flexShrink: 0,
-                        }} />
-                        {r.dept_name}
-                      </span>
-                    ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
-                  </td>
-                  {/* JOB ROLE */}
-                  <td style={{ padding: '8px 16px', fontSize: '13px', fontWeight: 500, color: t.text1 }}>
-                    {r.job_role || '—'}
-                  </td>
-                  {/* ASSIGNMENT */}
-                  <td style={{
-                    padding: '8px 16px', fontSize: '13px', color: t.text2,
-                    maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          {/* Department pills — compact, 1px border, 3px radius */}
+          <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <PillButton active={deptFilter === 'All'} onClick={() => { setDeptFilter('All'); setResourceTypeFilter('all'); setPage(1); }}
+              label="All" tokens={t} />
+            {deptNames.map(d => (
+              <PillButton key={d} active={deptFilter === d} onClick={() => { setDeptFilter(d); setResourceTypeFilter('all'); setPage(1); }}
+                label={`${d} (${deptCounts[d]})`} tokens={t} />
+            ))}
+          </div>
+        </div>
+
+        {/* ═══ Resource Type Filter — compact row ═══ */}
+        <div style={{ display: 'flex', gap: 6, padding: '0 0 8px 0', alignItems: 'center' }}>
+          <span style={{
+            fontSize: 11, fontWeight: 600, color: t.text3,
+            textTransform: 'uppercase', letterSpacing: '0.05em',
+            marginRight: 4,
+          }}>
+            Resource Type
+          </span>
+          {([
+            { key: 'all' as const, label: 'All' },
+            { key: 'core' as const, label: 'Core' },
+            { key: 'project' as const, label: 'Project' },
+            { key: 'temporary' as const, label: 'Temporary' },
+          ] as const).map(pill => {
+            const isActive = resourceTypeFilter === pill.key;
+            const count = resourceTypeCounts[pill.key];
+            const showBadge = pill.key !== 'all' && count > 0;
+            return (
+              <button
+                key={pill.key}
+                onClick={() => { setResourceTypeFilter(pill.key); setPage(1); }}
+                style={{
+                  height: 26, padding: '0 10px', borderRadius: 3,
+                  fontSize: 12, fontWeight: isActive ? 600 : 500, cursor: 'pointer',
+                  transition: 'all 150ms ease',
+                  display: 'inline-flex', alignItems: 'center', gap: 4,
+                  border: isActive ? `1.5px solid ${isDark ? '#EDEDED' : '#111'}` : `1px solid ${t.pillBorder}`,
+                  background: isActive ? t.typePillActiveBg : 'transparent',
+                  color: isActive ? (isDark ? '#EDEDED' : '#111') : t.text2,
+                }}
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = t.pillHoverBg;
+                    e.currentTarget.style.color = t.pillHoverText;
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = t.text2;
+                  }
+                }}
+              >
+                {pill.label}
+                {showBadge && (
+                  <span style={{
+                    background: isActive ? (isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)') : t.badgeBg,
+                    color: isActive ? 'inherit' : t.text3,
+                    borderRadius: 3, padding: '0 5px',
+                    fontSize: 11, fontWeight: 600,
                   }}>
-                    {r.assignment_name || '—'}
-                  </td>
-                  {/* LOCATION */}
-                  <td style={{ padding: '8px 16px' }}>
-                    {r.location_type ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500 }}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* ═══ Table ═══ */}
+        <div style={{
+          border: `1px solid ${t.border}`, borderRadius: '6px', overflow: 'hidden',
+          background: t.surfaceBg, flex: 1, minHeight: 0,
+          display: 'flex', flexDirection: 'column',
+        }}>
+          <div style={{ overflowX: 'auto', flex: 1, minHeight: 0 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <thead>
+                <tr>
+                  {COLUMNS.map(col => (
+                    <th
+                      key={col.key}
+                      onClick={() => col.key !== 'actions' && handleSort(col.key as SortKey)}
+                      style={{
+                        background: t.headerBg, padding: '0 12px', height: '36px',
+                        fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' as const,
+                        letterSpacing: '0.07em', color: t.text2,
+                        borderBottom: `0.75px solid ${t.border}`,
+                        cursor: col.key !== 'actions' ? 'pointer' : 'default',
+                        textAlign: col.center ? 'center' : 'left',
+                        minWidth: col.minWidth, width: col.width,
+                        userSelect: 'none', whiteSpace: 'nowrap',
+                      }}
+                    >
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        {col.label}
+                        {col.key !== 'actions' && sortKey === col.key && (
+                          sortDir === 'asc'
+                            ? <ChevronUp size={12} strokeWidth={2.5} />
+                            : <ChevronDown size={12} strokeWidth={2.5} />
+                        )}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <tr key={i}>
+                      {COLUMNS.map(col => (
+                        <td key={col.key} style={{ padding: '6px 12px', height: '36px', maxHeight: '36px' }}>
+                          <div style={{
+                            height: '12px', borderRadius: '3px',
+                            background: `linear-gradient(90deg, ${t.shimmerFrom} 25%, ${t.shimmerMid} 50%, ${t.shimmerFrom} 75%)`,
+                            backgroundSize: '200% 100%',
+                            animation: 'r360shimmer 1.5s infinite',
+                            width: col.key === 'actions' ? '100px' : '60%',
+                          }} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : sorted.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} style={{ textAlign: 'center', padding: '60px 20px' }}>
+                      <Search size={32} style={{ color: t.textDim, margin: '0 auto 12px' }} />
+                      <div style={{ fontSize: '15px', fontWeight: 700, color: t.text1, marginBottom: '4px' }}>No resources match your search.</div>
+                      <div style={{ fontSize: '12px', color: t.text3 }}>Try adjusting your search or filters</div>
+                    </td>
+                  </tr>
+                ) : pageData.map(r => (
+                  <tr
+                    key={r.rid}
+                    className="r360-row"
+                    style={{ borderBottom: `0.75px solid ${t.borderSubtle}`, cursor: 'pointer', height: '36px', maxHeight: '36px' }}
+                    onClick={() => navTo(r.id, 'ring')}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = t.hoverBg; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                  >
+                    {/* RESOURCE */}
+                    <td style={{ padding: '4px 12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <ResourceAvatar name={r.full_name} avatarUrl={r.avatar_url} />
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{
+                            fontSize: '13px', fontWeight: 600, color: t.text1,
+                            lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            maxWidth: '220px',
+                          }}>{r.full_name}</div>
+                          <div style={{ fontSize: '11px', color: t.textMuted, marginTop: 1 }}>RID: {r.rid}</div>
+                        </div>
+                      </div>
+                    </td>
+                    {/* DEPARTMENT */}
+                    <td style={{ padding: '4px 12px' }}>
+                      {r.dept_name ? (
                         <span style={{
-                          width: '6px', height: '6px', borderRadius: '50%',
-                          background: r.location_type === 'Onsite' ? t.onsite : t.offShore,
-                        }} />
-                        <span style={{ color: r.location_type === 'Onsite' ? t.onsite : t.offShore }}>
+                          display: 'inline-flex', alignItems: 'center', gap: '6px',
+                          fontSize: '13px', fontWeight: 500, color: t.text2,
+                        }}>
+                          <span style={{
+                            width: '6px', height: '6px', borderRadius: '50%',
+                            background: DEPT_COLORS[r.dept_name] || '#2563EB', flexShrink: 0,
+                          }} />
+                          {r.dept_name}
+                        </span>
+                      ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
+                    </td>
+                    {/* JOB ROLE */}
+                    <td style={{ padding: '4px 12px', fontSize: '13px', fontWeight: 500, color: t.text1 }}>
+                      {r.job_role || '—'}
+                    </td>
+                    {/* ASSIGNMENT */}
+                    <td style={{
+                      padding: '4px 12px', fontSize: '13px', color: t.text2,
+                      maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                    }}>
+                      {r.assignment_name || '—'}
+                    </td>
+                    {/* LOCATION — neutral text, no semantic colors */}
+                    <td style={{ padding: '4px 12px' }}>
+                      {r.location_type ? (
+                        <span style={{ fontSize: '13px', fontWeight: 500, color: t.text2 }}>
                           {r.location_type}
                         </span>
-                      </span>
-                    ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
-                  </td>
-                  {/* ACTIONS — opacity:0 hover reveal */}
-                  <td style={{ padding: '8px 16px', textAlign: 'center' }}>
-                    <div className="r360-actions" style={{ display: 'inline-flex', gap: '6px', opacity: 0, transition: 'opacity 150ms ease' }}>
-                      <ActionBtn
-                        tooltip="Open Intelligence"
-                        bg="#7C3AED" bgHover="#6D28D9"
-                        shadowColor="rgba(124,58,237,0.2)"
-                        icon={<Zap size={14} strokeWidth={1.9} />}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/project-hub/resources/${r.id}?view=ring&intel=true`);
-                        }}
-                      />
-                      <ActionBtn
-                        tooltip="Resource 360°"
-                        bg={isDark ? '#A1A1A1' : '#1e293b'} bgHover={isDark ? '#EDEDED' : '#0f172a'}
-                        icon={<RotateCw size={14} strokeWidth={1.9} />}
-                        onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
-                      />
-                      <ActionBtn
-                        tooltip="Chronology View"
-                        bg="#2563eb" bgHover="#1d4ed8"
-                        shadowColor="rgba(37,99,235,0.2)"
-                        icon={<Clock size={14} strokeWidth={1.9} />}
-                        onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
-                      />
-                      <ActionBtn
-                        tooltip="Board View"
-                        bg="#0d9488" bgHover="#0f766e"
-                        shadowColor="rgba(13,148,136,0.2)"
-                        icon={<LayoutGrid size={14} strokeWidth={1.9} />}
-                        onClick={(e) => { e.stopPropagation(); navTo(r.id, 'board'); }}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                      ) : <span style={{ fontSize: '13px', color: t.textDim }}>—</span>}
+                    </td>
+                    {/* ACTIONS — opacity:0 hover reveal */}
+                    <td style={{ padding: '4px 12px', textAlign: 'center' }}>
+                      <div className="r360-actions" style={{ display: 'inline-flex', gap: '4px', opacity: 0, transition: 'opacity 150ms ease' }}>
+                        <ActionBtn
+                          tooltip="Open Intelligence"
+                          bg="#7C3AED" bgHover="#6D28D9"
+                          shadowColor="rgba(124,58,237,0.2)"
+                          icon={<Zap size={13} strokeWidth={1.9} />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/project-hub/resources/${r.id}?view=ring&intel=true`);
+                          }}
+                        />
+                        <ActionBtn
+                          tooltip="Resource 360°"
+                          bg={isDark ? '#A1A1A1' : '#1e293b'} bgHover={isDark ? '#EDEDED' : '#0f172a'}
+                          icon={<RotateCw size={13} strokeWidth={1.9} />}
+                          onClick={(e) => { e.stopPropagation(); navTo(r.id, 'ring'); }}
+                        />
+                        <ActionBtn
+                          tooltip="Chronology View"
+                          bg="#2563eb" bgHover="#1d4ed8"
+                          shadowColor="rgba(37,99,235,0.2)"
+                          icon={<Clock size={13} strokeWidth={1.9} />}
+                          onClick={(e) => { e.stopPropagation(); navTo(r.id, 'chronology'); }}
+                        />
+                        <ActionBtn
+                          tooltip="Board View"
+                          bg="#0d9488" bgHover="#0f766e"
+                          shadowColor="rgba(13,148,136,0.2)"
+                          icon={<LayoutGrid size={13} strokeWidth={1.9} />}
+                          onClick={(e) => { e.stopPropagation(); navTo(r.id, 'board'); }}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        {/* Pagination Footer */}
-        {totalPages > 1 && (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            padding: '10px 16px',
-            borderTop: `0.75px solid ${t.border}`,
-            fontSize: 13, color: t.text2,
-          }}>
-            <span>
-              Showing {startIdx + 1}–{endIdx} of {sorted.length} resources
-            </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={safePage === 1}
-                style={{
-                  width: 32, height: 32, borderRadius: 6,
-                  border: `1px solid ${t.border}`, background: 'transparent',
-                  color: safePage === 1 ? t.textDim : t.text2,
-                  cursor: safePage === 1 ? 'not-allowed' : 'pointer',
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13,
-                }}
-              >
-                <ChevronLeft size={14} />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+          {/* Pagination Footer */}
+          {totalPages > 1 && (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '8px 12px',
+              borderTop: `0.75px solid ${t.border}`,
+              fontSize: 12, color: t.text2,
+            }}>
+              <span>
+                Showing {startIdx + 1}–{endIdx} of {sorted.length} resources
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <button
-                  key={n}
-                  onClick={() => setPage(n)}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  disabled={safePage === 1}
                   style={{
-                    width: 32, height: 32, borderRadius: 6,
-                    border: `1px solid ${safePage === n ? '#2563EB' : t.border}`,
-                    background: safePage === n ? '#2563EB' : 'transparent',
-                    color: safePage === n ? '#FFFFFF' : t.text2,
-                    fontWeight: safePage === n ? 600 : 400,
-                    cursor: 'pointer', fontSize: 13,
+                    width: 28, height: 28, borderRadius: 4,
+                    border: `1px solid ${t.border}`, background: 'transparent',
+                    color: safePage === 1 ? t.textDim : t.text2,
+                    cursor: safePage === 1 ? 'not-allowed' : 'pointer',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 12,
                   }}
                 >
-                  {n}
+                  <ChevronLeft size={13} />
                 </button>
-              ))}
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={safePage === totalPages}
-                style={{
-                  width: 32, height: 32, borderRadius: 6,
-                  border: `1px solid ${t.border}`, background: 'transparent',
-                  color: safePage === totalPages ? t.textDim : t.text2,
-                  cursor: safePage === totalPages ? 'not-allowed' : 'pointer',
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 13,
-                }}
-              >
-                <ChevronRight size={14} />
-              </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setPage(n)}
+                    style={{
+                      width: 28, height: 28, borderRadius: 4,
+                      border: `1px solid ${safePage === n ? '#2563EB' : t.border}`,
+                      background: safePage === n ? '#2563EB' : 'transparent',
+                      color: safePage === n ? '#FFFFFF' : t.text2,
+                      fontWeight: safePage === n ? 600 : 400,
+                      cursor: 'pointer', fontSize: 12,
+                    }}
+                  >
+                    {n}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  disabled={safePage === totalPages}
+                  style={{
+                    width: 28, height: 28, borderRadius: 4,
+                    border: `1px solid ${t.border}`, background: 'transparent',
+                    color: safePage === totalPages ? t.textDim : t.text2,
+                    cursor: safePage === totalPages ? 'not-allowed' : 'pointer',
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 12,
+                  }}
+                >
+                  <ChevronRight size={13} />
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <style>{`
@@ -606,13 +592,14 @@ function PillButton({ active, onClick, label, tokens }: { active: boolean; onCli
     <button
       onClick={onClick}
       style={{
-        background: tokens.pillBg,
-        border: `1.5px solid ${active ? tokens.pillActiveBorder : tokens.pillBorder}`,
+        background: active ? tokens.pillBg : 'transparent',
+        border: `1px solid ${active ? tokens.pillActiveBorder : tokens.pillBorder}`,
         color: active ? tokens.pillActiveText : tokens.pillInactiveText,
-        borderRadius: '20px',
-        padding: '8px 18px',
+        borderRadius: '3px',
+        padding: '0 12px',
+        height: 30,
         fontSize: '13px',
-        fontWeight: 500,
+        fontWeight: active ? 600 : 500,
         cursor: 'pointer',
         whiteSpace: 'nowrap',
         transition: 'border-color 150ms, color 150ms, background 150ms',
@@ -625,7 +612,7 @@ function PillButton({ active, onClick, label, tokens }: { active: boolean; onCli
       }}
       onMouseLeave={e => {
         if (!active) {
-          e.currentTarget.style.background = tokens.pillBg;
+          e.currentTarget.style.background = 'transparent';
           e.currentTarget.style.color = tokens.pillInactiveText;
         }
       }}
@@ -643,7 +630,7 @@ function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string |
       <img
         src={avatarUrl}
         alt={name}
-        style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+        style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
         onError={() => setImgError(true)}
       />
     );
@@ -651,10 +638,10 @@ function ResourceAvatar({ name, avatarUrl }: { name: string; avatarUrl: string |
 
   return (
     <div style={{
-      width: 32, height: 32, borderRadius: '50%',
+      width: 28, height: 28, borderRadius: '50%',
       background: hashColor(name), color: '#ffffff',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: '12px', fontWeight: 600, flexShrink: 0,
+      fontSize: '11px', fontWeight: 600, flexShrink: 0,
     }}>
       {getInitials(name)}
     </div>
@@ -680,7 +667,7 @@ function ActionBtn({
             aria-label={tooltip}
             title={tooltip}
             style={{
-              width: 28, height: 28, borderRadius: 6,
+              width: 26, height: 26, borderRadius: 4,
               border: `1px solid ${bg}`, background: 'transparent', color: bg,
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', padding: 0,
