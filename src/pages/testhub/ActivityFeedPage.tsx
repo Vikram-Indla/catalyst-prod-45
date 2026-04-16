@@ -11,7 +11,7 @@ import {
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 
 interface ActivityItem {
   id: string;
@@ -141,12 +141,12 @@ export default function ActivityFeedPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
-      <TestHubPageHeader title="Activity Feed" subtitle="Track all changes and actions across TestHub">
+      <CatalystPageHeader title="Activity Feed" actions={
         <button onClick={fetchActivities}
           style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#334155', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
           <RefreshCw size={16} /> Refresh
         </button>
-      </TestHubPageHeader>
+      } />
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Stats Cards */}

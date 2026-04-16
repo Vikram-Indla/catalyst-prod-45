@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   RefreshCw, Download, AlertTriangle, ChevronRight, Plus, Play, FileText,
 } from 'lucide-react';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
@@ -295,8 +295,9 @@ export default function TestHubDashboardPage() {
       background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif',
     }}>
 
-      {/* ═══ PAGE HEADER — 64px ═══ */}
-      <TestHubPageHeader title="TestHub Dashboard" subtitle="Test execution metrics and activity">
+      {/* ═══ PAGE HEADER — 52px ═══ */}
+      <CatalystPageHeader title="TestHub Dashboard" actions={
+        <>
           <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B' }}>
             Updated {formatLastUpdated()}
           </span>
@@ -316,7 +317,8 @@ export default function TestHubDashboardPage() {
           }}>
             <Download size={13} /> Export
           </button>
-      </TestHubPageHeader>
+        </>
+      } />
 
       {/* ═══ BODY ═══ */}
       <div style={{ flex: 1, minHeight: 0, padding: '12px 16px', overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 12 }}>

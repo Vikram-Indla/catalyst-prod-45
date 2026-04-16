@@ -12,7 +12,7 @@ import {
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { CreateReportModal } from '@/components/testhub/reports/CreateReportModal';
 
 interface Report {
@@ -131,11 +131,11 @@ export default function ReportsListPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
-      <TestHubPageHeader title="Test Reports" subtitle="Generate and export test execution reports">
+      <CatalystPageHeader title="Test Reports" actions={
         <button onClick={() => setShowCreateModal(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: 'pointer', boxShadow: '0 2px 8px rgba(37,99,235,0.25)' }}>
           <Plus size={18} /> New Report
         </button>
-      </TestHubPageHeader>
+      } />
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Stats Cards */}

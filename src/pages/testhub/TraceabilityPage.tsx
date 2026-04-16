@@ -11,7 +11,7 @@ import {
   ChevronRight, ChevronDown, Target, FileText, ArrowRight, Download,
 } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 
 interface Requirement {
@@ -158,7 +158,7 @@ export default function TraceabilityPage() {
 
   return (
     <div className="flex-1 flex flex-col overflow-auto">
-      <TestHubPageHeader title="Traceability" subtitle="Requirements-to-test traceability view">
+      <CatalystPageHeader title="Traceability" actions={
         <button
           onClick={handleExportCSV}
           className="inline-flex items-center gap-2 h-10 px-4 border rounded-lg text-sm font-medium transition-colors bg-background border-border text-foreground hover:bg-muted"
@@ -166,7 +166,7 @@ export default function TraceabilityPage() {
           <Download className="h-4 w-4" />
           Export CSV
         </button>
-      </TestHubPageHeader>
+      } />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
