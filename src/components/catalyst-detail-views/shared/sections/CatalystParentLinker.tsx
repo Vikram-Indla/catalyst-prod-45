@@ -141,59 +141,61 @@ function BusinessRequestParentPicker({
   const done = filtered.filter(c => DONE_STEPS.includes(c.process_step?.toLowerCase()));
 
   return (
-    <div style={{ marginBottom: 16 }} ref={pickerRef}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 6 }}>{rule.pickerLabel}</div>
-
-      {/* Current parent display */}
-      {currentParent ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 4, background: '#F4F5F7' }}>
-          <IssueIcon type="Business Request" size={14} />
-          <span
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#0052CC', cursor: 'pointer' }}
-            onClick={() => onOpenItem?.(currentParent.id)}
-          >{currentParent.request_key}</span>
-          <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-            onClick={() => onOpenItem?.(currentParent.id)}
-          >{currentParent.title}</span>
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
-            <X size={12} />
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
+      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Parent</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Current parent display */}
+        {currentParent ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <IssueIcon type="Business Request" size={16} />
+            <span
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+              onClick={() => onOpenItem?.(currentParent.id)}
+            >{currentParent.request_key}</span>
+            <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              onClick={() => onOpenItem?.(currentParent.id)}
+            >{currentParent.title}</span>
+            <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+              <X size={12} />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowPicker(!showPicker)} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
+            background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
+            cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
+          >
+            <Plus size={12} /> Add parent
           </button>
-        </div>
-      ) : (
-        <button onClick={() => setShowPicker(!showPicker)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
-          background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-          cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
-        >
-          <Plus size={12} /> Add parent
-        </button>
-      )}
+        )}
 
-      {/* Picker dropdown */}
-      {showPicker && (
-        <div style={{
-          marginTop: 4, background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
-          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-        }}>
-          {/* Search */}
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-              <Search size={14} color="#5E6C84" />
-              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
-                style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+        {/* Picker dropdown */}
+        {showPicker && (
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
+            background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
+          }}>
+            {/* Search */}
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
+                <Search size={14} color="#5E6C84" />
+                <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
+                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
+                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+              </div>
+            </div>
+            <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+              {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
+              {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
+              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching business requests</div>}
             </div>
           </div>
-          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
-            {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching business requests</div>}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -308,59 +310,61 @@ function SingleParentPicker({
   const done = filtered.filter(c => c.status_category === 'done');
 
   return (
-    <div style={{ marginBottom: 16 }} ref={pickerRef}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 6 }}>{rule.pickerLabel}</div>
-
-      {/* Current parent display */}
-      {currentParent ? (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 8px', borderRadius: 4, background: '#F4F5F7' }}>
-          <IssueIcon type={currentParent.issue_type} size={14} />
-          <span
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#0052CC', cursor: 'pointer' }}
-            onClick={() => onOpenItem?.(currentParent.id)}
-          >{currentParent.issue_key}</span>
-          <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-            onClick={() => onOpenItem?.(currentParent.id)}
-          >{currentParent.summary}</span>
-          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
-            <X size={12} />
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
+      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 120, flexShrink: 0 }}>Parent</span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Current parent display */}
+        {currentParent ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <IssueIcon type={currentParent.issue_type} size={16} />
+            <span
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+              onClick={() => onOpenItem?.(currentParent.id)}
+            >{currentParent.issue_key}</span>
+            <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+              onClick={() => onOpenItem?.(currentParent.id)}
+            >{currentParent.summary}</span>
+            <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+              <X size={12} />
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowPicker(!showPicker)} style={{
+            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
+            background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
+            cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
+          >
+            <Plus size={12} /> Add parent
           </button>
-        </div>
-      ) : (
-        <button onClick={() => setShowPicker(!showPicker)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
-          background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-          cursor: 'pointer', fontSize: 13, color: '#5E6C84', transition: 'border-color 0.15s, background 0.15s',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
-        >
-          <Plus size={12} /> Add parent
-        </button>
-      )}
+        )}
 
-      {/* Picker dropdown */}
-      {showPicker && (
-        <div style={{
-          marginTop: 4, background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
-          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-        }}>
-          {/* Search */}
-          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-              <Search size={14} color="#5E6C84" />
-              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
-                style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
-              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+        {/* Picker dropdown */}
+        {showPicker && (
+          <div style={{
+            position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
+            background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
+          }}>
+            {/* Search */}
+            <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
+                <Search size={14} color="#5E6C84" />
+                <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
+                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
+              </div>
+            </div>
+            <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+              {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
+              {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
+              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching items</div>}
             </div>
           </div>
-          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
-            {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching items</div>}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
