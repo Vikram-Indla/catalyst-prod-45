@@ -191,26 +191,77 @@ export default function StoryDetailModal({
   });
 
   const { data: comments = [] } = useQuery({
-    queryKey: ['ph-comments', itemId], enabled: !!itemId && isOpen,
+    queryKey: ['ph-comments', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_comments').select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
-      if (!data?.length) return [] as PhComment[];
-      const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', authorIds);
-      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null })) as unknown as PhComment[];
+      // 1) Catalyst-native comments (ph_comments)
+      const { data: phData } = await supabase.from('ph_comments').select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
+      const phRows = phData ?? [];
+      const authorIds = [...new Set(phRows.map(c => c.author_id).filter(Boolean))];
+      const { data: profiles } = authorIds.length
+        ? await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', authorIds)
+        : { data: [] as any[] };
+      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const phMapped = phRows.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
+
+      // 2) Jira-synced comments (jira_sync_comments) — read-only, keyed by issue_key
+      let jiraMapped: any[] = [];
+      if (issue?.issue_key) {
+        const { data: jiraRows } = await supabase
+          .from('jira_sync_comments')
+          .select('id, jira_comment_id, author_display_name, author_account_id, author_avatar_url, body, jira_created_at, created_at')
+          .eq('issue_key', issue.issue_key)
+          .order('jira_created_at', { ascending: true });
+        jiraMapped = (jiraRows ?? []).map(j => ({
+          id: `jira-${j.id}`,
+          work_item_id: itemId,
+          body: j.body ?? '',
+          author_id: j.author_account_id ?? null,
+          created_at: j.jira_created_at ?? j.created_at,
+          updated_at: j.jira_created_at ?? j.created_at,
+          author: { id: j.author_account_id, full_name: j.author_display_name ?? 'Jira User', avatar_url: j.author_avatar_url ?? null, email: null },
+          _jiraSynced: true,
+        }));
+      }
+      return [...phMapped, ...jiraMapped].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) as unknown as PhComment[];
     },
   });
 
   const { data: activityLog = [] } = useQuery({
-    queryKey: ['ph-activity-log', itemId], enabled: !!itemId && isOpen,
+    queryKey: ['ph-activity-log', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_activity_log').select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
-      if (!data?.length) return [] as PhActivityLog[];
-      const userIds = [...new Set(data.map(e => e.user_id).filter(Boolean))];
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', userIds);
-      const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null })) as unknown as PhActivityLog[];
+      // 1) Catalyst-native activity (ph_activity_log)
+      const { data: phData } = await supabase.from('ph_activity_log').select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const phRows = phData ?? [];
+      const userIds = [...new Set(phRows.map(e => e.user_id).filter(Boolean))];
+      const { data: profiles } = userIds.length
+        ? await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', userIds)
+        : { data: [] as any[] };
+      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const phMapped = phRows.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
+
+      // 2) Jira-synced changelog (jira_sync_changelog) — read-only, keyed by issue_key
+      let jiraMapped: any[] = [];
+      if (issue?.issue_key) {
+        const { data: jiraRows } = await supabase
+          .from('jira_sync_changelog')
+          .select('id, author_display_name, author_account_id, author_avatar_url, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
+          .eq('issue_key', issue.issue_key)
+          .order('jira_created_at', { ascending: false });
+        jiraMapped = (jiraRows ?? []).map(j => ({
+          id: `jira-cl-${j.id}`,
+          work_item_id: itemId,
+          action: 'field_updated',
+          field_name: j.field_name ?? '',
+          old_value: j.from_string ?? j.from_value ?? null,
+          new_value: j.to_string ?? j.to_value ?? null,
+          user_id: j.author_account_id ?? null,
+          metadata: null,
+          created_at: j.jira_created_at ?? j.created_at,
+          actor: { id: j.author_account_id, full_name: j.author_display_name ?? 'Jira', avatar_url: j.author_avatar_url ?? null, email: null },
+          _jiraSynced: true,
+        }));
+      }
+      return [...phMapped, ...jiraMapped].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as unknown as PhActivityLog[];
     },
   });
 
