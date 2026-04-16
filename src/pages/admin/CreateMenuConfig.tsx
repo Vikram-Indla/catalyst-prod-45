@@ -258,8 +258,8 @@ export default function CreateMenuConfig() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-          <CatalystPageHeader title="Create Menu Configuration" />
+      <CatalystPageHeader title="Create Menu Configuration" actions={
+        <div className="flex items-center gap-2">
           <Button 
             variant="outline"
             onClick={handleRestoreDefaults} 
@@ -282,7 +282,7 @@ export default function CreateMenuConfig() {
             Save Settings
           </Button>
         </div>
-      </div>
+      } />
 
       {hasUnsavedChanges && (
         <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-[rgba(251,191,36,0.12)] border border-amber-200 dark:border-amber-800 rounded-lg">
