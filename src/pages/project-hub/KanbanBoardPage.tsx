@@ -73,8 +73,7 @@ import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import {
-  AvatarStackFilter, EpicFilterDropdown, TypeFilterDropdown, PriorityFilterDropdown,
-  QuickFilterDropdown, GroupByBtn,
+  AvatarStackFilter,
 } from '@/components/kanban/KanbanToolbar';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
@@ -86,6 +85,10 @@ import {
   AdvancedFilterPanel, type AdvancedFilters,
   EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
 } from '@/components/kanban/AdvancedFilterPanel';
+import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
+import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
+import { GroupByPopover } from '@/components/shared/GroupByPopover';
+import type { GroupByOption } from '@/components/shared/GroupByPopover';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -117,6 +120,7 @@ export default function KanbanBoardPage() {
   const [showViewSettings, setShowViewSettings] = useState(false);
   const [showBoardMenu, setShowBoardMenu] = useState(false);
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
+  const [showBasicFilter, setShowBasicFilter] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
@@ -352,6 +356,67 @@ export default function KanbanBoardPage() {
     rawIssues.forEach(i => { m.set(i.issueType, (m.get(i.issueType) ?? 0) + 1); });
     return Array.from(m.entries()).map(([t, c]) => ({ type: t, count: c }));
   }, [rawIssues]);
+
+  /* ═══ CANONICAL FILTER CATEGORIES ═══ */
+  const filterCategories: FilterCategory[] = useMemo(() => {
+    const epicOptions = allEpics.map(e => ({
+      id: e.key,
+      label: e.summary || e.key,
+      labelExtra: e.key,
+    }));
+    const typeOptions = allTypes.map(t => ({
+      id: t.type,
+      label: t.type,
+    }));
+    const priorityOptions = ['Critical', 'High', 'Medium', 'Low'].map(p => ({
+      id: p,
+      label: p,
+    }));
+    const statusOptions = KANBAN_COLUMNS.map(c => ({
+      id: c.name,
+      label: c.name,
+    }));
+    const assigneeOptions2 = allAssignees.map(a => ({
+      id: a.name,
+      label: a.name,
+      avatarUrl: avatarsByName.get(a.name.toLowerCase()) || undefined,
+      avatarType: (avatarsByName.get(a.name.toLowerCase()) ? 'photo' : 'person-icon') as 'photo' | 'person-icon',
+    }));
+    return [
+      { id: 'epic', label: 'Epic', options: epicOptions, searchPlaceholder: 'Search epics...' },
+      { id: 'type', label: 'Type', options: typeOptions },
+      { id: 'priority', label: 'Priority', options: priorityOptions },
+      { id: 'status', label: 'Status', options: statusOptions },
+      { id: 'assignee', label: 'Assignee', options: assigneeOptions2, searchPlaceholder: 'Search people...' },
+    ];
+  }, [allEpics, allTypes, allAssignees, avatarsByName, KANBAN_COLUMNS]);
+
+  const filterSelected: Record<string, string[]> = useMemo(() => ({
+    epic: selEpics,
+    type: selTypes,
+    priority: selPriorities,
+    status: [],
+    assignee: Array.from(selAssignees),
+  }), [selEpics, selTypes, selPriorities, selAssignees]);
+
+  const handleFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
+    switch (categoryId) {
+      case 'epic': setSelEpics(optionIds); break;
+      case 'type': setSelTypes(optionIds); break;
+      case 'priority': setSelPriorities(optionIds); break;
+      case 'assignee': setSelAssignees(new Set(optionIds)); break;
+    }
+  }, []);
+
+  const basicFilterCount = selEpics.length + selTypes.length + selPriorities.length + selAssignees.size;
+
+  const BOARD_GROUP_OPTIONS: GroupByOption<GroupByMode>[] = useMemo(() => [
+    { key: 'none' as GroupByMode, label: 'None' },
+    { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
+    { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
+    { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
+    { key: 'fixVersion' as GroupByMode, label: 'Fix Version' },
+  ], []);
 
   // Current user for "Assigned to me"
   const { data: currentUserName } = useQuery({
@@ -784,30 +849,52 @@ export default function KanbanBoardPage() {
       }}>
         {/* Search */}
         <div className="relative" style={{ width: 220 }}>
-          <Search size={14} color="#6B778C" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search size={14} style={{ color: tk.textMuted }} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text" placeholder="Search board" value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
               width: '100%', height: 34, paddingLeft: 30, paddingRight: 8,
-              border: '1px solid #DFE1E6', borderRadius: 4,
-              fontSize: 13.5, color: '#172B4D', background: '#FFFFFF',
+              border: `1px solid ${tk.border}`, borderRadius: 6,
+              fontSize: 13.5, color: tk.textPrimary, background: tk.inputBg,
               outline: 'none', fontFamily: "'Inter', sans-serif",
               transition: 'border-color 120ms ease',
             }}
-            onFocus={e => e.currentTarget.style.borderColor = '#0052CC'}
-            onBlur={e => e.currentTarget.style.borderColor = '#DFE1E6'}
+            onFocus={e => e.currentTarget.style.borderColor = tk.selectedAccent}
+            onBlur={e => e.currentTarget.style.borderColor = tk.border}
           />
         </div>
 
         {/* Avatar stack */}
         <AvatarStackFilter allAssignees={allAssignees} selected={selAssignees} onChange={setSelAssignees} avatarsByName={avatarsByName} tk={tk} />
 
-        {/* Filter dropdowns */}
-        <EpicFilterDropdown epics={allEpics} selected={selEpics} onChange={setSelEpics} tk={tk} />
-        <TypeFilterDropdown types={allTypes} selected={selTypes} onChange={setSelTypes} tk={tk} />
-        <PriorityFilterDropdown selected={selPriorities} onChange={setSelPriorities} tk={tk} />
-        <QuickFilterDropdown selected={quickFilters} onChange={setQuickFilters} tk={tk} />
+        {/* Canonical Filter */}
+        <div style={{ position: 'relative' }}>
+          <FilterTriggerButton
+            count={basicFilterCount}
+            onClick={() => setShowBasicFilter(p => !p)}
+            isOpen={showBasicFilter}
+          />
+          {showBasicFilter && (
+            <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100 }}>
+              <JiraBasicFilter
+                categories={filterCategories}
+                selected={filterSelected}
+                onSelectionChange={handleFilterChange}
+                onClearAll={() => { setSelEpics([]); setSelTypes([]); setSelPriorities([]); setSelAssignees(new Set()); }}
+                onClose={() => setShowBasicFilter(false)}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Canonical Group By */}
+        <GroupByPopover<GroupByMode>
+          value={groupBy}
+          onChange={setGroupBy}
+          options={BOARD_GROUP_OPTIONS}
+          noneKey={'none' as GroupByMode}
+        />
 
         {/* Clear filters */}
         {activeFilterCount > 0 && (
@@ -827,54 +914,50 @@ export default function KanbanBoardPage() {
 
         <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{total} issues</span>
 
-
-        {/* Group by */}
-        <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
-
         {/* Board menu ••• */}
         <div ref={boardMenuRef} style={{ position: 'relative' }}>
           <button
             onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
+            className="focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
               width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 6, border: '1px solid #DFE1E6', background: '#FFFFFF',
-              cursor: 'pointer', transition: 'all 120ms ease',
+              borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
+              cursor: 'pointer', transition: 'all 120ms ease', outline: 'none',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
+            onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceBg; }}
             aria-label="Board menu"
           >
-            <MoreHorizontal size={16} color="#42526E" />
+            <MoreHorizontal size={16} style={{ color: tk.textSecondary }} />
           </button>
           {showBoardMenu && !showViewSettings && (
             <div
               style={{
                 position: 'absolute', top: '100%', right: 0, marginTop: 6,
-                width: 240, background: '#FFFFFF',
-                border: '1px solid #DFE1E6', borderRadius: 8,
-                boxShadow: '0 8px 24px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.2)',
+                width: 240, background: tk.surfaceBg,
+                border: `1px solid ${tk.border}`, borderRadius: 10,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.12)',
                 zIndex: 50,
                 padding: '6px 0', fontFamily: "'Inter', sans-serif",
               }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Section label */}
-              <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Board Options
               </div>
               <BoardMenuItem
-                icon={<Settings2 size={16} color="#42526E" />}
+                icon={<Settings2 size={16} style={{ color: tk.textSecondary }} />}
                 label="View settings"
                 onClick={() => { setShowBoardMenu(false); setShowViewSettings(true); }}
               />
               <BoardMenuItem
-                icon={<MapIcon size={16} color="#42526E" />}
+                icon={<MapIcon size={16} style={{ color: tk.textSecondary }} />}
                 label="Map statuses"
                 onClick={() => { setShowBoardMenu(false); navigate(`/project-hub/${key}/boards/map-statuses`); }}
               />
-              <div style={{ height: 1, background: '#EBECF0', margin: '6px 12px' }} />
+              <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
               <BoardMenuItem
-                icon={<Filter size={16} color="#42526E" />}
+                icon={<Filter size={16} style={{ color: tk.textSecondary }} />}
                 label="Advanced filter"
                 badge={advFilterCount > 0 ? advFilterCount : undefined}
                 onClick={() => { setShowBoardMenu(false); setShowAdvancedFilter(true); }}
