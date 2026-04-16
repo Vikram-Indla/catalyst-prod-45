@@ -131,10 +131,7 @@ export default function KanbanPage() {
 
   return (
     <div className="pk-page" data-module="product-kanban">
-      <div className="pk-page-header">
-        <h1 className="pk-page-title">Product Kanban</h1>
-        <p className="pk-page-subtitle">Drag initiatives between status columns to update workflow</p>
-      </div>
+        <CatalystPageHeader title="Product Kanban" />
 
       <KanbanToolbar
         sortBy={sortBy}
