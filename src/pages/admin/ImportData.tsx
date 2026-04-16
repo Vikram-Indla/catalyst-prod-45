@@ -30,6 +30,9 @@ export default function ImportData() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
+  // Source type toggle
+  const [importSource, setImportSource] = useState<'csv' | 'notion'>('csv');
+  
   // Module selection
   const [selectedModule, setSelectedModule] = useState<ImportModuleType | null>(null);
   
