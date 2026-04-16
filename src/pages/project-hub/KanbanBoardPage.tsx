@@ -849,30 +849,52 @@ export default function KanbanBoardPage() {
       }}>
         {/* Search */}
         <div className="relative" style={{ width: 220 }}>
-          <Search size={14} color="#6B778C" className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search size={14} style={{ color: tk.textMuted }} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text" placeholder="Search board" value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
               width: '100%', height: 34, paddingLeft: 30, paddingRight: 8,
-              border: '1px solid #DFE1E6', borderRadius: 4,
-              fontSize: 13.5, color: '#172B4D', background: '#FFFFFF',
+              border: `1px solid ${tk.border}`, borderRadius: 6,
+              fontSize: 13.5, color: tk.textPrimary, background: tk.inputBg,
               outline: 'none', fontFamily: "'Inter', sans-serif",
               transition: 'border-color 120ms ease',
             }}
-            onFocus={e => e.currentTarget.style.borderColor = '#0052CC'}
-            onBlur={e => e.currentTarget.style.borderColor = '#DFE1E6'}
+            onFocus={e => e.currentTarget.style.borderColor = tk.selectedAccent}
+            onBlur={e => e.currentTarget.style.borderColor = tk.border}
           />
         </div>
 
         {/* Avatar stack */}
         <AvatarStackFilter allAssignees={allAssignees} selected={selAssignees} onChange={setSelAssignees} avatarsByName={avatarsByName} tk={tk} />
 
-        {/* Filter dropdowns */}
-        <EpicFilterDropdown epics={allEpics} selected={selEpics} onChange={setSelEpics} tk={tk} />
-        <TypeFilterDropdown types={allTypes} selected={selTypes} onChange={setSelTypes} tk={tk} />
-        <PriorityFilterDropdown selected={selPriorities} onChange={setSelPriorities} tk={tk} />
-        <QuickFilterDropdown selected={quickFilters} onChange={setQuickFilters} tk={tk} />
+        {/* Canonical Filter */}
+        <div style={{ position: 'relative' }}>
+          <FilterTriggerButton
+            count={basicFilterCount}
+            onClick={() => setShowBasicFilter(p => !p)}
+            isOpen={showBasicFilter}
+          />
+          {showBasicFilter && (
+            <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100 }}>
+              <JiraBasicFilter
+                categories={filterCategories}
+                selected={filterSelected}
+                onSelectionChange={handleFilterChange}
+                onClearAll={() => { setSelEpics([]); setSelTypes([]); setSelPriorities([]); setSelAssignees(new Set()); }}
+                onClose={() => setShowBasicFilter(false)}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Canonical Group By */}
+        <GroupByPopover<GroupByMode>
+          value={groupBy}
+          onChange={setGroupBy}
+          options={BOARD_GROUP_OPTIONS}
+          noneKey={'none' as GroupByMode}
+        />
 
         {/* Clear filters */}
         {activeFilterCount > 0 && (
@@ -892,54 +914,50 @@ export default function KanbanBoardPage() {
 
         <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{total} issues</span>
 
-
-        {/* Group by */}
-        <GroupByBtn value={groupBy} onChange={setGroupBy} tk={tk} />
-
         {/* Board menu ••• */}
         <div ref={boardMenuRef} style={{ position: 'relative' }}>
           <button
             onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
+            className="focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
               width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 6, border: '1px solid #DFE1E6', background: '#FFFFFF',
-              cursor: 'pointer', transition: 'all 120ms ease',
+              borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
+              cursor: 'pointer', transition: 'all 120ms ease', outline: 'none',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
+            onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceBg; }}
             aria-label="Board menu"
           >
-            <MoreHorizontal size={16} color="#42526E" />
+            <MoreHorizontal size={16} style={{ color: tk.textSecondary }} />
           </button>
           {showBoardMenu && !showViewSettings && (
             <div
               style={{
                 position: 'absolute', top: '100%', right: 0, marginTop: 6,
-                width: 240, background: '#FFFFFF',
-                border: '1px solid #DFE1E6', borderRadius: 8,
-                boxShadow: '0 8px 24px rgba(9,30,66,0.15), 0 0 1px rgba(9,30,66,0.2)',
+                width: 240, background: tk.surfaceBg,
+                border: `1px solid ${tk.border}`, borderRadius: 10,
+                boxShadow: '0 8px 24px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.12)',
                 zIndex: 50,
                 padding: '6px 0', fontFamily: "'Inter', sans-serif",
               }}
               onClick={e => e.stopPropagation()}
             >
-              {/* Section label */}
-              <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                 Board Options
               </div>
               <BoardMenuItem
-                icon={<Settings2 size={16} color="#42526E" />}
+                icon={<Settings2 size={16} style={{ color: tk.textSecondary }} />}
                 label="View settings"
                 onClick={() => { setShowBoardMenu(false); setShowViewSettings(true); }}
               />
               <BoardMenuItem
-                icon={<MapIcon size={16} color="#42526E" />}
+                icon={<MapIcon size={16} style={{ color: tk.textSecondary }} />}
                 label="Map statuses"
                 onClick={() => { setShowBoardMenu(false); navigate(`/project-hub/${key}/boards/map-statuses`); }}
               />
-              <div style={{ height: 1, background: '#EBECF0', margin: '6px 12px' }} />
+              <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
               <BoardMenuItem
-                icon={<Filter size={16} color="#42526E" />}
+                icon={<Filter size={16} style={{ color: tk.textSecondary }} />}
                 label="Advanced filter"
                 badge={advFilterCount > 0 ? advFilterCount : undefined}
                 onClick={() => { setShowBoardMenu(false); setShowAdvancedFilter(true); }}
