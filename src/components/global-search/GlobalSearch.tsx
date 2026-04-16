@@ -117,18 +117,19 @@ function ResultRow({ item, isSelected, onHover, onClick, query, isLoading: rowLo
 
   return (
     <div
-      onClick={onClick}
+      onClick={rowLoading ? undefined : onClick}
       onMouseEnter={onHover}
       role="option"
       aria-selected={isSelected}
       style={{
         display: "flex", alignItems: "center",
         margin: "0 8px", padding: "0 10px", height: 42,
-        borderRadius: 6, cursor: "pointer",
-        backgroundColor: isSelected ? "#F4F5F7" : "transparent",
+        borderRadius: 6, cursor: rowLoading ? "wait" : "pointer",
+        backgroundColor: rowLoading ? "#E9F2FF" : isSelected ? "#F4F5F7" : "transparent",
+        opacity: rowLoading ? 0.85 : 1,
         transition: "background 60ms ease",
       }}
-      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+      onMouseLeave={e => { if (!isSelected && !rowLoading) e.currentTarget.style.backgroundColor = "transparent"; }}
     >
       {/* Icon */}
       <span
