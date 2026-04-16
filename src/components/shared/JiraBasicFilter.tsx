@@ -226,7 +226,7 @@ export function JiraBasicFilter({
                                   {isChecked && (
                                     <span className="jf-check-icon">
                                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                                        <path d="M3 8.5L6.5 12L13 4" stroke="#1868DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M3 8.5L6.5 12L13 4" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                                       </svg>
                                     </span>
                                   )}
@@ -324,7 +324,7 @@ function CheckboxSVG({ checked }: { checked: boolean }) {
 function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path fill="rgb(41,42,46)" d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9M1 7a6 6 0 1 1 10.74 3.68l3.29 3.29-1.06 1.06-3.29-3.29A6 6 0 0 1 1 7" />
+      <path fill="currentColor" d="M7 2.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9M1 7a6 6 0 1 1 10.74 3.68l3.29 3.29-1.06 1.06-3.29-3.29A6 6 0 0 1 1 7" />
     </svg>
   );
 }
