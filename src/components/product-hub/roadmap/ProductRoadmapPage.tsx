@@ -210,9 +210,8 @@ export function ProductRoadmapPage() {
     <div className="flex flex-col h-full" style={{ fontFamily: FONT.body }}>
       {/* Page Header */}
       {!isFullscreen && (
-        <ProductHubPageHeader
+        <CatalystPageHeader
           title="Product Roadmap"
-          subtitle="Initiative timeline & delivery planning"
           actions={
             <>
               <button
