@@ -237,9 +237,9 @@ export function CatalystViewBase({
                     ? `/project-hub/${projectKey}/hierarchy/allwork`
                     : `/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`
                   }
-                  style={{ fontSize: 14, fontWeight: 400, color: '#6B778C', textDecoration: 'none', cursor: 'pointer' }}
+                  style={{ fontSize: 14, fontWeight: 500, color: '#42526E', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; e.currentTarget.style.textDecoration = 'none'; }}
                 >
                   {projectName || projectKey}
                 </Link>
@@ -248,7 +248,7 @@ export function CatalystViewBase({
             )}
             {projectName && !projectKey && (
               <>
-                <span style={{ fontSize: 14, fontWeight: 400, color: '#6B778C' }}>{projectName}</span>
+                <span style={{ fontSize: 14, fontWeight: 500, color: '#42526E' }}>{projectName}</span>
                 <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
               </>
             )}
@@ -256,10 +256,10 @@ export function CatalystViewBase({
               <>
                 <IssueIcon type={parentType || 'Epic'} size={16} />
                 <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#6B778C', cursor: onParentClick ? 'pointer' : 'default' }}
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#42526E', cursor: onParentClick ? 'pointer' : 'default' }}
                   onClick={onParentClick}
                   onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; }}
                 >{parentKey}</span>
                 <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
               </>
