@@ -3,7 +3,7 @@
  * Route: /project-hub/resources
  * ECLIPSE NOCTURNE: Full dark mode support with warm charcoal palette
  */
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -71,10 +71,10 @@ const hashColor = (name: string) => {
 /* ── Dark mode token map ── */
 function useTokens(dk: boolean) {
   return useMemo(() => ({
-    pageBg:       dk ? '#0A0A0A' : '#F8FAFC',
+    pageBg:       dk ? '#0A0A0A' : '#FFFFFF',
     surfaceBg:    dk ? '#0A0A0A' : '#FFFFFF',
     elevatedBg:   dk ? '#1A1A1A' : '#FFFFFF',
-    headerBg:     dk ? '#111111' : '#FAFAFA',
+    headerBg:     dk ? '#111111' : '#FFFFFF',
     hoverBg:      dk ? '#1F1F1F' : '#F8FAFC',
     border:       dk ? '#2E2E2E' : '#E2E8F0',
     borderSubtle: dk ? '#292929' : '#f3f4f6',
@@ -106,6 +106,12 @@ function useTokens(dk: boolean) {
   }), [dk]);
 }
 
+const getRowsPerPage = () => {
+  if (typeof window === 'undefined') return 16;
+
+  return Math.min(20, Math.max(10, Math.floor((window.innerHeight - 380) / 36)));
+};
+
 /* ── Component ── */
 export default function ResourceListingPage() {
   const navigate = useNavigate();
@@ -117,7 +123,16 @@ export default function ResourceListingPage() {
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const [resourceTypeFilter, setResourceTypeFilter] = useState<'all' | 'core' | 'project' | 'temporary'>('all');
   const [page, setPage] = useState(1);
-  const perPage = 10;
+  const [perPage, setPerPage] = useState<number>(() => getRowsPerPage());
+
+  useEffect(() => {
+    const handleResize = () => setPerPage(getRowsPerPage());
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const { data: resources = [], isLoading } = useQuery({
     queryKey: ['resources-listing', 'all-types-v1'],
