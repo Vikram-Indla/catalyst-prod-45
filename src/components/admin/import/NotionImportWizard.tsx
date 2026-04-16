@@ -313,34 +313,28 @@ export function NotionImportWizard() {
 
           {/* ═══ STEP 2: PREVIEW ═══ */}
           {step === 2 && (
-            <div className="space-y-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Data Preview</h2>
-                  <p className="text-sm text-[#64748B]">
-                    Review the data fetched from <span className="font-medium text-[#0F172A]">{dbTitle}</span>
-                  </p>
-                </div>
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-[15px] font-semibold text-[#0F172A]">Data Preview</h2>
+                <p className="text-[13px] text-[#64748B] mt-0.5">
+                  {notionRows.length} rows from <span className="font-medium text-[#0F172A]">{dbTitle}</span>
+                </p>
               </div>
 
-              {/* Stats row */}
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <StatPill icon={Table2} label="Rows" value={notionRows.length} />
                 <StatPill icon={Layers} label="Columns" value={notionProps.length} />
                 <StatPill icon={FolderKanban} label="Target" value={projectName} />
               </div>
 
-              {/* Table */}
-              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full">
                     <thead>
                       <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                        <th className="text-left px-3 py-2.5 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] w-8">
-                          #
-                        </th>
+                        <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] w-8">#</th>
                         {notionProps.map(p => (
-                          <th key={p.id} className="text-left px-3 py-2.5 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] whitespace-nowrap">
+                          <th key={p.id} className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] whitespace-nowrap">
                             {p.name}
                           </th>
                         ))}
@@ -348,10 +342,10 @@ export function NotionImportWizard() {
                     </thead>
                     <tbody>
                       {notionRows.slice(0, 8).map((row, idx) => (
-                        <tr key={row.notionPageId} className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors">
-                          <td className="px-3 py-2 text-[11px] font-mono text-[#94A3B8]">{idx + 1}</td>
+                        <tr key={row.notionPageId} className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC]">
+                          <td className="px-3 py-1.5 text-[11px] font-mono text-[#94A3B8]">{idx + 1}</td>
                           {notionProps.map(p => (
-                            <td key={p.id} className="px-3 py-2 whitespace-nowrap text-[#0F172A] max-w-[220px] truncate text-[13px]">
+                            <td key={p.id} className="px-3 py-1.5 whitespace-nowrap text-[#0F172A] max-w-[200px] truncate text-[13px]">
                               {row.properties[p.name] || <span className="text-[#CBD5E1]">—</span>}
                             </td>
                           ))}
@@ -361,8 +355,8 @@ export function NotionImportWizard() {
                   </table>
                 </div>
                 {notionRows.length > 8 && (
-                  <div className="px-4 py-2.5 text-xs text-[#94A3B8] bg-[#FAFBFC] border-t border-[#F1F5F9] font-medium">
-                    + {notionRows.length - 8} more rows not shown
+                  <div className="px-3 py-2 text-[11px] text-[#94A3B8] bg-[#FAFBFC] border-t border-[#F1F5F9]">
+                    + {notionRows.length - 8} more rows
                   </div>
                 )}
               </div>
