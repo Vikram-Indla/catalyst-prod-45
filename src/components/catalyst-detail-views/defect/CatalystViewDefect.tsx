@@ -31,7 +31,6 @@ export default function CatalystViewDefect({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="defect" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystQuickActions />
 
       {/* DEFECT-UNIQUE: Priority + Type badge row */}
@@ -49,7 +48,9 @@ export default function CatalystViewDefect({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect" />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect">
+      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="defect" projectKey={projectKey} onOpenItem={onOpenItem} />
+    </CatalystSidebarDetails>
   );
 
   return (
@@ -62,8 +63,6 @@ export default function CatalystViewDefect({
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
         { label: 'Clone', onClick: () => toast('Clone — coming soon') },
-        { label: 'Move', onClick: () => toast('Move — coming soon') },
-        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete defect', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

@@ -1,9 +1,5 @@
 /**
  * CatalystViewSubtask — Sub-task detail overlay.
- *
- * Canonical sections: Title, Description, Acceptance Criteria, Priority,
- * Activity, Sidebar.
- * Subtask-unique: Parent story context banner.
  */
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -58,7 +54,6 @@ export default function CatalystViewSubtask({
       )}
 
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="subtask" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
@@ -68,7 +63,9 @@ export default function CatalystViewSubtask({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task" />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="sub-task">
+      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="subtask" projectKey={projectKey} onOpenItem={onOpenItem} />
+    </CatalystSidebarDetails>
   );
 
   return (
@@ -81,8 +78,6 @@ export default function CatalystViewSubtask({
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
         { label: 'Clone', onClick: () => toast('Clone — coming soon') },
-        { label: 'Move', onClick: () => toast('Move — coming soon') },
-        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete sub-task', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}

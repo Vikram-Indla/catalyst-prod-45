@@ -1,12 +1,5 @@
 /**
  * CatalystViewFeature — Feature detail overlay.
- *
- * Canonical sections: Title, Description, Acceptance Criteria, Priority,
- * Activity, Sidebar.
- * Feature-unique: Child issues (stories under this feature).
- *
- * Note: Even if no Jira tickets exist yet, this view is ready for when
- * features are created natively in Catalyst.
  */
 import React from 'react';
 import { toast } from 'sonner';
@@ -31,7 +24,6 @@ export default function CatalystViewFeature({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="feature" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
@@ -52,12 +44,14 @@ export default function CatalystViewFeature({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="feature" />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="feature">
+      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="feature" projectKey={projectKey} onOpenItem={onOpenItem} />
+    </CatalystSidebarDetails>
   );
 
   return (
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
-      itemType={issue?.issue_type || 'Feature'} itemKey={issue?.issue_key || null}
+      itemType={issue?.issue_type || 'New Feature'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Epic"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
@@ -65,8 +59,6 @@ export default function CatalystViewFeature({
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },
         { label: 'Clone', onClick: () => toast('Clone — coming soon') },
-        { label: 'Move', onClick: () => toast('Move — coming soon') },
-        { label: 'Archive', onClick: () => toast('Archive — coming soon') },
         { label: 'Delete feature', onClick: () => mutations.deleteIssue.mutate(), danger: true },
       ]}
       onTogglePanelMode={onTogglePanelMode} navigationItems={navigationItems} currentItemId={itemId} onNavigate={onNavigate}
