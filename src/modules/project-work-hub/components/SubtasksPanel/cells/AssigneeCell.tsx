@@ -1,48 +1,42 @@
 /**
- * AssigneeCell — Avatar photo (24px circle) + truncated name
- * Jira parity: real avatar with initials fallback, name truncated
+ * AssigneeCell — Avatar photo (24px circle) + truncated name + assign popover.
  */
 import React, { useState } from 'react';
-
-function getInitials(name: string | null | undefined): string {
-  if (!name?.trim()) return '?';
-  const parts = name.trim().split(/\s+/);
-  return parts.length === 1
-    ? parts[0].slice(0, 2).toUpperCase()
-    : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-function getAvatarColor(id: string): string {
-  const colors = ['#0052CC', '#6554C0', '#36B37E', '#FF5630', '#FF991F', '#00B8D9', '#166534', '#9E4C00'];
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = ((hash << 5) - hash) + id.charCodeAt(i);
-    hash = hash & hash;
-  }
-  return colors[Math.abs(hash) % colors.length];
-}
+import { AssigneePopover } from '../popovers/AssigneePopover';
+import { getInitials, getAvatarColor } from '../../dialogs/story-detail-modules/helpers';
+import { UserPlus } from 'lucide-react';
 
 interface AssigneeCellProps {
   displayName: string | null;
+  accountId: string | null;
   avatarUrl?: string | null;
+  onChange?: (assignee: { accountId: string | null; displayName: string | null }) => void;
+  readOnly?: boolean;
 }
 
-export const AssigneeCell = React.memo(function AssigneeCell({ displayName, avatarUrl }: AssigneeCellProps) {
+export const AssigneeCell = React.memo(function AssigneeCell({
+  displayName, accountId, avatarUrl, onChange, readOnly,
+}: AssigneeCellProps) {
   const [imgError, setImgError] = useState(false);
 
-  if (!displayName) {
-    return (
-      <div className="sp-assignee-cell">
-        <div className="sp-avatar-fallback" style={{ background: '#8993A4' }}>?</div>
-      </div>
-    );
-  }
+  const truncated = displayName
+    ? displayName.length > 6 ? displayName.slice(0, 5) + '…' : displayName
+    : null;
 
-  const truncated = displayName.length > 6 ? displayName.slice(0, 5) + '...' : displayName;
-
-  return (
-    <div className="sp-assignee-cell" title={displayName}>
-      {avatarUrl && !imgError ? (
+  const trigger = (
+    <button
+      type="button"
+      className="sp-inline-trigger sp-assignee-cell"
+      onClick={(e) => e.stopPropagation()}
+      title={displayName ?? 'Unassigned'}
+      aria-label={displayName ? `Assigned to ${displayName} — change` : 'Assign user'}
+      disabled={readOnly}
+    >
+      {!displayName ? (
+        <span className="sp-avatar-fallback" style={{ background: '#DFE1E6', color: '#6B778C' }}>
+          <UserPlus size={12} />
+        </span>
+      ) : avatarUrl && !imgError ? (
         <img
           className="sp-avatar"
           src={avatarUrl}
@@ -50,11 +44,19 @@ export const AssigneeCell = React.memo(function AssigneeCell({ displayName, avat
           onError={() => setImgError(true)}
         />
       ) : (
-        <div className="sp-avatar-fallback" style={{ background: getAvatarColor(displayName) }}>
+        <span className="sp-avatar-fallback" style={{ background: getAvatarColor(displayName) }}>
           {getInitials(displayName)}
-        </div>
+        </span>
       )}
-      <span className="sp-assignee-name">{truncated}</span>
-    </div>
+      {truncated && <span className="sp-assignee-name">{truncated}</span>}
+    </button>
+  );
+
+  if (readOnly || !onChange) return trigger;
+
+  return (
+    <AssigneePopover currentAccountId={accountId} onChange={onChange}>
+      {trigger}
+    </AssigneePopover>
   );
 });
