@@ -235,7 +235,7 @@ export function InitiativeTable({
         const attCount = attachmentCounts.get(attKey) || 0;
         return (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
+            {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: 'var(--cp-text-muted)', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
             <IDCell value={key} />
           </div>
         );
@@ -244,7 +244,7 @@ export function InitiativeTable({
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',
       cell: ({ getValue }) => (
-        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--pb-ink)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-primary)', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {getValue()}
         </span>
       ),
