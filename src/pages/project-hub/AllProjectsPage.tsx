@@ -20,7 +20,7 @@ import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
 import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
 import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 const WiringAuditLazy = lazy(() => import('@/components/project-hub/WiringAudit').then(m => ({ default: m.WiringAudit })));
@@ -153,9 +153,8 @@ export default function AllProjectsPage() {
 
   return (
     <div className="flex flex-col h-full font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
-      <CommandCenterHeader
+      <CatalystPageHeader
         title="All Projects"
-        subtitle={`${filtered.length} projects across your portfolio`}
         actions={
           <div className="flex items-center gap-3">
             {/* Jira Sync CTA */}

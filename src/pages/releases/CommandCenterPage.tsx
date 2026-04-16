@@ -16,7 +16,7 @@
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -652,58 +652,62 @@ export default function CommandCenterPage() {
   return (
     <div className="min-h-screen bg-background" ref={dashboardRef} id="command-center-dashboard">
       {/* Page Header */}
-      <CommandCenterHeader
+      <CatalystPageHeader
         title="Command Center"
-        subtitle="Executive overview of testing operations"
-        timestamp={`Last updated: ${getTimeAgo()}`}
-        onRefresh={handleRefresh}
-        isRefreshing={isRefreshing}
         actions={
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" aria-label="Export dashboard">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-                <ChevronDown className="h-3 w-3 ml-2" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem onClick={handleExportPdf} className="gap-2">
-                <FileText className="h-4 w-4" />
-                Export as PDF
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportCsv} className="gap-2">
-                <Table2 className="h-4 w-4" />
-                Export as CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportExcel} className="gap-2">
-                <FileSpreadsheet className="h-4 w-4" />
-                Export as Excel
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {
-                downloadFeatureTree('markdown');
-                catalystToast.success('Feature tree downloaded');
-              }} className="gap-2">
-                <FileText className="h-4 w-4" />
-                Feature Hierarchy Tree (.md)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                downloadDocumentation();
-                catalystToast.success('Documentation downloaded');
-              }} className="gap-2">
-                <FileText className="h-4 w-4" />
-                Module Documentation (.md)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                downloadCompleteSpec();
-                catalystToast.success('Complete specification downloaded');
-              }} className="gap-2">
-                <FileText className="h-4 w-4" />
-                Complete Technical Spec (.md)
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--text-3, hsl(var(--muted-foreground)))' }}>
+              Last updated: {getTimeAgo()}
+            </span>
+            <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh data">
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" aria-label="Export dashboard">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                  <ChevronDown className="h-3 w-3 ml-2" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={handleExportPdf} className="gap-2">
+                  <FileText className="h-4 w-4" />
+                  Export as PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportCsv} className="gap-2">
+                  <Table2 className="h-4 w-4" />
+                  Export as CSV
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExportExcel} className="gap-2">
+                  <FileSpreadsheet className="h-4 w-4" />
+                  Export as Excel
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => {
+                  downloadFeatureTree('markdown');
+                  catalystToast.success('Feature tree downloaded');
+                }} className="gap-2">
+                  <FileText className="h-4 w-4" />
+                  Feature Hierarchy Tree (.md)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  downloadDocumentation();
+                  catalystToast.success('Documentation downloaded');
+                }} className="gap-2">
+                  <FileText className="h-4 w-4" />
+                  Module Documentation (.md)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {
+                  downloadCompleteSpec();
+                  catalystToast.success('Complete specification downloaded');
+                }} className="gap-2">
+                  <FileText className="h-4 w-4" />
+                  Complete Technical Spec (.md)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         }
       />
       

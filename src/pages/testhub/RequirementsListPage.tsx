@@ -12,7 +12,7 @@ import {
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { useTheme } from '@/hooks/useTheme';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { CreateRequirementModal } from '@/components/testhub/requirements/CreateRequirementModal';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -136,7 +136,7 @@ export default function RequirementsListPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: isDark ? '#0A0A0A' : '#F8FAFC' }}>
-      <TestHubPageHeader title="Requirements" subtitle="Track test coverage for requirements and user stories">
+      <CatalystPageHeader title="Requirements" actions={
         <button
           onClick={() => setShowCreateModal(true)}
           style={{
@@ -148,7 +148,7 @@ export default function RequirementsListPage() {
         >
           <Plus size={18} /> Add Requirement
         </button>
-      </TestHubPageHeader>
+      } />
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       {/* Summary Cards */}

@@ -8,7 +8,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { PageChrome } from '@/components/layout/PageChrome';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+
 import { useThemes, useCreateTheme, useUpdateTheme, useDeleteTheme } from '@/hooks/use-strategic-themes';
 import type { StrategicTheme, ThemeView } from '@/types/strategic-themes';
 
@@ -105,7 +105,7 @@ export default function StrategicThemesPage() {
   if (isLoading) {
     return (
       <PageChrome hideHeader>
-        <CommandCenterHeader title="Strategic Themes" />
+        <CatalystPageHeader title="Strategic Themes" />
         <div className="p-6 space-y-3">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="rounded-lg animate-pulse" style={{ height: 48, background: isDark ? '#1F1F1F' : 'hsl(var(--muted))' }} />

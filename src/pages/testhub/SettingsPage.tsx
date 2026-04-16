@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { ActivityLog } from '@/components/testhub/settings/ActivityLog';
 
 interface UserPreferences {
@@ -159,14 +159,14 @@ export default function SettingsPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: pageBg }}>
-      <TestHubPageHeader title="Settings" subtitle="Customize your TestHub experience">
-        {hasChanges && (
+      <CatalystPageHeader title="Settings" actions={
+        hasChanges ? (
           <button onClick={savePreferences} disabled={isSaving}
             style={{ display: 'flex', alignItems: 'center', gap: 8, height: 40, padding: '0 20px', border: 'none', borderRadius: 8, background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF', fontSize: 14, fontWeight: 600, cursor: isSaving ? 'not-allowed' : 'pointer', opacity: isSaving ? 0.7 : 1 }}>
             <Save size={18} /> {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
-        )}
-      </TestHubPageHeader>
+        ) : undefined
+      } />
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
 
       <div style={{ display: 'flex', gap: 24 }}>

@@ -1,7 +1,7 @@
 import { CAPABILITY_CONFIGS } from '@/types/requirement-assist';
 import { CapabilityCard } from '@/components/requirement-assist/CapabilityCard';
 import { DocumentTable } from '@/components/requirement-assist/DocumentTable';
-import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import type { RaDocumentType } from '@/types/requirement-assist';
 
 const CAPABILITY_ORDER: RaDocumentType[] = ['brd', 'translation', 'epic', 'uat'];
@@ -9,10 +9,7 @@ const CAPABILITY_ORDER: RaDocumentType[] = ['brd', 'translation', 'epic', 'uat']
 export default function RequirementAssistWorkspace() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <CommandCenterHeader
-        title="Req Assist™"
-        subtitle="AI-powered BRD generation, translation, epic decomposition, and UAT scenario creation"
-      />
+      <CatalystPageHeader title="Req Assist™" />
 
       <div className="flex-1 overflow-y-auto p-6">
         {/* Capability cards */}

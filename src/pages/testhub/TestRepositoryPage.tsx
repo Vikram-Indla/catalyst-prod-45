@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { RefreshCw, Plus, Trash2, MoveRight, CheckSquare, Download, Upload, Sparkles, UserPlus, Tag } from 'lucide-react';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { FolderPanel } from '@/components/testhub/FolderPanel';
 import { TestCasesTable } from '@/components/testhub/TestCasesTable';
 import { TestCasesToolbar } from '@/components/testhub/TestCasesToolbar';
@@ -675,32 +675,18 @@ export function TestRepositoryPage() {
     <div className="testhub">
       <div className="th-page">
         {/* Page Header */}
-        <TestHubPageHeader title="Test Repository" subtitle="Manage your test case repository">
+        <CatalystPageHeader title="Test Repository" actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             {/* Refresh */}
             <button 
               onClick={handleRefresh}
               title="Refresh"
               style={{
-                width: 40,
-                height: 40,
-                padding: 0,
+                width: 40, height: 40, padding: 0,
                 backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                 border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0',
-                borderRadius: 8,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#F8FAFC';
-                e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = isDark ? '#1A1A1A' : '#FFFFFF';
-                e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0';
+                borderRadius: 8, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s',
               }}
             >
               <RefreshCw style={{ width: 16, height: 16, color: '#64748B' }} />
@@ -734,7 +720,7 @@ export function TestRepositoryPage() {
               Export
             </button>
 
-            {/* Generate with AI - PURPLE (AI reserved) */}
+            {/* Generate with AI */}
             <button 
               onClick={() => setIsAIGenerateModalOpen(true)}
               style={{
@@ -750,40 +736,23 @@ export function TestRepositoryPage() {
               Generate with AI
             </button>
 
-            {/* Create Test Case - BLUE */}
+            {/* Create Test Case */}
             <button 
               onClick={handleOpenCreateModal}
               style={{
-                height: 40,
-                padding: '0 20px',
+                height: 40, padding: '0 20px',
                 background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                border: 'none',
-                borderRadius: 8,
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 14,
-                fontWeight: 600,
-                color: '#FFFFFF',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                boxShadow: '0 2px 8px rgba(37,99,235,0.18)',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.25)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(37,99,235,0.18)';
+                border: 'none', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', gap: 8,
+                boxShadow: '0 2px 8px rgba(37,99,235,0.18)', transition: 'all 0.15s',
               }}
             >
               <Plus style={{ width: 16, height: 16, color: '#FFFFFF' }} />
               Create Test Case
             </button>
           </div>
-        </TestHubPageHeader>
+        } />
 
         {/* Content */}
         <div className="th-page-content">

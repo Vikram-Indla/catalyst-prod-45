@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
-import { TestHubPageHeader } from '@/components/testhub/TestHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -242,12 +242,12 @@ export default function CoverageMatrixPage() {
 
   return (
     <div className={`flex-1 flex flex-col overflow-auto ${isDark ? 'bg-[#0A0A0A]' : ''}`}>
-      <TestHubPageHeader title="Traceability Matrix" subtitle={`${summary.pct}% coverage (${summary.full}/${summary.total} requirements) · ${summary.none} gap${summary.none !== 1 ? 's' : ''}${summary.critGaps > 0 ? ` (${summary.critGaps} critical)` : ''}`}>
+      <CatalystPageHeader title="Traceability Matrix" actions={
         <Button variant="outline" size="sm" onClick={() => exportCSV(filtered)}>
           <Download className="w-4 h-4 mr-2" />
           Export CSV
         </Button>
-      </TestHubPageHeader>
+      } />
       <div className="flex-1 p-6 overflow-auto">
 
       {/* Coverage Summary Bar */}
