@@ -122,56 +122,25 @@ export function NotionImportWizard() {
   const mappedCount = useMemo(() => Object.values(mappings).filter(v => v !== '__skip__').length, [mappings]);
   const [mapError, setMapError] = useState(false);
 
-  // Step 4 — Import
+  // Step 4 — Import via service
   const handleImport = useCallback(async () => {
     setImporting(true);
     setImportDone(0);
-    let imported = 0;
-    let skipped = 0;
-    let failed = 0;
 
-    // Build insert payload per row
-    const activeMappings = Object.entries(mappings).filter(([, v]) => v !== '__skip__');
-
-    const batchSize = 50;
-    for (let i = 0; i < notionRows.length; i += batchSize) {
-      const batch = notionRows.slice(i, i + batchSize);
-      const inserts = batch.map(row => {
-        const record: Record<string, any> = {
-          item_type: itemType,
-          project_id: projectId,
-          sync_source: 'notion',
-          jira_issue_id: row.notionPageId,
-          jira_url: row.notionPageUrl,
-        };
-        activeMappings.forEach(([notionProp, catalystCol]) => {
-          const val = row.properties[notionProp];
-          if (val !== null && val !== undefined) {
-            record[catalystCol] = val;
-          }
-        });
-        // Ensure summary exists
-        if (!record.summary) record.summary = 'Untitled';
-        return record;
+    try {
+      const result = await importNotionRows({
+        rows: notionRows,
+        mappings,
+        projectId,
+        defaultItemType: itemType,
+        onProgress: (done) => setImportDone(done),
       });
-
-      // @ts-ignore — dynamic column set
-      const { error, data } = await supabase
-        .from('ph_work_items')
-        .upsert(inserts as any[], { onConflict: 'jira_issue_id', ignoreDuplicates: true })
-        .select('id');
-
-      if (error) {
-        failed += inserts.length;
-      } else {
-        imported += data?.length || 0;
-        skipped += inserts.length - (data?.length || 0);
-      }
-      setImportDone(Math.min(i + batchSize, notionRows.length));
+      setImportResult(result);
+    } catch (e: any) {
+      setImportResult({ imported: 0, skipped: 0, failed: notionRows.length });
+    } finally {
+      setImporting(false);
     }
-
-    setImportResult({ imported, skipped, failed });
-    setImporting(false);
   }, [notionRows, mappings, itemType, projectId]);
 
   const canFetch = token.length > 0 && dbUrl.length > 0 && projectId.length > 0;
