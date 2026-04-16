@@ -1,6 +1,6 @@
 /**
  * SortableCard — DnD-enabled wrapper around WorkItemCard (memoized)
- * Card radius: 8px per spec. Hover elevation. Selection accent bar.
+ * Card radius: 8px per spec. Smooth hover elevation. Selection accent bar with transition.
  */
 import React, { useCallback, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
@@ -41,6 +41,10 @@ interface SortableCardProps {
 export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
+  const restShadow = '0 1px 2px rgba(0,0,0,0.06)';
+  const hoverShadow = tk.cardHoverShadow;
+  const focusShadow = `0 0 0 2px ${tk.selectedAccent}`;
+
   const cardStyle: React.CSSProperties = {
     background: tk.cardBg,
     borderRadius: 8,
@@ -50,12 +54,11 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
-    transition: 'background 80ms, box-shadow 80ms',
+    transition: transition || 'background 120ms ease, box-shadow 120ms ease, border-left 120ms ease',
     transform: CSS.Transform.toString(transform),
     opacity: isDragging ? 0.35 : 1,
     zIndex: isDragging ? 999 : 'auto',
-    boxShadow: isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : '0 1px 2px rgba(9,30,66,0.08)',
-    ...(transition ? { transition } : {}),
+    boxShadow: isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow,
     position: 'relative' as const,
     outline: 'none',
     overflow: 'visible',
@@ -79,7 +82,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       onMouseEnter={e => {
         if (!isDragging) {
           e.currentTarget.style.background = tk.cardHoverBg;
-          e.currentTarget.style.boxShadow = '0 2px 8px rgba(9,30,66,0.16)';
+          e.currentTarget.style.boxShadow = hoverShadow;
           e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
             (el as HTMLElement).style.opacity = '1';
           });
@@ -87,7 +90,7 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
       }}
       onMouseLeave={e => {
         e.currentTarget.style.background = tk.cardBg;
-        e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? `0 0 0 2px ${tk.selectedAccent}` : '0 1px 2px rgba(9,30,66,0.08)';
+        e.currentTarget.style.boxShadow = isDragging ? tk.cardDragShadow : isFocused ? focusShadow : restShadow;
         e.currentTarget.querySelectorAll('.kanban-card-menu-btn, .kanban-card-edit-btn').forEach((el) => {
           (el as HTMLElement).style.opacity = '0';
         });
