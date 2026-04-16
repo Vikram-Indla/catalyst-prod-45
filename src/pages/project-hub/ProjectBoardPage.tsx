@@ -112,43 +112,7 @@ export default function ProjectBoardPage() {
   return (
     <div style={{ fontFamily: "'Inter', sans-serif", padding: '20px 24px 16px' }}>
       {/* ─── PAGE HEADER ─── */}
-      <div className="flex items-center gap-3 mb-1">
-        <div
-          className="flex items-center justify-center flex-shrink-0"
-          style={{
-            width: 36, height: 50, borderRadius: 12,
-            background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
-            color: '#fff', fontSize: 14, fontWeight: 700,
-            fontFamily: "'JetBrains Mono', monospace",
-          }}
-        >
-          {projectName.slice(0, 2)}
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1
-              style={{
-                fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A',
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                letterSpacing: '-0.4px', margin: 0,
-              }}
-            >
-              {projectName}
-            </h1>
-            <span
-              style={{
-                fontSize: 11, fontWeight: 600, padding: '2px 10px', borderRadius: 6,
-                background: '#DCFCE7', color: '#16A34A',
-              }}
-            >
-              ON TRACK
-            </span>
-          </div>
-          <p style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', margin: '2px 0 0', fontWeight: 500 }}>
-            Sprint 14 · Mar 10 – Mar 24, 2026 · 8 days remaining
-          </p>
-        </div>
-      </div>
+      <CatalystPageHeader title={projectName} />
 
       {/* ─── STAT CARDS ─── */}
       <div

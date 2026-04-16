@@ -65,12 +65,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
   return (
     <div className="h-full flex flex-col" style={{ background: tk.pageBg }}>
       <div className="flex items-center justify-between px-6 py-3 border-b" style={{ borderColor: tk.border }}>
-        <div className="flex items-center gap-3">
-          <WorkItemIcon type="feature" size={20} />
-          <h1 className="text-base font-semibold" style={{ color: tk.t1, fontWeight: 650 }}>Feature Backlog</h1>
-          <span className="text-xs" style={{ color: tk.t2 }}>{total} features across {groups.length} groups</span>
-        </div>
-        <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+        <CatalystPageHeader title="Feature Backlog" actions={
           <Plus className="h-3.5 w-3.5 mr-1" /> Create Feature
         </Button>
       </div>
