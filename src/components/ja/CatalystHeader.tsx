@@ -635,25 +635,37 @@ export function CatalystHeader() {
                   onClick={() => setUserMenuOpen((v) => !v)}
                   aria-haspopup="menu"
                   aria-expanded={userMenuOpen}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden"
                   style={{
-                    background: 'linear-gradient(135deg, #0052CC, #6366F1)',
+                    background: (userProfile?.avatar_url && !avatarImgError) ? 'transparent' : 'linear-gradient(135deg, #0052CC, #6366F1)',
                     color: '#FFFFFF',
-                    border: '3px solid transparent',
+                    border: '2px solid',
+                    borderColor: isDark ? '#454545' : '#E2E8F0',
                     transition: 'border-color 150ms ease, box-shadow 150ms ease',
+                    padding: 0,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0';
-                    e.currentTarget.style.boxShadow = `0 0 0 2px ${isDark ? 'rgba(0,82,204,0.2)' : 'rgba(0,82,204,0.15)'}`;
+                    e.currentTarget.style.borderColor = isDark ? '#6B7280' : '#C1C7D0';
+                    e.currentTarget.style.boxShadow = `0 0 0 2px ${isDark ? '#1E3A5F' : '#DEEBFF'}`;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'transparent';
+                    e.currentTarget.style.borderColor = isDark ? '#454545' : '#E2E8F0';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
-                  title="Profile"
+                  title={userProfile?.full_name || user?.email || 'Profile'}
                 >
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
-              </button>
+                  {userProfile?.avatar_url && !avatarImgError ? (
+                    <img
+                      src={userProfile.avatar_url}
+                      alt={userProfile.full_name || 'Profile'}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover rounded-full"
+                      onError={() => setAvatarImgError(true)}
+                    />
+                  ) : (
+                    <span>{user?.email?.charAt(0).toUpperCase() || 'U'}</span>
+                  )}
+               </button>
 
               {userMenuOpen && (
                 <div
