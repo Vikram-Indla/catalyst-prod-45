@@ -11,7 +11,7 @@ const ALL_TABS = [
   { value: 'risks', label: 'Risks' },
   { value: 'milestones', label: 'Milestones' },
   { value: 'links', label: 'Links' },
-  { value: 'audit-history', label: 'Audit History' },
+  { value: 'audit-history', label: 'Activity' },
 ];
 
 // Base tabs visible to all users
