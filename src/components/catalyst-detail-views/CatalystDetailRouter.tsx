@@ -51,7 +51,7 @@ export default function CatalystDetailRouter({
         .select('issue_type')
         .eq('id', itemId)
         .is('deleted_at', null)
-        .single();
+        .maybeSingle();
       return data?.issue_type ?? null;
     },
     staleTime: 120000,
