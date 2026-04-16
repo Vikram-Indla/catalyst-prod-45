@@ -58,7 +58,6 @@ export default function CatalystViewBusinessRequest({
       </div>
 
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="business_request" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
@@ -94,7 +93,9 @@ export default function CatalystViewBusinessRequest({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="business request" />
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="business request">
+      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="business_request" projectKey={projectKey} onOpenItem={onOpenItem} />
+    </CatalystSidebarDetails>
   );
 
   return (
