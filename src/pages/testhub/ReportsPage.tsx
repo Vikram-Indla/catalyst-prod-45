@@ -3,6 +3,7 @@
  * Route: /testhub/reports
  */
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { subDays } from 'date-fns';
 import { BarChart3, TrendingUp, Target, FileText, Bug, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -52,8 +53,7 @@ export default function ReportsPage() {
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-primary/10"><BarChart3 className="h-5 w-5 text-primary" /></div>
           <div>
-            <h1 className="text-xl font-semibold">Reports & Analytics</h1>
-            <p className="text-sm text-muted-foreground">Track testing progress and metrics</p>
+            <CatalystPageHeader title="Reports & Analytics" />
           </div>
         </div>
         <div className="flex items-center gap-2">

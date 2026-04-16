@@ -4,6 +4,7 @@
  */
 
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, X, ChevronDown, ChevronUp, Download, Plus, Sparkles,
@@ -540,7 +541,7 @@ export default function AllReleasesPage() {
       {/* ═══ PAGE HEADER (52px) ═══ */}
       <header className="flex items-center justify-between px-6 border-b" style={{ height: '52px', flexShrink: 0, borderColor: '#e2e8f0', background: '#ffffff' }}>
         <div className="flex items-center gap-3">
-          <h1 style={{ fontSize: '24px', fontWeight: 600, color: '#0f172a', lineHeight: 1.2 }}>All Releases</h1>
+          <CatalystPageHeader title="All Releases" />
           <span style={{ fontSize: '13px', fontWeight: 400, color: '#94a3b8' }}>{releases.length} releases</span>
         </div>
         <div className="flex items-center gap-2">

@@ -7,6 +7,7 @@
  * DEF-S11-04: Release FK stored & clickable chip
  */
 import { useState, useCallback, useMemo } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
@@ -261,7 +262,7 @@ export default function PlanDetailPage() {
               </button>
             )}
           </div>
-          <h1 className="text-2xl font-bold">{displayPlan.name}</h1>
+          <CatalystPageHeader title={displayPlan.name} />
           <div className="flex items-center gap-4 mt-1">
             {plan.creator && (
               <p className="text-sm text-muted-foreground">Created by {plan.creator.full_name}</p>

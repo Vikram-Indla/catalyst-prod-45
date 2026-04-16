@@ -3,6 +3,7 @@
  * With Chain Focus Zoom & AI Executive Story Panel
  */
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, X, Minus, Plus, RotateCcw, Unlink, Sparkles, RefreshCw, Copy, ChevronRight } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -724,13 +725,8 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
       <div className="flex items-center justify-between shrink-0 px-5 border-b border-border bg-card" style={{ height: 52 }}>
         {/* Left: Title + Stats */}
         <div className="flex items-center gap-5">
-          <div>
-            <h1 className="text-foreground font-semibold tracking-tight" style={{ fontSize: 15 }}>
-              Strategy Alignment Map
-            </h1>
-            <p className="text-muted-foreground" style={{ fontSize: 11 }}>
-              Ministry of Industry — FY2026 Strategic Alignment
-            </p>
+           <div>
+            <CatalystPageHeader title="Strategy Alignment Map" />
           </div>
           {stats && (
             <>

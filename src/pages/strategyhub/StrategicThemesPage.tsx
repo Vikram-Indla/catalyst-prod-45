@@ -5,6 +5,7 @@
  */
 
 import { useState, useMemo, useCallback } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useNavigate } from 'react-router-dom';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { CommandCenterHeader } from '@/components/shared/CommandCenterHeader';
@@ -129,7 +130,7 @@ export default function StrategicThemesPage() {
           <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</span>
         </nav>
         <div className="flex items-center justify-between" style={{ marginBottom: 0 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</h1>
+          <CatalystPageHeader title="Strategic Themes" />
         </div>
       </div>
 

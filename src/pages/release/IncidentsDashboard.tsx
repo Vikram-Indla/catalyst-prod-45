@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -54,11 +55,9 @@ export default function IncidentsDashboard() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header - fixed height 72px to align with sidebar */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
-        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Incidents Dashboard</h1>
-          </div>
+      <div className="border-b border-border bg-card flex-shrink-0">
+        <div className="px-4 sm:px-6 flex items-center justify-between">
+          <CatalystPageHeader title="Incidents Dashboard" />
           <Link to="/release/incidents">
             <Button variant="outline" className="border-border text-muted-foreground">
               View List

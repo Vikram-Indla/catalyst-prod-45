@@ -5,6 +5,7 @@
  */
 
 import { useState, useRef, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { useVision } from '@/hooks/strategy/useStrategyData';
 import { useUpdateVision } from '@/hooks/strategy/useStrategyMutations';
 import { Pencil, Check, X } from 'lucide-react';
@@ -241,7 +242,7 @@ export default function StrategyRoomDashboard({
       {/* HEADER */}
       <header className="srd-header">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <h1 style={{ ...S(22), color: 'var(--srd-ink)', letterSpacing: '-0.025em', margin: 0 }}>Strategy Room</h1>
+          <CatalystPageHeader title="Strategy Room" />
           <div style={{ ...F(12), marginTop: 2, flexWrap: 'wrap' }}>
             <span style={{ ...M(11), color: 'var(--srd-ink-m)', ...F(5) }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--srd-green)', flexShrink: 0, animation: 'srd-pulse 2s ease-in-out infinite' }} />
