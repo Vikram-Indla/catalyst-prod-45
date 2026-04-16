@@ -1,65 +1,77 @@
-import { useState } from 'react';
-import { Send, MoreVertical, Trash2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useDefectCommentsG25, useCreateDefectCommentG25, useDeleteDefectCommentG25 } from '@/hooks/useDefectsG25';
-import { formatDistanceToNow } from 'date-fns';
-import { Skeleton } from '@/components/ui/skeleton';
+/**
+ * Defect Comments (G25) — catalyst-ds replacement.
+ * Reads from tm_comments with entity_type='defect'.
+ */
+import { useState, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { ActivityPanel } from '@/components/catalyst-ds';
+import type { CdsComment, CdsUser } from '@/components/catalyst-ds';
 
-export function DefectComments({ defectId }: { defectId: string }) {
-  const { data: comments, isLoading } = useDefectCommentsG25(defectId);
-  const create = useCreateDefectCommentG25();
-  const del = useDeleteDefectCommentG25();
-  const [text, setText] = useState('');
+interface DefectCommentsProps {
+  defectId: string;
+}
 
-  const handleSubmit = async () => {
-    if (!text.trim()) return;
-    await create.mutateAsync({ defectId, comment: text.trim() });
-    setText('');
-  };
+export function DefectComments({ defectId }: DefectCommentsProps) {
+  const queryClient = useQueryClient();
+  const [currentUser, setCurrentUser] = useState<CdsUser | undefined>();
 
-  if (isLoading) return <div className="space-y-3"><Skeleton className="h-16 w-full" /><Skeleton className="h-16 w-full" /></div>;
+  useQuery({
+    queryKey: ['current-user-defect-comments'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      const { data: profile } = await supabase.from('profiles').select('id, full_name, avatar_url').eq('id', user.id).single();
+      if (profile) setCurrentUser({ id: profile.id, name: profile.full_name || 'You', avatarUrl: profile.avatar_url });
+      return user;
+    },
+  });
+
+  const { data: rawComments = [], isLoading } = useQuery({
+    queryKey: ['g25-defect-comments', defectId],
+    enabled: !!defectId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('tm_comments')
+        .select('*, creator:profiles!tm_comments_author_id_fkey(full_name, avatar_url)')
+        .eq('entity_type', 'defect')
+        .eq('entity_id', defectId)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  const addMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      await supabase.from('tm_comments').insert({ entity_type: 'defect', entity_id: defectId, author_id: user.id, content });
+    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['g25-defect-comments', defectId] }); toast.success('Comment added'); },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => { await supabase.from('tm_comments').delete().eq('id', id); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['g25-defect-comments', defectId] }); toast.success('Comment deleted'); },
+  });
+
+  const comments: CdsComment[] = rawComments.map((r: any) => ({
+    id: r.id,
+    author: { id: r.author_id || 'unknown', name: r.creator?.full_name || 'Unknown', avatarUrl: r.creator?.avatar_url || null },
+    content: r.content || '', createdAt: r.created_at, isEdited: r.updated_at && r.updated_at !== r.created_at,
+  }));
 
   return (
-    <div className="space-y-4">
-      {comments?.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-4 text-center">No comments yet</p>
-      ) : (
-        <div className="space-y-3">
-          {comments?.map(c => (
-            <div key={c.id} className="flex gap-3 p-3 rounded-lg bg-muted/50">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={c.creator?.avatar_url || undefined} />
-                <AvatarFallback className="text-xs">{c.creator?.full_name?.slice(0, 2).toUpperCase() || '??'}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">{c.creator?.full_name || 'Unknown'}</span>
-                    <span className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}</span>
-                    {c.updated_at && new Date(c.updated_at).getTime() - new Date(c.created_at).getTime() > 1000 && (
-                      <span className="text-xs text-muted-foreground italic">(edited)</span>
-                    )}
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild><Button variant="ghost" size="sm" className="h-6 w-6 p-0"><MoreVertical className="h-3 w-3" /></Button></DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="text-destructive" onClick={() => del.mutate({ commentId: c.id, defectId })}><Trash2 className="h-4 w-4 mr-2" />Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-                <p className="text-sm whitespace-pre-wrap">{c.comment}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-      <div className="flex gap-3 items-start">
-        <Textarea placeholder="Add a comment... (Ctrl+Enter to send)" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) handleSubmit(); }} rows={2} className="resize-none" />
-        <Button size="sm" onClick={handleSubmit} disabled={!text.trim() || create.isPending}><Send className="h-4 w-4" /></Button>
-      </div>
-    </div>
+    <ActivityPanel
+      comments={comments} historyItems={[]} currentUser={currentUser} mentionableUsers={[]}
+      onAddComment={useCallback((c: string) => addMutation.mutateAsync(c), [addMutation])}
+      onDeleteComment={useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation])}
+      isSubmitting={addMutation.isPending} isLoadingComments={isLoading} isLoadingHistory={false}
+      defaultTab="comments" defaultSortOrder="newest"
+    />
   );
 }
+
+export default DefectComments;

@@ -1,61 +1,62 @@
+/**
+ * Feature Audit Tab — catalyst-ds replacement.
+ * Reads from activity_logs with entity_type='features'.
+ */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { formatDistanceToNow } from 'date-fns';
+import { ActivityFeed } from '@/components/catalyst-ds';
+import type { CdsActivityItem } from '@/components/catalyst-ds';
 
 interface FeatureAuditTabProps {
   featureId?: string;
 }
 
-export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
-  const { data: auditLogs } = useQuery({
-    queryKey: ['feature-audit', featureId],
-    queryFn: async () => {
-      if (!featureId) return [];
+function diffFields(before: any, after: any): { field: string; oldValue: string | null; newValue: string | null }[] {
+  if (!before || !after) return [];
+  const changes: { field: string; oldValue: string | null; newValue: string | null }[] = [];
+  for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    if (['updated_at', 'created_at'].includes(key)) continue;
+    if (JSON.stringify(before[key]) !== JSON.stringify(after[key])) {
+      changes.push({ field: key, oldValue: before[key] != null ? String(before[key]) : null, newValue: after[key] != null ? String(after[key]) : null });
+    }
+  }
+  return changes;
+}
 
+export function FeatureAuditTab({ featureId }: FeatureAuditTabProps) {
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ['feature-audit', featureId],
+    enabled: !!featureId,
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('activity_logs')
         .select('*')
         .eq('entity_type', 'features')
-        .eq('entity_id', featureId)
+        .eq('entity_id', featureId!)
         .order('created_at', { ascending: false })
         .limit(50);
       if (error) throw error;
 
-      return data || [];
+      const result: CdsActivityItem[] = (data || []).flatMap((log: any) => {
+        let type: CdsActivityItem['type'] = 'update';
+        if (log.action === 'INSERT') type = 'create';
+        else if (log.action === 'DELETE') type = 'delete';
+
+        const changes = diffFields(log.before_json, log.after_json);
+        if (changes.length === 0) {
+          return [{ id: log.id, type, actor: { id: log.actor_id || 'system', name: 'System' }, timestamp: log.created_at, description: `${log.action?.toLowerCase()} this feature` }];
+        }
+        return changes.map((c, i) => ({
+          id: `${log.id}-${i}`, type: type as CdsActivityItem['type'],
+          actor: { id: log.actor_id || 'system', name: 'System' },
+          timestamp: log.created_at, fieldChange: c,
+        }));
+      });
+      return result;
     },
-    enabled: !!featureId,
   });
 
-  if (!featureId) {
-    return (
-      <div className="text-sm text-muted-foreground">
-        Save feature to view audit log
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {auditLogs && auditLogs.length > 0 ? (
-        <div className="border rounded-lg divide-y">
-          {auditLogs.map((log) => (
-            <div key={log.id} className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="font-medium text-sm">{log.action}</div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    {log.created_at && formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="border rounded-lg p-8 text-center text-sm text-muted-foreground">
-          No audit history yet
-        </div>
-      )}
-    </div>
-  );
+  return <ActivityFeed items={items} isLoading={isLoading} emptyMessage="No audit history" />;
 }
+
+export default FeatureAuditTab;
