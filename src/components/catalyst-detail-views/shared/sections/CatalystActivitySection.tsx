@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { ActivityPanel } from '@/components/catalyst-ds';
-import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply } from '@/components/catalyst-ds';
+import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap } from '@/components/catalyst-ds';
 
 interface CatalystActivitySectionProps {
   itemId: string;
@@ -94,6 +94,25 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     avatarUrl: p.avatar_url,
     email: p.email,
   }));
+
+  // Jira accountId -> display name map, used to render [~accountid:xxx] mentions
+  // in historical descriptions / summaries as @Name.
+  const { data: jiraUserMap = {} as JiraUserMap } = useQuery({
+    queryKey: ['jira-user-map'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, jira_display_name, catalyst_profile_id');
+      const map: JiraUserMap = {};
+      for (const row of data || []) {
+        if (row.jira_account_id && row.jira_display_name) {
+          map[row.jira_account_id] = row.jira_display_name;
+        }
+      }
+      return map;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   useQuery({
     queryKey: ['current-user-profile', user?.id],
@@ -216,6 +235,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         quickReplies={QUICK_REPLIES}
         defaultTab="all"
         defaultSortOrder="newest"
+        jiraUserMap={jiraUserMap}
       />
     </div>
   );
