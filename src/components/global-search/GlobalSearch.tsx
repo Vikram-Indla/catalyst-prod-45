@@ -656,6 +656,7 @@ export function GlobalSearch() {
                       isSelected={selectedIdx === idx}
                       onHover={() => setSelectedIdx(idx)}
                       onClick={() => handleSelect(item)}
+                      isLoading={loadingItemId === item.id}
                     />
                   ))}
                 </>
@@ -699,6 +700,7 @@ export function GlobalSearch() {
                         isSelected={selectedIdx === idx}
                         onHover={() => setSelectedIdx(idx)}
                         onClick={() => handleSelect(item)}
+                        isLoading={loadingItemId === item.id}
                       />
                     ))}
                   </>
