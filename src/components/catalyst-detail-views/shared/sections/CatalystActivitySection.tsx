@@ -1,6 +1,8 @@
 /**
- * Drop-in replacement for CatalystActivitySection using catalyst-ds components.
- * Queries ph_comments + ph_activity_log — same data sources as the original.
+ * CatalystActivitySection — catalyst-ds replacement.
+ * Merges BOTH Catalyst-native data (ph_comments + ph_activity_log)
+ * AND Jira-synced data (jira_sync_comments + jira_sync_changelog).
+ * Looks up issue_key from ph_issues to join Jira tables.
  */
 import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,7 +23,7 @@ const QUICK_REPLIES: CdsQuickReply[] = [
   { label: 'Agree...', template: 'Agreed. ' },
 ];
 
-function mapComment(raw: any): CdsComment {
+function mapCatalystComment(raw: any): CdsComment {
   return {
     id: raw.id,
     author: {
@@ -37,7 +39,20 @@ function mapComment(raw: any): CdsComment {
   };
 }
 
-function mapActivity(raw: any): CdsActivityItem {
+function mapJiraComment(raw: any): CdsComment {
+  return {
+    id: `jira-${raw.id}`,
+    author: {
+      id: raw.author_account_id || 'jira',
+      name: raw.author_display_name || 'Jira User',
+      avatarUrl: raw.author_avatar_url || null,
+    },
+    content: raw.body || '',
+    createdAt: raw.jira_created_at || raw.created_at,
+  };
+}
+
+function mapCatalystActivity(raw: any): CdsActivityItem {
   const action = raw.action;
   let type: CdsActivityItem['type'] = 'update';
   if (action === 'created' || action === 'create') type = 'create';
@@ -56,6 +71,24 @@ function mapActivity(raw: any): CdsActivityItem {
     fieldChange: raw.field_name
       ? { field: raw.field_name, oldValue: raw.old_value, newValue: raw.new_value }
       : undefined,
+  };
+}
+
+function mapJiraChangelog(raw: any): CdsActivityItem {
+  return {
+    id: `jira-cl-${raw.id}`,
+    type: 'update',
+    actor: {
+      id: raw.author_account_id || 'jira',
+      name: raw.author_display_name || 'Jira',
+      avatarUrl: raw.author_avatar_url || null,
+    },
+    timestamp: raw.jira_created_at || raw.created_at,
+    fieldChange: {
+      field: raw.field_name || 'unknown',
+      oldValue: raw.from_string || raw.from_value || null,
+      newValue: raw.to_string || raw.to_value || null,
+    },
   };
 }
 
@@ -101,7 +134,22 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const { data: rawComments = [], isLoading: isLoadingComments } = useQuery({
+  // Look up issue_key for Jira table joins
+  const { data: issueKey } = useQuery({
+    queryKey: ['issue-key-lookup', itemId],
+    enabled: !!itemId && isOpen,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('issue_key')
+        .eq('id', itemId)
+        .single();
+      return data?.issue_key || null;
+    },
+  });
+
+  // Catalyst-native comments (ph_comments)
+  const { data: catalystComments = [], isLoading: loadingCatalystComments } = useQuery({
     queryKey: ['cv-comments', itemId],
     enabled: !!itemId && isOpen,
     queryFn: async () => {
@@ -121,7 +169,23 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const { data: rawActivity = [], isLoading: isLoadingHistory } = useQuery({
+  // Jira-synced comments (jira_sync_comments)
+  const { data: jiraComments = [], isLoading: loadingJiraComments } = useQuery({
+    queryKey: ['jira-sync-comments', issueKey],
+    enabled: !!issueKey,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jira_sync_comments')
+        .select('id, issue_key, jira_comment_id, author_display_name, author_account_id, author_avatar_url, body, jira_created_at, created_at')
+        .eq('issue_key', issueKey!)
+        .order('jira_created_at', { ascending: true });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Catalyst-native activity (ph_activity_log)
+  const { data: catalystActivity = [], isLoading: loadingCatalystActivity } = useQuery({
     queryKey: ['cv-activity', itemId],
     enabled: !!itemId && isOpen,
     queryFn: async () => {
@@ -141,6 +205,37 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
+  // Jira-synced changelog (jira_sync_changelog)
+  const { data: jiraChangelog = [], isLoading: loadingJiraChangelog } = useQuery({
+    queryKey: ['jira-sync-changelog', issueKey],
+    enabled: !!issueKey,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('jira_sync_changelog')
+        .select('id, issue_key, author_display_name, author_account_id, author_avatar_url, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
+        .eq('issue_key', issueKey!)
+        .order('jira_created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Merge comments: Catalyst + Jira
+  const allComments: CdsComment[] = [
+    ...catalystComments.map(mapCatalystComment),
+    ...jiraComments.map(mapJiraComment),
+  ];
+
+  // Merge history: Catalyst + Jira
+  const allHistory: CdsActivityItem[] = [
+    ...catalystActivity.map(mapCatalystActivity),
+    ...jiraChangelog.map(mapJiraChangelog),
+  ];
+
+  const isLoadingComments = loadingCatalystComments || loadingJiraComments;
+  const isLoadingHistory = loadingCatalystActivity || loadingJiraChangelog;
+
+  // Mutations write to Catalyst-native tables only
   const addMutation = useMutation({
     mutationFn: async (body: string) => {
       await supabase.from('ph_comments').insert({
@@ -176,9 +271,6 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  const comments: CdsComment[] = rawComments.map(mapComment);
-  const historyItems: CdsActivityItem[] = rawActivity.map(mapActivity);
-
   const handleAdd = useCallback((content: string) => addMutation.mutateAsync(content), [addMutation]);
   const handleEdit = useCallback((id: string, content: string) => editMutation.mutateAsync({ id, body: content }), [editMutation]);
   const handleDelete = useCallback((id: string) => deleteMutation.mutateAsync(id), [deleteMutation]);
@@ -186,8 +278,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   return (
     <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20, marginTop: 8 }}>
       <ActivityPanel
-        comments={comments}
-        historyItems={historyItems}
+        comments={allComments}
+        historyItems={allHistory}
         currentUser={currentUser}
         mentionableUsers={mentionableUsers}
         onAddComment={handleAdd}
