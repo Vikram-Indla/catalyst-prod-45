@@ -137,7 +137,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
       if (!user) return [];
       const { data, error } = await supabase
         .from('user_recent_items')
-        .select('id, issue_id, issue_key, issue_type, summary, visited_at, project_id')
+        .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at, project_id')
         .eq('user_id', user.id)
         .order('visited_at', { ascending: false })
         .limit(10);
@@ -153,7 +153,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
 
   const handleRecentClick = (item: typeof recentItems[0]) => {
     const { openDetail } = useGlobalSearchStore.getState();
-    openDetail({ id: item.issue_id, itemType: item.issue_type as any });
+    openDetail({ id: item.entity_id, itemType: item.entity_type as any });
   };
 
   const issueTypeColor = (t: string) => {
@@ -222,15 +222,15 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
               onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F4F5F7'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              <span style={{ width: 8, height: 8, borderRadius: 2, background: issueTypeColor(item.issue_type), flexShrink: 0 }} />
+              <span style={{ width: 8, height: 8, borderRadius: 2, background: issueTypeColor(item.entity_type), flexShrink: 0 }} />
               <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>
-                {item.issue_key}
+                {item.entity_key}
               </span>
               <span style={{
                 fontSize: 12, color: isDark ? '#A1A1A1' : '#172B4D', fontWeight: 450,
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
               }}>
-                {item.summary}
+                {item.display_summary}
               </span>
               <button
                 className="opacity-0 group-hover:opacity-100"

@@ -122,9 +122,9 @@ export function SidebarProjectNav({
   const handleRecentClick = (item: typeof recentItems[0]) => {
     const { openDetail } = useGlobalSearchStore.getState();
     openDetail({
-      id: item.issue_id,
+      id: item.entity_id,
       projectKey,
-      itemType: item.issue_type,
+      itemType: item.entity_type,
     });
   };
 
@@ -281,7 +281,7 @@ export function SidebarProjectNav({
             {recentsExpanded && (
               <div style={{ padding: '2px 0' }}>
                 {recentItems.map(item => {
-                  const typeColor = getTypeColor(item.issue_type);
+                  const typeColor = getTypeColor(item.entity_type);
                   return (
                     <div
                       key={item.id}
@@ -300,10 +300,10 @@ export function SidebarProjectNav({
                     >
                       <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: typeColor, flexShrink: 0 }} />
                       <span style={{ fontSize: 11.5, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: "'JetBrains Mono', monospace", flexShrink: 0, letterSpacing: '-0.02em' }}>
-                        {item.issue_key}
+                        {item.entity_key}
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#6B778C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
-                        {item.summary}
+                        {item.display_summary}
                       </span>
                       <span className="group-hover:hidden" style={{ fontSize: 10, fontWeight: 500, color: isDark ? '#7D7D7D' : '#94A3B8', flexShrink: 0, fontFamily: "'JetBrains Mono', monospace" }}>
                         {formatTimeAgo(item.visited_at)}
