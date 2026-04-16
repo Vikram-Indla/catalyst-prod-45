@@ -131,15 +131,15 @@
   --cp-ai-bd:           rgba(59,130,246, 0.16);
   --cp-ai-t:            #60A5FA;
 
-  /* StatusLozenge — NOCTURNE dark values */
-  --cp-lz-gy-bg:        #1A1A1A;
-  --cp-lz-gy-t:         #B8BCC8;
-  --cp-lz-bl-bg:        #1A2030;
-  --cp-lz-bl-t:         #93C5FD;
-  --cp-lz-gn-bg:        #182820;
-  --cp-lz-gn-t:         #86EFAC;
-  --cp-lz-rd-bg:        #2A1C1E;
-  --cp-lz-rd-t:         #FCA5A5;
+  /* StatusLozenge — Bold pill (matches StatusBadge canonical) */
+  --cp-lz-gy-bg:        #42526E;
+  --cp-lz-gy-t:         #FFFFFF;
+  --cp-lz-bl-bg:        #0C66E4;
+  --cp-lz-bl-t:         #FFFFFF;
+  --cp-lz-gn-bg:        #1B7F37;
+  --cp-lz-gn-t:         #FFFFFF;
+  --cp-lz-rd-bg:        #BF2600;
+  --cp-lz-rd-t:         #FFFFFF;
 
   /* StatusBadge — Jira-grade pill tokens (dark) */
   --status-todo-bg:         #3B3D42;

@@ -79,7 +79,7 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
   const overflow = memberCount - shown.length;
 
   if (memberCount === 0) {
-    return <span className="text-[10px] text-gray-400 dark:text-gray-500">—</span>;
+    return <span className="text-[10px] text-slate-400 dark:text-[#555]">—</span>;
   }
 
   return (
@@ -98,15 +98,15 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
                   <img
                     src={avatarUrl}
                     alt={name || 'Unknown'}
-                    className="h-[22px] w-[22px] shrink-0 rounded-full border-2 border-background object-cover"
-                    style={{ marginLeft: i > 0 ? -6 : 0, zIndex: max - i }}
+                    className="h-[26px] w-[26px] shrink-0 rounded-full border-[1.5px] border-background object-cover"
+                    style={{ marginLeft: i > 0 ? -8 : 0, zIndex: max - i }}
                   />
                 ) : (
                   <div
-                    className="flex h-[22px] w-[22px] shrink-0 cursor-default items-center justify-center rounded-full border-2 border-background text-[8px] font-bold text-white"
+                    className="flex h-[26px] w-[26px] shrink-0 cursor-default items-center justify-center rounded-full border-[1.5px] border-background text-[9px] font-bold text-white"
                     style={{
                       background: `linear-gradient(135deg, ${from}, ${to})`,
-                      marginLeft: i > 0 ? -6 : 0,
+                      marginLeft: i > 0 ? -8 : 0,
                       zIndex: max - i,
                     }}
                   >
@@ -121,9 +121,17 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
           );
         })}
         {overflow > 0 && (
-          <span className="text-[10px] text-gray-500 dark:text-gray-400 ml-1">
-            {overflow}
-          </span>
+          <div
+            className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-background text-[9px] font-semibold"
+            style={{
+              background: '#2E2E2E',
+              color: '#A1A1A1',
+              marginLeft: -8,
+              zIndex: 0,
+            }}
+          >
+            +{overflow}
+          </div>
         )}
       </div>
     </TooltipProvider>
