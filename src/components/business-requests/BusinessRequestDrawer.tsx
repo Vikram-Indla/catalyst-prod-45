@@ -43,6 +43,7 @@ import { BudgetViewTab } from './drawer-tabs/BudgetViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
 import { ExecutiveAuditHistoryTab } from './drawer-tabs/ExecutiveAuditHistoryTab';
+import { ActivityTab } from './drawer-tabs/ActivityTab';
 import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
 import { RisksViewTab } from './drawer-tabs/RisksViewTab';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
@@ -174,7 +175,7 @@ const FALLBACK_TABS = [
   { value: 'scoring', label: 'Scoring & Review' },
   { value: 'planning', label: 'Planning' },
   { value: 'links', label: 'Links' },
-  { value: 'history', label: 'History' },
+  { value: 'activity', label: 'Activity' },
 ];
 
 export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestChange, initialTab }: BusinessRequestDrawerProps) {
@@ -840,9 +841,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                 )}
               </TabsContent>
               
-              {/* Audit History Tab */}
-              <TabsContent value="audit-history" className="mt-0 p-5 pb-8 focus-visible:outline-none">
-                {requestId && <ExecutiveAuditHistoryTab requestId={requestId} />}
+              {/* Activity Tab (catalyst-ds) */}
+              <TabsContent value="audit-history" className="mt-0 pb-8 focus-visible:outline-none">
+                {requestId && <ActivityTab requestId={requestId} />}
+              </TabsContent>
+              <TabsContent value="activity" className="mt-0 pb-8 focus-visible:outline-none">
+                {requestId && <ActivityTab requestId={requestId} />}
               </TabsContent>
             </div>
           </Tabs>
