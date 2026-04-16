@@ -182,7 +182,6 @@ function ResultRow({ item, isSelected, onHover, onClick, query, isLoading: rowLo
           formatViewedDate(item.viewed_at)
         )}
       </div>
-      </div>
     </div>
   );
 }
