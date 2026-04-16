@@ -9,7 +9,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import { Search, Download, Plus } from 'lucide-react';
-import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { AIIntelligenceButton } from '@/components/ui/AIIntelligenceButton';
 import {
   Idea, IdeationView, IdeaStatus, StatusFilter, VIEW_TITLES,

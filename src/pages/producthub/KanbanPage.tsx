@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { KanbanToolbar } from '@/components/producthub/kanban/KanbanToolbar';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';

@@ -29,7 +29,7 @@ import type { Initiative, InitiativeStatus, Density } from '@/types/initiative';
 import { getPriorityLevel, STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { Search, X, Plus, Download, Calendar, Clock, LayoutGrid } from 'lucide-react';
 import { PriorityBars } from '@/components/shared/PriorityIndicator';
-import { ProductHubPageHeader } from '@/components/producthub/shared/ProductHubPageHeader';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { BacklogSubTabs, type BacklogTabType } from '@/components/producthub/listing/BacklogSubTabs';
 import { BacklogStatusBar } from '@/components/producthub/listing/BacklogStatusBar';
 import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
