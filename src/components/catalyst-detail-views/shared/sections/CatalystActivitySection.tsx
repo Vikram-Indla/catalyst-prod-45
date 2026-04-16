@@ -4,7 +4,7 @@
  * AND Jira-synced data (jira_sync_comments + jira_sync_changelog).
  * Looks up issue_key from ph_issues to join Jira tables.
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -219,6 +219,27 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
       return data || [];
     },
   });
+
+  // On-demand activity backfill — bulk sync skips changelog expansion to save CPU,
+  // so newer items have no rows until opened. Fetch once per issue if empty.
+  const backfillTriedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!issueKey) return;
+    if (loadingJiraChangelog || loadingJiraComments) return;
+    if (jiraChangelog.length > 0 || jiraComments.length > 0) return;
+    if (backfillTriedRef.current === issueKey) return;
+    backfillTriedRef.current = issueKey;
+    supabase.functions
+      .invoke('wh-jira-issue-activity', { body: { issue_key: issueKey } })
+      .then(({ data, error }: any) => {
+        if (error) return;
+        if ((data?.changelog_count ?? 0) > 0 || (data?.comment_count ?? 0) > 0) {
+          queryClient.invalidateQueries({ queryKey: ['jira-sync-changelog', issueKey] });
+          queryClient.invalidateQueries({ queryKey: ['jira-sync-comments', issueKey] });
+        }
+      })
+      .catch(() => {});
+  }, [issueKey, loadingJiraChangelog, loadingJiraComments, jiraChangelog.length, jiraComments.length, queryClient]);
 
   // Merge comments: Catalyst + Jira
   const allComments: CdsComment[] = [
