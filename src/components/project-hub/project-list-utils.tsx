@@ -23,12 +23,12 @@ export function formatRelativeTime(dateStr: string | null): string {
  *   GREEN → Done / Approved / Completed
  */
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  active:    { bg: '#DEEBFF', color: '#0747A6' },
-  on_hold:   { bg: '#DFE1E6', color: '#253858' },
-  planning:  { bg: '#DFE1E6', color: '#253858' },
-  completed: { bg: '#E3FCEF', color: '#006644' },
-  archived:  { bg: '#DFE1E6', color: '#253858' },
-  backlog:   { bg: '#DFE1E6', color: '#253858' },
+  active:    { bg: '#0C66E4', color: '#FFFFFF' },
+  on_hold:   { bg: '#42526E', color: '#FFFFFF' },
+  planning:  { bg: '#42526E', color: '#FFFFFF' },
+  completed: { bg: '#1B7F37', color: '#FFFFFF' },
+  archived:  { bg: '#42526E', color: '#FFFFFF' },
+  backlog:   { bg: '#42526E', color: '#FFFFFF' },
 };
 
 export function StatusBadge({ status }: { status: string }) {
@@ -96,40 +96,54 @@ export function HealthBadge({ health }: { health: string | null }) {
   );
 }
 
-const AVATAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#7C3AED', '#D97706'];
+const AVATAR_COLORS = ['#2563EB', '#0D9488', '#DC2626', '#7C3AED', '#D97706', '#059669', '#0369A1', '#BE185D'];
 
-export function AvatarStack({ count }: { count: number }) {
-  if (count === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  return name.slice(0, 2).toUpperCase();
+}
 
-  const show = Math.min(count, 3);
-  const overflow = count - show;
+function hashName(name: string): number {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+export function AvatarStack({ names }: { names: string[] }) {
+  if (names.length === 0) return <span style={{ fontSize: 12, color: '#94A3B8' }}>—</span>;
+
+  const show = Math.min(names.length, 5);
+  const overflow = names.length - show;
 
   return (
     <div className="flex items-center -space-x-1.5">
-      {Array.from({ length: show }).map((_, i) => (
+      {names.slice(0, show).map((name, i) => (
         <div
-          key={i}
+          key={name}
+          title={name}
           className="flex items-center justify-center rounded-full flex-shrink-0"
           style={{
-            width: 24,
-            height: 24,
-            backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
+            width: 26,
+            height: 26,
+            backgroundColor: AVATAR_COLORS[hashName(name) % AVATAR_COLORS.length],
             color: '#FFFFFF',
             fontSize: 9,
             fontWeight: 600,
             border: '2px solid var(--cp-float)',
             fontFamily: "'Inter', sans-serif",
+            zIndex: show - i,
           }}
         >
-          {String.fromCharCode(65 + i)}
+          {getInitials(name)}
         </div>
       ))}
       {overflow > 0 && (
         <div
           className="flex items-center justify-center rounded-full flex-shrink-0"
           style={{
-            width: 24,
-            height: 24,
+            width: 26,
+            height: 26,
             backgroundColor: '#EBECF0',
             color: '#6B778C',
             fontSize: 9,

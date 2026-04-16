@@ -14,6 +14,7 @@ export interface PHProject {
   icon: string | null;
   updated_at: string | null;
   member_count?: number;
+  member_names?: string[];
   item_count?: number;
 }
 
@@ -86,7 +87,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
 
       {/* Members */}
       <td style={{ padding: '0 12px' }}>
-        <AvatarStack count={project.member_count || 0} />
+        <AvatarStack names={project.member_names || []} />
       </td>
 
       {/* Items */}
