@@ -13,7 +13,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { InitiativeTable } from '@/components/producthub/listing/InitiativeTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
+import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { ContextMenu } from '@/components/initiatives/ContextMenu';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
@@ -721,13 +721,11 @@ export default function InitiativeListingPage() {
         onPageSizeChange={setPageSize}
       />
 
-      {detailOpen && detailInitiative && (
-        <InitiativeDetailPanel
-          initiative={toTimelineInitiative(detailInitiative)}
-          initiatives={memoizedTimelineInitiatives}
-          onClose={() => setDetailOpen(false)}
-        />
-      )}
+      <BusinessRequestDetailModal
+        isOpen={detailOpen && !!detailInitiative}
+        onClose={() => setDetailOpen(false)}
+        requestId={detailInitiative?.id ?? null}
+      />
 
       <ContextMenu
         position={contextMenu?.pos ?? null}
