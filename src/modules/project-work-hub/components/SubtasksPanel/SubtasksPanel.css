@@ -1,12 +1,30 @@
 /**
  * SubtasksPanel — Pixel-perfect Jira native-issue-table CSS
  * All values reverse-engineered from Jira's actual DOM
+ *
+ * Scoping guardrail:
+ *   Every table-level rule is prefixed with .sp-panel to prevent inheritance
+ *   from ancestor [data-sdm-scope] / .adf-editor-content table rules.
  */
 
 /* ── Panel container ────────────────────────── */
 .sp-panel {
   margin-top: 24px;
   padding: 0;
+  /* Lock typography — prevents system-font fallback inside scoped ancestors */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #172B4D;
+}
+
+/* Neutralise any ambient table reset that ancestor scopes may carry. */
+.sp-panel .sp-table,
+.sp-panel .sp-thead,
+.sp-panel .sp-table tbody,
+.sp-panel .sp-row,
+.sp-panel .sp-th,
+.sp-panel .sp-td {
+  box-sizing: border-box;
+  background: transparent;
 }
 
 /* ── Header row ─────────────────────────────── */
@@ -134,19 +152,22 @@
   overflow-x: auto;
 }
 
-.sp-table {
+.sp-panel .sp-table {
   border-collapse: separate;
   border-spacing: 0;
   table-layout: auto;
   width: 100%;
+  margin: 0;
+  border: none;
 }
 
 /* ── Table header ───────────────────────────── */
-.sp-thead {
+.sp-panel .sp-thead {
   border-bottom: 1.667px solid rgba(11, 18, 14, 0.14);
+  background: transparent;
 }
 
-.sp-th {
+.sp-panel .sp-th {
   padding: 0 8px;
   height: 32px;
   font-size: 12px;
@@ -155,46 +176,109 @@
   text-align: left;
   vertical-align: middle;
   white-space: nowrap;
+  border: none;
   border-bottom: 0.556px solid rgba(11, 18, 14, 0.14);
-  text-transform: none; /* NOT uppercase — Jira uses sentence case */
+  text-transform: none;
+  background: transparent;
 }
 
-.sp-th--priority,
-.sp-th--assignee {
-  width: 60px;
-  min-width: 60px;
+.sp-panel .sp-th--priority {
+  width: 110px;
+  min-width: 110px;
 }
 
-.sp-th--status {
+.sp-panel .sp-th--assignee {
+  width: 140px;
+  min-width: 140px;
+}
+
+.sp-panel .sp-th--status {
   width: 168px;
-  min-width: 100px;
+  min-width: 110px;
+}
+
+.sp-panel .sp-th--select {
+  width: 36px;
+  min-width: 36px;
+  padding: 0 8px;
+  text-align: left;
 }
 
 /* ── Table row ──────────────────────────────── */
-.sp-row {
+.sp-panel .sp-row {
   height: 40px;
   background: #FFFFFF;
   cursor: pointer;
   transition: background 0.1s;
 }
-
-.sp-row:hover {
+.sp-panel .sp-row:hover {
   background: #F4F5F7;
 }
-
-.sp-row + .sp-row {
-  border-top: 0; /* separator handled by td */
+.sp-panel .sp-row--selected,
+.sp-panel .sp-row--selected:hover {
+  background: #E9F2FF;
 }
 
-.sp-td {
+.sp-panel .sp-td {
   vertical-align: middle;
   padding: 0;
+  border: none;
   border-top: 1px solid rgba(11, 18, 14, 0.14);
+  background: transparent;
+  height: 40px;
 }
 
-.sp-row:first-child .sp-td {
+.sp-panel .sp-row:first-child .sp-td {
   border-top: none;
 }
+
+.sp-panel .sp-td--select {
+  width: 36px;
+  padding: 0 8px;
+  text-align: left;
+}
+
+/* ── Checkbox ──────────────────────────────── */
+.sp-checkbox {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+.sp-checkbox input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+.sp-checkbox-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1.5px solid rgba(9, 30, 66, 0.3);
+  background: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, border-color 0.12s;
+}
+.sp-checkbox:hover .sp-checkbox-box {
+  border-color: #0052CC;
+}
+.sp-checkbox input:checked + .sp-checkbox-box,
+.sp-row--selected .sp-checkbox-box {
+  background: #0052CC;
+  border-color: #0052CC;
+}
+.sp-checkbox-dash {
+  width: 8px;
+  height: 2px;
+  background: #0052CC;
+  border-radius: 1px;
+}
+.sp-row--selected .sp-checkbox-dash { background: #FFFFFF; }
 
 /* ── Work cell (merged: icon + key + summary) ─ */
 .sp-work-cell {
@@ -242,7 +326,7 @@
 }
 
 /* ── Priority cell ──────────────────────────── */
-.sp-priority-cell {
+.sp-panel .sp-priority-cell {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -250,13 +334,13 @@
   padding: 0 8px;
 }
 
-.sp-priority-icon {
+.sp-panel .sp-priority-icon {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.sp-priority-label {
+.sp-panel .sp-priority-label {
   font-size: 14px;
   color: #44546F;
   white-space: nowrap;
@@ -265,7 +349,7 @@
 }
 
 /* ── Assignee cell ──────────────────────────── */
-.sp-assignee-cell {
+.sp-panel .sp-assignee-cell {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -300,7 +384,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 60px;
+  max-width: 90px;
 }
 
 /* ── Status cell ────────────────────────────── */
@@ -570,12 +654,39 @@
 }
 
 /* ── Popover (shared) ────────────────────────── */
+/* Inline `style={{ width, padding }}` on PopoverContent wins over shadcn's
+   default w-72 / p-4 classes, so no !important needed here. */
 .sp-pop {
   border: 1px solid rgba(9, 30, 66, 0.24);
   border-radius: 6px;
   box-shadow: 0 6px 16px rgba(9, 30, 66, 0.15);
   background: #FFFFFF;
-  font-family: inherit;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #172B4D;
+}
+
+.sp-pop-label {
+  font-size: 13px;
+  color: #172B4D;
+  flex: 1;
+  text-align: left;
+}
+
+/* Header-menu checkbox (rendered inline, always visible) */
+.sp-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1.5px solid rgba(9, 30, 66, 0.3);
+  background: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sp-check--on {
+  background: #0052CC;
+  border-color: #0052CC;
 }
 
 .sp-pop-search {
@@ -810,6 +921,86 @@
   font-size: 11px;
   color: #1868DB;
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Bulk edit bar ───────────────────────────── */
+.sp-bulkbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #0C2340;
+  border-radius: 6px;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(9, 30, 66, 0.25);
+}
+
+.sp-bulkbar-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  padding: 4px 8px 4px 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  margin-right: 4px;
+}
+
+.sp-bulkbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  background: transparent;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  transition: background 0.12s, border-color 0.12s;
+}
+.sp-bulkbar-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+.sp-bulkbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sp-bulkbar-btn--danger {
+  border-color: rgba(255, 99, 89, 0.6);
+  color: #FFB4AB;
+}
+.sp-bulkbar-btn--danger:hover:not(:disabled) {
+  background: rgba(255, 99, 89, 0.15);
+  border-color: #FF8A80;
+  color: #FFD1CA;
+}
+
+.sp-bulkbar-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+  border-radius: 3px;
+  transition: background 0.12s;
+}
+.sp-bulkbar-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
 }
 
 /* ════════════════════════════════════════════════════════════════

@@ -38,6 +38,7 @@ import { RowActionsMenu } from './RowActionsMenu';
 import { HeaderOverflowMenu } from './HeaderOverflowMenu';
 import { ViewToggle, type SubtaskView } from './ViewToggle';
 import { BoardView } from './BoardView';
+import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import './SubtasksPanel.css';
 
@@ -192,6 +193,9 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   const [draftSummary, setDraftSummary] = useState('');
   const [draftType, setDraftType] = useState('Sub-task');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [hideDone, setHideDone] = useState(false);
+  const [bulkEditMode, setBulkEditMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
     priority: true,
     assignee: true,
@@ -199,7 +203,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   });
   const createRef = useRef<HTMLInputElement>(null);
 
-  const { update, remove, bulkRemoveDone } = useSubtaskMutations(storyKey);
+  const { update, remove, bulkUpdate, bulkRemove } = useSubtaskMutations(storyKey);
 
   // ─── Data query ───────────────────────────────
   const { data: children = [], isLoading } = useQuery({
@@ -250,6 +254,25 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
   const doneCount = doneRows.length;
   const totalCount = children.length;
   const percentage = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
+
+  // ─── Hide-done filter applied to visible rows ───
+  const visibleRows = useMemo(
+    () => hideDone ? children.filter(c => (c.status_category ?? '').toLowerCase() !== 'done') : children,
+    [children, hideDone]
+  );
+
+  // Keep selection clean if hideDone removes rows or a row is deleted elsewhere.
+  useEffect(() => {
+    if (selectedIds.size === 0) return;
+    const visibleIdSet = new Set(visibleRows.map(r => r.id));
+    let changed = false;
+    const next = new Set<string>();
+    selectedIds.forEach(id => {
+      if (visibleIdSet.has(id)) next.add(id);
+      else changed = true;
+    });
+    if (changed) setSelectedIds(next);
+  }, [visibleRows, selectedIds]);
 
   // ─── Create mutation ──────────────────────────
   const createMutation = useMutation({
@@ -317,10 +340,66 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
     remove.mutate(row.id);
   };
 
-  const handleClearDone = () => {
-    if (doneRows.length === 0) return;
-    if (!window.confirm(`Clear ${doneRows.length} completed subtask${doneRows.length === 1 ? '' : 's'}? They will be removed from this parent.`)) return;
-    bulkRemoveDone.mutate(doneRows.map(r => r.id));
+  // ─── Bulk edit handlers ───────────────────────
+  const enterBulkEdit = () => {
+    setBulkEditMode(true);
+    setSelectedIds(new Set());
+  };
+
+  const exitBulkEdit = () => {
+    setBulkEditMode(false);
+    setSelectedIds(new Set());
+  };
+
+  const toggleSelected = (id: string) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const allVisibleSelected = visibleRows.length > 0 && visibleRows.every(r => selectedIds.has(r.id));
+  const someVisibleSelected = visibleRows.some(r => selectedIds.has(r.id));
+
+  const toggleSelectAll = () => {
+    if (allVisibleSelected) setSelectedIds(new Set());
+    else setSelectedIds(new Set(visibleRows.map(r => r.id)));
+  };
+
+  const handleBulkStatus = (status: string, category: 'todo' | 'in_progress' | 'done') => {
+    if (selectedIds.size === 0) return;
+    bulkUpdate.mutate({
+      ids: Array.from(selectedIds),
+      patch: { status, status_category: category || resolveStatusCategory(status) },
+    });
+  };
+
+  const handleBulkPriority = (priority: 'Critical' | 'High' | 'Medium' | 'Low') => {
+    if (selectedIds.size === 0) return;
+    bulkUpdate.mutate({ ids: Array.from(selectedIds), patch: { priority } });
+  };
+
+  const handleBulkAssignee = (a: { accountId: string | null; displayName: string | null }) => {
+    if (selectedIds.size === 0) return;
+    bulkUpdate.mutate({
+      ids: Array.from(selectedIds),
+      patch: { assignee_account_id: a.accountId, assignee_display_name: a.displayName },
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedIds.size === 0) return;
+    const n = selectedIds.size;
+    if (!window.confirm(`Delete ${n} subtask${n === 1 ? '' : 's'}? This cannot be undone.`)) return;
+    bulkRemove.mutate(Array.from(selectedIds));
+    setSelectedIds(new Set());
+  };
+
+  const handleViewInSearch = () => {
+    const pk = projectKey || storyKey.split('-')[0];
+    if (!pk) return;
+    window.location.href = `/project-hub/${pk}/hierarchy/allwork`;
   };
 
   return (
@@ -345,10 +424,11 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
         {expanded && (
           <div className="sp-header-right">
             <HeaderOverflowMenu
-              expanded={expanded}
-              onToggleExpand={() => setExpanded(e => !e)}
-              doneCount={doneCount}
-              onClearDone={handleClearDone}
+              hideDone={hideDone}
+              onToggleHideDone={() => setHideDone(h => !h)}
+              bulkEditMode={bulkEditMode}
+              onEnterBulkEdit={enterBulkEdit}
+              onViewInSearch={handleViewInSearch}
             />
             <ColumnPicker columns={columns} onChange={setColumns} />
             <ViewToggle view={view} onChange={setView} />
@@ -393,7 +473,7 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
             </div>
           )}
 
-          {/* ═══ Empty state ═══ */}
+          {/* ═══ Empty state (no subtasks at all) ═══ */}
           {!isLoading && children.length === 0 && !creating && (
             <div className="sp-empty">
               <div className="sp-empty-heading">No subtasks yet</div>
@@ -402,21 +482,46 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
             </div>
           )}
 
+          {/* ═══ Empty state (all subtasks hidden by filter) ═══ */}
+          {!isLoading && children.length > 0 && visibleRows.length === 0 && hideDone && (
+            <div className="sp-empty">
+              <div className="sp-empty-heading">All subtasks are done</div>
+              <div className="sp-empty-sub">Turn off "Hide done" to see them.</div>
+              <button type="button" className="sp-empty-cta" onClick={() => setHideDone(false)}>Show completed</button>
+            </div>
+          )}
+
           {/* ═══ Board view ═══ */}
-          {!isLoading && children.length > 0 && view === 'board' && (
+          {!isLoading && visibleRows.length > 0 && view === 'board' && (
             <BoardView
-              subtasks={children}
+              subtasks={visibleRows}
               avatarMap={avatarMap}
               onCardClick={(id) => onSubtaskClick?.(id)}
             />
           )}
 
           {/* ═══ List (native HTML table) view ═══ */}
-          {!isLoading && children.length > 0 && view === 'list' && (
+          {!isLoading && visibleRows.length > 0 && view === 'list' && (
             <div className="sp-scroll-container">
               <table className="sp-table">
                 <thead className="sp-thead">
                   <tr>
+                    {bulkEditMode && (
+                      <th className="sp-th sp-th--select">
+                        <label className="sp-checkbox" aria-label="Select all">
+                          <input
+                            type="checkbox"
+                            checked={allVisibleSelected}
+                            ref={(el) => { if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected; }}
+                            onChange={toggleSelectAll}
+                          />
+                          <span className="sp-checkbox-box">
+                            {allVisibleSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                            {!allVisibleSelected && someVisibleSelected && <span className="sp-checkbox-dash" />}
+                          </span>
+                        </label>
+                      </th>
+                    )}
                     <th className="sp-th" style={{ width: 'auto' }}>Work</th>
                     {columns.priority && <th className="sp-th sp-th--priority">Priority</th>}
                     {columns.assignee && <th className="sp-th sp-th--assignee">Assignee</th>}
@@ -425,73 +530,111 @@ export function SubtasksPanel({ storyKey, storyId, projectKey, onSubtaskClick }:
                   </tr>
                 </thead>
                 <tbody>
-                  {children.map(child => (
-                    <tr
-                      key={child.id}
-                      className="sp-row"
-                      onClick={() => onSubtaskClick?.(child.id)}
-                    >
-                      <td className="sp-td">
-                        {editingId === child.id ? (
-                          <div className="sp-work-cell" onClick={(e) => e.stopPropagation()}>
-                            <span className="sp-type-icon">
-                              <JiraIssueTypeIcon type={child.issue_type} size={16} />
-                            </span>
-                            <span className="sp-issue-key">{child.issue_key}</span>
-                            <InlineSummaryEditor
-                              value={child.summary}
-                              onSave={handleSummarySave(child)}
-                              onCancel={() => setEditingId(null)}
-                            />
-                          </div>
-                        ) : (
-                          <WorkCell
-                            issueType={child.issue_type}
-                            issueKey={child.issue_key}
-                            summary={child.summary}
-                            onClick={() => onSubtaskClick?.(child.id)}
-                          />
+                  {visibleRows.map(child => {
+                    const checked = selectedIds.has(child.id);
+                    return (
+                      <tr
+                        key={child.id}
+                        className={`sp-row ${checked ? 'sp-row--selected' : ''}`}
+                        onClick={() => {
+                          if (bulkEditMode) toggleSelected(child.id);
+                          else onSubtaskClick?.(child.id);
+                        }}
+                      >
+                        {bulkEditMode && (
+                          <td className="sp-td sp-td--select" onClick={(e) => e.stopPropagation()}>
+                            <label className="sp-checkbox" aria-label={`Select ${child.issue_key}`}>
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleSelected(child.id)}
+                              />
+                              <span className="sp-checkbox-box">
+                                {checked && <Check size={10} color="#fff" strokeWidth={3} />}
+                              </span>
+                            </label>
+                          </td>
                         )}
-                      </td>
-                      {columns.priority && (
                         <td className="sp-td">
-                          <PriorityCell
-                            priority={child.priority}
-                            onChange={handlePriorityChange(child)}
-                          />
+                          {editingId === child.id ? (
+                            <div className="sp-work-cell" onClick={(e) => e.stopPropagation()}>
+                              <span className="sp-type-icon">
+                                <JiraIssueTypeIcon type={child.issue_type} size={16} />
+                              </span>
+                              <span className="sp-issue-key">{child.issue_key}</span>
+                              <InlineSummaryEditor
+                                value={child.summary}
+                                onSave={handleSummarySave(child)}
+                                onCancel={() => setEditingId(null)}
+                              />
+                            </div>
+                          ) : (
+                            <WorkCell
+                              issueType={child.issue_type}
+                              issueKey={child.issue_key}
+                              summary={child.summary}
+                              onClick={() => onSubtaskClick?.(child.id)}
+                            />
+                          )}
                         </td>
-                      )}
-                      {columns.assignee && (
-                        <td className="sp-td">
-                          <AssigneeCell
-                            displayName={child.assignee_display_name}
-                            accountId={child.assignee_account_id}
-                            avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
-                            onChange={handleAssigneeChange(child)}
-                          />
+                        {columns.priority && (
+                          <td className="sp-td">
+                            <PriorityCell
+                              priority={child.priority}
+                              onChange={handlePriorityChange(child)}
+                              readOnly={bulkEditMode}
+                            />
+                          </td>
+                        )}
+                        {columns.assignee && (
+                          <td className="sp-td">
+                            <AssigneeCell
+                              displayName={child.assignee_display_name}
+                              accountId={child.assignee_account_id}
+                              avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                              onChange={handleAssigneeChange(child)}
+                              readOnly={bulkEditMode}
+                            />
+                          </td>
+                        )}
+                        {columns.status && (
+                          <td className="sp-td">
+                            <StatusCell
+                              status={child.status}
+                              statusCategory={child.status_category}
+                              onChange={handleStatusChange(child)}
+                              readOnly={bulkEditMode}
+                            />
+                          </td>
+                        )}
+                        <td className="sp-td sp-td--actions" onClick={(e) => e.stopPropagation()}>
+                          {!bulkEditMode && (
+                            <RowActionsMenu
+                              onOpen={() => onSubtaskClick?.(child.id)}
+                              onRename={() => setEditingId(child.id)}
+                              onDelete={() => handleDelete(child)}
+                            />
+                          )}
                         </td>
-                      )}
-                      {columns.status && (
-                        <td className="sp-td">
-                          <StatusCell
-                            status={child.status}
-                            statusCategory={child.status_category}
-                            onChange={handleStatusChange(child)}
-                          />
-                        </td>
-                      )}
-                      <td className="sp-td sp-td--actions" onClick={(e) => e.stopPropagation()}>
-                        <RowActionsMenu
-                          onOpen={() => onSubtaskClick?.(child.id)}
-                          onRename={() => setEditingId(child.id)}
-                          onDelete={() => handleDelete(child)}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+          )}
+
+          {/* ═══ Bulk edit bar ═══ */}
+          {bulkEditMode && (
+            <BulkEditBar
+              selectedCount={selectedIds.size}
+              totalCount={visibleRows.length}
+              onStatusChange={handleBulkStatus}
+              onPriorityChange={handleBulkPriority}
+              onAssigneeChange={handleBulkAssignee}
+              onDelete={handleBulkDelete}
+              onCancel={exitBulkEdit}
+            />
           )}
 
           {/* ═══ Inline create ═══ */}
