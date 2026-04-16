@@ -426,113 +426,76 @@ export function NotionImportWizard() {
 
           {/* ═══ STEP 4: CONFIRM & IMPORT ═══ */}
           {step === 4 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-[#0F172A] mb-1">
-                  {importResult ? 'Import Complete' : 'Ready to Import'}
-                </h2>
-              </div>
+            <div className="space-y-4">
+              <h2 className="text-[15px] font-semibold text-[#0F172A]">
+                {importResult ? 'Import Complete' : 'Review & Import'}
+              </h2>
 
               {!importResult ? (
                 <>
-                  {/* Summary card */}
-                  <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+                  <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
                     {[
-                      { label: 'Source Database', value: dbTitle, icon: Database },
-                      { label: 'Rows to Import', value: String(notionRows.length), icon: Table2 },
-                      { label: 'Target Project', value: projectName, icon: FolderKanban },
-                      { label: 'Default Item Type', value: itemType, icon: Layers },
-                      { label: 'Mapped Fields', value: `${mappedCount} of ${notionProps.length}`, icon: ArrowLeftRight },
+                      { label: 'Source', value: dbTitle, icon: Database },
+                      { label: 'Rows', value: String(notionRows.length), icon: Table2 },
+                      { label: 'Project', value: projectName, icon: FolderKanban },
+                      { label: 'Type', value: itemType, icon: Layers },
+                      { label: 'Fields', value: `${mappedCount} / ${notionProps.length}`, icon: ArrowLeftRight },
                     ].map((row, i) => (
-                      <div key={row.label} className={`flex items-center justify-between px-5 py-3.5 ${
-                        i < 4 ? 'border-b border-[#F1F5F9]' : ''
-                      }`}>
-                        <div className="flex items-center gap-2.5">
-                          <row.icon className="h-4 w-4 text-[#94A3B8]" />
-                          <span className="text-sm text-[#64748B]">{row.label}</span>
+                      <div key={row.label} className={`flex items-center justify-between px-4 py-2.5 ${i < 4 ? 'border-b border-[#F1F5F9]' : ''}`}>
+                        <div className="flex items-center gap-2">
+                          <row.icon className="h-3.5 w-3.5 text-[#94A3B8]" />
+                          <span className="text-[13px] text-[#64748B]">{row.label}</span>
                         </div>
-                        <span className="text-sm font-semibold text-[#0F172A]">{row.value}</span>
+                        <span className="text-[13px] font-semibold text-[#0F172A]">{row.value}</span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Info callout */}
-                  <div className="flex items-start gap-3 p-4 rounded-xl bg-[#F0F9FF] border border-[#BAE6FD]">
-                    <Info className="h-4 w-4 text-[#0284C7] mt-0.5 shrink-0" />
-                    <p className="text-sm text-[#0369A1]">
-                      Rows already imported from this Notion database (matched by page ID) will be skipped automatically.
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-[#F0F9FF] border border-[#BAE6FD]">
+                    <Info className="h-3.5 w-3.5 text-[#0284C7] mt-0.5 shrink-0" />
+                    <p className="text-[12px] text-[#0369A1]">
+                      Duplicate rows (matched by Notion page ID) are skipped automatically.
                     </p>
                   </div>
 
-                  {/* Progress bar during import */}
                   {importing && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[13px]">
                         <span className="text-[#64748B]">Importing…</span>
-                        <span className="font-mono font-semibold text-[#0F172A]">
-                          {importDone} / {notionRows.length}
-                        </span>
+                        <span className="font-mono font-semibold text-[#0F172A]">{importDone}/{notionRows.length}</span>
                       </div>
-                      <div className="h-2 rounded-full bg-[#F1F5F9] overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-[#2563EB] transition-all duration-300"
-                          style={{ width: `${(importDone / notionRows.length) * 100}%` }}
-                        />
+                      <div className="h-1.5 rounded-full bg-[#F1F5F9] overflow-hidden">
+                        <div className="h-full rounded-full bg-[#2563EB] transition-all duration-300" style={{ width: `${(importDone / notionRows.length) * 100}%` }} />
                       </div>
                     </div>
                   )}
                 </>
               ) : (
-                /* ─── Success / Results ─── */
-                <div className="bg-white border border-[#E2E8F0] rounded-xl p-8 text-center space-y-5">
-                  <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center ${
-                    importResult.failed > 0 && importResult.imported === 0
-                      ? 'bg-[#FEE2E2]' : 'bg-[#DCFCE7]'
+                <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 text-center space-y-4">
+                  <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center ${
+                    importResult.failed > 0 && importResult.imported === 0 ? 'bg-[#FEE2E2]' : 'bg-[#DCFCE7]'
                   }`}>
-                    {importResult.failed > 0 && importResult.imported === 0 ? (
-                      <XCircle className="h-7 w-7 text-[#DC2626]" />
-                    ) : (
-                      <CheckCircle2 className="h-7 w-7 text-[#16A34A]" />
-                    )}
+                    {importResult.failed > 0 && importResult.imported === 0
+                      ? <XCircle className="h-6 w-6 text-[#DC2626]" />
+                      : <CheckCircle2 className="h-6 w-6 text-[#16A34A]" />}
                   </div>
-
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold text-[#0F172A]">
-                      {importResult.imported > 0
-                        ? `${importResult.imported} items imported`
-                        : 'Import failed'}
-                    </p>
-                  </div>
-
-                  {/* Result pills */}
-                  <div className="flex justify-center gap-3">
+                  <p className="text-[15px] font-semibold text-[#0F172A]">
+                    {importResult.imported > 0 ? `${importResult.imported} items imported` : 'Import failed'}
+                  </p>
+                  <div className="flex justify-center gap-2 text-[12px] font-medium">
                     {importResult.imported > 0 && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#DCFCE7] text-[#16A34A] text-sm font-medium">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> {importResult.imported} imported
-                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#16A34A]">{importResult.imported} imported</span>
                     )}
                     {importResult.skipped > 0 && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F1F5F9] text-[#64748B] text-sm font-medium">
-                        <SkipForward className="h-3.5 w-3.5" /> {importResult.skipped} skipped
-                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-[#F1F5F9] text-[#64748B]">{importResult.skipped} skipped</span>
                     )}
                     {importResult.failed > 0 && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FEE2E2] text-[#DC2626] text-sm font-medium">
-                        <XCircle className="h-3.5 w-3.5" /> {importResult.failed} failed
-                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[#DC2626]">{importResult.failed} failed</span>
                     )}
                   </div>
-
-                  <div className="pt-2">
-                    <Button
-                      variant="outline"
-                      className="gap-1.5"
-                      onClick={() => navigate('/producthub/backlog')}
-                    >
-                      View in ProductHub
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/producthub/backlog')}>
+                    View in ProductHub <ExternalLink className="h-3 w-3" />
+                  </Button>
                 </div>
               )}
             </div>
