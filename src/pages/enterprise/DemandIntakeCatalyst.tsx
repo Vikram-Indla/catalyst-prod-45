@@ -38,7 +38,7 @@ import { DemandExportModal } from '@/components/demand/DemandExportModal';
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { StatusSummaryKanbanView } from '@/components/business-requests/StatusSummaryKanbanView';
 import { useProcessStepOptions, useProcessStepInfo } from '@/contexts/ProcessStepsContext';
 import { useToast } from '@/hooks/use-toast';
@@ -600,7 +600,7 @@ export default function DemandIntakeCatalyst() {
         onClose={() => setCreateModalOpen(false)} 
       />
 
-      <BusinessRequestDetailModal 
+      <BusinessRequestDrawer 
         isOpen={!!selectedRequestId}
         requestId={selectedRequestId} 
         onClose={() => setSelectedRequestId(null)} 

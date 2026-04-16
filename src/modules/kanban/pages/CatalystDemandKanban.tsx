@@ -15,7 +15,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { IndustryHeaderToolbarV2 } from '@/shared/components/IndustryHeaderToolbarV2';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { PageChrome } from '@/components/layout/PageChrome';
 import { useIndustryViewStore } from '@/stores/useIndustryViewStore';
 
@@ -252,11 +252,11 @@ export default function CatalystDemandKanban() {
         )}
       </div>
 
-      {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
         isOpen={!!selectedCardId}
         onClose={() => setSelectedCardId(null)}
-        requestId={selectedCardId || null}
+        requestId={selectedCardId || undefined}
       />
 
       {/* Create Business Request Modal */}

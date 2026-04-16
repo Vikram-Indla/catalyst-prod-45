@@ -8,7 +8,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
 import { RequestListPanel, RequestDetailPanel, AttachmentUploadModal } from '../components/split-panel';
@@ -599,14 +599,15 @@ export default function CatalystDemandList() {
         onFiltersChange={setFilters}
       />
 
-      {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
         isOpen={!!drawerRequestId}
         onClose={() => {
           setDrawerRequestId(null);
           setDrawerInitialTab(undefined);
         }}
         requestId={drawerRequestId}
+        initialTab={drawerInitialTab}
         onRequestChange={() => queryClient.invalidateQueries({ queryKey: ['business-requests'] })}
       />
 

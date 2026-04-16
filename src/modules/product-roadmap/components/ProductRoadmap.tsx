@@ -14,7 +14,7 @@ import { RoadmapLoadingSkeleton } from './RoadmapLoadingSkeleton';
 import { RoadmapEmptyState } from './RoadmapEmptyState';
 import { RoadmapFilterDialog } from './RoadmapFilterDialog';
 import { RoadmapExportDialog } from './RoadmapExportDialog';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RoadmapDetailPanel } from './RoadmapDetailPanel';
 import { useRoadmapDemands, useReorderDemands, useUpdateDemandDates } from '../hooks/useRoadmapDemands';
 import { useRoadmapFilters } from '../hooks/useRoadmapFilters';
@@ -282,8 +282,8 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
             timelineConfig={timelineConfig}
           />
 
-          {/* Business Request Detail Modal */}
-          <BusinessRequestDetailModal
+          {/* Business Request Drawer */}
+          <BusinessRequestDrawer
             isOpen={isDrawerOpen}
             onClose={handleCloseDrawer}
             requestId={drawerRequestId}

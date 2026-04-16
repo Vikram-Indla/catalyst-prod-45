@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from 'lucide-react';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { PCInitiativeCard } from '@/components/producthub/cards/PCInitiativeCard';
 import type { MDTInitiative } from '@/hooks/useMDTBacklog';
@@ -340,12 +340,14 @@ const CardsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Detail Modal */}
-      <BusinessRequestDetailModal
-        isOpen={!!selectedInitiative}
-        onClose={() => setSelectedId(null)}
-        requestId={selectedInitiative?.id ?? null}
-      />
+      {/* Detail Panel — REUSE existing */}
+      {selectedInitiative && (
+        <InitiativeDetailPanel
+          initiative={toTimelineInitiative(selectedInitiative)}
+          initiatives={processed.map(toTimelineInitiative)}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
 
       {/* Create drawer */}
       <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />

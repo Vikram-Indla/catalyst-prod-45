@@ -9,7 +9,7 @@ import { filterDemandsCanonical, countMatchingDemands, filterByViewportOverlap }
 import { Scale, Demand } from '@/types/product-roadmap';
 import { useProductRoadmapData } from '@/hooks/useProductRoadmapData';
 import { useProductRoadmapFilters } from '@/hooks/useProductRoadmapFilters';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { Loader2 } from 'lucide-react';
 import { RoadmapViewport, RoadmapDebugOverlay } from '@/components/roadmaps/RoadmapDateFilterV2';
@@ -336,8 +336,8 @@ export const ProductRoadmapPage: React.FC = () => {
         entityLabel="demands"
       />
 
-      {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
         requestId={selectedDemandId}
         isOpen={!!selectedDemandId}
         onClose={handleCloseDrawer}

@@ -5188,7 +5188,7 @@ input[type="range"]::-moz-range-thumb {
   width: 100%;
   margin: 12px 0;
   font-size: 14px;
-  table-layout: auto;
+  table-layout: fixed;
   border: 1px solid #DFE1E6;
 }
 

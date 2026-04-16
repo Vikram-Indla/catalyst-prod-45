@@ -4,7 +4,7 @@ import { KanbanToolbar } from '@/components/producthub/kanban/KanbanToolbar';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { KanbanFilterBar } from '@/components/producthub/kanban/KanbanFilterBar';
 import { KanbanBoard } from '@/components/producthub/kanban/KanbanBoard';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { supabase } from '@/integrations/supabase/client';
 import type { Initiative } from '@/types/initiative';
@@ -158,11 +158,13 @@ export default function KanbanPage() {
         totalCount={initiatives.length}
       />
 
-      <BusinessRequestDetailModal
-        isOpen={!!selectedInitiative}
-        onClose={handleCloseDetail}
-        requestId={selectedInitiative?.id ?? null}
-      />
+      {selectedInitiative && (
+        <InitiativeDetailPanel
+          initiative={toTimelineInitiative(selectedInitiative)}
+          initiatives={memoizedTimelineInitiatives}
+          onClose={handleCloseDetail}
+        />
+      )}
 
       <CreateInitiativeDrawer open={showCreateDrawer} onClose={() => setShowCreateDrawer(false)} />
     </div>

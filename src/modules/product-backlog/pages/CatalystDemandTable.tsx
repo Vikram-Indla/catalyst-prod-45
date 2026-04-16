@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { ProductBacklogFiltersDialog, ProductBacklogFilters } from '../components/ProductBacklogFiltersDialog';
 import { BacklogTableView } from '@/components/business-requests/table-view';
@@ -202,8 +202,8 @@ export default function CatalystDemandTable() {
         onFiltersChange={setFilters}
       />
 
-      {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
         isOpen={!!drawerRequestId}
         onClose={() => setDrawerRequestId(null)}
         requestId={drawerRequestId}

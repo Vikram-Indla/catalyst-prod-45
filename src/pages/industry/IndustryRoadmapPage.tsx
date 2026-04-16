@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import GlobalPageHeader from '@/components/layout/GlobalPageHeader';
 import { TimelineFilterPopover, TimelineFilterState, DEFAULT_TIMELINE_FILTER } from '@/components/roadmap/TimelineFilterPopover';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { IndustryRoadmapFiltersDialog, IndustryFilters, DEFAULT_INDUSTRY_FILTERS, getCurrentQuarterDates, getNextQuarterDates } from '@/components/industry/IndustryRoadmapFiltersDialog';
 
 // ===== TYPES =====
@@ -1315,8 +1315,8 @@ export default function IndustryRoadmapPage() {
         processSteps={processStepsData || []}
       />
       
-      {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
         requestId={selectedRequestId}
         isOpen={!!selectedRequestId}
         onClose={() => setSelectedRequestId(null)}

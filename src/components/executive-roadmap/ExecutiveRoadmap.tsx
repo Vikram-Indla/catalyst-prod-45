@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { BusinessRequestRoadmapItem, PLATFORM_INFO, STAGE_NAMES, STAGE_NAMES_AR } from '@/types/roadmapTypes';
 import { RoadmapLegend } from './RoadmapLegend';
 import { RoadmapFiltersDialog, type RoadmapFilters } from './RoadmapFiltersDialog';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { useRoadmapBusinessRequests } from '@/hooks/useRoadmapBusinessRequests';
 import {
   TimeScale,
@@ -577,8 +577,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         uniqueOwners={uniqueOwners}
       />
 
-      {/* Business Request Detail Modal */}
-      <BusinessRequestDetailModal
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
         isOpen={!!selectedRequestId && !!selectedRequestDbId}
         onClose={() => setSelectedRequestId(null)}
         requestId={selectedRequestDbId || null}

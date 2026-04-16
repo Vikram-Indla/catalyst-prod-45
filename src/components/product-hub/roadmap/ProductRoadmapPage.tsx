@@ -13,7 +13,7 @@ import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
 import { RoadmapFilters } from './RoadmapFilters';
 import { RoadmapTimeline } from './RoadmapTimeline';
-import { BusinessRequestDetailModal } from '@/components/business-requests/BusinessRequestDetailModal';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 
 import { AddInitiativeModal } from './AddInitiativeModal';
@@ -313,11 +313,13 @@ export function ProductRoadmapPage() {
         </>
       )}
 
-      <BusinessRequestDetailModal
-        isOpen={isDetailOpen && !!selectedId}
-        onClose={() => setIsDetailOpen(false)}
-        requestId={selectedId}
-      />
+      {isDetailOpen && selectedAsTimeline && (
+        <InitiativeDetailPanel
+          initiative={selectedAsTimeline}
+          initiatives={allAsTimeline}
+          onClose={() => setIsDetailOpen(false)}
+        />
+      )}
       <AddInitiativeModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
     </div>
   );
