@@ -92,6 +92,20 @@ export function CatalystHeader() {
     },
   });
 
+  const { data: userProfile } = useQuery({
+    queryKey: ['current-user-profile', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name, avatar_url')
+        .eq('id', user!.id)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const handleCreateSuccess = (entity: { id: string; name: string; key?: string }) => {
     if (createDialogType === 'program') {
       navigate(`/program/${entity.id}/room`);
