@@ -9,7 +9,9 @@
  *   - EditableStoryPoints (Fibonacci picker with None option)
  *   - EditableFixVersions (multi-select with unreleased/released groups)
  *
- * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Fix Versions → Story Points → Timestamps
+ * Renders: Status dropdown → Details header → Assignee → "Assign to me" → {children} → Priority → Reporter → Labels → Fix Versions → Timestamps
+ *
+ * GUARDRAIL: Story Points are BANNED platform-wide (see Catalyst spec). Do NOT re-add.
  *
  * The `children` slot is where type-specific sidebar fields go.
  */
@@ -20,7 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
-import { EditableAssignee, EditablePriority, EditableLabels, EditableStoryPoints, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EditableAssignee, EditablePriority, EditableLabels, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -290,19 +292,7 @@ export function CatalystSidebarDetails({
             </div>
           </div>
 
-          {/* ── Story Points ──── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Story points</span>
-            <div style={{ flex: 1 }}>
-              {issue && (
-                <EditableStoryPoints
-                  issueId={issue.id}
-                  currentPoints={issue.story_points}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </div>
-          </div>
+          {/* Story Points: BANNED platform-wide. Do NOT re-add. */}
         </div>
       </div>
 
