@@ -57,12 +57,10 @@ function StatPill({ icon: Icon, label, value, color = '#2563EB' }: {
   icon: any; label: string; value: string | number; color?: string;
 }) {
   return (
-    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0]">
-      <Icon className="h-4 w-4 shrink-0" style={{ color }} />
-      <div className="flex flex-col">
-        <span className="text-[10px] uppercase tracking-wider font-semibold text-[#94A3B8]">{label}</span>
-        <span className="text-sm font-semibold text-[#0F172A]">{value}</span>
-      </div>
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#F8FAFC] border border-[#E2E8F0]">
+      <Icon className="h-3.5 w-3.5 shrink-0" style={{ color }} />
+      <span className="text-[10px] uppercase tracking-wider font-semibold text-[#94A3B8]">{label}</span>
+      <span className="text-[13px] font-semibold text-[#0F172A]">{value}</span>
     </div>
   );
 }
@@ -205,40 +203,37 @@ export function NotionImportWizard() {
 
       {/* ─── Content ─── */}
       <div className="flex-1 overflow-auto">
-        <div className="max-w-3xl mx-auto py-8 px-6">
+        <div className="max-w-[560px] mx-auto py-6 px-6">
 
           {/* ═══ STEP 1: CONNECT ═══ */}
           {step === 1 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Connect to Notion</h2>
-                <p className="text-sm text-[#64748B]">
-                  Provide your integration token and database URL to begin importing work items.
+            <div className="space-y-4">
+              <div className="mb-1">
+                <h2 className="text-[15px] font-semibold text-[#0F172A]">Connect to Notion</h2>
+                <p className="text-[13px] text-[#64748B] mt-0.5">
+                  Enter your integration token and database URL to start.
                 </p>
               </div>
 
-              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
                 {/* Token */}
-                <div className="p-5 space-y-2 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-2">
-                    <KeyRound className="h-4 w-4 text-[#64748B]" />
-                    <Label htmlFor="notion-token" className="text-sm font-semibold text-[#0F172A]">
-                      Integration Token
-                    </Label>
-                  </div>
+                <div className="px-4 pt-3.5 pb-3 border-b border-[#F1F5F9]">
+                  <Label htmlFor="notion-token" className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                    <KeyRound className="h-3.5 w-3.5 text-[#94A3B8]" />
+                    Integration Token
+                  </Label>
                   <Input
                     id="notion-token"
                     type="password"
                     placeholder="secret_..."
                     value={token}
                     onChange={e => setToken(e.target.value)}
-                    className="h-10 bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white transition-colors"
+                    className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white"
                   />
-                  <p className="text-xs text-[#94A3B8] flex items-center gap-1">
-                    <Info className="h-3 w-3" />
+                  <p className="text-[11px] text-[#94A3B8] mt-1.5">
                     Create at{' '}
                     <a href="https://www.notion.so/my-integrations" target="_blank" rel="noopener noreferrer"
-                       className="underline text-[#2563EB] hover:text-[#1D4ED8]">
+                       className="underline text-[#2563EB]">
                       notion.so/my-integrations
                     </a>
                     {' '}→ copy Internal Integration Secret
@@ -246,37 +241,34 @@ export function NotionImportWizard() {
                 </div>
 
                 {/* Database URL */}
-                <div className="p-5 space-y-2 border-b border-[#F1F5F9]">
-                  <div className="flex items-center gap-2">
-                    <Link2 className="h-4 w-4 text-[#64748B]" />
-                    <Label htmlFor="notion-db-url" className="text-sm font-semibold text-[#0F172A]">
-                      Database URL
-                    </Label>
-                  </div>
+                <div className="px-4 pt-3.5 pb-3 border-b border-[#F1F5F9]">
+                  <Label htmlFor="notion-db-url" className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                    <Link2 className="h-3.5 w-3.5 text-[#94A3B8]" />
+                    Database URL
+                  </Label>
                   <Input
                     id="notion-db-url"
                     type="text"
                     placeholder="https://www.notion.so/workspace/..."
                     value={dbUrl}
                     onChange={e => setDbUrl(e.target.value)}
-                    className="h-10 bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white transition-colors"
+                    className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0] focus:bg-white"
                   />
-                  <p className="text-xs text-[#94A3B8] flex items-center gap-1">
-                    <Info className="h-3 w-3" />
-                    Open your database in Notion and copy the URL from the browser
+                  <p className="text-[11px] text-[#94A3B8] mt-1.5">
+                    Open your database in Notion, copy the full URL from the browser bar
                   </p>
                 </div>
 
-                {/* Project + Type — side by side */}
-                <div className="p-5 grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <FolderKanban className="h-4 w-4 text-[#64748B]" />
-                      <Label className="text-sm font-semibold text-[#0F172A]">Target Project</Label>
-                    </div>
+                {/* Project + Type */}
+                <div className="px-4 pt-3.5 pb-3.5 grid grid-cols-2 gap-3">
+                  <div>
+                    <Label className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                      <FolderKanban className="h-3.5 w-3.5 text-[#94A3B8]" />
+                      Target Project
+                    </Label>
                     <Select value={projectId} onValueChange={setProjectId}>
-                      <SelectTrigger className="h-10 bg-[#F8FAFC] border-[#E2E8F0]">
-                        <SelectValue placeholder="Select a project…" />
+                      <SelectTrigger className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0]">
+                        <SelectValue placeholder="Select project…" />
                       </SelectTrigger>
                       <SelectContent>
                         {(projects || []).map(p => (
@@ -285,13 +277,13 @@ export function NotionImportWizard() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Layers className="h-4 w-4 text-[#64748B]" />
-                      <Label className="text-sm font-semibold text-[#0F172A]">Default Type</Label>
-                    </div>
+                  <div>
+                    <Label className="text-[13px] font-semibold text-[#0F172A] flex items-center gap-1.5 mb-1.5">
+                      <Layers className="h-3.5 w-3.5 text-[#94A3B8]" />
+                      Default Type
+                    </Label>
                     <Select value={itemType} onValueChange={setItemType}>
-                      <SelectTrigger className="h-10 bg-[#F8FAFC] border-[#E2E8F0]">
+                      <SelectTrigger className="h-9 text-[13px] bg-[#F8FAFC] border-[#E2E8F0]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -306,13 +298,11 @@ export function NotionImportWizard() {
 
               {/* Error */}
               {fetchError && (
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FEF2F2] border border-[#FECACA]">
-                  <div className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center shrink-0">
-                    <XCircle className="h-4 w-4 text-[#DC2626]" />
-                  </div>
+                <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
+                  <XCircle className="h-4 w-4 text-[#DC2626] mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-[#DC2626]">Connection failed</p>
-                    <p className="text-sm text-[#DC2626]/80 mt-0.5">{fetchError}</p>
+                    <p className="text-[13px] font-semibold text-[#DC2626]">Connection failed</p>
+                    <p className="text-[12px] text-[#DC2626]/80 mt-0.5">{fetchError}</p>
                   </div>
                 </div>
               )}
@@ -321,34 +311,28 @@ export function NotionImportWizard() {
 
           {/* ═══ STEP 2: PREVIEW ═══ */}
           {step === 2 && (
-            <div className="space-y-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Data Preview</h2>
-                  <p className="text-sm text-[#64748B]">
-                    Review the data fetched from <span className="font-medium text-[#0F172A]">{dbTitle}</span>
-                  </p>
-                </div>
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-[15px] font-semibold text-[#0F172A]">Data Preview</h2>
+                <p className="text-[13px] text-[#64748B] mt-0.5">
+                  {notionRows.length} rows from <span className="font-medium text-[#0F172A]">{dbTitle}</span>
+                </p>
               </div>
 
-              {/* Stats row */}
-              <div className="flex gap-3">
+              <div className="flex gap-2">
                 <StatPill icon={Table2} label="Rows" value={notionRows.length} />
                 <StatPill icon={Layers} label="Columns" value={notionProps.length} />
                 <StatPill icon={FolderKanban} label="Target" value={projectName} />
               </div>
 
-              {/* Table */}
-              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full">
                     <thead>
                       <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
-                        <th className="text-left px-3 py-2.5 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] w-8">
-                          #
-                        </th>
+                        <th className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] w-8">#</th>
                         {notionProps.map(p => (
-                          <th key={p.id} className="text-left px-3 py-2.5 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] whitespace-nowrap">
+                          <th key={p.id} className="text-left px-3 py-2 font-semibold text-[10px] uppercase tracking-wider text-[#64748B] whitespace-nowrap">
                             {p.name}
                           </th>
                         ))}
@@ -356,10 +340,10 @@ export function NotionImportWizard() {
                     </thead>
                     <tbody>
                       {notionRows.slice(0, 8).map((row, idx) => (
-                        <tr key={row.notionPageId} className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC] transition-colors">
-                          <td className="px-3 py-2 text-[11px] font-mono text-[#94A3B8]">{idx + 1}</td>
+                        <tr key={row.notionPageId} className="border-b border-[#F1F5F9] hover:bg-[#F8FAFC]">
+                          <td className="px-3 py-1.5 text-[11px] font-mono text-[#94A3B8]">{idx + 1}</td>
                           {notionProps.map(p => (
-                            <td key={p.id} className="px-3 py-2 whitespace-nowrap text-[#0F172A] max-w-[220px] truncate text-[13px]">
+                            <td key={p.id} className="px-3 py-1.5 whitespace-nowrap text-[#0F172A] max-w-[200px] truncate text-[13px]">
                               {row.properties[p.name] || <span className="text-[#CBD5E1]">—</span>}
                             </td>
                           ))}
@@ -369,8 +353,8 @@ export function NotionImportWizard() {
                   </table>
                 </div>
                 {notionRows.length > 8 && (
-                  <div className="px-4 py-2.5 text-xs text-[#94A3B8] bg-[#FAFBFC] border-t border-[#F1F5F9] font-medium">
-                    + {notionRows.length - 8} more rows not shown
+                  <div className="px-3 py-2 text-[11px] text-[#94A3B8] bg-[#FAFBFC] border-t border-[#F1F5F9]">
+                    + {notionRows.length - 8} more rows
                   </div>
                 )}
               </div>
@@ -379,60 +363,41 @@ export function NotionImportWizard() {
 
           {/* ═══ STEP 3: MAP FIELDS ═══ */}
           {step === 3 && (
-            <div className="space-y-6">
-              <div className="flex items-start justify-between">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-lg font-semibold text-[#0F172A] mb-1">Map Fields</h2>
-                  <p className="text-sm text-[#64748B]">
-                    Map each Notion column to a Catalyst field, or skip it.
+                  <h2 className="text-[15px] font-semibold text-[#0F172A]">Map Fields</h2>
+                  <p className="text-[13px] text-[#64748B] mt-0.5">
+                    Map each Notion column to a Catalyst field.
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <StatPill icon={ArrowLeftRight} label="Mapped" value={mappedCount} color="#16A34A" />
-                  <StatPill icon={SkipForward} label="Skipped" value={skippedCount} color="#94A3B8" />
+                <div className="flex gap-2 text-[11px]">
+                  <span className="px-2 py-1 rounded bg-[#DCFCE7] text-[#16A34A] font-semibold">{mappedCount} mapped</span>
+                  <span className="px-2 py-1 rounded bg-[#F1F5F9] text-[#94A3B8] font-semibold">{skippedCount} skipped</span>
                 </div>
               </div>
 
-              <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
-                {/* Header row */}
-                <div className="flex items-center px-5 py-2.5 bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">
-                    Notion Column
-                  </span>
-                  <span className="w-6 flex justify-center">
-                    <ArrowRight className="h-3 w-3 text-[#CBD5E1]" />
-                  </span>
-                  <span className="w-52 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">
-                    Catalyst Field
-                  </span>
+              <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
+                <div className="flex items-center px-4 py-2 bg-[#F8FAFC] border-b border-[#E2E8F0]">
+                  <span className="flex-1 text-[10px] uppercase tracking-wider font-semibold text-[#64748B]">Notion Column</span>
+                  <ArrowRight className="h-3 w-3 text-[#CBD5E1] mx-2" />
+                  <span className="w-44 text-[10px] uppercase tracking-wider font-semibold text-[#64748B] text-right">Catalyst Field</span>
                 </div>
-                {/* Mapping rows */}
-                {notionProps.map((p, i) => {
+                {notionProps.map(p => {
                   const mapped = mappings[p.name] || '__skip__';
                   const isSkip = mapped === '__skip__';
                   const isSummary = mapped === 'summary';
                   return (
-                    <div key={p.id} className={`flex items-center px-5 py-3 gap-3 border-b border-[#F1F5F9] last:border-b-0 transition-colors ${
-                      isSkip ? 'bg-[#FAFBFC]' : ''
-                    }`}>
-                      <div className="flex-1 flex items-center gap-2.5 min-w-0">
-                        <span className={`text-sm font-medium truncate ${isSkip ? 'text-[#94A3B8]' : 'text-[#0F172A]'}`}>
-                          {p.name}
-                        </span>
-                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0]">
-                          {p.type}
-                        </span>
+                    <div key={p.id} className={`flex items-center px-4 py-2 gap-2 border-b border-[#F1F5F9] last:border-b-0 ${isSkip ? 'bg-[#FAFBFC]' : ''}`}>
+                      <div className="flex-1 flex items-center gap-2 min-w-0">
+                        <span className={`text-[13px] font-medium truncate ${isSkip ? 'text-[#94A3B8]' : 'text-[#0F172A]'}`}>{p.name}</span>
+                        <span className="shrink-0 text-[9px] uppercase tracking-wider font-bold px-1 py-px rounded bg-[#F1F5F9] text-[#94A3B8]">{p.type}</span>
                       </div>
-                      <ArrowRight className={`h-3.5 w-3.5 shrink-0 ${isSkip ? 'text-[#E2E8F0]' : 'text-[#94A3B8]'}`} />
-                      <div className="w-52 shrink-0">
-                        <Select
-                          value={mapped}
-                          onValueChange={val => setMappings(prev => ({ ...prev, [p.name]: val }))}
-                        >
-                          <SelectTrigger className={`h-8 text-sm border ${
-                            isSummary ? 'border-[#16A34A] bg-[#F0FDF4]' :
-                            isSkip ? 'border-[#E2E8F0] text-[#94A3B8]' :
-                            'border-[#E2E8F0]'
+                      <ArrowRight className={`h-3 w-3 shrink-0 ${isSkip ? 'text-[#E2E8F0]' : 'text-[#94A3B8]'}`} />
+                      <div className="w-44 shrink-0">
+                        <Select value={mapped} onValueChange={val => setMappings(prev => ({ ...prev, [p.name]: val }))}>
+                          <SelectTrigger className={`h-7 text-[13px] border ${
+                            isSummary ? 'border-[#16A34A] bg-[#F0FDF4]' : isSkip ? 'border-[#E2E8F0] text-[#94A3B8]' : 'border-[#E2E8F0]'
                           }`}>
                             <SelectValue />
                           </SelectTrigger>
@@ -449,14 +414,9 @@ export function NotionImportWizard() {
               </div>
 
               {mapError && !summaryMapped && (
-                <div className="flex items-start gap-3 p-4 rounded-xl bg-[#FEF2F2] border border-[#FECACA]">
-                  <div className="w-8 h-8 rounded-full bg-[#FEE2E2] flex items-center justify-center shrink-0">
-                    <AlertCircle className="h-4 w-4 text-[#DC2626]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#DC2626]">Summary required</p>
-                    <p className="text-sm text-[#DC2626]/80 mt-0.5">Map at least one Notion column to the <strong>Summary</strong> field to proceed.</p>
-                  </div>
+                <div className="flex items-start gap-2.5 p-3 rounded-lg bg-[#FEF2F2] border border-[#FECACA]">
+                  <AlertCircle className="h-4 w-4 text-[#DC2626] mt-0.5 shrink-0" />
+                  <p className="text-[13px] text-[#DC2626]">Map at least one column to <strong>Summary</strong> to proceed.</p>
                 </div>
               )}
             </div>
@@ -464,113 +424,76 @@ export function NotionImportWizard() {
 
           {/* ═══ STEP 4: CONFIRM & IMPORT ═══ */}
           {step === 4 && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold text-[#0F172A] mb-1">
-                  {importResult ? 'Import Complete' : 'Ready to Import'}
-                </h2>
-              </div>
+            <div className="space-y-4">
+              <h2 className="text-[15px] font-semibold text-[#0F172A]">
+                {importResult ? 'Import Complete' : 'Review & Import'}
+              </h2>
 
               {!importResult ? (
                 <>
-                  {/* Summary card */}
-                  <div className="bg-white border border-[#E2E8F0] rounded-xl overflow-hidden">
+                  <div className="bg-white border border-[#E2E8F0] rounded-lg overflow-hidden">
                     {[
-                      { label: 'Source Database', value: dbTitle, icon: Database },
-                      { label: 'Rows to Import', value: String(notionRows.length), icon: Table2 },
-                      { label: 'Target Project', value: projectName, icon: FolderKanban },
-                      { label: 'Default Item Type', value: itemType, icon: Layers },
-                      { label: 'Mapped Fields', value: `${mappedCount} of ${notionProps.length}`, icon: ArrowLeftRight },
+                      { label: 'Source', value: dbTitle, icon: Database },
+                      { label: 'Rows', value: String(notionRows.length), icon: Table2 },
+                      { label: 'Project', value: projectName, icon: FolderKanban },
+                      { label: 'Type', value: itemType, icon: Layers },
+                      { label: 'Fields', value: `${mappedCount} / ${notionProps.length}`, icon: ArrowLeftRight },
                     ].map((row, i) => (
-                      <div key={row.label} className={`flex items-center justify-between px-5 py-3.5 ${
-                        i < 4 ? 'border-b border-[#F1F5F9]' : ''
-                      }`}>
-                        <div className="flex items-center gap-2.5">
-                          <row.icon className="h-4 w-4 text-[#94A3B8]" />
-                          <span className="text-sm text-[#64748B]">{row.label}</span>
+                      <div key={row.label} className={`flex items-center justify-between px-4 py-2.5 ${i < 4 ? 'border-b border-[#F1F5F9]' : ''}`}>
+                        <div className="flex items-center gap-2">
+                          <row.icon className="h-3.5 w-3.5 text-[#94A3B8]" />
+                          <span className="text-[13px] text-[#64748B]">{row.label}</span>
                         </div>
-                        <span className="text-sm font-semibold text-[#0F172A]">{row.value}</span>
+                        <span className="text-[13px] font-semibold text-[#0F172A]">{row.value}</span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Info callout */}
-                  <div className="flex items-start gap-3 p-4 rounded-xl bg-[#F0F9FF] border border-[#BAE6FD]">
-                    <Info className="h-4 w-4 text-[#0284C7] mt-0.5 shrink-0" />
-                    <p className="text-sm text-[#0369A1]">
-                      Rows already imported from this Notion database (matched by page ID) will be skipped automatically.
+                  <div className="flex items-start gap-2 p-3 rounded-lg bg-[#F0F9FF] border border-[#BAE6FD]">
+                    <Info className="h-3.5 w-3.5 text-[#0284C7] mt-0.5 shrink-0" />
+                    <p className="text-[12px] text-[#0369A1]">
+                      Duplicate rows (matched by Notion page ID) are skipped automatically.
                     </p>
                   </div>
 
-                  {/* Progress bar during import */}
                   {importing && (
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-sm">
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-[13px]">
                         <span className="text-[#64748B]">Importing…</span>
-                        <span className="font-mono font-semibold text-[#0F172A]">
-                          {importDone} / {notionRows.length}
-                        </span>
+                        <span className="font-mono font-semibold text-[#0F172A]">{importDone}/{notionRows.length}</span>
                       </div>
-                      <div className="h-2 rounded-full bg-[#F1F5F9] overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-[#2563EB] transition-all duration-300"
-                          style={{ width: `${(importDone / notionRows.length) * 100}%` }}
-                        />
+                      <div className="h-1.5 rounded-full bg-[#F1F5F9] overflow-hidden">
+                        <div className="h-full rounded-full bg-[#2563EB] transition-all duration-300" style={{ width: `${(importDone / notionRows.length) * 100}%` }} />
                       </div>
                     </div>
                   )}
                 </>
               ) : (
-                /* ─── Success / Results ─── */
-                <div className="bg-white border border-[#E2E8F0] rounded-xl p-8 text-center space-y-5">
-                  <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center ${
-                    importResult.failed > 0 && importResult.imported === 0
-                      ? 'bg-[#FEE2E2]' : 'bg-[#DCFCE7]'
+                <div className="bg-white border border-[#E2E8F0] rounded-lg p-6 text-center space-y-4">
+                  <div className={`mx-auto w-12 h-12 rounded-full flex items-center justify-center ${
+                    importResult.failed > 0 && importResult.imported === 0 ? 'bg-[#FEE2E2]' : 'bg-[#DCFCE7]'
                   }`}>
-                    {importResult.failed > 0 && importResult.imported === 0 ? (
-                      <XCircle className="h-7 w-7 text-[#DC2626]" />
-                    ) : (
-                      <CheckCircle2 className="h-7 w-7 text-[#16A34A]" />
-                    )}
+                    {importResult.failed > 0 && importResult.imported === 0
+                      ? <XCircle className="h-6 w-6 text-[#DC2626]" />
+                      : <CheckCircle2 className="h-6 w-6 text-[#16A34A]" />}
                   </div>
-
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold text-[#0F172A]">
-                      {importResult.imported > 0
-                        ? `${importResult.imported} items imported`
-                        : 'Import failed'}
-                    </p>
-                  </div>
-
-                  {/* Result pills */}
-                  <div className="flex justify-center gap-3">
+                  <p className="text-[15px] font-semibold text-[#0F172A]">
+                    {importResult.imported > 0 ? `${importResult.imported} items imported` : 'Import failed'}
+                  </p>
+                  <div className="flex justify-center gap-2 text-[12px] font-medium">
                     {importResult.imported > 0 && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#DCFCE7] text-[#16A34A] text-sm font-medium">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> {importResult.imported} imported
-                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-[#DCFCE7] text-[#16A34A]">{importResult.imported} imported</span>
                     )}
                     {importResult.skipped > 0 && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F1F5F9] text-[#64748B] text-sm font-medium">
-                        <SkipForward className="h-3.5 w-3.5" /> {importResult.skipped} skipped
-                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-[#F1F5F9] text-[#64748B]">{importResult.skipped} skipped</span>
                     )}
                     {importResult.failed > 0 && (
-                      <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FEE2E2] text-[#DC2626] text-sm font-medium">
-                        <XCircle className="h-3.5 w-3.5" /> {importResult.failed} failed
-                      </div>
+                      <span className="px-2.5 py-1 rounded-full bg-[#FEE2E2] text-[#DC2626]">{importResult.failed} failed</span>
                     )}
                   </div>
-
-                  <div className="pt-2">
-                    <Button
-                      variant="outline"
-                      className="gap-1.5"
-                      onClick={() => navigate('/producthub/backlog')}
-                    >
-                      View in ProductHub
-                      <ExternalLink className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
+                  <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/producthub/backlog')}>
+                    View in ProductHub <ExternalLink className="h-3 w-3" />
+                  </Button>
                 </div>
               )}
             </div>
