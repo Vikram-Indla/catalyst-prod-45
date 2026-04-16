@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { GripVertical, ChevronDown, ChevronUp, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // ============================================================================
 // CATALYST V5 ENTERPRISE TABLE - DARK MODE COMPLIANT
