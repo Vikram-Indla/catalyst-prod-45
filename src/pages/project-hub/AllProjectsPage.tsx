@@ -1,4 +1,4 @@
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, FolderKanban, FolderOpen, Star } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
@@ -46,7 +46,7 @@ export default function AllProjectsPage() {
   const [syncPanelOpen, setSyncPanelOpen] = useState(false);
 
   // Get current user for "My Projects" tab
-  useMemo(() => {
+  useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) setCurrentUserId(data.user.id);
     });
@@ -71,7 +71,9 @@ export default function AllProjectsPage() {
       }
       return map;
     },
-    staleTime: 30_000,
+    staleTime: 3 * 60_000,
+    gcTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
   });
 
   // Enrich projects with real sync counts so sorting uses actual numbers

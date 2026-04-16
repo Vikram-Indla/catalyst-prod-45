@@ -131,13 +131,21 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const { data: profiles = [] } = useAllProfiles();
   const [optimisticLead, setOptimisticLead] = useState<{ id: string; name: string; avatar_url: string | null } | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const filtered = profiles.filter(p =>
-    p.display_name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleSearchChange = useCallback((val: string) => {
+    setSearch(val);
+    clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => setDebouncedSearch(val), 150);
+  }, []);
+
+  const filtered = useMemo(() => profiles.filter(p =>
+    p.display_name?.toLowerCase().includes(debouncedSearch.toLowerCase())
+  ), [profiles, debouncedSearch]);
 
   const displayLead = optimisticLead
     ? { name: optimisticLead.name, avatar_url: optimisticLead.avatar_url, id: optimisticLead.id }
@@ -218,7 +226,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
             <input
               placeholder="Search people..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => handleSearchChange(e.target.value)}
               className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[13px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
@@ -253,8 +261,16 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [debouncedMemberSearch, setDebouncedMemberSearch] = useState('');
+  const memberSearchTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const [addMode, setAddMode] = useState(false);
   const { data: profiles = [] } = useAllProfiles();
+
+  const handleMemberSearchChange = useCallback((val: string) => {
+    setSearch(val);
+    clearTimeout(memberSearchTimerRef.current);
+    memberSearchTimerRef.current = setTimeout(() => setDebouncedMemberSearch(val), 150);
+  }, []);
 
   const memberIds = project.member_ids || [];
 
@@ -265,9 +281,9 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
     });
   }, [memberIds, profiles]);
 
-  const nonMembers = profiles.filter(p =>
-    !memberIds.includes(p.id) && p.display_name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const nonMembers = useMemo(() => profiles.filter(p =>
+    !memberIds.includes(p.id) && p.display_name?.toLowerCase().includes(debouncedMemberSearch.toLowerCase())
+  ), [profiles, memberIds, debouncedMemberSearch]);
 
   const handleRemove = async (userId: string) => {
     const { error } = await supabase
@@ -314,7 +330,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
               <input
                 placeholder="Search people..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={e => handleMemberSearchChange(e.target.value)}
                 autoFocus
                 className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[13px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
@@ -531,8 +547,10 @@ export function AllProjectsTable({
 
       return { countMap, lastSyncAt: effectiveSyncAt, syncedProjectKeys };
     },
-    refetchInterval: 60_000,
-    staleTime: 30_000,
+    refetchInterval: 5 * 60_000,
+    staleTime: 3 * 60_000,
+    gcTime: 10 * 60_000,
+    refetchOnWindowFocus: false,
   });
 
   const renderProjectCell = (colKey: string, p: ProjectListItem, idx: number) => {

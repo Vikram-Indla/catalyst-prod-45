@@ -40,7 +40,7 @@ function relativeTime(dateStr: string): string {
   return formatDistanceToNow(new Date(dateStr), { addSuffix: true });
 }
 
-export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, gridSize, onClick }) => {
+export const InitiativeCard: React.FC<InitiativeCardProps> = React.memo(({ initiative, gridSize, onClick }) => {
   const status = STATUS_DISPLAY[initiative.status];
   const isCancelled = initiative.status === 'cancelled';
   const priority = getPriorityLabel(initiative.computed_score);
@@ -299,6 +299,6 @@ export const InitiativeCard: React.FC<InitiativeCardProps> = ({ initiative, grid
       </div>
     </div>
   );
-};
+});
 
 export default InitiativeCard;

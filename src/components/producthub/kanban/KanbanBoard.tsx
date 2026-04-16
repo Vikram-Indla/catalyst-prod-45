@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useMemo } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -68,8 +68,19 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   const { activeId, activeInitiative, onDragStart, onDragEnd } = useKanbanDragDrop(initiatives);
 
-  const sorted = sortInitiatives(initiatives, sortBy);
-  const columnItems = (status: InitiativeStatus) => sorted.filter(i => i.status === status);
+  const sorted = useMemo(() => sortInitiatives(initiatives, sortBy), [initiatives, sortBy]);
+
+  const itemsByStatus = useMemo(() => {
+    const map = new Map<string, Initiative[]>();
+    for (const col of COLUMNS) map.set(col.key, []);
+    for (const item of sorted) {
+      const bucket = map.get(item.status);
+      if (bucket) bucket.push(item);
+    }
+    return map;
+  }, [sorted]);
+
+  const columnItems = useCallback((status: InitiativeStatus) => itemsByStatus.get(status) ?? [], [itemsByStatus]);
 
   const [collapsedCols, setCollapsedCols] = useState<Set<string>>(new Set());
   const toggleCollapse = useCallback((key: string) => {

@@ -67,6 +67,8 @@ export function useProjectTeam(projectId: string | null) {
 export function useProjectFavorites() {
   return useQuery({
     queryKey: QUERY_KEYS.favorites,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
     queryFn: async (): Promise<Set<string>> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return new Set<string>();
@@ -313,20 +315,27 @@ export function filterAndSortProjects(
 // 8. Portfolio stats computed from projects array
 // ─────────────────────────────────────────────
 export function computePortfolioStats(projects: ProjectListItem[], favorites?: Set<string>) {
+  let active = 0, atRisk = 0, totalEpics = 0, totalStories = 0;
+  let totalTodo = 0, totalInProgress = 0, totalDone = 0;
+  let statusStarred = 0, statusActive = 0, statusOnHold = 0, statusPlanning = 0, statusCompleted = 0;
+
+  for (const p of projects) {
+    if (p.status === 'active') { active++; statusActive++; }
+    else if (p.status === 'on_hold') statusOnHold++;
+    else if (p.status === 'planning') statusPlanning++;
+    else if (p.status === 'completed') statusCompleted++;
+    if (p.health_status === 'at_risk' || p.health_status === 'off_track') atRisk++;
+    totalEpics += p.total_epics;
+    totalStories += p.total_stories;
+    totalTodo += p.work_items_todo;
+    totalInProgress += p.work_items_in_progress;
+    totalDone += p.work_items_done;
+    if (favorites?.has(p.id)) statusStarred++;
+  }
+
   return {
-    total: projects.length,
-    active: projects.filter(p => p.status === 'active').length,
-    atRisk: projects.filter(p => p.health_status === 'at_risk' || p.health_status === 'off_track').length,
-    totalEpics: projects.reduce((s, p) => s + p.total_epics, 0),
-    totalStories: projects.reduce((s, p) => s + p.total_stories, 0),
-    totalTodo: projects.reduce((s, p) => s + p.work_items_todo, 0),
-    totalInProgress: projects.reduce((s, p) => s + p.work_items_in_progress, 0),
-    totalDone: projects.reduce((s, p) => s + p.work_items_done, 0),
-    // Status counts for chips
-    statusStarred: favorites ? projects.filter(p => favorites.has(p.id)).length : 0,
-    statusActive: projects.filter(p => p.status === 'active').length,
-    statusOnHold: projects.filter(p => p.status === 'on_hold').length,
-    statusPlanning: projects.filter(p => p.status === 'planning').length,
-    statusCompleted: projects.filter(p => p.status === 'completed').length,
+    total: projects.length, active, atRisk, totalEpics, totalStories,
+    totalTodo, totalInProgress, totalDone,
+    statusStarred, statusActive, statusOnHold, statusPlanning, statusCompleted,
   };
 }

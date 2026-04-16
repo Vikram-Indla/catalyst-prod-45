@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import { FILTER_CHIPS, type FilterChip } from '@/types/producthub/initiative';
 
@@ -15,14 +15,23 @@ export const KanbanFilterBar: React.FC<KanbanFilterBarProps> = ({
   activeFilter,
   onFilterChange,
 }) => {
+  const [localSearch, setLocalSearch] = useState(searchTerm);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const handleSearch = useCallback((val: string) => {
+    setLocalSearch(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => onSearchChange(val), 250);
+  }, [onSearchChange]);
+
   return (
     <div className="pk-filters">
       <div className="pk-search">
         <Search className="pk-search-icon" />
         <input
           type="text"
-          value={searchTerm}
-          onChange={e => onSearchChange(e.target.value)}
+          value={localSearch}
+          onChange={e => handleSearch(e.target.value)}
           placeholder="Search initiatives…"
           className="pk-search-input"
         />

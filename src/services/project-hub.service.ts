@@ -78,7 +78,9 @@ export interface IssueFilters {
 /** Fetch all issues (soft-deleted excluded via RLS) */
 export function useProjectIssues(filters?: IssueFilters) {
   return useQuery({
-    queryKey: [...phKeys.issues, filters],
+    queryKey: [...phKeys.issues, filters?.status, filters?.type, filters?.priority, filters?.release_id, filters?.assignee_id, filters?.source, filters?.search],
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
     queryFn: async () => {
       let q = supabase
         .from('ph_sdlc_issues')
@@ -105,6 +107,8 @@ export function useProjectIssues(filters?: IssueFilters) {
 export function useProjectIssue(id: string | null) {
   return useQuery({
     queryKey: phKeys.issue(id ?? ''),
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
     queryFn: async () => {
       if (!id) return null;
       const { data: issue, error } = await supabase
@@ -207,6 +211,8 @@ export function useDeleteIssue() {
 export function useSDLCReleases() {
   return useQuery({
     queryKey: phKeys.releases,
+    staleTime: 5 * 60_000,
+    gcTime: 15 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_sdlc_releases')
@@ -224,6 +230,8 @@ export function useSDLCReleases() {
 export function useBoards() {
   return useQuery({
     queryKey: phKeys.boards,
+    staleTime: 5 * 60_000,
+    gcTime: 15 * 60_000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('ph_boards')
