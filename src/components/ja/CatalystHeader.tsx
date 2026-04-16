@@ -553,25 +553,26 @@ export function CatalystHeader() {
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
               className="hidden sm:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
               style={{
-                minWidth: '200px',
-                height: '32px',
-                padding: '0 10px',
-                background: isDark ? '#1A1A1A' : '#F8FAFC',
-                border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+                minWidth: '220px',
+                height: '34px',
+                padding: '0 12px',
+                background: isDark ? '#1A1A1A' : '#F4F5F7',
+                border: `1.5px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
                 borderRadius: '6px',
                 cursor: 'pointer',
                 gap: '8px',
                 alignItems: 'center',
+                transition: 'border-color 120ms ease, background 120ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#CBD5E1'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#EBECF0'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#DFE1E6'; e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F4F5F7'; }}
             >
-              <Search style={{ width: '14px', height: '14px', color: isDark ? '#878787' : '#94A3B8', flexShrink: 0 }} />
-              <span style={{ flex: 1, fontSize: '12px', fontFamily: "'Inter', sans-serif", color: isDark ? '#878787' : '#94A3B8', textAlign: 'left' }}>
+              <Search style={{ width: '14px', height: '14px', color: isDark ? '#878787' : '#6B778C', flexShrink: 0 }} />
+              <span style={{ flex: 1, fontSize: '13px', fontFamily: "'Inter', sans-serif", color: isDark ? '#878787' : '#6B778C', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#F1F5F9', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? '#878787' : '#64748B' }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#F1F5F9', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '4px', padding: '1px 4px', fontFamily: 'monospace', color: isDark ? '#878787' : '#64748B' }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '4px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '4px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>K</kbd>
             </button>
             {/* Mobile search icon */}
             <button
@@ -589,29 +590,26 @@ export function CatalystHeader() {
               aria-label={`Notifications${debouncedUnreadCount > 0 ? `, ${debouncedUnreadCount} unread` : ''}`}
               style={{
                 position: 'relative',
-                width: '36px', height: '50px',
+                width: '36px', height: '36px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'transparent', border: 'none', borderRadius: '8px',
                 cursor: 'pointer',
-                color: isDark ? '#A1A1A1' : '#64748B',
-                transition: 'color 150ms ease',
+                color: isDark ? '#A1A1A1' : '#6B778C',
+                transition: 'color 150ms ease, background 120ms ease',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#0F172A'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#64748B'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#172B4D'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F4F5F7'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#6B778C'; e.currentTarget.style.background = 'transparent'; }}
             >
               <Bell style={{ width: '18px', height: '18px' }} />
               {debouncedUnreadCount > 0 && (
                 <span style={{
                   position: 'absolute', top: '4px', right: '4px',
-                  minWidth: '16px', height: '16px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: '#EF4444', color: '#FFFFFF',
-                  borderRadius: '8px', padding: '0 4px',
-                  fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
-                  lineHeight: 1,
-                }}>
-                  {debouncedUnreadCount > 99 ? '99+' : String(debouncedUnreadCount)}
-                </span>
+                  width: '8px', height: '8px',
+                  background: '#EF4444',
+                  borderRadius: '50%',
+                  border: `2px solid ${isDark ? '#0A0A0A' : '#FFFFFF'}`,
+                  boxSizing: 'content-box',
+                }} />
               )}
             </button>
 
@@ -624,13 +622,17 @@ export function CatalystHeader() {
                   aria-expanded={userMenuOpen}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   style={{
-                    background: 'linear-gradient(135deg, var(--cp-blue), #6366F1)',
+                    background: 'linear-gradient(135deg, #0052CC, #6366F1)',
                     color: '#FFFFFF',
+                    border: '2px solid transparent',
+                    transition: 'border-color 150ms ease, box-shadow 150ms ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-blue-wash)';
+                    e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0';
+                    e.currentTarget.style.boxShadow = `0 0 0 2px ${isDark ? 'rgba(0,82,204,0.2)' : 'rgba(0,82,204,0.15)'}`;
                   }}
                   onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'transparent';
                     e.currentTarget.style.boxShadow = 'none';
                   }}
                   title="Profile"
