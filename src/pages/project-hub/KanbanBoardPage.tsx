@@ -357,6 +357,67 @@ export default function KanbanBoardPage() {
     return Array.from(m.entries()).map(([t, c]) => ({ type: t, count: c }));
   }, [rawIssues]);
 
+  /* ═══ CANONICAL FILTER CATEGORIES ═══ */
+  const filterCategories: FilterCategory[] = useMemo(() => {
+    const epicOptions = allEpics.map(e => ({
+      id: e.key,
+      label: e.summary || e.key,
+      labelExtra: e.key,
+    }));
+    const typeOptions = allTypes.map(t => ({
+      id: t.type,
+      label: t.type,
+    }));
+    const priorityOptions = ['Critical', 'High', 'Medium', 'Low'].map(p => ({
+      id: p,
+      label: p,
+    }));
+    const statusOptions = KANBAN_COLUMNS.map(c => ({
+      id: c.name,
+      label: c.name,
+    }));
+    const assigneeOptions2 = allAssignees.map(a => ({
+      id: a.name,
+      label: a.name,
+      avatarUrl: avatarsByName.get(a.name.toLowerCase()) || undefined,
+      avatarType: (avatarsByName.get(a.name.toLowerCase()) ? 'photo' : 'person-icon') as 'photo' | 'person-icon',
+    }));
+    return [
+      { id: 'epic', label: 'Epic', options: epicOptions, searchPlaceholder: 'Search epics...' },
+      { id: 'type', label: 'Type', options: typeOptions },
+      { id: 'priority', label: 'Priority', options: priorityOptions },
+      { id: 'status', label: 'Status', options: statusOptions },
+      { id: 'assignee', label: 'Assignee', options: assigneeOptions2, searchPlaceholder: 'Search people...' },
+    ];
+  }, [allEpics, allTypes, allAssignees, avatarsByName, KANBAN_COLUMNS]);
+
+  const filterSelected: Record<string, string[]> = useMemo(() => ({
+    epic: selEpics,
+    type: selTypes,
+    priority: selPriorities,
+    status: [],
+    assignee: Array.from(selAssignees),
+  }), [selEpics, selTypes, selPriorities, selAssignees]);
+
+  const handleFilterChange = useCallback((categoryId: string, optionIds: string[]) => {
+    switch (categoryId) {
+      case 'epic': setSelEpics(optionIds); break;
+      case 'type': setSelTypes(optionIds); break;
+      case 'priority': setSelPriorities(optionIds); break;
+      case 'assignee': setSelAssignees(new Set(optionIds)); break;
+    }
+  }, []);
+
+  const basicFilterCount = selEpics.length + selTypes.length + selPriorities.length + selAssignees.size;
+
+  const BOARD_GROUP_OPTIONS: GroupByOption<GroupByMode>[] = useMemo(() => [
+    { key: 'none' as GroupByMode, label: 'None' },
+    { key: 'assignee' as GroupByMode, label: 'Assignee', icon: 'assignee' },
+    { key: 'epic' as GroupByMode, label: 'Epic', icon: 'parent' },
+    { key: 'priority' as GroupByMode, label: 'Priority', icon: 'priority' },
+    { key: 'fixVersion' as GroupByMode, label: 'Fix Version' },
+  ], []);
+
   // Current user for "Assigned to me"
   const { data: currentUserName } = useQuery({
     queryKey: ['current-user-display-name'],
