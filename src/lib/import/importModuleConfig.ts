@@ -149,7 +149,39 @@ export const importModuleConfigs: ImportModuleConfig[] = [
       { key: 'category', label: 'Category', dbColumn: 'category', type: 'select', required: false, isLookup: true, options: ['Planning', 'Development', 'Testing', 'Deployment', 'Review'] },
     ],
   },
+  {
+    type: 'notion',
+    label: 'Notion Database',
+    description: 'Import work items from a Notion database',
+    tableName: 'ph_work_items',
+    requiresProject: true,
+    fields: [
+      { key: 'summary', label: 'Name', dbColumn: 'summary', type: 'text', required: true, isLookup: false },
+      { key: 'status', label: 'Status', dbColumn: 'status', type: 'select', required: false, isLookup: true, options: ['To Do', 'In Progress', 'Done', 'Backlog', 'On Hold'] },
+      { key: 'priority', label: 'Priority', dbColumn: 'priority', type: 'select', required: false, isLookup: true, options: ['Highest', 'High', 'Medium', 'Low', 'Lowest'] },
+      { key: 'due_date', label: 'Due Date', dbColumn: 'due_date', type: 'date', required: false, isLookup: false },
+      { key: 'assignee_id', label: 'Assignee', dbColumn: 'assignee_id', type: 'relation', required: false, isLookup: true, foreignTable: 'profiles', foreignColumn: 'id' },
+      { key: 'description', label: 'Description', dbColumn: 'description', type: 'text', required: false, isLookup: false },
+    ],
+  },
 ];
+
+/** Standalone Notion field mapping config for the Notion-specific import pipeline */
+export const notionImportConfig = {
+  id: 'notion' as const,
+  label: 'Notion Database',
+  tableName: 'ph_work_items',
+  sourceType: 'notion' as const,
+  requiredFields: ['summary', 'item_type', 'project_id'],
+  fieldMappings: [
+    { notionProp: 'Name',        catalystCol: 'summary',     required: true  },
+    { notionProp: 'Status',      catalystCol: 'status',      required: false },
+    { notionProp: 'Priority',    catalystCol: 'priority',    required: false },
+    { notionProp: 'Due Date',    catalystCol: 'due_date',    required: false },
+    { notionProp: 'Assignee',    catalystCol: 'assignee_id', required: false },
+    { notionProp: 'Description', catalystCol: 'description', required: false },
+  ],
+};
 
 export function getModuleConfig(type: ImportModuleType): ImportModuleConfig | undefined {
   return importModuleConfigs.find(m => m.type === type);
