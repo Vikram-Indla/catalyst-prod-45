@@ -12,7 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImportWizardStepper, WizardStep } from './ImportWizardStepper';
 import { AlertCircle, Check, Loader2, ExternalLink } from 'lucide-react';
-import type { NotionProperty, NotionRow, NotionFetchResponse } from '@/types/notionImport';
+import { fetchNotionDatabase, importNotionRows } from '@/lib/import/notionImportService';
+import type { NotionProperty, NotionRow } from '@/types/notionImport';
 
 const WIZARD_STEPS: WizardStep[] = [
   { id: 1, label: 'Connect' },
@@ -92,17 +93,12 @@ export function NotionImportWizard() {
   // Derive project name
   const projectName = useMemo(() => projects?.find(p => p.id === projectId)?.name || '', [projects, projectId]);
 
-  // Step 1 — Fetch Database
+  // Step 1 — Fetch Database via service
   const handleFetch = useCallback(async () => {
     setFetchError(null);
     setFetching(true);
     try {
-      const { data, error } = await supabase.functions.invoke('notion-fetch', {
-        body: { integrationToken: token, databaseUrl: dbUrl },
-      });
-      if (error) throw new Error(error.message || 'Edge function error');
-      const res = data as NotionFetchResponse;
-      if (!res.success) throw new Error(res.error || 'Unknown error');
+      const res = await fetchNotionDatabase(token, dbUrl);
 
       setDbTitle(res.databaseTitle);
       setNotionProps(res.properties);
