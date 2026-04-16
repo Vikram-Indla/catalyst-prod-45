@@ -60744,38 +60744,47 @@ export type Database = {
       user_recent_items: {
         Row: {
           created_at: string
+          display_summary: string
+          entity_id: string
+          entity_key: string | null
+          entity_type: string
           id: string
-          issue_id: string
-          issue_key: string
-          issue_type: string
-          project_id: string
-          summary: string
+          nav_path: string
+          project_id: string | null
+          project_name: string | null
           updated_at: string
           user_id: string
+          visit_count: number
           visited_at: string
         }
         Insert: {
           created_at?: string
+          display_summary: string
+          entity_id: string
+          entity_key?: string | null
+          entity_type: string
           id?: string
-          issue_id: string
-          issue_key: string
-          issue_type?: string
-          project_id: string
-          summary?: string
+          nav_path: string
+          project_id?: string | null
+          project_name?: string | null
           updated_at?: string
           user_id: string
+          visit_count?: number
           visited_at?: string
         }
         Update: {
           created_at?: string
+          display_summary?: string
+          entity_id?: string
+          entity_key?: string | null
+          entity_type?: string
           id?: string
-          issue_id?: string
-          issue_key?: string
-          issue_type?: string
-          project_id?: string
-          summary?: string
+          nav_path?: string
+          project_id?: string | null
+          project_name?: string | null
           updated_at?: string
           user_id?: string
+          visit_count?: number
           visited_at?: string
         }
         Relationships: []
