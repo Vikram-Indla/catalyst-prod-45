@@ -60666,6 +60666,45 @@ export type Database = {
           },
         ]
       }
+      user_recent_items: {
+        Row: {
+          created_at: string
+          id: string
+          issue_id: string
+          issue_key: string
+          issue_type: string
+          project_id: string
+          summary: string
+          updated_at: string
+          user_id: string
+          visited_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_id: string
+          issue_key: string
+          issue_type?: string
+          project_id: string
+          summary?: string
+          updated_at?: string
+          user_id: string
+          visited_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_id?: string
+          issue_key?: string
+          issue_type?: string
+          project_id?: string
+          summary?: string
+          updated_at?: string
+          user_id?: string
+          visited_at?: string
+        }
+        Relationships: []
+      }
       user_role_history: {
         Row: {
           action: string

@@ -91,7 +91,6 @@ function getAvatarColor(name: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-/** Highlight matched query words with <strong> — no background, just bold */
 function HighlightTitle({ text, query }: { text: string; query: string }) {
   if (!query || query.length < 2) return <>{text}</>;
   const words = query.trim().split(/\s+/).filter(Boolean);
@@ -101,102 +100,80 @@ function HighlightTitle({ text, query }: { text: string; query: string }) {
   return (
     <>
       {parts.map((part, i) =>
-        pattern.test(part) ? <strong key={i} style={{ fontWeight: 700, color: "#292A2E", background: "transparent" }}>{part}</strong> : part
+        pattern.test(part) ? <strong key={i} style={{ fontWeight: 650, color: "#172B4D", background: "transparent" }}>{part}</strong> : part
       )}
     </>
   );
 }
 
-/* ── Result Row — Jira parity (45px, 3-column) ── */
+/* ── Result Row — Enterprise high-density (42px) ── */
 function ResultRow({ item, isSelected, onHover, onClick, query }: {
   item: SearchResult; isSelected: boolean; onHover: () => void; onClick: () => void;
   query: string;
 }) {
   const typeKey = mapType(item.item_type);
   const icon = WORK_ICONS[typeKey] ?? WORK_ICONS.task;
-  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
-    <div style={{ display: "block", width: "100%" }}>
-      <div
-        onClick={onClick}
-        onMouseEnter={onHover}
-        role="option"
-        aria-selected={isSelected}
-        style={{
-          display: "inline-flex", flexDirection: "row", alignItems: "center",
-          width: "calc(100% - 16px)", margin: "0 8px",
-          padding: "6px 8px", height: 45,
-          borderRadius: 8, cursor: "pointer",
-          backgroundColor: isSelected ? "rgba(5,21,36,0.06)" : "transparent",
-          transition: "background 60ms ease",
-        }}
-        onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
-      >
-        {/* Col 1: Icon */}
-        <span
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
-          style={{ flexShrink: 0, width: 24, height: 24, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}
-          dangerouslySetInnerHTML={{ __html: icon.svg }}
-        />
-        {showTooltip && (
-          <div style={{
-            position: "absolute", marginLeft: -4, marginTop: -42,
-            backgroundColor: "#292A2E", color: "#FFFFFF",
-            fontSize: 12, fontWeight: 500, fontFamily: "Inter, system-ui, sans-serif",
-            padding: "4px 8px", borderRadius: 4,
-            whiteSpace: "nowrap", zIndex: 9999, pointerEvents: "none",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-          }}>
-            {icon.label}
-          </div>
-        )}
+    <div
+      onClick={onClick}
+      onMouseEnter={onHover}
+      role="option"
+      aria-selected={isSelected}
+      style={{
+        display: "flex", alignItems: "center",
+        margin: "0 8px", padding: "0 10px", height: 42,
+        borderRadius: 6, cursor: "pointer",
+        backgroundColor: isSelected ? "#F4F5F7" : "transparent",
+        transition: "background 60ms ease",
+      }}
+      onMouseLeave={e => { if (!isSelected) e.currentTarget.style.backgroundColor = "transparent"; }}
+    >
+      {/* Icon */}
+      <span
+        style={{ flexShrink: 0, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center" }}
+        dangerouslySetInnerHTML={{ __html: icon.svg }}
+      />
 
-        {/* Col 2: Content */}
+      {/* Content */}
+      <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, marginLeft: 10, gap: 1 }}>
         <div style={{
-          display: "flex", flexDirection: "column", flex: "1 1 0%", minWidth: 0,
-          marginLeft: 12, height: 33,
+          display: "flex", alignItems: "center", gap: 6,
+          fontSize: 13.5, lineHeight: "18px", color: "#172B4D",
+          fontFamily: "Inter, system-ui, sans-serif", fontWeight: 400,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         }}>
-          <div style={{
-            display: "flex", alignItems: "center", flexWrap: "nowrap", gap: 6,
-            fontSize: 14, lineHeight: "16px", color: "#292A2E",
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            fontFamily: "Inter, system-ui, sans-serif", fontWeight: 400,
-          }}>
-            <span style={{ whiteSpace: "nowrap" }}>{item.item_key}:</span>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              <HighlightTitle text={item.title} query={query} />
-            </span>
-          </div>
-          <div style={{
-            display: "flex", alignItems: "center", flexWrap: "nowrap",
-            fontSize: 12, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
-            lineHeight: "16px", marginTop: 0,
-          }}>
-            <span>Catalyst</span>
-            <span style={{ display: "inline-block", margin: "0 4px", color: "#6B6E76" }}>•</span>
-            <span>{icon.label}</span>
-            {item.project_name && (
-              <>
-                <span style={{ display: "inline-block", margin: "0 4px", color: "#6B6E76" }}>•</span>
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>
-                  {item.project_name}
-                </span>
-              </>
-            )}
-          </div>
+          <span style={{ fontWeight: 500, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "#42526E", flexShrink: 0 }}>
+            {item.item_key}
+          </span>
+          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "#172B4D" }}>
+            <HighlightTitle text={item.title} query={query} />
+          </span>
         </div>
+        <div style={{
+          display: "flex", alignItems: "center",
+          fontSize: 11.5, color: "#6B778C", fontFamily: "Inter, system-ui, sans-serif",
+          lineHeight: "14px", gap: 4,
+        }}>
+          <span>{icon.label}</span>
+          {item.project_name && (
+            <>
+              <span style={{ color: "#94A3B8" }}>·</span>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 180 }}>
+                {item.project_name}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
 
-        {/* Col 3: Timestamp */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "flex-end",
-          flex: "0 0 auto", marginLeft: 12,
-          fontSize: 12, fontWeight: 400, color: "#6B6E76",
-          fontFamily: "Inter, system-ui, sans-serif", whiteSpace: "nowrap", lineHeight: "16px",
-        }}>
-          {formatViewedDate(item.viewed_at)}
-        </div>
+      {/* Timestamp */}
+      <div style={{
+        flexShrink: 0, marginLeft: 12,
+        fontSize: 11, fontWeight: 500, color: "#94A3B8",
+        fontFamily: "'JetBrains Mono', monospace", whiteSpace: "nowrap",
+      }}>
+        {formatViewedDate(item.viewed_at)}
       </div>
     </div>
   );
@@ -240,48 +217,49 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
       ref={popupRef}
       style={{
         position: "fixed", top, left,
-        width: 287, zIndex: 510,
-        backgroundColor: "#FFFFFF", borderRadius: 4,
-        boxShadow: "0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)",
+        width: 280, zIndex: 510,
+        backgroundColor: "#FFFFFF", borderRadius: 8,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
         display: "flex", flexDirection: "column",
         overflow: "hidden",
       }}
     >
-      <div style={{ padding: 8 }}>
+      <div style={{ padding: "8px 8px 4px" }}>
         <div style={{
           display: "flex", alignItems: "center",
-          height: 40, borderRadius: 3,
-          border: "0.56px solid rgb(70,136,236)",
-          boxShadow: "rgb(70,136,236) 0 0 0 1px inset",
-          padding: "0 8px",
+          height: 36, borderRadius: 6,
+          border: "1.5px solid #0052CC",
+          padding: "0 10px",
+          backgroundColor: "#FAFBFC",
         }}>
-          <Search size={16} color="#6B6E76" style={{ flexShrink: 0, marginRight: 8 }} />
+          <Search size={14} color="#6B778C" style={{ flexShrink: 0, marginRight: 8 }} />
           <input
             ref={inputRef}
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder={label === "Projects" ? "Find projects" : "Find people"}
+            placeholder={label === "Projects" ? "Find projects..." : "Find people..."}
             style={{
               flex: 1, border: "none", outline: "none",
-              fontSize: 14, fontFamily: "Inter, system-ui, sans-serif",
-              color: "#292A2E", backgroundColor: "transparent",
+              fontSize: 13, fontFamily: "Inter, system-ui, sans-serif",
+              color: "#172B4D", backgroundColor: "transparent",
             }}
           />
         </div>
       </div>
 
       <div style={{
-        padding: "8px 12px 4px", fontSize: 12, fontWeight: 600,
-        color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
+        padding: "8px 14px 4px", fontSize: 11, fontWeight: 700,
+        color: "#6B778C", fontFamily: "Inter, system-ui, sans-serif",
+        letterSpacing: "0.04em", textTransform: "uppercase",
       }}>
         Suggested
       </div>
 
-      <div role="listbox" style={{ overflowY: "auto", maxHeight: 260 }}>
+      <div role="listbox" style={{ overflowY: "auto", maxHeight: 240, padding: "2px 0" }}>
         {filtered.length === 0 ? (
           <div style={{
-            padding: "16px 12px", textAlign: "center",
-            fontSize: 13, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif",
+            padding: "16px 14px", textAlign: "center",
+            fontSize: 13, color: "#6B778C", fontFamily: "Inter, system-ui, sans-serif",
           }}>
             No results found
           </div>
@@ -296,15 +274,15 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
               onClick={() => toggle(item.value)}
               style={{
                 display: "flex", alignItems: "center",
-                height: 36, padding: "4px 12px 4px 16px",
+                height: 34, padding: "0 14px",
                 cursor: "pointer", gap: 8,
-                backgroundColor: isActive ? "rgba(5,21,36,0.06)" : "transparent",
-                boxShadow: isActive ? "rgb(70,136,236) 2px 0 0 0 inset" : "none",
-                fontSize: 14, color: "#292A2E", fontFamily: "Inter, system-ui, sans-serif",
+                backgroundColor: isActive ? "#F4F5F7" : "transparent",
+                borderLeft: isActive ? "2px solid #0052CC" : "2px solid transparent",
+                fontSize: 13, color: "#172B4D", fontFamily: "Inter, system-ui, sans-serif",
                 transition: "background 60ms ease",
               }}
               onMouseEnter={e => {
-                if (!isActive) e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.06)";
+                if (!isActive) e.currentTarget.style.backgroundColor = "#F4F5F7";
               }}
               onMouseLeave={e => {
                 if (!isActive) e.currentTarget.style.backgroundColor = "transparent";
@@ -313,14 +291,14 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
               {label === "Assignee" ? (
                 photoUrl ? (
                   <img src={photoUrl} alt={item.display} style={{
-                    width: 24, height: 24, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
+                    width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
                   }} />
                 ) : (
                   <span style={{
-                    width: 24, height: 24, borderRadius: "50%", display: "inline-flex",
+                    width: 22, height: 22, borderRadius: "50%", display: "inline-flex",
                     alignItems: "center", justifyContent: "center",
                     backgroundColor: item.color || "#525252", color: "#FFFFFF",
-                    fontSize: 10, fontWeight: 600, flexShrink: 0,
+                    fontSize: 9, fontWeight: 600, flexShrink: 0,
                   }}>
                     {getInitials(item.display)}
                   </span>
@@ -329,7 +307,7 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
               <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {item.display}
               </span>
-              {isActive && <Check size={16} color="#1868DB" style={{ flexShrink: 0 }} />}
+              {isActive && <Check size={14} color="#0052CC" style={{ flexShrink: 0 }} />}
             </div>
           );
         })}
@@ -339,14 +317,14 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
         <div
           onClick={() => onSelect([])}
           style={{
-            padding: "1px 6px 1px 20px", height: 32, cursor: "pointer",
-            color: "#505258", fontSize: 14, fontFamily: "Inter, system-ui, sans-serif",
-            borderTop: "0.56px solid rgba(11,18,14,0.14)",
-            backgroundColor: "#FFFFFF",
+            padding: "0 14px", height: 34, cursor: "pointer",
+            color: "#6B778C", fontSize: 13, fontFamily: "Inter, system-ui, sans-serif",
+            borderTop: "1px solid #EBECF0",
             display: "flex", alignItems: "center",
+            transition: "background 60ms ease",
           }}
-          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.06)")}
-          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#FFFFFF")}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#F4F5F7")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
         >
           Clear filter
         </div>
@@ -355,7 +333,7 @@ function PopupSelect({ label, items, selected, onSelect, triggerRef, avatarMap }
   );
 }
 
-/* ── Filter Button with icon + chevron ── */
+/* ── Filter Button ── */
 function FilterButton({ label, icon, isActive, isOpen, onClick, buttonRef }: {
   label: string; icon: React.ReactNode; isActive: boolean; isOpen: boolean;
   onClick: () => void; buttonRef: React.RefObject<HTMLButtonElement | null>;
@@ -369,11 +347,11 @@ function FilterButton({ label, icon, isActive, isOpen, onClick, buttonRef }: {
       aria-expanded={isOpen}
       style={{
         display: "inline-flex", alignItems: "center", gap: 6,
-        padding: "4px 12px", height: 32, borderRadius: 4,
-        border: `0.56px solid ${active ? "rgb(24,104,219)" : "rgba(11,18,14,0.14)"}`,
-        backgroundColor: active ? "rgb(207,225,253)" : "transparent",
-        color: active ? "rgb(24,104,219)" : "#505258",
-        fontSize: 14, fontWeight: 500, cursor: "pointer",
+        padding: "0 10px", height: 30, borderRadius: 6,
+        border: `1px solid ${active ? "#0052CC" : "#DFE1E6"}`,
+        backgroundColor: active ? "#E9F2FF" : "transparent",
+        color: active ? "#0052CC" : "#42526E",
+        fontSize: 13, fontWeight: 500, cursor: "pointer",
         fontFamily: "Inter, system-ui, sans-serif",
         lineHeight: "20px", whiteSpace: "nowrap",
         transition: "all 80ms ease",
@@ -387,7 +365,7 @@ function FilterButton({ label, icon, isActive, isOpen, onClick, buttonRef }: {
 }
 
 /* ═══════════════════════════════════════════════════════════
-   MAIN — GlobalSearch (Jira Parity)
+   MAIN — GlobalSearch (Enterprise)
    ═══════════════════════════════════════════════════════════ */
 
 export function GlobalSearch() {
@@ -463,7 +441,6 @@ export function GlobalSearch() {
     return true;
   });
 
-  // Max 10 results visible (no pagination)
   const displayItems = showSearch ? results.slice(0, 10) : filteredRecents.slice(0, 10);
 
   useEffect(() => {
@@ -525,7 +502,7 @@ export function GlobalSearch() {
         onClick={() => { setOpenFilter(null); close(); }}
         style={{
           position: "fixed", inset: 0, zIndex: 9998,
-          backgroundColor: "rgba(0,0,0,0.4)",
+          backgroundColor: "rgba(9,30,66,0.54)",
         }}
       />
 
@@ -539,14 +516,14 @@ export function GlobalSearch() {
           maxHeight: "calc(100vh - 72px)",
         }}
       >
-        {/* Search Input Bar — FIX 1 */}
+        {/* Search Input Bar */}
         <div style={{
-          display: "flex", flexDirection: "row", alignItems: "center",
-          backgroundColor: "#FFFFFF", borderRadius: 4,
-          boxShadow: "0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)",
-          height: 40, width: 780, border: "none", padding: 0,
+          display: "flex", alignItems: "center",
+          backgroundColor: "#FFFFFF", borderRadius: 8,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
+          height: 48, padding: "0 4px 0 16px",
         }}>
-          <Search size={16} color="#6B6E76" style={{ margin: "0 12px 0 16px", flexShrink: 0 }} />
+          <Search size={18} color="#6B778C" style={{ flexShrink: 0, marginRight: 12 }} />
           <input
             ref={inputRef}
             role="combobox"
@@ -556,43 +533,47 @@ export function GlobalSearch() {
             onChange={e => onInput(e.target.value)}
             placeholder="Search Catalyst..."
             style={{
-              flex: 1, height: 20, border: "none", outline: "none",
-              fontSize: 14, fontFamily: "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
-              color: "#292A2E", backgroundColor: "transparent", caretColor: "#292A2E",
+              flex: 1, height: 28, border: "none", outline: "none",
+              fontSize: 15, fontFamily: "Inter, system-ui, sans-serif",
+              fontWeight: 400, letterSpacing: "-0.01em",
+              color: "#172B4D", backgroundColor: "transparent", caretColor: "#0052CC",
             }}
           />
           {query && (
             <button
               onClick={() => { setQuery(""); setDebouncedQuery(""); }}
               style={{
-                width: 24, height: 24, margin: "0 8px 0 0", flexShrink: 0,
-                border: "none", backgroundColor: "transparent", cursor: "pointer",
+                width: 28, height: 28, marginRight: 4, flexShrink: 0,
+                border: "none", backgroundColor: "#F4F5F7", cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                color: "#6B6E76", borderRadius: 4,
+                color: "#6B778C", borderRadius: 6,
+                transition: "background 80ms ease",
               }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#EBECF0")}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = "#F4F5F7")}
             >
-              <X size={16} />
+              <X size={14} />
             </button>
           )}
         </div>
 
-        {/* Dropdown Panel — FIX 2 */}
+        {/* Dropdown Panel */}
         <div style={{
-          position: "relative", top: 0, left: 0, width: 780,
-          backgroundColor: "#FFFFFF", borderRadius: 4,
-          boxShadow: "0px 8px 12px rgba(30,31,33,0.15), 0px 0px 1px rgba(30,31,33,0.31)",
+          width: 780, marginTop: 6,
+          backgroundColor: "#FFFFFF", borderRadius: 8,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.06)",
           display: "flex", flexDirection: "column",
-          overflow: "hidden", marginTop: 4,
+          overflow: "hidden",
         }}>
-          {/* Filter Bar — FIX 3 */}
+          {/* Filter Bar */}
           <div style={{
             display: "flex", alignItems: "center",
-            padding: "2px 16px 6px", height: 40, gap: 8,
-            flexShrink: 0,
+            padding: "10px 14px", gap: 8,
+            borderBottom: "1px solid #F4F5F7",
           }}>
             <FilterButton
               label={selectedProjects.length > 0 ? `Projects (${selectedProjects.length})` : "Projects"}
-              icon={<FolderKanban size={16} />}
+              icon={<FolderKanban size={14} />}
               isActive={selectedProjects.length > 0}
               isOpen={openFilter === "project"}
               onClick={() => setOpenFilter(openFilter === "project" ? null : "project")}
@@ -600,7 +581,7 @@ export function GlobalSearch() {
             />
             <FilterButton
               label={selectedAssignees.length > 0 ? `Assignee (${selectedAssignees.length})` : "Assignee"}
-              icon={<User size={16} />}
+              icon={<User size={14} />}
               isActive={selectedAssignees.length > 0}
               isOpen={openFilter === "assignee"}
               onClick={() => setOpenFilter(openFilter === "assignee" ? null : "assignee")}
@@ -608,50 +589,48 @@ export function GlobalSearch() {
             />
           </div>
 
-          {/* Scrollable Results — FIX 11 */}
+          {/* Results */}
           <div role="listbox" id="gs-results-listbox" style={{
-            display: "flex", flexDirection: "column", gap: 2,
-            padding: "8px 0", overflowY: "auto", maxHeight: 640,
-            flex: 1,
+            display: "flex", flexDirection: "column",
+            padding: "4px 0", overflowY: "auto", maxHeight: 540,
           }}>
-            {/* Loading skeleton */}
+            {/* Loading */}
             {showSearch && isLoading && [1,2,3,4].map(i => (
               <div key={i} style={{
-                display: "flex", alignItems: "center", height: 45, padding: "0 16px", gap: 12,
+                display: "flex", alignItems: "center", height: 42, padding: "0 18px", gap: 10,
               }}>
-                <div style={{ width: 24, height: 24, borderRadius: 4, backgroundColor: "#F1F5F9" }} />
+                <div style={{ width: 20, height: 20, borderRadius: 4, backgroundColor: "#F4F5F7" }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ width: "60%", height: 14, borderRadius: 3, backgroundColor: "#F1F5F9", marginBottom: 4 }} />
-                  <div style={{ width: "40%", height: 10, borderRadius: 3, backgroundColor: "#F1F5F9" }} />
+                  <div style={{ width: "55%", height: 12, borderRadius: 3, backgroundColor: "#F4F5F7", marginBottom: 4 }} />
+                  <div style={{ width: "35%", height: 10, borderRadius: 3, backgroundColor: "#F4F5F7" }} />
                 </div>
               </div>
             ))}
 
-            {/* Recent state — FIX 4 */}
+            {/* Recent state */}
             {!showSearch && (() => {
               if (filteredRecents.length === 0) return (
                 <div style={{
                   display: "flex", flexDirection: "column", alignItems: "center",
-                  justifyContent: "center", height: 180, gap: 10,
+                  justifyContent: "center", height: 160, gap: 8,
                 }}>
-                  <Clock size={28} color="#6B6E76" />
-                  <span style={{ fontSize: 14, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif" }}>
-                    No recent items yet
+                  <Clock size={24} color="#94A3B8" />
+                  <span style={{ fontSize: 14, fontWeight: 500, color: "#42526E", fontFamily: "Inter, system-ui, sans-serif" }}>
+                    No recent items
                   </span>
-                  <span style={{ fontSize: 12, color: "#A3A3A3", fontFamily: "Inter, system-ui, sans-serif" }}>
-                    Items you open across Catalyst will appear here
+                  <span style={{ fontSize: 12.5, color: "#94A3B8", fontFamily: "Inter, system-ui, sans-serif" }}>
+                    Items you view across Catalyst will appear here
                   </span>
                 </div>
               );
 
               return (
                 <>
-                  {/* Single "Recent" heading — no date sub-groups */}
                   <div style={{
-                    padding: "0 8px", height: 32,
-                    display: "flex", alignItems: "center",
-                    fontSize: 14, fontWeight: 400, color: "#292A2E",
+                    padding: "6px 18px 4px", display: "flex", alignItems: "center",
+                    fontSize: 11, fontWeight: 700, color: "#6B778C",
                     fontFamily: "Inter, system-ui, sans-serif",
+                    letterSpacing: "0.06em", textTransform: "uppercase",
                   }}>
                     Recent
                   </div>
@@ -669,30 +648,33 @@ export function GlobalSearch() {
               );
             })()}
 
-            {/* Search Results state — FIX 5 */}
+            {/* Search Results */}
             {showSearch && !isLoading && (
               <>
                 {results.length === 0 ? (
                   <div style={{
                     display: "flex", flexDirection: "column", alignItems: "center",
-                    justifyContent: "center", height: 180, gap: 10,
+                    justifyContent: "center", height: 160, gap: 8,
                   }}>
-                    <Search size={28} color="#6B6E76" />
-                    <span style={{ fontSize: 14, color: "#6B6E76", fontFamily: "Inter, system-ui, sans-serif" }}>
+                    <Search size={24} color="#94A3B8" />
+                    <span style={{ fontSize: 14, fontWeight: 500, color: "#42526E", fontFamily: "Inter, system-ui, sans-serif" }}>
                       No results for "{debouncedQuery}"
                     </span>
                   </div>
                 ) : (
                   <>
-                    {/* "Search Results" heading */}
                     <div style={{
-                      height: 32, display: "flex", alignItems: "center",
+                      padding: "6px 18px 4px", display: "flex", alignItems: "center",
+                      fontSize: 11, fontWeight: 700, color: "#6B778C",
+                      fontFamily: "Inter, system-ui, sans-serif",
+                      letterSpacing: "0.06em", textTransform: "uppercase",
                     }}>
+                      Results
                       <span style={{
-                        padding: "0 8px", fontSize: 14, fontWeight: 400,
-                        color: "#292A2E", fontFamily: "Inter, system-ui, sans-serif",
+                        marginLeft: 6, fontSize: 10, fontWeight: 600, color: "#94A3B8",
+                        fontFamily: "'JetBrains Mono', monospace",
                       }}>
-                        Search Results
+                        {results.length}
                       </span>
                     </div>
                     {displayItems.map((item, idx) => (
@@ -711,37 +693,37 @@ export function GlobalSearch() {
             )}
           </div>
 
-          {/* Footer link — FIX 8 (replaces FIX 7 pagination + FIX 9 keyboard hints) */}
+          {/* Footer */}
           <div
-            onClick={() => {
-              /* Could navigate to full search page */
-            }}
+            onClick={() => { /* full search page */ }}
             style={{
-              display: "inline-block", width: "100%", height: 40,
-              textDecoration: "none", color: "#292A2E", cursor: "pointer",
-              borderTop: "0.56px solid rgba(11,18,14,0.08)",
+              display: "flex", alignItems: "center",
+              height: 40, padding: "0 16px", gap: 10,
+              borderTop: "1px solid #F4F5F7",
+              cursor: "pointer",
+              transition: "background 60ms ease",
             }}
-            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(5,21,36,0.06)")}
+            onMouseEnter={e => (e.currentTarget.style.backgroundColor = "#FAFBFC")}
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
           >
-            <div style={{
-              display: "flex", flexDirection: "row", alignItems: "center",
-              padding: "8px 16px", height: 40, gap: 12,
+            <Search size={14} color="#94A3B8" style={{ flexShrink: 0 }} />
+            <span style={{
+              flex: 1, fontSize: 13, fontWeight: 450, color: "#42526E",
+              fontFamily: "Inter, system-ui, sans-serif",
             }}>
-              <Search size={16} color="#6B6E76" style={{ flexShrink: 0 }} />
-              <span style={{
-                flex: 1, fontSize: 14, fontWeight: 400, color: "#292A2E",
-                fontFamily: "Inter, system-ui, sans-serif",
-              }}>
-                Search Catalyst for work items
-              </span>
-              <CornerDownLeft size={16} color="#6B6E76" style={{ flexShrink: 0 }} />
-            </div>
+              Search Catalyst for work items
+            </span>
+            <kbd style={{
+              fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+              color: "#94A3B8", backgroundColor: "#F4F5F7",
+              border: "1px solid #EBECF0",
+              borderRadius: 4, padding: "1px 6px",
+            }}>↵</kbd>
           </div>
         </div>
       </div>
 
-      {/* PopupSelect overlays — FIX 10 */}
+      {/* PopupSelect overlays */}
       {openFilter === "project" && (
         <PopupSelect
           label="Projects"
