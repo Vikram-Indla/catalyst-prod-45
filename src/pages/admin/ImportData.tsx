@@ -177,9 +177,18 @@ export default function ImportData() {
     </div>
   );
 
-  // ─── Notion source: render dedicated wizard ───
+  // ─── Notion source: render dedicated wizard with source tabs ───
   if (importSource === 'notion') {
-    return <NotionImportWizard />;
+    return (
+      <div className="flex flex-col h-full bg-[#F8FAFC]">
+        <div className="px-6 pt-6">
+          {sourceTabs}
+        </div>
+        <div className="flex-1 min-h-0">
+          <NotionImportWizard />
+        </div>
+      </div>
+    );
   }
 
   // ─── CSV source: existing module selection ───

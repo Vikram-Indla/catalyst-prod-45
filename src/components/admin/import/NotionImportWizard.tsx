@@ -146,7 +146,7 @@ export function NotionImportWizard() {
   const canFetch = token.length > 0 && dbUrl.length > 0 && projectId.length > 0;
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#F8FAFC]">
       {/* Header */}
       <div className="h-[72px] flex items-center justify-between border-b px-6 shrink-0">
         <h1 className="text-2xl font-semibold text-foreground">Import from Notion</h1>
