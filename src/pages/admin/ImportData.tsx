@@ -181,7 +181,7 @@ export default function ImportData() {
   if (importSource === 'notion') {
     return (
       <div className="flex flex-col h-full bg-[#F8FAFC]">
-        <div className="px-6 pt-6">
+        <div className="px-6 pt-4 bg-white border-b border-[#E2E8F0]">
           {sourceTabs}
         </div>
         <div className="flex-1 min-h-0">
