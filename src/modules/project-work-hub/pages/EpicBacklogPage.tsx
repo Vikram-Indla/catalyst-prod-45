@@ -18,6 +18,8 @@ import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogEpic } from '../types/backlog.types';
+import { ENABLE_EPIC_BACKLOG_V2 } from '@/lib/featureFlags';
+import { EpicBacklogTable } from '../components/EpicBacklogTable';
 
 export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
@@ -63,7 +65,9 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
     );
   }
 
-  if (isLoading) {
+  // V2 renders its own skeleton/error states inside the DynamicTable surface.
+  // V1 preserves the original early-return behavior.
+  if (!ENABLE_EPIC_BACKLOG_V2 && isLoading) {
     return (
       <div className="h-full" style={{ background: tk.pageBg }}>
         <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
@@ -76,7 +80,9 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
     );
   }
 
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading epics</div>;
+  if (!ENABLE_EPIC_BACKLOG_V2 && error) {
+    return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading epics</div>;
+  }
 
   const totalEpics = epics?.length || 0;
 
@@ -89,7 +95,27 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
       } />
 
       <div className="flex-1 overflow-auto">
-        {totalEpics === 0 ? (
+        {ENABLE_EPIC_BACKLOG_V2 ? (
+          <EpicBacklogTable
+            groups={groups}
+            avatarsByName={avatarsByName}
+            isLoading={isLoading}
+            error={error instanceof Error ? error : error ? new Error(String(error)) : null}
+            onRowClick={(epic) => setDrawerEpicId(epic.id)}
+            onEdit={(epic) => setEditEpicId(epic.id)}
+            onDelete={(epic) => setDeleteTarget(epic)}
+            emptyState={
+              <div className="flex flex-col items-center justify-center py-8">
+                <Box className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
+                <p className="text-base font-medium" style={{ color: tk.t1 }}>No epics yet</p>
+                <p className="text-sm mt-1 mb-4" style={{ color: tk.t3 }}>Create the first epic to get started</p>
+                <Button onClick={() => setShowCreate(true)} size="sm" style={{ backgroundColor: '#2563EB', color: '#FFFFFF', borderRadius: 6 }}>
+                  <Plus className="h-3.5 w-3.5 mr-1" /> Create Epic
+                </Button>
+              </div>
+            }
+          />
+        ) : totalEpics === 0 ? (
           <div className="h-full flex flex-col items-center justify-center">
             <Box className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />
             <p className="text-base font-medium" style={{ color: tk.t1 }}>No epics yet</p>
