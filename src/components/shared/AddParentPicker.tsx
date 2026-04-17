@@ -67,18 +67,25 @@ export function AddParentPicker({
   const BR_TYPES = ['Business Request', 'business request'];
   const EPIC_TYPES = ['Epic', 'epic', 'Feature', 'feature'];
 
+  // Business Requests live in the MDT project (ProductHub backlog).
+  // Epics scope to the current project; BRs are cross-project (always MDT).
+  const BR_PROJECT_KEYS = ['MDT'];
+
   // Recent candidates (shown on first open)
   const { data: recentCandidates = [] } = useQuery({
     queryKey: ['ph-recent-parent-canonical', parentSource, projectKey],
-    enabled: !!projectKey,
+    enabled: isBR ? true : !!projectKey,
     queryFn: async (): Promise<CandidateRow[]> => {
       const types = isBR ? BR_TYPES : EPIC_TYPES;
       let q = supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', projectKey)
         .in('issue_type', types)
         .is('deleted_at', null);
-      if (!isBR) q = q.neq('status_category', 'done');
+      if (isBR) {
+        q = q.in('project_key', BR_PROJECT_KEYS);
+      } else {
+        q = q.eq('project_key', projectKey).neq('status_category', 'done');
+      }
       const { data } = await q
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(5);
@@ -90,14 +97,19 @@ export function AddParentPicker({
   // All candidates (loaded when "View all" panel is opened)
   const { data: allCandidates = [] } = useQuery({
     queryKey: ['ph-all-parent-canonical', parentSource, projectKey],
-    enabled: showAllPanel && !!projectKey,
+    enabled: showAllPanel && (isBR ? true : !!projectKey),
     queryFn: async (): Promise<CandidateRow[]> => {
       const types = isBR ? BR_TYPES : EPIC_TYPES;
-      const { data } = await supabase.from('ph_issues')
+      let q = supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status_category')
-        .eq('project_key', projectKey)
         .in('issue_type', types)
-        .is('deleted_at', null)
+        .is('deleted_at', null);
+      if (isBR) {
+        q = q.in('project_key', BR_PROJECT_KEYS);
+      } else {
+        q = q.eq('project_key', projectKey);
+      }
+      const { data } = await q
         .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(200);
       return (data || []) as CandidateRow[];
