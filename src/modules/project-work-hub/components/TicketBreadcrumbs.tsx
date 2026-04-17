@@ -100,7 +100,7 @@ const CallbackBreadcrumb = React.forwardRef<HTMLButtonElement, CallbackProps>(
 );
 CallbackBreadcrumb.displayName = 'CallbackBreadcrumb';
 
-/* ── Terminal crumb (current issue) — non-interactive span ──────────────── */
+/* ── Terminal crumb (current issue) — inline-flex container, single baseline ── */
 const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string }>(
   ({ children, className }, ref) => (
     <span
@@ -108,9 +108,14 @@ const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.React
       aria-current="page"
       className={className}
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
-        fontSize: 13,
-        fontWeight: 600,
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        whiteSpace: 'nowrap',
+        fontFamily: "'Inter', sans-serif",
+        fontSize: 14,
+        fontWeight: 500,
+        lineHeight: 1,
         color: token('color.text', '#172B4D'),
       }}
     >
@@ -180,10 +185,17 @@ export function TicketBreadcrumbs({
           />
         )}
 
-        {/* Crumb 2 — Current issue (terminal) */}
+        {/* Crumb 2 — Current issue (terminal). Icon + key share one inline-flex
+            container so they sit on a single baseline and never wrap. */}
         <BreadcrumbsItem
-          text={itemKey ?? '—'}
-          iconBefore={<IssueIcon type={itemType} size={14} />}
+          text={
+            (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+                <IssueIcon type={itemType} size={14} />
+                <span>{itemKey ?? '—'}</span>
+              </span>
+            ) as unknown as string
+          }
           component={TerminalCrumb}
         />
       </Breadcrumbs>
