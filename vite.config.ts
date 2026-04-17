@@ -108,10 +108,26 @@ export default defineConfig(({ mode, command }) => {
       // import bare 'react-intl'. We redirect to @atlaskit's bundled alias
       // `react-intl-next` (which is itself a pinned alias of react-intl@5.18+).
       "react-intl": path.resolve(__dirname, "./node_modules/react-intl-next"),
+      // ─────────────────────────────────────────────────────────────────────
+      // CRITICAL: Force a SINGLE ProseMirror instance.
+      // @atlaskit/editor-core and @atlaskit/renderer import from the Atlaskit
+      // fork at `@atlaskit/editor-prosemirror/<subpath>`. Tiptap imports from
+      // upstream `prosemirror-*`. Both register selection IDs into a global
+      // registry → "Duplicate use of selection JSON ID cell" RangeError.
+      // Redirect every Atlaskit subpath to the upstream package.
+      // ─────────────────────────────────────────────────────────────────────
+      "@atlaskit/editor-prosemirror/state": path.resolve(__dirname, "./node_modules/prosemirror-state"),
+      "@atlaskit/editor-prosemirror/model": path.resolve(__dirname, "./node_modules/prosemirror-model"),
+      "@atlaskit/editor-prosemirror/view": path.resolve(__dirname, "./node_modules/prosemirror-view"),
+      "@atlaskit/editor-prosemirror/transform": path.resolve(__dirname, "./node_modules/prosemirror-transform"),
+      "@atlaskit/editor-prosemirror/keymap": path.resolve(__dirname, "./node_modules/prosemirror-keymap"),
+      "@atlaskit/editor-prosemirror/history": path.resolve(__dirname, "./node_modules/prosemirror-history"),
+      "@atlaskit/editor-prosemirror/dropcursor": path.resolve(__dirname, "./node_modules/prosemirror-dropcursor"),
+      "@atlaskit/editor-prosemirror/commands": path.resolve(__dirname, "./node_modules/prosemirror-commands"),
+      "@atlaskit/editor-prosemirror/utils": path.resolve(__dirname, "./node_modules/prosemirror-utils"),
+      "@atlaskit/editor-prosemirror/markdown": path.resolve(__dirname, "./node_modules/prosemirror-markdown"),
     },
-    // Dedupe prosemirror — @atlaskit/editor-core and @atlaskit/renderer each
-    // bundle their own prosemirror tree, which causes RangeError "Duplicate use
-    // of selection JSON ID cell" when both load. Force a single instance.
+    // Dedupe prosemirror — belt-and-suspenders alongside the alias above.
     dedupe: [
       'react',
       'react-dom',
