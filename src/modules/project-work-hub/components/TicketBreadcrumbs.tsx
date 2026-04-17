@@ -134,22 +134,26 @@ const CallbackBreadcrumb = React.forwardRef<HTMLButtonElement, CallbackProps>(
 );
 CallbackBreadcrumb.displayName = 'CallbackBreadcrumb';
 
-/* ── Terminal crumb (current issue) — non-interactive span ──────────────── */
-const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string }>(
-  ({ children, className }, ref) => (
+/* ── Terminal crumb (current issue) — non-interactive span.
+      Renders icon + key with the same gap Atlaskit uses for iconBefore (4px). */
+const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string; iconBefore?: React.ReactNode }>(
+  ({ children, className, iconBefore }, ref) => (
     <span
       ref={ref}
       aria-current="page"
       className={className}
       style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
         fontFamily: "'Inter', sans-serif",
-        fontSize: 13,
-        fontWeight: 600,
+        fontSize: 12,
+        fontWeight: 500,
         color: token('color.text', '#172B4D'),
-        letterSpacing: '0.01em',
       }}
     >
-      {children}
+      {iconBefore}
+      <span>{children}</span>
     </span>
   ),
 );
