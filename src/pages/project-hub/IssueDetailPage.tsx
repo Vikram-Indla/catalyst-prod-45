@@ -166,6 +166,7 @@ export default function IssueDetailPage() {
               projectKey={resolvedProjectKey}
               projectName={project?.name || undefined}
               issueKey={resolvedIssueKey}
+              issueType={issue?.issue_type}
             />
           </div>
         )}
@@ -195,6 +196,7 @@ export default function IssueDetailPage() {
               projectKey={resolvedProjectKey}
               projectName={project?.name || undefined}
               issueKey={resolvedIssueKey}
+              issueType={issue?.issue_type}
             />
           </div>
         )}
@@ -259,6 +261,7 @@ export default function IssueDetailPage() {
           projectKey={resolvedProjectKey}
           projectName={project?.name || undefined}
           issueKey={resolvedIssueKey}
+          issueType={issue?.issue_type}
         />
       </div>
       <div style={bodyStyle}>
