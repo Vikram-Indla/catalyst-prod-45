@@ -113,44 +113,29 @@ export default defineConfig(({ mode, command }) => {
       //
       // Atlaskit (@atlaskit/editor-core, @atlaskit/renderer) imports its
       // ProseMirror via `@atlaskit/editor-prosemirror/<subpath>` (an internal
-      // fork). Tiptap imports via `@tiptap/pm/<subpath>` (which re-exports its
-      // own bundled prosemirror-*). When both load, they register the same
-      // selection JSON IDs into a shared registry → RangeError: "Duplicate use
-      // of selection JSON ID cell".
+      // wrapper that re-exports pinned prosemirror-* packages). Tiptap imports
+      // via `@tiptap/pm/<subpath>` which itself does `export * from 'prosemirror-*'`.
       //
-      // Fix: route BOTH the Atlaskit fork paths and any bare `prosemirror-*`
-      // imports to `@tiptap/pm/*`. This gives the entire app a single
-      // ProseMirror instance without removing the Atlaskit editor experience.
-      // Atlaskit-specific subpaths that have no Tiptap equivalent (afm-*,
-      // commands, dropcursor, history, keymap, markdown, utils — all present
-      // in @tiptap/pm) are mapped 1:1.
+      // If the two trees resolve to DIFFERENT prosemirror-* copies, both
+      // register the same selection JSON IDs into a shared registry →
+      // RangeError: "Duplicate use of selection JSON ID cell".
+      //
+      // Fix: route every Atlaskit fork subpath to the upstream `prosemirror-*`
+      // package at the top of node_modules. Tiptap's `@tiptap/pm/*` already
+      // re-exports those exact same upstream packages (they are deduped via
+      // resolve.dedupe below), so both editors share a single instance and
+      // the full Atlaskit editor experience is preserved 1:1.
       // ─────────────────────────────────────────────────────────────────────
-      "@atlaskit/editor-prosemirror/state": path.resolve(__dirname, "./node_modules/@tiptap/pm/state"),
-      "@atlaskit/editor-prosemirror/model": path.resolve(__dirname, "./node_modules/@tiptap/pm/model"),
-      "@atlaskit/editor-prosemirror/view": path.resolve(__dirname, "./node_modules/@tiptap/pm/view"),
-      "@atlaskit/editor-prosemirror/transform": path.resolve(__dirname, "./node_modules/@tiptap/pm/transform"),
-      "@atlaskit/editor-prosemirror/keymap": path.resolve(__dirname, "./node_modules/@tiptap/pm/keymap"),
-      "@atlaskit/editor-prosemirror/history": path.resolve(__dirname, "./node_modules/@tiptap/pm/history"),
-      "@atlaskit/editor-prosemirror/dropcursor": path.resolve(__dirname, "./node_modules/@tiptap/pm/dropcursor"),
-      "@atlaskit/editor-prosemirror/commands": path.resolve(__dirname, "./node_modules/@tiptap/pm/commands"),
+      "@atlaskit/editor-prosemirror/state": path.resolve(__dirname, "./node_modules/prosemirror-state"),
+      "@atlaskit/editor-prosemirror/model": path.resolve(__dirname, "./node_modules/prosemirror-model"),
+      "@atlaskit/editor-prosemirror/view": path.resolve(__dirname, "./node_modules/prosemirror-view"),
+      "@atlaskit/editor-prosemirror/transform": path.resolve(__dirname, "./node_modules/prosemirror-transform"),
+      "@atlaskit/editor-prosemirror/keymap": path.resolve(__dirname, "./node_modules/prosemirror-keymap"),
+      "@atlaskit/editor-prosemirror/history": path.resolve(__dirname, "./node_modules/prosemirror-history"),
+      "@atlaskit/editor-prosemirror/dropcursor": path.resolve(__dirname, "./node_modules/prosemirror-dropcursor"),
+      "@atlaskit/editor-prosemirror/commands": path.resolve(__dirname, "./node_modules/prosemirror-commands"),
       "@atlaskit/editor-prosemirror/utils": path.resolve(__dirname, "./node_modules/prosemirror-utils"),
-      "@atlaskit/editor-prosemirror/markdown": path.resolve(__dirname, "./node_modules/@tiptap/pm/markdown"),
-      // Bare prosemirror-* → @tiptap/pm/* so Tiptap and any other consumers
-      // resolve to the same instance Atlaskit now uses.
-      "prosemirror-state": path.resolve(__dirname, "./node_modules/@tiptap/pm/state"),
-      "prosemirror-model": path.resolve(__dirname, "./node_modules/@tiptap/pm/model"),
-      "prosemirror-view": path.resolve(__dirname, "./node_modules/@tiptap/pm/view"),
-      "prosemirror-transform": path.resolve(__dirname, "./node_modules/@tiptap/pm/transform"),
-      "prosemirror-keymap": path.resolve(__dirname, "./node_modules/@tiptap/pm/keymap"),
-      "prosemirror-history": path.resolve(__dirname, "./node_modules/@tiptap/pm/history"),
-      "prosemirror-dropcursor": path.resolve(__dirname, "./node_modules/@tiptap/pm/dropcursor"),
-      "prosemirror-commands": path.resolve(__dirname, "./node_modules/@tiptap/pm/commands"),
-      "prosemirror-markdown": path.resolve(__dirname, "./node_modules/@tiptap/pm/markdown"),
-      "prosemirror-tables": path.resolve(__dirname, "./node_modules/@tiptap/pm/tables"),
-      "prosemirror-inputrules": path.resolve(__dirname, "./node_modules/@tiptap/pm/inputrules"),
-      "prosemirror-schema-basic": path.resolve(__dirname, "./node_modules/@tiptap/pm/schema-basic"),
-      "prosemirror-schema-list": path.resolve(__dirname, "./node_modules/@tiptap/pm/schema-list"),
-      "prosemirror-gapcursor": path.resolve(__dirname, "./node_modules/@tiptap/pm/gapcursor"),
+      "@atlaskit/editor-prosemirror/markdown": path.resolve(__dirname, "./node_modules/prosemirror-markdown"),
     },
     // Dedupe prosemirror — belt-and-suspenders alongside the alias above.
     dedupe: [
