@@ -1,18 +1,25 @@
 /**
- * SubtasksPanelV2 — canonical Atlaskit/ADF molecular subtasks component.
+ * SubtasksPanelV2 — DEPRECATED (Apr 2026). Pending removal.
  *
- * This is the V2 molecule gated by ENABLE_SUBTASKS_V2. It reuses the V1
- * cells (WorkCell / PriorityCell / AssigneeCell / StatusCell), popovers,
- * and useSubtaskMutations hook unchanged. V2 adds:
+ * Original intent: a canonical Atlaskit/ADF molecular subtasks component
+ * that would replace V1 once piloted on Epic.
  *
- *   • Per-row ADF description popover (AtlaskitEditor, description_adf)
- *   • Row-level keyboard navigation (ArrowUp/Down, Home/End, Enter, Delete)
- *   • shadcn AlertDialog replaces window.confirm for destructive confirm
- *   • role="grid" with aria-rowcount / aria-rowindex for SR parity
- *   • Atlaskit-grade focus ring + visible affordances
+ * Status: the three strategic wins this scaffold carried — AlertDialog
+ * (over window.confirm), role="grid" keyboard nav (Home/End/F2/Shift+Del),
+ * and per-row DescriptionPopover — have been ported INTO V1 (`index.tsx`)
+ * behind the existing `ENABLE_SUBTASKS_V2` flag. Porting was chosen over
+ * replacement because V1 already carries DnD reorder, sort persistence,
+ * bulk edit, AI create, link-existing, hierarchy enforcement, and the
+ * Atlaskit DynamicTable — rebuilding all of that inside V2 would have
+ * duplicated production code and created a regression surface.
  *
- * Drop-in prop signature with V1 so the caller can swap behind a feature flag.
- * V1 remains the canonical renderer for every non-pilot surface.
+ * What the flag does now: it is the kill-switch for the NEW V1 behaviors
+ * (per-row DescriptionPopover). Everything else in V1 is always-on.
+ *
+ * Retention: kept only while the smoke test at
+ * __tests__/SubtasksPanelV2.smoke.test.tsx still references this file.
+ * Safe to delete together with that test once V1 has an equivalent
+ * integration test.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
