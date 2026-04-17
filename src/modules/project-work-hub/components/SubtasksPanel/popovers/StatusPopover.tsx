@@ -1,7 +1,17 @@
+/**
+ * StatusPopover — Atlaskit @atlaskit/popup wrapping our grouped-by-category
+ * status picker. Three groups (To Do / In Progress / Done) match the Jira
+ * Cloud status menu exactly.
+ *
+ * Items keep the 3-colour guardrail (CLAUDE.md §5) — each row renders an
+ * inline Atlaskit Lozenge with one of three appearances (default, inprogress,
+ * success). No destructive / new / moved lozenges are ever emitted.
+ */
 import React from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { STATUS_OPTION_GROUPS } from '../../dialogs/story-detail-modules/constants';
+import Popup from '@atlaskit/popup';
+import Lozenge from '@atlaskit/lozenge';
 import { Check } from 'lucide-react';
+import { STATUS_OPTION_GROUPS } from '../../dialogs/story-detail-modules/constants';
 
 interface StatusPopoverProps {
   status: string;
@@ -12,50 +22,59 @@ interface StatusPopoverProps {
   showActive?: boolean;
 }
 
-const CATEGORY_TO_CHIP: Record<string, string> = {
-  todo: 'sp-status-btn--todo',
-  in_progress: 'sp-status-btn--inprogress',
-  done: 'sp-status-btn--done',
+const CATEGORY_TO_APPEARANCE: Record<string, 'default' | 'inprogress' | 'success'> = {
+  todo: 'default',
+  in_progress: 'inprogress',
+  done: 'success',
 };
 
 export function StatusPopover({ status, onChange, children, showActive = true }: StatusPopoverProps) {
-  const [open, setOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent
-        align="start"
-        sideOffset={4}
-        className="sp-pop"
-        style={{ width: 260, padding: 0 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {STATUS_OPTION_GROUPS.map((group) => (
-          <div key={group.category} className="sp-pop-group">
-            <div className="sp-pop-group-label">{group.groupLabel}</div>
-            {group.statuses.map((s) => {
-              const active = showActive && s === status;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  className="sp-pop-row"
-                  onClick={() => {
-                    onChange(s, group.category as 'todo' | 'in_progress' | 'done');
-                    setOpen(false);
-                  }}
-                >
-                  <span className={`sp-status-btn ${CATEGORY_TO_CHIP[group.category]}`} style={{ cursor: 'default' }}>
-                    {s}
-                  </span>
-                  {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
-                </button>
-              );
-            })}
-          </div>
-        ))}
-      </PopoverContent>
-    </Popover>
+    <Popup
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      placement="bottom-start"
+      content={() => (
+        <div className="sp-pop sp-pop--status" style={{ width: 260, padding: 0 }} onClick={(e) => e.stopPropagation()}>
+          {STATUS_OPTION_GROUPS.map((group) => (
+            <div key={group.category} className="sp-pop-group">
+              <div className="sp-pop-group-label">{group.groupLabel}</div>
+              {group.statuses.map((s) => {
+                const active = showActive && s === status;
+                const appearance = CATEGORY_TO_APPEARANCE[group.category] ?? 'default';
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    className="sp-pop-row"
+                    onClick={() => {
+                      onChange(s, group.category as 'todo' | 'in_progress' | 'done');
+                      setIsOpen(false);
+                    }}
+                  >
+                    <Lozenge appearance={appearance} isBold>{s}</Lozenge>
+                    {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+      trigger={(triggerProps) => (
+        <span
+          {...triggerProps}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen((o) => !o);
+          }}
+          style={{ display: 'inline-flex' }}
+        >
+          {children}
+        </span>
+      )}
+    />
   );
 }

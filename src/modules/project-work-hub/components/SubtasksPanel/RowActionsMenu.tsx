@@ -1,5 +1,9 @@
+/**
+ * RowActionsMenu — Atlaskit DropdownMenu per-row (···).
+ *   Open subtask · Rename · Delete (destructive)
+ */
 import React from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { MoreHorizontal, ExternalLink, Pencil, Trash2 } from 'lucide-react';
 
 interface RowActionsMenuProps {
@@ -9,53 +13,44 @@ interface RowActionsMenuProps {
 }
 
 export function RowActionsMenu({ onOpen, onRename, onDelete }: RowActionsMenuProps) {
-  const [open, setOpen] = React.useState(false);
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <DropdownMenu
+      placement="bottom-end"
+      trigger={({ triggerRef, ...triggerProps }) => (
         <button
+          {...triggerProps}
+          ref={triggerRef as React.Ref<HTMLButtonElement>}
           type="button"
           className="sp-row-actions-btn"
-          onClick={(e) => e.stopPropagation()}
           aria-label="Row actions"
+          onClick={(e) => { e.stopPropagation(); triggerProps.onClick?.(e as unknown as never); }}
         >
           <MoreHorizontal size={14} />
         </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        sideOffset={4}
-        className="sp-pop"
-        style={{ width: 180, padding: 4 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button
-          type="button"
-          className="sp-pop-row"
-          onClick={() => { setOpen(false); onOpen(); }}
+      )}
+    >
+      <DropdownItemGroup>
+        <DropdownItem
+          elemBefore={<ExternalLink size={14} color="#6B778C" />}
+          onClick={() => onOpen()}
         >
-          <ExternalLink size={14} color="#6B778C" />
-          <span style={{ fontSize: 13, color: '#172B4D' }}>Open subtask</span>
-        </button>
-        <button
-          type="button"
-          className="sp-pop-row"
-          onClick={() => { setOpen(false); onRename(); }}
+          Open subtask
+        </DropdownItem>
+        <DropdownItem
+          elemBefore={<Pencil size={14} color="#6B778C" />}
+          onClick={() => onRename()}
         >
-          <Pencil size={14} color="#6B778C" />
-          <span style={{ fontSize: 13, color: '#172B4D' }}>Rename</span>
-        </button>
-        <div className="sp-pop-divider" />
-        <button
-          type="button"
-          className="sp-pop-row sp-pop-row--danger"
-          onClick={() => { setOpen(false); onDelete(); }}
+          Rename
+        </DropdownItem>
+      </DropdownItemGroup>
+      <DropdownItemGroup>
+        <DropdownItem
+          elemBefore={<Trash2 size={14} color="#BF2600" />}
+          onClick={() => onDelete()}
         >
-          <Trash2 size={14} color="#BF2600" />
-          <span style={{ fontSize: 13, color: '#BF2600' }}>Delete</span>
-        </button>
-      </PopoverContent>
-    </Popover>
+          <span style={{ color: '#BF2600' }}>Delete</span>
+        </DropdownItem>
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
