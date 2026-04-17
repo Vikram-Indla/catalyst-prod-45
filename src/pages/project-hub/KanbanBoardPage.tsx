@@ -931,6 +931,25 @@ export default function KanbanBoardPage() {
 
         <div className="flex-1" />
 
+        {ENABLE_KANBAN_V2 && (
+          <span
+            title="Kanban V2 pilot (ENABLE_KANBAN_V2) is ACTIVE on this board"
+            aria-label="V2 pilot active"
+            style={{
+              display: 'inline-flex', alignItems: 'center',
+              height: 20, padding: '0 8px', borderRadius: 3,
+              background: '#0052CC', color: '#FFFFFF',
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 10, fontWeight: 700,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
+              lineHeight: 1, whiteSpace: 'nowrap', userSelect: 'none',
+              boxShadow: '0 1px 2px rgba(0, 82, 204, 0.25)',
+            }}
+          >
+            V2 PILOT
+          </span>
+        )}
+
         <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{total} issues</span>
 
         {/* Board menu ••• */}
