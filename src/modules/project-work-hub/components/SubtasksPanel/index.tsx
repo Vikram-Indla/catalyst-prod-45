@@ -25,7 +25,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import {
   ChevronDown, ChevronRight, Plus, LayoutGrid,
-  Check, Loader2, CornerDownLeft,
+  Check,
 } from 'lucide-react';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
@@ -42,7 +42,8 @@ import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
 import { IssueTypeCell } from './cells/IssueTypeCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
-import { allowedChildTypes, canCreateChild, panelTitleFor } from './hierarchy';
+import { allowedChildTypes, panelTitleFor } from './hierarchy';
+import { InlineCreateWithAI } from './InlineCreateWithAI';
 import DynamicTable from '@atlaskit/dynamic-table';
 import './SubtasksPanel.css';
 
@@ -65,6 +66,8 @@ interface SubtasksPanelProps {
    * union of story-level + sub-task-family types.
    */
   parentIssueType?: string;
+  /** Parent issue summary — passed to AI predict_subtask_titles for better context. */
+  parentSummary?: string;
   /** Optional explicit title override. Defaults to panelTitleFor(parentIssueType). */
   title?: string;
 }
@@ -245,7 +248,7 @@ function InlineSummaryEditor({
 
 // ─── Main component ─────────────────────────────────────
 export function SubtasksPanel({
-  storyKey, storyId, projectKey, onSubtaskClick, parentIssueType, title,
+  storyKey, storyId, projectKey, onSubtaskClick, parentIssueType, parentSummary, title,
 }: SubtasksPanelProps) {
   useAtlaskitThemeSync();
   const queryClient = useQueryClient();
@@ -260,7 +263,6 @@ export function SubtasksPanel({
   const [expanded, setExpanded] = useState(true);
   const [view, setView] = useState<SubtaskView>('list');
   const [creating, setCreating] = useState(false);
-  const [draftSummary, setDraftSummary] = useState('');
   const [draftType, setDraftType] = useState(defaultDraftType);
   // Re-seed draft type when the allowed set changes (e.g. parent type reload)
   useEffect(() => {
@@ -305,7 +307,6 @@ export function SubtasksPanel({
   });
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
-  const createRef = useRef<HTMLInputElement>(null);
 
   const { update, remove, bulkUpdate, bulkRemove, reorderPositions } = useSubtaskMutations(storyKey);
 
@@ -359,6 +360,10 @@ export function SubtasksPanel({
   const totalCount = children.length;
   const percentage = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
 
+  // Memoised sibling context for InlineCreateWithAI (AI prompt + fuzzy-search exclusion).
+  const siblingSummaries = useMemo(() => children.map(c => c.summary), [children]);
+  const siblingIds = useMemo(() => children.map(c => c.id), [children]);
+
   // ─── Hide-done filter + sort applied to visible rows ───
   const visibleRows = useMemo(() => {
     const filtered = hideDone
@@ -401,15 +406,27 @@ export function SubtasksPanel({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
-      setDraftSummary('');
-      setTimeout(() => createRef.current?.focus(), 50);
     },
     onError: (err) => toast.error('Failed to create subtask', { description: (err as Error).message }),
   });
 
-  useEffect(() => {
-    if (creating) setTimeout(() => createRef.current?.focus(), 50);
-  }, [creating]);
+  // ─── Link-existing mutation ───────────────────
+  // Reparents an existing issue under this story by setting parent_key.
+  const linkExistingMutation = useMutation({
+    mutationFn: async (issueId: string) => {
+      const { error } = await supabase
+        .from('ph_issues')
+        .update({ parent_key: storyKey })
+        .eq('id', issueId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
+      toast.success('Linked to existing work item');
+    },
+    onError: (err) => toast.error('Failed to link work item', { description: (err as Error).message }),
+  });
+
 
   // ─── Handlers ─────────────────────────────────
   const handleStatusChange = (row: SubtaskRow) => (status: string, category: 'todo' | 'in_progress' | 'done') => {
@@ -898,56 +915,28 @@ export function SubtasksPanel({
             />
           )}
 
-          {/* ═══ Inline create ═══ */}
-          {creating && (
-            <>
-              <div className="sp-create-row">
-                <input
-                  ref={createRef}
-                  type="text"
-                  className="sp-create-input"
-                  placeholder="What needs to be done?"
-                  value={draftSummary}
-                  onChange={e => setDraftSummary(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter' && draftSummary.trim()) {
-                      e.preventDefault();
-                      createMutation.mutate(draftSummary);
-                    }
-                    if (e.key === 'Escape') {
-                      setCreating(false);
-                      setDraftSummary('');
-                    }
-                  }}
-                  maxLength={255}
-                />
-                <div className="sp-create-actions">
-                  <TypeSelector value={draftType} onChange={setDraftType} allowed={allowedTypes} />
-                  <button
-                    type="button"
-                    onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}
-                    disabled={!draftSummary.trim() || createMutation.isPending}
-                    title="Create (Enter)"
-                    className="sp-create-submit"
-                    style={{
-                      cursor: draftSummary.trim() ? 'pointer' : 'not-allowed',
-                      opacity: draftSummary.trim() ? 1 : 0.5,
-                    }}
-                  >
-                    {createMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <CornerDownLeft size={14} />}
-                  </button>
-                </div>
-              </div>
-              <div style={{ textAlign: 'right', padding: '6px 0 2px' }}>
-                <button
-                  type="button"
-                  onClick={() => { setCreating(false); setDraftSummary(''); }}
-                  className="sp-create-cancel"
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
+          {/* ═══ Inline create (AI-augmented) ═══ */}
+          {creating && canCreate && (
+            <InlineCreateWithAI
+              allowedTypes={allowedTypes}
+              draftType={draftType}
+              onDraftTypeChange={setDraftType}
+              typeSelectorSlot={
+                <TypeSelector value={draftType} onChange={setDraftType} allowed={allowedTypes} />
+              }
+              parentSummary={parentSummary ?? ''}
+              parentType={parentIssueType ?? ''}
+              siblingSummaries={siblingSummaries}
+              excludedIds={siblingIds}
+              projectKey={projectKey}
+              isSubmitting={createMutation.isPending || linkExistingMutation.isPending}
+              onCreate={(summary) => createMutation.mutate(summary)}
+              onLinkExisting={(id) => {
+                linkExistingMutation.mutate(id);
+                setCreating(false);
+              }}
+              onCancel={() => setCreating(false)}
+            />
           )}
         </>
       )}

@@ -39,6 +39,7 @@ export default function CatalystViewEpic({
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
           parentIssueType={issue.issue_type || 'Epic'}
+          parentSummary={issue.summary || ''}
         />
       )}
 
