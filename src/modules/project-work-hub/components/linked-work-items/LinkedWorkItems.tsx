@@ -214,14 +214,6 @@ export function LinkedWorkItems({
 
       {expanded && (
         <>
-          <AiLinkSimilarPanel
-            issueKey={issueKey}
-            existingLinkedKeys={links.map((l) => l.target.issue_key).filter(Boolean)}
-            onLinked={() =>
-              queryClient.invalidateQueries({ queryKey: ['linkedIssues', issueKey] })
-            }
-          />
-
           <LinkedWorkItemsBody
             id={bodyId}
             groups={groups}
