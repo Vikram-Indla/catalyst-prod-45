@@ -104,7 +104,22 @@ export default defineConfig(({ mode, command }) => {
     dedupe: ['react', 'react-dom', 'react-is'],
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-is'],
+    include: [
+      'react',
+      'react-dom',
+      'react-is',
+      // Pre-bundle @atlaskit primitives so SubtasksPanel mount doesn't trigger
+      // mid-flight dep re-optimization (which 404s in-flight chunk requests).
+      '@atlaskit/avatar',
+      '@atlaskit/dropdown-menu',
+      '@atlaskit/dynamic-table',
+      '@atlaskit/editor-core',
+      '@atlaskit/lozenge',
+      '@atlaskit/popup',
+      '@atlaskit/renderer',
+      '@atlaskit/textfield',
+      '@atlaskit/tokens',
+    ],
   },
   build: {
     sourcemap: false,
