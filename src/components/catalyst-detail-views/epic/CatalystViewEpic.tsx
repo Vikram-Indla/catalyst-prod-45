@@ -9,9 +9,10 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
+import { ParentAndLabels } from './ParentAndLabels';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import { LinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items';
