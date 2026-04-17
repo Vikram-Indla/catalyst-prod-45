@@ -113,7 +113,7 @@ const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.React
         gap: 4,
         whiteSpace: 'nowrap',
         fontFamily: "'Inter', sans-serif",
-        fontSize: 14,
+        fontSize: 13,
         fontWeight: 500,
         lineHeight: 1,
         color: token('color.text', '#172B4D'),
