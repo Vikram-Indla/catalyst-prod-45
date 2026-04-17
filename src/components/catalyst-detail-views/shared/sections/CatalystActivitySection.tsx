@@ -138,7 +138,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_comments')
-        .select('id, work_item_id, body, author_id, created_at, updated_at, source, jira_author_account_id, jira_author_display_name, jira_author_avatar_url')
+        .select('id, work_item_id, body, author_id, created_at, updated_at')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: true });
       if (!data?.length) return [];
@@ -160,7 +160,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_activity_log')
-        .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at, source, jira_author_account_id, jira_author_display_name, jira_author_avatar_url')
+        .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: false });
       if (!data?.length) return [];
