@@ -109,7 +109,33 @@ export default defineConfig(({ mode, command }) => {
       // `react-intl-next` (which is itself a pinned alias of react-intl@5.18+).
       "react-intl": path.resolve(__dirname, "./node_modules/react-intl-next"),
     },
-    dedupe: ['react', 'react-dom', 'react-is'],
+    // Dedupe prosemirror — @atlaskit/editor-core and @atlaskit/renderer each
+    // bundle their own prosemirror tree, which causes RangeError "Duplicate use
+    // of selection JSON ID cell" when both load. Force a single instance.
+    dedupe: [
+      'react',
+      'react-dom',
+      'react-is',
+      'prosemirror-state',
+      'prosemirror-model',
+      'prosemirror-view',
+      'prosemirror-transform',
+      'prosemirror-tables',
+      'prosemirror-keymap',
+      'prosemirror-commands',
+      'prosemirror-history',
+      'prosemirror-inputrules',
+      'prosemirror-schema-basic',
+      'prosemirror-schema-list',
+      'prosemirror-dropcursor',
+      'prosemirror-gapcursor',
+      'prosemirror-menu',
+      'prosemirror-utils',
+      'prosemirror-changeset',
+      'prosemirror-collab',
+      'prosemirror-markdown',
+      'prosemirror-trailing-node',
+    ],
   },
   optimizeDeps: {
     include: [
@@ -127,6 +153,21 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/renderer',
       '@atlaskit/textfield',
       '@atlaskit/tokens',
+      // Pre-bundle prosemirror so editor-core + renderer share ONE instance.
+      'prosemirror-state',
+      'prosemirror-model',
+      'prosemirror-view',
+      'prosemirror-transform',
+      'prosemirror-tables',
+      'prosemirror-keymap',
+      'prosemirror-commands',
+      'prosemirror-history',
+      'prosemirror-inputrules',
+      'prosemirror-schema-basic',
+      'prosemirror-schema-list',
+      'prosemirror-dropcursor',
+      'prosemirror-gapcursor',
+      'prosemirror-utils',
     ],
   },
   build: {
