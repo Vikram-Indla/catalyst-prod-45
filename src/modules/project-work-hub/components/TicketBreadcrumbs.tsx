@@ -150,55 +150,106 @@ export function TicketBreadcrumbs({
         color: 'color.text.subtlest',
       } as never}
     >
-      <Breadcrumbs label="Breadcrumbs">
-        {/* Crumb 1 — Parent OR "+ Add parent" (hidden when the current issue is an epic) */}
-        {showParent && (
-          onParentClick ? (
+      {/* Scoped polish for this breadcrumb instance only — does NOT affect
+          other Atlaskit Breadcrumbs in the app. Targets the wrapper class
+          `tk-breadcrumbs` exclusively. */}
+      <style>{`
+        .tk-breadcrumbs nav > ol,
+        .tk-breadcrumbs ol[role="list"],
+        .tk-breadcrumbs ol {
+          display: inline-flex;
+          align-items: center;
+          flex-wrap: wrap;
+          row-gap: 2px;
+        }
+        .tk-breadcrumbs li {
+          display: inline-flex;
+          align-items: center;
+          line-height: 1;
+        }
+        .tk-breadcrumbs a,
+        .tk-breadcrumbs button {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-family: 'Inter', sans-serif;
+          font-size: 13px;
+          font-weight: 500;
+          line-height: 1;
+          padding: 2px 4px;
+          border-radius: 3px;
+        }
+        .tk-breadcrumbs a > span,
+        .tk-breadcrumbs button > span {
+          line-height: 1;
+        }
+        /* Separator — lighter, smaller, recede into chrome */
+        .tk-breadcrumbs [aria-hidden="true"],
+        .tk-breadcrumbs span[role="presentation"] {
+          color: ${token('color.text.subtlest', '#8993A4')};
+          font-size: 12px;
+          font-weight: 400;
+          margin: 0 6px;
+          opacity: 0.55;
+          line-height: 1;
+          user-select: none;
+        }
+        /* Icons inside crumbs sit on shared optical baseline */
+        .tk-breadcrumbs svg {
+          flex-shrink: 0;
+          display: block;
+        }
+      `}</style>
+      <div className="tk-breadcrumbs">
+        <Breadcrumbs label="Breadcrumbs">
+          {/* Crumb 1 — Parent OR "+ Add parent" (hidden when current is epic) */}
+          {showParent && (
+            onParentClick ? (
+              <BreadcrumbsItem
+                text={parentKey!}
+                iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
+                onClick={onParentClick}
+                component={CallbackBreadcrumb}
+              />
+            ) : (
+              <BreadcrumbsItem
+                href={`/project-hub/${projectKey}/issue/${parentKey}`}
+                text={parentKey!}
+                iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
+                component={RouterBreadcrumbLink}
+              />
+            )
+          )}
+          {showAddParent && (
             <BreadcrumbsItem
-              text={parentKey!}
-              iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
-              onClick={onParentClick}
+              text="+ Add parent"
+              onClick={onAddParent}
               component={CallbackBreadcrumb}
             />
-          ) : (
+          )}
+          {hasSlot && !isEpic && (
             <BreadcrumbsItem
-              href={`/project-hub/${projectKey}/issue/${parentKey}`}
-              text={parentKey!}
-              iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
-              component={RouterBreadcrumbLink}
+              text=""
+              component={React.forwardRef<HTMLSpanElement>(() => (
+                <span style={{ display: 'inline-flex', alignItems: 'center' }}>{middleSlot}</span>
+              ))}
             />
-          )
-        )}
-        {showAddParent && (
-          <BreadcrumbsItem
-            text="+ Add parent"
-            onClick={onAddParent}
-            component={CallbackBreadcrumb}
-          />
-        )}
-        {hasSlot && !isEpic && (
-          <BreadcrumbsItem
-            text=""
-            component={React.forwardRef<HTMLSpanElement>(() => (
-              <span style={{ display: 'inline-flex', alignItems: 'center' }}>{middleSlot}</span>
-            ))}
-          />
-        )}
+          )}
 
-        {/* Crumb 2 — Current issue (terminal). Icon + key share one inline-flex
-            container so they sit on a single baseline and never wrap. */}
-        <BreadcrumbsItem
-          text={
-            (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-                <IssueIcon type={itemType} size={14} />
-                <span>{itemKey ?? '—'}</span>
-              </span>
-            ) as unknown as string
-          }
-          component={TerminalCrumb}
-        />
-      </Breadcrumbs>
+          {/* Crumb 2 — Current issue (terminal). */}
+          <BreadcrumbsItem
+            text={
+              (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+                  <IssueIcon type={itemType} size={14} />
+                  <span>{itemKey ?? '—'}</span>
+                </span>
+              ) as unknown as string
+            }
+            component={TerminalCrumb}
+          />
+        </Breadcrumbs>
+      </div>
     </Box>
   );
 }
