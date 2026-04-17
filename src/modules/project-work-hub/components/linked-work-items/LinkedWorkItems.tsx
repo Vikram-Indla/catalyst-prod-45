@@ -244,18 +244,6 @@ export function LinkedWorkItems({
               ) : null
             }
           />
-              showToolbar ? (
-                <LinkToolbar
-                  sourceIssueKey={issueKey}
-                  existingLinkedKeys={existingLinkedKeys}
-                  onLink={handleLink}
-                  onCreateNew={projectData ? handleCreateNew : undefined}
-                  onCancel={() => setShowToolbar(false)}
-                  isPending={linkMutation.isPending}
-                />
-              ) : null
-            }
-          />
         </>
       )}
 
