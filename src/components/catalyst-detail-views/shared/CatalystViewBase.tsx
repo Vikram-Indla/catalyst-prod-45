@@ -215,79 +215,70 @@ export function CatalystViewBase({
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
         }}>
-          {/* Breadcrumb — Jira pattern: Project / ParentKey / ItemKey */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
-            {/* Full-page back button */}
-            {fullPageMode && (
-              <button onClick={handleBack} style={{
-                ...hoverBtn, padding: '4px 6px', marginRight: 2,
-              }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                title="Back to list"
-              >
-                <ArrowLeft size={16} />
-              </button>
-            )}
-            {/* Project — clickable, links to All Work in full-page mode, or type-specific backlog otherwise */}
-            {projectKey && (
-              <>
+          {/* Breadcrumb — hidden in fullPageMode because the outer TicketBreadcrumbs
+              row on IssueDetailPage already renders Projects ▸ Project ▸ Source ▸ Key.
+              Kept for modal + panel modes where no outer breadcrumb exists. */}
+          {fullPageMode ? (
+            <div />
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
+              {/* Project — clickable, links to type-specific backlog */}
+              {projectKey && (
+                <>
+                  <Link
+                    to={`/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`}
+                    style={{ fontSize: 14, fontWeight: 500, color: '#42526E', textDecoration: 'none', cursor: 'pointer' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; e.currentTarget.style.textDecoration = 'none'; }}
+                  >
+                    {projectName || projectKey}
+                  </Link>
+                  <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
+                </>
+              )}
+              {projectName && !projectKey && (
+                <>
+                  <span style={{ fontSize: 14, fontWeight: 500, color: '#42526E' }}>{projectName}</span>
+                  <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
+                </>
+              )}
+              {parentKey && (
+                <>
+                  <IssueIcon type={parentType || 'Epic'} size={16} />
+                  <span
+                    style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#42526E', cursor: onParentClick ? 'pointer' : 'default' }}
+                    onClick={onParentClick}
+                    onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
+                    onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; }}
+                  >{parentKey}</span>
+                  <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
+                </>
+              )}
+              {breadcrumbExtra}
+              <IssueIcon type={itemType} size={16} />
+              {itemKey && projectKey ? (
                 <Link
-                  to={fullPageMode
-                    ? `/project-hub/${projectKey}/hierarchy/allwork`
-                    : `/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`
-                  }
-                  style={{ fontSize: 14, fontWeight: 500, color: '#42526E', textDecoration: 'none', cursor: 'pointer' }}
+                  to={`/project-hub/${projectKey}/issue/${itemKey}`}
+                  state={(() => {
+                    try {
+                      const raw = typeof window !== 'undefined' ? sessionStorage.getItem('ticketOrigin') : null;
+                      return raw ? { ticketOrigin: JSON.parse(raw) } : undefined;
+                    } catch { return undefined; }
+                  })()}
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; e.currentTarget.style.textDecoration = 'none'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}
+                  title="Open full page view"
                 >
-                  {projectName || projectKey}
+                  {itemKey}
                 </Link>
-                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              </>
-            )}
-            {projectName && !projectKey && (
-              <>
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#42526E' }}>{projectName}</span>
-                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              </>
-            )}
-            {parentKey && (
-              <>
-                <IssueIcon type={parentType || 'Epic'} size={16} />
-                <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#42526E', cursor: onParentClick ? 'pointer' : 'default' }}
-                  onClick={onParentClick}
-                  onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; }}
-                >{parentKey}</span>
-                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              </>
-            )}
-            {breadcrumbExtra}
-            <IssueIcon type={itemType} size={16} />
-            {!fullPageMode && itemKey && projectKey ? (
-              <Link
-                to={`/project-hub/${projectKey}/issue/${itemKey}`}
-                state={(() => {
-                  try {
-                    const raw = typeof window !== 'undefined' ? sessionStorage.getItem('ticketOrigin') : null;
-                    return raw ? { ticketOrigin: JSON.parse(raw) } : undefined;
-                  } catch { return undefined; }
-                })()}
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}
-                title="Open full page view"
-              >
-                {itemKey}
-              </Link>
-            ) : (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: fullPageMode ? '#172B4D' : '#0052CC' }}>
-                {itemKey ?? '—'}
-              </span>
-            )}
-          </div>
+              ) : (
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
+                  {itemKey ?? '—'}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Right actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
