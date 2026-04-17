@@ -134,18 +134,24 @@ export default function IssueDetailPage() {
   }
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={true}
-          onClose={handleClose}
-          itemId={issue.id}
-          projectKey={issue.project_key || projectKey || ''}
-          itemType={issue.issue_type}
-          fullPageMode={true}
-          onOpenItem={handleOpenItem}
-        />
-      </Suspense>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CatalystPageHeader
+        title={issue.issue_key}
+        icon={<JiraIssueTypeIcon type={issue.issue_type || 'task'} size={20} />}
+      />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={handleClose}
+            itemId={issue.id}
+            projectKey={issue.project_key || projectKey || ''}
+            itemType={issue.issue_type}
+            fullPageMode={true}
+            onOpenItem={handleOpenItem}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 }
