@@ -232,6 +232,13 @@
   flex-shrink: 0;
 }
 
+.lwi-row__priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .lwi-row__avatar-empty {
   display: inline-block;
   width: 24px;
