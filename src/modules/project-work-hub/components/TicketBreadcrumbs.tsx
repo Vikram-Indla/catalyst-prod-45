@@ -1,16 +1,10 @@
 /**
  * TicketBreadcrumbs — source-aware breadcrumb row for full-page ticket view.
  *
- * Built on already-installed Atlassian Design System primitives:
- *   - @atlaskit/primitives  → Box for layout via design tokens
- *   - @atlaskit/tokens      → color/typography tokens + runtime theme sync
- *   - react-router-dom Link → client-side navigation
- *
- * We intentionally do NOT depend on @atlaskit/breadcrumbs — that package
- * is not in the stable install set here and would require a fresh
- * dependency install. Recreating the visual + a11y contract with
- * primitives + tokens gives Atlassian Design System parity without the
- * extra package.
+ * Uses the shadcn Breadcrumb primitives that already ship with the codebase
+ * (@/components/ui/breadcrumb). No Atlaskit imports — keeps this component
+ * install-free for any dev checkout and avoids resolution errors when the
+ * local node_modules doesn't carry @atlaskit packages.
  *
  * Shape (Catalyst mapping — "Spaces" in Jira ≡ "Projects" here):
  *   Projects ▸ <ProjectName> ▸ <Origin label>? ▸ <ISSUE-KEY>
@@ -19,12 +13,17 @@
  * When origin is null (deep link) the source crumb is omitted — we never
  * fabricate a backlog the user didn't come from.
  */
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Inline } from '@atlaskit/primitives';
-import { token } from '@atlaskit/tokens';
-import { Home, ChevronRight } from 'lucide-react';
-import { useAtlaskitThemeSync } from '@/modules/project-work-hub/components/SubtasksPanel/atlaskitTheme';
+import { Home } from 'lucide-react';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { useTheme } from '@/hooks/useTheme';
 import { useTicketOrigin } from '../hooks/useTicketOrigin';
 
 interface TicketBreadcrumbsProps {
@@ -33,104 +32,106 @@ interface TicketBreadcrumbsProps {
   issueKey: string;
 }
 
-interface CrumbLinkProps {
-  to: string;
-  children: React.ReactNode;
-  iconBefore?: React.ReactNode;
-}
-
-function CrumbLink({ to, children, iconBefore }: CrumbLinkProps) {
-  return (
-    <Link
-      to={to}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        fontFamily: "'Inter', sans-serif",
-        fontSize: 13,
-        fontWeight: 500,
-        color: token('color.text.subtlest', '#5E6C84'),
-        textDecoration: 'none',
-        borderRadius: 3,
-        padding: '2px 4px',
-        transition: 'color 120ms ease, background 120ms ease',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.color = token('color.text', '#172B4D');
-        e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(9,30,66,0.06)');
-        e.currentTarget.style.textDecoration = 'underline';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.color = token('color.text.subtlest', '#5E6C84');
-        e.currentTarget.style.background = 'transparent';
-        e.currentTarget.style.textDecoration = 'none';
-      }}
-    >
-      {iconBefore}
-      <span>{children}</span>
-    </Link>
-  );
-}
-
-function Separator() {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        color: token('color.text.disabled', '#C1C7D0'),
-      }}
-    >
-      <ChevronRight size={14} />
-    </span>
-  );
-}
-
 export function TicketBreadcrumbs({ projectKey, projectName, issueKey }: TicketBreadcrumbsProps) {
-  useAtlaskitThemeSync();
   const origin = useTicketOrigin();
+  const { isDark } = useTheme();
+
+  const linkColor = isDark ? '#A1A1A1' : '#42526E';
+  const linkHoverColor = isDark ? '#EDEDED' : '#0052CC';
+  const currentColor = isDark ? '#EDEDED' : '#172B4D';
+  const separatorColor = isDark ? '#454545' : '#C1C7D0';
+
+  const hoverIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.color = linkHoverColor;
+    e.currentTarget.style.textDecoration = 'underline';
+  };
+  const hoverOut = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.currentTarget.style.color = linkColor;
+    e.currentTarget.style.textDecoration = 'none';
+  };
+
+  const linkStyle: React.CSSProperties = {
+    fontFamily: "'Inter', sans-serif",
+    fontSize: 13,
+    fontWeight: 500,
+    color: linkColor,
+    textDecoration: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 4,
+    borderRadius: 3,
+    padding: '2px 4px',
+    transition: 'color 120ms ease',
+  };
 
   return (
-    <Box
-      as="nav"
-      xcss={{
-        paddingBlock: 'space.050',
-      } as never}
-    >
-      <Inline
-        space="space.050"
-        alignBlock="center"
-        {...{ 'aria-label': 'Breadcrumbs' }}
+    <Breadcrumb aria-label="Breadcrumbs">
+      <BreadcrumbList
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          fontSize: 13,
+          color: linkColor,
+          flexWrap: 'wrap',
+        }}
       >
-        <CrumbLink to="/project-hub" iconBefore={<Home size={13} aria-hidden="true" />}>
-          Projects
-        </CrumbLink>
-        <Separator />
-        <CrumbLink to={`/project-hub/${projectKey}/list`}>
-          {projectName || projectKey}
-        </CrumbLink>
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link to="/project-hub" style={linkStyle} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+              <Home size={13} aria-hidden="true" />
+              <span>Projects</span>
+            </Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+
+        <BreadcrumbSeparator style={{ color: separatorColor }} />
+
+        <BreadcrumbItem>
+          <BreadcrumbLink asChild>
+            <Link
+              to={`/project-hub/${projectKey}/list`}
+              style={linkStyle}
+              onMouseEnter={hoverIn}
+              onMouseLeave={hoverOut}
+            >
+              {projectName || projectKey}
+            </Link>
+          </BreadcrumbLink>
+        </BreadcrumbItem>
+
         {origin && (
           <>
-            <Separator />
-            <CrumbLink to={origin.fromUrl}>{origin.fromLabel}</CrumbLink>
+            <BreadcrumbSeparator style={{ color: separatorColor }} />
+            <BreadcrumbItem>
+              <BreadcrumbLink asChild>
+                <Link
+                  to={origin.fromUrl}
+                  style={linkStyle}
+                  onMouseEnter={hoverIn}
+                  onMouseLeave={hoverOut}
+                >
+                  {origin.fromLabel}
+                </Link>
+              </BreadcrumbLink>
+            </BreadcrumbItem>
           </>
         )}
-        <Separator />
-        <span
-          aria-current="page"
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            fontSize: 13,
-            fontWeight: 600,
-            color: token('color.text', '#172B4D'),
-            padding: '2px 4px',
-          }}
-        >
-          {issueKey}
-        </span>
-      </Inline>
-    </Box>
+
+        <BreadcrumbSeparator style={{ color: separatorColor }} />
+
+        <BreadcrumbItem>
+          <BreadcrumbPage
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 13,
+              fontWeight: 600,
+              color: currentColor,
+              padding: '2px 4px',
+            }}
+          >
+            {issueKey}
+          </BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }
