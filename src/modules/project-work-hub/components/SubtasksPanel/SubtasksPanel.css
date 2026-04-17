@@ -630,6 +630,32 @@
   50% { opacity: 0.5; }
 }
 
+/* ── Atlaskit Lozenge trigger (Chunk C) ───────── */
+.sp-status-btn-ak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  padding: 2px 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  line-height: 1;
+  transition: background 0.1s;
+}
+.sp-status-btn-ak:hover:not(:disabled) {
+  background: rgba(9, 30, 66, 0.06);
+}
+.sp-status-btn-ak:disabled {
+  cursor: default;
+}
+.sp-status-chevron-ak {
+  display: inline-flex;
+  align-items: center;
+  color: #6B778C;
+}
+
 /* ── Inline trigger (priority/assignee click target) ── */
 .sp-inline-trigger {
   display: inline-flex;

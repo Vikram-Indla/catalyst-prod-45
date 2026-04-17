@@ -1,10 +1,14 @@
 /**
- * AssigneeCell — Avatar photo (24px circle) + truncated name + assign popover.
+ * AssigneeCell — Atlaskit Avatar (24px "small") + truncated name + assign popover.
+ *
+ * Atlaskit Avatar gives us the correct Jira ring colour + initials fallback
+ * out of the box, respecting current theme tokens. We keep the surrounding
+ * AssigneePopover so click-to-reassign still works.
  */
-import React, { useState } from 'react';
-import { AssigneePopover } from '../popovers/AssigneePopover';
-import { getInitials, getAvatarColor } from '../../dialogs/story-detail-modules/helpers';
+import React from 'react';
+import Avatar from '@atlaskit/avatar';
 import { UserPlus } from 'lucide-react';
+import { AssigneePopover } from '../popovers/AssigneePopover';
 
 interface AssigneeCellProps {
   displayName: string | null;
@@ -17,10 +21,8 @@ interface AssigneeCellProps {
 export const AssigneeCell = React.memo(function AssigneeCell({
   displayName, accountId, avatarUrl, onChange, readOnly,
 }: AssigneeCellProps) {
-  const [imgError, setImgError] = useState(false);
-
   const truncated = displayName
-    ? displayName.length > 6 ? displayName.slice(0, 5) + '…' : displayName
+    ? displayName.length > 12 ? displayName.slice(0, 11) + '…' : displayName
     : null;
 
   const trigger = (
@@ -32,20 +34,16 @@ export const AssigneeCell = React.memo(function AssigneeCell({
       aria-label={displayName ? `Assigned to ${displayName} — change` : 'Assign user'}
       disabled={readOnly}
     >
-      {!displayName ? (
-        <span className="sp-avatar-fallback" style={{ background: '#DFE1E6', color: '#6B778C' }}>
-          <UserPlus size={12} />
-        </span>
-      ) : avatarUrl && !imgError ? (
-        <img
-          className="sp-avatar"
-          src={avatarUrl}
-          alt={displayName}
-          onError={() => setImgError(true)}
+      {displayName ? (
+        <Avatar
+          size="small"
+          name={displayName}
+          src={avatarUrl ?? undefined}
+          borderColor="transparent"
         />
       ) : (
-        <span className="sp-avatar-fallback" style={{ background: getAvatarColor(displayName) }}>
-          {getInitials(displayName)}
+        <span className="sp-avatar-fallback" style={{ background: '#DFE1E6', color: '#6B778C' }}>
+          <UserPlus size={12} />
         </span>
       )}
       {truncated && <span className="sp-assignee-name">{truncated}</span>}
