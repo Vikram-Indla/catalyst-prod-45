@@ -1102,7 +1102,17 @@ export default function KanbanBoardPage() {
           </DndContext>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 300 }}>
+            <div
+              className="flex"
+              style={{
+                // V2: visible column-wise partition. 10px gap + 12px outer padding
+                // gives the Jira-parity "breathing room between columns" look.
+                // Flag-off = flush (existing behavior).
+                minWidth: KANBAN_COLUMNS.length * 300 + (ENABLE_KANBAN_V2 ? (KANBAN_COLUMNS.length - 1) * 10 + 24 : 0),
+                gap: ENABLE_KANBAN_V2 ? 10 : 0,
+                padding: ENABLE_KANBAN_V2 ? '12px' : 0,
+              }}
+            >
               {KANBAN_COLUMNS.map((col, i) => (
                 <DroppableColumn
                   key={col.id}
