@@ -193,9 +193,79 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
             return 'vendor-charts';
           }
-          if (id.includes('node_modules/@tiptap/') || id.includes('node_modules/prosemirror') || id.includes('node_modules/@atlaskit/')) {
-            return 'vendor-editor';
+
+          // ═══════════════════════════════════════════════════════════════
+          // LAYER 4 — Atlaskit chunk split along Atlassian package boundaries.
+          // ═══════════════════════════════════════════════════════════════
+          // Before: every @atlaskit/*, every @tiptap/* and every prosemirror-*
+          // package was fused into one ~4MB `vendor-editor` chunk. Any feature
+          // that mounted an Atlaskit primitive (Lozenge, Avatar, DynamicTable)
+          // paid the full editor-core + renderer + editor-plugin-* cost up
+          // front — that's what made BAU-4771's Epic view slow to open.
+          //
+          // After: chunks match Atlassian's own package boundaries so each
+          // surface only downloads what it renders. `if` ORDER IS LOAD-BEARING
+          // — editor-plugin-* and editor-* must be matched BEFORE the generic
+          // `@atlaskit/` catch-all, or plugins leak into the ui chunk.
+          //
+          //   vendor-prosemirror      ProseMirror core (shared by editor +
+          //                           renderer + tiptap; deduped via
+          //                           `resolve.dedupe` above). Must be a
+          //                           stable singleton or PM throws
+          //                           "Duplicate use of selection JSON ID".
+          //   vendor-atlaskit-editor  editor-core + all editor-plugin-* +
+          //                           editor-common + editor-json-transformer.
+          //                           Only loaded when the user clicks Edit
+          //                           on an Epic description. ~2MB.
+          //   vendor-atlaskit-renderer  @atlaskit/renderer. Loaded on Epic
+          //                           view. ~400–600KB.
+          //   vendor-atlaskit-adf     @atlaskit/adf-* utilities. Tiny,
+          //                           shared by editor + renderer + the
+          //                           main-bundle `adfToPlainText`.
+          //   vendor-atlaskit-media   @atlaskit/media-* (external media
+          //                           support). Loaded alongside renderer.
+          //   vendor-atlaskit-ui      primitives used by SubtasksPanel /
+          //                           LinkedWorkItems: avatar, lozenge,
+          //                           dropdown-menu, popup, select,
+          //                           textfield, tokens, icon, button,
+          //                           checkbox, primitives, progress-bar.
+          //                           Cached once, reused on every feature.
+          //   vendor-tiptap           tiptap editor (legacy non-Epic path).
+          //                           Isolated from Atlaskit so changes to
+          //                           one don't bust the other's cache.
+          // ═══════════════════════════════════════════════════════════════
+          if (id.includes('node_modules/prosemirror-')) {
+            return 'vendor-prosemirror';
           }
+          if (
+            id.includes('node_modules/@atlaskit/editor-core') ||
+            id.includes('node_modules/@atlaskit/editor-common') ||
+            id.includes('node_modules/@atlaskit/editor-plugin-') ||
+            id.includes('node_modules/@atlaskit/editor-json-transformer') ||
+            id.includes('node_modules/@atlaskit/editor-markdown-transformer') ||
+            id.includes('node_modules/@atlaskit/editor-palette') ||
+            id.includes('node_modules/@atlaskit/editor-performance-metrics') ||
+            id.includes('node_modules/@atlaskit/editor-prosemirror') ||
+            id.includes('node_modules/@atlaskit/editor-tables')
+          ) {
+            return 'vendor-atlaskit-editor';
+          }
+          if (id.includes('node_modules/@atlaskit/renderer')) {
+            return 'vendor-atlaskit-renderer';
+          }
+          if (id.includes('node_modules/@atlaskit/adf-')) {
+            return 'vendor-atlaskit-adf';
+          }
+          if (id.includes('node_modules/@atlaskit/media-')) {
+            return 'vendor-atlaskit-media';
+          }
+          if (id.includes('node_modules/@atlaskit/')) {
+            return 'vendor-atlaskit-ui';
+          }
+          if (id.includes('node_modules/@tiptap/')) {
+            return 'vendor-tiptap';
+          }
+
           if (id.includes('node_modules/framer-motion')) {
             return 'vendor-motion';
           }

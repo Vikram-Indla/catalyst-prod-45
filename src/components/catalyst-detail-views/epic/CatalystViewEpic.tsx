@@ -15,7 +15,7 @@ import {
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import { LinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items';
-import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit';
+import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 /**
