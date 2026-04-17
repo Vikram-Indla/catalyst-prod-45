@@ -49,6 +49,7 @@ export default function CatalystViewBusinessRequest({
           storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
+          parentIssueType={issue.issue_type || 'Business Request'}
         />
       )}
 

@@ -42,6 +42,7 @@ import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
 import { IssueTypeCell } from './cells/IssueTypeCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
+import { allowedChildTypes, canCreateChild, panelTitleFor } from './hierarchy';
 import DynamicTable from '@atlaskit/dynamic-table';
 import './SubtasksPanel.css';
 
@@ -52,17 +53,34 @@ interface SubtasksPanelProps {
   storyId: string;
   projectKey: string;
   onSubtaskClick?: (subtaskId: string) => void;
-  /** Section title — defaults to "Subtasks". Epic/Feature parents pass "Child work items". */
+  /**
+   * Parent issue's type (e.g. "Epic", "Story", "Feature", "Sub-task"…).
+   * Drives hierarchy enforcement:
+   *   • Epic    → child types limited to story-level; Sub-task family blocked
+   *   • Story/… → child types limited to the sub-task family
+   *   • Sub-task / Backend / Frontend / etc. → creation disabled entirely
+   * Also drives the default panel title ("Child work items" for Epic,
+   * "Subtasks" everywhere else).
+   * Optional for back-compat; when omitted, falls back to a permissive
+   * union of story-level + sub-task-family types.
+   */
+  parentIssueType?: string;
+  /** Optional explicit title override. Defaults to panelTitleFor(parentIssueType). */
   title?: string;
 }
 
 // ─── Type selector for inline create ────────────────────
-const TYPE_OPTIONS = CANONICAL_WORK_ITEM_OPTIONS;
-
-function TypeSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function TypeSelector({
+  value, onChange, allowed,
+}: { value: string; onChange: (v: string) => void; allowed: string[] }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const current = TYPE_OPTIONS.find(t => t.key === value) ?? TYPE_OPTIONS[0];
+  const allowedSet = React.useMemo(() => new Set(allowed), [allowed]);
+  const options = React.useMemo(
+    () => CANONICAL_WORK_ITEM_OPTIONS.filter(o => allowedSet.has(o.key)),
+    [allowedSet],
+  );
+  const current = options.find(t => t.key === value) ?? options[0];
 
   useEffect(() => {
     if (!open) return;
@@ -73,6 +91,8 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  if (!current) return null;
+
   return (
     <div ref={ref} style={{ position: 'relative', flexShrink: 0 }}>
       <button type="button" onClick={() => setOpen(o => !o)} className="sp-type-selector-btn">
@@ -82,7 +102,7 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
       </button>
       {open && (
         <div className="sp-type-selector-dropdown">
-          {TYPE_OPTIONS.map(opt => (
+          {options.map(opt => (
             <div
               key={opt.key}
               onClick={() => { onChange(opt.key); setOpen(false); }}
@@ -225,16 +245,30 @@ function InlineSummaryEditor({
 
 // ─── Main component ─────────────────────────────────────
 export function SubtasksPanel({
-  storyKey, storyId, projectKey, onSubtaskClick, title = 'Subtasks',
+  storyKey, storyId, projectKey, onSubtaskClick, parentIssueType, title,
 }: SubtasksPanelProps) {
   useAtlaskitThemeSync();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+
+  // ─── Hierarchy-driven config ─────────────────────────
+  const allowedTypes = useMemo(() => allowedChildTypes(parentIssueType), [parentIssueType]);
+  const canCreate = allowedTypes.length > 0;
+  const effectiveTitle = title ?? panelTitleFor(parentIssueType);
+  const defaultDraftType = allowedTypes[0] ?? 'Sub-task';
+
   const [expanded, setExpanded] = useState(true);
   const [view, setView] = useState<SubtaskView>('list');
   const [creating, setCreating] = useState(false);
   const [draftSummary, setDraftSummary] = useState('');
-  const [draftType, setDraftType] = useState('Sub-task');
+  const [draftType, setDraftType] = useState(defaultDraftType);
+  // Re-seed draft type when the allowed set changes (e.g. parent type reload)
+  useEffect(() => {
+    if (!allowedTypes.includes(draftType)) {
+      setDraftType(defaultDraftType);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultDraftType]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [hideDone, setHideDone] = useState(false);
   const [bulkEditMode, setBulkEditMode] = useState(false);
@@ -523,9 +557,10 @@ export function SubtasksPanel({
 
   // ─── Keyboard navigation ─────────────────────────
   const handlePanelKeyDown = (e: React.KeyboardEvent) => {
-    // ⇧C → create subtask (Jira parity)
+    // ⇧C → create child (Jira parity). Silently no-ops when hierarchy
+    // disallows creation under this parent type (e.g. Sub-task parents).
     if (e.shiftKey && (e.key === 'C' || e.key === 'c')
-        && !creating && !editingId
+        && !creating && !editingId && canCreate
         && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLTextAreaElement)) {
       e.preventDefault();
       setCreating(true);
@@ -568,7 +603,7 @@ export function SubtasksPanel({
           >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          <span className="sp-title">{title}</span>
+          <span className="sp-title">{effectiveTitle}</span>
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}
@@ -586,15 +621,17 @@ export function SubtasksPanel({
             />
             <ColumnPicker columns={columns} onChange={setColumns} />
             <ViewToggle view={view} onChange={setView} />
-            <button
-              type="button"
-              className="sp-icon-btn sp-icon-btn--add"
-              title="Create subtask"
-              aria-label="Create subtask"
-              onClick={() => setCreating(true)}
-            >
-              <Plus size={16} />
-            </button>
+            {canCreate && (
+              <button
+                type="button"
+                className="sp-icon-btn sp-icon-btn--add"
+                title={`Create ${defaultDraftType.toLowerCase()}`}
+                aria-label={`Create ${defaultDraftType.toLowerCase()}`}
+                onClick={() => setCreating(true)}
+              >
+                <Plus size={16} />
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -630,9 +667,17 @@ export function SubtasksPanel({
           {/* ═══ Empty state (no subtasks at all) ═══ */}
           {!isLoading && children.length === 0 && !creating && (
             <div className="sp-empty">
-              <div className="sp-empty-heading">No subtasks yet</div>
-              <div className="sp-empty-sub">Break this item into subtasks to track progress</div>
-              <button type="button" className="sp-empty-cta" onClick={() => setCreating(true)}>+ Create subtask</button>
+              <div className="sp-empty-heading">No {effectiveTitle.toLowerCase()} yet</div>
+              <div className="sp-empty-sub">
+                {canCreate
+                  ? 'Break this item down to track progress.'
+                  : 'This work item cannot have children.'}
+              </div>
+              {canCreate && (
+                <button type="button" className="sp-empty-cta" onClick={() => setCreating(true)}>
+                  + Create {defaultDraftType.toLowerCase()}
+                </button>
+              )}
             </div>
           )}
 
@@ -877,7 +922,7 @@ export function SubtasksPanel({
                   maxLength={255}
                 />
                 <div className="sp-create-actions">
-                  <TypeSelector value={draftType} onChange={setDraftType} />
+                  <TypeSelector value={draftType} onChange={setDraftType} allowed={allowedTypes} />
                   <button
                     type="button"
                     onClick={() => { if (draftSummary.trim()) createMutation.mutate(draftSummary); }}

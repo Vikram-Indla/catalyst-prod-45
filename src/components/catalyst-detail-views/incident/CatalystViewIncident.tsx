@@ -51,6 +51,7 @@ export default function CatalystViewIncident({
           storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
+          parentIssueType={issue.issue_type || 'Incident'}
         />
       )}
 
