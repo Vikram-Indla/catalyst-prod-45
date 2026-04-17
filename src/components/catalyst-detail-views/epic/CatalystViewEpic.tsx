@@ -14,7 +14,18 @@ import {
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import { LinkedWorkItems } from '@/modules/project-work-hub/components/linked-work-items';
+import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit';
 import type { CatalystViewBaseProps } from '../shared/types';
+
+/**
+ * BAU-4771 pilot: swap in the Atlaskit-based LinkedWorkItems molecule
+ * only for the pilot issue. Every other Epic keeps the production
+ * LinkedIssuesSection. The AtlaskitBoundary falls back to the legacy
+ * section if the Atlaskit stack throws at runtime, so the worst case is
+ * visual parity with pre-pilot production.
+ */
+const LINKED_WORK_ITEMS_PILOT_KEYS = new Set<string>(['BAU-4771']);
 
 export default function CatalystViewEpic({
   isOpen, onClose, itemId, projectId, projectKey,
@@ -43,7 +54,20 @@ export default function CatalystViewEpic({
         />
       )}
 
-      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
+      {issue?.issue_key && LINKED_WORK_ITEMS_PILOT_KEYS.has(issue.issue_key) ? (
+        <AtlaskitBoundary
+          diagnosticTag={`linked-work-items:${issue.issue_key}`}
+          fallback={<LinkedIssuesSection issueId={itemId} issueKey={issue.issue_key} />}
+        >
+          <LinkedWorkItems
+            issueId={itemId}
+            issueKey={issue.issue_key}
+            projectKey={issue.project_key || projectKey}
+          />
+        </AtlaskitBoundary>
+      ) : (
+        <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
+      )}
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );

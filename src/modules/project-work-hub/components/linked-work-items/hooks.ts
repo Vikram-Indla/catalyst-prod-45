@@ -1,0 +1,193 @@
+/**
+ * LinkedWorkItems — data hooks.
+ *
+ * Contract parity with the legacy `LinkedIssuesSection`:
+ *   - reads/writes `ph_issue_links` using `source_id`/`target_id` = issue_key
+ *   - resolves targets from `ph_issues` first, then falls back to
+ *     `catalyst_issues` for locally-created items
+ *   - shares React Query key `['linkedIssues', issueKey]` so the legacy UI
+ *     and the new molecule stay in cache lockstep during the BAU-4771 pilot
+ *   - surfaces toast notifications via `catalystToast` (same channel as
+ *     the legacy implementation) so activity feedback remains consistent
+ *   - treats duplicate unique_link violations as a non-error (already linked)
+ *   - invalidates linked-issue list after mutations so the count in the
+ *     collapsible header, row list, and optimistic deltas stay honest
+ *
+ * This hook is the only place that talks to Supabase for link CRUD; UI
+ * components import pure data + handlers and never touch the client.
+ */
+import { useCallback } from 'react';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { catalystToast } from '@/lib/catalystToast';
+import type { LinkedWorkItem, LinkedWorkItemTarget } from './types';
+import type { StatusCategory } from '../dialogs/story-detail-modules/types';
+
+const LINKED_ISSUES_KEY = (issueKey: string) => ['linkedIssues', issueKey] as const;
+
+function toStatusCategory(raw: unknown): StatusCategory {
+  const c = String(raw ?? '').toLowerCase();
+  if (c === 'done') return 'done';
+  if (c === 'in_progress' || c === 'inprogress') return 'in_progress';
+  return 'todo';
+}
+
+export function useLinkedWorkItems(issueKey: string) {
+  return useQuery<LinkedWorkItem[]>({
+    queryKey: LINKED_ISSUES_KEY(issueKey),
+    enabled: !!issueKey,
+    queryFn: async () => {
+      const { data: rawLinks, error } = await supabase
+        .from('ph_issue_links')
+        .select('id, link_type, created_at, source_id, target_id')
+        .or(`source_id.eq.${issueKey},target_id.eq.${issueKey}`)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      if (!rawLinks?.length) return [];
+
+      const targetKeys = rawLinks.map((l) =>
+        l.source_id === issueKey ? l.target_id : l.source_id,
+      );
+
+      const { data: phTargets } = await supabase
+        .from('ph_issues')
+        .select(
+          'issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, project_key',
+        )
+        .in('issue_key', targetKeys)
+        .is('jira_removed_at', null);
+
+      const targetMap = new Map<string, LinkedWorkItemTarget>(
+        (phTargets ?? []).map((t: any) => [
+          t.issue_key,
+          {
+            issue_key: t.issue_key,
+            summary: t.summary,
+            issue_type: t.issue_type,
+            status: t.status,
+            status_category: toStatusCategory(t.status_category),
+            assignee_account_id: t.assignee_account_id,
+            assignee_display_name: t.assignee_display_name,
+            priority: t.priority,
+            jira_updated_at: t.jira_updated_at,
+            project_key: t.project_key,
+          } satisfies LinkedWorkItemTarget,
+        ]),
+      );
+
+      const missingKeys = targetKeys.filter((k) => !targetMap.has(k));
+      if (missingKeys.length > 0) {
+        const { data: catTargets } = await supabase
+          .from('catalyst_issues')
+          .select('id, issue_key, title, status, issue_type, assignee_id, priority, project_id')
+          .in('issue_key', missingKeys);
+        (catTargets ?? []).forEach((ct: any) => {
+          targetMap.set(ct.issue_key, {
+            id: ct.id,
+            issue_key: ct.issue_key,
+            summary: ct.title,
+            issue_type: ct.issue_type,
+            status: ct.status,
+            status_category:
+              ct.status === 'Done'
+                ? 'done'
+                : ct.status === 'In Progress'
+                ? 'in_progress'
+                : 'todo',
+            assignee_account_id: ct.assignee_id,
+            assignee_display_name: null,
+            priority: ct.priority,
+            jira_updated_at: null,
+            project_id: ct.project_id,
+          });
+        });
+      }
+
+      return rawLinks
+        .map((l): LinkedWorkItem | null => {
+          const key = l.source_id === issueKey ? l.target_id : l.source_id;
+          const target = targetMap.get(key);
+          if (!target) return null;
+          return {
+            id: l.id,
+            link_type: l.link_type,
+            created_at: l.created_at,
+            source_id: l.source_id,
+            target_id: l.target_id,
+            target,
+          };
+        })
+        .filter((l): l is LinkedWorkItem => l !== null);
+    },
+  });
+}
+
+export function useLinkMutations(issueKey: string) {
+  const queryClient = useQueryClient();
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: LINKED_ISSUES_KEY(issueKey) });
+  }, [queryClient, issueKey]);
+
+  const linkMutation = useMutation({
+    mutationFn: async ({
+      linkType,
+      targetKeys,
+    }: {
+      linkType: string;
+      targetKeys: string[];
+    }) => {
+      if (!targetKeys.length) return { linked: 0 };
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let linked = 0;
+      for (const targetKey of targetKeys) {
+        if (targetKey === issueKey) continue; // defensive: no self-links
+        const { error } = await supabase.from('ph_issue_links').insert({
+          source_id: issueKey,
+          target_id: targetKey,
+          link_type: linkType,
+          created_by: user.id,
+        } as any);
+        if (error) {
+          // Unique-constraint collisions mean the link already exists; swallow
+          // so a bulk-link flow with partial duplicates still succeeds cleanly.
+          if (error.code === '23505' || error.message?.includes('unique_link')) continue;
+          throw error;
+        }
+        linked += 1;
+      }
+      return { linked };
+    },
+    onSuccess: ({ linked }) => {
+      if (linked > 0) {
+        catalystToast.success(`Linked ${linked} item${linked > 1 ? 's' : ''}`);
+      } else {
+        catalystToast.info('Items already linked');
+      }
+      invalidate();
+    },
+    onError: (err: any) => {
+      catalystToast.error('Failed to link', err.message);
+    },
+  });
+
+  const unlinkMutation = useMutation({
+    mutationFn: async (linkId: string) => {
+      const { error } = await supabase.from('ph_issue_links').delete().eq('id', linkId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      catalystToast.success('Link removed');
+      invalidate();
+    },
+    onError: (err: any) => {
+      catalystToast.error('Failed to unlink', err.message);
+    },
+  });
+
+  return { linkMutation, unlinkMutation, invalidate };
+}
