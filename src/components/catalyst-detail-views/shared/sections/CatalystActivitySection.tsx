@@ -1,16 +1,16 @@
 /**
- * CatalystActivitySection — catalyst-ds replacement.
- * Merges BOTH Catalyst-native data (ph_comments + ph_activity_log)
- * AND Jira-synced data (jira_sync_comments + jira_sync_changelog).
- * Looks up issue_key from ph_issues to join Jira tables.
+ * CatalystActivitySection — catalyst-ds Activity panel.
+ * Reads from unified Catalyst tables only. Jira-synced comments/history are
+ * mirrored into ph_comments/ph_activity_log by wh-jira-sync and wh-jira-bulk-sync,
+ * so a single query per source covers both Catalyst-native and Jira rows.
  */
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { ActivityPanel } from '@/components/catalyst-ds';
-import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply } from '@/components/catalyst-ds';
+import type { CdsComment, CdsActivityItem, CdsUser, CdsQuickReply, JiraUserMap } from '@/components/catalyst-ds';
 
 interface CatalystActivitySectionProps {
   itemId: string;
@@ -23,36 +23,30 @@ const QUICK_REPLIES: CdsQuickReply[] = [
   { label: 'Agree...', template: 'Agreed. ' },
 ];
 
-function mapCatalystComment(raw: any): CdsComment {
+function mapComment(raw: any): CdsComment {
+  const isJira = raw.source === 'jira';
+  const profile = raw.author;
   return {
     id: raw.id,
     author: {
-      id: raw.author_id || 'unknown',
-      name: raw.author?.full_name || raw.author?.email || 'Unknown',
-      avatarUrl: raw.author?.avatar_url || null,
-      email: raw.author?.email,
+      id: raw.author_id || raw.jira_author_account_id || 'unknown',
+      name: profile?.full_name
+        || profile?.email
+        || raw.jira_author_display_name
+        || (isJira ? 'Jira User' : 'Unknown'),
+      avatarUrl: profile?.avatar_url || raw.jira_author_avatar_url || null,
+      email: profile?.email,
     },
     content: raw.body || '',
     createdAt: raw.created_at,
     updatedAt: raw.updated_at,
-    isEdited: raw.updated_at && raw.updated_at !== raw.created_at,
+    isEdited: !isJira && raw.updated_at && raw.updated_at !== raw.created_at,
   };
 }
 
-function mapJiraComment(raw: any): CdsComment {
-  return {
-    id: `jira-${raw.id}`,
-    author: {
-      id: raw.author_account_id || 'jira',
-      name: raw.author_display_name || 'Jira User',
-      avatarUrl: raw.author_avatar_url || null,
-    },
-    content: raw.body || '',
-    createdAt: raw.jira_created_at || raw.created_at,
-  };
-}
-
-function mapCatalystActivity(raw: any): CdsActivityItem {
+function mapActivity(raw: any): CdsActivityItem {
+  const isJira = raw.source === 'jira';
+  const profile = raw.actor;
   const action = raw.action;
   let type: CdsActivityItem['type'] = 'update';
   if (action === 'created' || action === 'create') type = 'create';
@@ -62,33 +56,17 @@ function mapCatalystActivity(raw: any): CdsActivityItem {
     id: raw.id,
     type,
     actor: {
-      id: raw.user_id || 'system',
-      name: raw.actor?.full_name || 'System',
-      avatarUrl: raw.actor?.avatar_url || null,
+      id: raw.user_id || raw.jira_author_account_id || 'system',
+      name: profile?.full_name
+        || raw.jira_author_display_name
+        || (isJira ? 'Jira' : 'System'),
+      avatarUrl: profile?.avatar_url || raw.jira_author_avatar_url || null,
     },
     timestamp: raw.created_at,
     description: type === 'create' ? 'created this item' : undefined,
     fieldChange: raw.field_name
       ? { field: raw.field_name, oldValue: raw.old_value, newValue: raw.new_value }
       : undefined,
-  };
-}
-
-function mapJiraChangelog(raw: any): CdsActivityItem {
-  return {
-    id: `jira-cl-${raw.id}`,
-    type: 'update',
-    actor: {
-      id: raw.author_account_id || 'jira',
-      name: raw.author_display_name || 'Jira',
-      avatarUrl: raw.author_avatar_url || null,
-    },
-    timestamp: raw.jira_created_at || raw.created_at,
-    fieldChange: {
-      field: raw.field_name || 'unknown',
-      oldValue: raw.from_string || raw.from_value || null,
-      newValue: raw.to_string || raw.to_value || null,
-    },
   };
 }
 
@@ -117,6 +95,25 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     email: p.email,
   }));
 
+  // Jira accountId -> display name map, used to render [~accountid:xxx] mentions
+  // in historical descriptions / summaries as @Name.
+  const { data: jiraUserMap = {} as JiraUserMap } = useQuery({
+    queryKey: ['jira-user-map'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, jira_display_name, catalyst_profile_id');
+      const map: JiraUserMap = {};
+      for (const row of data || []) {
+        if (row.jira_account_id && row.jira_display_name) {
+          map[row.jira_account_id] = row.jira_display_name;
+        }
+      }
+      return map;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   useQuery({
     queryKey: ['current-user-profile', user?.id],
     enabled: !!user?.id && profiles.length > 0,
@@ -134,135 +131,61 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
     },
   });
 
-  // Look up issue_key for Jira table joins
-  const { data: issueKey } = useQuery({
-    queryKey: ['issue-key-lookup', itemId],
-    enabled: !!itemId && isOpen,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_issues')
-        .select('issue_key')
-        .eq('id', itemId)
-        .single();
-      return data?.issue_key || null;
-    },
-  });
-
-  // Catalyst-native comments (ph_comments)
-  const { data: catalystComments = [], isLoading: loadingCatalystComments } = useQuery({
+  // Comments: ph_comments (Catalyst-native + Jira-mirrored)
+  const { data: comments = [], isLoading: isLoadingComments } = useQuery({
     queryKey: ['cv-comments', itemId],
     enabled: !!itemId && isOpen,
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_comments')
-        .select('id, work_item_id, body, author_id, created_at, updated_at')
+        .select('id, work_item_id, body, author_id, created_at, updated_at, source, jira_author_account_id, jira_author_display_name, jira_author_avatar_url')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: true });
       if (!data?.length) return [];
       const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
+      if (authorIds.length === 0) return data.map(c => ({ ...c, author: null }));
       const { data: authorProfiles } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, email')
         .in('id', authorIds);
       const profileMap = new Map((authorProfiles ?? []).map(p => [p.id, p]));
-      return data.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
+      return data.map(c => ({ ...c, author: c.author_id ? profileMap.get(c.author_id) ?? null : null }));
     },
   });
 
-  // Jira-synced comments (jira_sync_comments)
-  const { data: jiraComments = [], isLoading: loadingJiraComments } = useQuery({
-    queryKey: ['jira-sync-comments', issueKey],
-    enabled: !!issueKey,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jira_sync_comments')
-        .select('id, issue_key, jira_comment_id, author_display_name, author_account_id, author_avatar_url, body, jira_created_at, created_at')
-        .eq('issue_key', issueKey!)
-        .order('jira_created_at', { ascending: true });
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Catalyst-native activity (ph_activity_log)
-  const { data: catalystActivity = [], isLoading: loadingCatalystActivity } = useQuery({
+  // History: ph_activity_log (Catalyst-native + Jira-mirrored)
+  const { data: historyItems = [], isLoading: isLoadingHistory } = useQuery({
     queryKey: ['cv-activity', itemId],
     enabled: !!itemId && isOpen,
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_activity_log')
-        .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at')
+        .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at, source, jira_author_account_id, jira_author_display_name, jira_author_avatar_url')
         .eq('work_item_id', itemId)
         .order('created_at', { ascending: false });
       if (!data?.length) return [];
       const userIds = [...new Set(data.map(e => e.user_id).filter(Boolean))];
+      if (userIds.length === 0) return data.map(e => ({ ...e, actor: null }));
       const { data: actorProfiles } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, email')
         .in('id', userIds);
       const profileMap = new Map((actorProfiles ?? []).map(p => [p.id, p]));
-      return data.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
+      return data.map(e => ({ ...e, actor: e.user_id ? profileMap.get(e.user_id) ?? null : null }));
     },
   });
 
-  // Jira-synced changelog (jira_sync_changelog)
-  const { data: jiraChangelog = [], isLoading: loadingJiraChangelog } = useQuery({
-    queryKey: ['jira-sync-changelog', issueKey],
-    enabled: !!issueKey,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('jira_sync_changelog')
-        .select('id, issue_key, author_display_name, author_account_id, author_avatar_url, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
-        .eq('issue_key', issueKey!)
-        .order('jira_created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    },
-  });
+  const mappedComments: CdsComment[] = comments.map(mapComment);
+  const mappedHistory: CdsActivityItem[] = historyItems.map(mapActivity);
 
-  // On-demand activity backfill — bulk sync skips changelog expansion to save CPU,
-  // so newer items have no rows until opened. Fetch once per issue if empty.
-  const backfillTriedRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (!issueKey) return;
-    if (loadingJiraChangelog || loadingJiraComments) return;
-    if (jiraChangelog.length > 0 || jiraComments.length > 0) return;
-    if (backfillTriedRef.current === issueKey) return;
-    backfillTriedRef.current = issueKey;
-    supabase.functions
-      .invoke('wh-jira-issue-activity', { body: { issue_key: issueKey } })
-      .then(({ data, error }: any) => {
-        if (error) return;
-        if ((data?.changelog_count ?? 0) > 0 || (data?.comment_count ?? 0) > 0) {
-          queryClient.invalidateQueries({ queryKey: ['jira-sync-changelog', issueKey] });
-          queryClient.invalidateQueries({ queryKey: ['jira-sync-comments', issueKey] });
-        }
-      })
-      .catch(() => {});
-  }, [issueKey, loadingJiraChangelog, loadingJiraComments, jiraChangelog.length, jiraComments.length, queryClient]);
-
-  // Merge comments: Catalyst + Jira
-  const allComments: CdsComment[] = [
-    ...catalystComments.map(mapCatalystComment),
-    ...jiraComments.map(mapJiraComment),
-  ];
-
-  // Merge history: Catalyst + Jira
-  const allHistory: CdsActivityItem[] = [
-    ...catalystActivity.map(mapCatalystActivity),
-    ...jiraChangelog.map(mapJiraChangelog),
-  ];
-
-  const isLoadingComments = loadingCatalystComments || loadingJiraComments;
-  const isLoadingHistory = loadingCatalystActivity || loadingJiraChangelog;
-
-  // Mutations write to Catalyst-native tables only
+  // Mutations — Catalyst-native comments only (source='catalyst')
   const addMutation = useMutation({
     mutationFn: async (body: string) => {
       await supabase.from('ph_comments').insert({
         work_item_id: itemId,
         body,
         author_id: user!.id,
+        source: 'catalyst',
       });
     },
     onSuccess: () => {
@@ -299,8 +222,8 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   return (
     <div style={{ borderTop: '1px solid #EBECF0', paddingTop: 20, marginTop: 8 }}>
       <ActivityPanel
-        comments={allComments}
-        historyItems={allHistory}
+        comments={mappedComments}
+        historyItems={mappedHistory}
         currentUser={currentUser}
         mentionableUsers={mentionableUsers}
         onAddComment={handleAdd}
@@ -312,6 +235,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
         quickReplies={QUICK_REPLIES}
         defaultTab="all"
         defaultSortOrder="newest"
+        jiraUserMap={jiraUserMap}
       />
     </div>
   );
