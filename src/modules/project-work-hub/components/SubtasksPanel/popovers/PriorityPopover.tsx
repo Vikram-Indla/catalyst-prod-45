@@ -1,5 +1,10 @@
+/**
+ * PriorityPopover — @atlaskit/popup wrapping a 4-level priority picker.
+ * Uses the canonical PriorityIndicator (bars + label) — Atlaskit does not
+ * ship a priority-level primitive.
+ */
 import React from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import Popup from '@atlaskit/popup';
 import { PriorityIndicator, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Check } from 'lucide-react';
 
@@ -19,37 +24,47 @@ const OPTIONS: Array<{ value: 'Critical' | 'High' | 'Medium' | 'Low' }> = [
 ];
 
 export function PriorityPopover({ priority, onChange, children, showActive = true }: PriorityPopoverProps) {
-  const [open, setOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
   const current = normalisePriority(priority);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>{children}</PopoverTrigger>
-      <PopoverContent
-        align="start"
-        sideOffset={4}
-        className="sp-pop"
-        style={{ width: 180, padding: 4 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {OPTIONS.map(({ value }) => {
-          const active = showActive && normalisePriority(value) === current;
-          return (
-            <button
-              key={value}
-              type="button"
-              className="sp-pop-row"
-              onClick={() => {
-                onChange(value);
-                setOpen(false);
-              }}
-            >
-              <PriorityIndicator priority={value} showLabel fontSize={13} />
-              {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
-            </button>
-          );
-        })}
-      </PopoverContent>
-    </Popover>
+    <Popup
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      placement="bottom-start"
+      content={() => (
+        <div className="sp-pop" style={{ width: 180, padding: 4 }} onClick={(e) => e.stopPropagation()}>
+          {OPTIONS.map(({ value }) => {
+            const active = showActive && normalisePriority(value) === current;
+            return (
+              <button
+                key={value}
+                type="button"
+                className="sp-pop-row"
+                onClick={() => {
+                  onChange(value);
+                  setIsOpen(false);
+                }}
+              >
+                <PriorityIndicator priority={value} showLabel fontSize={13} />
+                {active && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      trigger={(triggerProps) => (
+        <span
+          {...triggerProps}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen((o) => !o);
+          }}
+          style={{ display: 'inline-flex' }}
+        >
+          {children}
+        </span>
+      )}
+    />
   );
 }
