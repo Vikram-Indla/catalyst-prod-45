@@ -36,6 +36,12 @@ import("./App")
         <App />
       </React.StrictMode>
     );
+    // Layer 3 — idle-prefetch the Atlaskit view chunks after first paint.
+    // Does NOT run on boot (would slow the critical path); waits for
+    // requestIdleCallback so the user's first Epic-open is instant.
+    import("./lib/atlaskitPrefetch")
+      .then(({ warmAtlaskitViewOnIdle }) => warmAtlaskitViewOnIdle())
+      .catch(() => { /* best-effort; skip on import failure */ });
   })
   .catch((err) => {
     console.error("Fatal boot error:", err);

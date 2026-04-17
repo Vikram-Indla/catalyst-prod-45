@@ -16,6 +16,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { CatalystRichTextEditor } from '@/components/shared/rich-text';
+import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 import type { PhIssue } from '../types';
 
 /* Atlaskit pilot — Epic only.
@@ -233,7 +234,22 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               opacity: hovered ? 1 : 0,
               transition: 'opacity 0.15s, color 0.1s, background 0.1s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#172B4D'; e.currentTarget.style.background = '#F4F5F7'; }}
+            /*
+             * Layer 3 — intent-based prefetch.
+             * Epic editor chunk is ~2MB; start its dynamic import the
+             * moment the user hovers or focuses the pencil. By the time
+             * the click fires, vendor-atlaskit-editor is in the HTTP
+             * cache and <EpicDescriptionEditor /> mounts synchronously
+             * from Suspense. No visible loading state for 95% of users.
+             * Only run for Epics — non-Epic path uses Tiptap (already in
+             * the main bundle, no prefetch needed).
+             */
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#172B4D';
+              e.currentTarget.style.background = '#F4F5F7';
+              if (epic) prefetchEpicEditor();
+            }}
+            onFocus={() => { if (epic) prefetchEpicEditor(); }}
             onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
           >
             <Pencil size={14} />
