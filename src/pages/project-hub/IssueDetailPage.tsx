@@ -13,6 +13,8 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -132,18 +134,24 @@ export default function IssueDetailPage() {
   }
 
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={true}
-          onClose={handleClose}
-          itemId={issue.id}
-          projectKey={issue.project_key || projectKey || ''}
-          itemType={issue.issue_type}
-          fullPageMode={true}
-          onOpenItem={handleOpenItem}
-        />
-      </Suspense>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CatalystPageHeader
+        title={issue.issue_key}
+        icon={<JiraIssueTypeIcon type={issue.issue_type || 'task'} size={20} />}
+      />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <Suspense fallback={null}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={handleClose}
+            itemId={issue.id}
+            projectKey={issue.project_key || projectKey || ''}
+            itemType={issue.issue_type}
+            fullPageMode={true}
+            onOpenItem={handleOpenItem}
+          />
+        </Suspense>
+      </div>
     </div>
   );
 }
