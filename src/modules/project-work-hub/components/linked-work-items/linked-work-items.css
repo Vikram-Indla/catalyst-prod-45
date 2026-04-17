@@ -169,10 +169,10 @@
 }
 
 .lwi-row__key {
-  font-family: var(--cp-font-mono, 'JetBrains Mono', ui-monospace, monospace);
-  font-size: 12px;
+  font-family: inherit;
+  font-size: 13px;
   font-weight: 600;
-  color: #0052CC;
+  color: #172B4D;
   background: transparent;
   border: none;
   padding: 2px 2px;
@@ -237,7 +237,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 1.5px dashed #DFE1E6;
+  background: #DFE1E6;
 }
 
 .lwi-row__actions {

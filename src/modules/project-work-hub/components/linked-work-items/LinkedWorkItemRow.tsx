@@ -85,16 +85,17 @@ export function LinkedWorkItemRow({
       </button>
 
       <span className="lwi-row__status">
-        <Lozenge appearance={appearance} isBold>
+        <Lozenge appearance={appearance}>
           {target.status}
         </Lozenge>
       </span>
 
       <span className="lwi-row__assignee">
-        {target.assignee_display_name ? (
+        {target.assignee_display_name || target.assignee_avatar_url ? (
           <Avatar
             size="small"
-            name={target.assignee_display_name}
+            name={target.assignee_display_name ?? undefined}
+            src={target.assignee_avatar_url ?? undefined}
             borderColor="transparent"
           />
         ) : (
