@@ -91,10 +91,11 @@ export function LinkedWorkItemRow({
       </span>
 
       <span className="lwi-row__assignee">
-        {target.assignee_display_name ? (
+        {target.assignee_display_name || target.assignee_avatar_url ? (
           <Avatar
             size="small"
-            name={target.assignee_display_name}
+            name={target.assignee_display_name ?? undefined}
+            src={target.assignee_avatar_url ?? undefined}
             borderColor="transparent"
           />
         ) : (
