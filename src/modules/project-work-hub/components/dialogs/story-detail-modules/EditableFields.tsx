@@ -653,11 +653,16 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
         </span>
       </div>
 
-      {/* Dropdown */}
-      {open && (
+      {/* Dropdown — position: fixed to escape sidebar overflow clipping */}
+      {open && (() => {
+        const rect = ref.current?.getBoundingClientRect();
+        const dropWidth = Math.max(rect?.width ?? 280, 280);
+        const dropLeft = Math.min(rect?.left ?? 0, window.innerWidth - dropWidth - 16);
+        const dropTop = (rect?.bottom ?? 0) + 4;
+        return (
         <div style={{
-          ...ATLASSIAN_DROPDOWN, position: 'absolute', top: '100%', left: 0, marginTop: 4,
-          width: Math.max(ref.current?.offsetWidth ?? 260, 260),
+          ...ATLASSIAN_DROPDOWN, position: 'fixed', top: dropTop, left: dropLeft,
+          width: dropWidth, zIndex: 10000,
           maxHeight: 360, display: 'flex', flexDirection: 'column', overflow: 'hidden',
         }}>
           {/* Search */}
