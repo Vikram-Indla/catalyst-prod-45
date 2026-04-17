@@ -21,8 +21,7 @@
  */
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import AsyncSelect from '@atlaskit/select/async';
-import Select from '@atlaskit/select';
+import Select, { AsyncSelect } from '@atlaskit/select';
 import Button from '@atlaskit/button/new';
 import { Plus } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
