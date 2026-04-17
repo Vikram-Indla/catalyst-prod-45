@@ -1,0 +1,117 @@
+/**
+ * SubtasksPanelV2 — scoped add-ons on top of SubtasksPanel.css.
+ *
+ * All rules are additive. V2 only applies under .sp-panel--v2 so V1
+ * styling is never touched.
+ *
+ * Tokens follow Jira/Atlaskit colours already used throughout sp-*:
+ *   #0052CC focus blue · #DFE1E6 border · #172B4D ink · #6B778C muted ·
+ *   #F4F5F7 subtle surface.
+ */
+
+/* ─── Row focus ring (keyboard navigation) ─── */
+.sp-panel--v2 .sp-row--v2 {
+  outline: none;
+}
+.sp-panel--v2 .sp-row--v2:focus-visible,
+.sp-panel--v2 .sp-row--focused {
+  box-shadow: inset 2px 0 0 #0052CC;
+  background: #F4F5F7;
+}
+
+/* ─── Work cell wrapper (row + trailing description trigger) ─── */
+.sp-panel--v2 .sp-work-cell-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* ─── Description trigger button (inline, row-scoped) ─── */
+.sp-panel--v2 .sp-desc-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 3px;
+  color: #6B778C;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+/* Reveal on row hover / focus / when filled */
+.sp-panel--v2 .sp-row:hover .sp-desc-trigger,
+.sp-panel--v2 .sp-row:focus-within .sp-desc-trigger,
+.sp-panel--v2 .sp-desc-trigger--filled,
+.sp-panel--v2 .sp-desc-trigger[aria-expanded="true"] {
+  opacity: 1;
+}
+
+.sp-panel--v2 .sp-desc-trigger:hover {
+  background: #EBECF0;
+  color: #172B4D;
+}
+
+.sp-panel--v2 .sp-desc-trigger:focus-visible {
+  outline: none;
+  border-color: #0052CC;
+  box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+  opacity: 1;
+}
+
+.sp-panel--v2 .sp-desc-trigger:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Filled indicator dot */
+.sp-panel--v2 .sp-desc-trigger-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0052CC;
+  box-shadow: 0 0 0 1.5px #FFFFFF;
+}
+
+/* ─── Description popover shell ─── */
+.sp-desc-popover {
+  width: min(520px, calc(100vw - 24px));
+  max-width: 520px;
+  padding: 12px;
+}
+
+.sp-desc-popover-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B778C;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0 0 8px;
+}
+
+.sp-desc-loading {
+  font-size: 13px;
+  color: #6B778C;
+  padding: 24px 0;
+  text-align: center;
+}
+
+/* ─── Ensure the create submit button still reads cleanly under V2 ─── */
+.sp-panel--v2 .sp-create-submit[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.sp-panel--v2 .sp-create-submit:not([disabled]) {
+  cursor: pointer;
+  opacity: 1;
+}
