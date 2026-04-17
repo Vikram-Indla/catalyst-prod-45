@@ -41,7 +41,7 @@ import { BoardView } from './BoardView';
 import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
-import { computeNewPosition } from './reorder';
+import { computeNewPosition, rebalancePositions } from './reorder';
 import { SortableRow } from './SortableRow';
 import {
   DndContext, PointerSensor, useSensor, useSensors, closestCenter,
@@ -275,7 +275,7 @@ export function SubtasksPanel({
   // DnD sensors — require 6px drag before engaging so clicks still work.
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
-  const { update, remove, bulkUpdate, bulkRemove } = useSubtaskMutations(storyKey);
+  const { update, remove, bulkUpdate, bulkRemove, reorderPositions } = useSubtaskMutations(storyKey);
 
   // ─── Data query ───────────────────────────────
   const { data: children = [], isLoading } = useQuery({
@@ -483,16 +483,31 @@ export function SubtasksPanel({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    const fromIndex = visibleRows.findIndex(r => r.id === active.id);
+    const movedId = String(active.id);
+    const fromIndex = visibleRows.findIndex(r => r.id === movedId);
     const toIndex = visibleRows.findIndex(r => r.id === over.id);
     if (fromIndex === -1 || toIndex === -1) return;
-    const newPos = computeNewPosition(
-      visibleRows.map(r => ({ id: r.id, position: r.position ?? 0 })),
-      String(active.id),
-      toIndex,
-    );
-    if (newPos == null) return;
-    update.mutate({ id: String(active.id), patch: { position: newPos } });
+
+    const positioned = visibleRows.map(r => ({ id: r.id, position: r.position ?? 0 }));
+    const result = computeNewPosition(positioned, movedId, toIndex);
+
+    // No integer slot between neighbours — renumber the full list with 1024
+    // spacing so subsequent drags have slack. Required because ph_issues.position
+    // is PostgreSQL bigint and will reject fractional midpoints.
+    if (result.needsRebalance) {
+      const without = visibleRows.filter(r => r.id !== movedId);
+      const insertAt = Math.max(0, Math.min(toIndex, without.length));
+      const reordered = [
+        ...without.slice(0, insertAt),
+        visibleRows.find(r => r.id === movedId)!,
+        ...without.slice(insertAt),
+      ];
+      reorderPositions.mutate(rebalancePositions(reordered.map(r => r.id)));
+      return;
+    }
+
+    if (result.position == null) return;
+    update.mutate({ id: movedId, patch: { position: result.position } });
   };
 
   // ─── Keyboard navigation ─────────────────────────
