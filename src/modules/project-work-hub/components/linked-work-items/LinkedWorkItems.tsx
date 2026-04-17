@@ -231,19 +231,19 @@ export function LinkedWorkItems({
             onCopyKey={handleCopyKey}
             onUnlink={handleUnlink}
             pendingUnlinkIds={pendingUnlinkIds}
-            emptyCta={
-              !showToolbar ? (
-                <div className="lwi-empty__cta">
-                  <Button
-                    appearance="primary"
-                    onClick={() => setShowToolbar(true)}
-                  >
-                    Link work item
-                  </Button>
-                </div>
+            footer={
+              showToolbar ? (
+                <LinkToolbar
+                  sourceIssueKey={issueKey}
+                  existingLinkedKeys={existingLinkedKeys}
+                  onLink={handleLink}
+                  onCreateNew={projectData ? handleCreateNew : undefined}
+                  onCancel={() => setShowToolbar(false)}
+                  isPending={linkMutation.isPending}
+                />
               ) : null
             }
-            footer={
+          />
               showToolbar ? (
                 <LinkToolbar
                   sourceIssueKey={issueKey}
