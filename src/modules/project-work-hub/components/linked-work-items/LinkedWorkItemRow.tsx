@@ -19,6 +19,7 @@ import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import { X } from 'lucide-react';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import type { LinkedWorkItem } from './types';
 
@@ -101,6 +102,10 @@ export function LinkedWorkItemRow({
         ) : (
           <span className="lwi-row__avatar-empty" aria-label="Unassigned" />
         )}
+      </span>
+
+      <span className="lwi-row__priority" aria-label={`Priority: ${target.priority ?? 'None'}`}>
+        <PriorityBars priority={normalisePriority(target.priority)} />
       </span>
 
       <span className="lwi-row__actions">
