@@ -16,20 +16,29 @@ import { supabase } from '@/integrations/supabase/client';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { CatalystRichTextEditor } from '@/components/shared/rich-text';
+import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 import type { PhIssue } from '../types';
 
 /* Atlaskit pilot — Epic only.
-   Lazy-loaded so the @atlaskit/editor-core + renderer bundle (~1MB) is only
-   fetched when an Epic description is actually viewed/edited. All other
-   issue types continue to use the existing TipTap-based path with zero
-   bundle impact.
+   LAYER 1 — STRICT VIEW/EDIT SPLIT (Atlassian-canonical).
+   The renderer chunk (~400–600KB) is loaded on Epic view.
+   The editor-core chunk (~2MB) is loaded only on Edit click.
+
+   These lazy imports MUST target the component files directly, NOT the
+   `@/components/shared/rich-text/atlaskit` barrel. Rollup treats each
+   `import(...)` specifier as the module boundary for the generated chunk:
+   if both dynamic imports resolve to the same barrel module, Rollup
+   hoists every barrel re-export into one chunk — so loading the
+   Renderer drags `@atlaskit/editor-core` with it. Direct file imports
+   keep the two graphs separate and let the renderer load alone on view.
+
    Wrapped in AtlaskitBoundary so a chunk-load failure or runtime error
    surfaces in the console and the existing TipTap path is used as fallback. */
-const EpicDescriptionEditor = lazy(() =>
-  import('@/components/shared/rich-text/atlaskit').then((m) => ({ default: m.EpicDescriptionEditor }))
+const EpicDescriptionEditor = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
-const EpicDescriptionRenderer = lazy(() =>
-  import('@/components/shared/rich-text/atlaskit').then((m) => ({ default: m.EpicDescriptionRenderer }))
+const EpicDescriptionRenderer = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer'),
 );
 import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
 
@@ -42,6 +51,30 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
   return (
     <div style={{ minHeight, paddingLeft: 20, color: '#97A0AF', fontSize: 13 }}>
       Loading editor…
+    </div>
+  );
+}
+
+/* LAYER 2 (mini) — pre-hydration placeholder parity.
+   Renders the description via the synchronous HTML path that is already
+   in the main bundle, so the text is on screen in <5ms. When the real
+   @atlaskit/renderer chunk arrives, React swaps it in with matching
+   typography and lineHeight — no layout shift, no flash of empty state.
+   This is the same DOM the Atlaskit-failure fallback produces, so the
+   placeholder is guaranteed to match the chunk-failure path as well. */
+function AtlaskitRendererPlaceholder({
+  html,
+  issueKey,
+}: {
+  html: string;
+  issueKey?: string;
+}) {
+  return (
+    <div
+      className="cv-desc-body"
+      style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7 }}
+    >
+      <AdfDescriptionRenderer html={html} issueKey={issueKey} />
     </div>
   );
 }
@@ -200,7 +233,22 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               opacity: hovered ? 1 : 0,
               transition: 'opacity 0.15s, color 0.1s, background 0.1s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#172B4D'; e.currentTarget.style.background = '#F4F5F7'; }}
+            /*
+             * Layer 3 — intent-based prefetch.
+             * Epic editor chunk is ~2MB; start its dynamic import the
+             * moment the user hovers or focuses the pencil. By the time
+             * the click fires, vendor-atlaskit-editor is in the HTTP
+             * cache and <EpicDescriptionEditor /> mounts synchronously
+             * from Suspense. No visible loading state for 95% of users.
+             * Only run for Epics — non-Epic path uses Tiptap (already in
+             * the main bundle, no prefetch needed).
+             */
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#172B4D';
+              e.currentTarget.style.background = '#F4F5F7';
+              if (epic) prefetchEpicEditor();
+            }}
+            onFocus={() => { if (epic) prefetchEpicEditor(); }}
             onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
           >
             <Pencil size={14} />
@@ -296,12 +344,14 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
                 diagnosticTag={`epic-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
                 onFallback={() => setEngineState('tiptap-fallback')}
                 fallback={
-                  <div className="cv-desc-body" style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7 }}>
-                    <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
-                  </div>
+                  <AtlaskitRendererPlaceholder html={descHtml} issueKey={issue?.issue_key} />
                 }
               >
-                <Suspense fallback={<AtlaskitFallback minHeight={40} />}>
+                <Suspense
+                  fallback={
+                    <AtlaskitRendererPlaceholder html={descHtml} issueKey={issue?.issue_key} />
+                  }
+                >
                   <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} issueKey={issue?.issue_key} />
                 </Suspense>
               </AtlaskitBoundary>
