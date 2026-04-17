@@ -35,6 +35,9 @@ import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/Ad
 import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
+import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
+
+const PILOT_ISSUE_KEY = 'BAU-4771';
 
 
 interface Props {
@@ -689,7 +692,21 @@ export function IssueContentView({
             );
           })()}
 
-          {/* ── Activity — Jira Cloud parity ── */}
+          {/* ── Activity ── */}
+          {issueKey === PILOT_ISSUE_KEY ? (
+            <div className="awSection" style={{ borderBottom: 'none' }}>
+              <div className="awSectionBody">
+                <ActivityPanelPilot
+                  issueKey={issueKey}
+                  comments={phComments}
+                  commentsLoading={false}
+                  historyItems={phHistory}
+                  historyLoading={false}
+                  createComment={{ mutateAsync: async ({ body }: { body: string; authorId: string }) => createPhComment.mutateAsync(body) }}
+                />
+              </div>
+            </div>
+          ) : (
           <div className="awSection" style={{ borderBottom: 'none' }}>
             {/* Activity heading */}
             <div className="awActivityHeader">
@@ -868,6 +885,7 @@ export function IssueContentView({
               )}
             </div>
           </div>
+          )}
         </div>
       </div>
 
