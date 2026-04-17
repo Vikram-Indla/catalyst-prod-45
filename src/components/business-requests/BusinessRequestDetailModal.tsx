@@ -790,10 +790,10 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Details</span>
                 </div>
 
-                {/* Priority — Jira-parity clickable */}
-                <div style={{ marginBottom: 14 }} ref={priorityDropdownRef}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
-                  <div style={{ position: 'relative' }}>
+                {/* Priority */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }} ref={priorityDropdownRef}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Priority</div>
+                  <div style={{ position: 'relative', flex: 1, minWidth: 0 }}>
                     <div
                       onClick={() => setShowPriorityDropdown(!showPriorityDropdown)}
                       style={{
@@ -839,77 +839,85 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 </div>
 
                 {/* Assignee */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Assignee</div>
-                  <UserSelect
-                    value={formData.assignee || null}
-                    onChange={(userId) => handleFieldChange('assignee', userId)}
-                    placeholder="Select assignee"
-                  />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Assignee</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <UserSelect
+                      value={formData.assignee || null}
+                      onChange={(userId) => handleFieldChange('assignee', userId)}
+                      placeholder="Select assignee"
+                    />
+                  </div>
                 </div>
 
                 {/* Reporter */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
-                  <UserSelect
-                    value={formData.requestor || null}
-                    onChange={(userId) => handleFieldChange('requestor', userId)}
-                    placeholder="Select reporter"
-                  />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Reporter</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <UserSelect
+                      value={formData.requestor || null}
+                      onChange={(userId) => handleFieldChange('requestor', userId)}
+                      placeholder="Select reporter"
+                    />
+                  </div>
                 </div>
 
                 {/* Business Owner */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Business Owner</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Business Owner</div>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                     {businessOwnerName ? (
                       <>
                         <div style={{
-                          width: 28, height: 28, borderRadius: '50%',
+                          width: 24, height: 24, borderRadius: '50%',
                           background: getAvatarColor(businessOwnerName),
                           color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 11, fontWeight: 700, flexShrink: 0,
+                          fontSize: 10, fontWeight: 700, flexShrink: 0,
                         }}>{getInitials(businessOwnerName)}</div>
                         <span style={{ fontSize: 14, color: '#172B4D' }}>{businessOwnerName}</span>
                       </>
-                    ) : <span style={{ color: '#42526E', fontSize: 14 }}>Auto-assigned from department</span>}
+                    ) : <span style={{ color: '#42526E', fontSize: 14 }}>Auto-assigned</span>}
                   </div>
                 </div>
 
                 {/* Department */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Department</div>
-                  <DepartmentSelect
-                    value={formData.department_id || null}
-                    onChange={handleDepartmentChange}
-                    placeholder="Select department"
-                    className="h-8 text-sm"
-                  />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Department</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <DepartmentSelect
+                      value={formData.department_id || null}
+                      onChange={handleDepartmentChange}
+                      placeholder="Select department"
+                      className="h-8 text-sm"
+                    />
+                  </div>
                 </div>
 
                 {/* Target Quarter */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Target Quarter</div>
-                  <Select value={formData.planned_quarter?.[0] || ''} onValueChange={(v) => handleFieldChange('planned_quarter', [v])}>
-                    <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select quarter" /></SelectTrigger>
-                    <SelectContent className="z-[9999] bg-popover">
-                      {QUARTER_OPTIONS.map(q => <SelectItem key={q} value={q}>{q.replace('-', ' ')}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Target Quarter</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <Select value={formData.planned_quarter?.[0] || ''} onValueChange={(v) => handleFieldChange('planned_quarter', [v])}>
+                      <SelectTrigger className="h-8 text-sm"><SelectValue placeholder="Select quarter" /></SelectTrigger>
+                      <SelectContent className="z-[9999] bg-popover">
+                        {QUARTER_OPTIONS.map(q => <SelectItem key={q} value={q}>{q.replace('-', ' ')}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Rank */}
                 {formData.rank && (
-                  <div style={{ marginBottom: 14 }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Rank</div>
-                    <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 500 }}>#{formData.rank}</span>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Rank</div>
+                    <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 500, paddingTop: 6 }}>#{formData.rank}</span>
                   </div>
                 )}
 
                 {/* EA Review */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>EA Review Required</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>EA Review</div>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, paddingTop: 4 }}>
                     <Switch
                       checked={formData.ea_review_required ?? false}
                       onCheckedChange={(checked) => handleFieldChange('ea_review_required', checked)}
@@ -926,17 +934,23 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   <span style={{ fontSize: 14, fontWeight: 700, color: '#172B4D' }}>Dates</span>
                 </div>
 
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Business Ask Date</div>
-                  <CatalystDatePicker value={formData.start_date} onChange={(d) => handleDateChange('start_date')(d ?? undefined)} placeholder="Select date" />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Business Ask</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <CatalystDatePicker value={formData.start_date} onChange={(d) => handleDateChange('start_date')(d ?? undefined)} placeholder="Select date" />
+                  </div>
                 </div>
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Kickoff Date</div>
-                  <CatalystDatePicker value={formData.impl_start_date} onChange={(d) => handleDateChange('impl_start_date')(d ?? undefined)} placeholder="Select date" />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Kickoff Date</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <CatalystDatePicker value={formData.impl_start_date} onChange={(d) => handleDateChange('impl_start_date')(d ?? undefined)} placeholder="Select date" />
+                  </div>
                 </div>
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Target Complete</div>
-                  <CatalystDatePicker value={formData.impl_target_end_date} onChange={(d) => handleDateChange('impl_target_end_date')(d ?? undefined)} placeholder="Select date" />
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Target Complete</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <CatalystDatePicker value={formData.impl_target_end_date} onChange={(d) => handleDateChange('impl_target_end_date')(d ?? undefined)} placeholder="Select date" />
+                  </div>
                 </div>
               </div>
 
