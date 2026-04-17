@@ -17,6 +17,7 @@ export type LinkedWorkItemTarget = {
   status_category: StatusCategory;
   assignee_account_id: string | null;
   assignee_display_name: string | null;
+  assignee_avatar_url?: string | null;
   priority: string | null;
   jira_updated_at: string | null;
   project_key?: string | null;
