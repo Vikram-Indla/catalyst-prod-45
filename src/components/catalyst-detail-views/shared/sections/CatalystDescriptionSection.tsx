@@ -187,7 +187,6 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             }}
           />
           {label}
-          {epic && <AtlaskitPilotBadge engine={engineState} />}
         </div>
         {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
         {!collapsed && !editing && issue && (
@@ -272,14 +271,26 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             Add a description...
           </div>
         ) : (
-          /* ── Read-only ADF render — click to edit ── */
+          /* ── Read-only ADF render — click anywhere to edit (Jira parity) ── */
           epic ? (
             <div
+              role="button"
+              tabIndex={0}
               style={{
                 paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
                 position: 'relative',
+                transition: 'background 0.15s',
               }}
-              onDoubleClick={() => { if (issue) setEditing(true); }}
+              onClick={() => { if (issue) setEditing(true); }}
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && issue) {
+                  e.preventDefault();
+                  setEditing(true);
+                }
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              title="Click to edit"
             >
               <AtlaskitBoundary
                 diagnosticTag={`epic-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
@@ -298,12 +309,24 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
           ) : (
             <div
               className="cv-desc-body"
+              role="button"
+              tabIndex={0}
               style={{
                 fontSize: 14, color: '#172B4D', lineHeight: 1.7,
                 minHeight: 40, paddingLeft: 20, cursor: 'text',
                 borderRadius: 4, position: 'relative',
+                transition: 'background 0.15s',
               }}
-              onDoubleClick={() => { if (issue) setEditing(true); }}
+              onClick={() => { if (issue) setEditing(true); }}
+              onKeyDown={(e) => {
+                if ((e.key === 'Enter' || e.key === ' ') && issue) {
+                  e.preventDefault();
+                  setEditing(true);
+                }
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              title="Click to edit"
             >
               <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
             </div>
