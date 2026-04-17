@@ -630,6 +630,66 @@
   50% { opacity: 0.5; }
 }
 
+/* ── InlineCreateWithAI (Chunk G) ─────────────── */
+.sp-create-wrap {
+  position: relative;
+  margin-top: 4px;
+}
+
+.sp-create-input-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.sp-create-panel {
+  position: absolute;
+  top: calc(100% - 18px);
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  border: 1px solid rgba(9, 30, 66, 0.24);
+  border-radius: 4px;
+  box-shadow: 0 6px 16px rgba(9, 30, 66, 0.15);
+  padding: 6px 4px;
+  z-index: 60;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.sp-create-section-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #6B778C;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sp-create-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: #172B4D;
+  text-align: left;
+  border-radius: 3px;
+  transition: background 0.1s;
+}
+.sp-create-option:hover,
+.sp-create-option.is-active {
+  background: #DEEBFF;
+  color: #0747A6;
+}
+
 /* ── Atlaskit DynamicTable wrapper (Chunk D) ──── */
 .sp-ak-table {
   margin-top: 4px;

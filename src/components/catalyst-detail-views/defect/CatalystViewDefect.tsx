@@ -51,6 +51,7 @@ export default function CatalystViewDefect({
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
           parentIssueType={issue.issue_type || 'Bug'}
+          parentSummary={issue.summary || ''}
         />
       )}
 
