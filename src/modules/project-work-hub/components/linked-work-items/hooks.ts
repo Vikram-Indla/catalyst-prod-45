@@ -69,6 +69,7 @@ export function useLinkedWorkItems(issueKey: string) {
             status_category: toStatusCategory(t.status_category),
             assignee_account_id: t.assignee_account_id,
             assignee_display_name: t.assignee_display_name,
+            assignee_avatar_url: null,
             priority: t.priority,
             jira_updated_at: t.jira_updated_at,
             project_key: t.project_key,
@@ -97,10 +98,36 @@ export function useLinkedWorkItems(issueKey: string) {
                 : 'todo',
             assignee_account_id: ct.assignee_id,
             assignee_display_name: null,
+            assignee_avatar_url: null,
             priority: ct.priority,
             jira_updated_at: null,
             project_id: ct.project_id,
           });
+        });
+      }
+
+      // Resolve assignee avatars from jira_identity_map (canonical pattern,
+      // matches SubtasksPanelV2 / IssueListPanel).
+      const assigneeAccountIds = Array.from(
+        new Set(
+          Array.from(targetMap.values())
+            .map((t) => t.assignee_account_id)
+            .filter((id): id is string => !!id),
+        ),
+      );
+      if (assigneeAccountIds.length > 0) {
+        const { data: avatarRows } = await supabase
+          .from('jira_identity_map')
+          .select('jira_account_id, avatar_url')
+          .in('jira_account_id', assigneeAccountIds);
+        const avatarMap = new Map<string, string | null>();
+        (avatarRows ?? []).forEach((r: any) => {
+          if (r.jira_account_id) avatarMap.set(r.jira_account_id, r.avatar_url);
+        });
+        targetMap.forEach((t) => {
+          if (t.assignee_account_id && avatarMap.has(t.assignee_account_id)) {
+            t.assignee_avatar_url = avatarMap.get(t.assignee_account_id) ?? null;
+          }
         });
       }
 
