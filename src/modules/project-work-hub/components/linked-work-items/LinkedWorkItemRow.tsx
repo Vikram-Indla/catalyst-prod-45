@@ -104,42 +104,16 @@ export function LinkedWorkItemRow({
 
       <span className="lwi-row__actions">
         {!readOnly && (
-          <DropdownMenu
-            placement="bottom-end"
-            trigger={({ triggerRef, ...triggerProps }) => (
-              <button
-                {...triggerProps}
-                ref={triggerRef as React.Ref<HTMLButtonElement>}
-                type="button"
-                className="lwi-row__action-btn"
-                aria-label={`Actions for ${target.issue_key}`}
-              >
-                <MoreHorizontal size={14} />
-              </button>
-            )}
+          <button
+            type="button"
+            className="lwi-row__action-btn"
+            onClick={() => onUnlink(link)}
+            disabled={isPending}
+            aria-label={`Unlink ${target.issue_key}`}
+            title="Unlink work item"
           >
-            <DropdownItemGroup>
-              <DropdownItem
-                elemBefore={<ExternalLink size={14} />}
-                onClick={() => onOpen(link)}
-              >
-                Open work item
-              </DropdownItem>
-              <DropdownItem
-                elemBefore={<Copy size={14} />}
-                onClick={() => onCopyKey(link)}
-              >
-                Copy key
-              </DropdownItem>
-              <DropdownItem
-                elemBefore={<Unlink size={14} />}
-                onClick={() => onUnlink(link)}
-                isDisabled={isPending}
-              >
-                Unlink
-              </DropdownItem>
-            </DropdownItemGroup>
-          </DropdownMenu>
+            <X size={16} />
+          </button>
         )}
       </span>
     </div>
