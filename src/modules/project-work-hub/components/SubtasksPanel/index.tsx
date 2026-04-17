@@ -672,15 +672,6 @@ export function SubtasksPanel({
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}
-          {ENABLE_SUBTASKS_V2 && (
-            <span
-              className="sp-pilot-pill"
-              title="Subtasks V2 pilot (ENABLE_SUBTASKS_V2) is ACTIVE on this surface"
-              aria-label="V2 pilot active"
-            >
-              V2 PILOT
-            </span>
-          )}
         </div>
         {expanded && (
           <div className="sp-header-right">
