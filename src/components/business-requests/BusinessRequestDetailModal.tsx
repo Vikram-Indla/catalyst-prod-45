@@ -364,8 +364,8 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
         <div
           data-brm-scope
           style={{
-            width: 1100, maxWidth: '95vw',
-            minHeight: 600, maxHeight: 'calc(100vh - 80px)',
+            width: 1024, maxWidth: '92vw',
+            height: 'min(720px, calc(100vh - 120px))',
             background: '#FFFFFF', borderRadius: 8,
             display: 'flex', flexDirection: 'column',
             boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
