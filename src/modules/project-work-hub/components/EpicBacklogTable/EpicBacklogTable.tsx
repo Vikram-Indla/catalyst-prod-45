@@ -1,32 +1,30 @@
 /**
- * EpicBacklogTable — V2 composition of DynamicTable for /project-hub/:key/epic-backlog.
+ * EpicBacklogTable — Jira "List" view (image-2) parity composition.
  *
- * Replaces the legacy div-grid in EpicBacklogPage. Wires directly to the
- * existing useEpicBacklog hook + BacklogEpic type + EPIC_STATUS_LOZENGE so
- * there is ZERO domain/data/permissions shift — only the presentation and
- * interaction substrate is upgraded.
+ * Columns (left → right):
+ *   ☐ select  ·  Type  ·  Key ↓  ·  Summary  ·  Status  ·  Comments  ·
+ *   Parent  ·  Assignee  ·  Due date  ·  Priority  ·  + column menu
  *
- * Parity coverage (vs. the user's Atlaskit spec):
- *   ✔ Sortable columns (aria-sort emitted per header)
- *   ✔ Column visibility menu ("+" header affordance, persisted per user)
- *   ✔ Column resize via drag-to-resize borders (persisted)
- *   ✔ Sticky header aligned under horizontal scroll
- *   ✔ Virtualized row body (auto when ≥60 rows)
- *   ✔ Row select with tri-state header (opt-in, off by default until bulk
- *     actions are wired — regression-safe)
- *   ✔ Grouped rows (by STATUS) with collapsible headers
- *   ✔ Tooltip on truncated summary
- *   ✔ Row hover affordances (Pencil/Trash, opacity-0 → 1 on hover)
- *   ✔ Click row → opens CatalystDetailRouter drawer (same wiring as V1)
- *   ✔ Empty / loading / error states
- *   ✔ Keyboard: Enter opens row; ↑/↓ via tab order; Space toggles group
+ * Every column is sortable (except select, Type-icon, Comments).
+ * Default sort: Key descending, matching the Jira reference UI.
  */
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
+import type { SortingState } from '@tanstack/react-table';
 import { DynamicTable, type DynamicTableColumn, type DynamicTableRowGroup } from '@/components/shared/dynamic-table';
 import { useTablePersistence } from '@/components/shared/dynamic-table/useTablePersistence';
 import type { BacklogEpic, BacklogGroup } from '../../types/backlog.types';
-import { AssigneeCell, DateCell, DueDateCell, KeyCell, StatusLozengeCell, SummaryCell } from './cells';
+import {
+  AssigneeCell,
+  CommentsCell,
+  DueDateCell,
+  KeyCell,
+  ParentCell,
+  PriorityCell,
+  StatusLozengeCell,
+  SummaryCell,
+  TypeCell,
+} from './cells';
 
 export interface EpicBacklogTableProps {
   groups: BacklogGroup<BacklogEpic>[];
@@ -42,14 +40,29 @@ export interface EpicBacklogTableProps {
 const TABLE_ID = 'project-hub/epic-backlog';
 
 const COLUMN_IDS = {
+  type: 'type',
   key: 'key',
   summary: 'summary',
   status: 'status',
+  comments: 'comments',
+  parent: 'parent',
   assignee: 'assignee',
-  created: 'created',
-  updated: 'updated',
   dueDate: 'dueDate',
+  priority: 'priority',
 } as const;
+
+// ─── Priority sort weight (highest → lowest) ────────────────────────────
+const PRIORITY_WEIGHT: Record<string, number> = {
+  highest: 0,
+  high: 1,
+  medium: 2,
+  low: 3,
+  lowest: 4,
+};
+
+function priorityWeight(p: string | null | undefined): number {
+  return PRIORITY_WEIGHT[(p ?? 'medium').toLowerCase()] ?? 2;
+}
 
 export function EpicBacklogTable({
   groups,
@@ -66,16 +79,30 @@ export function EpicBacklogTable({
     sizing: {},
   });
 
-  // ─── Column model ───────────────────────────────────────────────────
+  // Default sort: Key desc (matches Jira "List" view reference).
+  const [sorting, setSorting] = useState<SortingState>([{ id: COLUMN_IDS.key, desc: true }]);
+
   const columns = useMemo<DynamicTableColumn<BacklogEpic>[]>(
     () => [
+      {
+        id: COLUMN_IDS.type,
+        header: 'Type',
+        label: 'Type',
+        size: 54,
+        minSize: 48,
+        maxSize: 60,
+        align: 'center',
+        disableSort: true,
+        disableResize: true,
+        cell: ({ row }) => <TypeCell issueType={row.original.issue_type ?? 'Epic'} />,
+      },
       {
         id: COLUMN_IDS.key,
         accessorKey: 'epic_key',
         header: 'Key',
         label: 'Key',
-        size: 138,
-        minSize: 110,
+        size: 120,
+        minSize: 100,
         alwaysVisible: true,
         cell: ({ row }) => <KeyCell epic={row.original} />,
       },
@@ -84,7 +111,7 @@ export function EpicBacklogTable({
         accessorKey: 'name',
         header: 'Summary',
         label: 'Summary',
-        size: 420,
+        size: 360,
         minSize: 220,
         alwaysVisible: true,
         cell: ({ row }) => <SummaryCell epic={row.original} />,
@@ -97,6 +124,29 @@ export function EpicBacklogTable({
         size: 148,
         minSize: 110,
         cell: ({ row }) => <StatusLozengeCell status={row.original.status ?? null} />,
+      },
+      {
+        id: COLUMN_IDS.comments,
+        header: 'Comments',
+        label: 'Comments',
+        size: 132,
+        minSize: 110,
+        disableSort: true,
+        cell: ({ row }) => <CommentsCell count={row.original.comment_count ?? null} />,
+      },
+      {
+        id: COLUMN_IDS.parent,
+        accessorKey: 'parent_key',
+        header: 'Parent',
+        label: 'Parent',
+        size: 200,
+        minSize: 140,
+        cell: ({ row }) => (
+          <ParentCell
+            parentKey={row.original.parent_key ?? null}
+            parentSummary={row.original.parent_summary ?? null}
+          />
+        ),
       },
       {
         id: COLUMN_IDS.assignee,
@@ -112,40 +162,29 @@ export function EpicBacklogTable({
         },
       },
       {
-        id: COLUMN_IDS.created,
-        accessorKey: 'jira_created_at',
-        header: 'Created',
-        label: 'Created',
-        size: 108,
-        minSize: 88,
-        cell: ({ row }) => <DateCell value={row.original.jira_created_at} />,
-        sortingFn: 'datetime',
-      },
-      {
-        id: COLUMN_IDS.updated,
-        accessorKey: 'jira_updated_at',
-        header: 'Updated',
-        label: 'Updated',
-        size: 108,
-        minSize: 88,
-        cell: ({ row }) => <DateCell value={row.original.jira_updated_at} />,
-        sortingFn: 'datetime',
-      },
-      {
         id: COLUMN_IDS.dueDate,
         accessorKey: 'end_date',
         header: 'Due date',
         label: 'Due date',
-        size: 108,
-        minSize: 88,
+        size: 112,
+        minSize: 96,
         cell: ({ row }) => <DueDateCell value={row.original.end_date} status={row.original.status ?? null} />,
         sortingFn: 'datetime',
+      },
+      {
+        id: COLUMN_IDS.priority,
+        accessorKey: 'priority',
+        header: 'Priority',
+        label: 'Priority',
+        size: 120,
+        minSize: 96,
+        cell: ({ row }) => <PriorityCell priority={row.original.priority ?? null} />,
+        sortingFn: (a, b) => priorityWeight(a.original.priority) - priorityWeight(b.original.priority),
       },
     ],
     [avatarsByName]
   );
 
-  // ─── Map BacklogGroup → DynamicTableRowGroup ────────────────────────
   const dtGroups = useMemo<DynamicTableRowGroup<BacklogEpic>[]>(
     () =>
       groups.map((g) => ({
@@ -158,36 +197,33 @@ export function EpicBacklogTable({
 
   const getRowId = useCallback((epic: BacklogEpic) => epic.id, []);
 
-  const renderRowActions = useMemo(
-    () => {
-      if (!onEdit && !onDelete) return undefined;
-      return (epic: BacklogEpic) => (
-        <>
-          {onEdit && (
-            <button
-              type="button"
-              aria-label={`Edit ${epic.epic_key ?? 'epic'}`}
-              className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]"
-              onClick={() => onEdit(epic)}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-            </button>
-          )}
-          {onDelete && (
-            <button
-              type="button"
-              aria-label={`Delete ${epic.epic_key ?? 'epic'}`}
-              className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
-              onClick={() => onDelete(epic)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </>
-      );
-    },
-    [onEdit, onDelete]
-  );
+  const renderRowActions = useMemo(() => {
+    if (!onEdit && !onDelete) return undefined;
+    return (epic: BacklogEpic) => (
+      <>
+        {onEdit && (
+          <button
+            type="button"
+            aria-label={`Edit ${epic.epic_key ?? 'epic'}`}
+            className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]"
+            onClick={() => onEdit(epic)}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </button>
+        )}
+        {onDelete && (
+          <button
+            type="button"
+            aria-label={`Delete ${epic.epic_key ?? 'epic'}`}
+            className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
+            onClick={() => onDelete(epic)}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </>
+    );
+  }, [onEdit, onDelete]);
 
   return (
     <DynamicTable<BacklogEpic>
@@ -198,14 +234,17 @@ export function EpicBacklogTable({
       getRowId={getRowId}
       onRowClick={onRowClick}
       renderRowActions={renderRowActions}
+      selectable
       sortable
+      sorting={sorting}
+      onSortingChange={setSorting}
       resizable
       columnVisibility={visibility}
       onColumnVisibilityChange={onVisibilityChange}
       columnSizing={sizing}
       onColumnSizingChange={onSizingChange}
-      rowHeight={50}
-      minTableWidth={1200}
+      rowHeight={44}
+      minTableWidth={1460}
       stickyHeader
       isLoading={isLoading}
       error={error ?? null}

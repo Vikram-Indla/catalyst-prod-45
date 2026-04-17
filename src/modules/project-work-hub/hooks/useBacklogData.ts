@@ -19,7 +19,7 @@ export function useEpicBacklog(projectId: string) {
       if (!projectKey) return [];
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, jira_created_at, jira_updated_at')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at')
         .eq('project_key', projectKey)
         .eq('issue_type', 'Epic')
         .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
@@ -42,6 +42,11 @@ export function useEpicBacklog(projectId: string) {
         jira_created_at: row.jira_created_at,
         jira_updated_at: row.jira_updated_at,
         source: 'jira' as const,
+        priority: row.priority ?? null,
+        parent_key: row.parent_key ?? null,
+        parent_summary: row.parent_summary ?? null,
+        issue_type: row.issue_type ?? 'Epic',
+        comment_count: typeof row.comment_count === 'number' ? row.comment_count : null,
       })) as BacklogEpic[];
     },
     enabled: !!projectId && !!projectKey,

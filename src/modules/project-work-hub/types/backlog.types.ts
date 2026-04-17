@@ -29,6 +29,12 @@ export interface BacklogEpic {
   jira_created_at?: string | null;
   jira_updated_at?: string | null;
   source?: 'jira' | 'catalyst';
+  /** Jira-grade list-view additions (image-2 parity) */
+  priority?: string | null;
+  parent_key?: string | null;
+  parent_summary?: string | null;
+  issue_type?: string | null;
+  comment_count?: number | null;
 }
 
 export interface BacklogFeature {
