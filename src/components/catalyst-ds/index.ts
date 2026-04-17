@@ -42,3 +42,6 @@ export type { ActivityFeedProps } from './activity/ActivityFeed';
 
 export { ActivityPanel } from './activity/ActivityPanel';
 export type { ActivityPanelProps, ActivityTabKey } from './activity/ActivityPanel';
+
+export { renderJiraContent, normalizeJiraText, prettyUrl } from './utils/jiraContent';
+export type { JiraUserMap } from './utils/jiraContent';

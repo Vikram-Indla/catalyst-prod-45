@@ -9,6 +9,7 @@ import type {
   CdsUser,
   CdsQuickReply,
 } from '../types';
+import type { JiraUserMap } from '../utils/jiraContent';
 import { CommentThread } from '../comments/CommentThread';
 import { ActivityFeed } from './ActivityFeed';
 import { Comment } from '../comments/Comment';
@@ -39,6 +40,9 @@ export interface ActivityPanelProps {
   defaultTab?: ActivityTabKey;
   defaultSortOrder?: CdsSortOrder;
 
+  /** Maps Jira accountId -> display name for resolving [~accountid:xxx] mentions. */
+  jiraUserMap?: JiraUserMap;
+
   className?: string;
 }
 
@@ -59,6 +63,7 @@ function ActivityPanel({
   quickReplies,
   defaultTab = 'all',
   defaultSortOrder = 'newest',
+  jiraUserMap,
   className,
 }: ActivityPanelProps) {
   const [activeTab, setActiveTab] = useState<ActivityTabKey>(defaultTab);
@@ -180,6 +185,7 @@ function ActivityPanel({
           hasMore={hasMoreHistory}
           onLoadMore={onLoadMoreHistory}
           isLoadingMore={isLoadingMoreHistory}
+          jiraUserMap={jiraUserMap}
         />
       )}
 
@@ -287,7 +293,7 @@ function ActivityPanel({
                   );
                 }
 
-                return <ActivityItem key={item.id} item={item} />;
+                return <ActivityItem key={item.id} item={item} jiraUserMap={jiraUserMap} />;
               })
             )}
           </div>

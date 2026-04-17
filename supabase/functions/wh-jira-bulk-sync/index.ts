@@ -393,6 +393,46 @@ Deno.serve(async (req) => {
         await supabase.from('jira_sync_changelog').insert(chunk)
       }
       console.log(`[sync] Upserted ${changelogRows.length} changelog entries`)
+
+      // Mirror to ph_activity_log (Catalyst-native) — single source of truth for Activity panel
+      const { data: phIssues } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key')
+        .in('issue_key', syncedKeys)
+      const issueKeyToId = new Map<string, string>((phIssues || []).map((r: any) => [r.issue_key, r.id]))
+
+      const { data: userMappings } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, catalyst_profile_id')
+        .eq('is_mapped', true)
+        .not('catalyst_profile_id', 'is', null)
+      const userMap = new Map<string, string>((userMappings || []).map((m: any) => [m.jira_account_id, m.catalyst_profile_id]))
+
+      const phActivityRows = changelogRows
+        .filter(r => issueKeyToId.has(r.issue_key))
+        .map(r => ({
+          work_item_id: issueKeyToId.get(r.issue_key),
+          user_id: r.author_account_id ? (userMap.get(r.author_account_id) || null) : null,
+          action: 'update',
+          field_name: r.field_name,
+          field_type: r.field_type,
+          old_value: r.from_string || r.from_value,
+          new_value: r.to_string || r.to_value,
+          created_at: r.jira_created_at,
+          source: 'jira',
+          jira_history_id: r.jira_history_id,
+          jira_author_account_id: r.author_account_id,
+          jira_author_display_name: r.author_display_name,
+          jira_author_avatar_url: r.author_avatar_url,
+          jira_created_at: r.jira_created_at,
+        }))
+      for (let i = 0; i < phActivityRows.length; i += 500) {
+        const chunk = phActivityRows.slice(i, i + 500)
+        const { error: phErr } = await supabase
+          .from('ph_activity_log')
+          .upsert(chunk, { onConflict: 'jira_history_id,field_name', ignoreDuplicates: false })
+        if (phErr) console.error(`[sync] ph_activity_log upsert error: ${phErr.message}`)
+      }
     }
 
     // 7d. Extract and upsert comments → jira_sync_comments
@@ -423,6 +463,43 @@ Deno.serve(async (req) => {
         await supabase.from('jira_sync_comments').insert(chunk)
       }
       console.log(`[sync] Upserted ${commentRows.length} comments`)
+
+      // Mirror to ph_comments (Catalyst-native) — single source of truth for Activity panel
+      const { data: phIssues } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key')
+        .in('issue_key', syncedKeys)
+      const issueKeyToId = new Map<string, string>((phIssues || []).map((r: any) => [r.issue_key, r.id]))
+
+      const { data: userMappings } = await supabase
+        .from('ph_user_mapping')
+        .select('jira_account_id, catalyst_profile_id')
+        .eq('is_mapped', true)
+        .not('catalyst_profile_id', 'is', null)
+      const userMap = new Map<string, string>((userMappings || []).map((m: any) => [m.jira_account_id, m.catalyst_profile_id]))
+
+      const phCommentRows = commentRows
+        .filter(r => issueKeyToId.has(r.issue_key))
+        .map(r => ({
+          work_item_id: issueKeyToId.get(r.issue_key),
+          author_id: r.author_account_id ? (userMap.get(r.author_account_id) || null) : null,
+          body: r.body,
+          created_at: r.jira_created_at,
+          updated_at: r.jira_updated_at || r.jira_created_at,
+          source: 'jira',
+          jira_comment_id: r.jira_comment_id,
+          jira_author_account_id: r.author_account_id,
+          jira_author_display_name: r.author_display_name,
+          jira_author_avatar_url: r.author_avatar_url,
+          jira_created_at: r.jira_created_at,
+        }))
+      for (let i = 0; i < phCommentRows.length; i += 500) {
+        const chunk = phCommentRows.slice(i, i + 500)
+        const { error: phErr } = await supabase
+          .from('ph_comments')
+          .upsert(chunk, { onConflict: 'jira_comment_id', ignoreDuplicates: false })
+        if (phErr) console.error(`[sync] ph_comments upsert error: ${phErr.message}`)
+      }
     }
 
     // 8. HARD DELETE — Remove issues not in the fetched set for synced projects

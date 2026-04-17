@@ -92,6 +92,14 @@ export default defineConfig(({ mode, command }) => {
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
       "react-is": path.resolve(__dirname, "./node_modules/react-is"),
+      // Browser polyfill for Node's `events` — @atlaskit/editor-plugin-block-controls
+      // imports { EventEmitter } from 'events'; Vite treats 'events' as a Node built-in
+      // by default, so we force it to the npm `events` package.
+      "events": path.resolve(__dirname, "./node_modules/events"),
+      // @atlaskit nested deps (e.g. @atlaskit/renderer/node_modules/@atlaskit/task-decision)
+      // import bare 'react-intl'. We redirect to @atlaskit's bundled alias
+      // `react-intl-next` (which is itself a pinned alias of react-intl@5.18+).
+      "react-intl": path.resolve(__dirname, "./node_modules/react-intl-next"),
     },
     dedupe: ['react', 'react-dom', 'react-is'],
   },

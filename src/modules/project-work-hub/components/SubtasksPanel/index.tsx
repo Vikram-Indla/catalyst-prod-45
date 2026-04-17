@@ -920,9 +920,9 @@ export function SubtasksPanel({
             <InlineCreateWithAI
               allowedTypes={allowedTypes}
               draftType={draftType}
-              onDraftTypeChange={setDraftType}
+              onDraftTypeChange={(t) => setDraftType(t as typeof draftType)}
               typeSelectorSlot={
-                <TypeSelector value={draftType} onChange={setDraftType} allowed={allowedTypes} />
+                <TypeSelector value={draftType} onChange={(v) => setDraftType(v as typeof draftType)} allowed={allowedTypes} />
               }
               parentSummary={parentSummary ?? ''}
               parentType={parentIssueType ?? ''}

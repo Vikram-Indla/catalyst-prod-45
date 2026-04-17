@@ -9,7 +9,7 @@
  * with the canonical CatalystRichTextEditor (TipTap + image management).
  * Falls back to plain text. Shows placeholder when empty.
  */
-import React, { useState, useCallback } from 'react';
+import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -17,6 +17,59 @@ import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { CatalystRichTextEditor } from '@/components/shared/rich-text';
 import type { PhIssue } from '../types';
+
+/* Atlaskit pilot — Epic only.
+   Lazy-loaded so the @atlaskit/editor-core + renderer bundle (~1MB) is only
+   fetched when an Epic description is actually viewed/edited. All other
+   issue types continue to use the existing TipTap-based path with zero
+   bundle impact.
+   Wrapped in AtlaskitBoundary so a chunk-load failure or runtime error
+   surfaces in the console and the existing TipTap path is used as fallback. */
+const EpicDescriptionEditor = lazy(() =>
+  import('@/components/shared/rich-text/atlaskit').then((m) => ({ default: m.EpicDescriptionEditor }))
+);
+const EpicDescriptionRenderer = lazy(() =>
+  import('@/components/shared/rich-text/atlaskit').then((m) => ({ default: m.EpicDescriptionRenderer }))
+);
+import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
+
+function isEpic(issue: PhIssue | null): boolean {
+  const raw = (issue?.issue_type ?? '').toString().trim().toLowerCase();
+  return raw === 'epic';
+}
+
+function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
+  return (
+    <div style={{ minHeight, paddingLeft: 20, color: '#97A0AF', fontSize: 13 }}>
+      Loading editor…
+    </div>
+  );
+}
+
+/* Build-ID marker so we can distinguish which deployed commit is running
+   by looking at the console without checking chunk hashes. Update when
+   the pilot surface changes materially. */
+const PILOT_BUILD_ID = 'atlaskit-editor-core-v217 [e5f0102]';
+
+/* Visible marker — emitted next to the Description heading when the
+   Epic-only pilot molecule is active. Badge text reflects which engine
+   actually ran at render time (atlaskit vs tiptap fallback). */
+function AtlaskitPilotBadge({ engine }: { engine: 'atlaskit' | 'tiptap-fallback' }) {
+  return (
+    <span
+      title={`Epic description pilot — engine=${engine}  build=${PILOT_BUILD_ID}`}
+      style={{
+        marginLeft: 6, padding: '1px 6px', borderRadius: 3,
+        fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
+        background: engine === 'atlaskit' ? '#E3FCEF' : '#FFF7E6',
+        color: engine === 'atlaskit' ? '#006644' : '#974F0C',
+        textTransform: 'uppercase',
+      }}
+    >
+      {engine === 'atlaskit' ? 'ATLASKIT' : 'TIPTAP FALLBACK'}
+    </span>
+  );
+}
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 const STYLE_ID = 'cv-desc-styles';
@@ -63,6 +116,19 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   const [editing, setEditing] = useState(false);
   const [hovered, setHovered] = useState(false);
   const queryClient = useQueryClient();
+  const epic = isEpic(issue);
+  const [engineState, setEngineState] = useState<'atlaskit' | 'tiptap-fallback'>('atlaskit');
+
+  /* Per-issue diagnostic at info level (visible at default console filter).
+     Prints the build ID so we can confirm which deployed bundle is live
+     without inspecting chunk hashes. */
+  React.useEffect(() => {
+    if (!issue) return;
+    // eslint-disable-next-line no-console
+    console.info(
+      `[CatalystDescriptionSection] build=${PILOT_BUILD_ID} issue_key=${issue.issue_key ?? 'n/a'} issue_type=${JSON.stringify(issue.issue_type)} → ${epic ? 'ATLASKIT pilot' : 'TipTap (legacy)'}`,
+    );
+  }, [issue, epic]);
 
   // Raw ADF content string for the editor (prefer description_adf_raw → description_adf → text)
   const rawAdfContent = issue?.description_adf
@@ -121,6 +187,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             }}
           />
           {label}
+          {epic && <AtlaskitPilotBadge engine={engineState} />}
         </div>
         {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
         {!collapsed && !editing && issue && (
@@ -145,19 +212,50 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
       {/* Collapsible body */}
       {!collapsed && (
         editing && issue ? (
-          /* ── Edit mode: CatalystRichTextEditor ── */
-          <div style={{ paddingLeft: 20 }}>
-            <CatalystRichTextEditor
-              content={rawAdfContent}
-              onSave={handleSave}
-              onCancel={handleCancel}
-              placeholder="Add a description..."
-              minHeight={200}
-              mode="save"
-              workItemId={issue.id}
-              storagePath="description-images"
-            />
-          </div>
+          /* ── Edit mode ── */
+          epic ? (
+            <div style={{ paddingLeft: 20 }}>
+              <AtlaskitBoundary
+                diagnosticTag={`epic-edit:${issue.issue_key ?? issue.id}`}
+                onFallback={() => setEngineState('tiptap-fallback')}
+                fallback={
+                  <CatalystRichTextEditor
+                    content={rawAdfContent}
+                    onSave={handleSave}
+                    onCancel={handleCancel}
+                    placeholder="Add a description..."
+                    minHeight={200}
+                    mode="save"
+                    workItemId={issue.id}
+                    storagePath="description-images"
+                  />
+                }
+              >
+                <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
+                  <EpicDescriptionEditor
+                    initialContent={issue.description_adf ?? issue.description_text ?? null}
+                    onSave={handleSave}
+                    onCancel={handleCancel}
+                    workItemId={issue.id}
+                    placeholder="Add a description..."
+                  />
+                </Suspense>
+              </AtlaskitBoundary>
+            </div>
+          ) : (
+            <div style={{ paddingLeft: 20 }}>
+              <CatalystRichTextEditor
+                content={rawAdfContent}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                placeholder="Add a description..."
+                minHeight={200}
+                mode="save"
+                workItemId={issue.id}
+                storagePath="description-images"
+              />
+            </div>
+          )
         ) : isEmpty ? (
           /* ── Empty placeholder — click to edit ── */
           <div
@@ -175,17 +273,41 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
           </div>
         ) : (
           /* ── Read-only ADF render — click to edit ── */
-          <div
-            className="cv-desc-body"
-            style={{
-              fontSize: 14, color: '#172B4D', lineHeight: 1.7,
-              minHeight: 40, paddingLeft: 20, cursor: 'text',
-              borderRadius: 4, position: 'relative',
-            }}
-            onDoubleClick={() => { if (issue) setEditing(true); }}
-          >
-            <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
-          </div>
+          epic ? (
+            <div
+              style={{
+                paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
+                position: 'relative',
+              }}
+              onDoubleClick={() => { if (issue) setEditing(true); }}
+            >
+              <AtlaskitBoundary
+                diagnosticTag={`epic-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
+                onFallback={() => setEngineState('tiptap-fallback')}
+                fallback={
+                  <div className="cv-desc-body" style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7 }}>
+                    <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
+                  </div>
+                }
+              >
+                <Suspense fallback={<AtlaskitFallback minHeight={40} />}>
+                  <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} issueKey={issue?.issue_key} />
+                </Suspense>
+              </AtlaskitBoundary>
+            </div>
+          ) : (
+            <div
+              className="cv-desc-body"
+              style={{
+                fontSize: 14, color: '#172B4D', lineHeight: 1.7,
+                minHeight: 40, paddingLeft: 20, cursor: 'text',
+                borderRadius: 4, position: 'relative',
+              }}
+              onDoubleClick={() => { if (issue) setEditing(true); }}
+            >
+              <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
+            </div>
+          )
         )
       )}
     </div>
