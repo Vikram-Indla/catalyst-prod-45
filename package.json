@@ -117,6 +117,7 @@
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.61.1",
     "react-hot-toast": "^2.6.0",
+    "react-intl-next": "^0.0.1-security",
     "react-is": "18.3.1",
     "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.9",
