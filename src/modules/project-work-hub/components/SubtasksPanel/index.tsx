@@ -43,6 +43,7 @@ import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutation
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
 import { SortableRow } from './SortableRow';
+import { useAtlaskitThemeSync } from './atlaskitTheme';
 import {
   DndContext, PointerSensor, useSensor, useSensors, closestCenter,
   type DragEndEvent,
@@ -231,6 +232,7 @@ function InlineSummaryEditor({
 export function SubtasksPanel({
   storyKey, storyId, projectKey, onSubtaskClick, title = 'Subtasks',
 }: SubtasksPanelProps) {
+  useAtlaskitThemeSync();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [expanded, setExpanded] = useState(true);
