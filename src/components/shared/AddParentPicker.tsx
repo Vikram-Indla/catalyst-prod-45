@@ -62,31 +62,25 @@ export function AddParentPicker({
   const Noun = isBR ? 'Business request' : 'Epic';
   const iconType = parentIssueType || (isBR ? 'business request' : 'epic');
 
+  // Business Requests live in ph_issues with issue_type = 'Business Request'
+  // (e.g. MDT-740, MDT-693). Scope to the same project as the current issue.
+  const BR_TYPES = ['Business Request', 'business request'];
+  const EPIC_TYPES = ['Epic', 'epic', 'Feature', 'feature'];
+
   // Recent candidates (shown on first open)
   const { data: recentCandidates = [] } = useQuery({
     queryKey: ['ph-recent-parent-canonical', parentSource, projectKey],
-    enabled: isBR ? true : !!projectKey,
+    enabled: !!projectKey,
     queryFn: async (): Promise<CandidateRow[]> => {
-      if (isBR) {
-        const { data } = await supabase.from('business_requests')
-          .select('id, request_key, title, process_step')
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(5);
-        return (data || []).map((r: any) => ({
-          id: r.id,
-          issue_key: r.request_key || '',
-          summary: r.title || '',
-          issue_type: 'Business Request',
-          status_category: r.process_step,
-        }));
-      }
-      const { data } = await supabase.from('ph_issues')
+      const types = isBR ? BR_TYPES : EPIC_TYPES;
+      let q = supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status_category')
         .eq('project_key', projectKey)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .neq('status_category', 'done')
-        .order('jira_updated_at', { ascending: false })
+        .in('issue_type', types)
+        .is('deleted_at', null);
+      if (!isBR) q = q.neq('status_category', 'done');
+      const { data } = await q
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
         .limit(5);
       return (data || []) as CandidateRow[];
     },
@@ -96,47 +90,26 @@ export function AddParentPicker({
   // All candidates (loaded when "View all" panel is opened)
   const { data: allCandidates = [] } = useQuery({
     queryKey: ['ph-all-parent-canonical', parentSource, projectKey],
-    enabled: showAllPanel && (isBR ? true : !!projectKey),
+    enabled: showAllPanel && !!projectKey,
     queryFn: async (): Promise<CandidateRow[]> => {
-      if (isBR) {
-        const { data } = await supabase.from('business_requests')
-          .select('id, request_key, title, process_step')
-          .is('deleted_at', null)
-          .order('updated_at', { ascending: false })
-          .limit(200);
-        return (data || []).map((r: any) => ({
-          id: r.id,
-          issue_key: r.request_key || '',
-          summary: r.title || '',
-          issue_type: 'Business Request',
-          status_category: r.process_step,
-        }));
-      }
+      const types = isBR ? BR_TYPES : EPIC_TYPES;
       const { data } = await supabase.from('ph_issues')
         .select('id, issue_key, summary, issue_type, status_category')
         .eq('project_key', projectKey)
-        .in('issue_type', ['Epic', 'epic', 'Feature', 'feature'])
-        .order('jira_updated_at', { ascending: false })
-        .limit(100);
+        .in('issue_type', types)
+        .is('deleted_at', null)
+        .order('jira_updated_at', { ascending: false, nullsFirst: false })
+        .limit(200);
       return (data || []) as CandidateRow[];
     },
     staleTime: 60000,
   });
 
-  // Resolve parent summary for field variant
+  // Resolve parent summary for field variant — always from ph_issues now
   const { data: parentSummary } = useQuery({
     queryKey: ['ph-parent-summary', parentSource, parentKey],
     enabled: !!parentKey && variant === 'field',
     queryFn: async () => {
-      if (isBR) {
-        const { data } = await supabase.from('business_requests')
-          .select('request_key, title')
-          .eq('request_key', parentKey!)
-          .is('deleted_at', null)
-          .maybeSingle();
-        if (!data) return null;
-        return { issue_key: data.request_key, summary: data.title, issue_type: 'Business Request' };
-      }
       const { data } = await supabase.from('ph_issues')
         .select('issue_key, summary, issue_type')
         .eq('issue_key', parentKey!)
