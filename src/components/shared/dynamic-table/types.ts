@@ -38,7 +38,7 @@ export type DynamicTableColumn<TData> = ColumnDef<TData, unknown> & {
   disableSort?: boolean;
   /** Align cell content. */
   align?: 'left' | 'center' | 'right';
-}
+};
 
 export interface DynamicTableRowGroup<TData> {
   /** Stable group key used for collapse/expand persistence. */
