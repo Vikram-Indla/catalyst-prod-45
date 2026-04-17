@@ -13,6 +13,8 @@ import { lazy, Suspense, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
