@@ -63,15 +63,8 @@ export function LinkedWorkItemsBody({
         </div>
       )}
 
-      {!isLoading && !isError && !hasGroups && (
-        <div className="lwi-empty">
-          <div className="lwi-empty__heading">No linked work items</div>
-          <div className="lwi-empty__sub">
-            Link related, blocking, or duplicate work items to keep dependencies visible.
-          </div>
-          {emptyCta}
-        </div>
-      )}
+      {/* Empty state intentionally renders nothing — the header `+` and the
+          AI "Link similar work items" suggestion row above are the entry points. */}
 
       {!isLoading && !isError && hasGroups && (
         <div className="lwi-groups">

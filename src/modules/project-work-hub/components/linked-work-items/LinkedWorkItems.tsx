@@ -231,18 +231,6 @@ export function LinkedWorkItems({
             onCopyKey={handleCopyKey}
             onUnlink={handleUnlink}
             pendingUnlinkIds={pendingUnlinkIds}
-            emptyCta={
-              !showToolbar ? (
-                <div className="lwi-empty__cta">
-                  <Button
-                    appearance="primary"
-                    onClick={() => setShowToolbar(true)}
-                  >
-                    Link work item
-                  </Button>
-                </div>
-              ) : null
-            }
             footer={
               showToolbar ? (
                 <LinkToolbar
