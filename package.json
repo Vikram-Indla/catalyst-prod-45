@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "sync-deps": "node scripts/sync-deps.js",
+    "dev": "node scripts/sync-deps.js && vite",
     "verify:sw-chunks": "node scripts/verify-sw-chunks.js",
-    "build": "npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build",
-    "build:dev": "npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode development",
+    "build": "node scripts/sync-deps.js && npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "build:dev": "node scripts/sync-deps.js && npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
   },

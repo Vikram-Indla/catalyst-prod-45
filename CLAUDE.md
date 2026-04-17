@@ -37,6 +37,17 @@ Atlassian Design System / Atlaskit:
   surfaces that have migrated. Legacy shadcn/Tailwind surfaces remain in
   place until their scheduled migration — do not mix the two systems on the
   same surface in a single change.
+
+  Adoption protocol (DO THIS every time you add a new @atlaskit/* package):
+    1. Add "@atlaskit/<pkg>": "^<version>" to package.json dependencies.
+    2. Add '@atlaskit/<pkg>' to vite.config.ts optimizeDeps.include so vite
+       pre-bundles it on first dev start (otherwise first render stalls on
+       cold optimize and can 404 in-flight chunks — the modal loading class
+       of bug we fought in April 2026).
+    3. Import canonically in the target surface.
+    4. No manual `bun install` needed — `npm run dev` / `bun run dev`
+       auto-sync via scripts/sync-deps.js (runs <10ms when lockfile matches
+       node_modules, installs otherwise).
 ```
 
 **Calendar:** Sunday = first day of work week (Saudi convention — enforce in ALL date components)  
