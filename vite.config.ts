@@ -107,11 +107,12 @@ export default defineConfig(({ mode, command }) => {
       // @atlaskit nested deps (e.g. @atlaskit/renderer/node_modules/@atlaskit/task-decision)
       // import bare 'react-intl'. We redirect to @atlaskit's bundled alias
       // `react-intl-next` (which is itself a pinned alias of react-intl@5.18+).
-      "react-intl": path.resolve(__dirname, "./node_modules/react-intl-next/index.js"),
+      "react-intl": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/react-intl-next/index.js"),
       // Our own code imports `react-intl-next` directly (Atlaskit convention).
-      // Pin it to the transitive copy shipped with @atlaskit/* so we don't need
-      // it in package.json (the published react-intl-next has broken main/module).
-      "react-intl-next": path.resolve(__dirname, "./node_modules/react-intl-next/index.js"),
+      // Pin it to the nested copy shipped with @atlaskit/renderer — guaranteed to
+      // exist since we depend on @atlaskit/renderer. The hoisted top-level copy
+      // is not reliable across install environments (only present when hoisted).
+      "react-intl-next": path.resolve(__dirname, "./node_modules/@atlaskit/renderer/node_modules/react-intl-next/index.js"),
       // ─────────────────────────────────────────────────────────────────────
       // CRITICAL: Force a SINGLE ProseMirror instance shared by Atlaskit + Tiptap.
       //
