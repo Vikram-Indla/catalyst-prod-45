@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "NODE_OPTIONS=--max-old-space-size=8192 vite build",
-    "build:dev": "NODE_OPTIONS=--max-old-space-size=8192 vite build --mode development",
+    "verify:sw-chunks": "node scripts/verify-sw-chunks.js",
+    "build": "npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "build:dev": "npm run verify:sw-chunks && NODE_OPTIONS=--max-old-space-size=8192 vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview"
   },
