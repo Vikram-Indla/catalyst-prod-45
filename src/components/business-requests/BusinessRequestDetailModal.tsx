@@ -23,6 +23,8 @@ import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story
 import { RichTextCommentEditor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor';
 import { StatusLozenge } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { UserSelect } from './UserSelect';
+import { BRAssigneePicker } from './BRAssigneePicker';
+import { BRProjectsPicker } from './BRProjectsPicker';
 import { DepartmentSelect } from './DepartmentSelect';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -838,16 +840,20 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   </div>
                 </div>
 
-                {/* Assignee */}
+                {/* Projects (linked ProjectHub projects) */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Projects</div>
+                  <BRProjectsPicker businessRequestId={request.id} />
+                </div>
+
+                {/* Assignee — canonical Story-style picker */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Assignee</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <UserSelect
-                      value={formData.assignee || null}
-                      onChange={(userId) => handleFieldChange('assignee', userId)}
-                      placeholder="Select assignee"
-                    />
-                  </div>
+                  <BRAssigneePicker
+                    value={formData.assignee || null}
+                    onChange={(v) => handleFieldChange('assignee', v)}
+                    placeholder="Unassigned"
+                  />
                 </div>
 
                 {/* Reporter */}
