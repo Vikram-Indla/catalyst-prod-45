@@ -81,10 +81,30 @@ function hasCmd(cmd) {
   return r.status === 0;
 }
 
-function run(cmd, args) {
-  console.log(`[sync-deps] ${cmd} ${args.join(' ')}`);
-  const r = spawnSync(cmd, args, { stdio: 'inherit', cwd: root });
-  return r.status === 0;
+/**
+ * Run a package manager quietly. We don't want npm's wall of deprecation
+ * warnings flooding the terminal on every dev start, but we DO want real
+ * errors surfaced. So:
+ *  - stdout is captured and discarded on success
+ *  - stderr is captured; on failure we print the tail (last ~25 lines)
+ *  - we print our own one-line status before + after
+ */
+function runQuiet(cmd, args, label) {
+  const start = Date.now();
+  process.stderr.write(`[sync-deps] ${label}… `);
+  const r = spawnSync(cmd, args, { cwd: root, encoding: 'utf8' });
+  const secs = ((Date.now() - start) / 1000).toFixed(1);
+  if (r.status === 0) {
+    process.stderr.write(`done in ${secs}s\n`);
+    return true;
+  }
+  process.stderr.write(`FAILED after ${secs}s\n`);
+  const tail = (r.stderr || r.stdout || '').split('\n').filter(Boolean).slice(-25);
+  if (tail.length) {
+    process.stderr.write('[sync-deps] last output:\n');
+    for (const line of tail) process.stderr.write(`  ${line}\n`);
+  }
+  return false;
 }
 
 function install() {
@@ -93,17 +113,22 @@ function install() {
   const bun = hasBunLock && hasCmd('bun');
 
   if (bun) {
-    if (run('bun', ['install'])) return true;
-    console.warn('[sync-deps] bun install failed; falling back to npm.');
+    if (runQuiet('bun', ['install', '--silent'], 'bun install')) return true;
+    process.stderr.write('[sync-deps] bun install failed; falling back to npm…\n');
   }
 
   // npm with explicit public registry — sidesteps sandbox proxies that 403
-  // on some packages and pins behavior across dev environments.
+  // on some packages and pins behavior across dev environments. `--loglevel=error`
+  // drops the uuid/rimraf/etc deprecation chorus; real errors still surface.
   if (hasCmd('npm')) {
-    if (run('npm', ['install', '--registry=https://registry.npmjs.org/', '--no-audit', '--no-fund'])) return true;
+    if (runQuiet(
+      'npm',
+      ['install', '--registry=https://registry.npmjs.org/', '--no-audit', '--no-fund', '--loglevel=error'],
+      'npm install',
+    )) return true;
   }
 
-  console.warn('[sync-deps] Could not install dependencies automatically. Run `bun install` or `npm install` manually.');
+  process.stderr.write('[sync-deps] Could not install dependencies automatically. Run `bun install` or `npm install` manually.\n');
   return false;
 }
 
