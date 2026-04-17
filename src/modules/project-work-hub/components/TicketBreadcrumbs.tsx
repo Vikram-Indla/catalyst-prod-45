@@ -181,11 +181,10 @@ export function TicketBreadcrumbs({
       } as never}
     >
       <Breadcrumbs label="Breadcrumbs">
-        {/* Crumb 1 — Project */}
+        {/* Crumb 1 — Project (no icon, text only per spec) */}
         <BreadcrumbsItem
           href={`/project-hub/${projectKey}/list`}
           text={projectName || projectKey}
-          iconBefore={<ProjectAvatar projectKey={projectKey} projectName={projectName} />}
           component={RouterBreadcrumbLink}
         />
 
