@@ -29,8 +29,6 @@ import {
 } from 'lucide-react';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { WorkCell } from './cells/WorkCell';
 import { PriorityCell } from './cells/PriorityCell';
 import { AssigneeCell } from './cells/AssigneeCell';
 import { StatusCell } from './cells/StatusCell';
@@ -42,18 +40,12 @@ import { BulkEditBar } from './BulkEditBar';
 import { useSubtaskMutations, type SubtaskRow } from './hooks/useSubtaskMutations';
 import { sortRows, cycleSort, type SortField, type SortState } from './sort';
 import { computeNewPosition, rebalancePositions } from './reorder';
-import { SortableRow } from './SortableRow';
+import { IssueTypeCell } from './cells/IssueTypeCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
-import {
-  DndContext, PointerSensor, useSensor, useSensors, closestCenter,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext, verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import DynamicTable from '@atlaskit/dynamic-table';
 import './SubtasksPanel.css';
 
-type VisibleColumn = 'priority' | 'assignee' | 'status' | 'fixVersions';
+type VisibleColumn = 'type' | 'key' | 'summary' | 'priority' | 'assignee' | 'status' | 'fixVersions';
 
 interface SubtasksPanelProps {
   storyKey: string;
@@ -109,10 +101,13 @@ function TypeSelector({ value, onChange }: { value: string; onChange: (v: string
 
 // ─── Column picker ──────────────────────────────────────
 const ALL_COLUMNS: { key: VisibleColumn; label: string }[] = [
-  { key: 'priority', label: 'Priority' },
+  { key: 'type', label: 'Issue Type' },
+  { key: 'key', label: 'Key' },
+  { key: 'summary', label: 'Summary' },
   { key: 'assignee', label: 'Assignee' },
   { key: 'status', label: 'Status' },
   { key: 'fixVersions', label: 'Fix versions' },
+  { key: 'priority', label: 'Priority' },
 ];
 
 function ColumnPicker({ columns, onChange }: {
@@ -264,18 +259,19 @@ export function SubtasksPanel({
     try { window.localStorage.setItem(sortStorageKey, JSON.stringify(sort)); } catch { /* quota */ }
   }, [sort, sortStorageKey]);
 
+  // Defaults match Jira's column picker screenshot (7 columns on by default).
   const [columns, setColumns] = useState<Record<VisibleColumn, boolean>>({
-    priority: true,
+    type: true,
+    key: true,
+    summary: true,
     assignee: true,
     status: true,
-    fixVersions: false,
+    fixVersions: true,
+    priority: true,
   });
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
   const tableContainerRef = useRef<HTMLDivElement>(null);
   const createRef = useRef<HTMLInputElement>(null);
-
-  // DnD sensors — require 6px drag before engaging so clicks still work.
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   const { update, remove, bulkUpdate, bulkRemove, reorderPositions } = useSubtaskMutations(storyKey);
 
@@ -478,30 +474,31 @@ export function SubtasksPanel({
     window.location.href = `/project-hub/${pk}/hierarchy/allwork?parent=${encodeURIComponent(storyKey)}`;
   };
 
-  // ─── DnD reorder ────────────────────────────────
+  // ─── Rank reorder (Atlaskit DynamicTable) ───────
   // Jira-parity: DnD disabled while a sort is active OR hide-done is on.
   const dndEnabled = !sort.field && !hideDone && !bulkEditMode && view === 'list';
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-    const movedId = String(active.id);
-    const fromIndex = visibleRows.findIndex(r => r.id === movedId);
-    const toIndex = visibleRows.findIndex(r => r.id === over.id);
-    if (fromIndex === -1 || toIndex === -1) return;
+  // DynamicTable onRankEnd signature: { sourceIndex, destination: { index } }
+  // Indices are into the rows[] array we pass to DynamicTable, which already
+  // matches our visibleRows order.
+  const handleRankEnd = (params: { sourceIndex: number; destination?: { index: number } | null }) => {
+    const { sourceIndex, destination } = params;
+    if (!destination || destination.index === sourceIndex) return;
+    const moved = visibleRows[sourceIndex];
+    if (!moved) return;
+    const movedId = moved.id;
 
     const positioned = visibleRows.map(r => ({ id: r.id, position: r.position ?? 0 }));
-    const result = computeNewPosition(positioned, movedId, toIndex);
+    const result = computeNewPosition(positioned, movedId, destination.index);
 
-    // No integer slot between neighbours — renumber the full list with 1024
-    // spacing so subsequent drags have slack. Required because ph_issues.position
-    // is PostgreSQL bigint and will reject fractional midpoints.
+    // bigint-safe: if no integer slot exists between neighbours, renumber the
+    // full list with 1024 spacing so subsequent drags have slack again.
     if (result.needsRebalance) {
       const without = visibleRows.filter(r => r.id !== movedId);
-      const insertAt = Math.max(0, Math.min(toIndex, without.length));
+      const insertAt = Math.max(0, Math.min(destination.index, without.length));
       const reordered = [
         ...without.slice(0, insertAt),
-        visibleRows.find(r => r.id === movedId)!,
+        moved,
         ...without.slice(insertAt),
       ];
       reorderPositions.mutate(rebalancePositions(reordered.map(r => r.id)));
@@ -510,6 +507,18 @@ export function SubtasksPanel({
 
     if (result.position == null) return;
     update.mutate({ id: movedId, patch: { position: result.position } });
+  };
+
+  // DynamicTable sort-click handler — translates its 2-state toggle to our
+  // 3-state cycle (asc→desc→off) for users who click column headers.
+  const handleColumnHeaderSort = (key: string, order: 'ASC' | 'DESC') => {
+    const field = key as SortField;
+    if (sort.field === field && sort.dir === 'desc' && order === 'ASC') {
+      // User's third click on same field — clear.
+      setSort({ field: null, dir: 'asc' });
+      return;
+    }
+    setSort({ field, dir: order === 'DESC' ? 'desc' : 'asc' });
   };
 
   // ─── Keyboard navigation ─────────────────────────
@@ -645,155 +654,190 @@ export function SubtasksPanel({
             />
           )}
 
-          {/* ═══ List (native HTML table) view ═══ */}
+          {/* ═══ List view — Atlaskit DynamicTable ═══ */}
           {!isLoading && visibleRows.length > 0 && view === 'list' && (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={visibleRows.map(r => r.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="sp-scroll-container">
-                  <table className="sp-table">
-                    <thead className="sp-thead">
-                      <tr>
-                        <th className="sp-th sp-th--drag" aria-label="Reorder" />
-                        {bulkEditMode && (
-                          <th className="sp-th sp-th--select">
-                            <label className="sp-checkbox" aria-label="Select all">
-                              <input
-                                type="checkbox"
-                                checked={allVisibleSelected}
-                                ref={(el) => { if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected; }}
-                                onChange={toggleSelectAll}
-                              />
-                              <span className="sp-checkbox-box">
-                                {allVisibleSelected && <Check size={10} color="#fff" strokeWidth={3} />}
-                                {!allVisibleSelected && someVisibleSelected && <span className="sp-checkbox-dash" />}
-                              </span>
-                            </label>
-                          </th>
-                        )}
-                        <th className="sp-th" style={{ width: 'auto' }}>Work</th>
-                        {columns.priority && <th className="sp-th sp-th--priority">Priority</th>}
-                        {columns.assignee && <th className="sp-th sp-th--assignee">Assignee</th>}
-                        {columns.status && <th className="sp-th sp-th--status">Status</th>}
-                        {columns.fixVersions && <th className="sp-th sp-th--fixv">Fix versions</th>}
-                        <th className="sp-th sp-th--actions" aria-label="Row actions" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {visibleRows.map(child => {
-                        const checked = selectedIds.has(child.id);
-                        const focused = focusedRowId === child.id;
-                        return (
-                          <SortableRow
-                            key={child.id}
-                            id={child.id}
-                            disabled={!dndEnabled}
-                            selected={checked}
-                            className={[
-                              'sp-row',
-                              checked ? 'sp-row--selected' : '',
-                              focused ? 'sp-row--focused' : '',
-                            ].join(' ')}
-                            onRowClick={() => {
-                              if (bulkEditMode) toggleSelected(child.id);
-                              else onSubtaskClick?.(child.id);
-                              setFocusedRowId(child.id);
-                            }}
-                          >
-                        {bulkEditMode && (
-                          <td className="sp-td sp-td--select" onClick={(e) => e.stopPropagation()}>
-                            <label className="sp-checkbox" aria-label={`Select ${child.issue_key}`}>
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() => toggleSelected(child.id)}
-                              />
-                              <span className="sp-checkbox-box">
-                                {checked && <Check size={10} color="#fff" strokeWidth={3} />}
-                              </span>
-                            </label>
-                          </td>
-                        )}
-                        <td className="sp-td">
-                          {editingId === child.id ? (
-                            <div className="sp-work-cell" onClick={(e) => e.stopPropagation()}>
-                              <span className="sp-type-icon">
-                                <JiraIssueTypeIcon type={child.issue_type} size={16} />
-                              </span>
-                              <span className="sp-issue-key">{child.issue_key}</span>
-                              <InlineSummaryEditor
-                                value={child.summary}
-                                onSave={handleSummarySave(child)}
-                                onCancel={() => setEditingId(null)}
-                              />
-                            </div>
-                          ) : (
-                            <WorkCell
-                              issueType={child.issue_type}
-                              issueKey={child.issue_key}
-                              summary={child.summary}
-                              onClick={() => onSubtaskClick?.(child.id)}
-                            />
-                          )}
-                        </td>
-                        {columns.priority && (
-                          <td className="sp-td">
-                            <PriorityCell
-                              priority={child.priority}
-                              onChange={handlePriorityChange(child)}
-                              readOnly={bulkEditMode}
-                            />
-                          </td>
-                        )}
-                        {columns.assignee && (
-                          <td className="sp-td">
-                            <AssigneeCell
-                              displayName={child.assignee_display_name}
-                              accountId={child.assignee_account_id}
-                              avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
-                              onChange={handleAssigneeChange(child)}
-                              readOnly={bulkEditMode}
-                            />
-                          </td>
-                        )}
-                        {columns.status && (
-                          <td className="sp-td">
-                            <StatusCell
-                              status={child.status}
-                              statusCategory={child.status_category}
-                              onChange={handleStatusChange(child)}
-                              readOnly={bulkEditMode}
-                            />
-                          </td>
-                        )}
-                        {columns.fixVersions && (
-                          <td className="sp-td">
-                            <FixVersionsCell value={child.fix_versions} />
-                          </td>
-                        )}
-                        <td className="sp-td sp-td--actions" onClick={(e) => e.stopPropagation()}>
-                          {!bulkEditMode && (
-                            <RowActionsMenu
-                              onOpen={() => onSubtaskClick?.(child.id)}
-                              onRename={() => setEditingId(child.id)}
-                              onDelete={() => handleDelete(child)}
-                            />
-                          )}
-                        </td>
-                          </SortableRow>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </SortableContext>
-            </DndContext>
+            <div className="sp-ak-table" onClick={(e) => e.stopPropagation()}>
+              <DynamicTable
+                head={{
+                  cells: [
+                    ...(bulkEditMode ? [{
+                      key: 'select',
+                      content: (
+                        <label className="sp-checkbox" aria-label="Select all">
+                          <input
+                            type="checkbox"
+                            checked={allVisibleSelected}
+                            ref={(el) => { if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected; }}
+                            onChange={toggleSelectAll}
+                          />
+                          <span className="sp-checkbox-box">
+                            {allVisibleSelected && <Check size={10} color="#fff" strokeWidth={3} />}
+                            {!allVisibleSelected && someVisibleSelected && <span className="sp-checkbox-dash" />}
+                          </span>
+                        </label>
+                      ),
+                      width: 4,
+                    }] : []),
+                    ...(columns.type ? [{ key: 'type', content: 'Type', isSortable: false, width: 5 }] : []),
+                    ...(columns.key ? [{ key: 'key', content: 'Key', isSortable: true, width: 9 }] : []),
+                    ...(columns.summary ? [{ key: 'summary', content: 'Summary', isSortable: false, shouldTruncate: true }] : []),
+                    ...(columns.assignee ? [{ key: 'assignee', content: 'Assignee', isSortable: true, width: 14 }] : []),
+                    ...(columns.status ? [{ key: 'status', content: 'Status', isSortable: true, width: 14 }] : []),
+                    ...(columns.fixVersions ? [{ key: 'fixVersions', content: 'Fix versions', isSortable: false, width: 12 }] : []),
+                    ...(columns.priority ? [{ key: 'priority', content: 'Priority', isSortable: true, width: 10 }] : []),
+                    { key: 'actions', content: '', width: 4 },
+                  ],
+                }}
+                rows={visibleRows.map((child) => {
+                  const checked = selectedIds.has(child.id);
+                  const focused = focusedRowId === child.id;
+                  const rowCells: Array<{ key: string | number; content: React.ReactNode }> = [];
+
+                  if (bulkEditMode) {
+                    rowCells.push({
+                      key: 'select',
+                      content: (
+                        <label className="sp-checkbox" aria-label={`Select ${child.issue_key}`} onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleSelected(child.id)}
+                          />
+                          <span className="sp-checkbox-box">
+                            {checked && <Check size={10} color="#fff" strokeWidth={3} />}
+                          </span>
+                        </label>
+                      ),
+                    });
+                  }
+
+                  if (columns.type) {
+                    rowCells.push({
+                      key: child.issue_type ?? '',
+                      content: <IssueTypeCell issueType={child.issue_type} />,
+                    });
+                  }
+                  if (columns.key) {
+                    rowCells.push({
+                      key: child.issue_key,
+                      content: (
+                        <a
+                          className="sp-issue-key"
+                          onClick={(e) => { e.stopPropagation(); onSubtaskClick?.(child.id); }}
+                        >
+                          {child.issue_key}
+                        </a>
+                      ),
+                    });
+                  }
+                  if (columns.summary) {
+                    rowCells.push({
+                      key: child.summary,
+                      content: editingId === child.id ? (
+                        <InlineSummaryEditor
+                          value={child.summary}
+                          onSave={handleSummarySave(child)}
+                          onCancel={() => setEditingId(null)}
+                        />
+                      ) : (
+                        <span
+                          className="sp-issue-summary"
+                          onClick={(e) => {
+                            if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
+                            onSubtaskClick?.(child.id);
+                            setFocusedRowId(child.id);
+                          }}
+                        >
+                          {child.summary}
+                        </span>
+                      ),
+                    });
+                  }
+                  if (columns.assignee) {
+                    rowCells.push({
+                      key: child.assignee_display_name ?? '\uFFFF', // unassigned sorts last
+                      content: (
+                        <AssigneeCell
+                          displayName={child.assignee_display_name}
+                          accountId={child.assignee_account_id}
+                          avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                          onChange={handleAssigneeChange(child)}
+                          readOnly={bulkEditMode}
+                        />
+                      ),
+                    });
+                  }
+                  if (columns.status) {
+                    const catRank = (child.status_category ?? '').toLowerCase() === 'done' ? 2
+                      : (child.status_category ?? '').toLowerCase().includes('progress') ? 1 : 0;
+                    rowCells.push({
+                      key: catRank,
+                      content: (
+                        <StatusCell
+                          status={child.status}
+                          statusCategory={child.status_category}
+                          onChange={handleStatusChange(child)}
+                          readOnly={bulkEditMode}
+                        />
+                      ),
+                    });
+                  }
+                  if (columns.fixVersions) {
+                    rowCells.push({
+                      key: 0,
+                      content: <FixVersionsCell value={child.fix_versions} />,
+                    });
+                  }
+                  if (columns.priority) {
+                    const pRank = { critical: 1, high: 2, medium: 3, low: 4 }[
+                      (child.priority ?? 'medium').toLowerCase() as 'critical' | 'high' | 'medium' | 'low'
+                    ] ?? 3;
+                    rowCells.push({
+                      key: pRank,
+                      content: (
+                        <PriorityCell
+                          priority={child.priority}
+                          onChange={handlePriorityChange(child)}
+                          readOnly={bulkEditMode}
+                        />
+                      ),
+                    });
+                  }
+
+                  rowCells.push({
+                    key: 'actions',
+                    content: !bulkEditMode ? (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <RowActionsMenu
+                          onOpen={() => onSubtaskClick?.(child.id)}
+                          onRename={() => setEditingId(child.id)}
+                          onDelete={() => handleDelete(child)}
+                        />
+                      </div>
+                    ) : null,
+                  });
+
+                  return {
+                    key: child.id,
+                    cells: rowCells,
+                    // Custom CSS hooks for focused / selected row highlighting.
+                    // DynamicTable passes this through to the row's tr element.
+                    className: [
+                      checked ? 'sp-row--selected' : '',
+                      focused ? 'sp-row--focused' : '',
+                    ].filter(Boolean).join(' '),
+                  };
+                })}
+                rowsPerPage={undefined}
+                isLoading={false}
+                isRankable={dndEnabled}
+                onRankEnd={handleRankEnd}
+                defaultSortKey={sort.field ?? undefined}
+                defaultSortOrder={sort.dir === 'desc' ? 'DESC' : 'ASC'}
+                onSort={(e: { key: string; sortOrder: 'ASC' | 'DESC' }) => handleColumnHeaderSort(e.key, e.sortOrder)}
+                emptyView={null}
+              />
+            </div>
           )}
 
           {/* ═══ Bulk edit bar ═══ */}

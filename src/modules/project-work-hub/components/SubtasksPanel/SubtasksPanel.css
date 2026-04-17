@@ -630,6 +630,20 @@
   50% { opacity: 0.5; }
 }
 
+/* ── Atlaskit DynamicTable wrapper (Chunk D) ──── */
+.sp-ak-table {
+  margin-top: 4px;
+}
+/* Paint selected + focused row backgrounds inside the Atlaskit table.
+   DynamicTable forwards className to each <tr>. */
+.sp-ak-table tr.sp-row--selected > td {
+  background: #E9F2FF;
+}
+.sp-ak-table tr.sp-row--focused > td {
+  outline: 2px solid #4C9AFF;
+  outline-offset: -2px;
+}
+
 /* ── Atlaskit Lozenge trigger (Chunk C) ───────── */
 .sp-status-btn-ak {
   display: inline-flex;
