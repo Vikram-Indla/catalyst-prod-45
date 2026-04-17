@@ -1,38 +1,56 @@
 /**
  * AtlaskitEditor — Wrapper around @atlaskit/editor-core
- * Provides standardized config for full-page and comment appearances.
- * All rich text fields in Catalyst must use this component.
+ *
+ * IMPORTANT: @atlaskit/editor-core bundles its own copy of prosemirror-state.
+ * Tiptap (used elsewhere in the app, e.g. StoryDetailModal) bundles another
+ * copy. If both load eagerly in the same page, ProseMirror throws
+ * `RangeError: Duplicate use of selection JSON ID cell` because each copy
+ * registers the same selection IDs into a shared registry.
+ *
+ * Fix: lazy-load @atlaskit/editor-core via dynamic import so the Atlaskit
+ * ProseMirror tree only enters the page when an Atlaskit editor is actually
+ * mounted (e.g. user clicks into a description popover). Tiptap-only views
+ * never trigger the import. The user-facing Atlaskit experience is identical.
  */
-import React, { useCallback, useRef, forwardRef, useImperativeHandle } from 'react';
-import { Editor, EditorActions } from '@atlaskit/editor-core';
+import React, {
+  useCallback,
+  useRef,
+  forwardRef,
+  useImperativeHandle,
+  useEffect,
+  useState,
+  Suspense,
+  lazy,
+} from 'react';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import { createEmptyADF } from '@/utils/adf';
 
+// ─── Lazy-loaded Atlaskit editor ──────────────────────────────
+// Wrap the named export `Editor` into a default export for React.lazy.
+const LazyEditor = lazy(async () => {
+  const mod = await import('@atlaskit/editor-core');
+  return { default: mod.Editor as unknown as React.ComponentType<any> };
+});
+
+// EditorActions is a class — we only need the type at runtime via dynamic import.
+type EditorActionsLike = {
+  replaceDocument: (adf: string) => void;
+};
+
 export interface AtlaskitEditorRef {
-  /** Replace entire document with new ADF */
   replaceDocument: (adf: ADFEntity) => void;
-  /** Get current ADF content */
   getContent: () => ADFEntity | null;
 }
 
 interface AtlaskitEditorProps {
-  /** Editor appearance: 'full-page' for description/AC, 'comment' for comments */
   appearance?: 'full-page' | 'comment';
-  /** Initial ADF content */
   defaultValue?: ADFEntity;
-  /** Placeholder text */
   placeholder?: string;
-  /** Called when content changes — receives ADF JSON */
   onChange?: (adf: ADFEntity) => void;
-  /** Called on save (comment appearance) */
   onSave?: (adf: ADFEntity) => void;
-  /** Called on cancel (comment appearance) */
   onCancel?: () => void;
-  /** Disable editing */
   disabled?: boolean;
-  /** Custom toolbar components (e.g. AI improve button) */
   primaryToolbarComponents?: React.ReactElement[];
-  /** Min height for the editor */
   minHeight?: number;
 }
 
@@ -51,7 +69,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
     },
     ref
   ) {
-    const actionsRef = useRef<EditorActions | null>(null);
+    const actionsRef = useRef<EditorActionsLike | null>(null);
     const contentRef = useRef<ADFEntity>(defaultValue || createEmptyADF());
 
     useImperativeHandle(ref, () => ({
@@ -64,7 +82,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
       getContent: () => contentRef.current,
     }));
 
-    const handleEditorReady = useCallback((actions: EditorActions) => {
+    const handleEditorReady = useCallback((actions: EditorActionsLike) => {
       actionsRef.current = actions;
     }, []);
 
@@ -76,7 +94,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
           contentRef.current = adf;
           onChange?.(adf);
         } catch {
-          // Ignore transient editor state errors
+          /* transient */
         }
       },
       [onChange]
@@ -89,7 +107,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
           const adf = editorView.state.doc.toJSON() as ADFEntity;
           onSave(adf);
         } catch {
-          // Ignore
+          /* ignore */
         }
       },
       [onSave]
@@ -100,27 +118,40 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
         style={{ minHeight: appearance === 'comment' ? undefined : minHeight }}
         className="atlaskit-editor-wrapper"
       >
-        <Editor
-          appearance={appearance}
-          defaultValue={defaultValue ? JSON.stringify(defaultValue) : undefined}
-          placeholder={placeholder}
-          disabled={disabled}
-          onChange={handleChange}
-          onSave={appearance === 'comment' ? handleSave : undefined}
-          onCancel={onCancel}
-          onEditorReady={handleEditorReady}
-          primaryToolbarComponents={primaryToolbarComponents}
-          allowTextColor
-          allowTextAlignment
-          allowIndentation
-          allowRule
-          allowTables={{
-            advanced: false,
-          }}
-          allowPanel
-          allowTasksAndDecisions
-          shouldFocus={false}
-        />
+        <Suspense
+          fallback={
+            <div
+              style={{
+                minHeight: appearance === 'comment' ? 80 : minHeight,
+                padding: 12,
+                color: '#878787',
+                fontSize: 13,
+              }}
+            >
+              Loading editor…
+            </div>
+          }
+        >
+          <LazyEditor
+            appearance={appearance}
+            defaultValue={defaultValue ? JSON.stringify(defaultValue) : undefined}
+            placeholder={placeholder}
+            disabled={disabled}
+            onChange={handleChange}
+            onSave={appearance === 'comment' ? handleSave : undefined}
+            onCancel={onCancel}
+            onEditorReady={handleEditorReady}
+            primaryToolbarComponents={primaryToolbarComponents}
+            allowTextColor
+            allowTextAlignment
+            allowIndentation
+            allowRule
+            allowTables={{ advanced: false }}
+            allowPanel
+            allowTasksAndDecisions
+            shouldFocus={false}
+          />
+        </Suspense>
       </div>
     );
   }
