@@ -108,6 +108,10 @@ export default defineConfig(({ mode, command }) => {
       // import bare 'react-intl'. We redirect to @atlaskit's bundled alias
       // `react-intl-next` (which is itself a pinned alias of react-intl@5.18+).
       "react-intl": path.resolve(__dirname, "./node_modules/react-intl-next"),
+      // Our own code imports `react-intl-next` directly (Atlaskit convention).
+      // Pin it to the transitive copy shipped with @atlaskit/* so we don't need
+      // it in package.json (the published react-intl-next has broken main/module).
+      "react-intl-next": path.resolve(__dirname, "./node_modules/react-intl-next"),
       // ─────────────────────────────────────────────────────────────────────
       // CRITICAL: Force a SINGLE ProseMirror instance shared by Atlaskit + Tiptap.
       //
