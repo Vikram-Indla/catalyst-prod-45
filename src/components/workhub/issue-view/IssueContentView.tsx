@@ -37,8 +37,6 @@ import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
 
-const PILOT_ISSUE_KEY = 'BAU-4771';
-
 
 interface Props {
   issueKey: string | null;
@@ -157,8 +155,6 @@ function StatusPill({ status, statusCategory, issueId, onStatusChange }: { statu
   );
 }
 
-type ActivityTab = 'all' | 'comments' | 'history';
-
 export function IssueContentView({
   issueKey, item, parentItem, childItems = [], childrenLoading,
   links = [], linksLoading, comments = [], commentsLoading,
@@ -169,11 +165,6 @@ export function IssueContentView({
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [activityTab, setActivityTab] = useState<ActivityTab>('all');
-  const [commentText, setCommentText] = useState('');
-  const [commentFocused, setCommentFocused] = useState(false);
-  const [posting, setPosting] = useState(false);
-  const [sortDir, setSortDir] = useState<'desc' | 'asc'>('desc');
   const [descEditMode, setDescEditMode] = useState(false);
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [showConvertWizard, setShowConvertWizard] = useState(false);
@@ -342,38 +333,6 @@ export function IssueContentView({
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-comments', item?.id] }); toast.success('Comment added'); },
   });
-
-  const handleComment = async () => {
-    if (!commentText.trim()) return;
-    setPosting(true);
-    try {
-      await createPhComment.mutateAsync(commentText.trim());
-      setCommentText('');
-      setCommentFocused(false);
-    } catch {
-      // Error toast handled by mutation onError
-    } finally {
-      setPosting(false);
-    }
-  };
-
-  const TABS: { key: ActivityTab; label: string }[] = [
-    { key: 'all', label: 'All' }, { key: 'comments', label: 'Comments' },
-    { key: 'history', label: 'History' },
-  ];
-
-  // Merged + sorted activity feed (ph_comments + ph_activity_log — canonical tables)
-  const activityFeed = useMemo(() => {
-    const items: { type: 'comment' | 'history' | 'worklog'; data: any; ts: number }[] = [];
-    if (activityTab === 'all' || activityTab === 'comments') {
-      phComments.forEach((c: any) => items.push({ type: 'comment', data: c, ts: new Date(c.created_at ?? 0).getTime() }));
-    }
-    if (activityTab === 'all' || activityTab === 'history') {
-      phHistory.forEach((h: any) => items.push({ type: 'history', data: h, ts: new Date(h.created_at ?? 0).getTime() }));
-    }
-    items.sort((a, b) => sortDir === 'desc' ? b.ts - a.ts : a.ts - b.ts);
-    return items;
-  }, [phComments, phHistory, activityTab, sortDir]);
 
   const fixVersionName = item?.fix_version_name;
 
@@ -696,200 +655,24 @@ export function IssueContentView({
             );
           })()}
 
-          {/* ── Activity ── */}
-          {issueKey === PILOT_ISSUE_KEY ? (
-            <div className="awSection" style={{ borderBottom: 'none' }}>
-              <div className="awSectionBody">
-                <ActivityPanelPilot
-                  issueKey={issueKey}
-                  comments={phComments}
-                  commentsLoading={false}
-                  historyItems={phHistory}
-                  historyLoading={false}
-                  createComment={{ mutateAsync: async ({ body }: { body: string; authorId: string }) => createPhComment.mutateAsync(body) }}
-                />
-              </div>
-            </div>
-          ) : (
+          {/* ── Activity — canonical ActivityPanelPilot for every issue.
+              Previously gated to a single pilot issue key (BAU-4771); now
+              rolled out to all work items after acceptance. The legacy
+              inline activity block below is retained as commented code for
+              one release cycle for quick rollback, then will be deleted.
+           */}
           <div className="awSection" style={{ borderBottom: 'none' }}>
-            {/* Activity heading */}
-            <div className="awActivityHeader">
-              <h3 className="awActivityHeading">Activity</h3>
-            </div>
-
-            {/* Underline-style tabs + sort toggle */}
-            <div className="awActivityTabBar">
-              <div className="awActivityTabList">
-                {TABS.map(t => (
-                  <button
-                    key={t.key}
-                    className={`awActivityTab2 ${activityTab === t.key ? 'active' : ''}`}
-                    onClick={() => setActivityTab(t.key)}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-              <button
-                className="awSortToggle"
-                onClick={() => setSortDir(d => d === 'desc' ? 'asc' : 'desc')}
-                title={sortDir === 'desc' ? 'Newest first' : 'Oldest first'}
-              >
-                <ArrowUpDown style={{ width: 16, height: 16 }} />
-              </button>
-            </div>
-
-            {/* Comment composer — Atlassian pattern: collapsed → expanded */}
-            <div className="awActivityBody2">
-              {!commentFocused ? (
-                <div className="awCommentBox" onClick={() => setCommentFocused(true)}>
-                  {user && <Avatar name={user.email ?? 'You'} size={32} />}
-                  <span className="awCommentPlaceholder">Add a comment...</span>
-                </div>
-              ) : (
-                <div className="awCommentComposer">
-                  <div className="awCommentComposerLeft">
-                    {user && <Avatar name={user.email ?? 'You'} size={32} />}
-                  </div>
-                  <div className="awCommentComposerRight">
-                    <div className="awCommentEditorBox">
-                      {/* Formatting toolbar (visual parity) */}
-                      <div className="awEditorToolbar">
-                        <button className="awToolbarBtn" title="Bold"><Bold style={{ width: 15, height: 15 }} /></button>
-                        <button className="awToolbarBtn" title="Italic"><Italic style={{ width: 15, height: 15 }} /></button>
-                        <button className="awToolbarBtn" title="List"><List style={{ width: 15, height: 15 }} /></button>
-                        <button className="awToolbarBtn" title="Code"><Code2 style={{ width: 15, height: 15 }} /></button>
-                        <span className="awToolbarDivider" />
-                        <button className="awToolbarBtn" title="Link"><LinkIcon style={{ width: 15, height: 15 }} /></button>
-                        <button className="awToolbarBtn" title="Emoji"><Smile style={{ width: 15, height: 15 }} /></button>
-                        <button className="awToolbarBtn" title="Attachment"><Paperclip style={{ width: 15, height: 15 }} /></button>
-                        <span className="awToolbarDivider" />
-                        <button className="awToolbarBtn" title="Undo"><Undo2 style={{ width: 15, height: 15 }} /></button>
-                        <button className="awToolbarBtn" title="Redo"><Redo2 style={{ width: 15, height: 15 }} /></button>
-                      </div>
-                      {/* Textarea */}
-                      <textarea
-                        autoFocus
-                        rows={3}
-                        placeholder="Type @ to mention and notify someone."
-                        value={commentText}
-                        onChange={e => setCommentText(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleComment(); }
-                          if (e.key === 'Escape' && !commentText.trim()) { setCommentFocused(false); }
-                        }}
-                        disabled={posting}
-                        className="awCommentTextarea2"
-                      />
-                    </div>
-                    {/* Save / Cancel below editor box */}
-                    <div className="awCommentFooter">
-                      <button
-                        className="awCommentSaveBtn"
-                        onClick={handleComment}
-                        disabled={posting || !commentText.trim()}
-                      >
-                        {posting ? 'Saving...' : 'Save'}
-                      </button>
-                      <button
-                        className="awCommentCancelBtn"
-                        onClick={() => { setCommentFocused(false); setCommentText(''); }}
-                        disabled={posting}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Log work form (toggle) — visible on Work log tab */}
-
-              {/* Merged activity timeline */}
-              {activityFeed.length > 0 ? (
-                <div className="awTimeline">
-                  {activityFeed.map((entry, i) => {
-                    if (entry.type === 'comment') {
-                      const c = entry.data;
-                      const name = c._author_name ?? 'Unknown';
-                      return (
-                        <div key={c.id ?? `c-${i}`} className="awTimelineItem">
-                          <div className="awTimelineAvatar" style={{ background: avatarBg(name) }}>{initials(name)}</div>
-                          <div className="awTimelineContent">
-                            <div className="awTimelineName">{name}</div>
-                            <div className="awTimelineTime">{fmtRel(c.created_at)}</div>
-                            <span className="awTypeBadge awTypeBadgeComment">COMMENT</span>
-                            <div className="awTimelineDetail">{c.body}</div>
-                          </div>
-                        </div>
-                      );
-                    }
-                    if (entry.type === 'history') {
-                      const h = entry.data;
-                      const name = h._author_name ?? 'System';
-                      const field = h.field_name ?? '';
-                      const oldVal = h.old_display ?? h.old_value ?? null;
-                      const newVal = h.new_display ?? h.new_value ?? null;
-                      const isStatus = field.toLowerCase() === 'status';
-                      const isAssignee = field.toLowerCase() === 'assignee';
-                      const isCreated = field.toLowerCase() === '' && !oldVal && !newVal;
-                      return (
-                        <div key={h.id ?? `h-${i}`} className="awTimelineItem">
-                          <div className="awTimelineAvatar" style={{ background: avatarBg(name) }}>{initials(name)}</div>
-                          <div className="awTimelineContent">
-                            <div className="awTimelineName">
-                              {name} {isCreated ? 'created the Work item' : <>changed the <strong>{field}</strong></>}
-                            </div>
-                            <div className="awTimelineTime">{fmtRel(h.created_at)}</div>
-                            <span className="awTypeBadge awTypeBadgeHistory">HISTORY</span>
-                            {/* Change detail rendering */}
-                            {!isCreated && (oldVal || newVal) && (
-                              <div className="awTimelineChange">
-                                {isStatus ? (
-                                  <>
-                                    {oldVal && <span className="awStatusLoz">{oldVal}</span>}
-                                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--aw-text-subtle)', flexShrink: 0 }} />
-                                    {newVal && <span className="awStatusLoz">{newVal}</span>}
-                                  </>
-                                ) : isAssignee ? (
-                                  <>
-                                    {oldVal && (
-                                      <span className="awAssigneeChip">
-                                        <span className="awAssigneeChipAvatar" style={{ background: avatarBg(oldVal) }}>{initials(oldVal)}</span>
-                                        {oldVal}
-                                      </span>
-                                    )}
-                                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--aw-text-subtle)', flexShrink: 0 }} />
-                                    {newVal && (
-                                      <span className="awAssigneeChip">
-                                        <span className="awAssigneeChipAvatar" style={{ background: avatarBg(newVal) }}>{initials(newVal)}</span>
-                                        {newVal}
-                                      </span>
-                                    )}
-                                  </>
-                                ) : (
-                                  <>
-                                    <span className="awChangeOld">{oldVal ?? 'None'}</span>
-                                    <ArrowRight style={{ width: 14, height: 14, color: 'var(--aw-text-subtle)', flexShrink: 0 }} />
-                                    <span className="awChangeNew">{newVal}</span>
-                                  </>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-                
-                </div>
-              ) : (
-                <div className="awEmpty">No activity yet</div>
-              )}
+            <div className="awSectionBody">
+              <ActivityPanelPilot
+                issueKey={issueKey}
+                comments={phComments}
+                commentsLoading={false}
+                historyItems={phHistory}
+                historyLoading={false}
+                createComment={{ mutateAsync: async ({ body }: { body: string; authorId: string }) => createPhComment.mutateAsync(body) }}
+              />
             </div>
           </div>
-          )}
         </div>
       </div>
 
