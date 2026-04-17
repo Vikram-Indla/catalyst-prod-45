@@ -16,9 +16,11 @@ interface AssigneePopoverProps {
   currentAccountId: string | null;
   onChange: (assignee: { accountId: string | null; displayName: string | null }) => void;
   children: React.ReactNode;
+  /** When false, no "current value" check mark is rendered — use in bulk-edit contexts. */
+  showActive?: boolean;
 }
 
-export function AssigneePopover({ currentAccountId, onChange, children }: AssigneePopoverProps) {
+export function AssigneePopover({ currentAccountId, onChange, children, showActive = true }: AssigneePopoverProps) {
   const [open, setOpen] = React.useState(false);
   const [q, setQ] = React.useState('');
 
@@ -86,7 +88,7 @@ export function AssigneePopover({ currentAccountId, onChange, children }: Assign
               <UserX size={12} />
             </span>
             <span style={{ fontSize: 13, color: '#172B4D' }}>Unassigned</span>
-            {!currentAccountId && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
+            {showActive && !currentAccountId && <Check size={14} color="#0052CC" style={{ marginLeft: 'auto' }} />}
           </button>
 
           {isLoading && (
@@ -98,7 +100,7 @@ export function AssigneePopover({ currentAccountId, onChange, children }: Assign
           )}
 
           {filtered.map((p) => {
-            const active = p.jira_account_id === currentAccountId;
+            const active = showActive && p.jira_account_id === currentAccountId;
             return (
               <button
                 key={p.jira_account_id ?? p.email ?? p.display_name}

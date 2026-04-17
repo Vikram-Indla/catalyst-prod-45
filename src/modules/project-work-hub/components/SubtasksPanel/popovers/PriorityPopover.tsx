@@ -7,6 +7,8 @@ interface PriorityPopoverProps {
   priority: string;
   onChange: (priority: 'Critical' | 'High' | 'Medium' | 'Low') => void;
   children: React.ReactNode;
+  /** When false, no "current value" check mark is rendered — use in bulk-edit contexts. */
+  showActive?: boolean;
 }
 
 const OPTIONS: Array<{ value: 'Critical' | 'High' | 'Medium' | 'Low' }> = [
@@ -16,7 +18,7 @@ const OPTIONS: Array<{ value: 'Critical' | 'High' | 'Medium' | 'Low' }> = [
   { value: 'Low' },
 ];
 
-export function PriorityPopover({ priority, onChange, children }: PriorityPopoverProps) {
+export function PriorityPopover({ priority, onChange, children, showActive = true }: PriorityPopoverProps) {
   const [open, setOpen] = React.useState(false);
   const current = normalisePriority(priority);
 
@@ -31,7 +33,7 @@ export function PriorityPopover({ priority, onChange, children }: PriorityPopove
         onClick={(e) => e.stopPropagation()}
       >
         {OPTIONS.map(({ value }) => {
-          const active = normalisePriority(value) === current;
+          const active = showActive && normalisePriority(value) === current;
           return (
             <button
               key={value}

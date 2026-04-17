@@ -13,8 +13,6 @@ import {
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
-import { SubtasksPanelV2 } from '@/modules/project-work-hub/components/SubtasksPanel/SubtasksPanelV2';
-import { ENABLE_SUBTASKS_V2 } from '@/lib/featureFlags';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
 import type { CatalystViewBaseProps } from '../shared/types';
 
@@ -33,25 +31,15 @@ export default function CatalystViewEpic({
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
-      {/* EPIC: Child work items (canonical SubtasksPanel).
-          Epic pilot: when ENABLE_SUBTASKS_V2 is on, render the V2 molecule.
-          V2 is a drop-in replacement; V1 remains the renderer everywhere else. */}
+      {/* EPIC: Child work items (canonical SubtasksPanel) */}
       {issue?.issue_key && (
-        ENABLE_SUBTASKS_V2 ? (
-          <SubtasksPanelV2
-            storyKey={issue.issue_key}
-            storyId={issue.id}
-            projectKey={issue.project_key || projectKey || ''}
-            onSubtaskClick={onOpenItem}
-          />
-        ) : (
-          <SubtasksPanel
-            storyKey={issue.issue_key}
-            storyId={issue.id}
-            projectKey={issue.project_key || projectKey || ''}
-            onSubtaskClick={onOpenItem}
-          />
-        )
+        <SubtasksPanel
+          storyKey={issue.issue_key}
+          storyId={issue.id}
+          projectKey={issue.project_key || projectKey || ''}
+          onSubtaskClick={onOpenItem}
+          title="Child work items"
+        />
       )}
 
       <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />

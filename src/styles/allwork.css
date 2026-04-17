@@ -1685,40 +1685,6 @@
 .dark .awAddParentLink:hover { color: #4C9AFF; background: #1F1F1F; }
 /* (old pill-style tab dark rule removed — now using underline tabs) */
 .dark .awLabelChip { background: #292929; color: #EDEDED; }
-.dark .sp-panel { color: #EDEDED; }
-.dark .sp-title { color: #EDEDED; }
-.dark .sp-collapse-btn { color: #878787; }
-.dark .sp-collapse-btn:hover { background: #1F1F1F; }
-.dark .sp-icon-btn { color: #878787; }
-.dark .sp-icon-btn:hover { background: #1F1F1F; color: #EDEDED; }
-.dark .sp-count { background: #292929; color: #A1A1A1; }
-.dark .sp-progress-track { background: #292929; }
-.dark .sp-progress-label { color: #878787; }
-.dark .sp-th { color: #878787; border-color: #2E2E2E; }
-.dark .sp-thead { border-color: #2E2E2E; }
-.dark .sp-td { border-color: #2E2E2E; }
-.dark .sp-row { background: #0A0A0A; }
-.dark .sp-row:hover { background: #1F1F1F; }
-.dark .sp-row--create { background: #1A1A0A; }
-.dark .sp-row--create:hover { background: #1A1A0A; }
-.dark .sp-issue-key { color: #5B9AFF; }
-.dark .sp-issue-key:hover { color: #4C9AFF; }
-.dark .sp-issue-summary { color: #EDEDED; }
-.dark .sp-priority-label { color: #A1A1A1; }
-.dark .sp-assignee-name { color: #A1A1A1; }
-.dark .sp-create-input { color: #EDEDED; }
-.dark .sp-create-input::placeholder { color: #6B778C; }
-.dark .sp-row-menu { background: #1A1A1A; border-color: #2E2E2E; }
-.dark .sp-row-menu-item { color: #EF4444; }
-.dark .sp-row-menu-item:hover { background: #2A1A1A; }
-.dark .sp-colpicker-dropdown { background: #1A1A1A; border-color: #2E2E2E; }
-.dark .sp-colpicker-title { color: #878787; border-color: #2E2E2E; }
-.dark .sp-colpicker-item { color: #EDEDED; }
-.dark .sp-colpicker-item:hover { background: #1F1F1F; }
-.dark .sp-status-dropdown { background: #1A1A1A; border-color: #2E2E2E; }
-.dark .sp-status-dropdown-item:hover { background: #1F1F1F; }
-.dark .sp-empty-heading { color: #EDEDED; }
-.dark .sp-empty-sub { color: #878787; }
-.dark .sp-empty-cta { background: #1A1A1A; border-color: #2E2E2E; color: #EDEDED; }
-.dark .sp-empty-cta:hover { background: #1F1F1F; }
-.dark .sp-skeleton-pulse { background: #2E2E2E; }
+/* SubtasksPanel NOCTURNE overrides moved to SubtasksPanel.css — see
+   src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanel.css
+   (consolidated per CLAUDE.md L35). */

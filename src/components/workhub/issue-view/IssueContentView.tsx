@@ -21,7 +21,6 @@ import { resolveStatusCategory } from '@/modules/project-work-hub/components/dia
 
 // Story Detail Modal sections — identical components for AllWork mid-body
 import { AttachmentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/AttachmentsSection';
-import { ChildIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/ChildIssuesSection';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/LinkedIssuesSection';
 import { DefectsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/DefectsSection';
 import { IncidentsSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/IncidentsSection';
@@ -664,7 +663,7 @@ export function IssueContentView({
             return (
               <>
                 {showSubtasks && (
-                  <ChildIssuesSection
+                  <SubtasksPanel
                     storyKey={issueKey!}
                     storyId={item?.id ?? ''}
                     projectKey={projectKey}

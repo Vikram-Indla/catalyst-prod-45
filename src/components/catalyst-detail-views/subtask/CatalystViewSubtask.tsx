@@ -12,6 +12,7 @@ import {
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
 import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   IssueIcon, StatusLozenge,
@@ -57,6 +58,16 @@ export default function CatalystViewSubtask({
       <CatalystQuickActions />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
+
+      {issue?.issue_key && (
+        <SubtasksPanel
+          storyKey={issue.issue_key}
+          storyId={issue.id}
+          projectKey={issue.project_key || projectKey || ''}
+          onSubtaskClick={onOpenItem}
+        />
+      )}
+
       <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
