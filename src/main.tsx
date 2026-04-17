@@ -42,6 +42,14 @@ import("./App")
     import("./lib/atlaskitPrefetch")
       .then(({ warmAtlaskitViewOnIdle }) => warmAtlaskitViewOnIdle())
       .catch(() => { /* best-effort; skip on import failure */ });
+
+    // Layer 5 — service worker precache for Atlaskit vendor chunks.
+    // Production-only; dev builds are skipped inside the registrar.
+    // Scheduled after the App render so registration never blocks first
+    // paint. Kill-switch: append ?nosw=1 to any URL to unregister.
+    import("./lib/registerServiceWorker")
+      .then(({ registerServiceWorker }) => registerServiceWorker())
+      .catch(() => { /* best-effort; SW is an optimisation, never required */ });
   })
   .catch((err) => {
     console.error("Fatal boot error:", err);
