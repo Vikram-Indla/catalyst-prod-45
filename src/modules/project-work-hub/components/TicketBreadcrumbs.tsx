@@ -44,6 +44,14 @@ export interface TicketBreadcrumbsProps {
   onParentClick?: () => void;
   /** Fires when user clicks "+ Add parent" — open the set-parent UI. */
   onAddParent?: () => void;
+  /**
+   * Optional override for the middle crumb. When provided, replaces the
+   * default parent / +Add-parent button with this node — used to embed
+   * surface-specific controls like AddParentPicker (which owns its own
+   * popover). If set, `parentKey`, `onParentClick`, `onAddParent` are
+   * ignored for rendering but still available if the consumer wants them.
+   */
+  middleSlot?: React.ReactNode;
 }
 
 /* ── Project avatar: small square with initials, Jira style ─────────────── */
@@ -155,12 +163,14 @@ export function TicketBreadcrumbs({
   parentType,
   onParentClick,
   onAddParent,
+  middleSlot,
 }: TicketBreadcrumbsProps) {
   useAtlaskitThemeSync();
 
   const isEpic = (itemType || '').toLowerCase().includes('epic');
-  const showParent = Boolean(parentKey);
-  const showAddParent = !isEpic && !parentKey;
+  const hasSlot = middleSlot !== undefined;
+  const showParent = !hasSlot && Boolean(parentKey);
+  const showAddParent = !hasSlot && !isEpic && !parentKey;
 
   return (
     <Box
@@ -202,6 +212,14 @@ export function TicketBreadcrumbs({
             text="+ Add parent"
             onClick={onAddParent}
             component={CallbackBreadcrumb}
+          />
+        )}
+        {hasSlot && !isEpic && (
+          <BreadcrumbsItem
+            text=""
+            component={React.forwardRef<HTMLSpanElement>(() => (
+              <span style={{ display: 'inline-flex', alignItems: 'center' }}>{middleSlot}</span>
+            ))}
           />
         )}
 
