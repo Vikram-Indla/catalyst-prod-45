@@ -146,14 +146,17 @@ const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.React
         display: 'inline-flex',
         alignItems: 'center',
         gap: 4,
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
         fontFamily: "'Inter', sans-serif",
-        fontSize: 12,
+        fontSize: 14,
         fontWeight: 500,
+        lineHeight: 1.4,
         color: token('color.text', '#172B4D'),
       }}
     >
       {iconBefore}
-      <span>{children}</span>
+      <span style={{ whiteSpace: 'nowrap' }}>{children}</span>
     </span>
   ),
 );
