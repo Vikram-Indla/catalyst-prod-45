@@ -20,7 +20,7 @@ export type DynamicTableColumnId = string;
  * localStorage key for visibility/width persistence), and a human `label` used
  * by the column-visibility menu.
  */
-export interface DynamicTableColumn<TData> extends ColumnDef<TData, unknown> {
+export type DynamicTableColumn<TData> = ColumnDef<TData, unknown> & {
   id: DynamicTableColumnId;
   /** Plain-text label used by the column-visibility menu. Falls back to `header` if absent. */
   label?: string;
