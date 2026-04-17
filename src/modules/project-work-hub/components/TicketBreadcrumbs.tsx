@@ -1,16 +1,15 @@
 /**
  * TicketBreadcrumbs — canonical issue-level breadcrumb.
  *
- * Rendered inline in the top bar of CatalystViewBase (the shared shell for
- * every detail view: Story / Epic / Feature / Task / Defect / Incident /
- * Subtask / Business Request). Shape:
+ * Rendered inline in every detail view surface (Story / Epic / Feature /
+ * Task / Defect / Incident / Subtask / Business Request). Two-crumb shape:
  *
- *   <ProjectAvatar> <ProjectName>  /  <ParentIcon> <ParentKey or +Add parent>  /  <IssueTypeIcon> <ISSUE-KEY>
+ *   <ParentIcon> <ParentKey or +Add parent>   /   <IssueTypeIcon> <ISSUE-KEY>
  *
- * Middle crumb rules:
+ * Middle / first crumb rules:
  *   - parent epic exists        → show parentKey + epic icon, clickable
- *   - parent missing + non-epic → show "+ Add parent" action (calls onAddParent)
- *   - current item IS the epic  → collapse middle crumb (Jira behavior)
+ *   - parent missing + non-epic → show "+ Add parent" action
+ *   - current item IS the epic  → crumb collapses, only issue key remains
  *
  * Built on:
  *   - @atlaskit/breadcrumbs           Breadcrumbs + BreadcrumbsItem
@@ -19,8 +18,7 @@
  *   - react-router-dom Link via       RouterBreadcrumbLink adapter
  *   - useAtlaskitThemeSync            light/dark parity with Catalyst theme
  *
- * Canonical — do NOT fork this for per-surface variants. Every detail view
- * composes CatalystViewBase, which renders this once.
+ * Canonical — do NOT fork this for per-surface variants.
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -29,14 +27,10 @@ import { Box } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { useAtlaskitThemeSync } from '@/modules/project-work-hub/components/SubtasksPanel/atlaskitTheme';
 import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
-import {
-  getAvatarColor,
-  getInitials,
-} from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
 export interface TicketBreadcrumbsProps {
+  /** Used to build the parent-navigation href when `onParentClick` isn't set. */
   projectKey: string;
-  projectName?: string;
   itemType: string;
   itemKey: string | null;
   parentKey?: string | null;
@@ -45,41 +39,13 @@ export interface TicketBreadcrumbsProps {
   /** Fires when user clicks "+ Add parent" — open the set-parent UI. */
   onAddParent?: () => void;
   /**
-   * Optional override for the middle crumb. When provided, replaces the
+   * Optional override for the first crumb. When provided, replaces the
    * default parent / +Add-parent button with this node — used to embed
    * surface-specific controls like AddParentPicker (which owns its own
    * popover). If set, `parentKey`, `onParentClick`, `onAddParent` are
    * ignored for rendering but still available if the consumer wants them.
    */
   middleSlot?: React.ReactNode;
-}
-
-/* ── Project avatar: small square with initials, Jira style ─────────────── */
-function ProjectAvatar({ projectKey, projectName, size = 16 }: { projectKey: string; projectName?: string; size?: number }) {
-  const label = projectName || projectKey;
-  const initial = getInitials(label).slice(0, 1) || projectKey.slice(0, 1);
-  const bg = getAvatarColor(label);
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: size,
-        height: size,
-        borderRadius: 3,
-        background: bg,
-        color: '#FFFFFF',
-        fontFamily: "'Inter', sans-serif",
-        fontSize: Math.round(size * 0.65),
-        fontWeight: 700,
-        flexShrink: 0,
-      }}
-    >
-      {initial.toUpperCase()}
-    </span>
-  );
 }
 
 /* ── Router adapter for BreadcrumbsItem.component ───────────────────────── */
@@ -134,29 +100,21 @@ const CallbackBreadcrumb = React.forwardRef<HTMLButtonElement, CallbackProps>(
 );
 CallbackBreadcrumb.displayName = 'CallbackBreadcrumb';
 
-/* ── Terminal crumb (current issue) — non-interactive span.
-      Renders icon + key with the same gap Atlaskit uses for iconBefore (4px). */
-const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string; iconBefore?: React.ReactNode }>(
-  ({ children, className, iconBefore }, ref) => (
+/* ── Terminal crumb (current issue) — non-interactive span ──────────────── */
+const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string }>(
+  ({ children, className }, ref) => (
     <span
       ref={ref}
       aria-current="page"
       className={className}
       style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        whiteSpace: 'nowrap',
-        flexShrink: 0,
-        fontFamily: "'Inter', sans-serif",
-        fontSize: 14,
-        fontWeight: 500,
-        lineHeight: 1.4,
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 13,
+        fontWeight: 600,
         color: token('color.text', '#172B4D'),
       }}
     >
-      {iconBefore}
-      <span style={{ whiteSpace: 'nowrap' }}>{children}</span>
+      {children}
     </span>
   ),
 );
@@ -164,7 +122,6 @@ TerminalCrumb.displayName = 'TerminalCrumb';
 
 export function TicketBreadcrumbs({
   projectKey,
-  projectName,
   itemType,
   itemKey,
   parentKey,
@@ -189,14 +146,7 @@ export function TicketBreadcrumbs({
       } as never}
     >
       <Breadcrumbs label="Breadcrumbs">
-        {/* Crumb 1 — Project (no icon, text only per spec) */}
-        <BreadcrumbsItem
-          href={`/project-hub/${projectKey}/list`}
-          text={projectName || projectKey}
-          component={RouterBreadcrumbLink}
-        />
-
-        {/* Crumb 2 — Parent OR "+ Add parent" (hidden when the current issue is an epic) */}
+        {/* Crumb 1 — Parent OR "+ Add parent" (hidden when the current issue is an epic) */}
         {showParent && (
           onParentClick ? (
             <BreadcrumbsItem
@@ -230,7 +180,7 @@ export function TicketBreadcrumbs({
           />
         )}
 
-        {/* Crumb 3 — Current issue (terminal) */}
+        {/* Crumb 2 — Current issue (terminal) */}
         <BreadcrumbsItem
           text={itemKey ?? '—'}
           iconBefore={<IssueIcon type={itemType} size={14} />}

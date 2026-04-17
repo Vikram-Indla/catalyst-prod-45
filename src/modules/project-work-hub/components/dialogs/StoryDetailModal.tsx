@@ -166,17 +166,6 @@ export default function StoryDetailModal({
       return null;
     },
   });
-  // Resolve project name for breadcrumb. Non-blocking — falls back to key.
-  const { data: breadcrumbProject } = useQuery({
-    queryKey: ['project-name-for-breadcrumb', issue?.project_key],
-    enabled: !!issue?.project_key,
-    staleTime: 60_000,
-    queryFn: async () => {
-      const { data } = await supabase.from('projects').select('name').eq('key', issue!.project_key).maybeSingle();
-      return data as { name: string | null } | null;
-    },
-  });
-
   // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
   const { data: reporterProfile } = useQuery({
     queryKey: ['profile-avatar-jira', issue?.reporter_account_id],
@@ -703,7 +692,6 @@ export default function StoryDetailModal({
               {issue && (
                 <TicketBreadcrumbs
                   projectKey={issue.project_key}
-                  projectName={breadcrumbProject?.name || undefined}
                   itemType={issue.issue_type ?? 'Story'}
                   itemKey={issue.issue_key ?? null}
                   middleSlot={

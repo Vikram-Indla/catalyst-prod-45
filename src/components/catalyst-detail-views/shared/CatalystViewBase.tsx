@@ -224,7 +224,6 @@ export function CatalystViewBase({
             {projectKey ? (
               <TicketBreadcrumbs
                 projectKey={projectKey}
-                projectName={projectName}
                 itemType={itemType}
                 itemKey={itemKey}
                 parentKey={parentKey}
