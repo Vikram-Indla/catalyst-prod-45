@@ -23,3 +23,16 @@ export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP !== 'false';
  * When this flag is off, the existing SubtasksPanel renders unchanged everywhere.
  */
 export const ENABLE_SUBTASKS_V2 = import.meta.env.VITE_ENABLE_SUBTASKS_V2 === 'true';
+
+/**
+ * Kanban V2 — ProjectHub board pilot gate.
+ * Defaults to FALSE: off everywhere.
+ * Set VITE_ENABLE_KANBAN_V2=true to enable the V2 board additions
+ * (URL deep-linking for filters + group-by, density control, Zod
+ * boundary validation on status change). When this flag is off, the
+ * existing KanbanBoardPage renders unchanged.
+ *
+ * Pilot surface: /project-hub/:key/board only.
+ * Out of scope: ProductHub/IncidentHub/TaskHub/legacy Project boards.
+ */
+export const ENABLE_KANBAN_V2 = import.meta.env.VITE_ENABLE_KANBAN_V2 === 'true';
