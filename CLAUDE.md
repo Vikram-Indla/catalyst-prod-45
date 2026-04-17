@@ -26,13 +26,17 @@ Icons:      Lucide React for UI chrome; canonical SVGs for work-item types (see 
 Builder:    Lovable AI (Claude Code now assists/replaces for fixes)
 Fonts:      Sora (headings) · Inter (body/UI) · JetBrains Mono (data)
 
-Approved external primitives (already in production — do NOT re-evaluate):
-  @atlaskit/dynamic-table   → subtasks / child-work-item tables (Jira parity)
-  @atlaskit/editor-core     → ADF editor for Epic description + subtask description
-  Related @atlaskit/*       → scoped to:
-                              src/components/shared/rich-text/atlaskit/
-                              src/modules/project-work-hub/components/SubtasksPanel/
-                              Never introduce @atlaskit/* outside these paths without review.
+Atlassian Design System / Atlaskit:
+  Active migration target. Catalyst is being migrated to @atlaskit/* and the
+  Atlassian Design System progressively, one surface at a time. Adopting
+  @atlaskit/* primitives in any new or refactored surface is ENCOURAGED and
+  requires no path-scoping review. When an Atlaskit primitive exists for a
+  role (Breadcrumbs, Page header, Tabs, Lozenge, primitives/tokens, editor,
+  dynamic-table, etc.), prefer it over a bespoke clone. Tokens from
+  @atlaskit/tokens are the source of truth for spacing/color/typography on
+  surfaces that have migrated. Legacy shadcn/Tailwind surfaces remain in
+  place until their scheduled migration — do not mix the two systems on the
+  same surface in a single change.
 ```
 
 **Calendar:** Sunday = first day of work week (Saudi convention — enforce in ALL date components)  
