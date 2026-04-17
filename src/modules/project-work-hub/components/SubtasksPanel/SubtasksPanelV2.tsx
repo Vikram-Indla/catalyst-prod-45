@@ -434,15 +434,7 @@ export function SubtasksPanelV2({
         </div>
         {expanded && (
           <div className="sp-header-right">
-            <HeaderOverflowMenu
-              expanded={expanded}
-              onToggleExpand={() => setExpanded(e => !e)}
-              doneCount={doneCount}
-              onClearDone={() => {
-                if (doneRows.length === 0) return;
-                setPendingClearDone(true);
-              }}
-            />
+            {/* HeaderOverflowMenu omitted in V2 prototype — see index.tsx for canonical wiring */}
             <ColumnPicker columns={columns} onChange={setColumns} />
             <ViewToggle view={view} onChange={setView} />
             <button
