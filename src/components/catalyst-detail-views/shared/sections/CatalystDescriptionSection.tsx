@@ -6,17 +6,90 @@
  * (headings, bold, numbered lists, tables with borders, media with lightbox).
  * Includes expand/collapse toggle matching Jira's collapsible sections.
  * Click-to-edit: clicking the description or pencil icon enters edit mode
- * with the canonical CatalystRichTextEditor (TipTap + image management).
- * Falls back to plain text. Shows placeholder when empty.
+ * with the canonical Atlaskit editor (@atlaskit/editor-core). On a chunk
+ * load or runtime failure the AtlaskitBoundary falls back to the existing
+ * TipTap editor / HTML renderer so users are never stranded.
  */
-import React, { useState, useCallback } from 'react';
+import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
 import { CatalystRichTextEditor } from '@/components/shared/rich-text';
+import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 import type { PhIssue } from '../types';
+
+/* Atlaskit description — canonical across ALL issue types.
+   LAYER 1 — STRICT VIEW/EDIT SPLIT (Atlassian-canonical).
+   The renderer chunk (~400–600KB) is loaded on view.
+   The editor-core chunk (~2MB) is loaded only on Edit click.
+
+   These lazy imports MUST target the component files directly, NOT the
+   `@/components/shared/rich-text/atlaskit` barrel. Rollup treats each
+   `import(...)` specifier as the module boundary for the generated chunk:
+   if both dynamic imports resolve to the same barrel module, Rollup
+   hoists every barrel re-export into one chunk — so loading the
+   Renderer drags `@atlaskit/editor-core` with it. Direct file imports
+   keep the two graphs separate and let the renderer load alone on view.
+
+   Wrapped in AtlaskitBoundary so a chunk-load failure or runtime error
+   surfaces in the console and a safe TipTap/HTML path is used as fallback.
+
+   Data-contract shim: `parseStoredDescriptionToAdf` (inside the Atlaskit
+   Editor/Renderer components) accepts ADF object, ADF JSON string, plain
+   text, or null. Issue types that historically stored only plain text in
+   `description_text` are transparently wrapped as a single ADF paragraph
+   on first load. On save, the editor writes normalized ADF JSON back to
+   `ph_issues.description_adf`, completing the lazy migration.
+
+   File names still reference "Epic" for historical reasons; the files
+   themselves are generic ADF editor/renderer pair. File renames are a
+   separate follow-up task. */
+const EpicDescriptionEditor = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+);
+const EpicDescriptionRenderer = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer'),
+);
+import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
+
+function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
+  return (
+    <div style={{ minHeight, paddingLeft: 20, color: '#97A0AF', fontSize: 13 }}>
+      Loading editor…
+    </div>
+  );
+}
+
+/* LAYER 2 (mini) — pre-hydration placeholder parity.
+   Renders the description via the synchronous HTML path that is already
+   in the main bundle, so the text is on screen in <5ms. When the real
+   @atlaskit/renderer chunk arrives, React swaps it in with matching
+   typography and lineHeight — no layout shift, no flash of empty state.
+   This is the same DOM the Atlaskit-failure fallback produces, so the
+   placeholder is guaranteed to match the chunk-failure path as well. */
+function AtlaskitRendererPlaceholder({
+  html,
+  issueKey,
+}: {
+  html: string;
+  issueKey?: string;
+}) {
+  return (
+    <div
+      className="cv-desc-body"
+      style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7 }}
+    >
+      <AdfDescriptionRenderer html={html} issueKey={issueKey} />
+    </div>
+  );
+}
+
+/* Build-ID marker so we can distinguish which deployed commit is running
+   by looking at the console without checking chunk hashes. Update when
+   the description surface changes materially. */
+const DESC_BUILD_ID = 'atlaskit-canonical-v218';
 
 /* ── Scoped styles for ADF content inside CatalystView ── */
 const STYLE_ID = 'cv-desc-styles';
@@ -63,6 +136,17 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   const [editing, setEditing] = useState(false);
   const [hovered, setHovered] = useState(false);
   const queryClient = useQueryClient();
+
+  /* Per-issue diagnostic at info level (visible at default console filter).
+     Prints the build ID so we can confirm which deployed bundle is live
+     without inspecting chunk hashes. */
+  React.useEffect(() => {
+    if (!issue) return;
+    // eslint-disable-next-line no-console
+    console.info(
+      `[CatalystDescriptionSection] build=${DESC_BUILD_ID} issue_key=${issue.issue_key ?? 'n/a'} issue_type=${JSON.stringify(issue.issue_type)} → ATLASKIT`,
+    );
+  }, [issue]);
 
   // Raw ADF content string for the editor (prefer description_adf_raw → description_adf → text)
   const rawAdfContent = issue?.description_adf
@@ -134,7 +218,20 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               opacity: hovered ? 1 : 0,
               transition: 'opacity 0.15s, color 0.1s, background 0.1s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#172B4D'; e.currentTarget.style.background = '#F4F5F7'; }}
+            /*
+             * Layer 3 — intent-based prefetch.
+             * The Atlaskit editor chunk is ~2MB; start its dynamic import
+             * the moment the user hovers or focuses the pencil. By the
+             * time the click fires, vendor-atlaskit-editor is in the HTTP
+             * cache and the editor mounts synchronously from Suspense.
+             * No visible loading state for 95% of users.
+             */
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#172B4D';
+              e.currentTarget.style.background = '#F4F5F7';
+              prefetchEpicEditor();
+            }}
+            onFocus={() => { prefetchEpicEditor(); }}
             onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.background = 'none'; }}
           >
             <Pencil size={14} />
@@ -145,18 +242,39 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
       {/* Collapsible body */}
       {!collapsed && (
         editing && issue ? (
-          /* ── Edit mode: CatalystRichTextEditor ── */
+          /* ── Edit mode — canonical Atlaskit editor for every issue type.
+             AtlaskitBoundary is kept strictly as a runtime safety net: if
+             the @atlaskit/editor-core chunk fails to load (network / CDN
+             outage) or throws, the boundary renders the existing TipTap
+             editor so the user is never stranded without a working
+             composer. This is NOT an issue-type gate — it is a
+             chunk-failure gate. */
           <div style={{ paddingLeft: 20 }}>
-            <CatalystRichTextEditor
-              content={rawAdfContent}
-              onSave={handleSave}
-              onCancel={handleCancel}
-              placeholder="Add a description..."
-              minHeight={200}
-              mode="save"
-              workItemId={issue.id}
-              storagePath="description-images"
-            />
+            <AtlaskitBoundary
+              diagnosticTag={`description-edit:${issue.issue_key ?? issue.id}`}
+              fallback={
+                <CatalystRichTextEditor
+                  content={rawAdfContent}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                  placeholder="Add a description..."
+                  minHeight={200}
+                  mode="save"
+                  workItemId={issue.id}
+                  storagePath="description-images"
+                />
+              }
+            >
+              <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
+                <EpicDescriptionEditor
+                  initialContent={issue.description_adf ?? issue.description_text ?? null}
+                  onSave={handleSave}
+                  onCancel={handleCancel}
+                  workItemId={issue.id}
+                  placeholder="Add a description..."
+                />
+              </Suspense>
+            </AtlaskitBoundary>
           </div>
         ) : isEmpty ? (
           /* ── Empty placeholder — click to edit ── */
@@ -174,17 +292,43 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             Add a description...
           </div>
         ) : (
-          /* ── Read-only ADF render — click to edit ── */
+          /* ── Read-only ADF render — canonical Atlaskit renderer for every
+             issue type. Click anywhere to enter edit mode (Jira parity).
+             AtlaskitBoundary falls back to the synchronous HTML renderer
+             only on a chunk-load / runtime failure — NOT on issue type. */
           <div
-            className="cv-desc-body"
+            role="button"
+            tabIndex={0}
             style={{
-              fontSize: 14, color: '#172B4D', lineHeight: 1.7,
-              minHeight: 40, paddingLeft: 20, cursor: 'text',
-              borderRadius: 4, position: 'relative',
+              paddingLeft: 20, minHeight: 40, cursor: 'text', borderRadius: 4,
+              position: 'relative',
+              transition: 'background 0.15s',
             }}
-            onDoubleClick={() => { if (issue) setEditing(true); }}
+            onClick={() => { if (issue) setEditing(true); }}
+            onKeyDown={(e) => {
+              if ((e.key === 'Enter' || e.key === ' ') && issue) {
+                e.preventDefault();
+                setEditing(true);
+              }
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+            title="Click to edit"
           >
-            <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />
+            <AtlaskitBoundary
+              diagnosticTag={`description-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
+              fallback={
+                <AtlaskitRendererPlaceholder html={descHtml} issueKey={issue?.issue_key} />
+              }
+            >
+              <Suspense
+                fallback={
+                  <AtlaskitRendererPlaceholder html={descHtml} issueKey={issue?.issue_key} />
+                }
+              >
+                <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} issueKey={issue?.issue_key} />
+              </Suspense>
+            </AtlaskitBoundary>
           </div>
         )
       )}

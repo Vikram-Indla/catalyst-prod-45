@@ -82,6 +82,10 @@ import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 import { Search, MoreHorizontal, Settings2, Map as MapIcon, Filter } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
 import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
+import { ENABLE_KANBAN_V2 } from '@/lib/featureFlags';
+import { readDensityPref, writeDensityPref } from '@/components/kanban/densityPrefs';
+import { statusChangeSchema } from '@/components/kanban/kanban-schemas';
+import { useBoardUrlState } from '@/components/kanban/useBoardUrlState';
 import {
   AdvancedFilterPanel, type AdvancedFilters,
   EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
@@ -93,8 +97,6 @@ import type { GroupByOption } from '@/components/shared/GroupByPopover';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
-const DENSITY_STORAGE_KEY = 'kanban-density';
-
 export default function KanbanBoardPage() {
   const { key } = useParams<{ key: string }>();
   const navigate = useNavigate();
@@ -105,15 +107,26 @@ export default function KanbanBoardPage() {
   const { toasts, dismissToast, success: toastSuccess, error: toastError } = usePriToast();
 
   /* ═══ STATE ═══ */
-  const [search, setSearch] = useState('');
-  const [debSearch, setDebSearch] = useState('');
-  const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
-  const [selEpics, setSelEpics] = useState<string[]>([]);
-  const [selTypes, setSelTypes] = useState<string[]>([]);
-  const [selPriorities, setSelPriorities] = useState<string[]>([]);
+  // V2: URL-backed filter hydration. When the flag is off, `initial` resolves
+  // to the schema defaults so the existing behavior is preserved exactly.
+  const { initial: urlInit, writeToUrl } = useBoardUrlState(ENABLE_KANBAN_V2);
+  const [search, setSearch] = useState(urlInit.search);
+  const [debSearch, setDebSearch] = useState(urlInit.search);
+  const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set(urlInit.assignees));
+  const [selEpics, setSelEpics] = useState<string[]>(urlInit.epics);
+  const [selTypes, setSelTypes] = useState<string[]>(urlInit.types);
+  const [selPriorities, setSelPriorities] = useState<string[]>(urlInit.priorities);
   const [quickFilters, setQuickFilters] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupByMode>('none');
-  const density: KanbanDensity = 'comfortable';
+  const [groupBy, setGroupBy] = useState<GroupByMode>(urlInit.group);
+  // V2: density is user-scoped via localStorage (DENSITY_STORAGE_KEY). When
+  // the flag is off, density stays hardcoded to 'comfortable' (existing behavior).
+  const [density, setDensity] = useState<KanbanDensity>(
+    ENABLE_KANBAN_V2 ? readDensityPref('comfortable') : 'comfortable',
+  );
+  const onDensityChange = useCallback((d: KanbanDensity) => {
+    setDensity(d);
+    writeDensityPref(d);
+  }, []);
   const [selIssueId, setSelIssueId] = useState<string | null>(null);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
@@ -332,6 +345,20 @@ export default function KanbanBoardPage() {
     timerRef.current = setTimeout(() => setDebSearch(search), 250);
     return () => clearTimeout(timerRef.current);
   }, [search]);
+
+  // V2: sync filter state to the URL. Debounced via debSearch so typing
+  // doesn't spam history. Noop when ENABLE_KANBAN_V2 is false (writeToUrl guards).
+  useEffect(() => {
+    if (!ENABLE_KANBAN_V2) return;
+    writeToUrl({
+      search: debSearch,
+      group: groupBy,
+      assignees: Array.from(selAssignees),
+      epics: selEpics,
+      types: selTypes,
+      priorities: selPriorities,
+    });
+  }, [debSearch, groupBy, selAssignees, selEpics, selTypes, selPriorities, writeToUrl]);
 
   /* ═══ AGGREGATIONS ═══ */
 
@@ -720,6 +747,13 @@ export default function KanbanBoardPage() {
   }, [groupBy]);
 
   const persistStatusChange = useCallback(async (issueId: string, newStatus: string) => {
+    // V2: Zod boundary on DnD — guards against empty/whitespace payloads from
+    // aborted drags or stale overlay references. Silent noop when invalid so
+    // the existing drag-stop UX is preserved.
+    if (ENABLE_KANBAN_V2) {
+      const parsed = statusChangeSchema.safeParse({ issueId, newStatus });
+      if (!parsed.success) return;
+    }
     const issue = issuesById.get(issueId);
     if (!issue || issue.status === newStatus) return;
     const oldStatus = issue.status;
@@ -963,6 +997,8 @@ export default function KanbanBoardPage() {
               }}
               onClose={() => setShowViewSettings(false)}
               tk={tk}
+              density={ENABLE_KANBAN_V2 ? density : undefined}
+              onDensityChange={ENABLE_KANBAN_V2 ? onDensityChange : undefined}
             />
           )}
           {showAdvancedFilter && (

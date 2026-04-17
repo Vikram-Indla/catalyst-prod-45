@@ -130,17 +130,28 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
     setAdvancedFilters({});
   }, []);
 
-  // Filter items based on advanced filters
+  // Parent filter from URL (?parent=<issue_key>) — used by SubtasksPanel "View in search"
+  const parentFilterKey = searchParams.get('parent');
+
+  // Filter items based on advanced filters + URL parent filter
   const filteredItems = useMemo(() => {
-    if (advancedFilterCount === 0) return items;
-    return items.filter(item => {
+    let list = items;
+    if (parentFilterKey) {
+      list = list.filter(item => item.parent_key === parentFilterKey);
+    }
+    if (advancedFilterCount === 0) return list;
+    return list.filter(item => {
       if (advancedFilters.status?.length && !advancedFilters.status.includes(item.status)) return false;
       if (advancedFilters.priority?.length && !advancedFilters.priority.includes(item.priority)) return false;
       if (advancedFilters.assignee?.length && !advancedFilters.assignee.includes(item.assignee_display_name || '')) return false;
       if (advancedFilters.type?.length && !advancedFilters.type.includes(item.issue_type)) return false;
       return true;
     });
-  }, [items, advancedFilters, advancedFilterCount]);
+  }, [items, advancedFilters, advancedFilterCount, parentFilterKey]);
+
+  const clearParentFilter = useCallback(() => {
+    setSearchParams(p => { p.delete('parent'); return p; }, { replace: true });
+  }, [setSearchParams]);
 
   // Auto-select first
   useEffect(() => {
@@ -197,6 +208,33 @@ export function IssueViewShell({ projectKey, storageKey }: Props) {
               />
             )}
           </div>
+
+          {parentFilterKey && (
+            <button
+              type="button"
+              onClick={clearParentFilter}
+              title="Clear parent filter"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                height: 28, padding: '0 8px 0 10px',
+                background: '#DEEBFF', color: '#0747A6',
+                border: '1px solid #B3D4FF', borderRadius: 3,
+                fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                fontFamily: 'inherit',
+              }}
+            >
+              Parent: {parentFilterKey}
+              <span
+                aria-hidden
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 14, height: 14, borderRadius: '50%',
+                  background: 'rgba(7, 71, 166, 0.12)', color: '#0747A6',
+                  fontSize: 11, lineHeight: 1,
+                }}
+              >×</span>
+            </button>
+          )}
         </div>
 
         <div className="awToolbarRight" />

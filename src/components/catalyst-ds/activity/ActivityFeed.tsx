@@ -3,6 +3,7 @@ import { useMemo, useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { History, Loader2 } from 'lucide-react';
 import type { CdsActivityItem, CdsSortOrder } from '../types';
+import type { JiraUserMap } from '../utils/jiraContent';
 import { ActivityItem } from './ActivityItem';
 
 export interface ActivityFeedProps {
@@ -14,6 +15,7 @@ export interface ActivityFeedProps {
   isLoadingMore?: boolean;
   emptyMessage?: string;
   emptyDescription?: string;
+  jiraUserMap?: JiraUserMap;
   className?: string;
 }
 
@@ -26,6 +28,7 @@ function ActivityFeed({
   isLoadingMore = false,
   emptyMessage = 'No history yet',
   emptyDescription = 'Changes will appear here',
+  jiraUserMap,
   className,
 }: ActivityFeedProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -77,7 +80,7 @@ function ActivityFeed({
     <div ref={scrollRef} className={cn('overflow-y-auto', className)}>
       <div className="divide-y divide-[#EBECF0] dark:divide-[#2E2E2E]">
         {sortedItems.map((item) => (
-          <ActivityItem key={item.id} item={item} />
+          <ActivityItem key={item.id} item={item} jiraUserMap={jiraUserMap} />
         ))}
       </div>
 

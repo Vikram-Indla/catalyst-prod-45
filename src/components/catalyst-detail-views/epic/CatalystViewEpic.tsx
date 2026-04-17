@@ -9,11 +9,12 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
+import { ParentAndLabels } from './ParentAndLabels';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
-import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewEpic({
@@ -28,6 +29,7 @@ export default function CatalystViewEpic({
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       <CatalystQuickActions />
+      <ParentAndLabels issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
@@ -38,18 +40,22 @@ export default function CatalystViewEpic({
           storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
+          parentIssueType={issue.issue_type || 'Epic'}
+          parentSummary={issue.summary || ''}
         />
       )}
 
-      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
+      <LinkedWorkItemsSection
+        issueId={itemId}
+        issueKey={issue?.issue_key ?? ''}
+        projectKey={issue?.project_key || projectKey}
+      />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic">
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
-    </CatalystSidebarDetails>
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="epic" />
   );
 
   return (

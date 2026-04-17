@@ -3,17 +3,20 @@
  *
  * V2 only. The legacy hand-rolled div-grid has been removed; the canonical
  * DynamicTable molecule is the single implementation standard for this surface.
+ *
+ * Row click integrates with main's ticket-origin pattern: writes a breadcrumb
+ * origin record and navigates to /project-hub/:key/issue/:epicKey so the
+ * full-page detail can offer a "Back to Epic backlog" affordance.
  */
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEpicBacklog } from '../hooks/useBacklogData';
 import { useProject } from '@/hooks/useProjects';
 import { groupByStatus, EPIC_GROUP_ORDER } from '../utils/backlog.utils';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
-const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 import { DeleteConfirmDialog } from '../components/dialogs/DeleteConfirmDialog';
 import { CreateEpicDialog, EditEpicDialog } from '@/modules/program-epics';
 import { Button } from '@/components/ui/button';
@@ -23,11 +26,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogEpic } from '../types/backlog.types';
 import { EpicBacklogTable } from '../components/EpicBacklogTable';
+import { writeTicketOrigin } from '../hooks/useTicketOrigin';
 
 export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { data: project } = useProject(projectId || '');
   const { data: epics, isLoading, error } = useEpicBacklog(projectId || '');
   const avatarsByName = useProfileAvatarsByName();
@@ -36,10 +41,22 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
 
   const [showCreate, setShowCreate] = useState(false);
   const [editEpicId, setEditEpicId] = useState<string | null>(null);
-  const [drawerEpicId, setDrawerEpicId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogEpic | null>(null);
 
   const groups = useMemo(() => groupByStatus(epics || [], EPIC_GROUP_ORDER), [epics]);
+
+  /** Row click → write ticket-origin breadcrumb + navigate to full-page detail. */
+  const openEpicDetail = (epic: BacklogEpic) => {
+    const epicKey = epic.epic_key;
+    if (!epicKey || !project?.key) return;
+    const origin = {
+      fromUrl: window.location.pathname + window.location.search,
+      fromLabel: 'Epic backlog',
+      fromType: 'epic-backlog' as const,
+    };
+    writeTicketOrigin(origin);
+    navigate(`/project-hub/${project.key}/issue/${epicKey}`, { state: { ticketOrigin: origin } });
+  };
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -85,7 +102,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
           avatarsByName={avatarsByName}
           isLoading={isLoading}
           error={error instanceof Error ? error : error ? new Error(String(error)) : null}
-          onRowClick={(epic) => setDrawerEpicId(epic.id)}
+          onRowClick={openEpicDetail}
           onEdit={(epic) => setEditEpicId(epic.id)}
           onDelete={(epic) => setDeleteTarget(epic)}
           emptyState={
@@ -123,16 +140,6 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
           onUpdated={() => queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] })}
         />
       )}
-
-      <Suspense fallback={null}>
-        <CatalystDetailRouter
-          isOpen={!!drawerEpicId}
-          onClose={() => setDrawerEpicId(null)}
-          itemId={drawerEpicId || ''}
-          itemType="epic"
-          projectId={projectId || ''}
-        />
-      </Suspense>
 
       <DeleteConfirmDialog
         isOpen={!!deleteTarget}

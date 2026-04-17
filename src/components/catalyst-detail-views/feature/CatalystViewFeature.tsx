@@ -10,7 +10,7 @@ import {
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
-import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewFeature({
@@ -35,10 +35,16 @@ export default function CatalystViewFeature({
           storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
+          parentIssueType={issue.issue_type || 'Feature'}
+          parentSummary={issue.summary || ''}
         />
       )}
 
-      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
+      <LinkedWorkItemsSection
+        issueId={itemId}
+        issueKey={issue?.issue_key ?? ''}
+        projectKey={issue?.project_key || projectKey}
+      />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );

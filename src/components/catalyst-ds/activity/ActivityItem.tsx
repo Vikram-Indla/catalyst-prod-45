@@ -1,31 +1,19 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowRight, Plus, Pencil, Trash2, Zap } from 'lucide-react';
-import type { CdsActivityItem, CdsActivityAction } from '../types';
+import { formatDistanceToNow } from 'date-fns';
+import type { CdsActivityItem, CdsActivityAction, CdsAppearance } from '../types';
 import { Lozenge } from '../status/Lozenge';
-import type { CdsAppearance } from '../types';
-
-function getInitials(name: string): string {
-  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-}
+import { renderJiraContent, normalizeJiraText, type JiraUserMap } from '../utils/jiraContent';
 
 function formatRelativeTime(dateStr: string): string {
-  const now = new Date();
-  const date = new Date(dateStr);
-  const diffMs = now.getTime() - date.getTime();
-  const diffSec = Math.floor(diffMs / 1000);
-  const diffMin = Math.floor(diffSec / 60);
-  const diffHour = Math.floor(diffMin / 60);
-  const diffDay = Math.floor(diffHour / 24);
-
-  if (diffSec < 60) return 'just now';
-  if (diffMin < 60) return `${diffMin}m ago`;
-  if (diffHour < 24) return `${diffHour}h ago`;
-  if (diffDay < 7) return `${diffDay}d ago`;
-  if (diffDay < 30) return `${Math.floor(diffDay / 7)}w ago`;
-
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  try {
+    return formatDistanceToNow(d, { addSuffix: true });
+  } catch {
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
 }
 
 const actionConfig: Record<
@@ -39,26 +27,18 @@ const actionConfig: Record<
 };
 
 function formatFieldName(field: string): string {
-  return field
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return field.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function formatDisplayValue(value: string | null): string {
   if (value === null || value === 'null' || value === '') return 'None';
-
   if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)) {
     try {
-      return new Date(value).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      });
+      return new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     } catch {
       // fall through
     }
   }
-
   return value;
 }
 
@@ -72,19 +52,29 @@ function statusAppearance(value: string | null): CdsAppearance | undefined {
   return 'default';
 }
 
+/** Fields that render as rich content (multi-line, long, may have Jira markup). */
+const RICH_TEXT_FIELDS = new Set(['description', 'summary', 'comment', 'title']);
+
+/** Fields that render as status lozenges. */
+const STATUS_FIELDS = new Set(['process_step', 'status', 'health']);
+
 export interface ActivityItemProps {
   item: CdsActivityItem;
+  jiraUserMap?: JiraUserMap;
   className?: string;
 }
 
-function ActivityItemDisplay({ item, className }: ActivityItemProps) {
+function ActivityItemDisplay({ item, jiraUserMap, className }: ActivityItemProps) {
   const { type, actor, timestamp, fieldChange, description } = item;
   const config = actionConfig[type];
   const Icon = config.icon;
 
-  const isFieldChangeOnStatus =
-    fieldChange &&
-    ['process_step', 'status', 'health'].includes(fieldChange.field.toLowerCase().replace(/\s/g, '_'));
+  const fieldKey = fieldChange ? fieldChange.field.toLowerCase().replace(/\s/g, '_') : '';
+  const isStatus = STATUS_FIELDS.has(fieldKey);
+  const isRich =
+    RICH_TEXT_FIELDS.has(fieldKey) ||
+    (fieldChange &&
+      ((fieldChange.oldValue?.length ?? 0) > 80 || (fieldChange.newValue?.length ?? 0) > 80));
 
   return (
     <div className={cn('flex gap-3 py-3', className)}>
@@ -112,7 +102,10 @@ function ActivityItemDisplay({ item, className }: ActivityItemProps) {
 
           {type === 'update' && fieldChange && (
             <span className="text-[13px] text-[#6B778C] dark:text-[#A1A1A1]">
-              changed <span className="font-medium text-[#172B4D] dark:text-[#EDEDED]">{formatFieldName(fieldChange.field)}</span>
+              updated the{' '}
+              <span className="font-medium text-[#172B4D] dark:text-[#EDEDED]">
+                {formatFieldName(fieldChange.field)}
+              </span>
             </span>
           )}
 
@@ -128,9 +121,9 @@ function ActivityItemDisplay({ item, className }: ActivityItemProps) {
         </div>
 
         {type === 'update' && fieldChange && (
-          <div className="flex items-center gap-2 mt-1.5">
-            {isFieldChangeOnStatus ? (
-              <>
+          <div className="mt-1.5">
+            {isStatus ? (
+              <div className="flex items-center gap-2">
                 <Lozenge appearance={statusAppearance(fieldChange.oldValue)}>
                   {formatDisplayValue(fieldChange.oldValue)}
                 </Lozenge>
@@ -138,17 +131,31 @@ function ActivityItemDisplay({ item, className }: ActivityItemProps) {
                 <Lozenge appearance={statusAppearance(fieldChange.newValue)}>
                   {formatDisplayValue(fieldChange.newValue)}
                 </Lozenge>
-              </>
+              </div>
+            ) : isRich ? (
+              <div className="grid grid-cols-[1fr_auto_1fr] gap-3 items-start">
+                <div className="text-[13px] text-[#6B778C] dark:text-[#A1A1A1] whitespace-pre-wrap break-words">
+                  {fieldChange.oldValue
+                    ? renderJiraContent(fieldChange.oldValue, { userMap: jiraUserMap })
+                    : <span className="italic">None</span>}
+                </div>
+                <ArrowRight className="h-3 w-3 text-[#6B778C] dark:text-[#878787] shrink-0 mt-1.5" />
+                <div className="text-[13px] text-[#172B4D] dark:text-[#EDEDED] whitespace-pre-wrap break-words">
+                  {fieldChange.newValue
+                    ? renderJiraContent(fieldChange.newValue, { userMap: jiraUserMap })
+                    : <span className="italic text-[#6B778C] dark:text-[#A1A1A1]">None</span>}
+                </div>
+              </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[13px] text-[#6B778C] dark:text-[#A1A1A1] line-through">
-                  {formatDisplayValue(fieldChange.oldValue)}
+                  {normalizeJiraText(fieldChange.oldValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
                 <ArrowRight className="h-3 w-3 text-[#6B778C] dark:text-[#878787] shrink-0" />
                 <span className="text-[13px] font-medium text-[#172B4D] dark:text-[#EDEDED]">
-                  {formatDisplayValue(fieldChange.newValue)}
+                  {normalizeJiraText(fieldChange.newValue, { userMap: jiraUserMap }) || 'None'}
                 </span>
-              </>
+              </div>
             )}
           </div>
         )}

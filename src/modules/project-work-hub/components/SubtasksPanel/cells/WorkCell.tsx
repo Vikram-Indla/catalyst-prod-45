@@ -1,25 +1,44 @@
 /**
- * WorkCell — Merged cell: issue type icon + key link + summary
- * Jira parity: icon 16px, key underlined blue, summary dark ellipsis
+ * WorkCell — issue type icon + key + summary, clickable to open subtask.
  */
-import React from 'react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 interface WorkCellProps {
-  issueType: string;
-  issueKey: string;
+  issueType?: string | null;
+  issueKey?: string | null;
   summary: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
-export const WorkCell = React.memo(function WorkCell({ issueType, issueKey, summary, onClick }: WorkCellProps) {
+export function WorkCell({ issueType, issueKey, summary, onClick }: WorkCellProps) {
   return (
-    <div className="sp-work-cell">
-      <span className="sp-type-icon"><JiraIssueTypeIcon type={issueType} size={16} /></span>
-      <span className="sp-issue-key" onClick={(e) => { e.stopPropagation(); onClick(); }}>
-        {issueKey}
+    <button
+      type="button"
+      onClick={onClick}
+      className="sp-work-cell"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        background: 'transparent',
+        border: 'none',
+        padding: 0,
+        cursor: onClick ? 'pointer' : 'default',
+        textAlign: 'left',
+        font: 'inherit',
+        color: 'inherit',
+        minWidth: 0,
+      }}
+    >
+      <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+        <JiraIssueTypeIcon type={issueType || 'task'} size={16} />
       </span>
-      <span className="sp-issue-summary">{summary}</span>
-    </div>
+      {issueKey && (
+        <span style={{ color: '#6B778C', fontSize: 12, flexShrink: 0 }}>{issueKey}</span>
+      )}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {summary}
+      </span>
+    </button>
   );
-});
+}

@@ -1,0 +1,338 @@
+/* ═══════════════════════════════════════════
+   ACTIVITY PILOT — Jira Cloud Parity
+   Scoped to .ap-* prefix. Pilot only.
+   ═══════════════════════════════════════════ */
+
+.ap-root {
+  padding: 0;
+}
+
+/* ── Heading ── */
+.ap-heading {
+  font: 600 16px/22px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text, #172B4D);
+  margin: 0 0 8px;
+}
+
+/* ── Tab bar ── */
+.ap-tab-bar {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--aw-border, #EBECF0);
+  margin-bottom: 16px;
+}
+.ap-tab-list {
+  display: flex;
+  gap: 0;
+  flex: 1;
+}
+.ap-tab {
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  font: 500 14px/20px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  cursor: pointer;
+  transition: color 150ms, border-color 150ms;
+}
+.ap-tab:hover { color: #172B4D; }
+.ap-tab.active {
+  color: #0052CC;
+  border-bottom-color: #0052CC;
+}
+.ap-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  cursor: pointer;
+  margin-left: auto;
+  white-space: nowrap;
+  transition: background 150ms;
+}
+.ap-sort-btn:hover { background: rgba(9,30,66,0.04); }
+
+/* ── Avatar ── */
+.ap-avatar {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Composer collapsed ── */
+.ap-composer-collapsed {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  border: 1px solid var(--aw-border, #DFE1E6);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  cursor: text;
+  transition: border-color 150ms;
+}
+.ap-composer-collapsed:hover { border-color: #B3BAC5; }
+.ap-composer-collapsed-body { flex: 1; min-width: 0; }
+.ap-composer-placeholder {
+  display: block;
+  font: 400 14px/20px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  margin-bottom: 8px;
+}
+.ap-quick-templates {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.ap-quick-btn {
+  padding: 4px 10px;
+  border: 1px solid #DFE1E6;
+  border-radius: 12px;
+  background: none;
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.ap-quick-btn:hover { background: #F4F5F7; color: #172B4D; }
+
+/* ── Composer expanded ── */
+.ap-composer-expanded {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.ap-composer-avatar { flex-shrink: 0; padding-top: 4px; }
+.ap-composer-editor { flex: 1; min-width: 0; }
+
+/* AtlaskitEditor wrapper override for comment appearance */
+.ap-composer-editor .atlaskit-editor-wrapper {
+  border: 2px solid #B3D4FF;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.ap-composer-editor .atlaskit-editor-wrapper:focus-within {
+  border-color: #4C9AFF;
+}
+
+.ap-composer-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+.ap-save-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 3px;
+  background: #0052CC;
+  font: 500 14px/20px system-ui, -apple-system, sans-serif;
+  color: #fff;
+  cursor: pointer;
+  transition: background 150ms;
+}
+.ap-save-btn:hover { background: #0747A6; }
+.ap-save-btn:disabled { background: #B3D4FF; color: #fff; cursor: not-allowed; }
+.ap-cancel-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 3px;
+  background: none;
+  font: 500 14px/20px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  cursor: pointer;
+  transition: color 150ms;
+}
+.ap-cancel-btn:hover { color: #172B4D; }
+
+.ap-composer-hints {
+  margin-top: 8px;
+}
+.ap-quick-templates-inline {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.ap-quick-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  cursor: pointer;
+  transition: color 150ms;
+}
+.ap-quick-link:hover { color: #0052CC; }
+.ap-pro-tip {
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+}
+.ap-kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid #DFE1E6;
+  border-radius: 3px;
+  background: #F4F5F7;
+  font: 700 11px/16px 'JetBrains Mono', monospace;
+  color: #172B4D;
+}
+
+/* ── Loading editor fallback ── */
+.ap-loading-editor {
+  padding: 20px;
+  text-align: center;
+  font: 400 13px/18px system-ui;
+  color: #6B778C;
+}
+
+/* ── Feed / timeline ── */
+.ap-feed { padding: 0; }
+.ap-timeline-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px 0;
+}
+.ap-timeline-content { flex: 1; min-width: 0; }
+.ap-timeline-name {
+  font: 500 14px/20px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text, #172B4D);
+}
+.ap-timeline-name strong { font-weight: 600; }
+.ap-timeline-time {
+  font: 400 12px/16px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+  margin-top: 2px;
+}
+
+/* Comment body */
+.ap-comment-body {
+  margin-top: 8px;
+}
+.ap-comment-plain {
+  font: 400 14px/22px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text, #172B4D);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.ap-loading-inline {
+  font: 400 12px/16px system-ui;
+  color: #6B778C;
+}
+
+/* History changes */
+.ap-history-change {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.ap-status-loz {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid #DFE1E6;
+  border-radius: 3px;
+  font: 600 11px/16px system-ui, -apple-system, sans-serif;
+  text-transform: uppercase;
+  color: var(--aw-text, #172B4D);
+  white-space: nowrap;
+}
+.ap-assignee-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 400 13px/18px system-ui, -apple-system, sans-serif;
+  color: var(--aw-text, #172B4D);
+}
+.ap-assignee-mini {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 8px/1 system-ui;
+  color: #fff;
+}
+.ap-change-old {
+  font: 400 13px/18px system-ui;
+  color: #6B778C;
+}
+.ap-change-new {
+  font: 500 13px/18px system-ui;
+  color: var(--aw-text, #172B4D);
+}
+
+/* States */
+.ap-loading {
+  display: flex;
+  justify-content: center;
+  padding: 24px 0;
+}
+.ap-spinner {
+  width: 20px;
+  height: 20px;
+  color: #6B778C;
+  animation: ap-spin 1s linear infinite;
+}
+@keyframes ap-spin {
+  to { transform: rotate(360deg); }
+}
+.ap-empty {
+  text-align: center;
+  padding: 24px 0;
+  font: 400 14px/20px system-ui, -apple-system, sans-serif;
+  color: #6B778C;
+}
+
+/* ═══════════════════════════════════════════
+   DARK MODE — NOCTURNE overrides
+   ═══════════════════════════════════════════ */
+.dark .ap-heading { color: #EDEDED; }
+.dark .ap-tab-bar { border-color: #2E2E2E; }
+.dark .ap-tab { color: #878787; }
+.dark .ap-tab:hover { color: #EDEDED; }
+.dark .ap-tab.active { color: #4C9AFF; border-bottom-color: #4C9AFF; }
+.dark .ap-sort-btn { color: #878787; }
+.dark .ap-sort-btn:hover { background: #1F1F1F; color: #EDEDED; }
+
+.dark .ap-composer-collapsed { border-color: #2E2E2E; }
+.dark .ap-composer-collapsed:hover { border-color: #454545; }
+.dark .ap-composer-placeholder { color: #878787; }
+.dark .ap-quick-btn { border-color: #2E2E2E; color: #878787; }
+.dark .ap-quick-btn:hover { background: #1F1F1F; color: #EDEDED; }
+
+.dark .ap-composer-editor .atlaskit-editor-wrapper { border-color: #454545; }
+.dark .ap-composer-editor .atlaskit-editor-wrapper:focus-within { border-color: #4C9AFF; }
+.dark .ap-save-btn { background: #1D4ED8; }
+.dark .ap-save-btn:hover { background: #2563EB; }
+.dark .ap-save-btn:disabled { background: #292929; color: #878787; }
+.dark .ap-cancel-btn { color: #A1A1A1; }
+.dark .ap-cancel-btn:hover { color: #EDEDED; }
+.dark .ap-quick-link { color: #878787; }
+.dark .ap-quick-link:hover { color: #4C9AFF; }
+.dark .ap-pro-tip { color: #878787; }
+.dark .ap-kbd { border-color: #2E2E2E; background: #1A1A1A; color: #EDEDED; }
+
+.dark .ap-timeline-name { color: #EDEDED; }
+.dark .ap-timeline-time { color: #878787; }
+.dark .ap-comment-plain { color: #EDEDED; }
+.dark .ap-status-loz { border-color: #454545; color: #EDEDED; }
+.dark .ap-assignee-chip { color: #EDEDED; }
+.dark .ap-change-old { color: #878787; }
+.dark .ap-change-new { color: #EDEDED; }
+.dark .ap-empty { color: #878787; }
+.dark .ap-spinner { color: #878787; }

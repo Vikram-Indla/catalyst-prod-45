@@ -3,11 +3,10 @@
  *
  * Canonical sections: Title, Description, Acceptance Criteria, Priority,
  * Activity, Sidebar.
- * BR-unique: Blue type badge, child issues query + rendering.
+ * BR-unique: Blue type badge. Child work items rendered via the canonical
+ * SubtasksPanel (Atlaskit parity).
  */
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FileText } from 'lucide-react';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
@@ -16,11 +15,9 @@ import {
   CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
-import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import type { CatalystViewBaseProps } from '../shared/types';
-import {
-  IssueIcon, StatusLozenge,
-} from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 
 export default function CatalystViewBusinessRequest({
   isOpen, onClose, itemId, projectId, projectKey,
@@ -29,22 +26,6 @@ export default function CatalystViewBusinessRequest({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
-
-  /* ── BR-UNIQUE: child issues query ─────── */
-  const { data: childIssues = [] } = useQuery({
-    queryKey: ['cv-br-children', issue?.issue_key],
-    enabled: !!issue?.issue_key && isOpen,
-    queryFn: async () => {
-      const { data } = await supabase.from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, issue_type, assignee_display_name, priority')
-        .eq('parent_key', issue!.issue_key)
-        .is('deleted_at', null)
-        .order('position', { ascending: true });
-      return data || [];
-    },
-  });
-
-  const doneChildren = childIssues.filter((c: any) => c.status_category === 'done').length;
 
   const leftContent = (
     <>
@@ -62,32 +43,22 @@ export default function CatalystViewBusinessRequest({
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />
 
-      {/* BR-UNIQUE: Child issues */}
-      {childIssues.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>Child issues</span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: '#5E6C84', background: '#F4F5F7', padding: '1px 6px', borderRadius: 3 }}>{childIssues.length}</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 'auto' }}>
-              <div style={{ width: 80, height: 4, borderRadius: 2, background: '#F4F5F7', overflow: 'hidden' }}>
-                <div style={{ width: `${(doneChildren / childIssues.length) * 100}%`, height: '100%', borderRadius: 2, background: '#36B37E' }} />
-              </div>
-              <span style={{ fontSize: 11, color: '#5E6C84' }}>{doneChildren} / {childIssues.length}</span>
-            </div>
-          </div>
-          {childIssues.map((child: any) => (
-            <div key={child.id} onClick={() => onOpenItem?.(child.id)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 8px', borderRadius: 4, cursor: 'pointer', transition: 'background 0.12s' }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')} onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-              <IssueIcon type={child.issue_type} size={14} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{child.issue_key}</span>
-              <span style={{ fontSize: 14, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{child.summary}</span>
-              <StatusLozenge status={child.status} category={child.status_category} />
-            </div>
-          ))}
-        </div>
+      {issue?.issue_key && (
+        <SubtasksPanel
+          storyKey={issue.issue_key}
+          storyId={issue.id}
+          projectKey={issue.project_key || projectKey || ''}
+          onSubtaskClick={onOpenItem}
+          parentIssueType={issue.issue_type || 'Business Request'}
+          parentSummary={issue.summary || ''}
+        />
       )}
 
-      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
+      <LinkedWorkItemsSection
+        issueId={itemId}
+        issueKey={issue?.issue_key ?? ''}
+        projectKey={issue?.project_key || projectKey}
+      />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );

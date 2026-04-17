@@ -56,11 +56,12 @@ import { SubtasksPanel } from '../SubtasksPanel';
 import { DefectsSection } from './story-detail-modules';
 import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
-import { LinkedIssuesSection } from './story-detail-modules';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels } from './story-detail-modules';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
+import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
@@ -165,10 +166,6 @@ export default function StoryDetailModal({
       return null;
     },
   });
-
-
-
-
   // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
   const { data: reporterProfile } = useQuery({
     queryKey: ['profile-avatar-jira', issue?.reporter_account_id],
@@ -687,21 +684,27 @@ export default function StoryDetailModal({
             padding: '10px 20px', minHeight: 44, flexShrink: 0,
             borderBottom: '1px solid #EBECF0',
           }}>
-            {/* Breadcrumb */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
-              {/* Parent breadcrumb — canonical AddParentPicker */}
+            {/* Breadcrumb — canonical Atlaskit via TicketBreadcrumbs.
+                Shape: <ProjectAvatar Project> / <AddParentPicker popover> / <IssueIcon KEY>
+                AddParentPicker owns its own popover; it's injected as the
+                middle crumb so the "change parent" behavior is preserved. */}
+            <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
               {issue && (
-                <AddParentPicker
-                  issueKey={issue.issue_key}
-                  parentKey={issue.parent_key ?? null}
+                <TicketBreadcrumbs
                   projectKey={issue.project_key}
-                  onParentChange={handleParentChange}
-                  variant="breadcrumb"
+                  itemType={issue.issue_type ?? 'Story'}
+                  itemKey={issue.issue_key ?? null}
+                  middleSlot={
+                    <AddParentPicker
+                      issueKey={issue.issue_key}
+                      parentKey={issue.parent_key ?? null}
+                      projectKey={issue.project_key}
+                      onParentChange={handleParentChange}
+                      variant="breadcrumb"
+                    />
+                  }
                 />
               )}
-              <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              <IssueIcon type={issue?.issue_type ?? 'Story'} size={16} />
-              <IssueKeyLink issueKey={issue?.issue_key ?? '—'} style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }} />
             </div>
 
             {/* Right actions */}
@@ -1262,8 +1265,8 @@ export default function StoryDetailModal({
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (
                     <>
-                      <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} />
-                      <LinkedIssuesSection issueId={issue.id} issueKey={issue.issue_key} projectKey={issue.project_key} />
+                      <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} parentIssueType={issue.issue_type || 'Story'} parentSummary={issue.summary || ''} />
+                      <LinkedWorkItemsSection issueId={issue.id} issueKey={issue.issue_key} projectKey={issue.project_key} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
                       <TestHubSection storyId={issue.id} />

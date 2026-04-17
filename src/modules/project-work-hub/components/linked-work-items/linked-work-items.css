@@ -1,0 +1,502 @@
+/**
+ * LinkedWorkItems — scoped styles.
+ *
+ * Scoping rules:
+ *   - every selector is prefixed with `.lwi-` so there is zero reach into
+ *     sibling sections (Activity, Subtasks, Attachments, etc.)
+ *   - no `!important`, no nesting of `.dark` overrides, no HSL
+ *   - hex literals only (CLAUDE.md §3 L38 and §7)
+ *   - dark-mode overrides live in a single consolidated `.dark` block at
+ *     the bottom of this file (CLAUDE.md §17)
+ *
+ * Row density (40px) and spacing are tuned to sit between Jira's native
+ * 36px subtask density and Catalyst's section padding. The 4-state
+ * interaction overlay model (CLAUDE.md §15) is used for hover/selected/press.
+ */
+
+.lwi-root {
+  font-family: var(--cp-font-body, 'Inter', system-ui, sans-serif);
+  color: #172B4D;
+  display: block;
+  margin-top: 16px;
+}
+
+/* ── Header ───────────────────────────────── */
+.lwi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.lwi-header__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 4px 6px 4px 2px;
+  margin: -4px -6px -4px -2px;
+  cursor: pointer;
+  color: #172B4D;
+  font-family: inherit;
+  border-radius: 4px;
+  transition: background-color 150ms ease;
+}
+
+.lwi-header__toggle:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.lwi-header__toggle:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+.lwi-header__title {
+  font-size: 14px;
+  font-weight: 650;
+  color: #172B4D;
+}
+
+.lwi-header__count {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6B778C;
+  background: #F4F5F7;
+  border-radius: 10px;
+  padding: 0 8px;
+  min-width: 20px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+}
+
+.lwi-header__add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: #42526E;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.lwi-header__add:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #172B4D;
+}
+
+.lwi-header__add:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+/* ── Body / Groups ────────────────────────── */
+.lwi-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 0;
+}
+
+.lwi-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.lwi-group__header {
+  font-size: 12px;
+  font-weight: 650;
+  color: #6B778C;
+  padding: 6px 0 4px;
+  letter-spacing: 0.02em;
+}
+
+.lwi-group__rows {
+  border: 1px solid #DFE1E6;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+/* ── Row ──────────────────────────────────── */
+.lwi-row {
+  display: grid;
+  grid-template-columns: 20px auto 1fr auto 28px 20px 28px;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 10px;
+  border-bottom: 1px solid #F4F5F7;
+  background: #FFFFFF;
+  transition: background-color 120ms ease;
+}
+
+.lwi-row:last-child {
+  border-bottom: none;
+}
+
+.lwi-row:hover,
+.lwi-row:focus-within {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.lwi-row[data-state='pending'] {
+  opacity: 0.6;
+}
+
+.lwi-row__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.lwi-row__icon > img,
+.lwi-row__icon > svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.lwi-row__key {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #172B4D;
+  background: transparent;
+  border: none;
+  padding: 2px 2px;
+  margin: -2px -2px;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  border-radius: 3px;
+}
+
+.lwi-row__key:hover {
+  text-decoration: underline;
+}
+
+.lwi-row__key:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+.lwi-row__summary {
+  font-size: 13px;
+  color: #172B4D;
+  background: transparent;
+  border: none;
+  padding: 2px 2px;
+  margin: -2px -2px;
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border-radius: 3px;
+  font-family: inherit;
+}
+
+.lwi-row__summary:hover {
+  text-decoration: underline;
+}
+
+.lwi-row__summary:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+.lwi-row__status {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.lwi-row__assignee {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.lwi-row__priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lwi-row__avatar-empty {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #DFE1E6;
+}
+
+.lwi-row__actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.lwi-row:hover .lwi-row__actions,
+.lwi-row:focus-within .lwi-row__actions {
+  opacity: 1;
+}
+
+.lwi-row__action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 3px;
+  color: #6B778C;
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.lwi-row__action-btn:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+  color: #172B4D;
+}
+
+.lwi-row__action-btn:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+/* ── Empty / Error / Skeleton ─────────────── */
+.lwi-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 0 4px;
+}
+
+.lwi-empty__heading {
+  font-size: 13px;
+  font-weight: 650;
+  color: #42526E;
+}
+
+.lwi-empty__sub {
+  font-size: 12px;
+  color: #6B778C;
+}
+
+.lwi-empty__cta {
+  margin-top: 8px;
+}
+
+.lwi-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #FFEDEB;
+  color: #BF2600;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.lwi-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lwi-skeleton__row {
+  display: grid;
+  grid-template-columns: 16px 60px 1fr 70px 28px;
+  align-items: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid #F4F5F7;
+  border-radius: 4px;
+  background: #FFFFFF;
+}
+
+.lwi-skeleton__pulse {
+  background: #F1F5F9;
+  border-radius: 4px;
+  animation: lwi-pulse 1.5s ease-in-out infinite;
+}
+
+.lwi-skeleton__icon { width: 16px; height: 16px; border-radius: 3px; }
+.lwi-skeleton__key { height: 12px; }
+.lwi-skeleton__summary { height: 12px; }
+.lwi-skeleton__status { height: 18px; }
+.lwi-skeleton__avatar { width: 24px; height: 24px; border-radius: 50%; }
+
+@keyframes lwi-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* ── Toolbar (inline link flow) ───────────── */
+.lwi-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0 4px;
+  border-top: 1px solid #DFE1E6;
+}
+
+.lwi-toolbar__row {
+  display: grid;
+  grid-template-columns: minmax(160px, 180px) 1fr;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.lwi-toolbar__type {
+  min-width: 160px;
+}
+
+.lwi-toolbar__picker {
+  min-width: 0;
+}
+
+.lwi-toolbar__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lwi-toolbar__buttons {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.lwi-toolbar__create {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  color: #44546F;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  border-radius: 4px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.lwi-toolbar__create:hover:not(:disabled) {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #172B4D;
+  text-decoration: underline;
+}
+
+.lwi-toolbar__create:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
+
+.lwi-toolbar__create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Picker option rendering ──────────────── */
+.lwi-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lwi-option__icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.lwi-option__icon > img,
+.lwi-option__icon > svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.lwi-option__key {
+  font-family: var(--cp-font-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-size: 12px;
+  font-weight: 600;
+  color: #505258;
+  flex-shrink: 0;
+}
+
+.lwi-option__summary {
+  font-size: 13px;
+  color: #172B4D;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Dark mode (NOCTURNE) ─────────────────── */
+.dark .lwi-root {
+  color: #EDEDED;
+}
+
+.dark .lwi-header__title { color: #EDEDED; }
+.dark .lwi-header__count { background: #292929; color: #A1A1A1; }
+.dark .lwi-header__toggle:hover { background-color: #1F1F1F; }
+.dark .lwi-header__add { color: #A1A1A1; }
+.dark .lwi-header__add:hover { background-color: #1F1F1F; color: #EDEDED; }
+
+.dark .lwi-group__header { color: #A1A1A1; }
+.dark .lwi-group__rows { background: #1A1A1A; border-color: #2E2E2E; }
+.dark .lwi-row { background: #1A1A1A; border-bottom-color: #292929; }
+.dark .lwi-row:hover,
+.dark .lwi-row:focus-within { background-color: #1F1F1F; }
+.dark .lwi-row__key { color: #4C9AFF; }
+.dark .lwi-row__summary { color: #EDEDED; }
+.dark .lwi-row__avatar-empty { border-color: #2E2E2E; }
+.dark .lwi-row__action-btn { color: #A1A1A1; }
+.dark .lwi-row__action-btn:hover { background-color: #292929; color: #EDEDED; }
+
+.dark .lwi-empty__heading { color: #EDEDED; }
+.dark .lwi-empty__sub { color: #A1A1A1; }
+.dark .lwi-error { background: #3B1F1C; color: #FFB9B0; }
+
+.dark .lwi-skeleton__row { background: #1A1A1A; border-color: #292929; }
+.dark .lwi-skeleton__pulse { background: #292929; }
+
+.dark .lwi-toolbar { border-top-color: #2E2E2E; }
+.dark .lwi-toolbar__create { color: #A1A1A1; }
+.dark .lwi-toolbar__create:hover:not(:disabled) {
+  background-color: #1F1F1F;
+  color: #EDEDED;
+}
+
+.dark .lwi-option__key { color: #A1A1A1; }
+.dark .lwi-option__summary { color: #EDEDED; }

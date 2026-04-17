@@ -13,10 +13,11 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { X, Share2, MoreHorizontal, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Share2, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
-import { IssueIcon, Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -215,72 +216,22 @@ export function CatalystViewBase({
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
         }}>
-          {/* Breadcrumb — Jira pattern: Project / ParentKey / ItemKey */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
-            {/* Full-page back button */}
-            {fullPageMode && (
-              <button onClick={handleBack} style={{
-                ...hoverBtn, padding: '4px 6px', marginRight: 2,
-              }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                title="Back to list"
-              >
-                <ArrowLeft size={16} />
-              </button>
-            )}
-            {/* Project — clickable, links to All Work in full-page mode, or type-specific backlog otherwise */}
-            {projectKey && (
-              <>
-                <Link
-                  to={fullPageMode
-                    ? `/project-hub/${projectKey}/hierarchy/allwork`
-                    : `/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`
-                  }
-                  style={{ fontSize: 14, fontWeight: 500, color: '#42526E', textDecoration: 'none', cursor: 'pointer' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; e.currentTarget.style.textDecoration = 'none'; }}
-                >
-                  {projectName || projectKey}
-                </Link>
-                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              </>
-            )}
-            {projectName && !projectKey && (
-              <>
-                <span style={{ fontSize: 14, fontWeight: 500, color: '#42526E' }}>{projectName}</span>
-                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              </>
-            )}
-            {parentKey && (
-              <>
-                <IssueIcon type={parentType || 'Epic'} size={16} />
-                <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#42526E', cursor: onParentClick ? 'pointer' : 'default' }}
-                  onClick={onParentClick}
-                  onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; }}
-                >{parentKey}</span>
-                <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-              </>
-            )}
+          {/* Canonical breadcrumb — Atlaskit Breadcrumbs; renders in every mode
+              (modal, panel, full-page) for every detail view type. Shape:
+                 <ProjectAvatar ProjectName>  /  <Parent or +Add parent>  /  <IssueKey>
+              See TicketBreadcrumbs.tsx for crumb rules. */}
+          <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+            {projectKey ? (
+              <TicketBreadcrumbs
+                projectKey={projectKey}
+                itemType={itemType}
+                itemKey={itemKey}
+                parentKey={parentKey}
+                parentType={parentType}
+                onParentClick={onParentClick}
+              />
+            ) : null}
             {breadcrumbExtra}
-            <IssueIcon type={itemType} size={16} />
-            {!fullPageMode && itemKey && projectKey ? (
-              <Link
-                to={`/project-hub/${projectKey}/issue/${itemKey}`}
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
-                onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}
-                title="Open full page view"
-              >
-                {itemKey}
-              </Link>
-            ) : (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: fullPageMode ? '#172B4D' : '#0052CC' }}>
-                {itemKey ?? '—'}
-              </span>
-            )}
           </div>
 
           {/* Right actions */}

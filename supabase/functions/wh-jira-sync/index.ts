@@ -454,6 +454,36 @@ serve(async (req) => {
           const pageKeys = [...new Set(commentRows.map(r => r.issue_key))]
           await supabase.from('jira_sync_comments').delete().in('issue_key', pageKeys)
           await supabase.from('jira_sync_comments').insert(commentRows)
+
+          // Mirror to ph_comments (Catalyst-native) — single source of truth for Activity panel
+          const issueKeyToId = new Map<string, string>()
+          const { data: phIssues } = await supabase
+            .from('ph_issues')
+            .select('id, issue_key')
+            .in('issue_key', pageKeys)
+          for (const r of (phIssues || [])) issueKeyToId.set(r.issue_key, r.id)
+
+          const phCommentRows = commentRows
+            .filter(r => issueKeyToId.has(r.issue_key))
+            .map(r => ({
+              work_item_id: issueKeyToId.get(r.issue_key),
+              author_id: userMap.get(r.author_account_id) || null,
+              body: r.body,
+              created_at: r.jira_created_at,
+              updated_at: r.jira_updated_at || r.jira_created_at,
+              source: 'jira',
+              jira_comment_id: r.jira_comment_id,
+              jira_author_account_id: r.author_account_id,
+              jira_author_display_name: r.author_display_name,
+              jira_author_avatar_url: r.author_avatar_url,
+              jira_created_at: r.jira_created_at,
+            }))
+          if (phCommentRows.length > 0) {
+            const { error: phErr } = await supabase
+              .from('ph_comments')
+              .upsert(phCommentRows, { onConflict: 'jira_comment_id', ignoreDuplicates: false })
+            if (phErr) console.error(`[sync] ph_comments upsert error: ${phErr.message}`)
+          }
         }
 
         // ── Users ──

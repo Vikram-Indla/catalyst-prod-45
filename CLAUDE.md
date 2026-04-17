@@ -22,9 +22,32 @@ Frontend:   React + TypeScript
 Styling:    Tailwind CSS + shadcn/ui
 Backend:    Supabase (PostgreSQL + Edge Functions + Auth)
 Data:       TanStack Query (React Query)
-Icons:      Lucide React ONLY (no external icon libs)
+Icons:      Lucide React for UI chrome; canonical SVGs for work-item types (see §11)
 Builder:    Lovable AI (Claude Code now assists/replaces for fixes)
 Fonts:      Sora (headings) · Inter (body/UI) · JetBrains Mono (data)
+
+Atlassian Design System / Atlaskit:
+  Active migration target. Catalyst is being migrated to @atlaskit/* and the
+  Atlassian Design System progressively, one surface at a time. Adopting
+  @atlaskit/* primitives in any new or refactored surface is ENCOURAGED and
+  requires no path-scoping review. When an Atlaskit primitive exists for a
+  role (Breadcrumbs, Page header, Tabs, Lozenge, primitives/tokens, editor,
+  dynamic-table, etc.), prefer it over a bespoke clone. Tokens from
+  @atlaskit/tokens are the source of truth for spacing/color/typography on
+  surfaces that have migrated. Legacy shadcn/Tailwind surfaces remain in
+  place until their scheduled migration — do not mix the two systems on the
+  same surface in a single change.
+
+  Adoption protocol (DO THIS every time you add a new @atlaskit/* package):
+    1. Add "@atlaskit/<pkg>": "^<version>" to package.json dependencies.
+    2. Add '@atlaskit/<pkg>' to vite.config.ts optimizeDeps.include so vite
+       pre-bundles it on first dev start (otherwise first render stalls on
+       cold optimize and can 404 in-flight chunks — the modal loading class
+       of bug we fought in April 2026).
+    3. Import canonically in the target surface.
+    4. No manual `bun install` needed — `npm run dev` / `bun run dev`
+       auto-sync via scripts/sync-deps.js (runs <10ms when lockfile matches
+       node_modules, installs otherwise).
 ```
 
 **Calendar:** Sunday = first day of work week (Saudi convention — enforce in ALL date components)  

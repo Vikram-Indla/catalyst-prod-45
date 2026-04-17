@@ -1,15 +1,27 @@
 /**
- * StatusCell — Atlaskit-style status lozenge with editable popover.
- * 3-colour guardrail: grey (todo) · blue (in_progress) · green (done).
+ * StatusCell — Atlaskit Lozenge + chevron, wrapped in StatusPopover for editing.
+ *
+ * CLAUDE.md §5 "3 colours only" guardrail:
+ *   Only three of Atlaskit Lozenge's six appearances are ever rendered:
+ *     todo         -> 'default'     (grey)
+ *     in_progress  -> 'inprogress'  (blue)
+ *     done         -> 'success'     (green)
+ *   `removed`, `new`, `moved` are NEVER used. Any unknown category falls
+ *   back to 'default'.
  */
 import React from 'react';
+import Lozenge from '@atlaskit/lozenge';
 import { StatusPopover } from '../popovers/StatusPopover';
 
-function getStatusClass(category: string): string {
-  const cat = category?.toLowerCase() || '';
-  if (cat === 'done') return 'sp-status-btn--done';
-  if (cat === 'in_progress' || cat === 'inprogress' || cat === 'indeterminate') return 'sp-status-btn--inprogress';
-  return 'sp-status-btn--todo';
+type AllowedAppearance = 'default' | 'inprogress' | 'success';
+
+function categoryToAppearance(category: string): AllowedAppearance {
+  const c = (category ?? '').toLowerCase();
+  if (c === 'done') return 'success';
+  if (c === 'in_progress' || c === 'inprogress' || c === 'indeterminate') {
+    return 'inprogress';
+  }
+  return 'default';
 }
 
 interface StatusCellProps {
@@ -19,18 +31,22 @@ interface StatusCellProps {
   readOnly?: boolean;
 }
 
-export const StatusCell = React.memo(function StatusCell({ status, statusCategory, onChange, readOnly }: StatusCellProps) {
+export const StatusCell = React.memo(function StatusCell({
+  status, statusCategory, onChange, readOnly,
+}: StatusCellProps) {
+  const appearance = categoryToAppearance(statusCategory);
+
   const trigger = (
     <button
-      className={`sp-status-btn ${getStatusClass(statusCategory)}`}
-      onClick={(e) => e.stopPropagation()}
-      aria-label={`${status} — change status`}
       type="button"
+      className="sp-status-btn-ak"
+      onClick={(e) => e.stopPropagation()}
+      aria-label={readOnly ? `Status ${status}` : `${status} — change status`}
       disabled={readOnly}
     >
-      <span>{status}</span>
+      <Lozenge appearance={appearance} isBold>{status}</Lozenge>
       {!readOnly && (
-        <span className="sp-status-chevron" aria-hidden>
+        <span className="sp-status-chevron-ak" aria-hidden>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
             <path d="M2.5 3.5L5 6.5L7.5 3.5" />
           </svg>
