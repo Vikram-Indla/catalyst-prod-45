@@ -33,6 +33,7 @@ import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBa
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
+import { writeTicketOrigin } from '../hooks/useTicketOrigin';
 import '@/styles/product-backlog.css';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -163,6 +164,14 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
   const [editStoryId, setEditStoryId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogStory | null>(null);
   const [detailItemId, setDetailItemId] = useState<string | null>(null);
+  const openStoryDetail = useCallback((id: string) => {
+    writeTicketOrigin({
+      fromUrl: `/project-hub/${projectKey}/story-backlog`,
+      fromLabel: 'Story backlog',
+      fromType: 'story-backlog',
+    });
+    setDetailItemId(id);
+  }, [projectKey]);
   const [panelMode, setPanelMode] = useState(false);
   const [panelDividerWidth, setPanelDividerWidth] = useState(55);
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
@@ -382,7 +391,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       switch (e.key) {
         case 'j': case 'ArrowDown': e.preventDefault(); setFocusedIndex(prev => Math.min(prev + 1, flatItems.length - 1)); break;
         case 'k': case 'ArrowUp': e.preventDefault(); setFocusedIndex(prev => Math.max(prev - 1, 0)); break;
-        case 'Enter': e.preventDefault(); if (focusedIndex >= 0 && focusedIndex < flatItems.length) setDetailItemId(flatItems[focusedIndex].id); break;
+        case 'Enter': e.preventDefault(); if (focusedIndex >= 0 && focusedIndex < flatItems.length) openStoryDetail(flatItems[focusedIndex].id); break;
         case 'Escape': e.preventDefault(); setSelectedIds(new Set()); setFocusedIndex(-1); break;
       }
     };
@@ -650,7 +659,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                       <tr
                         key={story.id}
                         className={`group ${isSelected ? 'pb-row-selected' : ''}`}
-                        onClick={() => { setFocusedIndex(currentRowIndex); setDetailItemId(story.id); }}
+                        onClick={() => { setFocusedIndex(currentRowIndex); openStoryDetail(story.id); }}
                         style={{
                           cursor: 'pointer',
                           background: isPanelSelected ? '#DEEBFF' : isSelected ? 'rgba(37,99,235,0.08)' : isFocused ? 'rgba(0,0,0,0.04)' : undefined,
