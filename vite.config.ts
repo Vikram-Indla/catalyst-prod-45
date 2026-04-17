@@ -175,11 +175,15 @@ export default defineConfig(({ mode, command }) => {
       'react-is',
       // Pre-bundle @atlaskit primitives so SubtasksPanel mount doesn't trigger
       // mid-flight dep re-optimization (which 404s in-flight chunk requests).
+      // When adopting a new Atlaskit component in a surface, ADD IT HERE so
+      // first render is warm instead of stalling on cold optimize.
       '@atlaskit/avatar',
+      '@atlaskit/breadcrumbs',
       '@atlaskit/dropdown-menu',
       '@atlaskit/dynamic-table',
       '@atlaskit/lozenge',
       '@atlaskit/popup',
+      '@atlaskit/primitives',
       '@atlaskit/textfield',
       '@atlaskit/tokens',
       // NOTE: @atlaskit/editor-core and @atlaskit/renderer are intentionally
