@@ -44,6 +44,19 @@ import { IssueTypeCell } from './cells/IssueTypeCell';
 import { useAtlaskitThemeSync } from './atlaskitTheme';
 import { allowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
+import { DescriptionPopover } from './DescriptionPopover';
+import { subtaskCreateInputSchema } from './schemas';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { ENABLE_SUBTASKS_V2 } from '@/lib/featureFlags';
 import DynamicTable from '@atlaskit/dynamic-table';
 import './SubtasksPanel.css';
 
@@ -306,6 +319,8 @@ export function SubtasksPanel({
     priority: true,
   });
   const [focusedRowId, setFocusedRowId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<SubtaskRow | null>(null);
+  const [pendingBulkDelete, setPendingBulkDelete] = useState(false);
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   const { update, remove, bulkUpdate, bulkRemove, reorderPositions } = useSubtaskMutations(storyKey);
@@ -388,16 +403,28 @@ export function SubtasksPanel({
   // ─── Create mutation ──────────────────────────
   const createMutation = useMutation({
     mutationFn: async (summary: string) => {
-      const tempKey = `${projectKey}-NEW-${Date.now()}`;
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: tempKey,
-        summary: summary.trim(),
+      // Boundary validation — guards against empty / whitespace-only summaries
+      // arriving from any call site (inline create, AI create, future callers).
+      const parsed = subtaskCreateInputSchema.safeParse({
+        summary,
         issue_type: draftType,
         parent_key: storyKey,
         project_key: projectKey,
+        priority: 'Medium',
+      });
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues.map((i) => i.message).join('; '));
+      }
+      const tempKey = `${projectKey}-NEW-${Date.now()}`;
+      const { error } = await supabase.from('ph_issues').insert({
+        issue_key: tempKey,
+        summary: parsed.data.summary,
+        issue_type: parsed.data.issue_type,
+        parent_key: parsed.data.parent_key,
+        project_key: parsed.data.project_key,
         status: 'To Do',
         status_category: 'todo',
-        priority: 'Medium',
+        priority: parsed.data.priority,
         position: nextPos(children),
         reporter_account_id: user?.id,
         source: 'catalyst',
@@ -459,8 +486,13 @@ export function SubtasksPanel({
   };
 
   const handleDelete = (row: SubtaskRow) => {
-    if (!window.confirm(`Delete subtask "${row.summary}"?`)) return;
-    remove.mutate(row.id);
+    setPendingDelete(row);
+  };
+
+  const confirmDelete = () => {
+    if (!pendingDelete) return;
+    remove.mutate(pendingDelete.id);
+    setPendingDelete(null);
   };
 
   // ─── Bulk edit handlers ───────────────────────
@@ -513,10 +545,13 @@ export function SubtasksPanel({
 
   const handleBulkDelete = () => {
     if (selectedIds.size === 0) return;
-    const n = selectedIds.size;
-    if (!window.confirm(`Delete ${n} subtask${n === 1 ? '' : 's'}? This cannot be undone.`)) return;
+    setPendingBulkDelete(true);
+  };
+
+  const confirmBulkDelete = () => {
     bulkRemove.mutate(Array.from(selectedIds));
     setSelectedIds(new Set());
+    setPendingBulkDelete(false);
   };
 
   const handleViewInSearch = () => {
@@ -595,9 +630,22 @@ export function SubtasksPanel({
       e.preventDefault();
       const prev = visibleRows[Math.max(currentIdx - 1, 0)];
       if (prev) setFocusedRowId(prev.id);
+    } else if (e.key === 'Home' && visibleRows.length > 0) {
+      e.preventDefault();
+      setFocusedRowId(visibleRows[0].id);
+    } else if (e.key === 'End' && visibleRows.length > 0) {
+      e.preventDefault();
+      setFocusedRowId(visibleRows[visibleRows.length - 1].id);
     } else if (e.key === 'Enter' && focusedRowId && !editingId) {
       e.preventDefault();
       onSubtaskClick?.(focusedRowId);
+    } else if (e.key === 'F2' && focusedRowId && !editingId) {
+      e.preventDefault();
+      setEditingId(focusedRowId);
+    } else if ((e.key === 'Delete' || e.key === 'Backspace') && e.shiftKey && focusedRowId && !editingId) {
+      e.preventDefault();
+      const row = visibleRows.find(r => r.id === focusedRowId);
+      if (row) setPendingDelete(row);
     }
   };
 
@@ -669,7 +717,7 @@ export function SubtasksPanel({
 
           {/* ═══ Loading skeleton ═══ */}
           {isLoading && (
-            <div>
+            <div aria-busy="true" aria-live="polite">
               {[1, 2, 3].map(i => (
                 <div key={i} className="sp-skeleton-row">
                   <div className="sp-skeleton-pulse" style={{ width: 16, height: 16 }} />
@@ -802,15 +850,24 @@ export function SubtasksPanel({
                           onCancel={() => setEditingId(null)}
                         />
                       ) : (
-                        <span
-                          className="sp-issue-summary"
-                          onClick={(e) => {
-                            if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
-                            onSubtaskClick?.(child.id);
-                            setFocusedRowId(child.id);
-                          }}
-                        >
-                          {child.summary}
+                        <span className="sp-summary-wrap">
+                          <span
+                            className="sp-issue-summary"
+                            onClick={(e) => {
+                              if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
+                              onSubtaskClick?.(child.id);
+                              setFocusedRowId(child.id);
+                            }}
+                          >
+                            {child.summary}
+                          </span>
+                          {ENABLE_SUBTASKS_V2 && !bulkEditMode && (
+                            <DescriptionPopover
+                              subtaskId={child.id}
+                              subtaskKey={child.issue_key}
+                              parentKey={storyKey}
+                            />
+                          )}
                         </span>
                       ),
                     });
@@ -914,6 +971,38 @@ export function SubtasksPanel({
               onCancel={exitBulkEdit}
             />
           )}
+
+          {/* ═══ Destructive confirm (single row) ═══ */}
+          <AlertDialog open={pendingDelete !== null} onOpenChange={(o) => !o && setPendingDelete(null)}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete {effectiveTitle.toLowerCase().replace(/s$/, '')}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Delete <strong>{pendingDelete?.issue_key}</strong> — {pendingDelete?.summary}? This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          {/* ═══ Destructive confirm (bulk) ═══ */}
+          <AlertDialog open={pendingBulkDelete} onOpenChange={setPendingBulkDelete}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Delete {selectedIds.size} selected {effectiveTitle.toLowerCase()}? This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={confirmBulkDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* ═══ Inline create (AI-augmented) ═══ */}
           {creating && canCreate && (

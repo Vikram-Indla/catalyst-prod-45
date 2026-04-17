@@ -22,9 +22,17 @@ Frontend:   React + TypeScript
 Styling:    Tailwind CSS + shadcn/ui
 Backend:    Supabase (PostgreSQL + Edge Functions + Auth)
 Data:       TanStack Query (React Query)
-Icons:      Lucide React ONLY (no external icon libs)
+Icons:      Lucide React for UI chrome; canonical SVGs for work-item types (see §11)
 Builder:    Lovable AI (Claude Code now assists/replaces for fixes)
 Fonts:      Sora (headings) · Inter (body/UI) · JetBrains Mono (data)
+
+Approved external primitives (already in production — do NOT re-evaluate):
+  @atlaskit/dynamic-table   → subtasks / child-work-item tables (Jira parity)
+  @atlaskit/editor-core     → ADF editor for Epic description + subtask description
+  Related @atlaskit/*       → scoped to:
+                              src/components/shared/rich-text/atlaskit/
+                              src/modules/project-work-hub/components/SubtasksPanel/
+                              Never introduce @atlaskit/* outside these paths without review.
 ```
 
 **Calendar:** Sunday = first day of work week (Saudi convention — enforce in ALL date components)  

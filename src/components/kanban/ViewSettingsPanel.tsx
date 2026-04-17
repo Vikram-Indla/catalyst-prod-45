@@ -1,10 +1,10 @@
 /**
  * ViewSettingsPanel — Popover from ••• button on Kanban toolbar
- * Sections: Top toggles, Fields, Swimlanes
+ * Sections: Top toggles, Fields, Swimlanes, Density (V2, optional)
  * NOCTURNE Geist compliant
  */
 import { useRef, useEffect, useCallback } from 'react';
-import type { KanbanThemeTokens } from './kanban-tokens';
+import type { KanbanThemeTokens, KanbanDensity } from './kanban-tokens';
 import type { KanbanViewSettings, VisibleFields } from '@/hooks/useKanbanViewSettings';
 
 interface ViewSettingsPanelProps {
@@ -14,6 +14,9 @@ interface ViewSettingsPanelProps {
   onCollapseAll: () => void;
   onClose: () => void;
   tk: KanbanThemeTokens;
+  /** V2 (ENABLE_KANBAN_V2): if both provided, shows the Density section. */
+  density?: KanbanDensity;
+  onDensityChange?: (d: KanbanDensity) => void;
 }
 
 /* ── Custom Toggle Switch ── */
@@ -72,7 +75,7 @@ function Divider({ tk }: { tk: KanbanThemeTokens }) {
   return <div style={{ height: 1, background: tk.borderSubtle, margin: '4px 0' }} />;
 }
 
-export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseAll, onClose, tk }: ViewSettingsPanelProps) {
+export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseAll, onClose, tk, density, onDensityChange }: ViewSettingsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Close on outside click
@@ -151,6 +154,48 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
           tk={tk}
         />
       ))}
+
+      {/* Density section — V2 only (only rendered when density + onDensityChange provided) */}
+      {density && onDensityChange && (
+        <>
+          <Divider tk={tk} />
+          <SectionHeader title="Density" tk={tk} />
+          <div
+            role="radiogroup"
+            aria-label="Card density"
+            style={{ display: 'flex', gap: 6, padding: '6px 0 4px' }}
+          >
+            {(['compact', 'dense', 'comfortable'] as const).map((d) => {
+              const selected = density === d;
+              return (
+                <button
+                  key={d}
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => onDensityChange(d)}
+                  style={{
+                    flex: 1,
+                    height: 28,
+                    padding: '0 8px',
+                    fontSize: 12,
+                    fontWeight: selected ? 600 : 500,
+                    color: selected ? '#FFFFFF' : tk.textSecondary,
+                    background: selected ? tk.selectedAccent : tk.chipBg,
+                    border: `1px solid ${selected ? tk.selectedAccent : tk.border}`,
+                    borderRadius: 4,
+                    cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                    textTransform: 'capitalize',
+                    transition: 'background 120ms ease, color 120ms ease',
+                  }}
+                >
+                  {d}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
 
       <Divider tk={tk} />
 

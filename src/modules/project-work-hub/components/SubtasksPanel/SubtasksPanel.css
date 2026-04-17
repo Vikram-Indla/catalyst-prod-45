@@ -176,6 +176,63 @@
   cursor: pointer;
 }
 
+/* Summary cell wrapper — co-locates the summary text with the per-row
+   description trigger (ENABLE_SUBTASKS_V2). Flex so the trigger sits flush
+   on the right; min-width:0 lets the summary ellipsis take remaining space. */
+.sp-panel .sp-summary-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.sp-panel .sp-summary-wrap .sp-issue-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.sp-panel .sp-summary-wrap .sp-desc-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  border-radius: 3px;
+  color: #6B778C;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+.sp-panel .sp-ak-table tr:hover .sp-desc-trigger,
+.sp-panel .sp-ak-table tr:focus-within .sp-desc-trigger,
+.sp-panel .sp-desc-trigger--filled,
+.sp-panel .sp-desc-trigger[aria-expanded="true"] {
+  opacity: 1;
+}
+.sp-panel .sp-desc-trigger:hover {
+  background: #EBECF0;
+  color: #172B4D;
+}
+.sp-panel .sp-desc-trigger:focus-visible {
+  outline: none;
+  border-color: #0052CC;
+  box-shadow: 0 0 0 2px rgba(0, 82, 204, 0.25);
+  opacity: 1;
+}
+.sp-panel .sp-desc-trigger-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0052CC;
+  box-shadow: 0 0 0 1.5px #FFFFFF;
+}
+
 .sp-inline-summary-input {
   flex: 1;
   min-width: 0;
