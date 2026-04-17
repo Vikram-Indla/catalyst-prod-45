@@ -35,7 +35,7 @@ export default function CatalystViewFeature({
           storyId={issue.id}
           projectKey={issue.project_key || projectKey || ''}
           onSubtaskClick={onOpenItem}
-          title="Child work items"
+          parentIssueType={issue.issue_type || 'Feature'}
         />
       )}
 

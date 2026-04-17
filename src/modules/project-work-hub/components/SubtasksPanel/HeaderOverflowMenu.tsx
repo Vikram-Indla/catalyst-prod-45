@@ -1,8 +1,23 @@
+/**
+ * HeaderOverflowMenu — Jira 4-item overflow: Hide done · Sort › · Bulk edit · View in search.
+ *
+ * Primary: @atlaskit/dropdown-menu
+ * Sort submenu: nested @atlaskit/popup anchored to the "Sort" item
+ *
+ * @atlaskit/dropdown-menu doesn't ship a slide-out submenu primitive (the
+ * canonical Atlaskit pattern is to keep menus flat). We emulate Jira's
+ * slide-out by opening a Popup positioned to the right when the Sort row
+ * is interacted with.
+ */
 import React from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  MoreHorizontal, Check, Edit3, Search, ArrowUp, ArrowDown, ChevronRight, ArrowUpDown,
-} from 'lucide-react';
+import DropdownMenu, {
+  DropdownItem,
+  DropdownItemCheckbox,
+  DropdownItemCheckboxGroup,
+  DropdownItemGroup,
+} from '@atlaskit/dropdown-menu';
+import Popup from '@atlaskit/popup';
+import { MoreHorizontal, Edit3, Search, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
 import { SORT_FIELDS, type SortField, type SortState } from './sort';
 
 interface HeaderOverflowMenuProps {
@@ -24,61 +39,80 @@ export function HeaderOverflowMenu({
   sort,
   onCycleSort,
 }: HeaderOverflowMenuProps) {
-  const [open, setOpen] = React.useState(false);
   const [sortOpen, setSortOpen] = React.useState(false);
-
-  // Close the sort submenu when the parent menu closes.
-  React.useEffect(() => {
-    if (!open) setSortOpen(false);
-  }, [open]);
+  const sortAnchorRef = React.useRef<HTMLButtonElement | null>(null);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
+    <DropdownMenu
+      placement="bottom-end"
+      trigger={({ triggerRef, ...triggerProps }) => (
         <button
+          {...triggerProps}
+          ref={triggerRef as React.Ref<HTMLButtonElement>}
           type="button"
           className="sp-icon-btn"
           aria-label="Subtasks actions"
         >
           <MoreHorizontal size={16} />
         </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        sideOffset={4}
-        className="sp-pop sp-pop--menu"
-        style={{ width: 220, padding: 6 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Filter / view group */}
-        <button
-          type="button"
-          className="sp-pop-row"
+      )}
+    >
+      <DropdownItemCheckboxGroup id="sp-hide-done" title="">
+        <DropdownItemCheckbox
+          id="sp-hide-done-toggle"
+          isSelected={hideDone}
           onClick={() => onToggleHideDone()}
         >
-          <span className={`sp-check ${hideDone ? 'sp-check--on' : ''}`}>
-            {hideDone && <Check size={10} color="#fff" strokeWidth={3} />}
-          </span>
-          <span className="sp-pop-label">Hide done</span>
-        </button>
+          Hide done
+        </DropdownItemCheckbox>
+      </DropdownItemCheckboxGroup>
 
-        {/* Sort — nested popover anchored to this row */}
-        <Popover open={sortOpen} onOpenChange={setSortOpen}>
-          <PopoverTrigger asChild>
-            <button type="button" className="sp-pop-row">
-              <ArrowUpDown size={14} color="#44546F" />
-              <span className="sp-pop-label">Sort</span>
-              <ChevronRight size={14} color="#6B778C" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent
-            side="right"
-            align="start"
-            sideOffset={8}
-            className="sp-pop"
-            style={{ width: 220, padding: 6 }}
-            onClick={(e) => e.stopPropagation()}
-          >
+      <DropdownItemGroup>
+        {/* Sort row — opens nested Popup to the right */}
+        <DropdownItem
+          elemBefore={
+            sort.field
+              ? (sort.dir === 'asc'
+                  ? <ArrowUp size={14} color="#0052CC" />
+                  : <ArrowDown size={14} color="#0052CC" />)
+              : undefined
+          }
+          elemAfter={<ChevronRight size={14} color="#6B778C" />}
+          onClick={(e) => {
+            e.preventDefault();
+            // Close the dropdown by returning focus, then open the sort popup.
+            sortAnchorRef.current = e.currentTarget as unknown as HTMLButtonElement;
+            setSortOpen(true);
+          }}
+        >
+          Sort
+        </DropdownItem>
+      </DropdownItemGroup>
+
+      <DropdownItemGroup>
+        <DropdownItem
+          elemBefore={<Edit3 size={14} color="#44546F" />}
+          isDisabled={bulkEditMode}
+          onClick={() => onEnterBulkEdit()}
+        >
+          Bulk edit
+        </DropdownItem>
+        <DropdownItem
+          elemBefore={<Search size={14} color="#44546F" />}
+          onClick={() => onViewInSearch()}
+        >
+          View in search
+        </DropdownItem>
+      </DropdownItemGroup>
+
+      {/* Nested Sort popup — rendered as a sibling so it survives the parent
+          closing. Anchored to the Sort row via the captured button ref. */}
+      <Popup
+        isOpen={sortOpen}
+        onClose={() => setSortOpen(false)}
+        placement="right-start"
+        content={() => (
+          <div className="sp-pop" style={{ width: 220, padding: 6 }} onClick={(e) => e.stopPropagation()}>
             {SORT_FIELDS.map(({ field, label }) => {
               const active = sort.field === field;
               const Arrow = sort.dir === 'asc' ? ArrowUp : ArrowDown;
@@ -100,32 +134,10 @@ export function HeaderOverflowMenu({
                 <div className="sp-pop-hint">Click again to flip direction or clear.</div>
               </>
             )}
-          </PopoverContent>
-        </Popover>
-
-        <div className="sp-pop-divider" />
-
-        {/* Action group */}
-        <button
-          type="button"
-          className="sp-pop-row"
-          disabled={bulkEditMode}
-          style={{ opacity: bulkEditMode ? 0.5 : 1, cursor: bulkEditMode ? 'not-allowed' : 'pointer' }}
-          onClick={() => { setOpen(false); onEnterBulkEdit(); }}
-        >
-          <Edit3 size={14} color="#44546F" />
-          <span className="sp-pop-label">Bulk edit</span>
-        </button>
-
-        <button
-          type="button"
-          className="sp-pop-row"
-          onClick={() => { setOpen(false); onViewInSearch(); }}
-        >
-          <Search size={14} color="#44546F" />
-          <span className="sp-pop-label">View in search</span>
-        </button>
-      </PopoverContent>
-    </Popover>
+          </div>
+        )}
+        trigger={() => <span ref={sortAnchorRef as unknown as React.Ref<HTMLSpanElement>} />}
+      />
+    </DropdownMenu>
   );
 }

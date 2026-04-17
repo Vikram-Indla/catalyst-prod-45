@@ -667,6 +667,7 @@ export function IssueContentView({
                     storyKey={issueKey!}
                     storyId={item?.id ?? ''}
                     projectKey={projectKey}
+                    parentIssueType={item?.issue_type || ''}
                   />
                 )}
 
