@@ -52,45 +52,52 @@ export function ParentAndLabels({
   const labels = (issue?.labels ?? []).filter(Boolean);
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
-        columnGap: 32,
-        rowGap: 12,
-        padding: '8px 0 12px',
-      }}
-    >
-      {/* Parent */}
-      <div style={{ minWidth: 0 }}>
-        <span style={FIELD_LABEL}>Parent</span>
-        <div className="lwi-parent-strip">
-          <CatalystParentLinker
-            issue={issue}
-            itemId={itemId}
-            itemType={itemType}
-            projectKey={projectKey}
-            onOpenItem={onOpenItem}
-          />
+    <>
+      <style>{`
+        .cv-parent-strip > div > span:first-child { display: none !important; }
+        .cv-parent-strip > div { padding: 0 !important; gap: 0 !important; }
+        .cv-parent-strip > div > div { flex: 1 1 auto !important; }
+      `}</style>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+          columnGap: 32,
+          rowGap: 4,
+          padding: '4px 0 16px',
+        }}
+      >
+        {/* Parent */}
+        <div style={{ minWidth: 0 }}>
+          <span style={FIELD_LABEL}>Parent</span>
+          <div className="cv-parent-strip">
+            <CatalystParentLinker
+              issue={issue}
+              itemId={itemId}
+              itemType={itemType}
+              projectKey={projectKey}
+              onOpenItem={onOpenItem}
+            />
+          </div>
+        </div>
+
+        {/* Labels */}
+        <div style={{ minWidth: 0 }}>
+          <span style={FIELD_LABEL}>Labels</span>
+          {labels.length > 0 ? (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+              {labels.map((l) => (
+                <span key={l} style={LABEL_CHIP}>
+                  {l}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <span style={{ fontSize: 13, color: '#7A869A' }}>None</span>
+          )}
         </div>
       </div>
-
-      {/* Labels */}
-      <div style={{ minWidth: 0 }}>
-        <span style={FIELD_LABEL}>Labels</span>
-        {labels.length > 0 ? (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {labels.map((l) => (
-              <span key={l} style={LABEL_CHIP}>
-                {l}
-              </span>
-            ))}
-          </div>
-        ) : (
-          <span style={{ fontSize: 13, color: '#7A869A' }}>None</span>
-        )}
-      </div>
-    </div>
+    </>
   );
 }
 
