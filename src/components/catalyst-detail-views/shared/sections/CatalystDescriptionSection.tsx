@@ -46,26 +46,27 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
   );
 }
 
+/* Build-ID marker so we can distinguish which deployed commit is running
+   by looking at the console without checking chunk hashes. Update when
+   the pilot surface changes materially. */
+const PILOT_BUILD_ID = 'atlaskit-editor-core-v217 [e5f0102]';
+
 /* Visible marker — emitted next to the Description heading when the
-   Epic-only pilot molecule is active. Pilot currently routes through
-   the existing TipTap editor + AdfDescriptionRenderer pair (Atlaskit
-   editor-core/renderer cannot resolve their transitive dep tree in
-   Catalyst's npm registry — see EpicDescriptionEditor / Renderer files
-   for the rationale). The molecule still owns the Epic edit/view
-   contract so it can be re-pointed at Atlaskit later without touching
-   any caller. Removed when pilot promotes to all issue types. */
-function AtlaskitPilotBadge() {
+   Epic-only pilot molecule is active. Badge text reflects which engine
+   actually ran at render time (atlaskit vs tiptap fallback). */
+function AtlaskitPilotBadge({ engine }: { engine: 'atlaskit' | 'tiptap-fallback' }) {
   return (
     <span
-      title="Epic description pilot — owns the Epic edit/view contract for future Atlaskit promotion"
+      title={`Epic description pilot — engine=${engine}  build=${PILOT_BUILD_ID}`}
       style={{
         marginLeft: 6, padding: '1px 6px', borderRadius: 3,
         fontSize: 9, fontWeight: 700, letterSpacing: '0.04em',
-        background: '#E9F2FF', color: '#0747A6',
+        background: engine === 'atlaskit' ? '#E3FCEF' : '#FFF7E6',
+        color: engine === 'atlaskit' ? '#006644' : '#974F0C',
         textTransform: 'uppercase',
       }}
     >
-      Epic Pilot
+      {engine === 'atlaskit' ? 'ATLASKIT' : 'TIPTAP FALLBACK'}
     </span>
   );
 }
@@ -116,15 +117,16 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   const [hovered, setHovered] = useState(false);
   const queryClient = useQueryClient();
   const epic = isEpic(issue);
+  const [engineState, setEngineState] = useState<'atlaskit' | 'tiptap-fallback'>('atlaskit');
 
-  /* One-shot diagnostic so we can see in the browser console which path is
-     active for the issue currently being viewed. Removed when the pilot
-     is promoted globally. */
+  /* Per-issue diagnostic at info level (visible at default console filter).
+     Prints the build ID so we can confirm which deployed bundle is live
+     without inspecting chunk hashes. */
   React.useEffect(() => {
     if (!issue) return;
     // eslint-disable-next-line no-console
-    console.debug(
-      `[CatalystDescriptionSection] issue_key=${issue.issue_key ?? 'n/a'} issue_type=${JSON.stringify(issue.issue_type)} → ${epic ? 'ATLASKIT pilot' : 'TipTap (legacy)'}`,
+    console.info(
+      `[CatalystDescriptionSection] build=${PILOT_BUILD_ID} issue_key=${issue.issue_key ?? 'n/a'} issue_type=${JSON.stringify(issue.issue_type)} → ${epic ? 'ATLASKIT pilot' : 'TipTap (legacy)'}`,
     );
   }, [issue, epic]);
 
@@ -185,7 +187,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             }}
           />
           {label}
-          {epic && <AtlaskitPilotBadge />}
+          {epic && <AtlaskitPilotBadge engine={engineState} />}
         </div>
         {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
         {!collapsed && !editing && issue && (
@@ -215,6 +217,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             <div style={{ paddingLeft: 20 }}>
               <AtlaskitBoundary
                 diagnosticTag={`epic-edit:${issue.issue_key ?? issue.id}`}
+                onFallback={() => setEngineState('tiptap-fallback')}
                 fallback={
                   <CatalystRichTextEditor
                     content={rawAdfContent}
@@ -280,6 +283,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             >
               <AtlaskitBoundary
                 diagnosticTag={`epic-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
+                onFallback={() => setEngineState('tiptap-fallback')}
                 fallback={
                   <div className="cv-desc-body" style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7 }}>
                     <AdfDescriptionRenderer html={descHtml} issueKey={issue?.issue_key} />

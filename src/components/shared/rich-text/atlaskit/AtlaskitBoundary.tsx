@@ -14,6 +14,10 @@ interface Props {
   fallback: React.ReactNode;
   /** Identifier logged with the error (e.g. issue_key). */
   diagnosticTag?: string;
+  /** Called once when the boundary catches — lets the parent flip UI
+   *  affordances (e.g. engine badge) without reading state out of the
+   *  boundary itself. */
+  onFallback?: (error: Error) => void;
   children: React.ReactNode;
 }
 
@@ -34,6 +38,7 @@ export class AtlaskitBoundary extends React.Component<Props, State> {
       error,
       info,
     );
+    try { this.props.onFallback?.(error); } catch { /* no-op */ }
   }
 
   render() {
