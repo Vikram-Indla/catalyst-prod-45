@@ -1,6 +1,6 @@
 import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useEpicBacklog } from '../hooks/useBacklogData';
@@ -35,13 +35,16 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
   const [showCreate, setShowCreate] = useState(false);
   const [editEpicId, setEditEpicId] = useState<string | null>(null);
   const [drawerEpicId, setDrawerEpicId] = useState<string | null>(null);
-  const openEpicDetail = (id: string) => {
-    writeTicketOrigin({
+  const navigate = useNavigate();
+  const openEpicDetail = (_id: string, epicKey: string | null | undefined) => {
+    if (!epicKey || !project?.key) return;
+    const origin = {
       fromUrl: window.location.pathname + window.location.search,
       fromLabel: 'Epic backlog',
-      fromType: 'epic-backlog',
-    });
-    setDrawerEpicId(id);
+      fromType: 'epic-backlog' as const,
+    };
+    writeTicketOrigin(origin);
+    navigate(`/project-hub/${project.key}/issue/${epicKey}`, { state: { ticketOrigin: origin } });
   };
   const [deleteTarget, setDeleteTarget] = useState<BacklogEpic | null>(null);
 
@@ -141,12 +144,12 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       style={{ borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
-                      onClick={() => openEpicDetail(epic.id)}>
+                      onClick={() => openEpicDetail(epic.id, epic.epic_key)}>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14, borderRadius: 2 }} />
                       </div>
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={(e) => { e.stopPropagation(); openEpicDetail(epic.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); openEpicDetail(epic.id, epic.epic_key); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <ChevronRight className="h-3.5 w-3.5" style={{ color: tk.t3 }} />
                         </button>
                       </div>
