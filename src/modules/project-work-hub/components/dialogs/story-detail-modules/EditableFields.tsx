@@ -740,7 +740,9 @@ export function EditableFixVersions({ issueId, currentFixVersions, projectKey, o
             )}
           </div>
         </div>
-      )}
+        );
+      })()}
+
     </div>
   );
 }
