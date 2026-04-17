@@ -104,6 +104,10 @@ export function LinkedWorkItemRow({
         )}
       </span>
 
+      <span className="lwi-row__priority" aria-label={`Priority: ${target.priority ?? 'None'}`}>
+        <PriorityBars priority={normalisePriority(target.priority)} />
+      </span>
+
       <span className="lwi-row__actions">
         {!readOnly && (
           <button
