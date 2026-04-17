@@ -17,14 +17,6 @@ export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB !=
 export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP !== 'false';
 
 /**
- * Subtasks V2 — canonical Atlaskit/ADF molecular component.
- * Defaults to FALSE: pilot gated to Epic detail view only.
- * Set VITE_ENABLE_SUBTASKS_V2=true to enable the V2 molecule at the Epic pilot surface.
- * When this flag is off, the existing SubtasksPanel renders unchanged everywhere.
- */
-export const ENABLE_SUBTASKS_V2 = import.meta.env.VITE_ENABLE_SUBTASKS_V2 === 'true';
-
-/**
  * Kanban V2 — ProjectHub board pilot gate.
  * Defaults to FALSE: off everywhere.
  * Set VITE_ENABLE_KANBAN_V2=true to enable the V2 board additions

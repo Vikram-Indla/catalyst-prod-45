@@ -7,14 +7,12 @@
  * Status: the three strategic wins this scaffold carried — AlertDialog
  * (over window.confirm), role="grid" keyboard nav (Home/End/F2/Shift+Del),
  * and per-row DescriptionPopover — have been ported INTO V1 (`index.tsx`)
- * behind the existing `ENABLE_SUBTASKS_V2` flag. Porting was chosen over
- * replacement because V1 already carries DnD reorder, sort persistence,
- * bulk edit, AI create, link-existing, hierarchy enforcement, and the
- * Atlaskit DynamicTable — rebuilding all of that inside V2 would have
- * duplicated production code and created a regression surface.
- *
- * What the flag does now: it is the kill-switch for the NEW V1 behaviors
- * (per-row DescriptionPopover). Everything else in V1 is always-on.
+ * and are now permanently on (the former ENABLE_SUBTASKS_V2 kill-switch
+ * was removed during the Atlaskit canonical rollout). Porting was chosen
+ * over replacement because V1 already carries DnD reorder, sort
+ * persistence, bulk edit, AI create, link-existing, hierarchy enforcement,
+ * and the Atlaskit DynamicTable — rebuilding all of that inside V2 would
+ * have duplicated production code and created a regression surface.
  *
  * Retention: kept only while the smoke test at
  * __tests__/SubtasksPanelV2.smoke.test.tsx still references this file.

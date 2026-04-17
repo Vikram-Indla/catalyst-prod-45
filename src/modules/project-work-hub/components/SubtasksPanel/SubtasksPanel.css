@@ -177,8 +177,9 @@
 }
 
 /* Summary cell wrapper — co-locates the summary text with the per-row
-   description trigger (ENABLE_SUBTASKS_V2). Flex so the trigger sits flush
-   on the right; min-width:0 lets the summary ellipsis take remaining space. */
+   description trigger (now permanently enabled). Flex so the trigger sits
+   flush on the right; min-width:0 lets the summary ellipsis take the
+   remaining space. */
 .sp-panel .sp-summary-wrap {
   display: flex;
   align-items: center;
