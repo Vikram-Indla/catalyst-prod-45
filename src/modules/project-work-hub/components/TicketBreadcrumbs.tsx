@@ -142,10 +142,11 @@ const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.React
       aria-current="page"
       className={className}
       style={{
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: "'Inter', sans-serif",
         fontSize: 13,
         fontWeight: 600,
         color: token('color.text', '#172B4D'),
+        letterSpacing: '0.01em',
       }}
     >
       {children}
