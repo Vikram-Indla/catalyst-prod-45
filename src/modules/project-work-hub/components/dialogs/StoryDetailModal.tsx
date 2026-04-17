@@ -56,7 +56,7 @@ import { SubtasksPanel } from '../SubtasksPanel';
 import { DefectsSection } from './story-detail-modules';
 import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
-import { LinkedIssuesSection } from './story-detail-modules';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { AttachmentsSection } from './story-detail-modules';
 import { EditableAssignee, EditablePriority, EditableLabels } from './story-detail-modules';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
@@ -1263,7 +1263,7 @@ export default function StoryDetailModal({
                   {issue && (
                     <>
                       <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} parentIssueType={issue.issue_type || 'Story'} parentSummary={issue.summary || ''} />
-                      <LinkedIssuesSection issueId={issue.id} issueKey={issue.issue_key} projectKey={issue.project_key} />
+                      <LinkedWorkItemsSection issueId={issue.id} issueKey={issue.issue_key} projectKey={issue.project_key} />
                       <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
                       <IncidentsSection storyKey={issue.issue_key} />
                       <TestHubSection storyId={issue.id} />

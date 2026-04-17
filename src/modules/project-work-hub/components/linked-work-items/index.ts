@@ -1,11 +1,17 @@
 /**
  * LinkedWorkItems — public barrel.
  *
- * Only the orchestrator + shared types are re-exported. Sub-components are
- * intentionally private to this folder; any consumer that needs a custom
- * composition imports them directly. This keeps the rollout surface minimal
- * while the BAU-4771 pilot is still proving itself.
+ * Canonical entry point: `LinkedWorkItemsSection`. Every detail view
+ * across Catalyst imports this and nothing else. It bundles the
+ * AtlaskitBoundary + legacy-section fallback so feature code never has
+ * to reason about runtime Atlaskit failures.
+ *
+ * `LinkedWorkItems` (orchestrator) is still exported for tests and for
+ * rare consumers that need a custom boundary strategy. New feature code
+ * must not import it directly — use `LinkedWorkItemsSection`.
  */
-export { LinkedWorkItems, default } from './LinkedWorkItems';
+export { LinkedWorkItemsSection, default } from './LinkedWorkItemsSection';
+export type { LinkedWorkItemsSectionProps } from './LinkedWorkItemsSection';
+export { LinkedWorkItems } from './LinkedWorkItems';
 export type { LinkedWorkItemsProps } from './LinkedWorkItems';
 export type { LinkedWorkItem, LinkedWorkItemTarget, LinkTypeOption } from './types';

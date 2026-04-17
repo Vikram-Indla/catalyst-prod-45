@@ -11,7 +11,7 @@ import {
   CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
-import { LinkedIssuesSection } from '@/modules/project-work-hub/components/dialogs/story-detail-modules';
+import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
@@ -70,7 +70,11 @@ export default function CatalystViewSubtask({
         />
       )}
 
-      <LinkedIssuesSection issueId={itemId} issueKey={issue?.issue_key ?? ''} />
+      <LinkedWorkItemsSection
+        issueId={itemId}
+        issueKey={issue?.issue_key ?? ''}
+        projectKey={issue?.project_key || projectKey}
+      />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
     </>
   );
