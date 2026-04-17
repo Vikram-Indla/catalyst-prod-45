@@ -18,11 +18,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import DropdownMenu, {
-  DropdownItem,
-  DropdownItemGroup,
-} from '@atlaskit/dropdown-menu';
-import { MoreHorizontal, ExternalLink, Copy, Unlink } from 'lucide-react';
+import { X } from 'lucide-react';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
 import type { LinkedWorkItem } from './types';
 
