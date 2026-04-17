@@ -56,7 +56,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { ENABLE_SUBTASKS_V2 } from '@/lib/featureFlags';
 import DynamicTable from '@atlaskit/dynamic-table';
 import './SubtasksPanel.css';
 
@@ -861,7 +860,7 @@ export function SubtasksPanel({
                           >
                             {child.summary}
                           </span>
-                          {ENABLE_SUBTASKS_V2 && !bulkEditMode && (
+                          {!bulkEditMode && (
                             <DescriptionPopover
                               subtaskId={child.id}
                               subtaskKey={child.issue_key}
