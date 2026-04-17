@@ -1,7 +1,76 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { spawnSync } from "node:child_process";
 import { componentTagger } from "lovable-tagger";
+
+/**
+ * AUTO-SYNC DEPS — runs at vite config load, regardless of launcher.
+ *
+ * Without this, a pull that adds a new @atlaskit/* package produces:
+ *   [plugin:vite:import-analysis] Failed to resolve import "@atlaskit/<pkg>"
+ * ...because node_modules hasn't been updated. That happens whether the
+ * dev server was started via `bun run dev`, `npm run dev`, direct `vite`,
+ * `npx vite --host`, or an IDE launch.json. Running the sync here catches
+ * all of them — vite.config.ts is the single entry every launch path
+ * eventually executes.
+ *
+ * The script itself is fingerprint-cached, so on the happy path this
+ * adds ~100ms to cold start and 0ms to HMR. It only installs when
+ * package.json / lockfiles actually changed since last run.
+ */
+try {
+  spawnSync("node", [path.resolve(__dirname, "scripts/sync-deps.js")], {
+    stdio: "inherit",
+    cwd: __dirname,
+  });
+} catch {
+  // sync-deps is best-effort — if it can't run, vite's own errors surface
+  // the real problem more clearly than anything we'd print here.
+}
+
+/**
+ * devDepsWatcher — Vite plugin that re-runs sync-deps when package.json
+ * or a lockfile changes DURING a running dev session.
+ *
+ * The config-load sync above covers fresh starts. This plugin handles the
+ * scenario where vite is already running, the developer pulls a commit
+ * that adds a new @atlaskit/* dep, and HMR tries to transform a module
+ * that now imports it. Without the watcher, they'd hit the resolve error
+ * until they manually restart vite; with it, we install in the background
+ * and trigger vite's own full-reload so the new module is picked up.
+ */
+function devDepsWatcher(): Plugin {
+  const WATCH_FILES = ["package.json", "bun.lock", "bun.lockb", "package-lock.json"];
+  let syncing = false;
+
+  return {
+    name: "catalyst-dev-deps-watcher",
+    apply: "serve",
+    configureServer(server) {
+      const absPaths = WATCH_FILES.map((f) => path.resolve(__dirname, f));
+      server.watcher.add(absPaths);
+
+      const onChange = (file: string) => {
+        if (!absPaths.includes(file) || syncing) return;
+        syncing = true;
+        server.config.logger.info(`[catalyst] ${path.basename(file)} changed — syncing deps…`);
+        const r = spawnSync("node", [path.resolve(__dirname, "scripts/sync-deps.js")], {
+          stdio: "inherit",
+          cwd: __dirname,
+        });
+        syncing = false;
+        if (r.status === 0) {
+          server.config.logger.info("[catalyst] deps synced — triggering full reload");
+          server.ws.send({ type: "full-reload", path: "*" });
+        }
+      };
+
+      server.watcher.on("change", onChange);
+      server.watcher.on("add", onChange);
+    },
+  };
+}
 
 /**
  * RUTHLESS BUILD OPTIMIZER
@@ -83,6 +152,7 @@ export default defineConfig(({ mode, command }) => {
   },
   plugins: [
     isBuild ? skipHeavyModules() : null,
+    !isBuild && devDepsWatcher(),
     react(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
