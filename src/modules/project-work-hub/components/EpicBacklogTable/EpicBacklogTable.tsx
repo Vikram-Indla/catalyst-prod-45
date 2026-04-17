@@ -1,32 +1,32 @@
 /**
- * EpicBacklogTable — V2 composition of DynamicTable for /project-hub/:key/epic-backlog.
+ * EpicBacklogTable — Jira "List" view (image-2) parity, built on
+ * @atlaskit/dynamic-table for real Atlassian Design System rendering.
  *
- * Replaces the legacy div-grid in EpicBacklogPage. Wires directly to the
- * existing useEpicBacklog hook + BacklogEpic type + EPIC_STATUS_LOZENGE so
- * there is ZERO domain/data/permissions shift — only the presentation and
- * interaction substrate is upgraded.
+ * Columns (L → R):
+ *   Type · Key ↓ · Summary · Status · Comments · Parent ·
+ *   Assignee · Due date · Priority
  *
- * Parity coverage (vs. the user's Atlaskit spec):
- *   ✔ Sortable columns (aria-sort emitted per header)
- *   ✔ Column visibility menu ("+" header affordance, persisted per user)
- *   ✔ Column resize via drag-to-resize borders (persisted)
- *   ✔ Sticky header aligned under horizontal scroll
- *   ✔ Virtualized row body (auto when ≥60 rows)
- *   ✔ Row select with tri-state header (opt-in, off by default until bulk
- *     actions are wired — regression-safe)
- *   ✔ Grouped rows (by STATUS) with collapsible headers
- *   ✔ Tooltip on truncated summary
- *   ✔ Row hover affordances (Pencil/Trash, opacity-0 → 1 on hover)
- *   ✔ Click row → opens CatalystDetailRouter drawer (same wiring as V1)
- *   ✔ Empty / loading / error states
- *   ✔ Keyboard: Enter opens row; ↑/↓ via tab order; Space toggles group
+ * Grouping (IN PROGRESS / BACKLOG / etc.) is rendered as one collapsible
+ * section per status — each section is a standalone @atlaskit/dynamic-table
+ * (the canonical Jira pattern; Atlaskit DT does not ship native grouping).
+ * Default sort: Key desc (matches the Jira reference UI).
  */
-import { useCallback, useMemo } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
-import { DynamicTable, type DynamicTableColumn, type DynamicTableRowGroup } from '@/components/shared/dynamic-table';
-import { useTablePersistence } from '@/components/shared/dynamic-table/useTablePersistence';
+import { Fragment, useCallback, useState } from 'react';
+import DynamicTable from '@atlaskit/dynamic-table';
+import type { HeadType, RowType, SortOrderType } from '@atlaskit/dynamic-table/dist/types/types';
+import { ChevronDown, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import type { BacklogEpic, BacklogGroup } from '../../types/backlog.types';
-import { AssigneeCell, DateCell, DueDateCell, KeyCell, StatusLozengeCell, SummaryCell } from './cells';
+import {
+  AssigneeCell,
+  CommentsCell,
+  DueDateCell,
+  KeyCell,
+  ParentCell,
+  PriorityCell,
+  StatusLozengeCell,
+  SummaryCell,
+  TypeCell,
+} from './cells';
 
 export interface EpicBacklogTableProps {
   groups: BacklogGroup<BacklogEpic>[];
@@ -39,17 +39,170 @@ export interface EpicBacklogTableProps {
   emptyState?: React.ReactNode;
 }
 
-const TABLE_ID = 'project-hub/epic-backlog';
-
-const COLUMN_IDS = {
+// Column keys (stable — also used as the Atlaskit `sortKey`).
+const COL = {
+  type: 'type',
   key: 'key',
   summary: 'summary',
   status: 'status',
+  comments: 'comments',
+  parent: 'parent',
   assignee: 'assignee',
-  created: 'created',
-  updated: 'updated',
   dueDate: 'dueDate',
+  priority: 'priority',
 } as const;
+type ColKey = (typeof COL)[keyof typeof COL];
+
+const PRIORITY_WEIGHT: Record<string, number> = {
+  highest: 0, high: 1, medium: 2, low: 3, lowest: 4,
+};
+const priorityWeight = (p: string | null | undefined): number =>
+  PRIORITY_WEIGHT[(p ?? 'medium').toLowerCase()] ?? 2;
+
+/** Atlaskit DynamicTable `head` definition — shared across every section. */
+const HEAD: HeadType = {
+  cells: [
+    { key: COL.type,     content: 'Type',     isSortable: false, width: 5  },
+    { key: COL.key,      content: 'Key',      isSortable: true,  width: 10 },
+    { key: COL.summary,  content: 'Summary',  isSortable: true,  width: 25 },
+    { key: COL.status,   content: 'Status',   isSortable: true,  width: 10 },
+    { key: COL.comments, content: 'Comments', isSortable: false, width: 10 },
+    { key: COL.parent,   content: 'Parent',   isSortable: true,  width: 14 },
+    { key: COL.assignee, content: 'Assignee', isSortable: true,  width: 12 },
+    { key: COL.dueDate,  content: 'Due date', isSortable: true,  width: 8  },
+    { key: COL.priority, content: 'Priority', isSortable: true,  width: 8  },
+  ],
+};
+
+function cmp<T>(a: T, b: T): number {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  if (a < b) return -1;
+  if (a > b) return 1;
+  return 0;
+}
+
+function sortRows(rows: BacklogEpic[], key: ColKey, order: SortOrderType): BacklogEpic[] {
+  const out = [...rows];
+  const dir = order === 'DESC' ? -1 : 1;
+  out.sort((a, b) => {
+    switch (key) {
+      case COL.key:      return dir * cmp(a.epic_key, b.epic_key);
+      case COL.summary:  return dir * cmp(a.name, b.name);
+      case COL.status:   return dir * cmp(a.status, b.status);
+      case COL.parent:   return dir * cmp(a.parent_key, b.parent_key);
+      case COL.assignee: return dir * cmp(a.assignee_name, b.assignee_name);
+      case COL.dueDate:  return dir * cmp(a.end_date, b.end_date);
+      case COL.priority: return dir * (priorityWeight(a.priority) - priorityWeight(b.priority));
+      default: return 0;
+    }
+  });
+  return out;
+}
+
+interface GroupSectionProps {
+  group: BacklogGroup<BacklogEpic>;
+  avatarsByName: Map<string, string | null>;
+  onRowClick?: (epic: BacklogEpic) => void;
+  onEdit?: (epic: BacklogEpic) => void;
+  onDelete?: (epic: BacklogEpic) => void;
+  sortKey: ColKey;
+  sortOrder: SortOrderType;
+  onSort: (key: ColKey, order: SortOrderType) => void;
+}
+
+function GroupSection({
+  group,
+  avatarsByName,
+  onRowClick,
+  onEdit,
+  onDelete,
+  sortKey,
+  sortOrder,
+  onSort,
+}: GroupSectionProps) {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const sorted = sortRows(group.rows, sortKey, sortOrder);
+
+  const rows: RowType[] = sorted.map((epic) => {
+    const name = epic.assignee_name ?? null;
+    const avatarUrl = name ? avatarsByName.get(name.toLowerCase()) ?? null : null;
+    return {
+      key: epic.id,
+      onClick: () => onRowClick?.(epic),
+      onKeyPress: (e) => {
+        if (e.key === 'Enter') onRowClick?.(epic);
+      },
+      cells: [
+        { key: COL.type,     content: <TypeCell issueType={epic.issue_type ?? 'Epic'} /> },
+        { key: COL.key,      content: <KeyCell epic={epic} /> },
+        { key: COL.summary,  content: <SummaryCell epic={epic} /> },
+        { key: COL.status,   content: <StatusLozengeCell status={epic.status ?? null} /> },
+        { key: COL.comments, content: <CommentsCell count={epic.comment_count ?? null} /> },
+        { key: COL.parent,   content: <ParentCell parentKey={epic.parent_key ?? null} parentSummary={epic.parent_summary ?? null} /> },
+        { key: COL.assignee, content: <AssigneeCell name={name} avatarUrl={avatarUrl} /> },
+        { key: COL.dueDate,  content: <DueDateCell value={epic.end_date} status={epic.status ?? null} /> },
+        { key: COL.priority, content: (
+          <span className="inline-flex items-center justify-between gap-2 w-full">
+            <PriorityCell priority={epic.priority ?? null} />
+            <span className="pointer-events-auto hidden items-center gap-1 group-hover:flex" onClick={(e) => e.stopPropagation()}>
+              {onEdit && (
+                <button
+                  type="button"
+                  aria-label={`Edit ${epic.epic_key ?? 'epic'}`}
+                  className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]"
+                  onClick={() => onEdit(epic)}
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  type="button"
+                  aria-label={`Delete ${epic.epic_key ?? 'epic'}`}
+                  className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
+                  onClick={() => onDelete(epic)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </span>
+          </span>
+        ) },
+      ],
+    };
+  });
+
+  return (
+    <div className="group">
+      <button
+        type="button"
+        className="flex w-full cursor-pointer select-none items-center gap-2 border-b bg-muted/40 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.03em] text-muted-foreground hover:bg-muted/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]"
+        aria-expanded={!collapsed}
+        onClick={() => setCollapsed((c) => !c)}
+      >
+        {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+        <span>{group.label}</span>
+        <span className="ml-1 inline-flex h-[18px] min-w-[20px] items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-semibold text-foreground/80">
+          {group.rows.length}
+        </span>
+      </button>
+
+      {!collapsed && (
+        <DynamicTable
+          head={HEAD}
+          rows={rows}
+          sortKey={sortKey}
+          sortOrder={sortOrder}
+          onSort={(data: { key: string; sortOrder: SortOrderType }) => onSort(data.key as ColKey, data.sortOrder)}
+          isFixedSize
+        />
+      )}
+    </div>
+  );
+}
 
 export function EpicBacklogTable({
   groups,
@@ -61,156 +214,52 @@ export function EpicBacklogTable({
   onDelete,
   emptyState,
 }: EpicBacklogTableProps) {
-  const { visibility, onVisibilityChange, sizing, onSizingChange } = useTablePersistence(TABLE_ID, {
-    visibility: {},
-    sizing: {},
-  });
+  const [sortKey, setSortKey] = useState<ColKey>(COL.key);
+  const [sortOrder, setSortOrder] = useState<SortOrderType>('DESC');
 
-  // ─── Column model ───────────────────────────────────────────────────
-  const columns = useMemo<DynamicTableColumn<BacklogEpic>[]>(
-    () => [
-      {
-        id: COLUMN_IDS.key,
-        accessorKey: 'epic_key',
-        header: 'Key',
-        label: 'Key',
-        size: 138,
-        minSize: 110,
-        alwaysVisible: true,
-        cell: ({ row }) => <KeyCell epic={row.original} />,
-      },
-      {
-        id: COLUMN_IDS.summary,
-        accessorKey: 'name',
-        header: 'Summary',
-        label: 'Summary',
-        size: 420,
-        minSize: 220,
-        alwaysVisible: true,
-        cell: ({ row }) => <SummaryCell epic={row.original} />,
-      },
-      {
-        id: COLUMN_IDS.status,
-        accessorKey: 'status',
-        header: 'Status',
-        label: 'Status',
-        size: 148,
-        minSize: 110,
-        cell: ({ row }) => <StatusLozengeCell status={row.original.status ?? null} />,
-      },
-      {
-        id: COLUMN_IDS.assignee,
-        accessorKey: 'assignee_name',
-        header: 'Assignee',
-        label: 'Assignee',
-        size: 180,
-        minSize: 120,
-        cell: ({ row }) => {
-          const name = row.original.assignee_name ?? null;
-          const avatarUrl = name ? avatarsByName.get(name.toLowerCase()) ?? null : null;
-          return <AssigneeCell name={name} avatarUrl={avatarUrl} />;
-        },
-      },
-      {
-        id: COLUMN_IDS.created,
-        accessorKey: 'jira_created_at',
-        header: 'Created',
-        label: 'Created',
-        size: 108,
-        minSize: 88,
-        cell: ({ row }) => <DateCell value={row.original.jira_created_at} />,
-        sortingFn: 'datetime',
-      },
-      {
-        id: COLUMN_IDS.updated,
-        accessorKey: 'jira_updated_at',
-        header: 'Updated',
-        label: 'Updated',
-        size: 108,
-        minSize: 88,
-        cell: ({ row }) => <DateCell value={row.original.jira_updated_at} />,
-        sortingFn: 'datetime',
-      },
-      {
-        id: COLUMN_IDS.dueDate,
-        accessorKey: 'end_date',
-        header: 'Due date',
-        label: 'Due date',
-        size: 108,
-        minSize: 88,
-        cell: ({ row }) => <DueDateCell value={row.original.end_date} status={row.original.status ?? null} />,
-        sortingFn: 'datetime',
-      },
-    ],
-    [avatarsByName]
-  );
+  const handleSort = useCallback((key: ColKey, order: SortOrderType) => {
+    setSortKey(key);
+    setSortOrder(order);
+  }, []);
 
-  // ─── Map BacklogGroup → DynamicTableRowGroup ────────────────────────
-  const dtGroups = useMemo<DynamicTableRowGroup<BacklogEpic>[]>(
-    () =>
-      groups.map((g) => ({
-        id: g.status,
-        label: g.label,
-        rows: g.items,
-      })),
-    [groups]
-  );
+  if (error) {
+    return (
+      <div role="alert" className="flex h-40 items-center justify-center text-sm text-destructive">
+        Failed to load epics: {error.message}
+      </div>
+    );
+  }
 
-  const getRowId = useCallback((epic: BacklogEpic) => epic.id, []);
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <DynamicTable head={HEAD} rows={[]} isLoading loadingSpinnerSize="large" />
+      </div>
+    );
+  }
 
-  const renderRowActions = useMemo(
-    () => {
-      if (!onEdit && !onDelete) return undefined;
-      return (epic: BacklogEpic) => (
-        <>
-          {onEdit && (
-            <button
-              type="button"
-              aria-label={`Edit ${epic.epic_key ?? 'epic'}`}
-              className="rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6]"
-              onClick={() => onEdit(epic)}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-            </button>
-          )}
-          {onDelete && (
-            <button
-              type="button"
-              aria-label={`Delete ${epic.epic_key ?? 'epic'}`}
-              className="rounded p-1 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus:outline-none focus-visible:ring-2 focus-visible:ring-destructive"
-              onClick={() => onDelete(epic)}
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </button>
-          )}
-        </>
-      );
-    },
-    [onEdit, onDelete]
-  );
+  const hasAny = groups.some((g) => g.rows.length > 0);
+  if (!hasAny) {
+    return <div className="flex min-h-[200px] items-center justify-center">{emptyState}</div>;
+  }
 
   return (
-    <DynamicTable<BacklogEpic>
-      tableId={TABLE_ID}
-      ariaLabel="Epic backlog"
-      columns={columns}
-      groups={dtGroups}
-      getRowId={getRowId}
-      onRowClick={onRowClick}
-      renderRowActions={renderRowActions}
-      sortable
-      resizable
-      columnVisibility={visibility}
-      onColumnVisibilityChange={onVisibilityChange}
-      columnSizing={sizing}
-      onColumnSizingChange={onSizingChange}
-      rowHeight={50}
-      minTableWidth={1200}
-      stickyHeader
-      isLoading={isLoading}
-      error={error ?? null}
-      emptyState={emptyState}
-    />
+    <div role="region" aria-label="Epic backlog" className="h-full overflow-auto">
+      {groups.map((g) => (
+        <Fragment key={g.status}>
+          <GroupSection
+            group={g}
+            avatarsByName={avatarsByName}
+            onRowClick={onRowClick}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            sortKey={sortKey}
+            sortOrder={sortOrder}
+            onSort={handleSort}
+          />
+        </Fragment>
+      ))}
+    </div>
   );
 }
 

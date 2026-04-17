@@ -239,19 +239,23 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
     enableRowSelection: !!selectable,
     onSortingChange: (updater) => {
       const next = typeof updater === 'function' ? updater(sortingState) : updater;
-      onSortingChange ? onSortingChange(next) : setInternalSorting(next);
+      if (onSortingChange) onSortingChange(next);
+      else setInternalSorting(next);
     },
     onColumnSizingChange: (updater) => {
       const next = typeof updater === 'function' ? updater(sizingState) : updater;
-      onColumnSizingChange ? onColumnSizingChange(next) : setInternalSizing(next);
+      if (onColumnSizingChange) onColumnSizingChange(next);
+      else setInternalSizing(next);
     },
     onColumnVisibilityChange: (updater) => {
       const next = typeof updater === 'function' ? updater(visibilityState) : updater;
-      onColumnVisibilityChange ? onColumnVisibilityChange(next) : setInternalVisibility(next);
+      if (onColumnVisibilityChange) onColumnVisibilityChange(next);
+      else setInternalVisibility(next);
     },
     onRowSelectionChange: (updater) => {
       const next = typeof updater === 'function' ? updater(selectionState) : updater;
-      onSelectionChange ? onSelectionChange(next) : setInternalSelection(next);
+      if (onSelectionChange) onSelectionChange(next);
+      else setInternalSelection(next);
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: sortable ? getSortedRowModel() : undefined,
