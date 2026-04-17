@@ -86,6 +86,14 @@ export default defineConfig(({ mode, command }) => {
     react(),
     mode === "development" && componentTagger(),
   ].filter(Boolean),
+  // @atlaskit packages reference Node's `process.env.NODE_ENV` at module top-level.
+  // Shim it for the browser so they don't throw "process is not defined" at load time.
+  define: {
+    'process.env.NODE_ENV': JSON.stringify(mode),
+    'process.env': '{}',
+    'process.platform': '"browser"',
+    'process.version': '""',
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
