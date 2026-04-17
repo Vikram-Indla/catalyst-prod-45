@@ -269,6 +269,12 @@ export function CatalystViewBase({
             {!fullPageMode && itemKey && projectKey ? (
               <Link
                 to={`/project-hub/${projectKey}/issue/${itemKey}`}
+                state={(() => {
+                  try {
+                    const raw = typeof window !== 'undefined' ? sessionStorage.getItem('ticketOrigin') : null;
+                    return raw ? { ticketOrigin: JSON.parse(raw) } : undefined;
+                  } catch { return undefined; }
+                })()}
                 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
                 onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
                 onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}

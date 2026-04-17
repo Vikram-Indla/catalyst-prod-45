@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 import type { BacklogEpic } from '../types/backlog.types';
+import { writeTicketOrigin } from '../hooks/useTicketOrigin';
 
 export default function EpicBacklogPage({ projectId: propProjectId }: { projectId?: string }) {
   const params = useParams<{ projectId: string }>();
@@ -34,6 +35,14 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
   const [showCreate, setShowCreate] = useState(false);
   const [editEpicId, setEditEpicId] = useState<string | null>(null);
   const [drawerEpicId, setDrawerEpicId] = useState<string | null>(null);
+  const openEpicDetail = (id: string) => {
+    writeTicketOrigin({
+      fromUrl: window.location.pathname + window.location.search,
+      fromLabel: 'Epic backlog',
+      fromType: 'epic-backlog',
+    });
+    setDrawerEpicId(id);
+  };
   const [deleteTarget, setDeleteTarget] = useState<BacklogEpic | null>(null);
 
   const groups = useMemo(() => groupByStatus(epics || [], EPIC_GROUP_ORDER), [epics]);
@@ -132,12 +141,12 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
                       style={{ borderColor: tk.divider, maxHeight: 50, transition: 'background 120ms' }}
                       onMouseEnter={(e) => (e.currentTarget.style.background = tk.hoverBg)}
                       onMouseLeave={(e) => (e.currentTarget.style.background = '')}
-                      onClick={() => setDrawerEpicId(epic.id)}>
+                      onClick={() => openEpicDetail(epic.id)}>
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <input type="checkbox" onClick={(e) => e.stopPropagation()} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 14, height: 14, borderRadius: 2 }} />
                       </div>
                       <div style={{ width: 26, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <button onClick={(e) => { e.stopPropagation(); setDrawerEpicId(epic.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                        <button onClick={(e) => { e.stopPropagation(); openEpicDetail(epic.id); }} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                           <ChevronRight className="h-3.5 w-3.5" style={{ color: tk.t3 }} />
                         </button>
                       </div>
