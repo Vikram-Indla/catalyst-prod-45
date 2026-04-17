@@ -1,38 +1,56 @@
 /**
- * TicketBreadcrumbs — source-aware breadcrumb row for full-page ticket view.
+ * TicketBreadcrumbs — canonical issue-level breadcrumb.
  *
- * Visual spec (Apr 2026 refresh, matches Atlassian "Spaces" reference):
- *   Spaces  /  [project-icon] <Project>  /  [origin-icon]? <Origin>?  /  [type-icon] <ISSUE-KEY>
+ * Rendered inline in the top bar of CatalystViewBase (the shared shell for
+ * every detail view: Story / Epic / Feature / Task / Defect / Incident /
+ * Subtask / Business Request). Shape:
  *
- * - Crumb labels: 13px Inter 500, color #44546F (light) / #B6C2CF (dark)
- * - Separators:   thin "/" 13px, color #8590A1 (light) / #738496 (dark), 6px gutter
- * - Project chip: small rounded thumbnail (16×16) with first letter on a tinted square
- * - Issue key:    JetBrains Mono 13/600, color #172B4D (light) / #EDEDED (dark)
- * - Type icon:    canonical SVG from /lib/jira-issue-type-icons (16px)
+ *   <ProjectAvatar> <ProjectName>  /  <ParentIcon> <ParentKey or +Add parent>  /  <IssueTypeIcon> <ISSUE-KEY>
  *
- * Built without @atlaskit/breadcrumbs so we have full control over the chip
- * rendering (Atlaskit's BreadcrumbsItem doesn't expose a slot for an icon
- * before the link text without flicker).
+ * Middle crumb rules:
+ *   - parent epic exists        → show parentKey + epic icon, clickable
+ *   - parent missing + non-epic → show "+ Add parent" action (calls onAddParent)
+ *   - current item IS the epic  → collapse middle crumb (Jira behavior)
+ *
+ * Built on:
+ *   - @atlaskit/breadcrumbs           Breadcrumbs + BreadcrumbsItem
+ *   - @atlaskit/primitives            Box for padding via tokens
+ *   - @atlaskit/tokens                color/typography tokens + theme sync
+ *   - react-router-dom Link via       RouterBreadcrumbLink adapter
+ *   - useAtlaskitThemeSync            light/dark parity with Catalyst theme
+ *
+ * Canonical — do NOT fork this for per-surface variants. Every detail view
+ * composes CatalystViewBase, which renders this once.
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { useTheme } from '@/hooks/useTheme';
-import { useTicketOrigin } from '../hooks/useTicketOrigin';
+import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
+import { Box } from '@atlaskit/primitives';
+import { token } from '@atlaskit/tokens';
+import { useAtlaskitThemeSync } from '@/modules/project-work-hub/components/SubtasksPanel/atlaskitTheme';
+import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+import {
+  getAvatarColor,
+  getInitials,
+} from '@/modules/project-work-hub/components/dialogs/story-detail-modules/helpers';
 
-interface TicketBreadcrumbsProps {
+export interface TicketBreadcrumbsProps {
   projectKey: string;
   projectName?: string;
-  issueKey: string;
-  issueType?: string;
-  /** Optional: issue type for the origin crumb (e.g. parent epic) */
-  originIssueType?: string;
+  itemType: string;
+  itemKey: string | null;
+  parentKey?: string | null;
+  parentType?: string;
+  onParentClick?: () => void;
+  /** Fires when user clicks "+ Add parent" — open the set-parent UI. */
+  onAddParent?: () => void;
 }
 
-function ProjectChip({ name, projectKey }: { name: string; projectKey: string }) {
-  const seed = (projectKey || name || '?').charCodeAt(0) || 65;
-  // Deterministic pastel from the project key — Atlassian-style tinted square.
-  const hue = (seed * 47) % 360;
+/* ── Project avatar: small square with initials, Jira style ─────────────── */
+function ProjectAvatar({ projectKey, projectName, size = 16 }: { projectKey: string; projectName?: string; size?: number }) {
+  const label = projectName || projectKey;
+  const initial = getInitials(label).slice(0, 1) || projectKey.slice(0, 1);
+  const bg = getAvatarColor(label);
   return (
     <span
       aria-hidden="true"
@@ -40,155 +58,160 @@ function ProjectChip({ name, projectKey }: { name: string; projectKey: string })
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 16,
-        height: 16,
+        width: size,
+        height: size,
         borderRadius: 3,
-        background: `linear-gradient(135deg, hsl(${hue} 70% 78%), hsl(${(hue + 30) % 360} 70% 64%))`,
+        background: bg,
         color: '#FFFFFF',
-        fontSize: 10,
+        fontFamily: "'Inter', sans-serif",
+        fontSize: Math.round(size * 0.65),
         fontWeight: 700,
-        fontFamily: 'Inter, sans-serif',
-        lineHeight: 1,
         flexShrink: 0,
       }}
     >
-      {(name || projectKey || '?').charAt(0).toUpperCase()}
+      {initial.toUpperCase()}
     </span>
   );
 }
 
+/* ── Router adapter for BreadcrumbsItem.component ───────────────────────── */
+type AnyAnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href?: string;
+  children?: React.ReactNode;
+};
+const RouterBreadcrumbLink = React.forwardRef<HTMLAnchorElement, AnyAnchorProps>(
+  ({ href, children, className, onClick, ...rest }, ref) => {
+    if (!href) {
+      return (
+        <a ref={ref} className={className} onClick={onClick} {...rest}>
+          {children}
+        </a>
+      );
+    }
+    return (
+      <Link ref={ref as React.Ref<HTMLAnchorElement>} to={href} className={className} onClick={onClick}>
+        {children}
+      </Link>
+    );
+  },
+);
+RouterBreadcrumbLink.displayName = 'RouterBreadcrumbLink';
+
+/* ── Button-as-crumb adapter: for "+ Add parent" and parent-navigation when
+      onParentClick is an in-app handler rather than a direct URL. ────────── */
+interface CallbackProps {
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  children?: React.ReactNode;
+  className?: string;
+}
+const CallbackBreadcrumb = React.forwardRef<HTMLButtonElement, CallbackProps>(
+  ({ onClick, children, className }, ref) => (
+    <button
+      ref={ref}
+      type="button"
+      onClick={onClick}
+      className={className}
+      style={{
+        background: 'transparent',
+        border: 'none',
+        padding: 0,
+        cursor: 'pointer',
+        font: 'inherit',
+        color: 'inherit',
+      }}
+    >
+      {children}
+    </button>
+  ),
+);
+CallbackBreadcrumb.displayName = 'CallbackBreadcrumb';
+
+/* ── Terminal crumb (current issue) — non-interactive span ──────────────── */
+const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string }>(
+  ({ children, className }, ref) => (
+    <span
+      ref={ref}
+      aria-current="page"
+      className={className}
+      style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 13,
+        fontWeight: 600,
+        color: token('color.text', '#172B4D'),
+      }}
+    >
+      {children}
+    </span>
+  ),
+);
+TerminalCrumb.displayName = 'TerminalCrumb';
+
 export function TicketBreadcrumbs({
   projectKey,
   projectName,
-  issueKey,
-  issueType,
-  originIssueType,
+  itemType,
+  itemKey,
+  parentKey,
+  parentType,
+  onParentClick,
+  onAddParent,
 }: TicketBreadcrumbsProps) {
-  const { isDark } = useTheme();
-  const origin = useTicketOrigin();
+  useAtlaskitThemeSync();
 
-  const linkColor = isDark ? '#B6C2CF' : '#44546F';
-  const sepColor = isDark ? '#738496' : '#8590A1';
-  const keyColor = isDark ? '#EDEDED' : '#172B4D';
-
-  const linkStyle: React.CSSProperties = {
-    fontFamily: 'Inter, sans-serif',
-    fontSize: 13,
-    fontWeight: 500,
-    color: linkColor,
-    textDecoration: 'none',
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '2px 4px',
-    margin: '-2px -4px',
-    borderRadius: 3,
-    transition: 'background 120ms ease, color 120ms ease',
-  };
-
-  const onHover = (e: React.MouseEvent<HTMLElement>, on: boolean) => {
-    (e.currentTarget as HTMLElement).style.background = on
-      ? isDark
-        ? 'rgba(255,255,255,0.06)'
-        : 'rgba(9,30,66,0.06)'
-      : 'transparent';
-    (e.currentTarget as HTMLElement).style.color = on
-      ? isDark
-        ? '#EDEDED'
-        : '#172B4D'
-      : linkColor;
-  };
-
-  const Sep = () => (
-    <span
-      aria-hidden="true"
-      style={{
-        color: sepColor,
-        fontSize: 13,
-        fontWeight: 400,
-        margin: '0 6px',
-        userSelect: 'none',
-      }}
-    >
-      /
-    </span>
-  );
+  const isEpic = (itemType || '').toLowerCase().includes('epic');
+  const showParent = Boolean(parentKey);
+  const showAddParent = !isEpic && !parentKey;
 
   return (
-    <nav
-      aria-label="Breadcrumbs"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        rowGap: 4,
-        paddingBlock: 6,
-        fontFamily: 'Inter, sans-serif',
-      }}
+    <Box
+      xcss={{
+        paddingBlock: 'space.050',
+        font: 'font.body',
+        color: 'color.text.subtlest',
+      } as never}
     >
-      <Link
-        to="/project-hub"
-        style={linkStyle}
-        onMouseEnter={(e) => onHover(e, true)}
-        onMouseLeave={(e) => onHover(e, false)}
-      >
-        Spaces
-      </Link>
+      <Breadcrumbs label="Breadcrumbs">
+        {/* Crumb 1 — Project */}
+        <BreadcrumbsItem
+          href={`/project-hub/${projectKey}/list`}
+          text={projectName || projectKey}
+          iconBefore={<ProjectAvatar projectKey={projectKey} projectName={projectName} />}
+          component={RouterBreadcrumbLink}
+        />
 
-      <Sep />
+        {/* Crumb 2 — Parent OR "+ Add parent" (hidden when the current issue is an epic) */}
+        {showParent && (
+          onParentClick ? (
+            <BreadcrumbsItem
+              text={parentKey!}
+              iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
+              onClick={onParentClick}
+              component={CallbackBreadcrumb}
+            />
+          ) : (
+            <BreadcrumbsItem
+              href={`/project-hub/${projectKey}/issue/${parentKey}`}
+              text={parentKey!}
+              iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
+              component={RouterBreadcrumbLink}
+            />
+          )
+        )}
+        {showAddParent && (
+          <BreadcrumbsItem
+            text="+ Add parent"
+            onClick={onAddParent}
+            component={CallbackBreadcrumb}
+          />
+        )}
 
-      <Link
-        to={`/project-hub/${projectKey}/list`}
-        style={linkStyle}
-        onMouseEnter={(e) => onHover(e, true)}
-        onMouseLeave={(e) => onHover(e, false)}
-      >
-        <ProjectChip name={projectName || projectKey} projectKey={projectKey} />
-        <span>{projectName || projectKey}</span>
-      </Link>
-
-      {origin && (
-        <>
-          <Sep />
-          <Link
-            to={origin.fromUrl}
-            style={linkStyle}
-            onMouseEnter={(e) => onHover(e, true)}
-            onMouseLeave={(e) => onHover(e, false)}
-          >
-            {originIssueType && (
-              <JiraIssueTypeIcon type={originIssueType} size={16} />
-            )}
-            <span>{origin.fromLabel}</span>
-          </Link>
-        </>
-      )}
-
-      <Sep />
-
-      <span
-        aria-current="page"
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '2px 4px',
-          margin: '-2px -4px',
-        }}
-      >
-        {issueType && <JiraIssueTypeIcon type={issueType} size={16} />}
-        <span
-          style={{
-            fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-            fontSize: 13,
-            fontWeight: 600,
-            letterSpacing: 0.1,
-            color: keyColor,
-          }}
-        >
-          {issueKey}
-        </span>
-      </span>
-    </nav>
+        {/* Crumb 3 — Current issue (terminal) */}
+        <BreadcrumbsItem
+          text={itemKey ?? '—'}
+          iconBefore={<IssueIcon type={itemType} size={14} />}
+          component={TerminalCrumb}
+        />
+      </Breadcrumbs>
+    </Box>
   );
 }

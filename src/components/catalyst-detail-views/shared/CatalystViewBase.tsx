@@ -13,10 +13,11 @@
  * renders its own content into the left/right slots.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { X, Share2, MoreHorizontal, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Share2, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
-import { IssueIcon, Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -215,70 +216,24 @@ export function CatalystViewBase({
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
         }}>
-          {/* Breadcrumb — hidden in fullPageMode because the outer TicketBreadcrumbs
-              row on IssueDetailPage already renders Projects ▸ Project ▸ Source ▸ Key.
-              Kept for modal + panel modes where no outer breadcrumb exists. */}
-          {fullPageMode ? (
-            <div />
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E', minWidth: 0 }}>
-              {/* Project — clickable, links to type-specific backlog */}
-              {projectKey && (
-                <>
-                  <Link
-                    to={`/project-hub/${projectKey}/${itemType?.toLowerCase() === 'epic' ? 'epic-backlog' : itemType?.toLowerCase() === 'story' ? 'backlog' : 'list'}`}
-                    style={{ fontSize: 14, fontWeight: 500, color: '#42526E', textDecoration: 'none', cursor: 'pointer' }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; e.currentTarget.style.textDecoration = 'none'; }}
-                  >
-                    {projectName || projectKey}
-                  </Link>
-                  <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-                </>
-              )}
-              {projectName && !projectKey && (
-                <>
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#42526E' }}>{projectName}</span>
-                  <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-                </>
-              )}
-              {parentKey && (
-                <>
-                  <IssueIcon type={parentType || 'Epic'} size={16} />
-                  <span
-                    style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#42526E', cursor: onParentClick ? 'pointer' : 'default' }}
-                    onClick={onParentClick}
-                    onMouseEnter={e => { if (onParentClick) e.currentTarget.style.color = '#0052CC'; }}
-                    onMouseLeave={e => { e.currentTarget.style.color = '#42526E'; }}
-                  >{parentKey}</span>
-                  <span style={{ color: '#C1C7D0', fontSize: 14 }}>/</span>
-                </>
-              )}
-              {breadcrumbExtra}
-              <IssueIcon type={itemType} size={16} />
-              {itemKey && projectKey ? (
-                <Link
-                  to={`/project-hub/${projectKey}/issue/${itemKey}`}
-                  state={(() => {
-                    try {
-                      const raw = typeof window !== 'undefined' ? sessionStorage.getItem('ticketOrigin') : null;
-                      return raw ? { ticketOrigin: JSON.parse(raw) } : undefined;
-                    } catch { return undefined; }
-                  })()}
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC', textDecoration: 'none' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'none'; }}
-                  title="Open full page view"
-                >
-                  {itemKey}
-                </Link>
-              ) : (
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
-                  {itemKey ?? '—'}
-                </span>
-              )}
-            </div>
-          )}
+          {/* Canonical breadcrumb — Atlaskit Breadcrumbs; renders in every mode
+              (modal, panel, full-page) for every detail view type. Shape:
+                 <ProjectAvatar ProjectName>  /  <Parent or +Add parent>  /  <IssueKey>
+              See TicketBreadcrumbs.tsx for crumb rules. */}
+          <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+            {projectKey ? (
+              <TicketBreadcrumbs
+                projectKey={projectKey}
+                projectName={projectName}
+                itemType={itemType}
+                itemKey={itemKey}
+                parentKey={parentKey}
+                parentType={parentType}
+                onParentClick={onParentClick}
+              />
+            ) : null}
+            {breadcrumbExtra}
+          </div>
 
           {/* Right actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
