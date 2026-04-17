@@ -237,7 +237,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 1.5px dashed #DFE1E6;
+  background: #DFE1E6;
 }
 
 .lwi-row__actions {
