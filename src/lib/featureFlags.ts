@@ -18,21 +18,24 @@ export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP !== 'false';
 
 /**
  * Subtasks V2 — canonical Atlaskit/ADF molecular component.
- * Defaults to FALSE: pilot gated to Epic detail view only.
- * Set VITE_ENABLE_SUBTASKS_V2=true to enable the V2 molecule at the Epic pilot surface.
- * When this flag is off, the existing SubtasksPanel renders unchanged everywhere.
+ *
+ * PILOT DEFAULT (Apr 2026): TRUE — so Vikram can see the V2 PILOT pill
+ * and the new behaviors (AlertDialog, F2/Home/End/Shift+Del, per-row
+ * ADF DescriptionPopover) on the deployed Catalyst without env-var
+ * wrangling. Set VITE_ENABLE_SUBTASKS_V2=false to revert to the pre-V2
+ * behavior at any time. Pilot surface: Epic detail view → child work items.
  */
-export const ENABLE_SUBTASKS_V2 = import.meta.env.VITE_ENABLE_SUBTASKS_V2 === 'true';
+export const ENABLE_SUBTASKS_V2 = import.meta.env.VITE_ENABLE_SUBTASKS_V2 !== 'false';
 
 /**
  * Kanban V2 — ProjectHub board pilot gate.
- * Defaults to FALSE: off everywhere.
- * Set VITE_ENABLE_KANBAN_V2=true to enable the V2 board additions
+ *
+ * PILOT DEFAULT (Apr 2026): TRUE — so the V2 PILOT pill and additions
  * (URL deep-linking for filters + group-by, density control, Zod
- * boundary validation on status change). When this flag is off, the
- * existing KanbanBoardPage renders unchanged.
+ * boundary validation on status change) are visible on the deployed
+ * Catalyst. Set VITE_ENABLE_KANBAN_V2=false to revert.
  *
  * Pilot surface: /project-hub/:key/board only.
  * Out of scope: ProductHub/IncidentHub/TaskHub/legacy Project boards.
  */
-export const ENABLE_KANBAN_V2 = import.meta.env.VITE_ENABLE_KANBAN_V2 === 'true';
+export const ENABLE_KANBAN_V2 = import.meta.env.VITE_ENABLE_KANBAN_V2 !== 'false';

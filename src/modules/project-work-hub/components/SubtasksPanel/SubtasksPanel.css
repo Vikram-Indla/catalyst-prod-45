@@ -233,6 +233,28 @@
   box-shadow: 0 0 0 1.5px #FFFFFF;
 }
 
+/* V2 PILOT pill — visible only when ENABLE_SUBTASKS_V2=true, so Vikram
+   can see at a glance that the new behaviors are active on this surface. */
+.sp-panel .sp-pilot-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 7px;
+  margin-left: 6px;
+  border-radius: 3px;
+  background: #0052CC;
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  box-shadow: 0 1px 2px rgba(0, 82, 204, 0.25);
+}
+
 .sp-inline-summary-input {
   flex: 1;
   min-width: 0;
