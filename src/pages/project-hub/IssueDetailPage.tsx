@@ -135,10 +135,7 @@ export default function IssueDetailPage() {
 
   return (
     <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <CatalystPageHeader
-        title={issue.issue_key}
-        icon={<JiraIssueTypeIcon type={issue.issue_type || 'task'} size={20} />}
-      />
+      <CatalystPageHeader title="Story Backlog" />
       <div style={{ flex: 1, minHeight: 0 }}>
         <Suspense fallback={null}>
           <CatalystDetailRouter
