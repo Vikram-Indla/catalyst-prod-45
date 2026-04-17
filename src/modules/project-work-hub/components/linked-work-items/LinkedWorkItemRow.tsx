@@ -85,7 +85,7 @@ export function LinkedWorkItemRow({
       </button>
 
       <span className="lwi-row__status">
-        <Lozenge appearance={appearance} isBold>
+        <Lozenge appearance={appearance}>
           {target.status}
         </Lozenge>
       </span>
