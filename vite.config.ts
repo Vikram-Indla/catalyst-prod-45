@@ -147,12 +147,14 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/avatar',
       '@atlaskit/dropdown-menu',
       '@atlaskit/dynamic-table',
-      '@atlaskit/editor-core',
       '@atlaskit/lozenge',
       '@atlaskit/popup',
-      '@atlaskit/renderer',
       '@atlaskit/textfield',
       '@atlaskit/tokens',
+      // NOTE: @atlaskit/editor-core and @atlaskit/renderer are intentionally
+      // EXCLUDED here. They bundle their own ProseMirror tree and clash with
+      // Tiptap if eagerly loaded. AtlaskitEditor.tsx lazy-imports editor-core
+      // via React.lazy so it only enters the page when an editor is mounted.
       // Pre-bundle prosemirror so editor-core + renderer share ONE instance.
       'prosemirror-state',
       'prosemirror-model',
