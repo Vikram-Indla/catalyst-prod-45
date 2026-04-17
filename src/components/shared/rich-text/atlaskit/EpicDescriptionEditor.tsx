@@ -22,12 +22,24 @@
  *   - Output: ADF JSON string passed to `onSave`, parsed by the existing
  *     CatalystDescriptionSection mutation and stored back in `description_adf`.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Editor, type EditorActions } from '@atlaskit/editor-core';
+import React, { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import { IntlProvider } from 'react-intl-next';
 import { normalizeAdfForAtlaskit, parseStoredDescriptionToAdf } from './adfNormalizer';
 import { uploadDescriptionImage } from './supabaseImageUpload';
+
+// Lazy-load @atlaskit/editor-core to avoid eager ProseMirror bundling
+// (prevents "Duplicate use of selection JSON ID cell" collision with Tiptap).
+const LazyEditor = lazy(async () => {
+  const mod = await import('@atlaskit/editor-core');
+  return { default: mod.Editor as unknown as React.ComponentType<any> };
+});
+
+// Local type alias — avoid eager type import from @atlaskit/editor-core.
+type EditorActions = {
+  getValue: () => Promise<any>;
+  replaceSelection: (node: any) => void;
+};
 
 export interface EpicDescriptionEditorProps {
   /** Raw stored description (ADF object, ADF JSON string, or null). */
@@ -152,39 +164,41 @@ export default function EpicDescriptionEditor({
   return (
     <IntlProvider locale="en">
       <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
-        <Editor
-          appearance="comment"
-          defaultValue={defaultValueString}
-          placeholder={placeholder}
-          onSave={handleEditorSave}
-          onCancel={onCancel}
-          onEditorReady={handleEditorReady}
-          allowTextColor
-          allowTextAlignment
-          allowIndentation
-          allowRule
-          allowTables={{ advanced: false }}
-          allowPanel
-          allowTasksAndDecisions
-          shouldFocus
-          primaryToolbarComponents={[
-            <button
-              key="insert-image"
-              type="button"
-              onClick={triggerImagePicker}
-              disabled={uploading}
-              title="Insert image"
-              style={{
-                height: 28, padding: '0 8px', borderRadius: 3, border: 'none',
-                background: 'transparent', cursor: uploading ? 'wait' : 'pointer',
-                color: uploading ? '#A5ADBA' : '#42526E', fontSize: 12,
-                fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center',
-              }}
-            >
-              {uploading ? 'Uploading…' : 'Image'}
-            </button>,
-          ]}
-        />
+        <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: '#878787' }}>Loading editor…</div>}>
+          <LazyEditor
+            appearance="comment"
+            defaultValue={defaultValueString}
+            placeholder={placeholder}
+            onSave={handleEditorSave}
+            onCancel={onCancel}
+            onEditorReady={handleEditorReady}
+            allowTextColor
+            allowTextAlignment
+            allowIndentation
+            allowRule
+            allowTables={{ advanced: false }}
+            allowPanel
+            allowTasksAndDecisions
+            shouldFocus
+            primaryToolbarComponents={[
+              <button
+                key="insert-image"
+                type="button"
+                onClick={triggerImagePicker}
+                disabled={uploading}
+                title="Insert image"
+                style={{
+                  height: 28, padding: '0 8px', borderRadius: 3, border: 'none',
+                  background: 'transparent', cursor: uploading ? 'wait' : 'pointer',
+                  color: uploading ? '#A5ADBA' : '#42526E', fontSize: 12,
+                  fontFamily: 'inherit', display: 'inline-flex', alignItems: 'center',
+                }}
+              >
+                {uploading ? 'Uploading…' : 'Image'}
+              </button>,
+            ]}
+          />
+        </Suspense>
         {uploadError && (
           <div role="alert" style={{
             padding: '6px 12px', fontSize: 12, color: '#BF2600',
