@@ -15,10 +15,3 @@ export const ENABLE_KNOWLEDGE_HUB = import.meta.env.VITE_ENABLE_KNOWLEDGE_HUB !=
  * Set VITE_ENABLE_FULL_APP=false to restrict to auth + for-you only.
  */
 export const ENABLE_FULL_APP = import.meta.env.VITE_ENABLE_FULL_APP !== 'false';
-
-/**
- * Epic Backlog V2 — Atlaskit-pattern DynamicTable (TanStack Table + react-virtual + Radix).
- * Pilot ship — ringfenced to /project-hub/:key/epic-backlog.
- * Defaults ON in preview; set VITE_ENABLE_EPIC_BACKLOG_V2=false to fall back to legacy div-grid.
- */
-export const ENABLE_EPIC_BACKLOG_V2 = import.meta.env.VITE_ENABLE_EPIC_BACKLOG_V2 !== 'false';

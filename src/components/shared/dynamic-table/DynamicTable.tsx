@@ -53,6 +53,9 @@ function ariaSortFor<TData>(h: Header<TData, unknown>): 'ascending' | 'descendin
 /**
  * Flattens groups into a single row array with group-header pseudo-rows.
  * Maintains parity with Atlaskit's `rows` + section semantics.
+ *
+ * When `sortOrderById` is provided, rows WITHIN each group are re-ordered to
+ * follow TanStack's sort state so column-header sort still works in grouped mode.
  */
 type FlatRowItem<TData> =
   | { kind: 'group'; group: DynamicTableRowGroup<TData>; collapsed: boolean }
@@ -61,14 +64,24 @@ type FlatRowItem<TData> =
 function buildFlatRows<TData>(
   groups: DynamicTableRowGroup<TData>[] | undefined,
   data: TData[] | undefined,
-  collapsedGroups: Record<string, boolean>
+  collapsedGroups: Record<string, boolean>,
+  getRowId: (row: TData) => string,
+  sortOrderById?: Map<string, number>
 ): FlatRowItem<TData>[] {
   if (groups) {
     const out: FlatRowItem<TData>[] = [];
     for (const g of groups) {
       const collapsed = !!collapsedGroups[g.id];
       out.push({ kind: 'group', group: g, collapsed });
-      if (!collapsed) for (const row of g.rows) out.push({ kind: 'row', data: row });
+      if (collapsed) continue;
+      const ordered = sortOrderById
+        ? [...g.rows].sort((a, b) => {
+            const ai = sortOrderById.get(getRowId(a)) ?? Number.MAX_SAFE_INTEGER;
+            const bi = sortOrderById.get(getRowId(b)) ?? Number.MAX_SAFE_INTEGER;
+            return ai - bi;
+          })
+        : g.rows;
+      for (const row of ordered) out.push({ kind: 'row', data: row });
     }
     return out;
   }
@@ -252,9 +265,22 @@ export function DynamicTable<TData>(props: DynamicTableProps<TData>) {
     return map;
   }, [sortedRows, getRowId]);
 
+  const sortOrderById = useMemo(() => {
+    const m = new Map<string, number>();
+    sortedRows.forEach((r, idx) => m.set(r.id, idx));
+    return m;
+  }, [sortedRows]);
+
   const flatItems = useMemo(
-    () => buildFlatRows<TData>(groups, sortedRows.map((r) => r.original), collapsedGroups),
-    [groups, sortedRows, collapsedGroups]
+    () =>
+      buildFlatRows<TData>(
+        groups,
+        sortedRows.map((r) => r.original),
+        collapsedGroups,
+        getRowId,
+        sortOrderById
+      ),
+    [groups, sortedRows, collapsedGroups, getRowId, sortOrderById]
   );
 
   // ─── Virtualization ─────────────────────────────────────────────────────
