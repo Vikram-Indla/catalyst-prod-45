@@ -131,7 +131,7 @@ function GroupSection({
 }: GroupSectionProps) {
   const [collapsed, setCollapsed] = useState(false);
 
-  const sorted = sortRows(group.rows, sortKey, sortOrder);
+  const sorted = sortRows(group.items, sortKey, sortOrder);
 
   const rows: RowType[] = sorted.map((epic) => {
     const name = epic.assignee_name ?? null;
