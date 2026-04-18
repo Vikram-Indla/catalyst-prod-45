@@ -131,7 +131,7 @@ function GroupSection({
 }: GroupSectionProps) {
   const [collapsed, setCollapsed] = useState(false);
 
-  const sorted = sortRows(group.rows, sortKey, sortOrder);
+  const sorted = sortRows(group.items, sortKey, sortOrder);
 
   const rows: RowType[] = sorted.map((epic) => {
     const name = epic.assignee_name ?? null;
@@ -209,7 +209,7 @@ function GroupSection({
         {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         <span>{group.label}</span>
         <span className="ml-1 inline-flex h-[18px] min-w-[20px] items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-semibold text-foreground/80">
-          {group.rows.length}
+          {group.items.length}
         </span>
       </button>
 
@@ -271,7 +271,7 @@ export function EpicBacklogTable({
     );
   }
 
-  const hasAny = groups.some((g) => g.rows.length > 0);
+  const hasAny = groups.some((g) => g.items.length > 0);
   if (!hasAny) {
     return <div className="flex min-h-[200px] items-center justify-center">{emptyState}</div>;
   }
