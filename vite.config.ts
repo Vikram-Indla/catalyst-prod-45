@@ -249,13 +249,21 @@ export default defineConfig(({ mode, command }) => {
       // first render is warm instead of stalling on cold optimize.
       '@atlaskit/avatar',
       '@atlaskit/breadcrumbs',
+      '@atlaskit/button',
+      '@atlaskit/checkbox',
       '@atlaskit/dropdown-menu',
       '@atlaskit/dynamic-table',
+      '@atlaskit/empty-state',
+      '@atlaskit/icon',
+      '@atlaskit/inline-edit',
       '@atlaskit/lozenge',
       '@atlaskit/popup',
       '@atlaskit/primitives',
+      '@atlaskit/select',
+      '@atlaskit/spinner',
       '@atlaskit/textfield',
       '@atlaskit/tokens',
+      '@atlaskit/tooltip',
       // NOTE: @atlaskit/editor-core and @atlaskit/renderer are intentionally
       // EXCLUDED here. They bundle their own ProseMirror tree and clash with
       // Tiptap if eagerly loaded. AtlaskitEditor.tsx lazy-imports editor-core
