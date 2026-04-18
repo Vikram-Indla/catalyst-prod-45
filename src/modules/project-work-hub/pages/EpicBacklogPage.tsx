@@ -105,6 +105,7 @@ export default function EpicBacklogPage({ projectId: propProjectId }: { projectI
           onRowClick={openEpicDetail}
           onEdit={(epic) => setEditEpicId(epic.id)}
           onDelete={(epic) => setDeleteTarget(epic)}
+          projectId={projectId}
           emptyState={
             <div className="flex flex-col items-center justify-center py-8">
               <Box className="h-12 w-12 mb-4" style={{ color: tk.t3 }} />

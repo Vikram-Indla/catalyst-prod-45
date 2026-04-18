@@ -22,11 +22,10 @@ import {
   DueDateCell,
   KeyCell,
   ParentCell,
-  PriorityCell,
-  StatusLozengeCell,
-  SummaryCell,
   TypeCell,
 } from './cells';
+import { EditablePriority, EditableStatus, EditableSummary } from './editable-cells';
+import { useUpdateEpic, type EpicUpdatePatch } from './hooks/useUpdateEpic';
 
 export interface EpicBacklogTableProps {
   groups: BacklogGroup<BacklogEpic>[];
@@ -37,6 +36,10 @@ export interface EpicBacklogTableProps {
   onEdit?: (epic: BacklogEpic) => void;
   onDelete?: (epic: BacklogEpic) => void;
   emptyState?: React.ReactNode;
+  /** Project id, passed into the inline-edit mutation hook. */
+  projectId?: string;
+  /** When false, every cell renders in read-only mode. */
+  canEdit?: boolean;
 }
 
 // Column keys (stable — also used as the Atlaskit `sortKey`).
@@ -110,6 +113,8 @@ interface GroupSectionProps {
   sortKey: ColKey;
   sortOrder: SortOrderType;
   onSort: (key: ColKey, order: SortOrderType) => void;
+  onEpicPatch?: (id: string, patch: EpicUpdatePatch) => void;
+  canEdit?: boolean;
 }
 
 function GroupSection({
@@ -121,6 +126,8 @@ function GroupSection({
   sortKey,
   sortOrder,
   onSort,
+  onEpicPatch,
+  canEdit = true,
 }: GroupSectionProps) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -138,15 +145,31 @@ function GroupSection({
       cells: [
         { key: COL.type,     content: <TypeCell issueType={epic.issue_type ?? 'Epic'} /> },
         { key: COL.key,      content: <KeyCell epic={epic} /> },
-        { key: COL.summary,  content: <SummaryCell epic={epic} /> },
-        { key: COL.status,   content: <StatusLozengeCell status={epic.status ?? null} /> },
+        { key: COL.summary,  content: (
+          <EditableSummary
+            value={epic.name}
+            disabled={!canEdit}
+            onChange={(next) => onEpicPatch?.(epic.id, { summary: next })}
+          />
+        ) },
+        { key: COL.status,   content: (
+          <EditableStatus
+            value={epic.status ?? null}
+            disabled={!canEdit}
+            onChange={(status, category) => onEpicPatch?.(epic.id, { status, status_category: category })}
+          />
+        ) },
         { key: COL.comments, content: <CommentsCell count={epic.comment_count ?? null} /> },
         { key: COL.parent,   content: <ParentCell parentKey={epic.parent_key ?? null} parentSummary={epic.parent_summary ?? null} /> },
         { key: COL.assignee, content: <AssigneeCell name={name} avatarUrl={avatarUrl} /> },
         { key: COL.dueDate,  content: <DueDateCell value={epic.end_date} status={epic.status ?? null} /> },
         { key: COL.priority, content: (
           <span className="inline-flex items-center justify-between gap-2 w-full">
-            <PriorityCell priority={epic.priority ?? null} />
+            <EditablePriority
+              value={epic.priority ?? null}
+              disabled={!canEdit}
+              onChange={(priority) => onEpicPatch?.(epic.id, { priority })}
+            />
             <span className="pointer-events-auto hidden items-center gap-1 group-hover:flex" onClick={(e) => e.stopPropagation()}>
               {onEdit && (
                 <button
@@ -213,14 +236,24 @@ export function EpicBacklogTable({
   onEdit,
   onDelete,
   emptyState,
+  projectId,
+  canEdit = true,
 }: EpicBacklogTableProps) {
   const [sortKey, setSortKey] = useState<ColKey>(COL.key);
   const [sortOrder, setSortOrder] = useState<SortOrderType>('DESC');
+  const updateEpic = useUpdateEpic(projectId);
 
   const handleSort = useCallback((key: ColKey, order: SortOrderType) => {
     setSortKey(key);
     setSortOrder(order);
   }, []);
+
+  const handleEpicPatch = useCallback(
+    (id: string, patch: EpicUpdatePatch) => {
+      updateEpic.mutate({ id, patch });
+    },
+    [updateEpic]
+  );
 
   if (error) {
     return (
@@ -256,6 +289,8 @@ export function EpicBacklogTable({
             sortKey={sortKey}
             sortOrder={sortOrder}
             onSort={handleSort}
+            onEpicPatch={handleEpicPatch}
+            canEdit={canEdit}
           />
         </Fragment>
       ))}
