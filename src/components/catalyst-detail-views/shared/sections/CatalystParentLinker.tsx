@@ -184,7 +184,7 @@ function BusinessRequestParentPicker({
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
                 <Search size={14} color="#5E6C84" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
-                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
+                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
                 {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
               </div>
             </div>
@@ -225,7 +225,7 @@ function renderBrGroup(
           >
             <IssueIcon type="Business Request" size={14} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.request_key || '—'}</span>
-            <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
+            <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
             <StatusLozenge status={item.process_step} category={statusCat} />
             {isSelected && <Check size={16} color="#0052CC" />}
           </div>
@@ -353,7 +353,7 @@ function SingleParentPicker({
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
                 <Search size={14} color="#5E6C84" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
-                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
+                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
                 {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
               </div>
             </div>
@@ -523,7 +523,7 @@ function MultiLinkPicker({
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
                 <Search size={14} color="#5E6C84" />
                 <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
-                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#172B4D', width: '100%', fontFamily: 'inherit' }} />
+                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
                 {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
               </div>
             </div>
@@ -565,7 +565,7 @@ function renderGroup(
           >
             <IssueIcon type={item.issue_type} size={14} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
-            <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
+            <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
             {isSelected && <Check size={14} color="#0052CC" />}
           </div>
@@ -607,7 +607,7 @@ function renderGroupMulti(
             </div>
             <IssueIcon type={item.issue_type} size={14} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
-            <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
+            <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
           </div>
         );

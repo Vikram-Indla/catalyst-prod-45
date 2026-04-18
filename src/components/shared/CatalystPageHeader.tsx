@@ -1,13 +1,14 @@
 /**
  * CatalystPageHeader — Canonical page header for the entire Catalyst platform.
  *
- * Design: Option A — Clean Minimal (Linear-style)
- * - Title only: 20px Sora 700, −0.3px tracking
- * - No subtitle — context moves to toolbar pills / tabs
- * - No bottom border — seamless blend into content
+ * Apr 2026 (Decision A): Restyled to match BacklogPage.atlaskit.tsx:1119-1123
+ * measurements. No breadcrumb — the top nav + sidebar already show location.
+ *
+ * - Title only: 20px / weight 600 / #172B4D / -0.003em tracking
+ * - Font: Atlassian Sans → Inter fallback
  * - Fixed height: 52px
  * - Padding: 0 24px (aligns with sidebar divider edge)
- * - Actions slot on the right for buttons
+ * - Actions slot on the right
  *
  * Usage:
  *   <CatalystPageHeader title="Board" />
@@ -43,13 +44,13 @@ export function CatalystPageHeader({ title, actions, icon }: CatalystPageHeaderP
         {icon}
         <h1
           style={{
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: '"Atlassian Sans", Inter, system-ui, -apple-system, sans-serif',
             fontSize: 20,
-            fontWeight: 700,
-            color: isDark ? '#EDEDED' : '#0F172A',
-            letterSpacing: '-0.3px',
+            fontWeight: 600,
+            color: isDark ? '#EDEDED' : '#172B4D',
+            letterSpacing: '-0.003em',
             margin: 0,
-            lineHeight: 1.3,
+            lineHeight: 1.2,
           }}
         >
           {title}

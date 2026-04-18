@@ -186,7 +186,7 @@ export function CatalystQuickActions({
               { icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5E6C84" strokeWidth="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>, label: 'Find similar items', action: () => { setShowAiMenu(false); toast.info('Find similar items — coming soon'); } },
             ].map((item, i) => (
               <button key={i} onClick={item.action}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 16px', background: 'none', border: 'none', fontSize: 14, color: '#172B4D', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
+                style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '8px 16px', background: 'none', border: 'none', fontSize: 14, color: '#292A2E', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left' }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
               >{item.icon}<span>{item.label}</span></button>

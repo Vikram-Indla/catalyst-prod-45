@@ -123,16 +123,8 @@ export default function StrategicThemesPage() {
 
   return (
     <PageChrome hideHeader>
-      <div style={{ padding: '16px 24px 0' }}>
-        <nav style={{ fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }}>
-          <span style={{ cursor: 'pointer', color: isDark ? '#7DB8FC' : undefined }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
-          <span style={{ margin: '0 4px', color: isDark ? DK.t3 : '#94A3B8' }}>›</span>
-          <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Strategic Themes</span>
-        </nav>
-        <div className="flex items-center justify-between" style={{ marginBottom: 0 }}>
-          <CatalystPageHeader title="Strategic Themes" />
-        </div>
-      </div>
+      {/* Inline breadcrumb removed Apr 2026 — Decision A (see CatalystPageHeader). */}
+      <CatalystPageHeader title="Strategic Themes" />
 
       <div style={{ padding: '16px 24px 24px' }}>
         <ThemeStatsStrip themes={themes} isDark={isDark} />

@@ -150,7 +150,25 @@ const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
 const V2_TABLE_ENABLED =
   typeof window !== 'undefined' && window.localStorage?.getItem('catalyst.table.v2') === '1';
 
+// ── @atlaskit/* full rebuild — opt in with localStorage.setItem('catalyst.story-backlog.atlaskit', '1') ──
+const ATLASKIT_BACKLOG_ENABLED =
+  typeof window !== 'undefined' && window.localStorage?.getItem('catalyst.story-backlog.atlaskit') === '1';
+const AtlaskitStoryBacklogPage = ATLASKIT_BACKLOG_ENABLED
+  ? lazy(() => import('./StoryBacklogPage.atlaskit'))
+  : null;
+
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
+  // Feature-flag short-circuit: render the Atlaskit version if the flag is set.
+  // Returning before any hooks is safe — React requires no hooks here.
+  // The flag is read once at module load, so it's stable across renders within a session.
+  if (ATLASKIT_BACKLOG_ENABLED && AtlaskitStoryBacklogPage) {
+    return (
+      <Suspense fallback={null}>
+        <AtlaskitStoryBacklogPage projectId={propProjectId} projectKey={projectKey} />
+      </Suspense>
+    );
+  }
+
   const params = useParams<{ projectId: string }>();
   const projectId = propProjectId || params.projectId;
   const queryClient = useQueryClient();

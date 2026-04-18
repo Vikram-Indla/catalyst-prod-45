@@ -115,12 +115,7 @@ export default function GoalsKeyResultsPage() {
 
   return (
     <div data-goals-page="" style={{ padding: '16px 24px 24px', minHeight: '100%', backgroundColor: 'var(--bg)' }}>
-      {/* Breadcrumb */}
-      <nav style={{ fontSize: 12, color: isDark ? DK.t2 : '#64748B', marginBottom: 4 }} aria-label="Breadcrumb">
-        <span style={{ cursor: 'pointer', color: isDark ? '#7DB8FC' : undefined }} onClick={() => navigate('/strategyhub')}>StrategyHub</span>
-        <span style={{ margin: '0 4px', color: isDark ? DK.t3 : '#94A3B8' }}>›</span>
-        <span style={{ fontWeight: 600, color: isDark ? DK.t1 : '#0F172A' }}>Goals &amp; Key Results</span>
-      </nav>
+      {/* Inline breadcrumb removed Apr 2026 — Decision A. */}
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8, marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>

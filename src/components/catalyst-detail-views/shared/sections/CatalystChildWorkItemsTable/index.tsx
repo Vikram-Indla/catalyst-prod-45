@@ -18,6 +18,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronDown, ChevronRight, Plus, MoreHorizontal, Settings2, Check } from 'lucide-react';
+import Heading from '@atlaskit/heading';
 import { SegmentedProgressBar } from './SegmentedProgressBar';
 import { ChildWorkItemRow, type ChildWorkItem, type ChildColumnConfig } from './ChildWorkItemRow';
 import { InlineCreateWithTypeSelector } from './InlineCreateWithTypeSelector';
@@ -102,7 +103,8 @@ export function CatalystChildWorkItemsTable({
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }} onClick={() => setExpanded(e => !e)}>
           {expanded ? <ChevronDown size={16} color="#42526E" /> : <ChevronRight size={16} color="#42526E" />}
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#172B4D' }}>Child work items</span>
+          {/* Phase D.1 (2026-04-18): Atlaskit Heading owns typography via tokens. */}
+          <Heading size="small">Child work items</Heading>
           <span style={{
             fontSize: 11, fontWeight: 700, color: '#5E6C84', background: '#F4F5F7',
             padding: '1px 6px', borderRadius: 3, marginLeft: 2,
@@ -154,7 +156,7 @@ export function CatalystChildWorkItemsTable({
                       }}>
                         {columns[col.key] && <Check size={10} color="#FFF" strokeWidth={3} />}
                       </div>
-                      <span style={{ fontSize: 13, color: '#172B4D' }}>{col.label}</span>
+                      <span style={{ fontSize: 13, color: '#292A2E' }}>{col.label}</span>
                     </div>
                   ))}
                 </div>

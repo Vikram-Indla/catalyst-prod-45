@@ -16,6 +16,7 @@
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
+import Heading from '@atlaskit/heading';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
@@ -186,7 +187,8 @@ export function CatalystSidebarDetails({
           padding: '0 8px', borderRadius: '6px 6px 0 0', background: '#FFFFFF',
         }}>
           <ChevronDown size={14} color="#505258" />
-          <span style={{ fontSize: 16, fontWeight: 500, lineHeight: '20px', color: '#292A2E' }}>Details</span>
+          {/* Phase D.1 (2026-04-18): Atlaskit Heading owns typography via tokens. */}
+          <Heading size="small">Details</Heading>
         </div>
 
         {/* Section body — two-column field grid */}
@@ -309,7 +311,7 @@ export function CatalystSidebarDetails({
       {showConfirmDelete && (
         <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
           <div style={{ background: '#FFF', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw', animation: 'cv-confirm-in 200ms ease-out' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Delete {issue?.issue_key}?</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#292A2E', marginBottom: 8 }}>Delete {issue?.issue_key}?</h3>
             <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>
               This {typeLabel} will be soft-deleted. It can be restored within 30 days.
             </p>

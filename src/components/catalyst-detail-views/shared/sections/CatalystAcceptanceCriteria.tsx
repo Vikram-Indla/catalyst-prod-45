@@ -7,6 +7,7 @@
  * (e.g. "Expected Behavior" for Defect, "Impact / Root Cause" for Incident).
  */
 import React from 'react';
+import Heading from '@atlaskit/heading';
 import type { PhIssue } from '../types';
 
 interface CatalystAcceptanceCriteriaProps {
@@ -20,8 +21,16 @@ export function CatalystAcceptanceCriteria({ issue, label = 'Acceptance Criteria
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <div style={{ fontSize: 14, fontWeight: 600, color: '#172B4D', marginBottom: 8 }}>{label}</div>
-      <div style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+      {/* Phase D.1 (2026-04-18): @atlaskit/heading owns typography via
+          tokens. Semantic <h3> by default for size="small". */}
+      <div style={{ marginBottom: 8 }}>
+        <Heading size="small">{label}</Heading>
+      </div>
+      {/* Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans */}
+      <div style={{
+        fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: 1.5, whiteSpace: 'pre-wrap',
+        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+      }}>
         {issue.acceptance_criteria}
       </div>
     </div>

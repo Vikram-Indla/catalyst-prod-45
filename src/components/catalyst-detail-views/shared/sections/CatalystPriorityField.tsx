@@ -19,10 +19,10 @@ export function CatalystPriorityField({ issue }: CatalystPriorityFieldProps) {
 
   return (
     <div style={{ marginBottom: 14 }}>
-      <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Priority</div>
+      <div style={{ fontSize: 12, fontWeight: 600, color: '#292A2E', marginBottom: 4 }}>Priority</div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 6px' }}>
         <span style={{ color: priorityStyle.color, fontWeight: 700, fontSize: 14 }}>{priorityStyle.symbol}</span>
-        <span style={{ fontSize: 14, color: '#172B4D' }}>{issue?.priority ?? 'Medium'}</span>
+        <span style={{ fontSize: 14, color: '#292A2E' }}>{issue?.priority ?? 'Medium'}</span>
       </div>
     </div>
   );

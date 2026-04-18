@@ -100,10 +100,15 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
         {
           title: 'Planning',
           items: [
-            { id: 'story-backlog', title: 'Story Backlog', path: `${base}/story-backlog`, icon: BookOpen, exact: false },
-            { id: 'epic-backlog', title: 'Epic Backlog', path: `${base}/epic-backlog`, icon: Layers, exact: false },
-            { id: 'feature-backlog', title: 'Feature Backlog', path: `${base}/feature-backlog`, icon: LayoutList, exact: false },
-            { id: 'hierarchy-allwork', title: 'All Work', path: `${base}/hierarchy/allwork`, icon: GitBranch, exact: false },
+            // Jira "List view" equivalent — unified, per-project. Combines
+            // Epics, Features, Stories, Tasks, QA Bugs, Production Incidents,
+            // Change Requests, Business Gaps, and API Requirements.
+            { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: Layers, exact: false },
+            // Jira "All work" equivalent — per-project, hierarchy view
+            { id: 'allwork', title: 'All Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
+            // Story / Epic / Feature Backlog pages were removed — their scope
+            // is fully covered by the unified Backlog view above. Routes now
+            // redirect to /backlog; source files remain on disk as-is.
           ],
         },
       ],

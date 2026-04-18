@@ -8,6 +8,7 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import Modal from '@atlaskit/modal-dialog';
 import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Search, MessageSquare, Clock,
@@ -118,6 +119,25 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     @keyframes sdm-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     @keyframes sdm-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     @keyframes sdm-panel-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+    /* ──────────────────────────────────────────────────────────────────────
+       Compact-drawer restack (task #74, 2026-04-18).
+       Shares the same breakpoint + behaviour with CatalystViewBase so
+       Story / Improvement detail drawers don't crush the title column to
+       ~66px in compact (400px) panel mode.
+       ────────────────────────────────────────────────────────────────────── */
+    .sdm-drawer-body { container-type: inline-size; }
+    @container (max-width: 679px) {
+      .sdm-drawer-body { flex-direction: column !important; }
+      .sdm-drawer-splitter { display: none !important; }
+      .sdm-drawer-sidebar {
+        width: 100% !important;
+        max-width: none !important;
+        border-left: none !important;
+        border-top: 1px solid #EBECF0;
+      }
+      .sdm-drawer-left { border-right: none !important; }
+    }
   `;
   document.head.appendChild(s);
 }
@@ -600,9 +620,14 @@ export default function StoryDetailModal({
     try { return JSON.parse(issue.labels as any); } catch { return []; }
   }, [issue?.labels]);
 
-  // Escape key to close modal (not in full-page mode)
+  // Escape key to close (Phase A.2b — gated to panel mode).
+  // Modal mode: @atlaskit/modal-dialog handles Escape natively via Modal's
+  //   own onClose + focus-trap semantics.
+  // Fullpage mode: Escape is a no-op (back button replaces it).
+  // Panel mode: we still own Escape-to-close. Double-firing with any
+  //   BacklogPage-level handler is idempotent.
   useEffect(() => {
-    if (!isOpen || fullPageMode) return;
+    if (!isOpen || !panelMode) return;
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
         onClose();
@@ -610,7 +635,7 @@ export default function StoryDetailModal({
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, fullPageMode, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+  }, [isOpen, panelMode, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
 
   if (!isOpen) return null;
 
@@ -672,40 +697,52 @@ export default function StoryDetailModal({
     animation: 'sdm-card-in 250ms ease-out',
   };
 
-  return (
+  /* ── Card contents ─────────────────────────────────────────────────────
+     Top bar + body JSX, extracted so all three modes (modal / panel /
+     fullpage) render the same content inside different wrappers.
+     Phase A.2b (2026-04-18): modal mode wraps in @atlaskit/modal-dialog
+     for focus trap + escape + body-scroll-lock a11y.
+     ──────────────────────────────────────────────────────────────────── */
+  const cardContents = (
     <>
-      {/* OVERLAY */}
-      <div style={OVERLAY} onClick={(panelMode || fullPageMode) ? undefined : onClose}>
-        <div data-sdm-scope style={MODAL} onClick={e => e.stopPropagation()}>
 
-          {/* ── A. TOP BAR — Jira breadcrumb + actions ─────── */}
+          {/* ── A. TOP BAR ─────────────────────────────────────────────────
+              Jira-parity fix (Phase A.1, 2026-04-18, task #12):
+              In panel mode the OUTER BacklogPage toolbar already renders
+              Breadcrumbs + Prev/Next + Expand + Fullscreen + Close using
+              Atlaskit IconButtons. Drawing those again here stacked two
+              chrome bars on the BAU-5419 screenshot. The inner bar now
+              shrinks to a right-aligned action bar with just Share + More
+              (which the outer toolbar doesn't own) whenever panelMode is
+              active. Full chrome stays for modal + fullpage modes.
+              ──────────────────────────────────────────────────────────── */}
           <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            display: 'flex', alignItems: 'center',
+            justifyContent: panelMode ? 'flex-end' : 'space-between',
             padding: '10px 20px', minHeight: 44, flexShrink: 0,
             borderBottom: '1px solid #EBECF0',
           }}>
-            {/* Breadcrumb — canonical Atlaskit via TicketBreadcrumbs.
-                Shape: <ProjectAvatar Project> / <AddParentPicker popover> / <IssueIcon KEY>
-                AddParentPicker owns its own popover; it's injected as the
-                middle crumb so the "change parent" behavior is preserved. */}
-            <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
-              {issue && (
-                <TicketBreadcrumbs
-                  projectKey={issue.project_key}
-                  itemType={issue.issue_type ?? 'Story'}
-                  itemKey={issue.issue_key ?? null}
-                  middleSlot={
-                    <AddParentPicker
-                      issueKey={issue.issue_key}
-                      parentKey={issue.parent_key ?? null}
-                      projectKey={issue.project_key}
-                      onParentChange={handleParentChange}
-                      variant="breadcrumb"
-                    />
-                  }
-                />
-              )}
-            </div>
+            {/* Breadcrumb — hidden in panel mode (outer toolbar owns it). */}
+            {!panelMode && (
+              <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+                {issue && (
+                  <TicketBreadcrumbs
+                    projectKey={issue.project_key}
+                    itemType={issue.issue_type ?? 'Story'}
+                    itemKey={issue.issue_key ?? null}
+                    middleSlot={
+                      <AddParentPicker
+                        issueKey={issue.issue_key}
+                        parentKey={issue.parent_key ?? null}
+                        projectKey={issue.project_key}
+                        onParentChange={handleParentChange}
+                        variant="breadcrumb"
+                      />
+                    }
+                  />
+                )}
+              </div>
+            )}
 
             {/* Right actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -737,8 +774,9 @@ export default function StoryDetailModal({
                   </div>
                 )}
               </div>
-              {/* Expand/Collapse panel toggle — hidden in full-page mode */}
-              {onTogglePanelMode && !fullPageMode && (
+              {/* Expand/Collapse panel toggle — hidden in full-page mode
+                  AND in panel mode (outer toolbar has Expand/Fullscreen). */}
+              {onTogglePanelMode && !fullPageMode && !panelMode && (
                 <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                   borderRadius: 4, color: '#42526E', fontSize: 14, display: 'flex', alignItems: 'center',
@@ -754,8 +792,11 @@ export default function StoryDetailModal({
                   )}
                 </button>
               )}
-              {/* Panel navigation — prev/next */}
-              {panelMode && navigationItems && navigationItems.length > 1 && (
+              {/* Panel navigation — DEAD in panel mode today (outer toolbar
+                  owns Prev/Next). Kept gated-false so the block re-lights if
+                  StoryDetailModal is ever mounted panel-style outside the
+                  BacklogPage chrome. */}
+              {false && panelMode && navigationItems && navigationItems.length > 1 && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <button onClick={navPrev} disabled={!canNavPrev} style={{
                     background: 'none', border: 'none', cursor: canNavPrev ? 'pointer' : 'default',
@@ -782,8 +823,9 @@ export default function StoryDetailModal({
                   </button>
                 </div>
               )}
-              {/* Close — hidden in full-page mode */}
-              {!fullPageMode && (
+              {/* Close — hidden in full-page mode (back button replaces it)
+                  AND in panel mode (outer BacklogPage toolbar owns Close). */}
+              {!fullPageMode && !panelMode && (
               <button onClick={onClose} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
                 borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
@@ -796,11 +838,11 @@ export default function StoryDetailModal({
             </div>
           </div>
 
-          {/* ── B. BODY — two-column ─────────────────────── */}
-          <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+          {/* ── B. BODY — two-column (restacks to single column under 680px via @container) ── */}
+          <div className="sdm-drawer-body" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
             {/* LEFT PANEL */}
-            <div style={{
+            <div className="sdm-drawer-left" style={{
               flex: 1, overflowY: 'auto', padding: '20px 24px 32px 24px',
               borderRight: '1px solid #EBECF0', minWidth: 0,
             }}>
@@ -1559,6 +1601,7 @@ export default function StoryDetailModal({
             {/* RESIZABLE SPLITTER — neutral grey, no blue tint */}
             <div
               ref={splitterRef}
+              className="sdm-drawer-splitter"
               onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
               style={{
                 width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
@@ -1572,7 +1615,7 @@ export default function StoryDetailModal({
             </div>
 
             {/* RIGHT PANEL — Sidebar details */}
-            <div style={{
+            <div className="sdm-drawer-sidebar" style={{
               width: rightPanelWidth, minWidth: 220, maxWidth: 480,
               background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
@@ -1810,8 +1853,34 @@ export default function StoryDetailModal({
               </div>
             </div>
           </div>
-        </div>
+    </>
+  );
+
+  /* ── Drawer wrapper ─────────────────────────────────────────────────────
+     Modal mode uses @atlaskit/modal-dialog (overlay + focus trap + escape
+     + body scroll lock + click-outside all handled by Atlaskit).
+     Panel + fullpage modes keep the hand-rolled shell from Phase A.1.
+     ──────────────────────────────────────────────────────────────────── */
+  const drawer = (!panelMode && !fullPageMode) ? (
+    <Modal onClose={onClose} width={1100} shouldScrollInViewport={false}>
+      <div data-sdm-scope style={{
+        minHeight: 600,
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }}>
+        {cardContents}
       </div>
+    </Modal>
+  ) : (
+    <div style={OVERLAY} onClick={(panelMode || fullPageMode) ? undefined : onClose}>
+      <div data-sdm-scope style={MODAL} onClick={e => e.stopPropagation()}>
+        {cardContents}
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {drawer}
 
       {/* ── MODALS ────────────────────────── */}
       {showConfirmDelete && (
