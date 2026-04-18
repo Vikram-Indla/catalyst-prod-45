@@ -530,25 +530,10 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
     }
   };
 
-  // ── Loading / Error ──
-  if (isLoading) {
-    return (
-      <div className="h-full" style={{ background: tk.pageBg }}>
-        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
-        {[1, 2, 3].map(i => (
-          <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
-            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading stories</div>;
-
   // ═════════════════════════════════════════════════════════════════════
-  // V2 TABLE PATH (feature-flagged). Only evaluated when V2_TABLE_ENABLED.
-  // Legacy path below is unchanged.
+  // V2 TABLE PATH (feature-flagged). Hooks declared unconditionally —
+  // early returns for loading/error live below all hooks to satisfy the
+  // Rules of Hooks (otherwise: "Rendered fewer hooks than expected").
   // ═════════════════════════════════════════════════════════════════════
 
   // Column sizing persistence — keyed under catalyst.dynamic-table.story-backlog
@@ -761,6 +746,22 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       rows: g.items,
     }));
   }, [groups, groupBy]);
+
+  // ── Loading / Error (after ALL hooks — Rules of Hooks) ──
+  if (isLoading) {
+    return (
+      <div className="h-full" style={{ background: tk.pageBg }}>
+        <div className="px-6 py-4"><div className="h-8 w-48 rounded" style={{ background: tk.chipBg }} /></div>
+        {[1, 2, 3].map(i => (
+          <div key={i} className="px-6 py-2 flex gap-3 animate-pulse">
+            <div className="h-[36px] flex-1 rounded" style={{ background: tk.chipBg }} />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading stories</div>;
 
   const v2EmptyState = (
     <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
