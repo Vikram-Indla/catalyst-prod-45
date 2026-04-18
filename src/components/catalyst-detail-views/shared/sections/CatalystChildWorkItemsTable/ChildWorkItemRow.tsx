@@ -126,7 +126,7 @@ export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: 
 
       {/* Summary — takes remaining space */}
       <div style={{
-        flex: 1, minWidth: 120, fontSize: 14, color: isDone ? '#97A0AF' : '#172B4D',
+        flex: 1, minWidth: 120, fontSize: 14, color: isDone ? '#97A0AF' : '#292A2E',
         textDecoration: isDone ? 'line-through' : 'none',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         paddingRight: 16, paddingLeft: 8,
@@ -144,7 +144,7 @@ export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: 
           }}>
             {item.assignee_display_name ? getInitials(item.assignee_display_name) : '?'}
           </div>
-          <span style={{ fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontSize: 13, color: '#292A2E', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {item.assignee_display_name || 'Unassigned'}
           </span>
         </div>
@@ -190,7 +190,7 @@ export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: 
                         onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F4F5F7'; }}
                         onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                       >
-                        <span style={{ fontSize: 13, color: '#172B4D' }}>{st}</span>
+                        <span style={{ fontSize: 13, color: '#292A2E' }}>{st}</span>
                         {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>}
                       </div>
                     );

@@ -65,27 +65,20 @@ export function PageChrome({
               borderBottom: '1px solid var(--divider)',
             }}
           >
-            {/* Left: Breadcrumb + Title (NO ICONS) */}
+            {/* Left: Title only (breadcrumb removed Apr 2026 — Decision A,
+                matches BacklogPage.atlaskit.tsx:1114-1123 rationale: top nav
+                + sidebar already show location, breadcrumb is redundant). */}
             <div className="flex items-center gap-2">
-              {section && (
-                <>
-                  <span
-                    className="text-[11px] font-semibold uppercase tracking-wider"
-                    style={{ color: 'var(--text-3)' }}
-                  >
-                    {section}
-                  </span>
-                  <span 
-                    className="text-[14px]" 
-                    style={{ color: 'var(--text-4)' }}
-                  >
-                    /
-                  </span>
-                </>
-              )}
               <h1
-                className="text-[18px] font-semibold"
-                style={{ color: 'var(--text-1)' }}
+                style={{
+                  fontFamily: '"Atlassian Sans", Inter, system-ui, -apple-system, sans-serif',
+                  fontSize: 20,
+                  fontWeight: 600,
+                  color: 'var(--text-1)',
+                  letterSpacing: '-0.003em',
+                  margin: 0,
+                  lineHeight: 1.2,
+                }}
               >
                 {pageTitle}
               </h1>

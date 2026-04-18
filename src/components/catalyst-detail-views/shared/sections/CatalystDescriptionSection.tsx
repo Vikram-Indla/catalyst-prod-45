@@ -12,6 +12,7 @@
  */
 import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
+import Heading from '@atlaskit/heading';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
@@ -79,7 +80,11 @@ function AtlaskitRendererPlaceholder({
   return (
     <div
       className="cv-desc-body"
-      style={{ fontSize: 14, color: '#172B4D', lineHeight: 1.7 }}
+      // Jira-measured: body 14/400, line-height 1.5, #292A2E, Atlassian Sans
+      style={{
+        fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: 1.5,
+        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+      }}
     >
       <AdfDescriptionRenderer html={html} issueKey={issueKey} />
     </div>
@@ -97,11 +102,11 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
   s.textContent = `
-    .cv-desc-body h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #172B4D; line-height: 1.3; }
-    .cv-desc-body h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: #172B4D; line-height: 1.3; }
-    .cv-desc-body h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: #172B4D; line-height: 1.4; }
-    .cv-desc-body h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #172B4D; }
-    .cv-desc-body h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: #172B4D; }
+    .cv-desc-body h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #292A2E; line-height: 1.3; }
+    .cv-desc-body h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: #292A2E; line-height: 1.3; }
+    .cv-desc-body h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; line-height: 1.4; }
+    .cv-desc-body h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; }
+    .cv-desc-body h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: #292A2E; }
     .cv-desc-body h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: #5E6C84; text-transform: uppercase; }
     .cv-desc-body ol, .cv-desc-body ul { margin: 4px 0 8px; padding-left: 24px; }
     .cv-desc-body li { margin-bottom: 4px; }
@@ -183,10 +188,13 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
   return (
     <div style={{ marginBottom: 24 }}>
       {/* Section header with expand/collapse + edit button */}
+      {/* Phase D.1 (2026-04-18): typography moved to Atlaskit Heading (size="small"
+          maps to a semantic h3 styled via @atlaskit/tokens). The outer div keeps
+          flex / gap / hover + click-to-collapse behavior; font styling is no
+          longer inline. */}
       <div
         style={{
           display: 'flex', alignItems: 'center', gap: 4,
-          fontSize: 14, fontWeight: 600, color: '#172B4D',
           marginBottom: collapsed ? 0 : 8, userSelect: 'none',
         }}
         onMouseEnter={() => setHovered(true)}
@@ -204,7 +212,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
               color: '#5E6C84',
             }}
           />
-          {label}
+          <Heading size="small">{label}</Heading>
         </div>
         {/* Edit pencil — visible on hover, hidden when editing or collapsed */}
         {!collapsed && !editing && issue && (
@@ -227,7 +235,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
              * No visible loading state for 95% of users.
              */
             onMouseEnter={e => {
-              e.currentTarget.style.color = '#172B4D';
+              e.currentTarget.style.color = '#292A2E';
               e.currentTarget.style.background = '#F4F5F7';
               prefetchEpicEditor();
             }}

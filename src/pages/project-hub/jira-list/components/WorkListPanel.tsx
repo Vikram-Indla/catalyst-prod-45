@@ -29,12 +29,12 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
       {/* Top bar: Ask AI | Search work | Avatars | Filter */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: '#FFFFFF',
+        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: 'transparent',
         flexWrap: 'nowrap',
       }}>
         <button style={{
           height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
-          background: '#FFFFFF', borderRadius: 6, cursor: 'pointer',
+          background: 'transparent', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontWeight: 600, fontFamily: 'Inter, sans-serif',
           color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 4,
           flexShrink: 0, whiteSpace: 'nowrap',
@@ -46,7 +46,7 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
           border: '1px solid #DFE1E6', borderRadius: 6, padding: '0 8px', height: 32,
-          background: '#FFFFFF',
+          background: 'transparent',
         }}>
           <Search size={14} style={{ opacity: 0.5, flexShrink: 0 }} />
           <input
@@ -64,7 +64,7 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
 
         <button style={{
           height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
-          background: '#FFFFFF', borderRadius: 6, cursor: 'pointer',
+          background: 'transparent', borderRadius: 6, cursor: 'pointer',
           fontSize: 13, fontFamily: 'Inter, sans-serif', display: 'inline-flex',
           alignItems: 'center', gap: 4, color: '#44546F', flexShrink: 0,
         }}>
@@ -76,7 +76,7 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
       {/* Sort header */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: '#FFFFFF',
+        padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: 'transparent',
       }}>
         <button style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -94,7 +94,7 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
       </div>
 
       {/* Scrollable card list */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px', minHeight: 0, background: '#FFFFFF' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px', minHeight: 0, background: 'transparent' }}>
         {filtered.map(item => {
           const selected = item.id === selectedKey;
           const rtl = /[\u0600-\u06FF]/.test(item.summary);
@@ -103,21 +103,34 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
               key={item.id}
               onClick={() => onSelect(item.id)}
               style={{
+                // Jira parity (measured 2026-04-18, BAU-5500):
+                //   - NO hard border (was 1px/#DFE1E6)
+                //   - Double shadow: 0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)
+                //   - 4px radius (was 8px)
+                //   - Selected: #E9F2FE bg + 1px blue inner-shadow ring (no outline)
+                //   - 2px margin between cards (was 8px)
                 width: '100%', textAlign: 'left', display: 'block',
-                border: selected ? '2px solid #579DFF' : '1px solid #DFE1E6',
-                background: selected ? '#E9F2FF' : '#FFFFFF',
-                borderRadius: 8, padding: selected ? '11px' : '12px',
-                marginBottom: 8, cursor: 'pointer',
-                transition: 'background 80ms, border-color 80ms',
+                border: 'none',
+                background: selected ? '#E9F2FE' : '#FFFFFF',
+                borderRadius: 4,
+                padding: 12,
+                margin: '2px 0',
+                cursor: 'pointer',
+                boxShadow: selected
+                  ? 'rgba(24, 104, 219, 0.4) 0px 0px 0px 1px, rgba(30, 31, 33, 0.18) 0px 1px 1px 0px'
+                  : 'rgba(30, 31, 33, 0.25) 0px 1px 1px 0px, rgba(30, 31, 33, 0.31) 0px 0px 1px 0px',
+                transition: 'background 80ms, box-shadow 80ms',
               }}
-              onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = '#F7F8F9'; } }}
+              onMouseEnter={e => { if (!selected) { e.currentTarget.style.background = '#F8F9FA'; } }}
               onMouseLeave={e => { if (!selected) { e.currentTarget.style.background = '#FFFFFF'; } }}
             >
               <div
                 dir={rtl ? 'rtl' : 'ltr'}
                 style={{
-                  fontWeight: 600, color: selected ? '#0C66E4' : '#172B4D',
-                  marginBottom: 8, lineHeight: 1.3, fontSize: 14,
+                  // Jira card title: Atlassian Sans 14/400/#292A2E (weight 400, not 600).
+                  // Selected state tints the title blue (#1868DB).
+                  fontWeight: 400, color: selected ? '#1868DB' : '#292A2E',
+                  marginBottom: 8, lineHeight: '20px', fontSize: 14,
                   fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
                   overflow: 'hidden', textOverflow: 'ellipsis',
                   display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -127,9 +140,11 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span style={{
-                  fontSize: 12, color: '#626F86', display: 'inline-flex',
-                  alignItems: 'center', gap: 5,
-                  fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+                  // Issue key in card: Atlassian Sans 12/400/#505258 (NOT monospace —
+                  // Jira uses the same family as body, just smaller).
+                  fontSize: 12, color: '#505258', display: 'inline-flex',
+                  alignItems: 'center', gap: 6,
+                  fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontWeight: 400,
                 }}>
                   <WorkItemTypeIcon type={item.type} size={14} />
                   {item.jiraKey}

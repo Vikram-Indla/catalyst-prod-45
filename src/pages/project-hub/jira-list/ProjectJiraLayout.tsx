@@ -1,29 +1,22 @@
 /**
- * ProjectJiraLayout — Project header + tab bar + view content
- * Stage E: Tab memory via sessionStorage, project-not-found guard
+ * ProjectJiraLayout — Project header + All Work view
+ *
+ * 2026-04-18: List tab deprecated per Vikram directive. The List view was a
+ * legacy table-only surface that duplicated functionality now owned by the
+ * unified All Work view (which itself offers both table and split-panel
+ * modes). Keeping two tabs that did almost the same thing caused confusion
+ * and sessionStorage tab-memory bugs. Single surface now — route
+ * /project-hub/:key/allwork renders ProjectAllWorkView directly, no tab bar.
  */
-import React, { useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Users, MoreHorizontal, Share2, Zap, MessageSquare, Maximize2 } from 'lucide-react';
-import ProjectListView from './ProjectListView';
 import ProjectAllWorkView from './ProjectAllWorkView';
-
-type ProjectView = 'list' | 'allwork';
 
 export default function ProjectJiraLayout() {
   const { key } = useParams<{ key: string }>();
-
-  // Cycle 1 §1.10: tab memory via sessionStorage
-  const [activeView, setActiveView] = useState<ProjectView>(() => {
-    const stored = sessionStorage.getItem(`ph-view-${key}`);
-    return (stored === 'allwork' ? 'allwork' : 'list');
-  });
-  const handleViewChange = (view: ProjectView) => {
-    setActiveView(view);
-    sessionStorage.setItem(`ph-view-${key}`, view);
-  };
 
   const { data: project, isLoading, error } = useQuery({
     queryKey: ['project-info', key],
@@ -82,53 +75,9 @@ export default function ProjectJiraLayout() {
         </div>
       </div>
 
-      {/* ── Tab Bar ── */}
-      <div style={{
-        display: 'flex', alignItems: 'flex-end', gap: 0,
-        background: 'var(--cp-bg-page)',
-        borderBottom: '2px solid var(--cp-border-default)',
-        padding: '0 16px', flexShrink: 0,
-      }}>
-        {[
-          { key: 'list' as const, label: 'List' },
-          { key: 'allwork' as const, label: 'All work' },
-        ].map(tab => (
-          <button
-            key={tab.key}
-            onClick={() => handleViewChange(tab.key)}
-            data-testid={`tab-${tab.key}`}
-            style={{
-              height: 'var(--ph-tab-height, 40px)',
-              padding: '0 12px',
-              display: 'flex', alignItems: 'center', gap: 6,
-              fontSize: 14,
-              fontFamily: 'Inter, sans-serif',
-              fontWeight: activeView === tab.key ? 500 : 400,
-              color: activeView === tab.key ? 'var(--cp-primary)' : 'var(--cp-text-secondary)',
-              border: 'none',
-              borderBottom: activeView === tab.key ? '2px solid var(--cp-primary)' : '2px solid transparent',
-              marginBottom: '-2px',
-              background: 'transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'color 150ms ease',
-            }}
-          >
-            {tab.label}
-          </button>
-        ))}
-        <button style={{
-          width: 32, height: 'var(--ph-tab-height, 40px)', border: 'none',
-          background: 'transparent', cursor: 'pointer', fontSize: 18,
-          color: 'var(--cp-text-tertiary)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>+</button>
-      </div>
-
-      {/* ── View Content ── */}
+      {/* ── View Content ── All Work only; List tab deprecated 2026-04-18 ── */}
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        {activeView === 'list' && <ProjectListView projectKey={key!} projectId={project?.id} />}
-        {activeView === 'allwork' && <ProjectAllWorkView projectKey={key!} />}
+        <ProjectAllWorkView projectKey={key!} projectId={project?.id} />
       </div>
     </div>
   );

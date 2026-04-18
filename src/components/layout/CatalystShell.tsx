@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense, ComponentType } from 'react';
+import { useState, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
 import { GlobalSearch } from '@/components/global-search';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -32,6 +32,30 @@ const TestHubSidebar = lazy(() => import('./TestHubSidebar').then(m => ({ defaul
 
 const ProjectHubSidebar = lazy(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })));
 const WikiSidebar = lazy(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })));
+
+import { HubSurface } from './HubSurface';
+
+/**
+ * Decision A (Apr 2026) — Jira blue-canvas on hub routes.
+ * Kept local to this file (no shared hook) so the whole trial can be reverted
+ * by unwinding this file + HubSurface.tsx. Mirrors the dark-aware logic used
+ * in HubSurface so both stay consistent when NOCTURNE toggles.
+ */
+const JIRA_CANVAS_BG = '#E9F2FE';
+function useIsDarkTheme(): boolean {
+  return useSyncExternalStore(
+    (onChange) => {
+      if (typeof window === 'undefined') return () => undefined;
+      const obs = new MutationObserver(onChange);
+      obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+      return () => obs.disconnect();
+    },
+    () =>
+      typeof document !== 'undefined' &&
+      document.documentElement.getAttribute('data-theme') === 'dark',
+    () => false,
+  );
+}
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
@@ -119,6 +143,32 @@ function CatalystShellContent() {
 
   // Check if on IncidentHub route
   const isIncidentHubRoute = location.pathname.startsWith('/incident-hub');
+
+  // Decision A (Apr 2026): Jira blue canvas (#E9F2FE) + white panel on all
+  // hub routes. /for-you, Home, Wiki, Admin are intentionally excluded.
+  const isHubSurfaceRoute =
+    location.pathname.startsWith('/strategyhub') ||
+    location.pathname.startsWith('/producthub') ||
+    location.pathname.startsWith('/product/') ||      // /product/ideas/*, /product/room, etc.
+    location.pathname.startsWith('/project-hub') ||
+    location.pathname.startsWith('/release-hub') ||
+    location.pathname.startsWith('/releasehub') ||
+    location.pathname.startsWith('/testhub') ||
+    location.pathname.startsWith('/incident-hub') ||
+    location.pathname.startsWith('/taskhub') ||
+    location.pathname.startsWith('/priorities');
+
+  // Pages that already paint their own Jira canvas + white card. Wrapping these
+  // in <HubSurface> would double-stack canvas layers. They still sit on the
+  // canvas <main> bg so there's visual consistency.
+  //   /project-hub/:key/backlog   → BacklogPage.atlaskit.tsx:1083
+  const isSelfFramedRoute =
+    /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
+    location.pathname.startsWith('/issue/');  // full-screen issue view
+
+  const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute;
+  const isDarkTheme = useIsDarkTheme();
+  const mainBg = isHubSurfaceRoute && !isDarkTheme ? JIRA_CANVAS_BG : 'var(--cp-bg)';
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).
@@ -363,11 +413,17 @@ function CatalystShellContent() {
           </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
-        <main data-catalyst-main className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden" style={{ background: 'var(--cp-bg)' }}>
+        <main data-catalyst-main className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden" style={{ background: mainBg }}>
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
           <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
             <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
-              <Outlet />
+              {shouldWrapHubSurface ? (
+                <HubSurface panelPadding={0}>
+                  <Outlet />
+                </HubSurface>
+              ) : (
+                <Outlet />
+              )}
             </div>
           </div>
         </main>

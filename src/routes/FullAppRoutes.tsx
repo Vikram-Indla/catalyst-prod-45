@@ -38,6 +38,7 @@ const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsP
 const NativeEpicBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeEpicBacklogPage"));
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
+const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));
 const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailPage"));
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
@@ -393,6 +394,17 @@ function MG({ k, t, children }: { k: string; t: string; children: React.ReactNod
 function Resource360Redirect() {
   const { id } = useParams();
   return <Navigate to={`/project-hub/resource-360/${id || '009'}`} replace />;
+}
+
+/**
+ * LegacyBacklogRedirect — the per-type Backlog pages (Story / Epic / Feature)
+ * were deprecated 2026-04 in favour of the unified /project-hub/:key/backlog
+ * surface. This redirect preserves old bookmarks + external links. Replace
+ * with a canonical location once CatalystDetailRouter links are audited.
+ */
+function LegacyBacklogRedirect() {
+  const { key } = useParams<{ key: string }>();
+  return <Navigate to={`/project-hub/${key}/backlog`} replace />;
 }
 
 function CatyWidgetRouteGuard() {
@@ -815,10 +827,15 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key" element={<Navigate to="dashboard" replace />} />
         <Route path="/project-hub/:key/dashboard" element={<S><ProjectDashboardPageLazy /></S>} />
         <Route path="/project-hub/:key/settings" element={<S><PHProjectSettingsPageLazy /></S>} />
-        <Route path="/project-hub/:key/backlog" element={<PHPlaceholder title="Backlog" phase="Phase 2" />} />
-        <Route path="/project-hub/:key/epic-backlog" element={<S><NativeEpicBacklogPageLazy /></S>} />
-        <Route path="/project-hub/:key/feature-backlog" element={<S><NativeFeatureBacklogPageLazy /></S>} />
-        <Route path="/project-hub/:key/story-backlog" element={<S><NativeStoryBacklogPageLazy /></S>} />
+        <Route path="/project-hub/:key/backlog" element={<S><UnifiedBacklogPageLazy /></S>} />
+        {/* Legacy per-type backlog pages — deprecated 2026-04. The unified
+            Backlog above combines all work-item types (Epics, Features,
+            Stories, Tasks, QA Bugs, Production Incidents, Change Requests,
+            Business Gaps, API Requirements). These three paths redirect so
+            bookmarks keep working; the source files remain on disk untouched. */}
+        <Route path="/project-hub/:key/epic-backlog" element={<LegacyBacklogRedirect />} />
+        <Route path="/project-hub/:key/feature-backlog" element={<LegacyBacklogRedirect />} />
+        <Route path="/project-hub/:key/story-backlog" element={<LegacyBacklogRedirect />} />
         <Route path="/project-hub/:key/story/:itemId" element={<S><StoryDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/issue/:issueKey" element={<S><IssueDetailPageLazy /></S>} />
         <Route path="/project-hub/:key/board" element={<S><ProjectBoardPageLazy /></S>} />

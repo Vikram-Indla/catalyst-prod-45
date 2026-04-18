@@ -187,7 +187,7 @@ export function InlineCreateWithTypeSelector({
             placeholder="Search for a work item"
             style={{
               flex: 1, border: 'none', outline: 'none', fontSize: 13,
-              color: '#172B4D', fontFamily: 'inherit', background: 'transparent',
+              color: '#292A2E', fontFamily: 'inherit', background: 'transparent',
             }}
           />
         </div>
@@ -214,7 +214,7 @@ export function InlineCreateWithTypeSelector({
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#0052CC', flexShrink: 0 }}>
                 {item.issue_key}
               </span>
-              <span style={{ fontSize: 13, color: '#172B4D', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {item.summary}
               </span>
             </div>
@@ -245,7 +245,7 @@ export function InlineCreateWithTypeSelector({
           placeholder="What needs to be done?"
           style={{
             flex: 1, border: 'none', outline: 'none', fontSize: 13,
-            color: '#172B4D', fontFamily: 'inherit', padding: '8px 4px',
+            color: '#292A2E', fontFamily: 'inherit', padding: '8px 4px',
             background: 'transparent',
           }}
           maxLength={255}
@@ -258,7 +258,7 @@ export function InlineCreateWithTypeSelector({
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 4,
               padding: '4px 8px', background: '#FAFBFC', border: '1px solid #DFE1E6',
-              borderRadius: 4, cursor: 'pointer', fontSize: 12, color: '#172B4D',
+              borderRadius: 4, cursor: 'pointer', fontSize: 12, color: '#292A2E',
               fontFamily: 'inherit', whiteSpace: 'nowrap',
             }}
           >
@@ -280,7 +280,7 @@ export function InlineCreateWithTypeSelector({
                   onClick={() => { setSelectedType(type.value); setShowTypeDropdown(false); }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px',
-                    cursor: 'pointer', fontSize: 13, color: '#172B4D',
+                    cursor: 'pointer', fontSize: 13, color: '#292A2E',
                     background: selectedType === type.value ? '#DEEBFF' : 'transparent',
                     transition: 'background 80ms',
                   }}

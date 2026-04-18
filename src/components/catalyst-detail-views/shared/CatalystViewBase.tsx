@@ -16,6 +16,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, Share2, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
+import Modal from '@atlaskit/modal-dialog';
 import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 
@@ -33,6 +34,29 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     @keyframes cv-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
     @keyframes cv-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+    /* ──────────────────────────────────────────────────────────────────────
+       Compact-drawer restack (task #74, 2026-04-18).
+       When the detail drawer is rendered in a narrow panel (compact mode
+       = 400px from BacklogPage), the fixed 280px right sidebar crushed the
+       left content column to ~66px, forcing the title's word-break to
+       render one character per line.
+       Fix: use a CSS container query keyed off the body's inline-size.
+       Below 680px, flex-direction flips to column, splitter hides, and the
+       right sidebar spans full width below the left content.
+       ────────────────────────────────────────────────────────────────────── */
+    .cv-drawer-body { container-type: inline-size; }
+    @container (max-width: 679px) {
+      .cv-drawer-body { flex-direction: column !important; }
+      .cv-drawer-splitter { display: none !important; }
+      .cv-drawer-sidebar {
+        width: 100% !important;
+        max-width: none !important;
+        border-left: none !important;
+        border-top: 1px solid #EBECF0;
+      }
+      .cv-drawer-left { border-right: none !important; }
+    }
   `;
   document.head.appendChild(s);
 }
@@ -116,18 +140,24 @@ export function CatalystViewBase({
     return () => document.removeEventListener('mousedown', h);
   }, [showDotsMenu]);
 
-  /* ── Escape key ─────────────────────────── */
+  /* ── Escape key ───────────────────────────
+     Phase A.2 (2026-04-18): gated to panel mode.
+       - Modal mode: @atlaskit/modal-dialog handles Escape natively
+         (closing via its own onClose + focus-trap semantics).
+       - Fullpage mode: Escape is a no-op (back button replaces it).
+       - Panel mode: we still own it. Double-calling onClose in panel mode
+         (us + a BacklogPage-level handler) is idempotent. */
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !panelMode) return;
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (showDotsMenu) { setShowDotsMenu(false); return; }
-        if (!fullPageMode) onClose();
+        onClose();
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, showDotsMenu, onClose, fullPageMode]);
+  }, [isOpen, panelMode, showDotsMenu, onClose]);
 
   if (!isOpen) return null;
 
@@ -206,33 +236,47 @@ export function CatalystViewBase({
     toast.success('Link copied to clipboard');
   }, [onShare, fullPageMode, itemKey, projectKey]);
 
-  return (
-    <div style={OVERLAY} onClick={panelMode || fullPageMode ? undefined : onClose}>
-      <div data-cv-scope style={MODAL} onClick={e => e.stopPropagation()}>
+  /* ── Card contents ─────────────────────────────────────────────────────
+     Top bar + body JSX, extracted as a fragment so all three modes
+     (modal / panel / fullpage) render the same content inside different
+     wrappers. Phase A.2 (2026-04-18): modal mode now wraps in
+     @atlaskit/modal-dialog; panel + fullpage keep the hand-rolled shell.
+     ──────────────────────────────────────────────────────────────────── */
+  const cardContents = (
+    <>
 
-        {/* ── A. TOP BAR ─────────────────────────── */}
+        {/* ── A. TOP BAR ─────────────────────────────────────────────────────
+            Jira-parity fix (Phase A.1, 2026-04-18, task #11):
+            In panel mode the OUTER BacklogPage toolbar already renders
+            Breadcrumbs + Prev/Next + Expand + Fullscreen + Close using
+            Atlaskit IconButtons. Drawing those again here stacked two
+            chrome bars on the BAU-5419 screenshot. The inner bar now
+            shrinks to a right-aligned action bar with just Share + More
+            (which the outer toolbar doesn't own) whenever panelMode is
+            active. Full chrome stays for modal + fullpage modes.
+            ──────────────────────────────────────────────────────────────── */}
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          display: 'flex', alignItems: 'center',
+          justifyContent: panelMode ? 'flex-end' : 'space-between',
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
         }}>
-          {/* Canonical breadcrumb — Atlaskit Breadcrumbs; renders in every mode
-              (modal, panel, full-page) for every detail view type. Shape:
-                 <ProjectAvatar ProjectName>  /  <Parent or +Add parent>  /  <IssueKey>
-              See TicketBreadcrumbs.tsx for crumb rules. */}
-          <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
-            {projectKey ? (
-              <TicketBreadcrumbs
-                projectKey={projectKey}
-                itemType={itemType}
-                itemKey={itemKey}
-                parentKey={parentKey}
-                parentType={parentType}
-                onParentClick={onParentClick}
-              />
-            ) : null}
-            {breadcrumbExtra}
-          </div>
+          {/* Canonical breadcrumb — hidden in panel mode (outer toolbar owns it). */}
+          {!panelMode && (
+            <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+              {projectKey ? (
+                <TicketBreadcrumbs
+                  projectKey={projectKey}
+                  itemType={itemType}
+                  itemKey={itemKey}
+                  parentKey={parentKey}
+                  parentType={parentType}
+                  onParentClick={onParentClick}
+                />
+              ) : null}
+              {breadcrumbExtra}
+            </div>
+          )}
 
           {/* Right actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -274,8 +318,9 @@ export function CatalystViewBase({
               </div>
             )}
 
-            {/* Panel toggle — hidden in full-page mode */}
-            {onTogglePanelMode && !fullPageMode && (
+            {/* Panel toggle — hidden in full-page mode AND panel mode
+                (outer BacklogPage toolbar has Expand/Fullscreen IconButtons). */}
+            {onTogglePanelMode && !fullPageMode && !panelMode && (
               <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={hoverBtn}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -288,8 +333,11 @@ export function CatalystViewBase({
               </button>
             )}
 
-            {/* Panel navigation */}
-            {panelMode && navigationItems && navigationItems.length > 1 && (
+            {/* Panel navigation — DEAD CODE in panel mode. Kept condition
+                so it lights up if CatalystViewBase is ever mounted in a
+                panel context without the outer BacklogPage toolbar; today
+                the outer toolbar owns Prev/Next so this branch is skipped. */}
+            {false && panelMode && navigationItems && navigationItems.length > 1 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <button onClick={navPrev} disabled={!canNavPrev} style={{
                   ...hoverBtn, cursor: canNavPrev ? 'pointer' : 'default', color: canNavPrev ? '#42526E' : '#C1C7D0', padding: '6px 6px',
@@ -313,8 +361,9 @@ export function CatalystViewBase({
               </div>
             )}
 
-            {/* Close — hidden in full-page mode (back button replaces it) */}
-            {!fullPageMode && (
+            {/* Close — hidden in full-page mode (back button replaces it)
+                AND hidden in panel mode (outer toolbar owns Close). */}
+            {!fullPageMode && !panelMode && (
               <button onClick={onClose} style={{ ...hoverBtn, padding: '6px 8px' }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
@@ -323,11 +372,11 @@ export function CatalystViewBase({
           </div>
         </div>
 
-        {/* ── B. BODY — two-column ───────────────── */}
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
+        {/* ── B. BODY — two-column (restacks to single column under 680px via @container) ── */}
+        <div className="cv-drawer-body" style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
 
           {/* LEFT PANEL */}
-          <div style={{
+          <div className="cv-drawer-left" style={{
             flex: 1, overflowY: 'auto', padding: '20px 24px 32px 24px',
             borderRight: '1px solid #EBECF0', minWidth: 0,
           }}>
@@ -341,6 +390,7 @@ export function CatalystViewBase({
 
           {/* RESIZABLE SPLITTER */}
           <div
+            className="cv-drawer-splitter"
             onMouseDown={() => { isDraggingRef.current = true; document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; }}
             style={{
               width: 6, minWidth: 6, cursor: 'col-resize', background: 'transparent',
@@ -354,7 +404,7 @@ export function CatalystViewBase({
           </div>
 
           {/* RIGHT PANEL — Sidebar */}
-          <div style={{
+          <div className="cv-drawer-sidebar" style={{
             width: rightPanelWidth, minWidth: 220, maxWidth: 480,
             background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
             display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
@@ -368,6 +418,33 @@ export function CatalystViewBase({
             ) : rightContent}
           </div>
         </div>
+    </>
+  );
+
+  /* ── Modal mode: @atlaskit/modal-dialog wrapper ─────────────────────────
+     Owns overlay, focus trap, escape, body-scroll-lock, and click-outside-
+     to-close. All hand-rolled equivalents for modal mode have been removed
+     (escape gated to panelMode above; OVERLAY / MODAL style objects for
+     the modal branch are now dead in this path but kept for the panel /
+     fullpage return below so we don't duplicate the style map). */
+  if (!panelMode && !fullPageMode) {
+    return (
+      <Modal onClose={onClose} width={1100} shouldScrollInViewport={false}>
+        <div data-cv-scope style={{
+          minHeight: 600,
+          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        }}>
+          {cardContents}
+        </div>
+      </Modal>
+    );
+  }
+
+  /* ── Panel + fullpage modes: hand-rolled shell (unchanged from Phase A.1) ── */
+  return (
+    <div style={OVERLAY} onClick={panelMode || fullPageMode ? undefined : onClose}>
+      <div data-cv-scope style={MODAL} onClick={e => e.stopPropagation()}>
+        {cardContents}
       </div>
     </div>
   );

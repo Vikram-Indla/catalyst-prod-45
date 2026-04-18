@@ -157,7 +157,7 @@ export function CatalystChildWorkItemsTable({
               width: 24, height: 24, border: 'none', borderRadius: 3, background: 'transparent',
               cursor: 'pointer', color: '#6B778C', transition: 'background 0.15s, color 0.15s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.color = '#172B4D'; }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.color = '#292A2E'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6B778C'; }}
             >
               <Plus size={16} strokeWidth={2} />

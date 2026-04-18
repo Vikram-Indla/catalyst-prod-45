@@ -62,6 +62,9 @@ export interface BacklogStory {
   feature_id: string | null;
   assignee_id: string | null;
   assignee_name?: string | null;
+  /** Jira reporter display_name — 100% populated on Jira rows per Lovable's
+   *  2026-04 discovery pass on ph_issues.reporter_display_name. */
+  reporter_name?: string | null;
   assignee?: BacklogUser | null;
   start_date: string | null;
   priority: string | null;
@@ -78,6 +81,14 @@ export interface BacklogStory {
       id: string;
       epic_key: string | null;
       name: string;
+      /** Enriched by useStoryBacklog so BacklogPage can synthesize real
+       *  epic rows when useEpicBacklog's year-2026 filter excludes them. */
+      status?: string | null;
+      priority?: string | null;
+      assignee_name?: string | null;
+      reporter_name?: string | null;
+      jira_created_at?: string | null;
+      jira_updated_at?: string | null;
     } | null;
   } | null;
 }

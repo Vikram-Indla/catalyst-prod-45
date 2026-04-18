@@ -1,7 +1,24 @@
 /**
+ * @deprecated 2026-04-18 — Replaced by CatalystDetailRouter in ProjectAllWorkView.
+ *   Kept temporarily so any in-flight branches that import this type still
+ *   compile. Safe to delete once no callers reference it. Run:
+ *     grep -rn "WorkItemDetailPanel" src/ --include="*.tsx" --include="*.ts"
+ *   and confirm zero matches outside this file before deleting.
+ *
  * WorkItemDetailPanel — Jira-parity 3-column split: Center (body) + Right (details)
  * Left panel is rendered by parent. This renders CENTER + RIGHT.
- * Styled to match Jira's actual split view exactly.
+ *
+ * Design tokens calibrated against live Jira on 2026-04-18
+ * (digital-transformation.atlassian.net, BAU-5419):
+ *   text.primary   #292A2E   (was #172B4D — old ADG3)
+ *   text.subtle    #505258   (was #44546F — old ADG3)
+ *   Title H1       20px / weight 653 / line-height 24px (was 24/600)
+ *   Issue key      Atlassian Sans / 14px / 400 / #505258 (was JetBrains Mono 500)
+ *   Description    16px / weight 653
+ *   Details        16px / weight 500 (section heading)
+ *   Field label    14px / 500 / #505258
+ *   Field value    14px / 400 / #292A2E  (LEFT-aligned, not right)
+ *   Status pill    sentence case, weight 500 (NOT uppercase/700)
  */
 import React, { useState } from 'react';
 import { Eye, Plus, Settings, MoreHorizontal, Trash2, ChevronDown, ChevronRight, Zap } from 'lucide-react';
@@ -34,10 +51,21 @@ function capitalize(s: string): string {
 
 /* ── Jira-strong status button (solid background, white text) ── */
 function JiraStrongStatus({ status, onStatusChange }: { status: string; onStatusChange: (s: string) => void }) {
+  // Jira's status transition button (measured live on BAU-5419 2026-04-18):
+  //   Backlog/To Do → bg: rgba(5,21,36,0.06) (soft gray overlay), color: #292A2E
+  //   In Progress   → bg: soft blue overlay
+  //   Done          → bg: soft green overlay
+  // Sentence case, weight 500, height 32, padding-left 10, border-radius 3.
   const isD = status === 'done' || status === 'closed' || status === 'in_production';
   const isP = status.includes('progress') || status.includes('dev') || status.includes('qa') || status.includes('uat');
-  const bg = isD ? '#1B845D' : isP ? '#0C66E4' : '#44546F';
-  const label = status.replace(/_/g, ' ').toUpperCase();
+  const bg = isD ? 'rgba(34, 163, 89, 0.18)' : isP ? 'rgba(12, 102, 228, 0.18)' : 'rgba(5, 21, 36, 0.06)';
+  const fg = isD ? '#1F845A' : isP ? '#0055CC' : '#292A2E';
+  // Sentence case: "In Progress", "To Do", "Backlog" — NOT "IN PROGRESS"
+  const label = status
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase())
+    // Fix common acronyms that should stay upper
+    .replace(/\bQa\b/, 'QA').replace(/\bUat\b/, 'UAT');
   return (
     <button
       onClick={() => {
@@ -46,10 +74,11 @@ function JiraStrongStatus({ status, onStatusChange }: { status: string; onStatus
       }}
       style={{
         display: 'inline-flex', alignItems: 'center', gap: 4,
-        height: 32, padding: '0 10px 0 12px', borderRadius: 4, border: 'none',
-        background: bg, color: '#FFFFFF', fontSize: 13, fontWeight: 700,
-        cursor: 'pointer', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase',
-        letterSpacing: '0.02em',
+        height: 32, padding: '0 10px', borderRadius: 3, border: 'none',
+        background: bg, color: fg, fontSize: 14, fontWeight: 500,
+        cursor: 'pointer',
+        fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        textTransform: 'none', letterSpacing: 'normal',
       }}
     >
       {label}
@@ -73,12 +102,20 @@ function CenterBody({ item, childItems, childrenLoading }: {
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, borderRight: '1px solid #DFE1E6' }}>
       <div style={{ flex: 1, overflowY: 'auto', padding: '18px 24px 30px' }}>
-        {/* Key + nav arrows */}
+        {/* Key + nav arrows — measured 2026-04-18: Atlassian Sans 14px/400/#505258 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <WorkItemTypeIcon type={item.type} size={18} />
-          <span style={{ fontSize: 14, color: '#44546F', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500 }}>
+          <a
+            href="#"
+            onClick={e => e.preventDefault()}
+            style={{
+              fontSize: 14, color: '#505258',
+              fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+              fontWeight: 400, textDecoration: 'none',
+            }}
+          >
             {item.jiraKey}
-          </span>
+          </a>
           <button style={navBtnStyle}>
             <svg width="14" height="14" viewBox="0 0 16 16"><path d="M4 10l4-4 4 4" fill="none" stroke="#626F86" strokeWidth="1.5"/></svg>
           </button>
@@ -93,9 +130,10 @@ function CenterBody({ item, childItems, childrenLoading }: {
           <h2
             dir={summaryRtl ? 'rtl' : 'ltr'}
             style={{
-              margin: 0, fontSize: 24, fontWeight: 600, color: '#172B4D',
+              // Live Jira (BAU-5419) H1: 20px / weight 653 / line-height 24px / #292A2E
+              margin: 0, fontSize: 20, fontWeight: 653, color: '#292A2E',
               fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-              lineHeight: 1.25,
+              lineHeight: '24px',
             }}
           >
             {item.summary || '(No title)'}
@@ -365,17 +403,30 @@ function RightDetails({ item }: { item: WorkItem }) {
   );
 }
 
-/* ── Detail KV Row (flat, no card) ── */
+/* ── Detail KV Row (flat, no card) ──
+ * Live Jira (BAU-5419, 2026-04-18): row stride 44px, label 94px wide,
+ * values LEFT-aligned to the right of the label, same font-size/family
+ * as label but weight 400 and color #292A2E.
+ */
 function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-      padding: '12px 0', borderBottom: '1px solid #F4F5F7', minHeight: 44,
+      display: 'flex', alignItems: 'flex-start',
+      padding: '10px 0', minHeight: 44, gap: 12,
     }}>
-      <span style={{ fontSize: 14, color: '#44546F', fontWeight: 500, fontFamily: "'Atlassian Sans', -apple-system, sans-serif", flexShrink: 0, width: 120 }}>
+      <span style={{
+        fontSize: 14, color: '#505258', fontWeight: 500,
+        fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+        flexShrink: 0, width: 94, lineHeight: '24px',
+      }}>
         {label}
       </span>
-      <div style={{ flex: 1, textAlign: 'right', display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{
+        flex: 1, display: 'flex', justifyContent: 'flex-start',
+        alignItems: 'flex-start', minWidth: 0,
+        fontSize: 14, color: '#292A2E', fontWeight: 400,
+        fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
+      }}>
         {children}
       </div>
     </div>
@@ -389,17 +440,22 @@ const navBtnStyle: React.CSSProperties = {
   justifyContent: 'center',
 };
 
+// Live Jira 2026-04-18: body section headings ("Description", "Child work items",
+// "Subtasks", "Linked work items") are 16px / weight 653.
 const sectionHeaderStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, background: 'transparent',
-  border: 'none', cursor: 'pointer', padding: '8px 0', color: '#172B4D',
-  fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontSize: 14, fontWeight: 700,
+  border: 'none', cursor: 'pointer', padding: '8px 0', color: '#292A2E',
+  fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontSize: 16, fontWeight: 653,
   width: 'auto',
 };
 
+// Live Jira 2026-04-18: right-panel accordion headings ("Details",
+// "Development", "Automation", "More fields") are 16px / weight 500 — lighter
+// than the body section headings above.
 const flatAccordionHeaderStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, background: 'transparent',
-  border: 'none', cursor: 'pointer', padding: '14px 0', color: '#172B4D',
-  fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontSize: 14, fontWeight: 700,
+  border: 'none', cursor: 'pointer', padding: '14px 0', color: '#292A2E',
+  fontFamily: "'Atlassian Sans', -apple-system, sans-serif", fontSize: 16, fontWeight: 500,
   width: '100%', textAlign: 'left',
 };
 

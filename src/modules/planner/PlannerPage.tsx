@@ -647,7 +647,7 @@ export function PlannerPage() {
         />
 
         {/* Mobile Menu Drawer */}
-        <MobileMenuDrawer 
+        <MobileMenuDrawer
           open={mobileMenuOpen}
           onClose={() => setMobileMenuOpen(false)}
         />

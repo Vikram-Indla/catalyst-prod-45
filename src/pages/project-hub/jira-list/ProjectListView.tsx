@@ -1,4 +1,8 @@
 /**
+ * @deprecated 2026-04-18 — List tab removed per Vikram directive.
+ *   No longer imported by ProjectJiraLayout. Safe to delete once you've
+ *   confirmed no other routes reference ProjectListView.
+ *
  * ProjectListView — List tab: Table mode + 3-column Split mode
  */
 import React, { useState, useMemo, useCallback } from 'react';

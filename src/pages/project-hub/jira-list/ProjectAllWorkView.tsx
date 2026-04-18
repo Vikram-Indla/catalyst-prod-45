@@ -1,22 +1,38 @@
 /**
- * ProjectAllWorkView — All Work tab: Table mode + 3-column Split mode
+ * ProjectAllWorkView — All Work: Table mode + 3-column Split mode
+ *
+ * 2026-04-18 (WS7 of Jira-parity plan): Split mode now delegates the
+ * center+right detail rendering to CatalystDetailRouter — the canonical
+ * Atlaskit-native detail surface already used by BacklogPage.atlaskit.
+ * This replaces ~460 lines of bespoke WorkItemDetailPanel with the same
+ * type-aware views (story / epic / feature / defect / incident / task /
+ * business_request / subtask) that /backlog uses, inheriting Jira-correct
+ * typography, tokens, inline-edit fields, and description editor for free.
  */
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useMemo, useCallback } from 'react';
+import { token } from '@atlaskit/tokens';
 import { AllWorkTable } from './components/AllWorkTable';
-import { WorkItemDetailPanel } from './components/WorkItemDetailPanel';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 import { LayoutGrid, Columns } from 'lucide-react';
 
+const CatalystDetailRouter = lazy(
+  () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
+);
+
 interface Props {
   projectKey: string;
+  /** Optional — enables inline-edit mutations that need the project UUID. */
+  projectId?: string;
 }
 
 type ViewMode = 'list' | 'detail';
 
-export default function ProjectAllWorkView({ projectKey }: Props) {
+export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [], isLoading } = useProjectAllWorkItems(projectKey);
-  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  // Default to 'detail' (split view) — matches Jira's default behavior. Table
+  // remains available via the view toggle for power users.
+  const [viewMode, setViewMode] = useState<ViewMode>('detail');
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
 
   const activeItem = useMemo(() =>
@@ -60,12 +76,15 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
       {viewMode === 'list' ? (
         <AllWorkTable items={items} isLoading={isLoading} onOpenItem={handleOpenItem} pageTitle="All Work" subtitle="Global work view — all types, all statuses" />
       ) : (
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#F4F5F7' }}>
-          {/* Left: WorkListPanel */}
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#FFFFFF', gap: 8, padding: 8 }}>
+          {/* Left: WorkListPanel — Jira parity container
+              (measured 2026-04-18): 260px wide / #F8F8F8 / 4px radius / no border.
+              Inner cards are white so they elevate against the gray backdrop. */}
           <div style={{
-            width: 320, flexShrink: 0, background: '#FFFFFF',
-            border: '1px solid #DFE1E6', borderRadius: '10px 0 0 10px',
+            width: 260, flexShrink: 0, background: '#F8F8F8',
+            border: 'none', borderRadius: 4,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
+            padding: '0 2px',
           }}>
             <WorkListPanel
               items={items}
@@ -74,16 +93,38 @@ export default function ProjectAllWorkView({ projectKey }: Props) {
             />
           </div>
 
-          {/* Center + Right: WorkItemDetailPanel */}
+          {/* Center + Right: CatalystDetailRouter (canonical Atlaskit detail) */}
           {activeItem ? (
-            <WorkItemDetailPanel
-              item={activeItem}
-              allItems={items}
-              onNavigate={handleNavigate}
-              onClose={() => { setActiveItemId(null); setViewMode('list'); }}
-            />
+            <div style={{
+              flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
+              background: token('elevation.surface', '#FFFFFF'),
+              borderRadius: '0 10px 10px 0', overflow: 'hidden',
+            }}>
+              <Suspense fallback={
+                <div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C'), fontSize: 14 }}>
+                  Loading…
+                </div>
+              }>
+                <CatalystDetailRouter
+                  isOpen={true}
+                  onClose={() => { setActiveItemId(null); setViewMode('list'); }}
+                  itemId={activeItem.id}
+                  itemType={activeItem.type}
+                  projectId={projectId}
+                  projectKey={projectKey}
+                  onOpenItem={(id) => setActiveItemId(id)}
+                  panelMode={true}
+                  navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+                  onNavigate={handleNavigate}
+                />
+              </Suspense>
+            </div>
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6E76', fontSize: 14, fontFamily: 'Inter, sans-serif' }}>
+            <div style={{
+              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: token('color.text.subtlest', '#6B778C'), fontSize: 14,
+              fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+            }}>
               Select an item to view details
             </div>
           )}
