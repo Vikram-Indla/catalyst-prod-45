@@ -35,6 +35,10 @@ import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColu
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
 import { writeTicketOrigin } from '../hooks/useTicketOrigin';
 import '@/styles/product-backlog.css';
+// ── V2 table (feature-flagged) — shared DynamicTable molecule
+import { DynamicTable, useTablePersistence } from '@/components/shared/dynamic-table';
+import type { DynamicTableColumn, DynamicTableRowGroup } from '@/components/shared/dynamic-table';
+import type { RowSelectionState, SortingState } from '@tanstack/react-table';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -138,6 +142,13 @@ function groupStories(items: BacklogStory[], groupBy: GroupByKey): { label: stri
 
 
 const AVATAR_COLOURS = ['#2563EB', '#0D9488', '#0284C7', '#DC2626', '#DB2777'];
+
+// ── V2 table feature flag ──
+// When localStorage.catalyst.table.v2 === '1', the backlog renders via the
+// shared DynamicTable molecule (Atlaskit-API-compatible). Default OFF — the
+// legacy CatalystTable path below is unchanged.
+const V2_TABLE_ENABLED =
+  typeof window !== 'undefined' && window.localStorage?.getItem('catalyst.table.v2') === '1';
 
 export default function StoryBacklogPage({ projectId: propProjectId, projectKey }: { projectId?: string; projectKey?: string }) {
   const params = useParams<{ projectId: string }>();
@@ -535,9 +546,333 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
 
   if (error) return <div className="h-full flex items-center justify-center" style={{ background: tk.pageBg, color: '#DC2626' }}>Error loading stories</div>;
 
+  // ═════════════════════════════════════════════════════════════════════
+  // V2 TABLE PATH (feature-flagged). Only evaluated when V2_TABLE_ENABLED.
+  // Legacy path below is unchanged.
+  // ═════════════════════════════════════════════════════════════════════
+
+  // Column sizing persistence — keyed under catalyst.dynamic-table.story-backlog
+  const v2Persistence = useTablePersistence('story-backlog');
+
+  // TanStack selection shape ↔ existing Set<string>
+  const v2Selection: RowSelectionState = useMemo(() => {
+    const r: RowSelectionState = {};
+    selectedIds.forEach((id) => { r[id] = true; });
+    return r;
+  }, [selectedIds]);
+
+  const handleV2SelectionChange = useCallback((next: RowSelectionState) => {
+    const ids = new Set<string>();
+    Object.entries(next).forEach(([id, on]) => { if (on) ids.add(id); });
+    setSelectedIds(ids);
+  }, []);
+
+  // TanStack sorting shape ↔ existing sortKey/sortDir
+  const v2Sorting: SortingState = useMemo(() => {
+    if (!sortKey || !sortDir) return [];
+    return [{ id: sortKey, desc: sortDir === 'desc' }];
+  }, [sortKey, sortDir]);
+
+  const handleV2SortingChange = useCallback((next: SortingState) => {
+    if (!next.length) { setSortKey(null); setSortDir(null); return; }
+    const s = next[0];
+    setSortKey(s.id);
+    setSortDir(s.desc ? 'desc' : 'asc');
+  }, []);
+
+  // Column model — mirrors STORY_COLUMNS (minus checkbox, which the molecule
+  // provides via `selectable`). Cell renderers return cell CONTENT only;
+  // the molecule wraps them in role="cell" divs.
+  const v2Columns = useMemo<DynamicTableColumn<BacklogStory>[]>(() => [
+    {
+      id: 'star',
+      size: 36, minSize: 36, maxSize: 36,
+      align: 'center',
+      alwaysVisible: true,
+      disableResize: true,
+      disableSort: true,
+      header: () => (
+        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Star size={13} stroke="#94A3B8" fill="none" />
+        </span>
+      ),
+      cell: ({ row }) => {
+        const s = row.original;
+        const isStarred = starredIds?.has(s.id) ?? false;
+        return (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleStarMutation.mutate({ itemId: s.id, itemType: 'story', isCurrentlyStarred: isStarred });
+            }}
+            aria-label={isStarred ? 'Unstar story' : 'Star story'}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, display: 'flex', alignItems: 'center' }}
+          >
+            <Star
+              size={14}
+              fill={isStarred ? '#F59E0B' : 'none'}
+              stroke={isStarred ? '#F59E0B' : '#94A3B8'}
+              style={{ transition: 'all 150ms' }}
+            />
+          </button>
+        );
+      },
+    },
+    {
+      id: 'type',
+      size: 56, minSize: 44,
+      align: 'center',
+      alwaysVisible: true,
+      disableResize: true,
+      disableSort: true,
+      label: 'Type',
+      header: 'TYPE',
+      cell: () => <JiraIssueTypeIcon type="story" size={16} />,
+    },
+    {
+      id: 'key',
+      size: 120, minSize: 80,
+      label: 'Key',
+      header: 'KEY',
+      sortingFn: (a, b) => (a.original.story_key || '').localeCompare(b.original.story_key || ''),
+      cell: ({ row }) => (
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
+          {row.original.story_key || '—'}
+        </span>
+      ),
+    },
+    {
+      id: 'summary',
+      size: 380, minSize: 150,
+      label: 'Summary',
+      header: 'SUMMARY',
+      sortingFn: (a, b) => (a.original.title || '').toLowerCase().localeCompare((b.original.title || '').toLowerCase()),
+      cell: ({ row }) => (
+        <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {row.original.title}
+        </span>
+      ),
+    },
+    {
+      id: 'status',
+      size: 130, minSize: 80,
+      label: 'Status',
+      header: 'STATUS',
+      sortingFn: (a, b) => (a.original.status || '').localeCompare(b.original.status || ''),
+      cell: ({ row }) => (row.original.status ? <StatusBadge status={row.original.status} /> : null),
+    },
+    {
+      id: 'parent',
+      size: 200, minSize: 100,
+      label: 'Parent',
+      header: 'PARENT',
+      sortingFn: (a, b) =>
+        (a.original.feature?.epic?.name || '').toLowerCase()
+          .localeCompare((b.original.feature?.epic?.name || '').toLowerCase()),
+      cell: ({ row }) => {
+        const ep = row.original.feature?.epic;
+        return ep
+          ? <ParentEpicChip epicId={ep.id} epicKey={ep.epic_key} epicName={ep.name} />
+          : <span style={{ color: '#94A3B8', fontSize: 12 }}>—</span>;
+      },
+    },
+    {
+      id: 'assignee',
+      size: 160, minSize: 100,
+      label: 'Assignee',
+      header: 'ASSIGNEE',
+      sortingFn: (a, b) =>
+        (a.original.assignee_name || '').toLowerCase()
+          .localeCompare((b.original.assignee_name || '').toLowerCase()),
+      cell: ({ row }) => {
+        const s = row.original;
+        const url = s.assignee_name ? avatarsByName.get(s.assignee_name.toLowerCase()) : null;
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, overflow: 'hidden' }}>
+            {url ? (
+              <img
+                src={url}
+                style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }}
+                alt=""
+              />
+            ) : (
+              <div style={{
+                width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                background: AVATAR_COLOURS[(getInitials(s.assignee_name || null) || 'U').charCodeAt(0) % AVATAR_COLOURS.length],
+                color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 10, fontWeight: 700,
+              }}>
+                {getInitials(s.assignee_name || null)}
+              </div>
+            )}
+            <span style={{ fontSize: 13, fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {s.assignee_name || 'Unassigned'}
+            </span>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'priority',
+      size: 80, minSize: 50,
+      label: 'Priority',
+      header: 'PRIORITY',
+      sortingFn: (a, b) => {
+        const ai = PRIORITY_ORDER.indexOf(a.original.priority || '');
+        const bi = PRIORITY_ORDER.indexOf(b.original.priority || '');
+        return (ai >= 0 ? ai : 999) - (bi >= 0 ? bi : 999);
+      },
+      cell: ({ row }) => {
+        const s = row.original;
+        const idx = PRIORITY_ORDER.indexOf(s.priority || '');
+        const level = idx >= 0 ? PRIORITY_ORDER.length - idx : 0;
+        return (
+          <div style={{ display: 'flex', gap: 2 }} title={getPriorityLabel(s.priority)}>
+            {[1, 2, 3, 4].map((i) => {
+              const filled = i <= level;
+              const fillColor = level >= 4 ? '#E5484D' : level >= 3 ? '#F59E0B' : '#22C55E';
+              return <div key={i} style={{ width: 4, height: 14, borderRadius: 1, background: filled ? fillColor : '#E2E8F0' }} />;
+            })}
+          </div>
+        );
+      },
+    },
+    {
+      id: 'updated',
+      size: 90, minSize: 60,
+      label: 'Updated',
+      header: 'UPDATED',
+      sortingFn: (a, b) => (a.original.jira_updated_at || '').localeCompare(b.original.jira_updated_at || ''),
+      cell: ({ row }) => (
+        <span style={{ fontSize: 12, fontWeight: 500, color: '#64748B' }}>
+          {formatDueDate(row.original.jira_updated_at ?? null)}
+        </span>
+      ),
+    },
+  ], [starredIds, toggleStarMutation, avatarsByName]);
+
+  // Grouped rows for molecule — builds from the same `groups` list the legacy
+  // path uses, so group-by semantics are identical.
+  const v2Groups: DynamicTableRowGroup<BacklogStory>[] | undefined = useMemo(() => {
+    if (groupBy === 'none') return undefined;
+    return groups.map((g) => ({
+      id: g.label || '__ungrouped',
+      label: (g.label || '').toUpperCase(),
+      rows: g.items,
+    }));
+  }, [groups, groupBy]);
+
+  const v2EmptyState = (
+    <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
+      <BookOpen className="h-12 w-12 mb-4" style={{ color: '#94A3B8' }} />
+      <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No stories found</p>
+      <p style={{ fontSize: 12, color: '#94A3B8', marginBottom: 16 }}>Try adjusting your filters or search</p>
+    </div>
+  );
+
+  const renderPagination = () => (
+    totalPages > 1 ? (
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
+        fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif",
+      }}>
+        <span style={{ fontWeight: 500 }}>
+          {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
+        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <button
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, borderRadius: 4,
+              border: '1px solid #E2E8F0', background: '#FFFFFF',
+              cursor: page <= 1 ? 'not-allowed' : 'pointer',
+              opacity: page <= 1 ? 0.4 : 1,
+            }}
+          >
+            <ChevronLeft size={14} />
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+            .reduce<(number | 'ellipsis')[]>((acc, p, i, arr) => {
+              if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push('ellipsis');
+              acc.push(p);
+              return acc;
+            }, [])
+            .map((p, i) =>
+              p === 'ellipsis' ? (
+                <span key={`e${i}`} style={{ padding: '0 4px', color: '#94A3B8' }}>…</span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => setPage(p as number)}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                    minWidth: 28, height: 28, borderRadius: 4, padding: '0 6px',
+                    border: page === p ? '1.5px solid #2563EB' : '1px solid #E2E8F0',
+                    background: page === p ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
+                    color: page === p ? '#2563EB' : '#475569',
+                    fontWeight: page === p ? 600 : 400,
+                    fontSize: 13, cursor: 'pointer',
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  {p}
+                </button>
+              )
+            )}
+          <button
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, borderRadius: 4,
+              border: '1px solid #E2E8F0', background: '#FFFFFF',
+              cursor: page >= totalPages ? 'not-allowed' : 'pointer',
+              opacity: page >= totalPages ? 0.4 : 1,
+            }}
+          >
+            <ChevronRight size={14} />
+          </button>
+        </div>
+      </div>
+    ) : null
+  );
+
+  const renderTableV2 = () => (
+    <div ref={tableRef} tabIndex={0} style={{ outline: 'none', border: '0.555556px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+      <DynamicTable<BacklogStory>
+        tableId="story-backlog"
+        ariaLabel="Story backlog"
+        columns={v2Columns}
+        data={groupBy === 'none' ? paginatedStories : undefined}
+        groups={v2Groups}
+        getRowId={(s) => s.id}
+        onRowClick={(s) => openStoryDetail(s.id, s.story_key)}
+        selectable
+        selection={v2Selection}
+        onSelectionChange={handleV2SelectionChange}
+        sortable
+        sorting={v2Sorting}
+        onSortingChange={handleV2SortingChange}
+        resizable
+        columnSizing={v2Persistence.sizing}
+        onColumnSizingChange={v2Persistence.onSizingChange}
+        density="compact"
+        stickyHeader
+        minTableWidth={1100}
+        emptyState={v2EmptyState}
+      />
+      {renderPagination()}
+    </div>
+  );
+
   let rowIndex = -1;
 
   const renderTable = () => {
+    if (V2_TABLE_ENABLED) return renderTableV2();
     if (total === 0) {
       return (
         <div className="flex flex-col items-center justify-center" style={{ padding: '64px 0' }}>
