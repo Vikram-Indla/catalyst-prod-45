@@ -15,37 +15,8 @@
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-
-/* ═══ Board Menu Item (enterprise styling) ═══ */
-function BoardMenuItem({ icon, label, badge, onClick }: {
-  icon: React.ReactNode; label: string; badge?: number; onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className="flex items-center gap-3 w-full"
-      style={{
-        padding: '10px 16px', background: 'transparent', border: 'none',
-        cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 450,
-        textAlign: 'left', fontFamily: "'Inter', sans-serif",
-        transition: 'background 80ms ease',
-      }}
-      onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-    >
-      {icon}
-      <span style={{ flex: 1 }}>{label}</span>
-      {badge !== undefined && badge > 0 && (
-        <span style={{
-          fontSize: 11, fontWeight: 700, color: '#FFFFFF',
-          background: '#0052CC', borderRadius: 10, padding: '1px 8px',
-          lineHeight: '18px',
-        }}>{badge}</span>
-      )}
-    </button>
-  );
-}
-import { useParams, useNavigate } from 'react-router-dom';
+import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
+import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -74,33 +45,25 @@ import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
 import { PragmaticBoard } from '@/components/kanban/PragmaticBoard';
-import {
-  AvatarStackFilter,
-} from '@/components/kanban/KanbanToolbar';
 import { useKanbanRealtime } from '@/components/kanban/useKanbanRealtime';
 import { useKanbanKeyboard } from '@/components/kanban/useKanbanKeyboard';
 
-import { Search, MoreHorizontal, Settings2, Map as MapIcon, Filter } from 'lucide-react';
 import { useKanbanViewSettings } from '@/hooks/useKanbanViewSettings';
-import { ViewSettingsPanel } from '@/components/kanban/ViewSettingsPanel';
 import { ENABLE_KANBAN_V2 } from '@/lib/featureFlags';
 import { readDensityPref, writeDensityPref } from '@/components/kanban/densityPrefs';
 import { statusChangeSchema } from '@/components/kanban/kanban-schemas';
 import { useBoardUrlState } from '@/components/kanban/useBoardUrlState';
 import {
-  AdvancedFilterPanel, type AdvancedFilters,
+  type AdvancedFilters,
   EMPTY_ADVANCED_FILTERS, hasActiveAdvancedFilters, countAdvancedFilters,
 } from '@/components/kanban/AdvancedFilterPanel';
-import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
-import { GroupByPopover } from '@/components/shared/GroupByPopover';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 export default function KanbanBoardPage() {
   const { key } = useParams<{ key: string }>();
-  const navigate = useNavigate();
   const { isDark } = useTheme();
   const tk = isDark ? KANBAN_TOKENS.dark : KANBAN_TOKENS.light;
   const avatarsByName = useProfileAvatarsByName();
@@ -169,18 +132,7 @@ export default function KanbanBoardPage() {
     });
   }, []);
 
-  // Close board menu on outside click
-  const boardMenuRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!showBoardMenu) return;
-    function handler(e: MouseEvent) {
-      if (boardMenuRef.current && !boardMenuRef.current.contains(e.target as Node)) {
-        setShowBoardMenu(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [showBoardMenu]);
+  /* Board-menu outside-click handling now owned by <KanbanToolbar>. */
 
   // Realtime subscription
   useKanbanRealtime(key, currentUserData ?? null);
@@ -861,160 +813,59 @@ export default function KanbanBoardPage() {
       {/* ── Page header ── */}
       <CatalystPageHeader title="Board" />
 
-      {/* ── Toolbar (Jira parity: 48h, transparent, no border) ── */}
-      <div className="flex items-center gap-2 px-4 flex-wrap" style={{
-        minHeight: 48, background: 'transparent',
-        flexShrink: 0,
-        paddingTop: 8, paddingBottom: 8,
-      }}>
-        {/* Search — 32h, 3px radius */}
-        <div className="relative" style={{ width: 220 }}>
-          <Search size={14} style={{ color: tk.textMuted }} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text" placeholder="Search board" value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{
-              width: '100%', height: 32, paddingLeft: 30, paddingRight: 8,
-              border: `1px solid ${tk.border}`, borderRadius: 3,
-              fontSize: 14, fontWeight: 500,
-              color: tk.textPrimary, background: tk.surfaceBg,
-              outline: 'none', fontFamily: "'Inter', sans-serif",
-              transition: 'border-color 150ms ease',
-            }}
-            onFocus={e => e.currentTarget.style.borderColor = tk.selectedAccent}
-            onBlur={e => e.currentTarget.style.borderColor = tk.border}
-          />
-        </div>
-
-        {/* Avatar stack */}
-        <AvatarStackFilter allAssignees={allAssignees} selected={selAssignees} onChange={setSelAssignees} avatarsByName={avatarsByName} tk={tk} />
-
-        {/* Canonical Filter */}
-        <div style={{ position: 'relative' }}>
-          <FilterTriggerButton
-            count={basicFilterCount}
-            onClick={() => setShowBasicFilter(p => !p)}
-            isOpen={showBasicFilter}
-          />
-          {showBasicFilter && (
-            <div style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100 }}>
-              <JiraBasicFilter
-                categories={filterCategories}
-                selected={filterSelected}
-                onSelectionChange={handleFilterChange}
-                onClearAll={() => { setSelEpics([]); setSelTypes([]); setSelPriorities([]); setSelAssignees(new Set()); }}
-                onClose={() => setShowBasicFilter(false)}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Canonical Group By */}
-        <GroupByPopover<GroupByMode>
-          value={groupBy}
-          onChange={setGroupBy}
-          options={BOARD_GROUP_OPTIONS}
-          noneKey={'none' as GroupByMode}
-        />
-
-        {/* Clear filters */}
-        {activeFilterCount > 0 && (
-          <button
-            onClick={clearAllFilters}
-            style={{
-              fontSize: 12, color: tk.selectedAccent, background: 'none',
-              border: 'none', cursor: 'pointer', fontWeight: 500,
-              fontFamily: "'Inter', sans-serif",
-            }}
-          >
-            Clear ({activeFilterCount})
-          </button>
-        )}
-
-        <div className="flex-1" />
-
-        <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{total} issues</span>
-
-        {/* Board menu ••• */}
-        <div ref={boardMenuRef} style={{ position: 'relative' }}>
-          <button
-            onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
-            className="focus-visible:ring-2 focus-visible:ring-offset-1"
-            style={{
-              /* Jira parity: 32h, 3px radius, transparent */
-              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 3, border: 'none', background: 'transparent',
-              cursor: 'pointer', transition: 'background 150ms ease', outline: 'none',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-            aria-label="Board menu"
-          >
-            <MoreHorizontal size={16} style={{ color: tk.textSecondary }} />
-          </button>
-          {showBoardMenu && !showViewSettings && (
-            <div
-              style={{
-                position: 'absolute', top: '100%', right: 0, marginTop: 6,
-                width: 240, background: tk.surfaceBg,
-                border: `1px solid ${tk.border}`, borderRadius: 10,
-                boxShadow: '0 8px 24px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.12)',
-                zIndex: 50,
-                padding: '6px 0', fontFamily: "'Inter', sans-serif",
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-              <div style={{ padding: '6px 16px 4px', fontSize: 11, fontWeight: 700, color: tk.textMuted, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                Board Options
-              </div>
-              <BoardMenuItem
-                icon={<Settings2 size={16} style={{ color: tk.textSecondary }} />}
-                label="View settings"
-                onClick={() => { setShowBoardMenu(false); setShowViewSettings(true); }}
-              />
-              <BoardMenuItem
-                icon={<MapIcon size={16} style={{ color: tk.textSecondary }} />}
-                label="Map statuses"
-                onClick={() => { setShowBoardMenu(false); navigate(`/project-hub/${key}/boards/map-statuses`); }}
-              />
-              <div style={{ height: 1, background: tk.borderSubtle, margin: '6px 12px' }} />
-              <BoardMenuItem
-                icon={<Filter size={16} style={{ color: tk.textSecondary }} />}
-                label="Advanced filter"
-                badge={advFilterCount > 0 ? advFilterCount : undefined}
-                onClick={() => { setShowBoardMenu(false); setShowAdvancedFilter(true); }}
-              />
-            </div>
-          )}
-          {showViewSettings && (
-            <ViewSettingsPanel
-              settings={viewSettings}
-              onUpdate={updateViewSettings}
-              onExpandAll={handleExpandAll}
-              onCollapseAll={() => {
-                setCollapsedSwimlanes(() => {
-                  const next = new Set<string>();
-                  groups?.forEach((g: any) => next.add(g.groupKey));
-                  return next;
-                });
-              }}
-              onClose={() => setShowViewSettings(false)}
-              tk={tk}
-              density={ENABLE_KANBAN_V2 ? density : undefined}
-              onDensityChange={ENABLE_KANBAN_V2 ? onDensityChange : undefined}
-            />
-          )}
-          {showAdvancedFilter && (
-            <AdvancedFilterPanel
-              projectKey={key ?? ''}
-              filters={advancedFilters}
-              onChange={setAdvancedFilters}
-              onClose={() => setShowAdvancedFilter(false)}
-              tk={tk}
-            />
-          )}
-        </div>
-      </div>
+      {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
+      <KanbanToolbar<GroupByMode>
+        tk={tk}
+        search={search}
+        onSearchChange={setSearch}
+        allAssignees={allAssignees}
+        selAssignees={selAssignees}
+        onSelAssigneesChange={setSelAssignees}
+        avatarsByName={avatarsByName}
+        basicFilterCount={basicFilterCount}
+        showBasicFilter={showBasicFilter}
+        onShowBasicFilterChange={setShowBasicFilter}
+        filterCategories={filterCategories}
+        filterSelected={filterSelected}
+        onFilterChange={handleFilterChange}
+        onClearBasicFilters={() => {
+          setSelEpics([]);
+          setSelTypes([]);
+          setSelPriorities([]);
+          setSelAssignees(new Set());
+        }}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
+        groupByOptions={BOARD_GROUP_OPTIONS}
+        groupByNoneKey={'none' as GroupByMode}
+        activeFilterCount={activeFilterCount}
+        onClearAllFilters={clearAllFilters}
+        totalIssues={total}
+        showBoardMenu={showBoardMenu}
+        onShowBoardMenuChange={setShowBoardMenu}
+        showViewSettings={showViewSettings}
+        onShowViewSettingsChange={setShowViewSettings}
+        showAdvancedFilter={showAdvancedFilter}
+        onShowAdvancedFilterChange={setShowAdvancedFilter}
+        advancedFilters={advancedFilters}
+        onAdvancedFiltersChange={setAdvancedFilters}
+        advFilterCount={advFilterCount}
+        viewSettings={viewSettings}
+        onUpdateViewSettings={updateViewSettings}
+        onExpandAll={handleExpandAll}
+        onCollapseAll={() => {
+          setCollapsedSwimlanes(() => {
+            const next = new Set<string>();
+            groups?.forEach((g: any) => next.add(g.groupKey));
+            return next;
+          });
+        }}
+        enableDensity={ENABLE_KANBAN_V2}
+        density={density}
+        onDensityChange={onDensityChange}
+        mapStatusesPath={`/project-hub/${key}/boards/map-statuses`}
+        projectKey={key ?? ''}
+      />
 
       {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
       <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px' }}>
