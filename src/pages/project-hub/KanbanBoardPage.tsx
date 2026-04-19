@@ -20,6 +20,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { useProjectMemberRole } from '@/modules/project-work-hub/hooks/useProjectMemberRole';
 import { useTheme } from '@/hooks/useTheme';
 import { usePriToast } from '@/modules/priorities/hooks/usePriToast';
 import { PriToastContainer } from '@/modules/priorities/components/PriToastContainer';
@@ -822,6 +823,39 @@ export default function KanbanBoardPage() {
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
       {/* ── Page header ── */}
       <CatalystPageHeader title="Board" />
+
+      {/* ── F3: Archived filter chip (admin/owner only) ── */}
+      {canArchive && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderBottom: '1px solid #DFE1E6', background: '#FAFBFC' }}>
+          <button
+            type="button"
+            onClick={() => setShowArchived(v => !v)}
+            aria-pressed={showArchived}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 12,
+              fontWeight: 600,
+              padding: '4px 10px',
+              borderRadius: 12,
+              border: '1px solid',
+              borderColor: showArchived ? '#0747A6' : '#DFE1E6',
+              background: showArchived ? '#DEEBFF' : '#FFFFFF',
+              color: showArchived ? '#0747A6' : '#42526E',
+              cursor: 'pointer',
+              lineHeight: 1.2,
+            }}
+          >
+            {showArchived ? 'Archived ON · click to hide' : 'Show archived'}
+          </button>
+          {showArchived && (
+            <span style={{ fontSize: 11, color: '#7A869A' }}>
+              Showing archived issues only — restore from the issue overflow menu.
+            </span>
+          )}
+        </div>
+      )}
 
       {/* ── Toolbar — canonical <KanbanToolbar/> (Phase 1 extraction) ── */}
       <KanbanToolbar<GroupByMode>
