@@ -124,6 +124,7 @@ const App = () => (
         </NavigationProvider>
         </FeatureFlagProvider>
       </AuthProvider>
+      </IntlProvider>
       </AdsThemeProvider>
     </ThemeProvider>
   </QueryClientProvider>
