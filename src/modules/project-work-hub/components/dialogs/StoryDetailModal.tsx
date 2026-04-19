@@ -1339,6 +1339,7 @@ export default function StoryDetailModal({
                     attachments={attachments}
                     itemId={itemId}
                     userId={user!.id}
+                    projectKey={issue?.project_key}
                   />
 
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}

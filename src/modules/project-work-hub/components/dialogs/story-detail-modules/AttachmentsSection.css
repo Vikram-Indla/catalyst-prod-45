@@ -403,3 +403,116 @@
   background-color: rgba(9, 30, 66, 0.08);
   color: rgb(41, 42, 46);
 }
+
+/* ─── DRAG / DROP ─── */
+.att-section { position: relative; }
+.att-section--dragging { outline: 2px dashed #2563EB; outline-offset: -2px; border-radius: 4px; }
+
+.att-drop-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37, 99, 235, 0.06);
+  color: #1D4ED8;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ─── ROW ACTIONS (hover-revealed) ─── */
+.att-th-actions { width: 80px; }
+.att-td-actions-cell { padding-right: 0; padding-left: 8px; text-align: right; }
+.att-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+.att-row:hover .att-row-actions,
+.att-row:focus-within .att-row-actions { opacity: 1; }
+@media (max-width: 768px) { .att-row-actions { opacity: 1; } }
+
+.att-delete-btn { color: rgba(8, 15, 33, 0.55); }
+.att-delete-btn:hover { color: #DE350B; background-color: rgba(222, 53, 11, 0.08); }
+
+/* ─── UPLOAD PROGRESS ─── */
+.att-upload-list { display: flex; flex-direction: column; gap: 4px; padding: 4px 0; }
+.att-upload-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 50px;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 13px;
+  border-radius: 3px;
+  background: #F8FAFC;
+}
+.att-upload-row--error { background: rgba(222, 53, 11, 0.06); }
+.att-upload-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #29292E; }
+.att-upload-bar { height: 6px; background: #DFE1E6; border-radius: 3px; overflow: hidden; }
+.att-upload-bar-fill { height: 100%; background: #2563EB; transition: width 0.2s ease; }
+.att-upload-pct { font-size: 11px; color: #505258; text-align: right; font-variant-numeric: tabular-nums; }
+.att-upload-error { color: #DE350B; font-size: 12px; grid-column: 2 / span 2; }
+.att-upload-retry {
+  grid-column: 3;
+  background: transparent; border: none; padding: 0;
+  color: #2563EB; font-size: 12px; cursor: pointer;
+}
+.att-upload-retry:hover { text-decoration: underline; }
+
+.att-spin { animation: att-spin 0.9s linear infinite; }
+@keyframes att-spin { to { transform: rotate(360deg); } }
+
+/* ─── EMPTY STATE ─── */
+.att-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 28px 16px;
+  text-align: center;
+}
+.att-empty-text { color: rgb(80, 82, 88); font-size: 13px; }
+.att-empty-cta {
+  background: transparent; border: 1px dashed #CBD5E1;
+  padding: 8px 14px; border-radius: 4px;
+  color: #2563EB; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.att-empty-cta:hover { background: rgba(37, 99, 235, 0.04); border-color: #2563EB; }
+
+/* ─── DARK MODE (ECLIPSE NOCTURNE) ─── */
+.dark .att-heading-label { color: #EDEDED; }
+.dark .att-badge { background: #292929; color: #A1A1A1; }
+.dark .att-icon-btn { color: #A1A1A1; }
+.dark .att-icon-btn:hover { background-color: rgba(255, 255, 255, 0.06); color: #EDEDED; }
+.dark .att-th { color: #A1A1A1; border-bottom-color: #2E2E2E; }
+.dark .att-sort-btn { color: #A1A1A1; }
+.dark .att-sort-btn:hover { color: #EDEDED; }
+.dark .att-row:hover { background-color: rgba(255, 255, 255, 0.04); }
+.dark .att-td { color: #EDEDED; }
+.dark .att-td-size, .dark .att-td-date { color: #A1A1A1; }
+.dark .att-filename-base, .dark .att-filename-ext { color: #EDEDED; }
+.dark .att-thumb-fallback { background: #292929; }
+.dark .att-empty-text { color: #A1A1A1; }
+.dark .att-empty-cta { border-color: #454545; color: #60A5FA; }
+.dark .att-empty-cta:hover { background: rgba(96, 165, 250, 0.06); border-color: #60A5FA; }
+.dark .att-more-menu { background: #1E2027; border-color: #2E2E2E; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); }
+.dark .att-menu-item { color: #EDEDED; }
+.dark .att-menu-item:hover { background: #292929; }
+.dark .att-menu-badge { background: #292929; color: #A1A1A1; }
+.dark .att-upload-row { background: #1E2027; }
+.dark .att-upload-row--error { background: rgba(222, 53, 11, 0.12); }
+.dark .att-upload-name { color: #EDEDED; }
+.dark .att-upload-bar { background: #292929; }
+.dark .att-upload-pct { color: #A1A1A1; }
+.dark .att-download-btn { color: #A1A1A1; }
+.dark .att-download-btn:hover { background-color: rgba(255, 255, 255, 0.08); color: #EDEDED; }
+.dark .att-delete-btn { color: #A1A1A1; }
+.dark .att-delete-btn:hover { color: #FF5630; background-color: rgba(255, 86, 48, 0.12); }
+.dark .att-drop-overlay { background: rgba(37, 99, 235, 0.10); color: #93C5FD; }
