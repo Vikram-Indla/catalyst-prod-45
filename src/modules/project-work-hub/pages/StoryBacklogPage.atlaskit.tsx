@@ -111,11 +111,10 @@ type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'mov
 
 function statusAppearance(status: string | null | undefined): LozengeAppearance {
   if (!status) return 'default';
-  // Use the Catalyst utility's colour mapping as the source of truth
+  // `STORY_STATUS_LOZENGE.color` is now the Atlaskit appearance token directly
+  // (§20 / L41 migration). Pass it through; fall back to 'default' for unknown.
   const cfg = STORY_STATUS_LOZENGE[status];
-  if (cfg?.color === 'blue')  return 'inprogress';
-  if (cfg?.color === 'green') return 'success';
-  return 'default';
+  return (cfg?.color as LozengeAppearance) ?? 'default';
 }
 
 function statusLabel(status: string | null | undefined): string {

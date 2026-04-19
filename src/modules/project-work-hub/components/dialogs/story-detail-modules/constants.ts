@@ -15,16 +15,27 @@ export const STATUS_CATEGORIES: Record<string, string[]> = {
   done: ['Production Ready', 'Beta Ready', 'In Production', 'Done', 'Closed'],
 };
 
+/**
+ * §20 / L41 — DEPRECATED render-time lookup.
+ *
+ * This map is orphaned from all render paths on the Jira-clone surface;
+ * status pills now route through `statusToLozenge()` → Atlaskit Lozenge
+ * (see `src/modules/project-work-hub/utils/statusToLozenge.ts`). The table
+ * is kept only so `getStatusStyle()` in `./helpers.ts` — referenced by a
+ * handful of non-Jira-clone callers — still type-checks. All values have
+ * been realigned to Atlaskit's palette so even if a rogue consumer reads
+ * `in_uat` it renders the canonical blue, not cyan.
+ */
 export const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
-  todo: { bg: '#F4F5F7', text: '#42526E' },
-  in_progress: { bg: '#0052CC', text: '#FFFFFF' },
-  done: { bg: '#36B37E', text: '#FFFFFF' },
-  blocked: { bg: '#FF5630', text: '#FFFFFF' },
-  on_hold: { bg: '#FF991F', text: '#FFFFFF' },
-  in_uat: { bg: '#00B8D9', text: '#FFFFFF' },
-  in_beta: { bg: '#36B37E', text: '#FFFFFF' },
-  in_prod: { bg: '#006644', text: '#FFFFFF' },
-  in_review: { bg: '#FF991F', text: '#FFFFFF' },
+  todo:        { bg: '#DFE1E6', text: '#253858' },
+  in_progress: { bg: '#DEEBFF', text: '#0747A6' },
+  done:        { bg: '#E3FCEF', text: '#006644' },
+  blocked:     { bg: '#FFEBE6', text: '#BF2600' },
+  on_hold:     { bg: '#FFF0B3', text: '#974F0C' },
+  in_uat:      { bg: '#DEEBFF', text: '#0747A6' }, // was #00B8D9 cyan — now Atlaskit inprogress-blue
+  in_beta:     { bg: '#DEEBFF', text: '#0747A6' },
+  in_prod:     { bg: '#E3FCEF', text: '#006644' },
+  in_review:   { bg: '#DEEBFF', text: '#0747A6' },
 };
 
 export const LOZENGE_STYLES: Record<'grey' | 'blue' | 'green', React.CSSProperties> = {
@@ -103,13 +114,31 @@ export const STATUS_OPTION_GROUPS = [
 const jiraIconImg = (file: string, label: string) =>
   `<img src="/admin/icons/jira/${file}-16.svg" width="16" height="16" alt="${label}" title="${label}" draggable="false" style="display:block;width:16px;height:16px;flex-shrink:0" />`;
 
+/**
+ * §21 / ICON-GUARDRAIL — File/label mapping for work-item-type icons rendered
+ * through raw HTML (innerHTML contexts that can't accept a React component).
+ *
+ * The file names here MUST correspond to SVGs in `/public/admin/icons/jira/`.
+ * The canonical React resolver is `src/lib/jira-issue-type-icons.tsx`; this
+ * table is a parallel lookup only for the HTML-string renderers (e.g. table
+ * cells that call .innerHTML, ADF export paths). If you add a type here, add
+ * it in the canonical resolver too, or surfaces will drift.
+ *
+ * 2026-04-20 fix: "Business Request" used to alias to the Story SVG (green
+ * bookmark). It now uses its OWN `business-request` SVG — the amber
+ * (#FFAB00) lightbulb per Jira canonical. "Business Gap" was likewise
+ * de-aliased from Incident (the canonical glyph is red lightning, distinct
+ * from the incident beacon).
+ */
 const WORK_ITEM_ICON_ALIASES: Array<[string, string, string[]]> = [
   ['task', 'Task', ['task', 'Task']],
   ['subtask', 'Sub-task', ['sub-task', 'subtask', 'Sub-task', 'Subtask']],
   ['new-feature', 'Feature', ['feature', 'Feature', 'new feature', 'New Feature']],
-  ['story', 'Story', ['story', 'Story', 'business request', 'Business Request']],
+  ['story', 'Story', ['story', 'Story']],
+  ['business-request', 'Business Request', ['business request', 'Business Request', 'business-request', 'BusinessRequest']],
   ['bug', 'Bug', ['bug', 'Bug', 'qa bug', 'QA Bug', 'defect', 'Defect']],
-  ['incident', 'Production Incident', ['incident', 'Incident', 'production incident', 'Production Incident', 'business gap', 'Business Gap']],
+  ['incident', 'Production Incident', ['incident', 'Incident', 'production incident', 'Production Incident']],
+  ['incident', 'Business Gap', ['business gap', 'Business Gap']],
   ['epic', 'Epic', ['epic', 'Epic']],
   ['improvement', 'Improvement', ['improvement', 'Improvement']],
   ['question', 'Question', ['question', 'Question']],

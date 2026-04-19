@@ -14,6 +14,8 @@ import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { DEFAULT_COLUMNS, STATUS_OPTION_GROUPS, LOZENGE } from './constants';
 import { nextPos, getAvatarColor, formatDateShort, resolveStatusCategory } from './helpers';
 import { SectionBlock, IssueIcon, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
+import Lozenge from '@atlaskit/lozenge';
+import { statusToLozenge } from '../../../utils/statusToLozenge';
 import { ConfirmDialog } from './ConfirmDialog';
 import { toast } from 'sonner';
 
@@ -91,21 +93,22 @@ function InlineStatusDropdown({ item, onUpdate }: { item: PhIssueRow; onUpdate: 
     return () => document.removeEventListener('mousedown', h);
   }, [open]);
 
-  const lozengeStyle = LOZENGE[item.status_category] ?? LOZENGE.todo;
-
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-flex' }}>
+      {/*
+        §20 / L41 — Atlaskit Lozenge wrapped in a transparent toggle button.
+        No inline `lozengeStyle` / `LOZENGE[category]` — the Lozenge itself
+        owns its palette, and `statusToLozenge()` is the single decision
+        point that turns a status string into the right appearance token.
+      */}
       <button
         onClick={e => { e.stopPropagation(); setOpen(o => !o); }}
         style={{
-          ...lozengeStyle,
-          display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
-          fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-          borderRadius: 3, padding: '0 6px', whiteSpace: 'nowrap',
-          border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+          background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+          display: 'inline-flex', alignItems: 'center', fontFamily: 'inherit',
         }}
       >
-        {item.status}
+        <Lozenge appearance={statusToLozenge(item.status)}>{item.status}</Lozenge>
       </button>
       {open && (
         <div style={{

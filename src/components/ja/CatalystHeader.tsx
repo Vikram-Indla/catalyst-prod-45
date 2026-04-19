@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
+import { resolveAvatarUrl } from "@/lib/avatars";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useEnabledModules } from "@/hooks/useModules";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
@@ -92,16 +93,25 @@ export function CatalystHeader() {
     },
   });
 
+  /**
+   * §19 avatar chokepoint (2026-04-20):
+   * Previously selected `profiles.avatar_url` → leaked external Atlassian-CDN /
+   * Gravatar URLs into the global topnav. Now we SELECT only `full_name`,
+   * then resolve the avatar URL synchronously via `resolveAvatarUrl(full_name)`
+   * so every rendered URL is a local hashed asset or `null`.
+   */
   const { data: userProfile } = useQuery({
-    queryKey: ['current-user-profile', user?.id],
+    queryKey: ['current-user-profile-local', user?.id],
     enabled: !!user?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('full_name, avatar_url')
+        .select('full_name')
         .eq('id', user!.id)
         .maybeSingle();
-      return data;
+      if (!data) return null;
+      const avatar_url = data.full_name ? resolveAvatarUrl(data.full_name) : null;
+      return { full_name: data.full_name, avatar_url };
     },
     staleTime: 5 * 60 * 1000,
   });

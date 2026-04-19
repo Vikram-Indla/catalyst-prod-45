@@ -39,6 +39,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { nextPos, resolveStatusCategory } from '../dialogs/story-detail-modules/helpers';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import { CANONICAL_WORK_ITEM_OPTIONS } from '@/components/shared/canonicalWorkItemOptions';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { WorkCell } from './cells/WorkCell';
@@ -268,30 +269,21 @@ export function SubtasksPanelV2({
     enabled: !!storyKey,
   });
 
-  // ─── Avatar resolution ────────────────────────
-  const assigneeAccountIds = useMemo(
-    () => [...new Set(children.map(c => c.assignee_account_id).filter(Boolean))] as string[],
-    [children]
-  );
-
-  const { data: avatarMap = {} } = useQuery({
-    queryKey: ['subtask-avatars', assigneeAccountIds],
-    queryFn: async () => {
-      if (assigneeAccountIds.length === 0) return {};
-      const { data, error } = await supabase
-        .from('jira_identity_map')
-        .select('jira_account_id,avatar_url')
-        .in('jira_account_id', assigneeAccountIds);
-      if (error) throw error;
-      const map: Record<string, string | null> = {};
-      (data ?? []).forEach(row => {
-        if (row.jira_account_id) map[row.jira_account_id] = row.avatar_url;
-      });
-      return map;
-    },
-    enabled: assigneeAccountIds.length > 0,
-    staleTime: 5 * 60 * 1000,
-  });
+  /**
+   * §19 avatar chokepoint (2026-04-20).
+   * Previously queried `jira_identity_map.avatar_url` (BANNED PATTERN) and
+   * leaked external Atlassian-CDN URLs into `<AssigneeCell>`. Now avatars
+   * resolve synchronously from `assignee_display_name` via `resolveAvatarUrl`.
+   */
+  const avatarMap = useMemo<Record<string, string | null>>(() => {
+    const map: Record<string, string | null> = {};
+    children.forEach((c) => {
+      if (c.assignee_account_id && c.assignee_display_name) {
+        map[c.assignee_account_id] = resolveAvatarUrl(c.assignee_display_name);
+      }
+    });
+    return map;
+  }, [children]);
 
   // ─── Progress ─────────────────────────────────
   const doneRows = useMemo(

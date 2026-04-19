@@ -1,7 +1,21 @@
 import type { BacklogGroup } from '../types/backlog.types';
+import type { LozengeAppearance } from './statusToLozenge';
 
 // ─── STATUS → LOZENGE MAPPING ───────────────────
-export type LozengeColor = 'grey' | 'blue' | 'green';
+//
+// §20 / L41 — migrated from the legacy 3-colour union ('grey' | 'blue' |
+// 'green') to Atlaskit's 6-appearance palette. `LozengeColor` is now an
+// alias for `LozengeAppearance` so callers that previously passed
+// `cfg.color` straight into an Atlaskit <Lozenge appearance={...}> get
+// type-correct values, and "In UAT" maps to `inprogress` rather than
+// inventing a cyan (#00B8D9) that isn't in Atlassian's palette.
+//
+// NOTE: `getLozengeStyle()` is retained as a back-compat inline-style
+// shim for the handful of consumers (FeatureBacklogPage, EpicDetailDrawer)
+// that still render their own <span> instead of <Lozenge>. Those sites
+// should migrate to Atlaskit Lozenge in a follow-on pass, but the shim
+// means they keep rendering correctly in the interim.
+export type LozengeColor = LozengeAppearance;
 
 export interface LozengeConfig {
   color: LozengeColor;
@@ -9,15 +23,21 @@ export interface LozengeConfig {
 }
 
 const LOZENGE_STYLES_LIGHT: Record<LozengeColor, { bg: string; text: string }> = {
-  grey:  { bg: '#DFE1E6', text: '#253858' },
-  blue:  { bg: '#DEEBFF', text: '#0747A6' },
-  green: { bg: '#E3FCEF', text: '#006644' },
+  default:    { bg: '#DFE1E6', text: '#253858' },
+  inprogress: { bg: '#DEEBFF', text: '#0747A6' },
+  success:    { bg: '#E3FCEF', text: '#006644' },
+  removed:    { bg: '#FFEBE6', text: '#BF2600' },
+  moved:      { bg: '#FFF0B3', text: '#974F0C' },
+  new:        { bg: '#EAE6FF', text: '#403294' },
 };
 
 const LOZENGE_STYLES_DARK: Record<LozengeColor, { bg: string; text: string }> = {
-  grey:  { bg: '#2E2E2E', text: '#A1A1A1' },
-  blue:  { bg: 'rgba(59,130,246,0.10)', text: '#7DB8FC' },
-  green: { bg: 'rgba(74,222,128,0.10)', text: '#4ADE80' },
+  default:    { bg: '#2E2E2E',            text: '#A1A1A1' },
+  inprogress: { bg: 'rgba(59,130,246,0.10)',  text: '#7DB8FC' },
+  success:    { bg: 'rgba(74,222,128,0.10)',  text: '#4ADE80' },
+  removed:    { bg: 'rgba(248,113,113,0.10)', text: '#F87171' },
+  moved:      { bg: 'rgba(234,179,8,0.10)',   text: '#FACC15' },
+  new:        { bg: 'rgba(167,139,250,0.10)', text: '#C4B5FD' },
 };
 
 export function getLozengeStyle(color: LozengeColor) {
@@ -27,48 +47,50 @@ export function getLozengeStyle(color: LozengeColor) {
 
 // ─── EPIC STATUS (Jira values) ───────────────────
 export const EPIC_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  'Backlog':       { color: 'grey',  label: 'BACKLOG' },
-  'To Do':         { color: 'grey',  label: 'TO DO' },
-  'In Progress':   { color: 'blue',  label: 'IN PROGRESS' },
-  'Done':          { color: 'green', label: 'DONE' },
-  'Cancelled':     { color: 'grey',  label: 'CANCELLED' },
+  'Backlog':       { color: 'default',    label: 'BACKLOG' },
+  'To Do':         { color: 'default',    label: 'TO DO' },
+  'In Progress':   { color: 'inprogress', label: 'IN PROGRESS' },
+  'Done':          { color: 'success',    label: 'DONE' },
+  'Cancelled':     { color: 'removed',    label: 'CANCELLED' },
   // Legacy native statuses (fallback)
-  'proposed':      { color: 'grey',  label: 'PROPOSED' },
-  'approved':      { color: 'blue',  label: 'APPROVED' },
-  'in_progress':   { color: 'blue',  label: 'IN PROGRESS' },
-  'done':          { color: 'green', label: 'DONE' },
-  'cancelled':     { color: 'grey',  label: 'CANCELLED' },
+  'proposed':      { color: 'default',    label: 'PROPOSED' },
+  'approved':      { color: 'success',    label: 'APPROVED' },
+  'in_progress':   { color: 'inprogress', label: 'IN PROGRESS' },
+  'done':          { color: 'success',    label: 'DONE' },
+  'cancelled':     { color: 'removed',    label: 'CANCELLED' },
 };
 
 // ─── FEATURE STATUS ──────────────────────────────
 export const FEATURE_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  'active':        { color: 'blue',  label: 'ACTIVE' },
-  'in_progress':   { color: 'blue',  label: 'IN PROGRESS' },
-  'done':          { color: 'green', label: 'DONE' },
-  'cancelled':     { color: 'grey',  label: 'CANCELLED' },
+  'active':        { color: 'inprogress', label: 'ACTIVE' },
+  'in_progress':   { color: 'inprogress', label: 'IN PROGRESS' },
+  'done':          { color: 'success',    label: 'DONE' },
+  'cancelled':     { color: 'removed',    label: 'CANCELLED' },
 };
 
 // ─── STORY STATUS (Jira values) ──────────────────
 export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
-  'In Requirements':        { color: 'grey',  label: 'IN REQUIREMENTS' },
-  'In Design':              { color: 'grey',  label: 'IN DESIGN' },
-  'Ready for Development':  { color: 'grey',  label: 'READY FOR DEV' },
-  'In Development':         { color: 'blue',  label: 'IN DEVELOPMENT' },
-  'In QA':                  { color: 'blue',  label: 'IN QA' },
-  'In UAT':                 { color: 'blue',  label: 'IN UAT' },
-  'BETA READY':             { color: 'blue',  label: 'BETA READY' },
-  'In BETA':                { color: 'blue',  label: 'IN BETA' },
-  'In Production':          { color: 'green', label: 'IN PRODUCTION' },
-  'Backlog':                { color: 'grey',  label: 'BACKLOG' },
-  'To Do':                  { color: 'grey',  label: 'TO DO' },
-  'In Progress':            { color: 'blue',  label: 'IN PROGRESS' },
-  'Done':                   { color: 'green', label: 'DONE' },
+  'In Requirements':        { color: 'inprogress', label: 'IN REQUIREMENTS' },
+  'In Design':              { color: 'inprogress', label: 'IN DESIGN' },
+  'Ready for Development':  { color: 'default',    label: 'READY FOR DEV' },
+  'In Development':         { color: 'inprogress', label: 'IN DEVELOPMENT' },
+  'In QA':                  { color: 'inprogress', label: 'IN QA' },
+  'In UAT':                 { color: 'inprogress', label: 'IN UAT' },
+  'BETA READY':             { color: 'success',    label: 'BETA READY' },
+  'In BETA':                { color: 'inprogress', label: 'IN BETA' },
+  'In Production':          { color: 'success',    label: 'IN PRODUCTION' },
+  'Backlog':                { color: 'default',    label: 'BACKLOG' },
+  'To Do':                  { color: 'default',    label: 'TO DO' },
+  'In Progress':            { color: 'inprogress', label: 'IN PROGRESS' },
+  'Done':                   { color: 'success',    label: 'DONE' },
+  'Blocked':                { color: 'removed',    label: 'BLOCKED' },
+  'On Hold':                { color: 'moved',      label: 'ON HOLD' },
   // Legacy native statuses (fallback)
-  'open':          { color: 'grey',  label: 'OPEN' },
-  'in_progress':   { color: 'blue',  label: 'IN PROGRESS' },
-  'in_review':     { color: 'blue',  label: 'IN REVIEW' },
-  'done':          { color: 'green', label: 'DONE' },
-  'cancelled':     { color: 'grey',  label: 'CANCELLED' },
+  'open':          { color: 'default',    label: 'OPEN' },
+  'in_progress':   { color: 'inprogress', label: 'IN PROGRESS' },
+  'in_review':     { color: 'inprogress', label: 'IN REVIEW' },
+  'done':          { color: 'success',    label: 'DONE' },
+  'cancelled':     { color: 'removed',    label: 'CANCELLED' },
 };
 
 // ─── GROUP ORDER ──────────────────────────────────

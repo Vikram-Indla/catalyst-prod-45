@@ -10,6 +10,7 @@ import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
 import { supabase } from '@/integrations/supabase/client';
 import { Check, Search, UserX } from 'lucide-react';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 export interface AssigneeOption {
   jira_account_id: string | null;
@@ -31,15 +32,23 @@ export function AssigneePopover({ currentAccountId, onChange, children, showActi
   const [q, setQ] = React.useState('');
 
   const { data: people = [], isLoading } = useQuery({
-    queryKey: ['subtask-assignee-options'],
+    queryKey: ['subtask-assignee-options-local'],
     queryFn: async () => {
+      // §19 chokepoint: do not SELECT avatar_url; resolve locally from display_name.
       const { data, error } = await supabase
         .from('jira_identity_map')
-        .select('jira_account_id,display_name,avatar_url,email,is_active_in_catalyst,is_active_in_jira')
+        .select('jira_account_id,display_name,email,is_active_in_catalyst,is_active_in_jira')
         .order('display_name', { ascending: true })
         .limit(500);
       if (error) throw error;
-      return (data ?? []).filter((p) => p.is_active_in_catalyst !== false || p.is_active_in_jira !== false) as AssigneeOption[];
+      return (data ?? [])
+        .filter((p) => p.is_active_in_catalyst !== false || p.is_active_in_jira !== false)
+        .map((p) => ({
+          jira_account_id: p.jira_account_id,
+          display_name: p.display_name,
+          avatar_url: p.display_name ? resolveAvatarUrl(p.display_name) : null,
+          email: p.email,
+        })) as AssigneeOption[];
     },
     enabled: isOpen,
     staleTime: 5 * 60 * 1000,

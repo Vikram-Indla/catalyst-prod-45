@@ -9,6 +9,8 @@ import type { TmTestCase, ThTestExecution, TestResult } from './types';
 import { LOZENGE, TEST_RESULT_STYLES } from './constants';
 import { getAvatarColor, formatDateShort } from './helpers';
 import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
+import Lozenge from '@atlaskit/lozenge';
+import { statusToLozenge } from '../../../utils/statusToLozenge';
 
 export function TestHubSection({ storyId }: { storyId: string }) {
   const [activeTab, setActiveTab] = useState<'cases' | 'executions'>('cases');
@@ -85,7 +87,8 @@ export function TestHubSection({ storyId }: { storyId: string }) {
                   </span>
                   <span className="sdm-child-key" style={{ color: '#42526E' }}>{tc.case_key}</span>
                   <span className="sdm-child-summary">{tc.title}</span>
-                  <span className="sdm-status-lozenge" style={LOZENGE[tc.status === 'active' ? 'in_progress' : 'todo']}>{tc.status}</span>
+                  {/* §20 / L41 — Atlaskit Lozenge (was LOZENGE[...] inline). */}
+                  <span className="sdm-status-lozenge"><Lozenge appearance={statusToLozenge(tc.status)}>{tc.status}</Lozenge></span>
                   <span className="sdm-date-col">{formatDateShort(tc.created_at)}</span>
                   <div className="sdm-row-actions">
                     <button className="sdm-row-action-btn" title="Open in TestHub"><ExternalLink size={11} /></button>

@@ -1,33 +1,47 @@
 /**
- * useProfileAvatars - Shared hook to fetch avatar URLs for profiles
- * Returns a Map<profileId, avatarUrl> for quick lookups across all modules
+ * useProfileAvatars — Avatar URL map hooks, wired through the §19 chokepoint.
+ *
+ * HISTORICAL NOTE:
+ * Previously, these hooks queried `profiles.avatar_url` and returned external
+ * Supabase/Gravatar/Atlassian-CDN URLs. That violated CLAUDE.md §19 (avatar
+ * image migration chokepoint). On 2026-04-20 the internals were replaced with
+ * `resolveAvatarUrl(name)` so every URL returned is either a local hashed
+ * asset or `undefined`. Hook return-types are unchanged → no caller changes.
+ *
+ * Consumers still get `Map<key, url>` / `Record<name, url>`. The difference is
+ * values now resolve via `src/lib/avatars.ts` instead of external HTTP.
  */
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
-interface ProfileAvatar {
+interface ProfileIdentityRow {
   id: string;
-  avatar_url: string | null;
   full_name: string | null;
 }
 
 /**
- * Fetches all profiles that have avatar_url set.
- * Returns a map for O(1) lookups by profile ID.
+ * Returns `Map<profileId, localAvatarUrl>` for any profile whose name
+ * resolves to a local avatar asset. Profiles without a local match are
+ * omitted — caller falls back to `CircleUser` / initials as before.
+ *
+ * §19: no `avatar_url` column selected; all URLs come from resolveAvatarUrl.
  */
 export function useProfileAvatars() {
   const { data: avatarMap = new Map<string, string>() } = useQuery({
-    queryKey: ['profile-avatars'],
+    queryKey: ['profile-avatars-local'],
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, avatar_url, full_name')
-        .not('avatar_url', 'is', null);
+        .select('id, full_name')
+        .not('full_name', 'is', null);
 
       const map = new Map<string, string>();
-      (data as ProfileAvatar[] || []).forEach(p => {
-        if (p.avatar_url) map.set(p.id, p.avatar_url);
+      (data as ProfileIdentityRow[] || []).forEach((p) => {
+        if (!p.full_name) return;
+        const url = resolveAvatarUrl(p.full_name);
+        if (url) map.set(p.id, url);
       });
       return map;
     },
@@ -38,23 +52,22 @@ export function useProfileAvatars() {
 }
 
 /**
- * Given a name, look up avatar_url from the profile avatars map.
- * Useful when you only have a name, not an ID.
+ * Returns `Map<lowercaseName, localAvatarUrl>`. Same chokepoint as above.
  */
 export function useProfileAvatarsByName() {
   const { data: avatarMap = new Map<string, string>() } = useQuery({
-    queryKey: ['profile-avatars-by-name'],
+    queryKey: ['profile-avatars-by-name-local'],
     queryFn: async () => {
       const { data } = await supabase
         .from('profiles')
-        .select('id, avatar_url, full_name')
-        .not('avatar_url', 'is', null);
+        .select('id, full_name')
+        .not('full_name', 'is', null);
 
       const map = new Map<string, string>();
-      (data as ProfileAvatar[] || []).forEach(p => {
-        if (p.avatar_url && p.full_name) {
-          map.set(p.full_name.toLowerCase(), p.avatar_url);
-        }
+      (data as ProfileIdentityRow[] || []).forEach((p) => {
+        if (!p.full_name) return;
+        const url = resolveAvatarUrl(p.full_name);
+        if (url) map.set(p.full_name.toLowerCase(), url);
       });
       return map;
     },

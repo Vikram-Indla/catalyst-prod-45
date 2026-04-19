@@ -46,6 +46,7 @@ import { allowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { DescriptionPopover } from './DescriptionPopover';
 import { subtaskCreateInputSchema } from './schemas';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -338,30 +339,22 @@ export function SubtasksPanel({
     enabled: !!storyKey,
   });
 
-  // ─── Resolve avatar URLs from jira_identity_map ───
-  const assigneeAccountIds = useMemo(
-    () => [...new Set(children.map(c => c.assignee_account_id).filter(Boolean))] as string[],
-    [children]
-  );
-
-  const { data: avatarMap = {} } = useQuery({
-    queryKey: ['subtask-avatars', assigneeAccountIds],
-    queryFn: async () => {
-      if (assigneeAccountIds.length === 0) return {};
-      const { data, error } = await supabase
-        .from('jira_identity_map')
-        .select('jira_account_id,avatar_url')
-        .in('jira_account_id', assigneeAccountIds);
-      if (error) throw error;
-      const map: Record<string, string | null> = {};
-      (data ?? []).forEach(row => {
-        if (row.jira_account_id) map[row.jira_account_id] = row.avatar_url;
-      });
-      return map;
-    },
-    enabled: assigneeAccountIds.length > 0,
-    staleTime: 5 * 60 * 1000,
-  });
+  /**
+   * §19 avatar chokepoint (2026-04-20).
+   * Previously queried `jira_identity_map.avatar_url` (BANNED PATTERN per
+   * CLAUDE.md §19) and handed external Atlassian-CDN URLs to `<AssigneeCell>`.
+   * Now avatars resolve synchronously from each child's `assignee_display_name`
+   * via `resolveAvatarUrl`. No external URL; no Supabase call.
+   */
+  const avatarMap = useMemo<Record<string, string | null>>(() => {
+    const map: Record<string, string | null> = {};
+    children.forEach((c) => {
+      if (c.assignee_account_id && c.assignee_display_name) {
+        map[c.assignee_account_id] = resolveAvatarUrl(c.assignee_display_name);
+      }
+    });
+    return map;
+  }, [children]);
 
   // ─── Progress calc ────────────────────────────
   const doneRows = useMemo(

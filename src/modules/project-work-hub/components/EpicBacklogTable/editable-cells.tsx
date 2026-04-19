@@ -50,8 +50,8 @@ export function EditableStatus({ value, onChange, disabled }: EditableStatusProp
         <DropdownItemGroup>
           {STATUS_OPTIONS.map((opt) => {
             const cfg = EPIC_STATUS_LOZENGE[opt.value];
-            const appearance: ThemeAppearance =
-              cfg?.color === 'blue' ? 'inprogress' : cfg?.color === 'green' ? 'success' : 'default';
+            // §20 / L41 — cfg.color is now an Atlaskit appearance token.
+            const appearance = (cfg?.color as ThemeAppearance) ?? 'default';
             const selected = value === opt.value;
             return (
               <DropdownItem

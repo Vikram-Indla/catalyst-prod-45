@@ -126,10 +126,10 @@ export interface BacklogItem {
 
 function statusAppearance(status: string | null | undefined): LozengeAppearance {
   if (!status) return 'default';
+  // `STORY_STATUS_LOZENGE.color` is now the Atlaskit appearance token directly
+  // (§20 / L41 migration). Pass it through; fall back to 'default' for unknown.
   const cfg = STORY_STATUS_LOZENGE[status];
-  if (cfg?.color === 'blue') return 'inprogress';
-  if (cfg?.color === 'green') return 'success';
-  return 'default';
+  return (cfg?.color as LozengeAppearance) ?? 'default';
 }
 // Jira's list view renders status in sentence case, not uppercase (measured
 // on digital-transformation.atlassian.net 2026-04-18). Return the raw Jira

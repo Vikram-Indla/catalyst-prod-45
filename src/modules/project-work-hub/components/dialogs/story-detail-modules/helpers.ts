@@ -3,6 +3,7 @@
  * Extracted from StoryDetailModal.tsx for modularity
  */
 import { STATUS_STYLES, STATUS_CATEGORIES } from './constants';
+import type { LozengeAppearance } from '../../../utils/statusToLozenge';
 
 export function fmtDate(iso: string | null | undefined): string {
   if (!iso) return '—';
@@ -49,10 +50,16 @@ export function getAvatarColor(id: string): string {
   return colors[Math.abs(hash) % colors.length];
 }
 
-export function getLozengeVariant(statusCategory: 'todo' | 'in_progress' | 'done'): 'grey' | 'blue' | 'green' {
-  if (statusCategory === 'done') return 'green';
-  if (statusCategory === 'in_progress') return 'blue';
-  return 'grey';
+/**
+ * §20 / L41 — Returns an Atlaskit Lozenge `appearance` value for a legacy
+ * 3-bucket status category. The old 'grey' | 'blue' | 'green' return type
+ * mapped 1:1 to hand-rolled backgrounds; those are gone. Callers that want
+ * pill colours should now pass `appearance` straight to `<Lozenge>`.
+ */
+export function getLozengeVariant(statusCategory: 'todo' | 'in_progress' | 'done'): LozengeAppearance {
+  if (statusCategory === 'done') return 'success';
+  if (statusCategory === 'in_progress') return 'inprogress';
+  return 'default';
 }
 
 export function nextPos(items: { position: number }[]): number {

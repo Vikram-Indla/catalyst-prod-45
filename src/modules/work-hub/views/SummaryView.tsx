@@ -289,8 +289,8 @@ function TypesOfWork() {
 // Team Workload
 function TeamWorkload() {
   const team = [
-    { name: 'Nada alfassam', initials: 'NA', percentage: 34 },
-    { name: 'vikram indla', avatar: '', percentage: 17 },
+    { name: 'Nada Alfassam', initials: 'NA', percentage: 34 },
+    { name: 'Vikram Indla', avatar: '', percentage: 17 },
     { name: 'Sherif Gjini', initials: 'SG', percentage: 15 },
     { name: 'Yahya Aloyoni', initials: 'YA', percentage: 12 },
     { name: 'Muhammad Ayaz', initials: 'MA', percentage: 10 },

@@ -21,6 +21,7 @@ import Avatar from '@atlaskit/avatar';
 import { X } from 'lucide-react';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { WORK_ITEM_ICONS } from '../dialogs/story-detail-modules/constants';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { LinkedWorkItem } from './types';
 
 type AllowedAppearance = 'default' | 'inprogress' | 'success';
@@ -92,11 +93,11 @@ export function LinkedWorkItemRow({
       </span>
 
       <span className="lwi-row__assignee">
-        {target.assignee_display_name || target.assignee_avatar_url ? (
+        {target.assignee_display_name ? (
           <Avatar
             size="small"
-            name={target.assignee_display_name ?? undefined}
-            src={target.assignee_avatar_url ?? undefined}
+            name={target.assignee_display_name}
+            src={resolveAvatarUrl(target.assignee_display_name) ?? undefined /* §19 chokepoint: never pass external URL */}
             borderColor="transparent"
           />
         ) : (

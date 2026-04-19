@@ -77,6 +77,21 @@ import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichText
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import Lozenge from '@atlaskit/lozenge';
+import { statusToLozenge } from '../../utils/statusToLozenge';
+
+/**
+ * §19 avatar chokepoint helper (2026-04-20).
+ * Overwrites `avatar_url` on any profile-like row with the local-hashed asset
+ * URL resolved from `full_name` / `display_name`. External Atlassian-CDN /
+ * Gravatar URLs never reach render. Returns `null` when no local match exists;
+ * render sites then fall back to initials (getAvatarColor + getInitials).
+ */
+function localizeAvatar<T extends { avatar_url?: string | null; full_name?: string | null }>(row: T | null | undefined): T | null {
+  if (!row) return null;
+  return { ...row, avatar_url: row.full_name ? resolveAvatarUrl(row.full_name) : null };
+}
 
 /* ─── Resolve media slot placeholders to <img> tags for TipTap editor ─── */
 function resolveMediaSlotsForEditor(
@@ -184,10 +199,11 @@ export default function StoryDetailModal({
 
   /* ── QUERIES ───────────────────────────────── */
   const { data: currentProfile } = useQuery({
-    queryKey: ['profile', user?.id], enabled: !!user?.id,
+    queryKey: ['profile-local', user?.id], enabled: !!user?.id,
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url, email').eq('id', user!.id).single();
-      return data as Profile | null;
+      // §19 chokepoint: select full_name only, resolve avatar locally.
+      const { data } = await supabase.from('profiles').select('id, full_name, email').eq('id', user!.id).single();
+      return localizeAvatar(data as Profile | null);
     },
   });
 
@@ -214,26 +230,18 @@ export default function StoryDetailModal({
       return null;
     },
   });
-  // Fetch reporter avatar — resolve via jira_identity_map (assignee_account_id is a Jira ID, not a Catalyst UUID)
-  const { data: reporterProfile } = useQuery({
-    queryKey: ['profile-avatar-jira', issue?.reporter_account_id],
-    queryFn: async () => {
-      if (!issue?.reporter_account_id) return null;
-      // First try jira_identity_map (Jira account ID → avatar_url)
-      const { data: jiraRow } = await supabase.from('jira_identity_map').select('avatar_url, catalyst_user_id').eq('jira_account_id', issue.reporter_account_id).maybeSingle();
-      if (jiraRow?.avatar_url) return { avatar_url: jiraRow.avatar_url };
-      // Fallback: try catalyst_user_id → profiles
-      if (jiraRow?.catalyst_user_id) {
-        const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', jiraRow.catalyst_user_id).single();
-        if (profile?.avatar_url) return profile;
-      }
-      // Final fallback: try profiles directly (for catalyst-native users)
-      const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', issue.reporter_account_id).maybeSingle();
-      return profile;
-    },
-    enabled: !!issue?.reporter_account_id,
-    staleTime: 60000,
-  });
+  /**
+   * §19 chokepoint (2026-04-20): reporter avatar resolution.
+   * Previously queried `jira_identity_map.avatar_url` + `profiles.avatar_url`
+   * directly — the worst BANNED PATTERN per CLAUDE.md §19. Now we resolve
+   * synchronously from `issue.reporter_display_name`. No Supabase call; no
+   * external URL; no PII query. Returns `{ avatar_url: null }` when no local
+   * asset exists, letting render site fall back to initials.
+   */
+  const reporterProfile = useMemo(
+    () => ({ avatar_url: issue?.reporter_display_name ? resolveAvatarUrl(issue.reporter_display_name) : null }),
+    [issue?.reporter_display_name],
+  );
 
   const { data: comments = [] } = useQuery({
     queryKey: ['ph-comments', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
@@ -242,18 +250,20 @@ export default function StoryDetailModal({
       const { data: phData } = await supabase.from('ph_comments').select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
       const phRows = phData ?? [];
       const authorIds = [...new Set(phRows.map(c => c.author_id).filter(Boolean))];
+      // §19 chokepoint: select full_name only, resolve avatar locally.
       const { data: profiles } = authorIds.length
-        ? await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', authorIds)
+        ? await supabase.from('profiles').select('id, full_name, email').in('id', authorIds)
         : { data: [] as any[] };
-      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, localizeAvatar(p)]));
       const phMapped = phRows.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
 
-      // 2) Jira-synced comments (jira_sync_comments) — read-only, keyed by issue_key
+      // 2) Jira-synced comments (jira_sync_comments) — read-only, keyed by issue_key.
+      // §19 chokepoint: drop author_avatar_url from SELECT, resolve via display_name.
       let jiraMapped: any[] = [];
       if (issue?.issue_key) {
         const { data: jiraRows } = await supabase
           .from('jira_sync_comments')
-          .select('id, jira_comment_id, author_display_name, author_account_id, author_avatar_url, body, jira_created_at, created_at')
+          .select('id, jira_comment_id, author_display_name, author_account_id, body, jira_created_at, created_at')
           .eq('issue_key', issue.issue_key)
           .order('jira_created_at', { ascending: true });
         jiraMapped = (jiraRows ?? []).map(j => ({
@@ -263,7 +273,12 @@ export default function StoryDetailModal({
           author_id: j.author_account_id ?? null,
           created_at: j.jira_created_at ?? j.created_at,
           updated_at: j.jira_created_at ?? j.created_at,
-          author: { id: j.author_account_id, full_name: j.author_display_name ?? 'Jira User', avatar_url: j.author_avatar_url ?? null, email: null },
+          author: {
+            id: j.author_account_id,
+            full_name: j.author_display_name ?? 'Jira User',
+            avatar_url: j.author_display_name ? resolveAvatarUrl(j.author_display_name) : null,
+            email: null,
+          },
           _jiraSynced: true,
         }));
       }
@@ -279,18 +294,20 @@ export default function StoryDetailModal({
       const { data: phData } = await supabase.from('ph_activity_log').select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
       const phRows = phData ?? [];
       const userIds = [...new Set(phRows.map(e => e.user_id).filter(Boolean))];
+      // §19 chokepoint: select full_name only, resolve avatar locally.
       const { data: profiles } = userIds.length
-        ? await supabase.from('profiles').select('id, full_name, avatar_url, email').in('id', userIds)
+        ? await supabase.from('profiles').select('id, full_name, email').in('id', userIds)
         : { data: [] as any[] };
-      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, p]));
+      const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, localizeAvatar(p)]));
       const phMapped = phRows.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
 
-      // 2) Jira-synced changelog (jira_sync_changelog) — read-only, keyed by issue_key
+      // 2) Jira-synced changelog (jira_sync_changelog) — read-only, keyed by issue_key.
+      // §19 chokepoint: drop author_avatar_url from SELECT, resolve via display_name.
       let jiraMapped: any[] = [];
       if (issue?.issue_key) {
         const { data: jiraRows } = await supabase
           .from('jira_sync_changelog')
-          .select('id, author_display_name, author_account_id, author_avatar_url, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
+          .select('id, author_display_name, author_account_id, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
           .eq('issue_key', issue.issue_key)
           .order('jira_created_at', { ascending: false });
         jiraMapped = (jiraRows ?? []).map(j => ({
@@ -303,7 +320,12 @@ export default function StoryDetailModal({
           user_id: j.author_account_id ?? null,
           metadata: null,
           created_at: j.jira_created_at ?? j.created_at,
-          actor: { id: j.author_account_id, full_name: j.author_display_name ?? 'Jira', avatar_url: j.author_avatar_url ?? null, email: null },
+          actor: {
+            id: j.author_account_id,
+            full_name: j.author_display_name ?? 'Jira',
+            avatar_url: j.author_display_name ? resolveAvatarUrl(j.author_display_name) : null,
+            email: null,
+          },
           _jiraSynced: true,
         }));
       }
@@ -344,12 +366,12 @@ export default function StoryDetailModal({
     staleTime: 60000,
   });
 
-  // Team members for @mention
+  // Team members for @mention — §19 chokepoint: no avatar_url SELECT, resolve locally.
   const { data: mentionMembers = [] } = useQuery({
-    queryKey: ['team-members-mention', projectId], enabled: !!projectId && isOpen,
+    queryKey: ['team-members-mention-local', projectId], enabled: !!projectId && isOpen,
     queryFn: async () => {
-      const { data } = await supabase.from('profiles').select('id, full_name, avatar_url').limit(50);
-      return (data ?? []) as Array<{ id: string; full_name: string; avatar_url: string | null }>;
+      const { data } = await supabase.from('profiles').select('id, full_name').limit(50);
+      return (data ?? []).map((p: any) => localizeAvatar(p)) as Array<{ id: string; full_name: string; avatar_url: string | null }>;
     },
     staleTime: 120000,
   });
@@ -608,7 +630,9 @@ export default function StoryDetailModal({
 
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
-  const statusStyle = getStatusStyle(localStatus || 'Backlog', statusCategory);
+  // §20 / L41 — hand-rolled `statusStyle` retired; status pills now resolve
+  // their appearance via `statusToLozenge(localStatus)` at the render site
+  // and the Atlaskit Lozenge component owns all pill colour tokens.
 
   const fixVersionNames = useMemo(() => {
     if (!issue?.fix_versions) return [];
@@ -1688,18 +1712,27 @@ export default function StoryDetailModal({
               {/* Status */}
               <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <div ref={statusDropdownRef} style={{ position: 'relative' }}>
-                  <button onClick={() => setShowStatusDropdown(!showStatusDropdown)} style={{
-                    backgroundColor: statusStyle.bg, color: statusStyle.text,
-                    padding: '6px 12px', borderRadius: 4, fontSize: 13, fontWeight: 700,
-                    border: 'none', cursor: 'pointer', display: 'inline-flex',
-                    alignItems: 'center', gap: 6, fontFamily: 'inherit', lineHeight: 1,
-                    transition: 'opacity 0.15s',
-                  }}
+                  {/*
+                    §20 / L41 — Atlaskit Lozenge is the ONLY admissible status pill
+                    on the Jira-clone surface. No inline bg/color (no cyan "In UAT",
+                    no rainbow). The <button> wrapper is transparent and exists only
+                    to carry the dropdown toggle + chevron affordance.
+                  */}
+                  <button
+                    onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                    style={{
+                      background: 'transparent', border: 'none', padding: 0,
+                      cursor: 'pointer', display: 'inline-flex', alignItems: 'center',
+                      gap: 4, fontFamily: 'inherit', lineHeight: 1,
+                      transition: 'opacity 0.15s',
+                    }}
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                   >
-                    {(localStatus || 'Backlog').toUpperCase()}
-                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <Lozenge appearance={statusToLozenge(localStatus || 'Backlog')} isBold>
+                      {localStatus || 'Backlog'}
+                    </Lozenge>
+                    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </button>
                   {showStatusDropdown && (
                     <div onKeyDown={e => { if (e.key === 'Escape') setShowStatusDropdown(false); }} style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFFFFF', borderRadius: 4, border: 'none', boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)', padding: '4px 0', zIndex: 9999, minWidth: 220, maxHeight: 340, overflowY: 'auto', animation: 'sdm-slide-down 0.15s ease-out' }}>
@@ -1708,8 +1741,6 @@ export default function StoryDetailModal({
                           <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '8px 12px 4px', marginTop: 4 }}>{group.groupLabel}</div>
                           {group.statuses.map(st => {
                             const isActive = localStatus === st;
-                            const cat = group.category as 'todo' | 'in_progress' | 'done';
-                            const lozengeStyle = cat === 'done' ? { background: '#E3FCEF', color: '#006644' } : cat === 'in_progress' ? { background: '#DEEBFF', color: '#0747A6' } : { background: '#DFE1E6', color: '#253858' };
                             return (
                               <div key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); updateStatusMutation.mutate(st); }} style={{
                                 height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -1718,7 +1749,8 @@ export default function StoryDetailModal({
                                 onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
                                 onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                               >
-                                <span style={{ ...lozengeStyle, display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 6px', borderRadius: 3, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em' }}>{st}</span>
+                                {/* §20 / L41 — Atlaskit Lozenge only; no inline colours per-item. */}
+                                <Lozenge appearance={statusToLozenge(st)} isBold>{st}</Lozenge>
                                 {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
                               </div>
                             );

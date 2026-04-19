@@ -10,59 +10,54 @@ import {
 } from 'lucide-react';
 import type { ColumnConfig, PhIssueRow, StatusCategory } from './types';
 import { LOZENGE, PRIORITY_COLORS, WORK_ITEM_ICONS } from './constants';
-import { getStatusCategory, getStatusStyle, getAvatarColor, formatDateShort } from './helpers';
+import { getStatusCategory, getAvatarColor, formatDateShort } from './helpers';
 import { detailLabelStyle, detailValueStyle } from './constants';
+import Lozenge from '@atlaskit/lozenge';
+import { statusToLozenge } from '../../../utils/statusToLozenge';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
 /* ── IssueIcon ─────────────────────────────── */
+/**
+ * §21 / ICON-GUARDRAIL — Thin delegation to the canonical Jira issue-type
+ * icon resolver at `src/lib/jira-issue-type-icons.tsx` ("RESET ICONS").
+ *
+ * Previously this component contained hand-rolled inline SVGs that:
+ *   (a) only covered 5 types (epic / bug / sub / incident / task) and
+ *       fell through to a green bookmark for everything else — so
+ *       "Business Request" rendered as a STORY icon instead of the
+ *       canonical amber lightbulb.
+ *   (b) drifted from the canonical palette (Task was #4BADE8 here vs
+ *       #2684FF in the canonical — two different blues shipping side by
+ *       side).
+ *
+ * Keeping the `IssueIcon` export name + prop contract so no call sites
+ * need to change. All rendering now goes through the SVG files in
+ * `/admin/icons/jira/*.svg` via `JiraIssueTypeIcon`.
+ */
 export function IssueIcon({ type, size = 16 }: { type: string; size?: number }) {
-  const t = type?.toLowerCase() || '';
-  if (t.includes('epic')) return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#6554C0"/><path d="M10.5 3.5L6.5 8.5h3l-4 4" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-  );
-  if (t.includes('bug') || t.includes('defect')) return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#FF5630"/><circle cx="8" cy="8" r="3" fill="#FFF"/></svg>
-  );
-  if (t.includes('sub')) return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#0052CC"/><rect x="4" y="4" width="4" height="4" rx="0.5" fill="#FFF"/><rect x="8" y="8" width="4" height="4" rx="0.5" fill="#FFF" opacity="0.7"/></svg>
-  );
-  if (t.includes('incident')) return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><path d="M8 1L15 14H1L8 1Z" fill="#FF5630"/><rect x="7.25" y="5" width="1.5" height="5" rx="0.75" fill="#FFF"/><circle cx="8" cy="12" r="0.75" fill="#FFF"/></svg>
-  );
-  if (t.includes('task')) return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#4BADE8"/><path d="M4.5 8.5L7 11L11.5 5.5" stroke="#FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-  );
-  return (
-    <svg width={size} height={size} viewBox="0 0 16 16" fill="none"><rect width="16" height="16" rx="3" fill="#36B37E"/><path d="M5 2h6v10.5L8 10l-3 2.5V2z" fill="#FFF"/></svg>
-  );
+  return <JiraIssueTypeIcon type={type} size={size} />;
 }
 
 /* ── StatusLozenge ─────────────────────────── */
-export function StatusLozenge({ status, category }: { status: string; category?: string | null }) {
-  const cat = category?.toLowerCase() || getStatusCategory(status);
-  let bg = '#DFE1E6', color = '#253858';
-  if (cat === 'done') { bg = '#E3FCEF'; color = '#006644'; }
-  else if (cat === 'in_progress' || cat === 'inprogress') { bg = '#DEEBFF'; color = '#0747A6'; }
-  return (
-    <span style={{
-      display: 'inline-block', height: 20, lineHeight: '20px', fontSize: 11,
-      fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-      borderRadius: 3, padding: '0 6px', whiteSpace: 'nowrap',
-      background: bg, color,
-    }}>{status}</span>
-  );
+/**
+ * §20 / L41 — Thin Atlaskit wrapper. Keeps the external prop contract
+ * (`{status, category}`) so no call sites need to change. The `category`
+ * prop is kept for backward-compat but the actual appearance is derived
+ * purely from the status string via `statusToLozenge`, which is the single
+ * source of truth. This is why "In UAT" no longer renders cyan.
+ */
+export function StatusLozenge({ status, category: _category }: { status: string; category?: string | null }) {
+  return <Lozenge appearance={statusToLozenge(status)}>{status}</Lozenge>;
 }
 
 /* ── JiraStatusPill ────────────────────────── */
-export function JiraStatusPill({ status, category }: { status: string; category: string }) {
-  const style = getStatusStyle(status, category);
-  return (
-    <span style={{
-      display: 'inline-block', height: 22, lineHeight: '22px', fontSize: 11,
-      fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em',
-      borderRadius: 4, padding: '0 8px', whiteSpace: 'nowrap',
-      background: style.bg, color: style.text,
-    }}>{status}</span>
-  );
+/**
+ * §20 / L41 — Same Atlaskit wrapper, rendered with `isBold` for the
+ * emphasised pill variant (used in history rows / current-status summary
+ * where a heavier pill reads better in dense prose).
+ */
+export function JiraStatusPill({ status, category: _category }: { status: string; category: string }) {
+  return <Lozenge appearance={statusToLozenge(status)} isBold>{status}</Lozenge>;
 }
 
 /* ── Skel ──────────────────────────────────── */
@@ -138,7 +133,10 @@ export function IssueRow({ item, columns, onDelete, onCopyLink }: IssueRowProps)
       <span className="sdm-child-key" style={isDone ? { color: 'rgba(9,30,66,0.4)' } : {}}>{item.issue_key}</span>
       <span className={`sdm-child-summary${isDone ? ' sdm-child-summary--done' : ''}`}>{item.summary}</span>
       {columns.status && (
-        <span className="sdm-status-lozenge" style={LOZENGE[item.status_category]}>{item.status}</span>
+        <span className="sdm-status-lozenge">
+          {/* §20 / L41 — Atlaskit Lozenge only; no inline LOZENGE[category] styles. */}
+          <Lozenge appearance={statusToLozenge(item.status)}>{item.status}</Lozenge>
+        </span>
       )}
       {columns.assignee && (
         <div className="sdm-child-avatar" style={{ background: avatarColor }} title={item.assignee_display_name ?? 'Unassigned'}>{avatarInitial}</div>

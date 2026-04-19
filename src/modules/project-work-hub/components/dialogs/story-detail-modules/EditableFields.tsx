@@ -2,13 +2,14 @@
  * EditableFields — EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker
  * Rebuilt to exact Jira parity — no pencil icons, Jira-native priority SVGs, 28px avatars, 14px names
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, CircleUser } from 'lucide-react';
 import type { ProjectMember, ParentIssue } from './types';
 import { PRIORITY_LIST, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 /** Atlassian-spec dropdown container styles */
 const ATLASSIAN_DROPDOWN: React.CSSProperties = {
@@ -77,39 +78,38 @@ export function EditableAssignee({ issueId, issueKey, projectId, currentAssignee
   const ref = useRef<HTMLDivElement>(null);
 
   const { data: members = [] } = useQuery({
-    queryKey: ['projectMembers-edit', projectId],
+    queryKey: ['projectMembers-edit-local', projectId],
     queryFn: async () => {
       const { data, error } = await supabase.from('project_members').select('user_id, role').eq('project_id', projectId);
       if (error) throw error;
       if (!data?.length) return [];
       const userIds = data.map(d => d.user_id);
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', userIds);
+      // §19 chokepoint: select full_name only, resolve avatar locally.
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', userIds);
       const profileMap = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(d => ({ user_id: d.user_id, full_name: profileMap.get(d.user_id)?.full_name ?? 'Unknown', avatar_url: profileMap.get(d.user_id)?.avatar_url ?? null, role: d.role })) as ProjectMember[];
+      return data.map(d => {
+        const full_name = profileMap.get(d.user_id)?.full_name ?? 'Unknown';
+        return {
+          user_id: d.user_id,
+          full_name,
+          avatar_url: resolveAvatarUrl(full_name),
+          role: d.role,
+        };
+      }) as ProjectMember[];
     },
     enabled: open,
   });
 
-  // Fetch current assignee's avatar_url — resolve via jira_identity_map (account_id is a Jira ID, not a Catalyst UUID)
-  const { data: assigneeProfile } = useQuery({
-    queryKey: ['profile-avatar-jira', currentAssigneeId],
-    queryFn: async () => {
-      if (!currentAssigneeId) return null;
-      // First try jira_identity_map (Jira account ID → avatar_url)
-      const { data: jiraRow } = await supabase.from('jira_identity_map').select('avatar_url, catalyst_user_id').eq('jira_account_id', currentAssigneeId).maybeSingle();
-      if (jiraRow?.avatar_url) return { avatar_url: jiraRow.avatar_url };
-      // Fallback: try catalyst_user_id → profiles
-      if (jiraRow?.catalyst_user_id) {
-        const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', jiraRow.catalyst_user_id).single();
-        if (profile?.avatar_url) return profile;
-      }
-      // Final fallback: try profiles directly (for catalyst-native users)
-      const { data: profile } = await supabase.from('profiles').select('avatar_url').eq('id', currentAssigneeId).maybeSingle();
-      return profile;
-    },
-    enabled: !!currentAssigneeId,
-    staleTime: 60000,
-  });
+  /**
+   * §19 chokepoint (2026-04-20): assignee avatar resolution.
+   * Previously queried `jira_identity_map.avatar_url` + `profiles.avatar_url`
+   * directly (BANNED PATTERN per CLAUDE.md §19). Now resolves synchronously
+   * from `currentAssigneeName`. No Supabase call; no external URL leak.
+   */
+  const assigneeProfile = useMemo(
+    () => ({ avatar_url: currentAssigneeName ? resolveAvatarUrl(currentAssigneeName) : null }),
+    [currentAssigneeName],
+  );
 
   const updateMutation = useMutation({
     mutationFn: async (userId: string | null) => {

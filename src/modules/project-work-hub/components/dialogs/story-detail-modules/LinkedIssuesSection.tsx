@@ -15,6 +15,8 @@ import type { StatusCategory } from './types';
 import { LOZENGE, LINK_TYPE_OPTIONS, WORK_ITEM_ICONS } from './constants';
 import { getAvatarColor } from './helpers';
 import { SectionBlock, SkeletonRows, EmptyState } from './shared-components';
+import Lozenge from '@atlaskit/lozenge';
+import { statusToLozenge } from '../../../utils/statusToLozenge';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter')
@@ -453,7 +455,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
             {(typeLinks as any[]).map((link: any) => {
               const target = link.target;
               const avatarColor = target.assignee_display_name ? getAvatarColor(target.assignee_display_name) : '#8993A4';
-              const statusLoz = LOZENGE[target.status_category as StatusCategory] ?? LOZENGE.todo;
+              // §20 / L41 — pill colour resolved from the Atlaskit helper.
               const issueIcon = WORK_ITEM_ICONS[target.issue_type?.toLowerCase()] ?? WORK_ITEM_ICONS.story;
               return (
                 <div key={link.id} style={{
@@ -481,14 +483,9 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                   >{target.issue_key}</span>
                   <span style={{ flex: 1, fontSize: 13, color: '#172B4D', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{target.summary}</span>
-                  <span style={{
-                    ...statusLoz as any, display: 'inline-flex', alignItems: 'center', gap: 3,
-                    height: 20, lineHeight: '20px', fontSize: 11, fontWeight: 700,
-                    textTransform: 'uppercase', letterSpacing: '0.03em', borderRadius: 3,
-                    padding: '0 6px', whiteSpace: 'nowrap', flexShrink: 0,
-                  }}>
-                    {target.status}
-                    <ChevronDown size={10} />
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, flexShrink: 0 }}>
+                    <Lozenge appearance={statusToLozenge(target.status)}>{target.status}</Lozenge>
+                    <ChevronDown size={10} color="#42526E" />
                   </span>
                   {target.assignee_display_name ? (
                     <div style={{

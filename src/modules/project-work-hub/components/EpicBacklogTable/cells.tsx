@@ -12,11 +12,13 @@ import { EPIC_STATUS_LOZENGE, formatDueDate, isDueDateOverdue, getEpicChipColor 
 import type { BacklogEpic } from '../../types/backlog.types';
 
 // ─── LOZENGE appearance mapping ─────────────────────────────────────────
-// Catalyst's 3-colour guardrail (grey/blue/green) → Atlaskit ThemeAppearance.
-function toLozengeAppearance(lozColor: 'grey' | 'blue' | 'green' | undefined): ThemeAppearance {
-  if (lozColor === 'blue') return 'inprogress';
-  if (lozColor === 'green') return 'success';
-  return 'default';
+// §20 / L41 — `EPIC_STATUS_LOZENGE.color` now stores Atlaskit appearance
+// tokens directly (no legacy grey/blue/green). This thin adapter just
+// guards against unknown values and coerces the string literal to the
+// ThemeAppearance type.
+function toLozengeAppearance(lozColor: string | undefined): ThemeAppearance {
+  const valid: ThemeAppearance[] = ['default', 'inprogress', 'success', 'removed', 'moved', 'new'];
+  return (valid.includes(lozColor as ThemeAppearance) ? lozColor : 'default') as ThemeAppearance;
 }
 
 // ─── TYPE cell ──────────────────────────────────────────────────────────
