@@ -3,7 +3,7 @@
  * `@atlaskit/editor-core` and `@atlaskit/renderer` can safely consume.
  *
  * Catalyst's existing ADF (produced by the TipTap → ADF converter at
- * `modules/project-work-hub/components/story-detail/adf-utils.ts`) places
+ * `components/shared/rich-text/adf-utils.ts`) places
  * the Supabase image URL on `mediaSingle > media.attrs.url` with
  * `attrs.type === 'file'`. Atlaskit's schema only treats this URL as
  * renderable when `media.attrs.type === 'external'` and the URL lives at

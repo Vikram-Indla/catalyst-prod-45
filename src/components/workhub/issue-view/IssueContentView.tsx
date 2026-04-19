@@ -33,7 +33,7 @@ import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions'
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
 import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
-import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
+import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';

@@ -68,7 +68,7 @@ import { EditableAssignee, EditablePriority, EditableLabels } from './story-deta
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
-import { StoryRichTextEditor } from '../story-detail/StoryRichTextEditor';
+import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
 import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
 import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';

@@ -19,7 +19,7 @@ import {
   useDeleteBusinessRequest, useDuplicateBusinessRequest,
 } from '@/hooks/useBusinessRequests';
 import { BusinessRequest } from '@/types/business-request';
-import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
+import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
 import { RichTextCommentEditor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor';
 import { StatusLozenge } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { UserSelect } from './UserSelect';
