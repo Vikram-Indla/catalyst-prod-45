@@ -60,6 +60,13 @@ export default function CatalystViewTask({
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Story"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
+      /* Canonical Add-parent (Catalyst rule): Task → Story / Epic / Feature parent (Jira parity with Defect). */
+      parentSource="story_epic_feature"
+      onParentChange={async (newKey) => {
+        await mutations.updateField.mutateAsync({
+          field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,
+        });
+      }}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },

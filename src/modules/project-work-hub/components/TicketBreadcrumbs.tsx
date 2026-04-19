@@ -11,21 +11,18 @@
  *   - parent missing + non-epic → show "+ Add parent" action
  *   - current item IS the epic  → crumb collapses, only issue key remains
  *
- * Built on:
- *   - @atlaskit/breadcrumbs           Breadcrumbs + BreadcrumbsItem
- *   - @atlaskit/primitives            Box for padding via tokens
- *   - @atlaskit/tokens                color/typography tokens + theme sync
- *   - react-router-dom Link via       RouterBreadcrumbLink adapter
- *   - useAtlaskitThemeSync            light/dark parity with Catalyst theme
+ * Built on the Catalyst ADS wrapper layer:
+ *   - @/components/ads        Breadcrumbs + BreadcrumbItem (data-driven)
+ *   - react-router-dom Link   via RouterBreadcrumbLink adapter
+ *
+ * Theme sync is handled globally by AdsThemeProvider (see src/App.tsx);
+ * no per-component hook is required.
  *
  * Canonical — do NOT fork this for per-surface variants.
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
-import { Box } from '@atlaskit/primitives';
-import { token } from '@atlaskit/tokens';
-import { useAtlaskitThemeSync } from '@/modules/project-work-hub/components/SubtasksPanel/atlaskitTheme';
+import { Breadcrumbs, type BreadcrumbItem } from '@/components/ads';
 import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 
 export interface TicketBreadcrumbsProps {
@@ -48,82 +45,17 @@ export interface TicketBreadcrumbsProps {
   middleSlot?: React.ReactNode;
 }
 
-/* ── Router adapter for BreadcrumbsItem.component ───────────────────────── */
-type AnyAnchorProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
-  href?: string;
-  children?: React.ReactNode;
-};
-const RouterBreadcrumbLink = React.forwardRef<HTMLAnchorElement, AnyAnchorProps>(
-  ({ href, children, className, onClick, ...rest }, ref) => {
-    if (!href) {
-      return (
-        <a ref={ref} className={className} onClick={onClick} {...rest}>
-          {children}
-        </a>
-      );
-    }
-    return (
-      <Link ref={ref as React.Ref<HTMLAnchorElement>} to={href} className={className} onClick={onClick}>
-        {children}
-      </Link>
-    );
-  },
-);
-RouterBreadcrumbLink.displayName = 'RouterBreadcrumbLink';
-
-/* ── Button-as-crumb adapter: for "+ Add parent" and parent-navigation when
-      onParentClick is an in-app handler rather than a direct URL. ────────── */
-interface CallbackProps {
-  onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  children?: React.ReactNode;
-  className?: string;
-}
-const CallbackBreadcrumb = React.forwardRef<HTMLButtonElement, CallbackProps>(
-  ({ onClick, children, className }, ref) => (
-    <button
-      ref={ref}
-      type="button"
-      onClick={onClick}
-      className={className}
-      style={{
-        background: 'transparent',
-        border: 'none',
-        padding: 0,
-        cursor: 'pointer',
-        font: 'inherit',
-        color: 'inherit',
-      }}
-    >
+/* ── Router adapter for Breadcrumbs.LinkComponent ───────────────────────── */
+const RouterBreadcrumbLink = React.forwardRef<
+  HTMLAnchorElement,
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & { href: string; children?: React.ReactNode }
+>(function RouterBreadcrumbLink({ href, children, className, onClick, ...rest }, ref) {
+  return (
+    <Link ref={ref as React.Ref<HTMLAnchorElement>} to={href} className={className} onClick={onClick} {...rest}>
       {children}
-    </button>
-  ),
-);
-CallbackBreadcrumb.displayName = 'CallbackBreadcrumb';
-
-/* ── Terminal crumb (current issue) — inline-flex container, single baseline ── */
-const TerminalCrumb = React.forwardRef<HTMLSpanElement, { children?: React.ReactNode; className?: string }>(
-  ({ children, className }, ref) => (
-    <span
-      ref={ref}
-      aria-current="page"
-      className={className}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        whiteSpace: 'nowrap',
-        fontFamily: "'Inter', sans-serif",
-        fontSize: 13,
-        fontWeight: 500,
-        lineHeight: 1,
-        color: token('color.text', '#172B4D'),
-      }}
-    >
-      {children}
-    </span>
-  ),
-);
-TerminalCrumb.displayName = 'TerminalCrumb';
+    </Link>
+  );
+});
 
 export function TicketBreadcrumbs({
   projectKey,
@@ -135,24 +67,66 @@ export function TicketBreadcrumbs({
   onAddParent,
   middleSlot,
 }: TicketBreadcrumbsProps) {
-  useAtlaskitThemeSync();
-
   const isEpic = (itemType || '').toLowerCase().includes('epic');
   const hasSlot = middleSlot !== undefined;
   const showParent = !hasSlot && Boolean(parentKey);
   const showAddParent = !hasSlot && !isEpic && !parentKey;
 
+  const items: BreadcrumbItem[] = [];
+
+  // Crumb 1 — parent OR "+ Add parent" (hidden when current is epic).
+  if (showParent) {
+    items.push(
+      onParentClick
+        ? {
+            key: 'parent',
+            text: parentKey!,
+            iconBefore: <IssueIcon type={parentType || 'Epic'} size={14} />,
+            onClick: onParentClick,
+            ariaLabel: `Parent ${parentKey}`,
+          }
+        : {
+            key: 'parent',
+            text: parentKey!,
+            iconBefore: <IssueIcon type={parentType || 'Epic'} size={14} />,
+            href: `/project-hub/${projectKey}/issue/${parentKey}`,
+            ariaLabel: `Parent ${parentKey}`,
+          },
+    );
+  } else if (showAddParent) {
+    items.push({
+      key: 'add-parent',
+      text: '+ Add parent',
+      onClick: onAddParent,
+      ariaLabel: 'Add parent',
+    });
+  } else if (hasSlot && !isEpic) {
+    items.push({
+      key: 'middle-slot',
+      text: '',
+      render: () => middleSlot,
+    });
+  }
+
+  // Crumb 2 — current issue (terminal).
+  items.push({
+    key: 'current',
+    text: (
+      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
+        <IssueIcon type={itemType} size={14} />
+        <span>{itemKey ?? '—'}</span>
+      </span>
+    ),
+    ariaLabel: itemKey ?? 'Current issue',
+    isCurrent: true,
+  });
+
   return (
-    <Box
-      xcss={{
-        paddingBlock: 'space.050',
-        font: 'font.body',
-        color: 'color.text.subtlest',
-      } as never}
-    >
+    <div style={{ paddingBlock: 4 }}>
       {/* Scoped polish for this breadcrumb instance only — does NOT affect
-          other Atlaskit Breadcrumbs in the app. Targets the wrapper class
-          `tk-breadcrumbs` exclusively. */}
+          other Breadcrumbs in the app. Targets `.tk-breadcrumbs` exclusively.
+          Styling uses Catalyst --cp-* CSS custom properties so dark mode
+          follows AdsThemeProvider automatically. */}
       <style>{`
         .tk-breadcrumbs nav > ol,
         .tk-breadcrumbs ol[role="list"],
@@ -168,7 +142,8 @@ export function TicketBreadcrumbs({
           line-height: 1;
         }
         .tk-breadcrumbs a,
-        .tk-breadcrumbs button {
+        .tk-breadcrumbs button,
+        .tk-breadcrumbs [aria-current="page"] {
           display: inline-flex;
           align-items: center;
           gap: 4px;
@@ -179,14 +154,21 @@ export function TicketBreadcrumbs({
           padding: 2px 4px;
           border-radius: 3px;
         }
+        .tk-breadcrumbs button {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          color: inherit;
+        }
         .tk-breadcrumbs a > span,
-        .tk-breadcrumbs button > span {
+        .tk-breadcrumbs button > span,
+        .tk-breadcrumbs [aria-current="page"] > span {
           line-height: 1;
         }
         /* Separator — lighter, smaller, recede into chrome */
         .tk-breadcrumbs [aria-hidden="true"],
         .tk-breadcrumbs span[role="presentation"] {
-          color: ${token('color.text.subtlest', '#8993A4')};
+          color: var(--cp-text-muted, #94A3B8);
           font-size: 12px;
           font-weight: 400;
           margin: 0 6px;
@@ -201,55 +183,12 @@ export function TicketBreadcrumbs({
         }
       `}</style>
       <div className="tk-breadcrumbs">
-        <Breadcrumbs label="Breadcrumbs">
-          {/* Crumb 1 — Parent OR "+ Add parent" (hidden when current is epic) */}
-          {showParent && (
-            onParentClick ? (
-              <BreadcrumbsItem
-                text={parentKey!}
-                iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
-                onClick={onParentClick}
-                component={CallbackBreadcrumb}
-              />
-            ) : (
-              <BreadcrumbsItem
-                href={`/project-hub/${projectKey}/issue/${parentKey}`}
-                text={parentKey!}
-                iconBefore={<IssueIcon type={parentType || 'Epic'} size={14} />}
-                component={RouterBreadcrumbLink}
-              />
-            )
-          )}
-          {showAddParent && (
-            <BreadcrumbsItem
-              text="+ Add parent"
-              onClick={onAddParent}
-              component={CallbackBreadcrumb}
-            />
-          )}
-          {hasSlot && !isEpic && (
-            <BreadcrumbsItem
-              text=""
-              component={React.forwardRef<HTMLSpanElement>(() => (
-                <span style={{ display: 'inline-flex', alignItems: 'center' }}>{middleSlot}</span>
-              ))}
-            />
-          )}
-
-          {/* Crumb 2 — Current issue (terminal). */}
-          <BreadcrumbsItem
-            text={
-              (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap' }}>
-                  <IssueIcon type={itemType} size={14} />
-                  <span>{itemKey ?? '—'}</span>
-                </span>
-              ) as unknown as string
-            }
-            component={TerminalCrumb}
-          />
-        </Breadcrumbs>
+        <Breadcrumbs
+          items={items}
+          LinkComponent={RouterBreadcrumbLink}
+          aria-label="Breadcrumbs"
+        />
       </div>
-    </Box>
+    </div>
   );
 }

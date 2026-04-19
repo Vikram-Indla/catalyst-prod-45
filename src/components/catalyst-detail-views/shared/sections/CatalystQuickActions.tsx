@@ -70,10 +70,20 @@ export function CatalystQuickActions({
   const primary = filtered.filter(i => i.section === 'primary');
   const secondary = filtered.filter(i => i.section === 'secondary');
 
+  /* Jira-parity (2026-04-19 revert): in the "+ and Sparkle" layout above
+     the description, Jira renders a NAKED + icon chip (no "Add" text).
+     The label would be visual noise against the unified icon pair.
+     The AI sparkle chip mirrors the same dimensions for visual balance.
+     A11y is preserved via aria-label + aria-haspopup + aria-expanded. */
   const btnStyle: React.CSSProperties = {
     width: 28, height: 28, border: '1px solid #DFE1E6', background: '#FAFBFC',
     borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: '#5E6C84', transition: 'background 0.15s, border-color 0.15s',
+    color: '#44546F', transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+  };
+  const aiBtnStyle: React.CSSProperties = {
+    width: 28, height: 28, border: '1px solid #DEEBFF', background: '#EFF6FF',
+    borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: '#2563EB', transition: 'background 0.15s',
   };
 
   const itemStyle: React.CSSProperties = {
@@ -85,16 +95,19 @@ export function CatalystQuickActions({
 
   return (
     <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
-      {/* + Add button */}
+      {/* + icon chip — Jira-parity naked icon (no "Add" label). */}
       <div ref={menuRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setShowMenu(!showMenu)}
           style={btnStyle}
-          onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
-          onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.color = '#172B4D'; }}
+          onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.borderColor = '#DFE1E6'; e.currentTarget.style.color = '#44546F'; }}
+          aria-haspopup="menu"
+          aria-expanded={showMenu}
+          aria-label="Add"
           title="Add"
         >
-          <Plus size={14} />
+          <Plus size={14} strokeWidth={2} />
         </button>
 
         {showMenu && (
@@ -159,13 +172,12 @@ export function CatalystQuickActions({
       <div ref={aiMenuRef} style={{ position: 'relative' }}>
         <button
           onClick={() => setShowAiMenu(o => !o)}
-          style={{
-            width: 28, height: 28, border: '1px solid #DEEBFF', background: '#EFF6FF',
-            borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: '#2563EB', transition: 'background 0.15s',
-          }}
+          style={aiBtnStyle}
           onMouseEnter={e => { e.currentTarget.style.background = '#DEEBFF'; }}
           onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
+          aria-haspopup="menu"
+          aria-expanded={showAiMenu}
+          aria-label="Catalyst Intelligence"
           title="Catalyst Intelligence"
         >
           <Sparkles size={14} />

@@ -61,6 +61,13 @@ export default function CatalystViewFeature({
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
       parentKey={issue?.parent_key} parentType="Epic"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
+      /* Canonical Add-parent (Jira parity): Feature → Epic parent. */
+      parentSource="epic"
+      onParentChange={async (newKey) => {
+        await mutations.updateField.mutateAsync({
+          field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,
+        });
+      }}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },

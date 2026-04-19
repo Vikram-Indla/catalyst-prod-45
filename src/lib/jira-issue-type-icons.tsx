@@ -308,14 +308,53 @@ interface JiraIssueTypeIconProps {
 }
 
 /**
+ * Inline-SVG overrides for glyphs we want to draw in-code rather than
+ * hit the /admin/icons/jira/*.svg static path. Useful where we want
+ * modern Atlassian glyphs without shipping new static assets.
+ *
+ * 2026-04-19: Epic upgraded from the legacy purple-stroke lightning bolt
+ * to the modern Atlassian Epic glyph — a filled purple rounded square
+ * with a white bolt cutout (Jira Cloud 2024+). This is what new Jira
+ * screenshots show; the old stroked icon reads dated beside modern
+ * Atlassian UI.
+ */
+const INLINE_SVGS: Record<string, (size: number) => React.ReactNode> = {
+  epic: (size) => (
+    <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Epic">
+      <rect width="16" height="16" rx="2" fill="#904EE2" />
+      <path
+        d="M8.6 2.9a.4.4 0 0 0-.75-.17L4.4 8.35a.4.4 0 0 0 .34.61h2.1l-.47 4.13a.4.4 0 0 0 .75.26l3.95-5.72a.4.4 0 0 0-.33-.63h-2.3L8.6 2.9z"
+        fill="#FFFFFF"
+      />
+    </svg>
+  ),
+};
+
+/**
  * Canonical Jira issue type icon component.
  * ALWAYS use this — never create local icon mappings.
- * 
- * Renders an <img> pointing to the SVG in /admin/icons/jira/.
- * To change an icon globally, replace the SVG file — no code changes needed.
+ *
+ * Renders an inline SVG when INLINE_SVGS has an entry for the resolved
+ * iconFile (modern Atlassian glyphs). Otherwise falls back to an <img>
+ * pointing at /admin/icons/jira/*.svg for legacy icons.
  */
 export function JiraIssueTypeIcon({ type, size = 16, className, style }: JiraIssueTypeIconProps) {
   const cfg = resolveJiraTypeConfig(type);
+
+  const inline = INLINE_SVGS[cfg.iconFile];
+  if (inline) {
+    return (
+      <span
+        className={className}
+        title={cfg.label}
+        aria-label={cfg.label}
+        style={{ display: 'inline-flex', flexShrink: 0, ...style }}
+      >
+        {inline(size)}
+      </span>
+    );
+  }
+
   // Use 16px SVG for sizes ≤ 16, 24px SVG for anything larger
   const svgSize: 16 | 24 = size <= 16 ? 16 : 24;
   const src = `${ICON_BASE_PATH}/${cfg.iconFile}-${svgSize}.svg`;

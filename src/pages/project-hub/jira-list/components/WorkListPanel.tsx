@@ -26,23 +26,13 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
-      {/* Top bar: Ask AI | Search work | Avatars | Filter */}
+      {/* Top bar: Search work | Filter
+          (Ask AI removed 2026-04-18 per directive — not used on All Work.) */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: 'transparent',
         flexWrap: 'nowrap',
       }}>
-        <button style={{
-          height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
-          background: 'transparent', borderRadius: 6, cursor: 'pointer',
-          fontSize: 13, fontWeight: 600, fontFamily: 'Inter, sans-serif',
-          color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 4,
-          flexShrink: 0, whiteSpace: 'nowrap',
-        }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="#7C3AED"><circle cx="4" cy="4" r="1.5"/><circle cx="8" cy="4" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/></svg>
-          Ask AI
-        </button>
-
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6, flex: 1, minWidth: 0,
           border: '1px solid #DFE1E6', borderRadius: 6, padding: '0 8px', height: 32,

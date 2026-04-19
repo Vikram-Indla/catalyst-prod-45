@@ -1,27 +1,30 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Catalyst Logo Mark - Convergence Hub Icon - LIGHT MODE -->
-  
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Catalyst Logo Mark - Option A: Protective Arc - LIGHT MODE -->
+  <!-- Standalone mark for favicon, app icon, etc. -->
+
   <defs>
     <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#3B82F6"/>
       <stop offset="100%" stop-color="#1D4ED8"/>
     </linearGradient>
   </defs>
-  
-  <!-- Connection lines -->
-  <line x1="32" y1="32" x2="12" y2="12" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
-  <line x1="32" y1="32" x2="52" y2="12" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
-  <line x1="32" y1="32" x2="12" y2="52" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
-  <line x1="32" y1="32" x2="52" y2="52" stroke="#93c5fd" stroke-width="3" stroke-linecap="round"/>
-  
-  <!-- Outer nodes -->
-  <circle cx="12" cy="12" r="8" fill="url(#catalystBlue)"/>
-  <circle cx="52" cy="12" r="8" fill="url(#catalystBlue)"/>
-  <circle cx="12" cy="52" r="8" fill="url(#catalystBlue)"/>
-  <circle cx="52" cy="52" r="8" fill="url(#catalystBlue)"/>
-  
-  <!-- Center hub -->
-  <circle cx="32" cy="32" r="12" fill="url(#catalystBlue)"/>
-  <circle cx="32" cy="32" r="6" fill="white"/>
-  
+
+  <!-- Umbrella arc (protective canopy) -->
+  <path
+    d="M10 24C10 12 22 4 40 4C58 4 70 12 70 24"
+    stroke="url(#catalystBlue)"
+    stroke-width="6"
+    stroke-linecap="round"
+    fill="none"
+  />
+
+  <!-- C letterform -->
+  <path
+    d="M64 38C64 28 54 22 40 22C24 22 14 32 14 48C14 64 24 74 40 74C54 74 64 66 64 56"
+    stroke="url(#catalystBlue)"
+    stroke-width="8"
+    stroke-linecap="round"
+    fill="none"
+  />
+
 </svg>

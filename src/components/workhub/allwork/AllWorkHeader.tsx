@@ -69,7 +69,7 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
               onClick={() => onTabChange(tab.key)}
               className="px-4 py-2 text-[13px] transition-colors duration-[80ms] relative focus-visible:outline-2 focus-visible:outline-[#2563EB]"
               style={{
-                color: isActive ? '#1558bc' : '#6b6e76',
+                color: isActive ? '#2563EB' : '#6b6e76',
                 fontWeight: isActive ? 600 : 400,
                 fontFamily: 'Inter, sans-serif',
               }}
@@ -78,7 +78,7 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
             >
               {tab.label}
               {isActive && (
-                <div className="absolute bottom-0 left-0 right-0" style={{ height: 2, backgroundColor: '#1558bc' }} />
+                <div className="absolute bottom-0 left-0 right-0" style={{ height: 2, backgroundColor: '#2563EB' }} />
               )}
             </button>
           );

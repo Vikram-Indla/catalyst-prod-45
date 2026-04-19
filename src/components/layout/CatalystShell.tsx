@@ -14,7 +14,7 @@ import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
 import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
 import { useCatalystTitle } from '@/hooks/useCatalystTitle';
-import { deriveHubFromPath, derivePageFromPath } from '@/lib/tabIdentity';
+import { derivePageFromPath } from '@/lib/tabIdentity';
 
 // ─── Lazy-loaded sidebars (only the active one loads into memory) ────
 const UnifiedSidebar = lazy(() => import('./UnifiedSidebar').then(m => ({ default: m.UnifiedSidebar })));
@@ -70,9 +70,7 @@ function CatalystShellContent() {
   // Track room visits for Recent Rooms functionality
   useRecentPlaceTracker();
   const location = useLocation();
-  const hub = deriveHubFromPath(location.pathname);
   const page = derivePageFromPath(location.pathname);
-  useCatalystTitle(page, hub);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
   const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded } = useCatalystContext();
@@ -136,6 +134,51 @@ function CatalystShellContent() {
 
   // Check if on full-screen issue view (/issue/:issueKey)
   const isIssueFullPageRoute = location.pathname.startsWith('/issue/');
+
+  // Parse issue key from /issue/:issueKey for tab-title binding
+  const fullPageIssueKey = isIssueFullPageRoute
+    ? (location.pathname.split('/')[2] || null)
+    : null;
+
+  // Detail-drawer item (modal opened via GlobalSearch / Notifications / ForYou)
+  const pendingDetailItem = useGlobalSearchStore(s => s.pendingItem);
+
+  // Fetch issue identity for tab title. Priority: detail drawer → full-page route.
+  const issueLookupId = pendingDetailItem?.id ?? null;
+  const issueLookupKey = fullPageIssueKey;
+  const { data: tabIssueData } = useQuery({
+    queryKey: ['tab-title-issue', issueLookupId, issueLookupKey],
+    queryFn: async () => {
+      if (issueLookupId) {
+        const { data } = await supabase
+          .from('catalyst_issues')
+          .select('issue_key, title')
+          .eq('id', issueLookupId)
+          .maybeSingle();
+        return data;
+      }
+      if (issueLookupKey) {
+        const { data } = await supabase
+          .from('catalyst_issues')
+          .select('issue_key, title')
+          .eq('issue_key', issueLookupKey)
+          .maybeSingle();
+        return data;
+      }
+      return null;
+    },
+    enabled: !!(issueLookupId || issueLookupKey),
+    staleTime: 60_000,
+  });
+
+  // Compose tab title inputs (issue ▸ project ▸ page fallback ladder)
+  const titleIssue = (issueLookupId || issueLookupKey)
+    ? { key: tabIssueData?.issue_key ?? issueLookupKey ?? null, title: tabIssueData?.title ?? null }
+    : null;
+  const titleProject = projectData
+    ? { key: projectData.key, name: projectData.name }
+    : null;
+  useCatalystTitle({ issue: titleIssue, project: titleProject, pageName: page });
 
 
   // Check if on Wiki route
@@ -398,7 +441,7 @@ function CatalystShellContent() {
     <div className="h-screen flex flex-col text-[var(--cp-t1)]" style={{ background: 'var(--cp-bg-canvas)' }} onClickCapture={handleInternalLinkClickCapture}>
       {/* Global Header - Catalyst Native */}
       <div data-catalyst-header>
-        <Suspense fallback={<div className="h-[52px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
+        <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
       </div>

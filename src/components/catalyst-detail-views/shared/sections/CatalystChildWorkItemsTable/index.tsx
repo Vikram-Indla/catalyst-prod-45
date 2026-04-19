@@ -19,6 +19,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronDown, ChevronRight, Plus, MoreHorizontal, Settings2, Check } from 'lucide-react';
 import Heading from '@atlaskit/heading';
+import { IconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
 import { SegmentedProgressBar } from './SegmentedProgressBar';
 import { ChildWorkItemRow, type ChildWorkItem, type ChildColumnConfig } from './ChildWorkItemRow';
 import { InlineCreateWithTypeSelector } from './InlineCreateWithTypeSelector';
@@ -113,21 +115,33 @@ export function CatalystChildWorkItemsTable({
 
         {expanded && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            {/* More menu stub */}
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#5E6C84', display: 'flex', borderRadius: 3 }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-              onMouseLeave={e => (e.currentTarget.style.background = '')}
-            ><MoreHorizontal size={16} /></button>
+            {/* Phase F.1 (2026-04-18): Atlaskit IconButton + Tooltip for all
+                three header chrome buttons. Dropdown render below the column
+                picker is unchanged — trigger swap only. The MoreHorizontal
+                button is still a stub (no handler); kept as IconButton so
+                when we wire actions in F.2 it's already Atlaskit-native. */}
+            <Tooltip content="More actions">
+              <IconButton
+                appearance="subtle"
+                spacing="compact"
+                icon={() => <MoreHorizontal size={16} />}
+                label="More actions"
+                onClick={() => { /* TODO(F.2): wire more-menu items */ }}
+              />
+            </Tooltip>
 
             {/* Column picker */}
             <div ref={columnPickerRef} style={{ position: 'relative' }}>
-              <button
-                onClick={() => setShowColumnPicker(!showColumnPicker)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#5E6C84', display: 'flex', borderRadius: 3 }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                onMouseLeave={e => (e.currentTarget.style.background = '')}
-                title="Configure columns"
-              ><Settings2 size={16} /></button>
+              <Tooltip content="Configure columns">
+                <IconButton
+                  appearance="subtle"
+                  spacing="compact"
+                  isSelected={showColumnPicker}
+                  icon={() => <Settings2 size={16} />}
+                  label="Configure columns"
+                  onClick={() => setShowColumnPicker(!showColumnPicker)}
+                />
+              </Tooltip>
 
               {showColumnPicker && (
                 <div style={{
@@ -163,14 +177,16 @@ export function CatalystChildWorkItemsTable({
               )}
             </div>
 
-            {/* Add child button */}
-            <button
-              onClick={() => { setShowCreateRow(true); setExpanded(true); }}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: '#5E6C84', display: 'flex', borderRadius: 3 }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-              onMouseLeave={e => (e.currentTarget.style.background = '')}
-              title="Add child issue"
-            ><Plus size={16} /></button>
+            {/* Add child button — Phase F.1 (2026-04-18): Atlaskit IconButton. */}
+            <Tooltip content="Add child issue">
+              <IconButton
+                appearance="subtle"
+                spacing="compact"
+                icon={() => <Plus size={16} />}
+                label="Add child issue"
+                onClick={() => { setShowCreateRow(true); setExpanded(true); }}
+              />
+            </Tooltip>
           </div>
         )}
       </div>

@@ -248,6 +248,7 @@ export default defineConfig(({ mode, command }) => {
       // When adopting a new Atlaskit component in a surface, ADD IT HERE so
       // first render is warm instead of stalling on cold optimize.
       '@atlaskit/avatar',
+      '@atlaskit/avatar-group',
       '@atlaskit/breadcrumbs',
       '@atlaskit/button',
       '@atlaskit/checkbox',

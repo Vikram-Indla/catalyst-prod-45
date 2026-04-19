@@ -114,6 +114,19 @@ export function AllWorkToolbar({
   const { data: issueTypes, isLoading: typesLoading } = useIssueTypes();
   const { data: statuses, isLoading: statusesLoading } = useIssueStatuses();
 
+  // Keep local input in sync when parent clears filters externally
+  useEffect(() => {
+    setSearchValue(filters.search ?? '');
+  }, [filters.search]);
+
+  // TC-G2 — debounce keystrokes (250 ms) so we don't fire a Supabase query per letter.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      onSearch(searchValue);
+    }, 250);
+    return () => clearTimeout(t);
+  }, [searchValue, onSearch]);
+
   const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
   const toggleFilter = (key: 'types' | 'statuses' | 'priorities', value: string) => {
@@ -161,22 +174,33 @@ export function AllWorkToolbar({
         </button>
       )}
 
-      {/* Search */}
+      {/* Search (TC-G2 — debounced + clear button) */}
       <div
         className="flex items-center gap-2 h-8 px-2.5 rounded border bg-[var(--bg-app)] focus-within:border-[#2563EB] transition-colors duration-[80ms]"
-        style={{ minWidth: 140, borderColor: 'var(--bd-default, #2E2E2E)' }}
+        style={{ minWidth: 180, borderColor: 'var(--bd-default, #2E2E2E)' }}
       >
         <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--fg-3)' }} />
         <input
           id="aw-search-input"
           type="text"
           value={searchValue}
-          onChange={(e) => { setSearchValue(e.target.value); onSearch(e.target.value); }}
-          placeholder="Search"
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder="Search work items"
           className="text-[13px] border-none outline-none shadow-none bg-transparent w-full"
           style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
           aria-label="Search work items"
         />
+        {searchValue && (
+          <button
+            onClick={() => setSearchValue('')}
+            aria-label="Clear search"
+            title="Clear search"
+            className="shrink-0 rounded p-0.5 transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            <X className="w-3 h-3" style={{ color: 'var(--fg-3)' }} />
+          </button>
+        )}
       </div>
 
       {/* Avatar stack */}

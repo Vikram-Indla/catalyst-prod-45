@@ -1,19 +1,27 @@
 /**
  * CANONICAL — Parent linking rules per work item type.
  *
- * Defines which issue types can be parents, and whether the relationship
- * is single-parent (like Jira's parent_key) or multi-link (stored in
- * ph_issue_links).
+ * Defines which issue types can be parents in the AddParentPicker. All
+ * relationships here are SINGLE-PARENT via ph_issues.parent_key (Jira
+ * parity). Additional many-to-many relationships (e.g. Defect linked to
+ * multiple Incidents) live in ph_issue_links and are outside this file.
  *
- * Rules (from Vikram):
- *   Story     → parent: Epic or Feature (single)
- *   Epic      → parent: none currently (TBD)
- *   Feature   → parent: Epic (single)
- *   Defect    → linked to: Incident, Story, Feature (multi)
- *   Incident  → linked to: Story, Feature (multi)
- *   Task      → parent: Story (single)
- *   Subtask   → parent: Story (single, like Jira)
- *   Business Request → parent: TBD (none for now)
+ * Rules (from Vikram, Apr 2026 — matches AddParentPicker parentSource):
+ *   Story             → parent: Epic only             (parentSource='epic')
+ *   Feature           → parent: Epic only             (parentSource='epic')
+ *   Epic              → parent: Business Request      (parentSource='business_request')
+ *   Defect (Bug)      → parent: Story / Epic / Feature
+ *                                                       (parentSource='story_epic_feature')
+ *   Task              → parent: Story / Epic / Feature (same as Defect)
+ *                                                       (parentSource='story_epic_feature')
+ *   Production Incident → parent: Story / Epic / Feature / Business Request
+ *                                                       (parentSource='story_epic_feature_br')
+ *   Subtask           → parent: Story only            (parentSource='story')
+ *   Business Request  → parent: none (root of hierarchy)
+ *
+ * Only Production Incident and Epic can parent directly to a Business
+ * Request — the BR itself lives in the MDT (ProductHub backlog) project
+ * and is cross-project for all other callers.
  */
 import type { CatalystItemType } from './types';
 
@@ -30,9 +38,9 @@ export interface ParentLinkRule {
 
 export const PARENT_LINK_RULES: Record<CatalystItemType, ParentLinkRule> = {
   story: {
-    allowedParentTypes: ['Epic', 'epic', 'Feature', 'feature', 'New Feature', 'new feature'],
+    allowedParentTypes: ['Epic', 'epic'],
     mode: 'single',
-    pickerLabel: 'Parent (Epic / Feature)',
+    pickerLabel: 'Parent (Epic)',
   },
   epic: {
     allowedParentTypes: ['Business Request', 'business request', 'Business_Request', 'business_request'],
@@ -46,19 +54,32 @@ export const PARENT_LINK_RULES: Record<CatalystItemType, ParentLinkRule> = {
     pickerLabel: 'Parent (Epic)',
   },
   defect: {
-    allowedParentTypes: ['Incident', 'incident', 'Production Incident', 'production incident', 'Story', 'story', 'Feature', 'feature', 'New Feature', 'new feature'],
-    mode: 'multi',
-    pickerLabel: 'Linked to (Incident / Story / Feature)',
+    allowedParentTypes: [
+      'Story', 'story', 'Improvement', 'improvement',
+      'Epic', 'epic',
+      'Feature', 'feature', 'New Feature', 'new feature',
+    ],
+    mode: 'single',
+    pickerLabel: 'Parent (Story / Epic / Feature)',
   },
   incident: {
-    allowedParentTypes: ['Story', 'story', 'Feature', 'feature', 'New Feature', 'new feature'],
-    mode: 'multi',
-    pickerLabel: 'Linked to (Story / Feature)',
+    allowedParentTypes: [
+      'Story', 'story', 'Improvement', 'improvement',
+      'Epic', 'epic',
+      'Feature', 'feature', 'New Feature', 'new feature',
+      'Business Request', 'business request',
+    ],
+    mode: 'single',
+    pickerLabel: 'Parent (Story / Epic / Feature / Business Request)',
   },
   task: {
-    allowedParentTypes: ['Story', 'story'],
+    allowedParentTypes: [
+      'Story', 'story', 'Improvement', 'improvement',
+      'Epic', 'epic',
+      'Feature', 'feature', 'New Feature', 'new feature',
+    ],
     mode: 'single',
-    pickerLabel: 'Parent (Story)',
+    pickerLabel: 'Parent (Story / Epic / Feature)',
   },
   subtask: {
     allowedParentTypes: ['Story', 'story'],

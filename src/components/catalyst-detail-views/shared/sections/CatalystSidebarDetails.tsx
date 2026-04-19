@@ -17,6 +17,50 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronDown } from 'lucide-react';
 import Heading from '@atlaskit/heading';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
+import Lozenge from '@atlaskit/lozenge';
+import { Inline } from '@atlaskit/primitives';
+
+/**
+ * FieldRow — sidebar field row atom (Phase E.3, 2026-04-18).
+ *
+ * Collapses the repeated {flex + fixed-width label + flex-1 value} pattern
+ * into a single call-site per field. Label typography (14/500/#505258 with
+ * lineHeight 18.67px) is Jira-measured and kept inline so future typography
+ * updates touch one spot. Horizontal gap uses @atlaskit/primitives Inline
+ * with space.250 (20px) — the one token that maps exactly to Jira's measured
+ * value. Vertical padding stays inline at 11px top/bottom; this doesn't map
+ * to any space token cleanly, and we're not drifting for the sake of
+ * tokenization.
+ */
+function FieldRow({
+  label,
+  alignBlock = 'start',
+  labelTopPad = false,
+  children,
+}: {
+  label: string;
+  alignBlock?: 'start' | 'center';
+  /** Add 2px top padding to the label — used for multi-line values like
+   *  Labels / Fix versions where the label should visually align with the
+   *  first line of chips. */
+  labelTopPad?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ padding: '11px 0' }}>
+      <Inline space="space.250" alignBlock={alignBlock}>
+        <span style={{
+          fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258',
+          minWidth: 96, flexShrink: 0,
+          paddingTop: labelTopPad ? 2 : undefined,
+        }}>{label}</span>
+        <div style={{ flex: 1, minWidth: 0 }}>{children}</div>
+      </Inline>
+    </div>
+  );
+}
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
@@ -62,6 +106,16 @@ export function CatalystSidebarDetails({
   const statusValue = localStatus || issue?.status || 'Backlog';
   const statusCategory = issue?.status_category || getStatusCategory(statusValue);
   const statusStyle = getStatusStyle(statusValue, statusCategory);
+  // Phase E.2 (2026-04-18): map Catalyst status category → Atlaskit Lozenge
+  // appearance. Colours are locked to the 3-colour guardrail (CLAUDE.md §5):
+  // grey / blue / green. Atlaskit's default / inprogress / success tokens
+  // render those exact values.
+  const lozengeAppearance: 'default' | 'inprogress' | 'success' =
+    statusCategory === 'done'
+      ? 'success'
+      : statusCategory === 'in_progress'
+        ? 'inprogress'
+        : 'default';
 
   useEffect(() => { setLocalStatus(''); }, [itemId]);
 
@@ -105,23 +159,33 @@ export function CatalystSidebarDetails({
 
   return (
     <>
-      {/* ── Status dropdown ──────────────────── */}
+      {/* ── Status dropdown ──────────────────────────────────────────────
+          Phase E.2 (2026-04-18): visual pill migrated to @atlaskit/lozenge.
+          Colours locked to CLAUDE.md §5 guardrail (grey / blue / green).
+          The button shell is kept minimal — padding 4px around the Lozenge
+          gives a comfortable click zone with a subtle token hover. Atlaskit
+          Lozenge renders sentence case natively, matching what Jira renders
+          on digital-transformation.atlassian.net. */}
       <div style={{ marginBottom: 14, position: 'relative' }} ref={statusDropdownRef}>
         <button
           onClick={() => setShowStatusDropdown(!showStatusDropdown)}
           style={{
-            backgroundColor: statusStyle.bg, color: statusStyle.text,
-            padding: '0 10px', borderRadius: 3, fontSize: 14, fontWeight: 500,
-            border: 'none', cursor: 'pointer', display: 'inline-flex',
-            alignItems: 'center', gap: 6, fontFamily: 'inherit', lineHeight: 1,
-            height: 32, transition: 'opacity 0.15s',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 4,
+            borderRadius: 3,
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            transition: 'background 0.15s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
+          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
-          {statusValue.toUpperCase()}
-          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-            <path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <Lozenge appearance={lozengeAppearance}>{statusValue}</Lozenge>
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
         {showStatusDropdown && (
@@ -141,11 +205,9 @@ export function CatalystSidebarDetails({
                 {group.statuses.map(st => {
                   const isActive = statusValue === st;
                   const cat = group.category as 'todo' | 'in_progress' | 'done';
-                  const lozengeStyle = cat === 'done'
-                    ? { background: '#E3FCEF', color: '#006644' }
-                    : cat === 'in_progress'
-                      ? { background: '#DEEBFF', color: '#0747A6' }
-                      : { background: '#DFE1E6', color: '#253858' };
+                  // Phase E.2 (2026-04-18): Atlaskit Lozenge per CLAUDE.md §5.
+                  const optionAppearance: 'default' | 'inprogress' | 'success' =
+                    cat === 'done' ? 'success' : cat === 'in_progress' ? 'inprogress' : 'default';
                   return (
                     <div key={st} onClick={() => { setLocalStatus(st); setShowStatusDropdown(false); onStatusChange(st); }}
                       style={{
@@ -156,11 +218,7 @@ export function CatalystSidebarDetails({
                       onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F4F5F7'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <span style={{
-                        ...lozengeStyle, display: 'inline-flex', alignItems: 'center',
-                        height: 20, padding: '0 8px', borderRadius: 3, fontSize: 11,
-                        fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                      }}>{st}</span>
+                      <Lozenge appearance={optionAppearance}>{st}</Lozenge>
                       {isActive && (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12" />
@@ -195,9 +253,8 @@ export function CatalystSidebarDetails({
         <div style={{ padding: '8px 12px 8px 19px' }}>
 
           {/* ── Assignee ──── */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Assignee</span>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <FieldRow label="Assignee">
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               {issue && (
                 <EditableAssignee
                   issueId={issue.id}
@@ -223,28 +280,24 @@ export function CatalystSidebarDetails({
                 </button>
               )}
             </div>
-          </div>
+          </FieldRow>
 
           {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
           {children}
 
           {/* ── Priority ──── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Priority</span>
-            <div style={{ flex: 1 }}>
-              {issue && (
-                <EditablePriority
-                  issueId={issue.id}
-                  currentPriority={issue.priority}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </div>
-          </div>
+          <FieldRow label="Priority" alignBlock="center">
+            {issue && (
+              <EditablePriority
+                issueId={issue.id}
+                currentPriority={issue.priority}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
 
           {/* ── Reporter ──── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 20, padding: '12px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Reporter</span>
+          <FieldRow label="Reporter" alignBlock="center">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               {issue?.reporter_display_name ? (
                 <>
@@ -262,36 +315,30 @@ export function CatalystSidebarDetails({
                 </>
               ) : <span style={{ color: '#6B6E76', fontSize: 14, fontWeight: 400 }}>None</span>}
             </div>
-          </div>
+          </FieldRow>
 
           {/* ── Labels ──── */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0, paddingTop: 2 }}>Labels</span>
-            <div style={{ flex: 1 }}>
-              {issue && (
-                <EditableLabels
-                  issueId={issue.id}
-                  currentLabels={labelsArray}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </div>
-          </div>
+          <FieldRow label="Labels" labelTopPad>
+            {issue && (
+              <EditableLabels
+                issueId={issue.id}
+                currentLabels={labelsArray}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
 
           {/* ── Fix Versions ──── */}
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>
-            <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0, paddingTop: 2 }}>Fix versions</span>
-            <div style={{ flex: 1 }}>
-              {issue && (
-                <EditableFixVersions
-                  issueId={issue.id}
-                  currentFixVersions={issue.fix_versions}
-                  projectKey={issue.project_key}
-                  onUpdate={invalidateIssue}
-                />
-              )}
-            </div>
-          </div>
+          <FieldRow label="Fix versions" labelTopPad>
+            {issue && (
+              <EditableFixVersions
+                issueId={issue.id}
+                currentFixVersions={issue.fix_versions}
+                projectKey={issue.project_key}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
 
           {/* Story Points: BANNED platform-wide. Do NOT re-add. */}
         </div>
@@ -307,21 +354,42 @@ export function CatalystSidebarDetails({
         </div>
       </div>
 
-      {/* ── Delete confirmation (canonical) ──── */}
-      {showConfirmDelete && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
-          <div style={{ background: '#FFF', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw', animation: 'cv-confirm-in 200ms ease-out' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#292A2E', marginBottom: 8 }}>Delete {issue?.issue_key}?</h3>
-            <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>
+      {/* ── Delete confirmation (canonical) ─────────────────────────────
+          Phase E.1 (2026-04-18): migrated from hand-rolled position:fixed
+          overlay to @atlaskit/modal-dialog. Focus trap, Escape to cancel,
+          click-outside to dismiss, body scroll lock all inherited from
+          Atlaskit. Matches the BacklogPage bulk-delete pattern. */}
+      <ModalTransition>
+        {showConfirmDelete && (
+          <Modal
+            onClose={() => { setShowConfirmDelete(false); onDeleteDismiss?.(); }}
+            width="small"
+          >
+            <ModalHeader>
+              <ModalTitle appearance="danger">
+                Delete {issue?.issue_key}?
+              </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
               This {typeLabel} will be soft-deleted. It can be restored within 30 days.
-            </p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => { setShowConfirmDelete(false); onDeleteDismiss?.(); }} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
-              <button onClick={() => { setShowConfirmDelete(false); onDelete(); }} style={{ padding: '7px 16px', borderRadius: 4, background: '#DE350B', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                appearance="subtle"
+                onClick={() => { setShowConfirmDelete(false); onDeleteDismiss?.(); }}
+              >
+                Cancel
+              </Button>
+              <Button
+                appearance="danger"
+                onClick={() => { setShowConfirmDelete(false); onDelete(); }}
+              >
+                Delete
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
     </>
   );
 }

@@ -23,3 +23,14 @@ dist-ssr
 *.sln
 *.sw?
 supabase/.temp/
+
+# Storybook build output (generated from source by `npm run build-storybook`)
+storybook-static/
+
+# Playwright — reports, traces, videos, generated test artifacts.
+# Baseline screenshots under tests/**/__screenshots__/ ARE committed; the
+# ignores below only cover run artifacts that should never be checked in.
+playwright-report/
+test-results/
+/blob-report/
+playwright/.cache/

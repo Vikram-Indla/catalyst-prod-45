@@ -235,8 +235,8 @@
   --cp-font-body: 'Inter', sans-serif;
   --cp-font-mono: 'JetBrains Mono', monospace;
   --cp-size-table-row: 36px;
-  --cp-layout-sidebar: 232px;
-  --cp-layout-topnav: 48px;
+  --cp-layout-sidebar: 240px;
+  --cp-layout-topnav: 56px;
   --cp-radius-sm: 3px;
   --cp-radius-md: 4px;
   --cp-radius-default: 6px;
