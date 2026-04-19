@@ -213,7 +213,20 @@ const before = fingerprint();
 const last = lastSynced();
 const nodeModulesExists = existsSync(join(root, 'node_modules'));
 
-if (before === last && nodeModulesExists) {
+// Verify the dev server entry point is actually installed. The hash file
+// can lie: a prior crashed install, an editor file-sync glitch, or a manual
+// `rm -rf node_modules/.bin` will leave the fingerprint marked "synced"
+// while `vite` is gone. Without this check the caller hits
+// `sh: vite: command not found` with zero signal from sync-deps.
+const viteBinPath = join(
+  root,
+  'node_modules',
+  '.bin',
+  process.platform === 'win32' ? 'vite.cmd' : 'vite',
+);
+const viteBinInstalled = existsSync(viteBinPath);
+
+if (before === last && nodeModulesExists && viteBinInstalled) {
   // Fast path. Nothing to do.
   process.exit(0);
 }
@@ -221,6 +234,12 @@ if (before === last && nodeModulesExists) {
 if (checkOnly) {
   console.log('[sync-deps] out of sync; would install');
   process.exit(1);
+}
+
+if (nodeModulesExists && !viteBinInstalled) {
+  process.stderr.write(
+    '[sync-deps] node_modules present but vite binary missing — reinstalling…\n',
+  );
 }
 
 const ok = install();
@@ -236,13 +255,7 @@ if (ok) {
 // node_modules plus an offline registry shouldn't block dev. But if vite
 // isn't even installed, running `&& vite` next produces a confusing
 // `sh: vite: command not found` and hides the real cause. Fail loudly here.
-const viteBin = join(
-  root,
-  'node_modules',
-  '.bin',
-  process.platform === 'win32' ? 'vite.cmd' : 'vite',
-);
-if (!existsSync(viteBin)) {
+if (!existsSync(viteBinPath)) {
   process.stderr.write(
     '[sync-deps] node_modules is incomplete (vite binary missing). Run `npm install` manually to see the full npm error, then retry `npm run dev`.\n',
   );
