@@ -184,6 +184,52 @@ export function IssueContentView({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
+  /* ─────────────────────────────────────────────────────────────────────
+     Responsive Details sidebar (Jira-parity ResizeObserver pattern).
+
+     Prior CSS-only attempts (container queries + viewport media) failed
+     to fire in the running bundle — the sidebar kept rendering at full
+     width while the middle column was crushed to fragments. JS is the
+     deterministic fix: measure .awIssueView's actual inline size and
+     auto-collapse the sidebar when the middle column would lose below
+     ~640px (Jira Cloud's observed comfort threshold).
+
+     Geometry: .awDetailsSidebar = 340px + divider 8px = 348px reserved.
+     Middle column comfortable minimum ≈ 640px.
+     Breakpoint: .awIssueView width < 988px → auto-collapse.
+
+     The user can still manually expand/collapse via the chevron; their
+     explicit choice wins until the next resize threshold crossing.
+     ───────────────────────────────────────────────────────────────── */
+  const issueViewRef = useRef<HTMLDivElement>(null);
+  const userOverrodeSidebar = useRef(false);
+  useEffect(() => {
+    const el = issueViewRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    let lastDecision: boolean | null = null;
+    const RESPONSIVE_THRESHOLD = 988;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentRect.width;
+        const shouldBeOpen = width >= RESPONSIVE_THRESHOLD;
+        if (lastDecision !== shouldBeOpen) {
+          lastDecision = shouldBeOpen;
+          // Crossing the threshold resets any user override — resize
+          // events indicate a new layout context.
+          userOverrodeSidebar.current = false;
+          setSidebarOpen(shouldBeOpen);
+        }
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const handleToggleSidebar = useCallback(() => {
+    userOverrodeSidebar.current = true;
+    setSidebarOpen((o) => !o);
+  }, []);
+
   // Derive project key from issue key (e.g. "BAU-5364" → "BAU")
   const projectKey = issueKey?.split('-')[0] ?? '';
 
@@ -380,7 +426,7 @@ export function IssueContentView({
   }
 
   return (
-    <div className="awIssueView">
+    <div className="awIssueView" ref={issueViewRef}>
       {/* ══ LEFT: Issue content ══ */}
       <div className="awIssueContent">
         {/* Header */}
@@ -740,7 +786,7 @@ export function IssueContentView({
       </div>
 
       {/* ══ DIVIDER with collapse button ══ */}
-      <div className="awSidebarDivider" onClick={() => setSidebarOpen(o => !o)}>
+      <div className="awSidebarDivider" onClick={handleToggleSidebar}>
         <button className="awCollapseBtn" title={sidebarOpen ? 'Collapse' : 'Expand'}>
           {sidebarOpen ? <ChevronRight style={{ width: 12, height: 12 }} /> : <ChevronLeft style={{ width: 12, height: 12 }} />}
         </button>

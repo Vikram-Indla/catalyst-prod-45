@@ -1683,37 +1683,24 @@
    (consolidated per CLAUDE.md L35). */
 
 /* ═══════════════════════════════════════════════════════════════════════
-   RESPONSIVE — narrow-shell fallback (Apr 2026)
+   RESPONSIVE — narrow-shell handling (Apr 2026, Pass 5 — JS-driven)
    ═══════════════════════════════════════════════════════════════════════
 
-   Measured against the SHELL container, not the viewport. The shell
-   lives inside Catalyst app chrome (BAU project sidebar, collapsible
-   nav rail — collectively up to ~232px), and that delta is invisible
-   to viewport @media rules, which is why two prior breakpoint guesses
-   mis-fired. Container queries fix this definitively: they measure the
-   actual awShellWrap inline size regardless of outer chrome state.
+   Responsive sidebar collapse is now owned by JS in IssueContentView.tsx
+   (ResizeObserver on .awIssueView). Four prior CSS passes (media query
+   at 1100/1280, container query at 1100, dual-trigger at 1280+1440) all
+   failed to fire reliably in the running bundle — diagnosed from
+   screenshots showing the middle column crushed while the right rail
+   remained at full 340px width.
 
-   Geometry inside the shell:
-     [ awColNav 240px ] [ 1px ] [ awIssueContent 1fr ] [ 8px ]
-     [ awDetailsSidebar 340px (flex-shrink:0) ]
-     Fixed + reserved = 589px
-     Middle column needs ≥ ~500px for non-overlap rendering.
-     Therefore hide the sidebar when shell inline-size < 1100px
-     (500 + 589 = 1089, rounded up).
+   JS approach is deterministic: measures .awIssueView's actual inline
+   size, calls setSidebarOpen(false) when width < 988px. Respects user's
+   manual chevron clicks until the next threshold crossing.
 
-   Strategy:
-     1. Hide the right Details sidebar. Everything in the sidebar is
-        already duplicated in the Key details rail on the left, so
-        nothing becomes unreachable.
-     2. Hide the .awSidebarDivider rail (otherwise the chevron button
-        floats with no target).
-     3. CSS-only — no JS, no grid-template-columns change. Left list
-        shrinking is a separate follow-up (Priority #2 in the critique).
+   CSS rules retained:
+     - .awDetailsSidebar.collapsed { display: none } (toggled by React)
+     - container-type: inline-size on .awShellWrap (kept harmless for
+       future container query usage)
 
-   Browser support: container queries are universal since Feb 2023 —
-   Chromium, Firefox, Safari all shipped them. No polyfill needed in
-   April 2026. */
-@container awshell (max-width: 1100px) {
-  .awDetailsSidebar { display: none; }
-  .awSidebarDivider { display: none; }
-}
+   No @media / @container width rules here — they would conflict with
+   JS state at borderline widths and cause flicker. */

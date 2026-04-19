@@ -37,16 +37,15 @@
  *      travel on BoardIssue as optional fields so non-Jira hubs can enrich
  *      the card without subclassing.
  *
- * Phase plan:
- *   Phase 2 (this file)  — define the contract, nothing else.
- *   Phase 3 — port ProductHub (initiatives) off CatalystKanban onto a
- *             BoardAdapter<Initiative> wired to KanbanBoardShell.
+ * Migration history (for context — every hub now ships via this contract):
+ *   Phase 2 — contract defined in this file.
+ *   Phase 3 — ProductHub (initiatives).
  *   Phase 4 — Product Ideas.
  *   Phase 5 — IncidentHub.
  *   Phase 6 — Team + Program boards.
- *   Phase 7 — delete CatalystKanban, CatalystKanbanBoard, catalyst-types
- *             (KanbanCardData et al), and the old producthub/kanban
- *             component tree once every hub is on the canonical path.
+ *   Phase 7 — legacy CatalystKanban tree (CatalystKanban, CatalystKanbanBoard,
+ *             CatalystKanbanCard, catalyst-types, initiativeAdapter,
+ *             kanban/filters/*) deleted; shell + adapters are the only path.
  */
 import type { ReactNode } from 'react';
 import type { BoardIssue } from '../kanban-types';

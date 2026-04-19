@@ -1,10 +1,11 @@
 /**
- * ProductHub Kanban — migrated onto the canonical KanbanBoardShell
- * (Phase 3 of the Catalyst Kanban consolidation).
+ * ProductHub Kanban — renders through the canonical KanbanBoardShell.
  *
- * Before: <CatalystKanban/> + initiativeToKanbanCard (legacy primitive).
- * After:  <KanbanBoardShell adapter={...}/> with a BoardAdapter<Initiative>
- *         produced by buildProductHubBoardAdapter.
+ * Consumes a BoardAdapter<Initiative> produced by
+ * buildProductHubBoardAdapter. The legacy CatalystKanban primitive this
+ * page used to wrap was retired in Phase 7 of the Kanban consolidation;
+ * every Catalyst board now flows through KanbanBoardShell + a hub-specific
+ * BoardAdapter.
  *
  * What the shell supplies for free (no hub code):
  *   - Toolbar: search, avatar stack, basic filter popover, group-by,

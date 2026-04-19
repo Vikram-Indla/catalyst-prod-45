@@ -1,15 +1,13 @@
 /**
- * ProductHub BoardAdapter<Initiative> — Phase 3.
+ * ProductHub BoardAdapter<Initiative>.
  *
- * Converts the legacy ProductHub kanban wiring (CatalystKanban +
- * initiativeToKanbanCard) into the canonical BoardAdapter<Initiative>
- * contract that KanbanBoardShell consumes. This is the first hub to move
- * off the CatalystKanban primitive.
+ * Produces the canonical BoardAdapter<Initiative> contract that
+ * KanbanBoardShell consumes.
  *
- * What changes (vs. the old adapter):
- *   - Cards are CanonicalBoardIssue (extends BoardIssue), not KanbanCardData.
- *   - Filter categories use ProjectHub's shared FilterCategory shape (not
- *     KanbanFilterFieldDef) so the canonical toolbar renders them directly.
+ * Contract highlights:
+ *   - Cards are CanonicalBoardIssue (extends BoardIssue).
+ *   - Filter categories use ProjectHub's shared FilterCategory shape so
+ *     the canonical toolbar renders them directly.
  *   - Group-by options use ProjectHub's shared GroupByOption<K> shape.
  *   - An initiative-typed icon resolver ships through so cards render with
  *     the correct hub icon instead of falling back to the Jira "Task" icon.
