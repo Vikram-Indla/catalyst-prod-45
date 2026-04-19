@@ -2025,6 +2025,29 @@ export default function StoryDetailModal({
           </Modal>
         )}
       </ModalTransition>
+
+      {/* Clone & Move dialogs (BATCH-B Features 1 & 2) */}
+      {issue && (
+        <CloneIssueDialog
+          open={showCloneDialog}
+          onClose={() => setShowCloneDialog(false)}
+          source={{
+            id: issue.id,
+            issue_key: issue.issue_key,
+            summary: issue.summary,
+            project_key: issue.project_key,
+            assignee_account_id: issue.assignee_account_id ?? null,
+            assignee_display_name: issue.assignee_display_name ?? null,
+          }}
+        />
+      )}
+      {issue && (
+        <MoveIssueDialog
+          open={showMoveDialog}
+          onClose={() => setShowMoveDialog(false)}
+          source={{ id: issue.id, issue_key: issue.issue_key, project_key: issue.project_key }}
+        />
+      )}
     </>
   );
 }
