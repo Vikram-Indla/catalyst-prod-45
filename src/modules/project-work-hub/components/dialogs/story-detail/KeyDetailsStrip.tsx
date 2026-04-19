@@ -63,9 +63,34 @@ export function KeyDetailsStrip({ story, onAssigneeClick }: {
       </StripField>
       {story.parent_key && (
         <StripField label="Parent">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, maxWidth: '100%' }}>
             <IssueTypeIcon type="epic" size={14} />
-            <span style={{ fontSize: 12, fontFamily: 'JetBrains Mono, monospace', color: V.linkBlue }}>{story.parent_key}</span>
+            <span
+              title={`${story.parent_key}${story.parent_summary ? ' ' + story.parent_summary : ''}`}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                background: '#E97B2C',
+                color: '#FFFFFF',
+                fontSize: 13,
+                fontWeight: 500,
+                padding: '2px 8px',
+                borderRadius: 4,
+                maxWidth: 280,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                cursor: 'pointer',
+              }}
+            >
+              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600 }}>{story.parent_key}</span>
+              {story.parent_summary && (
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {story.parent_summary}
+                </span>
+              )}
+            </span>
           </div>
         </StripField>
       )}
