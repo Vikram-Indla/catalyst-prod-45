@@ -275,7 +275,7 @@ export function CloneIssueDialog({ open, onClose, source }: CloneIssueDialogProp
                         isClearable
                       />
                       <Button
-                        appearance="link"
+                        appearance="subtle"
                         spacing="compact"
                         onClick={() => setFieldValue('assignee', currentUserOpt as any)}
                       >
