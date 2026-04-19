@@ -7,6 +7,7 @@
 import { useState } from 'react';
 import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { resolveAvatarUrl } from '@/lib/avatars';
 
 // Avatar colors — neutral blue-gray palette + approved Catalyst hues (no purple/pink/magenta)
 const AVATAR_COLORS = [
@@ -95,10 +96,12 @@ export function UserAvatar({
     lg: 'w-5 h-5 text-base',
   };
 
-  const showPhoto = avatarUrl && !imgError;
+  const resolvedLocalUrl = avatarUrl ? null : resolveAvatarUrl(name);
+  const effectiveUrl = avatarUrl ?? resolvedLocalUrl;
+  const showPhoto = effectiveUrl && !imgError;
 
   return (
-    <div 
+    <div
       className={cn(
         "relative flex-shrink-0",
         sizeClasses[size].split(' ').slice(0, 2).join(' '),
@@ -109,7 +112,7 @@ export function UserAvatar({
     >
       {showPhoto ? (
         <img
-          src={avatarUrl}
+          src={effectiveUrl}
           alt={name || 'User'}
           onError={() => setImgError(true)}
           className={cn(
