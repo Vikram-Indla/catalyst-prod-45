@@ -247,7 +247,9 @@ export function AddParentPicker({
   // ── Trigger ──
   const renderTrigger = () => {
     if (variant === 'field') {
-      if (parentKey && parentSummary) {
+      const effectiveSummary = parentSummary?.summary ?? parentSummaryFallback ?? null;
+      const effectiveType = parentSummary?.issue_type ?? iconType;
+      if (parentKey && effectiveSummary) {
         return (
           <button
             title={`Change ${noun}`}
@@ -260,9 +262,10 @@ export function AddParentPicker({
             onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <JiraIssueTypeIcon type={parentSummary.issue_type ?? iconType} size={16} />
+            <JiraIssueTypeIcon type={effectiveType} size={16} />
             <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {parentSummary.issue_key} {parentSummary.summary}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", marginRight: 6 }}>{parentKey}</span>
+              {effectiveSummary}
             </span>
           </button>
         );
