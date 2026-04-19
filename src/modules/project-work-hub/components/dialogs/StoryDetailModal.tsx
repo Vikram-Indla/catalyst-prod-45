@@ -1171,7 +1171,7 @@ export default function StoryDetailModal({
                         <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12, minHeight: 28 }}>
                           <span style={{ width: 100, flexShrink: 0, fontSize: 13, color: '#5E6C84', paddingTop: 4 }}>Parent</span>
                           <div style={{ flex: 1, fontSize: 13, color: '#172B4D' }}>
-                            {issue && <AddParentPicker issueKey={issue.issue_key} parentKey={issue.parent_key ?? null} projectKey={issue.project_key} onParentChange={handleParentChange} variant="field" />}
+                            {issue && <AddParentPicker issueKey={issue.issue_key} parentKey={issue.parent_key ?? null} projectKey={issue.project_key} onParentChange={handleParentChange} variant="field" parentSummaryFallback={(issue as any).parent_summary ?? null} />}
                           </div>
                         </div>
                         {/* Priority field */}

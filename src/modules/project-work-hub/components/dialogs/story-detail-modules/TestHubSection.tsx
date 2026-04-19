@@ -18,7 +18,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
     queryKey: ['testCases', storyId],
     queryFn: async () => {
       const { data, error } = await supabase.from('tm_test_case_links')
-        .select(`id, test_case:tm_test_cases ( id, case_key, title, status, priority, assigned_to, created_at )`)
+        .select(`id, test_case:tm_test_cases ( id, case_key, title, status, priority_id, assigned_to, created_at )`)
         .eq('linked_item_id', storyId).eq('linked_item_type', 'story');
       if (error) throw error;
       return (data?.map((r: any) => r.test_case).filter(Boolean) ?? []) as TmTestCase[];

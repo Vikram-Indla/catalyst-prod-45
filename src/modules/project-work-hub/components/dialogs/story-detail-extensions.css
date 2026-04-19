@@ -1369,3 +1369,34 @@
   outline: 2px solid #4C9AFF;
   border-radius: 4px;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   LIST MARKERS — restore bullet/number visibility in editor + saved view
+   Tailwind preflight resets list-style to none; re-enable scoped.
+   ════════════════════════════════════════════════════════════════ */
+[data-sdm-scope] .adf-editor-content ul,
+[data-sdm-scope] .ProseMirror ul,
+[data-sdm-scope] .jira-desc-view ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+[data-sdm-scope] .adf-editor-content ol,
+[data-sdm-scope] .ProseMirror ol,
+[data-sdm-scope] .jira-desc-view ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+[data-sdm-scope] .adf-editor-content ul ul,
+[data-sdm-scope] .ProseMirror ul ul,
+[data-sdm-scope] .jira-desc-view ul ul { list-style-type: circle; }
+[data-sdm-scope] .adf-editor-content ul ul ul,
+[data-sdm-scope] .ProseMirror ul ul ul,
+[data-sdm-scope] .jira-desc-view ul ul ul { list-style-type: square; }
+[data-sdm-scope] .adf-editor-content li,
+[data-sdm-scope] .ProseMirror li,
+[data-sdm-scope] .jira-desc-view li {
+  display: list-item;
+  margin: 0.15em 0;
+}
