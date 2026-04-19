@@ -28,6 +28,7 @@ import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/st
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
+import { enqueueWriteBack } from '@/lib/jira-writeback';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
@@ -197,7 +198,7 @@ export function IssueContentView({
     await (supabase.from('ph_issues') as any)
       .update({ parent_key: newParentKey })
       .eq('issue_key', issueKey ?? item?.issue_key);
-    await supabase.from('jira_write_back_queue').insert({ ph_issue_id: item.id, field_name: 'parent', new_value: newParentKey ?? '', status: 'approved' } as any);
+    await enqueueWriteBack({ phIssueId: item.id, fieldName: 'parent', newValue: newParentKey ?? '' });
     queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
     queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
     queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
@@ -209,7 +210,7 @@ export function IssueContentView({
       if (!item?.id) throw new Error('No item');
       const { error } = await supabase.from('ph_issues').update({ status: newStatus, status_category: resolveStatusCategory(newStatus) } as any).eq('id', item.id);
       if (error) throw error;
-      await supabase.from('jira_write_back_queue').insert({ ph_issue_id: item.id, field_name: 'status', new_value: newStatus, status: 'approved' } as any);
+      await enqueueWriteBack({ phIssueId: item.id, fieldName: 'status', newValue: newStatus });
     },
     onSuccess: () => {
       toast.success('Status updated');

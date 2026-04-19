@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { enqueueWriteBack } from '@/lib/jira-writeback';
 
 /** Sub-task types only get 3 statuses: To Do, In Progress, Done */
 const SUBTASK_STATUS_GROUPS = [
@@ -143,12 +144,7 @@ export function ConvertToSubtaskWizard({ issueId, issueKey, issueType, currentSt
       } as any).eq('id', issueId);
       if (error) throw error;
       // Write back to Jira queue
-      await supabase.from('jira_write_back_queue').insert({
-        ph_issue_id: issueId,
-        field_name: 'issue_type',
-        new_value: subtaskType,
-        status: 'approved',
-      } as any);
+      await enqueueWriteBack({ phIssueId: issueId, fieldName: 'issue_type', newValue: subtaskType });
     },
     onSuccess: () => {
       toast.success(`${issueKey} converted to ${subtaskType}`);

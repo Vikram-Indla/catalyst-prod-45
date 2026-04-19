@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { RichTextCommentEditor } from './story-detail-modules/RichTextCommentEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { enqueueWriteBack } from '@/lib/jira-writeback';
 
 
 // Ring-fenced CSS for extension components
@@ -448,7 +449,7 @@ export default function StoryDetailModal({
     mutationFn: async (newStatus: string) => {
       const { error } = await supabase.from('ph_issues').update({ status: newStatus, status_category: resolveStatusCategory(newStatus) }).eq('id', itemId);
       if (error) throw error;
-      await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'status', new_value: newStatus, status: 'approved' });
+      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'status', newValue: newStatus });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
     onError: () => toast.error('Failed to update status'),
@@ -471,7 +472,7 @@ export default function StoryDetailModal({
     mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
       const { error } = await supabase.from('ph_issues').update({ assignee_account_id: userId, assignee_display_name: displayName }).eq('id', itemId);
       if (error) throw error;
-      await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'assignee', new_value: userId, status: 'approved' });
+      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'assignee', newValue: userId });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
     onError: () => toast.error('Failed to update assignee'),
@@ -589,7 +590,7 @@ export default function StoryDetailModal({
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
     await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
     // Write-back to Jira
-    await supabase.from('jira_write_back_queue').insert({ ph_issue_id: itemId, field_name: 'parent', new_value: newParentKey ?? '', status: 'approved' });
+    await enqueueWriteBack({ phIssueId: itemId, fieldName: 'parent', newValue: newParentKey ?? '' });
     // Refresh detail + all table views across Catalyst
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
     queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
