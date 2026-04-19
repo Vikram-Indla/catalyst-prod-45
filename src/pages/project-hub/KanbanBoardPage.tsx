@@ -101,6 +101,11 @@ export default function KanbanBoardPage() {
   const [showBasicFilter, setShowBasicFilter] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const [collapsedSwimlanes, setCollapsedSwimlanes] = useState<Set<string>>(new Set());
+  // F3 (Archive) — Archived filter chip. When true, the kanban-issues query
+  // inverts archived_at IS NULL → archived_at IS NOT NULL. Admin/owner only;
+  // FE gate is cosmetic, RLS enforces server-side.
+  const { isAdminOrOwner: canArchive } = useProjectMemberRole(key);
+  const [showArchived, setShowArchived] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const d = DENSITY_CONFIG[density];
@@ -236,17 +241,22 @@ export default function KanbanBoardPage() {
   }, [dynamicBoardData]);
 
   const { data: rawIssues = [], isLoading } = useQuery({
-    queryKey: ['kanban-issues', key],
+    queryKey: ['kanban-issues', key, showArchived],
     queryFn: async () => {
       if (!key) return [];
       const PAGE = 1000;
       let all: any[] = [];
       let from = 0;
       while (true) {
-        const { data, error } = await supabase.from('ph_issues')
-          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at')
+        let q = supabase.from('ph_issues')
+          .select('id, issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, labels, sprint_name, story_points, parent_key, parent_summary, fix_versions, is_flagged, jira_updated_at, jira_created_at, archived_at')
           .eq('project_key', key.toUpperCase())
-          .is('deleted_at', null)
+          .is('deleted_at', null);
+        // F3: default view hides archived; Archived chip inverts it.
+        q = showArchived
+          ? q.not('archived_at', 'is', null)
+          : q.is('archived_at', null);
+        const { data, error } = await q
           .order('jira_updated_at', { ascending: false })
           .range(from, from + PAGE - 1);
         if (error) throw error;
