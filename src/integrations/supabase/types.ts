@@ -21818,42 +21818,14 @@ export type Database = {
             foreignKeyName: "ph_attachments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_overdue_view"
+            referencedRelation: "ph_issues"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "ph_attachments_work_item_id_fkey"
             columns: ["work_item_id"]
             isOneToOne: false
-            referencedRelation: "ph_work_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_attachments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "ph_work_items_full_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_attachments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_chain_intelligence"
-            referencedColumns: ["epic_id"]
-          },
-          {
-            foreignKeyName: "ph_attachments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_epic_stories"
-            referencedColumns: ["story_id"]
-          },
-          {
-            foreignKeyName: "ph_attachments_work_item_id_fkey"
-            columns: ["work_item_id"]
-            isOneToOne: false
-            referencedRelation: "vw_ph_work_items_full"
+            referencedRelation: "workhub_items_view"
             referencedColumns: ["id"]
           },
         ]
