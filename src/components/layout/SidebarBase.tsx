@@ -31,7 +31,7 @@ import { useTheme } from '@/hooks/useTheme';
 const ROUTE_PREFETCH_MAP: Record<string, () => Promise<unknown>> = {
   '/project-hub/projects': () => import('../../pages/project-hub/AllProjectsPage'),
   '/project-hub/resources': () => import('../../pages/ResourceListingPage'),
-  '/producthub/kanban': () => import('../../components/producthub/kanban/KanbanBoard'),
+  '/producthub/kanban': () => import('../../pages/producthub/KanbanPage'),
   '/releasehub': () => import('../../pages/releasehub/AllReleasesPage'),
   '/testhub': () => import('../../pages/testhub/TestHubPage'),
   '/planhub': () => import('../../components/planhub/PlanHubShell'),
