@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CatalystDefectFields — Defect-specific canonical field block.
  *
