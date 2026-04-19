@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ChevronsLeft, ChevronsRight, Star, LucideIcon } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Tooltip,
@@ -127,8 +127,13 @@ export function SidebarBase({
     badgeText: isDark ? 'var(--cp-t2)' : '#6B778C',
   };
 
-  const chevronColor = isDark ? 'var(--cp-blue)' : '#0052CC';
-  const chevronHoverColor = isDark ? 'var(--cp-blue)' : '#0052CC';
+  // Chevron critique (2026-04-19): brand-blue (#0052CC / --cp-blue) violated
+  // the CLAUDE.md colour reservation — blue is reserved for the +Create CTA
+  // only. Pulled the toggle to neutral muted tokens so the primary blue cue
+  // stays unique to the primary action. Hover lifts to text-primary for an
+  // affordance pop without reintroducing brand colour.
+  const chevronColor = isDark ? 'var(--cp-t2, #A1A1A1)' : '#6B778C';
+  const chevronHoverColor = isDark ? 'var(--cp-t1, #EDEDED)' : '#172B4D';
   const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
   const sidebarBorder = isDark ? '#2E2E2E' : '#DFE1E6';
   const dividerColor = isDark ? '#2E2E2E' : '#DFE1E6';
@@ -196,19 +201,13 @@ export function SidebarBase({
           }}
         >
           {!expanded ? (
+            // Chevron critique (2026-04-19): collapsed-mode order flipped so
+            // the toggle button renders ABOVE the avatar. Combined with the
+            // expanded-mode right-anchor, the chevron now lives at the
+            // trailing/top edge of the header in both states — Jira-parity
+            // anchor instead of the previous stack order that jumped the
+            // chevron from right (expanded) to bottom (collapsed).
             <>
-              <div 
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: 'var(--cp-blue)',
-                  color: 'var(--bg-app)',
-                  fontSize: '0.62rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.02em',
-                }}
-              >
-                {config.badge}
-              </div>
               <button
                 onClick={onToggle}
                 className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0"
@@ -226,10 +225,22 @@ export function SidebarBase({
                   e.currentTarget.style.background = 'transparent';
                   e.currentTarget.style.color = chevronColor;
                 }}
-                aria-label="Expand sidebar"
+                aria-label="Expand sidebar (shortcut: [ )"
               >
-                <ChevronsRight size={15} />
+                <PanelLeftOpen size={15} />
               </button>
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+                style={{
+                  background: 'var(--cp-blue)',
+                  color: 'var(--bg-app)',
+                  fontSize: '0.62rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {config.badge}
+              </div>
             </>
           ) : (
             <>
@@ -277,9 +288,9 @@ export function SidebarBase({
                   e.currentTarget.style.background = 'transparent';
                   e.currentTarget.style.color = chevronColor;
                 }}
-                aria-label="Collapse sidebar"
+                aria-label="Collapse sidebar (shortcut: [ )"
               >
-                <ChevronsLeft size={15} />
+                <PanelLeftClose size={15} />
               </button>
             </>
           )}

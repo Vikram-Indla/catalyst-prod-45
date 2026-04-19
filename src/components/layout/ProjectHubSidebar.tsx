@@ -99,13 +99,24 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
           title: '',
           items: [
             { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: false },
-            { id: 'board', title: 'Board', path: `${base}/boards`, icon: Columns3, exact: false },
+            // 2026-04-19: "Board" → "Project Board", "Backlog" → "Project
+            // Backlog" per Vikram's call on the flattened layout. With no
+            // section headers, the bare nouns read too thin against the
+            // project header ("BA · BAU"); the "Project" prefix adds the
+            // scope signal that the dropped section labels used to provide
+            // and gives the sidebar visual ballast at this 4-item count.
+            { id: 'board', title: 'Project Board', path: `${base}/boards`, icon: Columns3, exact: false },
             // Jira "List view" equivalent — unified, per-project. Combines
             // Epics, Features, Stories, Tasks, QA Bugs, Production Incidents,
             // Change Requests, Business Gaps, and API Requirements.
-            { id: 'backlog', title: 'Backlog', path: `${base}/backlog`, icon: Layers, exact: false },
-            // Jira "All work" equivalent — per-project, hierarchy view
-            { id: 'allwork', title: 'All Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
+            { id: 'backlog', title: 'Project Backlog', path: `${base}/backlog`, icon: Layers, exact: false },
+            // Jira "All work" equivalent — per-project, hierarchy view.
+            // 2026-04-19: "All Work" → "Project Work" to match the
+            // "Project Board" / "Project Backlog" naming cadence on the
+            // flattened layout. Consistent prefix gives the 4-item list a
+            // unified scope signal without needing a section header to
+            // carry it.
+            { id: 'allwork', title: 'Project Work', path: `${base}/allwork`, icon: GitBranch, exact: false },
             // Story / Epic / Feature Backlog pages were removed — their scope
             // is fully covered by the unified Backlog view above. Routes now
             // redirect to /backlog; source files remain on disk as-is.

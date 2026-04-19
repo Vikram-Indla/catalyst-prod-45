@@ -149,9 +149,11 @@
 
   /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
   --cp-bg-page: #FFFFFF;
-  /* Jira-blue page bg for migrated hub surfaces — consumed by
-     <AtlaskitPageShell>. Measured from Jira BAU list DOM (2026-04-18). */
-  --cp-bg-hub-page: #E9F2FE;
+  /* Outer page bg for migrated hub surfaces — consumed by
+     <AtlaskitPageShell>. Flattened to white Apr 19, 2026 per Vikram;
+     project-hub pages now render on a single white canvas (token
+     docstring in src/theme/ads/tokens.ts explains the pre-V3 value). */
+  --cp-bg-hub-page: #FFFFFF;
   --cp-bg-surface: #F8FAFC;
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;

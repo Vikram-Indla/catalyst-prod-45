@@ -71,14 +71,23 @@ export const adsTokens = {
   bg: {
     page:     { cp: '--cp-bg-page',     light: '#FFFFFF', dark: '#0A0A0A', atlaskit: 'color.background.neutral' } satisfies AdsToken,
     /**
-     * hubPage — Jira-blue page background measured from Jira BAU list DOM
-     * (2026-04-18): rgb(233, 242, 254) / #E9F2FE. Used by the canonical
-     * <AtlaskitPageShell> outer wrapper for migrated hub surfaces
-     * (BacklogPage, ProjectDashboardPage, etc.) so every hub lands on the
-     * same tinted page under a rounded-white content card. Dark-mode value
-     * mirrors the NOCTURNE page bg (#0A0A0A, see CLAUDE.md §18).
+     * hubPage — outer page background for <AtlaskitPageShell>.
+     *
+     * Apr 19, 2026 (V3 — White Canvas):
+     *   Light mode moved from Jira-blue #E9F2FE to #FFFFFF on Vikram's
+     *   decision (dashboard read as a "grey/blue tint" next to backlog;
+     *   backlog's mostly-white content had been masking the same frame).
+     *   Decision: flatten project-hub surfaces to a single white canvas.
+     *   The shell keeps its 8px outer padding + inner rounded card so
+     *   scroll clipping and layout continue working — they just become
+     *   white-on-white and visually invisible.
+     *
+     *   Pre-V3 (historical): #E9F2FE — Jira BAU list DOM rgb(233,242,254)
+     *   measured 2026-04-18.
+     *
+     * Dark mode continues to mirror NOCTURNE page bg #0A0A0A (CLAUDE.md §18).
      */
-    hubPage:  { cp: '--cp-bg-hub-page', light: '#E9F2FE', dark: '#0A0A0A', atlaskit: '' } satisfies AdsToken,
+    hubPage:  { cp: '--cp-bg-hub-page', light: '#FFFFFF', dark: '#0A0A0A', atlaskit: '' } satisfies AdsToken,
     surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#1A1A1A', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: '#F8FAFC', dark: '#1F1F1F', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: '#F1F5F9', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,

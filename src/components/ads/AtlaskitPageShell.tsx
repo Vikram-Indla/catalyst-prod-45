@@ -3,24 +3,26 @@
  *
  * Why this exists
  * ───────────────
- * Every migrated hub surface needs the same outer shell: a Jira-blue page
- * (#E9F2FE) with a single white rounded card nesting the page's content.
- * Without a shared wrapper each migration invented its own shell — the
- * BacklogPage and ProjectDashboardPage diverged within one sprint
- * (backlog on #E9F2FE + rounded card; dashboard on #FFFFFF with a
- * breadcrumb). See the consistency critique in
- * `docs/design/BAU-Dashboard-Atlaskit-Conversion.md` (follow-up addendum).
+ * Every migrated hub surface needs the same outer shell. Without a shared
+ * wrapper each migration invented its own — the BacklogPage and
+ * ProjectDashboardPage diverged within one sprint. See the consistency
+ * critique in `docs/design/BAU-Dashboard-Atlaskit-Conversion.md` (follow-up
+ * addendum).
  *
- * Pattern derived verbatim from `BacklogPage.atlaskit.tsx:1085-1124`.
+ * Pattern derived from `BacklogPage.atlaskit.tsx:1085-1124` (pre-V3 chrome
+ * had a Jira-blue page wash; V3 flattened to a single white canvas — see
+ * the hubPage token docstring in src/theme/ads/tokens.ts).
  *
  * Chrome (locked)
  * ───────────────
  *   Outer wrapper
- *     - background: --cp-bg-hub-page (#E9F2FE light / #0A0A0A dark)
- *     - padding:    8px (reduced 24 → 12 → 8 Apr 19, 2026; Vikram flagged
- *                   that 12 still read as a frame vs. the thinner seam on
- *                   backlog once that surface migrates. 8px lands at the
- *                   same visual weight as Jira's list-view canvas gutter.)
+ *     - background: --cp-bg-hub-page (#FFFFFF light / #0A0A0A dark).
+ *                   V3 white — flattened Apr 19, 2026 (see token docstring).
+ *                   Pre-V3 was Jira-blue #E9F2FE.
+ *     - padding:    8px (preserved from pre-V3 even though it's now
+ *                   invisible white-on-white — keeps the inner rounded
+ *                   card's corners off the page edges and makes it cheap
+ *                   to A/B a tinted outer bg again if we need to).
  *     - font:       "Atlassian Sans" base stack
  *     - flex column, minHeight 100%
  *
