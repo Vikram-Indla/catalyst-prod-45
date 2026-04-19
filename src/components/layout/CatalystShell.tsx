@@ -536,7 +536,25 @@ function CatalystShellContent() {
           </div>
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
-        <main data-catalyst-main className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden" style={{ background: mainBg }}>
+        {/* 2026-04-19 Tier 2: Paint isolation on <main>. As the sidebar's width
+            animates over 180ms the flex layout recomputes main's width each
+            frame. Without `contain: paint` every descendant paints on every
+            frame; with it, the browser clips invalidation to main's bounding
+            box and schedules a single compositor-level repaint. The
+            translateZ(0) + backface-visibility pair promote main to its own
+            GPU layer so the per-frame reflow runs independently of the
+            sidebar's layer. Net: kills the mid-animation tearing we were
+            seeing at the hub-chrome / sidebar seam. */}
+        <main
+          data-catalyst-main
+          className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden"
+          style={{
+            background: mainBg,
+            contain: 'paint',
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+          }}
+        >
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
           <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
             <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>

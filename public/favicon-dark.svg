@@ -3,12 +3,18 @@
   <!-- Standalone mark for favicon, app icon, etc. on dark backgrounds -->
 
   <defs>
-    <!-- 2026-04-19 (v3): Unified with the dark-mode wordmark palette for
-         brand coherence. Range: #85B8FF Jira Blue-300 → #579DFF Blue-500.
-         See favicon.svg for the unification rationale. -->
+    <!-- 2026-04-19 (v4): Split from the dark-mode wordmark palette (see
+         favicon.svg for the full rationale). On dark tab backgrounds
+         (#202124 in Chrome dark mode) we need a brighter blue to hold
+         contrast, but the v3 #85B8FF → #579DFF was too pale and read
+         as a washed tint next to Jira's dark-mode favicon. v4 uses
+         Jira's dark-mode tab palette: #579DFF Blue-500 → #2684FF Jira
+         Product Blue. Brighter than the wordmark's dark palette, which
+         is the point — the favicon competes with other tab icons for
+         visual parity, the wordmark sits alone in the header. -->
     <linearGradient id="catalystBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#85B8FF"/>
-      <stop offset="100%" stop-color="#579DFF"/>
+      <stop offset="0%" stop-color="#579DFF"/>
+      <stop offset="100%" stop-color="#2684FF"/>
     </linearGradient>
   </defs>
 

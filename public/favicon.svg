@@ -3,17 +3,20 @@
   <!-- Standalone mark for favicon, app icon, etc. -->
 
   <defs>
-    <!-- 2026-04-19 (v3): Unified with the wordmark palette for brand
-         coherence — the browser tab favicon and the header wordmark now
-         share one gradient so they read as one brand when seen together.
-         Range: #2684FF Jira Product Blue → #0052CC Atlassian Primary.
-         Still materially more saturated than the original pale Tailwind
-         (#3B82F6 → #1D4ED8) that prompted the contrast fix, but softer
-         than Primary→Deep so it doesn't diverge from the wordmark at
-         display size. -->
+    <!-- 2026-04-19 (v4): Split from the wordmark palette. The favicon
+         renders at 16×16 / 32×32 in browser tabs, where anti-aliasing
+         shaves the lighter stop of any gradient and the tab chrome
+         (light grey ~#E8EAED on active Chrome) eats low-saturation
+         blues. The v3 unified palette (#2684FF → #0052CC) looked pale
+         next to Jira's tab favicon. v4 drops the light stop and uses
+         Jira's exact tab palette: #0052CC Atlassian Primary → #0747A6
+         Atlassian Deep. At 16×16 this anti-aliases to a punchy deep
+         blue that matches Jira's favicon contrast. The wordmark keeps
+         the airier v3 palette so the header doesn't read harsh —
+         different rendering sizes, different optimal palettes. -->
     <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2684FF"/>
-      <stop offset="100%" stop-color="#0052CC"/>
+      <stop offset="0%" stop-color="#0052CC"/>
+      <stop offset="100%" stop-color="#0747A6"/>
     </linearGradient>
   </defs>
 
