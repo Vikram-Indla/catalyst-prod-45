@@ -542,46 +542,7 @@ function renderMenuItem(
           {item.textBadge}
         </span>
       )}
-      {/* Numeric Badge — dark mode aware per D8-R3 Fix 6 */}
-      {!item.textBadge && item.badge !== undefined && item.badge > 0 && (
-        <span 
-          style={{
-            fontSize: '10px',
-            fontWeight: 600,
-            fontFamily: "'JetBrains Mono', monospace",
-            padding: '1px 6px',
-            borderRadius: '12px',
-            background: active 
-              ? (tk.isDark ? 'rgba(59,130,246,0.15)' : '#DBEAFE')
-              : item.badgeVariant === 'danger' 
-              ? 'hsl(var(--destructive))' 
-              : item.badgeVariant === 'purple'
-              ? (tk.isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF')
-              : tk.badgeBg,
-            color: active 
-              ? (tk.isDark ? '#7DB8FC' : '#2563EB')
-              : item.badgeVariant === 'danger'
-              ? 'hsl(var(--destructive-foreground))'
-              : item.badgeVariant === 'purple'
-              ? (tk.isDark ? '#C4B5FD' : '#7C3AED')
-              : tk.badgeText,
-            minWidth: expanded ? '20px' : '0',
-            height: '20px',
-            textAlign: 'center',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: expanded ? 'relative' : 'absolute',
-            top: expanded ? 'auto' : '6px',
-            right: expanded ? 'auto' : '6px',
-            opacity: expanded ? 1 : 0,
-            overflow: 'hidden',
-            transition: 'opacity 80ms ease',
-          }}
-        >
-          {item.badge > 99 ? '99+' : item.badge}
-        </span>
-      )}
+      {/* Numeric badges removed platform-wide per product directive */}
     </button>
   );
 
