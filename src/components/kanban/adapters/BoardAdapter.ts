@@ -258,6 +258,15 @@ export interface BoardAdapter<THubRow = unknown> {
 
   /* ───── Optional: card slots for hub-specific UI. ───── */
   renderCardFooter?: (card: CanonicalBoardIssue) => ReactNode;
+
+  /**
+   * Optional per-adapter icon resolver. When supplied, the canonical card's
+   * footer type-icon slot renders whatever this returns. Falls back to the
+   * default Jira issue-type icon if the function returns null or is absent.
+   * Hubs whose type taxonomy is not Jira-native (initiatives, ideas,
+   * incidents) should populate this so the card looks hub-native.
+   */
+  resolveIcon?: (card: CanonicalBoardIssue) => ReactNode | null;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

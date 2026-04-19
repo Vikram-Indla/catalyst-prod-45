@@ -31,7 +31,7 @@
  * component only surfaces the intent; it never mutates DB state itself.
  */
 
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
@@ -63,6 +63,12 @@ interface CardActions {
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  /**
+   * Optional hub-specific icon resolver — forwarded to WorkItemCard. Hubs
+   * whose type taxonomy diverges from Jira (ProductHub initiatives,
+   * Ideas, etc.) supply this via the canonical BoardAdapter.
+   */
+  resolveIcon?: (issue: BoardIssue) => ReactNode | null;
 }
 
 /* ═════════════════════════════════════════════════════════════════════════

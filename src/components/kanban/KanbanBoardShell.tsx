@@ -240,6 +240,7 @@ export function KanbanBoardShell<THubRow = unknown>({
             ? () => { /* signature mismatch — adapter receives full context elsewhere */ }
             : undefined}
           visibleFields={viewSettings.visibleFields}
+          resolveIcon={adapter.resolveIcon as ((issue: import('@/components/kanban/kanban-types').BoardIssue) => React.ReactNode | null) | undefined}
         />
       </div>
     </div>

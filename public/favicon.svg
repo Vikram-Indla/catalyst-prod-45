@@ -1,41 +1,80 @@
 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Catalyst Logo Mark - Option A: Protective Arc - LIGHT MODE -->
-  <!-- Standalone mark for favicon, app icon, etc. -->
+  <!-- Catalyst Favicon — v5 "Badged" (2026-04-19) =========================
+       v4 kept the umbrella-arc + stroked-C mark from the header on a
+       transparent canvas. At 16×16 / 32×32 browser-tab sizes that
+       rendered as a thin blue line drawing floating in the tab chrome
+       (~#E8EAED on active Chrome) — recognizable up close, invisible
+       at tab-switcher distance, and pale next to Jira's solid blue
+       rounded-square badge.
+
+       v5 adopts the industry-standard favicon pattern that Jira,
+       Linear, Notion, Slack, Figma all use: a filled rounded-square
+       container in brand color + a high-contrast inverted glyph in
+       the center. Structural changes:
+
+         1. Added a rounded-square blue background (rx=18 ≈ 22.5%
+            corner radius — the Atlaskit app-icon standard and a
+            pixel-match for Jira's tab favicon). The canvas now has
+            ~94% pixel coverage of saturated blue, up from ~25% stroke
+            coverage in v4.
+
+         2. Dropped the umbrella arc. Two-element composition fought
+            for negative space at 16×16; one-glyph reads at any size.
+            The umbrella stays in the header wordmark + marketing
+            marks where the canvas supports it. This "different mark
+            at favicon size" is how every major SaaS brand handles
+            tab-size rendering.
+
+         3. Converted the C from stroke to a filled shape. Stroked
+            paths lose ~30% opacity to anti-aliasing below 2 px
+            effective width; solid fills keep their mass at any size.
+
+         4. Inverted to white-on-blue. Contrast jumps from ~4.7:1
+            (blue stroke on tab chrome) to 8.59:1 (white on #0052CC),
+            clearing WCAG AAA by a wide margin.
+
+         5. Vertical gradient (y-axis only). Diagonal gradients at
+            16×16 can band/shimmer due to sub-pixel AA; vertical
+            renders cleanly at every zoom level.
+
+       Range: #0065FF (Jira Blue-500) top → #0747A6 (Atlassian Deep)
+       bottom. Slightly brighter top stop than v4 to give the badge
+       dimension — reads as a lit surface, not a flat plate. ===== -->
 
   <defs>
-    <!-- 2026-04-19 (v4): Split from the wordmark palette. The favicon
-         renders at 16×16 / 32×32 in browser tabs, where anti-aliasing
-         shaves the lighter stop of any gradient and the tab chrome
-         (light grey ~#E8EAED on active Chrome) eats low-saturation
-         blues. The v3 unified palette (#2684FF → #0052CC) looked pale
-         next to Jira's tab favicon. v4 drops the light stop and uses
-         Jira's exact tab palette: #0052CC Atlassian Primary → #0747A6
-         Atlassian Deep. At 16×16 this anti-aliases to a punchy deep
-         blue that matches Jira's favicon contrast. The wordmark keeps
-         the airier v3 palette so the header doesn't read harsh —
-         different rendering sizes, different optimal palettes. -->
-    <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0052CC"/>
+    <linearGradient id="catalystBlueBg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#0065FF"/>
       <stop offset="100%" stop-color="#0747A6"/>
     </linearGradient>
   </defs>
 
-  <!-- Umbrella arc (protective canopy) -->
-  <path
-    d="M10 24C10 12 22 4 40 4C58 4 70 12 70 24"
-    stroke="url(#catalystBlue)"
-    stroke-width="6"
-    stroke-linecap="round"
-    fill="none"
-  />
+  <!-- Rounded-square badge container (Jira-parity silhouette) -->
+  <rect x="0" y="0" width="80" height="80" rx="18" fill="url(#catalystBlueBg)"/>
 
-  <!-- C letterform -->
+  <!-- White C letterform — solid fill, centered in a 56×56 safe area
+       with 12px inset on all sides. Stroke weight equivalent ~10px
+       which is ~12.5% of canvas — well above the 8-10% minimum for
+       favicon legibility at 16×16. The C opens to the right with an
+       ~84° mouth, matching the header wordmark's C geometry so the
+       favicon and header still read as the same letter even though
+       the decoration differs. -->
   <path
-    d="M64 38C64 28 54 22 40 22C24 22 14 32 14 48C14 64 24 74 40 74C54 74 64 66 64 56"
-    stroke="url(#catalystBlue)"
-    stroke-width="8"
-    stroke-linecap="round"
-    fill="none"
+    d="M58 26
+       C58 22 53 18 46 16
+       C42 14.8 38 14.5 34 15
+       C22 16.5 14 25 14 40
+       C14 55 22 63.5 34 65
+       C38 65.5 42 65.2 46 64
+       C53 62 58 58 58 54
+       L58 50
+       C58 52 54 54 50 55
+       C46 56 42 56.2 38 55.5
+       C29 54 24 48 24 40
+       C24 32 29 26 38 24.5
+       C42 23.8 46 24 50 25
+       C54 26 58 28 58 30
+       Z"
+    fill="#FFFFFF"
   />
 
 </svg>

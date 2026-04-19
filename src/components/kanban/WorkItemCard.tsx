@@ -6,7 +6,7 @@
  *   BADGE ROW: dark epic pill + bordered fix-version/sprint pill
  *   FOOTER: type-icon + issue_key (left) + priority + assignee avatar (right)
  */
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, type ReactNode } from 'react';
 import {
   Flag, MoreHorizontal, Pencil, Check, X,
 } from 'lucide-react';
@@ -65,6 +65,13 @@ interface WorkItemCardProps {
   assigneeOptions?: AssigneeOption[];
   avatarsByName?: Map<string, string>;
   visibleFields?: VisibleFields;
+  /**
+   * Optional hub-specific icon resolver. When supplied, overrides the default
+   * `JiraIssueTypeIcon` lookup keyed by `issue.issueType`. Use this for hubs
+   * whose type taxonomy does not match Jira (Initiatives, Ideas, etc.). If
+   * it returns `null`, the default Jira icon is used as a fallback.
+   */
+  resolveIcon?: (issue: BoardIssue) => ReactNode | null;
 }
 
 export function WorkItemCard({
@@ -72,6 +79,7 @@ export function WorkItemCard({
   onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail,
   onArchive, onDelete, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName,
   projectKey, onLabelsUpdated, onParentChange, onMoved, onLinked, visibleFields,
+  resolveIcon,
 }: WorkItemCardProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -284,7 +292,11 @@ export function WorkItemCard({
 
       {/* ─── FOOTER: Type Icon + Key (left) + Priority + Avatar (right) ─── */}
       <div className="flex items-center" style={{ gap: 6, minHeight: d.footerHeight, marginTop: 6 }}>
-        {vf?.workType !== false && <JiraIssueTypeIcon type={issue.issueType} size={14} />}
+        {vf?.workType !== false && (
+          resolveIcon
+            ? (resolveIcon(issue) ?? <JiraIssueTypeIcon type={issue.issueType} size={14} />)
+            : <JiraIssueTypeIcon type={issue.issueType} size={14} />
+        )}
         {vf?.workItemKey !== false && (
           <span style={{
             fontSize: d.metaSize + 1, fontWeight: 500,

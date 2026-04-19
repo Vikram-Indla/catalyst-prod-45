@@ -1,44 +1,40 @@
 /**
- * ProductHub Kanban — migrated onto the canonical CatalystKanban primitive.
+ * ProductHub Kanban — migrated onto the canonical KanbanBoardShell
+ * (Phase 3 of the Catalyst Kanban consolidation).
  *
- * Before: custom `components/producthub/kanban/*` tree with its own DnD,
- * columns, card markup, CSS variables and dark-mode overrides. This page
- * was a full 220-LOC duplicate of the ProjectHub kanban chrome.
+ * Before: <CatalystKanban/> + initiativeToKanbanCard (legacy primitive).
+ * After:  <KanbanBoardShell adapter={...}/> with a BoardAdapter<Initiative>
+ *         produced by buildProductHubBoardAdapter.
  *
- * After: this page is a thin adapter — fetch initiatives, map them to
- * `KanbanCardData`, hand them to `<CatalystKanban/>` with the ProductHub
- * column lifecycle, filter schema and sort options. Adding a new column
- * or filter now means editing `initiativeAdapter.ts`, not writing
- * parallel components.
+ * What the shell supplies for free (no hub code):
+ *   - Toolbar: search, avatar stack, basic filter popover, group-by,
+ *     density, view settings, advanced filter entry point, ••• menu.
+ *   - Pragmatic DnD board with the exact Jira-parity card surface.
+ *   - Optimistic colMap + automatic re-sync on data refetch.
+ *   - Initiative-typed icon (via the adapter's resolveIcon).
  *
- * Status persistence is a single Supabase update on `ph_initiatives`.
- * Rollback on failure is automatic because we invalidate the query
- * key — TanStack Query refetches the canonical server state.
+ * Still owned here:
+ *   - Data fetch (useMDTBacklog).
+ *   - Page-level filter state (search, selAssignees, filterSelected,
+ *     groupBy) because it drives query keys.
+ *   - Status-change mutation (Supabase update on ph_initiatives).
+ *   - Detail panel drawer + create drawer.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { CatalystKanban } from '@/components/kanban/CatalystKanban';
-import {
-  initiativeToKanbanCard,
-  PRODUCTHUB_COLUMNS,
-  producthubStatusToColumnId,
-  producthubColumnIdToStatus,
-  PRODUCTHUB_FILTER_FIELDS,
-  PRODUCTHUB_GROUP_BY,
-  PRODUCTHUB_SORT,
-} from '@/components/kanban/adapters/initiativeAdapter';
+import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
+import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase } from '@/integrations/supabase/client';
-import type { KanbanCardData } from '@/components/kanban/catalyst-types';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 
-/* ═════ Initiative → TimelineInitiative adapter — unchanged from previous
-        implementation, used only for the detail panel. ═════ */
+/* ═════ Initiative → TimelineInitiative adapter — unchanged from prior
+        implementation; used only for the detail panel. ═════ */
 function toTimelineInitiative(i: Initiative): TimelineInitiative {
   return {
     id: i.id,
@@ -83,17 +79,29 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
 export default function ProductHubKanbanPage() {
   const { data, isLoading } = useMDTBacklog();
   const initiatives = useMemo<Initiative[]>(() => data?.data ?? [], [data]);
+  const avatarsByName = useProfileAvatarsByName();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-
+  const [, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
   }, []);
 
-  /* ═════ Map initiatives → canonical cards. ═════ */
-  const cards = useMemo(() => initiatives.map(initiativeToKanbanCard), [initiatives]);
+  /* ═════ Page-owned filter + group-by state. ═════ */
+  const [search, setSearch] = useState('');
+  const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
+  const [filterSelected, setFilterSelected] = useState<Record<string, string[]>>({});
+  const [groupBy, setGroupBy] = useState<string>('none');
+
+  const onFilterChange = useCallback((categoryId: string, values: string[]) => {
+    setFilterSelected(prev => ({ ...prev, [categoryId]: values }));
+  }, []);
+  const onClearFilters = useCallback(() => {
+    setFilterSelected({});
+    setSelAssignees(new Set());
+    setSearch('');
+  }, []);
 
   /* ═════ Status-change mutation (drag between columns). ═════ */
   const qc = useQueryClient();
@@ -114,56 +122,83 @@ export default function ProductHubKanbanPage() {
     },
   });
 
-  const onStatusChange = useCallback((card: KanbanCardData, newStatus: string) => {
-    statusMutation.mutate({ id: card.id, status: newStatus as InitiativeStatus });
-  }, [statusMutation]);
+  const onStatusChange = useCallback(
+    (initiativeId: string, status: InitiativeStatus) => {
+      statusMutation.mutate({ id: initiativeId, status });
+    },
+    [statusMutation],
+  );
 
-  const onCardClick = useCallback((card: KanbanCardData) => setSelectedId(card.id), []);
+  /* ═════ Favorite toggle mutation. ═════ */
+  const favoriteMutation = useMutation({
+    mutationFn: async ({ id, value }: { id: string; value: boolean }) => {
+      const { error } = await supabase
+        .from('ph_initiatives')
+        .update({ is_favorited: value, updated_at: new Date().toISOString() })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['ph-initiatives'] });
+      qc.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    },
+  });
+
+  const onToggleFavorite = useCallback(
+    (initiativeId: string) => {
+      const current = initiatives.find(i => i.id === initiativeId);
+      if (!current) return;
+      favoriteMutation.mutate({ id: initiativeId, value: !current.is_favorited });
+    },
+    [favoriteMutation, initiatives],
+  );
+
+  /* ═════ Detail panel routing. ═════ */
+  const onCardClick = useCallback((initiativeId: string) => setSelectedId(initiativeId), []);
   const selectedInitiative = useMemo(
-    () => (selectedId ? initiatives.find(i => i.id === selectedId) : null),
+    () => (selectedId ? initiatives.find(i => i.id === selectedId) ?? null : null),
     [selectedId, initiatives],
   );
   const detailList = useMemo(() => initiatives.map(toTimelineInitiative), [initiatives]);
 
-  /* ═════ Filter fields — add "My initiatives" derived chip via assignee filter. ═════ */
-  const filterFields = useMemo(() => {
-    if (!currentUserId) return PRODUCTHUB_FILTER_FIELDS;
-    return PRODUCTHUB_FILTER_FIELDS;
-  }, [currentUserId]);
+  /* ═════ Build the canonical adapter. ═════ */
+  const adapter = useMemo(() => buildProductHubBoardAdapter({
+    initiatives,
+    avatarsByName,
+    search,
+    onSearchChange: setSearch,
+    selAssignees,
+    onSelAssigneesChange: setSelAssignees,
+    filterSelected,
+    onFilterChange,
+    onClearFilters,
+    groupBy,
+    onGroupByChange: setGroupBy,
+    onStatusChange,
+    onToggleFavorite,
+    onCardClick,
+  }), [
+    initiatives, avatarsByName,
+    search, selAssignees, filterSelected, groupBy,
+    onFilterChange, onClearFilters,
+    onStatusChange, onToggleFavorite, onCardClick,
+  ]);
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <CatalystPageHeader title="Product Kanban" />
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{
-            width: 32, height: 32,
-            border: '2px solid #2563EB', borderTopColor: 'transparent',
-            borderRadius: '50%', animation: 'spin 1s linear infinite',
-          }} />
-        </div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <div style={{
+          width: 32, height: 32,
+          border: '2px solid #2563EB', borderTopColor: 'transparent',
+          borderRadius: '50%', animation: 'spin 1s linear infinite',
+        }} />
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', minHeight: 0 }}>
-      <CatalystPageHeader title="Product Kanban" />
-
-      <CatalystKanban
-        cards={cards}
-        columns={PRODUCTHUB_COLUMNS}
-        statusToColumnId={producthubStatusToColumnId}
-        columnIdToStatus={producthubColumnIdToStatus}
-        filterFields={filterFields}
-        groupByOptions={PRODUCTHUB_GROUP_BY}
-        sortOptions={PRODUCTHUB_SORT}
-        onCardClick={onCardClick}
-        onStatusChange={onStatusChange}
-        onCreate={() => setShowCreate(true)}
-        createLabel="New initiative"
-        storageKey="producthub"
-      />
+    <>
+      <KanbanBoardShell adapter={adapter} title="Product Kanban" />
 
       {selectedInitiative && (
         <InitiativeDetailPanel
@@ -174,6 +209,6 @@ export default function ProductHubKanbanPage() {
       )}
 
       <CreateInitiativeDrawer open={showCreate} onClose={() => setShowCreate(false)} />
-    </div>
+    </>
   );
 }

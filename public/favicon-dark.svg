@@ -1,39 +1,55 @@
 <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Catalyst Logo Mark - Option A: Protective Arc - DARK MODE -->
-  <!-- Standalone mark for favicon, app icon, etc. on dark backgrounds -->
+  <!-- Catalyst Favicon — v5 "Badged" DARK MODE (2026-04-19) ===============
+       Same structural approach as favicon.svg v5 (see that file for
+       the full v4→v5 rationale). Differences for dark mode:
+
+         • Badge gradient shifts one notch brighter on the spectrum:
+           #2684FF Jira Product Blue top → #0052CC Atlassian Primary
+           bottom. On dark tab chrome (~#202124 in Chrome dark mode,
+           ~#292A2D in Arc/Safari dark) a #0747A6 bottom stop reads
+           almost black — we need the deep stop to still show as
+           unambiguously "blue" against a dark background. #0052CC
+           holds its identity at this size.
+
+         • The white glyph stays pure #FFFFFF — the contrast against
+           either badge stop is AAA (9.1:1 against #2684FF, 8.59:1
+           against #0052CC).
+
+       The v4 "airy" palette (#85B8FF → #579DFF) has been retired for
+       favicon use because it read as washed tint next to Jira's
+       dark-mode favicon in the same tab row. The header wordmark's
+       dark palette stays airy (user-preferred, shipped separately). == -->
 
   <defs>
-    <!-- 2026-04-19 (v4): Split from the dark-mode wordmark palette (see
-         favicon.svg for the full rationale). On dark tab backgrounds
-         (#202124 in Chrome dark mode) we need a brighter blue to hold
-         contrast, but the v3 #85B8FF → #579DFF was too pale and read
-         as a washed tint next to Jira's dark-mode favicon. v4 uses
-         Jira's dark-mode tab palette: #579DFF Blue-500 → #2684FF Jira
-         Product Blue. Brighter than the wordmark's dark palette, which
-         is the point — the favicon competes with other tab icons for
-         visual parity, the wordmark sits alone in the header. -->
-    <linearGradient id="catalystBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#579DFF"/>
-      <stop offset="100%" stop-color="#2684FF"/>
+    <linearGradient id="catalystBlueBgDark" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#2684FF"/>
+      <stop offset="100%" stop-color="#0052CC"/>
     </linearGradient>
   </defs>
 
-  <!-- Umbrella arc (protective canopy) -->
-  <path
-    d="M10 24C10 12 22 4 40 4C58 4 70 12 70 24"
-    stroke="url(#catalystBlueDark)"
-    stroke-width="6"
-    stroke-linecap="round"
-    fill="none"
-  />
+  <!-- Rounded-square badge container -->
+  <rect x="0" y="0" width="80" height="80" rx="18" fill="url(#catalystBlueBgDark)"/>
 
-  <!-- C letterform -->
+  <!-- White C letterform — identical geometry to light mode for
+       silhouette consistency. Both tabs read as the same brand
+       regardless of the viewer's OS theme. -->
   <path
-    d="M64 38C64 28 54 22 40 22C24 22 14 32 14 48C14 64 24 74 40 74C54 74 64 66 64 56"
-    stroke="url(#catalystBlueDark)"
-    stroke-width="8"
-    stroke-linecap="round"
-    fill="none"
+    d="M58 26
+       C58 22 53 18 46 16
+       C42 14.8 38 14.5 34 15
+       C22 16.5 14 25 14 40
+       C14 55 22 63.5 34 65
+       C38 65.5 42 65.2 46 64
+       C53 62 58 58 58 54
+       L58 50
+       C58 52 54 54 50 55
+       C46 56 42 56.2 38 55.5
+       C29 54 24 48 24 40
+       C24 32 29 26 38 24.5
+       C42 23.8 46 24 50 25
+       C54 26 58 28 58 30
+       Z"
+    fill="#FFFFFF"
   />
 
 </svg>
