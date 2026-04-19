@@ -74,6 +74,7 @@ export function useMDTBacklog() {
           .eq('project_key', 'MDT')
           .in('issue_type', ['BRD Task', 'Sub-task'])
           .not('parent_key', 'is', null)
+          .is('archived_at', null)
           .limit(5000),
       ]);
 

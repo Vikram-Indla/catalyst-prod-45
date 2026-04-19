@@ -56,7 +56,8 @@ export function useLinkedWorkItems(issueKey: string) {
           'issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, project_key',
         )
         .in('issue_key', targetKeys)
-        .is('jira_removed_at', null);
+        .is('jira_removed_at', null)
+        .is('archived_at', null);
 
       const targetMap = new Map<string, LinkedWorkItemTarget>(
         (phTargets ?? []).map((t: any) => [

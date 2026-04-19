@@ -22,6 +22,7 @@ export function useBoardCards(boardId: string | undefined) {
       const { data: items, error: itemError } = await typedQuery('ph_issues')
         .select('id, issue_key, summary, issue_type, status, status_category, priority, story_points, assignee_display_name, assignee_account_id, fix_versions, parent_key, labels, due_date')
         .in('id', workItemIds)
+        .is('archived_at', null)
         .limit(5000);
 
       if (itemError) throw itemError;

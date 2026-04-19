@@ -118,6 +118,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
         const { data } = await supabase.from('ph_issues')
           .select('issue_key, summary, issue_type, status, status_category')
           .is('jira_removed_at', null)
+          .is('archived_at', null)
           .order('jira_updated_at', { ascending: false })
           .limit(8);
         return data ?? [];
@@ -126,6 +127,7 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
         .select('issue_key, summary, issue_type, status, status_category')
         .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
         .is('jira_removed_at', null)
+        .is('archived_at', null)
         .limit(10);
       return data ?? [];
     },
@@ -338,7 +340,8 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       const { data: phTargets } = await supabase.from('ph_issues')
         .select('issue_key, summary, status, status_category, issue_type, assignee_account_id, assignee_display_name, priority, jira_updated_at, project_key')
         .in('issue_key', targetKeys)
-        .is('jira_removed_at', null);
+        .is('jira_removed_at', null)
+        .is('archived_at', null);
       const targetMap = new Map((phTargets ?? []).map((t: any) => [t.issue_key, t]));
 
       // Fallback: resolve missing keys from catalyst_issues (locally-created items)

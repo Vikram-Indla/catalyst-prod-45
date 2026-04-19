@@ -80,6 +80,7 @@ export function useIncidentListView() {
         .eq('issue_type', 'Production Incident')
         .gte('jira_created_at', '2026-01-01T00:00:00Z')
         .is('deleted_at', null)
+        .is('archived_at', null)
         .order('jira_created_at', { ascending: false });
       if (error) throw error;
       return (data || []).map(row => ({

@@ -118,7 +118,8 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
       let query = (supabase as any)
         .from('ph_issues')
         .select('issue_key, summary, issue_type, status, status_category, jira_updated_at, jira_created_at')
-        .in('issue_type', ['Story', 'Epic', 'Feature', 'Task']);
+        .in('issue_type', ['Story', 'Epic', 'Feature', 'Task'])
+        .is('archived_at', null);
       if (projectKey) {
         query = query.like('issue_key', `${projectKey}-%`);
       }

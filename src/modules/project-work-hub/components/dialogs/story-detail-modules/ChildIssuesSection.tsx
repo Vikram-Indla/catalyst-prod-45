@@ -290,7 +290,7 @@ export function ChildIssuesSection({ storyKey, storyId, projectKey, onOpenItem }
     queryFn: async () => {
       const { data, error } = await supabase.from('ph_issues')
         .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
-        .eq('parent_key', storyKey).in('issue_type', ['task', 'Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration']).is('deleted_at', null)
+        .eq('parent_key', storyKey).in('issue_type', ['task', 'Sub-task', 'Frontend', 'Backend', 'Figma', 'Integration']).is('deleted_at', null).is('archived_at', null)
         .order('position', { ascending: true });
       if (error) throw error;
       return (data ?? []) as PhIssueRow[];

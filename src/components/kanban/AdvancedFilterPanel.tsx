@@ -96,6 +96,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         .select('fix_versions')
         .eq('project_key', projectKey.toUpperCase())
         .is('deleted_at', null)
+        .is('archived_at', null)
         .not('fix_versions', 'is', null);
       const names = new Set<string>();
       (data ?? []).forEach((r: any) => {
@@ -119,7 +120,8 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         .from('ph_issues')
         .select('issue_type')
         .eq('project_key', projectKey.toUpperCase())
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .is('archived_at', null);
       const types = new Set<string>();
       (data ?? []).forEach((r: any) => { if (r.issue_type) types.add(r.issue_type); });
       return Array.from(types).sort();
@@ -134,7 +136,8 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         .from('ph_issues')
         .select('status')
         .eq('project_key', projectKey.toUpperCase())
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .is('archived_at', null);
       const statuses = new Set<string>();
       (data ?? []).forEach((r: any) => { if (r.status) statuses.add(r.status); });
       return Array.from(statuses).sort();
@@ -149,7 +152,8 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         .from('ph_issues')
         .select('assignee_display_name')
         .eq('project_key', projectKey.toUpperCase())
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .is('archived_at', null);
       const names = new Set<string>();
       (data ?? []).forEach((r: any) => {
         if (r.assignee_display_name) names.add(r.assignee_display_name);

@@ -499,8 +499,8 @@ export function useForYouData() {
         // Jira queries (only if user has Jira mapping)
         if (jiraAccountIds.length > 0) {
           wave2Promises.push(
-            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).order('jira_updated_at', { ascending: false }).limit(200),
-            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200),
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).is('archived_at', null).order('jira_updated_at', { ascending: false }).limit(200),
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('assignee_account_id', jiraAccountIds).is('archived_at', null).gte('jira_updated_at', ninetyDaysAgo.toISOString()).order('jira_updated_at', { ascending: false }).limit(200),
           );
         }
 
@@ -555,7 +555,7 @@ export function useForYouData() {
           const itemIds = stars.map(s => s.item_id);
 
           const [{ data: starredIssuesRaw }, { data: starredPlannerTasks }] = await Promise.all([
-            supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).order('jira_updated_at', { ascending: false }),
+            supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', itemIds).is('archived_at', null).order('jira_updated_at', { ascending: false }),
             supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id').in('task_key', itemIds).is('deleted_at', null),
           ]);
 

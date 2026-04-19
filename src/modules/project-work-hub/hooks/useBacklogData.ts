@@ -77,6 +77,7 @@ export function useEpicBacklog(projectId: string) {
         .eq('issue_type', 'Epic')
         .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false });
       if (error) throw error;
 
@@ -139,6 +140,7 @@ export function useStoryBacklog(projectId: string) {
         .eq('issue_type', 'Story')
         .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false });
       if (error) throw error;
       // Also fetch Catalyst-native stories for this project
@@ -179,7 +181,8 @@ export function useStoryBacklog(projectId: string) {
         const { data: epics } = await supabase
           .from('ph_issues')
           .select('id, issue_key, summary, status, priority, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at')
-          .in('issue_key', parentKeys);
+          .in('issue_key', parentKeys)
+          .is('archived_at', null);
         if (epics) {
           for (const e of epics) {
             epicMap[e.issue_key] = {

@@ -217,7 +217,7 @@ export default function CleanupPage() {
     enabled: parentKeys.length > 0,
     staleTime: 300_000,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_issues').select('issue_key, summary, issue_type').in('issue_key', parentKeys);
+      const { data } = await supabase.from('ph_issues').select('issue_key, summary, issue_type').in('issue_key', parentKeys).is('archived_at', null);
       const map: Record<string, { title: string; issueType: string }> = {};
       (data ?? []).forEach((p: any) => { map[p.issue_key] = { title: p.summary, issueType: p.issue_type || 'Task' }; });
       return map;

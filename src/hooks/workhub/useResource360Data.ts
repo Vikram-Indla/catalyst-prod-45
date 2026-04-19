@@ -133,7 +133,8 @@ export function useResource360People() {
           effective_due_date
         `)
         .in('issue_type', ['Backend', 'Frontend', 'Figma', 'Integration', 'Sub-task'])
-        .not('assignee_account_id', 'is', null);
+        .not('assignee_account_id', 'is', null)
+        .is('archived_at', null);
       if (sErr) throw new Error(sErr.message);
 
       // 5. Get parent stories to check their status (active = not Done)
@@ -147,7 +148,8 @@ export function useResource360People() {
         const { data: parentStories } = await supabase
           .from('ph_issues')
           .select('issue_key, status_category, fix_versions')
-          .in('issue_key', Array.from(parentKeys));
+          .in('issue_key', Array.from(parentKeys))
+          .is('archived_at', null);
         (parentStories ?? []).forEach((p: any) => {
           parentStoryMap.set(p.issue_key, { 
             status_category: p.status_category,

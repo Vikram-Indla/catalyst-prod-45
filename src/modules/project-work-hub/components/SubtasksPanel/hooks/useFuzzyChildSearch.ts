@@ -71,6 +71,7 @@ export function useFuzzyChildSearch({
           .select('id,issue_key,summary,issue_type,status,status_category')
           .eq('project_key', projectKey)
           .is('deleted_at', null)
+          .is('archived_at', null)
           .or(`issue_key.ilike.%${needle}%,summary.ilike.%${needle}%`)
           .order('jira_updated_at', { ascending: false })
           .limit(RESULT_LIMIT);

@@ -164,6 +164,7 @@ async function fetchPhIssuesFallback(
       let q = supabase
         .from('ph_issues')
         .select('*', { count: 'exact' })
+        .is('archived_at', null)
         .order('jira_updated_at', { ascending: false })
         .range(from, to);
 

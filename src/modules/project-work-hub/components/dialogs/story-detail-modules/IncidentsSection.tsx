@@ -20,7 +20,7 @@ export function IncidentsSection({ storyKey }: { storyKey: string }) {
     queryFn: async () => {
       const { data, error } = await supabase.from('ph_issues')
         .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
-        .eq('parent_key', storyKey).eq('issue_type', 'Production Incident').is('deleted_at', null)
+        .eq('parent_key', storyKey).eq('issue_type', 'Production Incident').is('deleted_at', null).is('archived_at', null)
         .order('jira_created_at', { ascending: false });
       if (error) throw error;
       return (data ?? []) as PhIssueRow[];

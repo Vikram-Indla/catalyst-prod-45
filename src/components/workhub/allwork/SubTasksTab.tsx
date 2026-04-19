@@ -42,6 +42,7 @@ export function useSubTasks(parentKey: string | null) {
       .select('issue_key, summary, status, status_category, issue_type, priority, assignee_display_name, parent_key, parent_summary, jira_created_at, jira_updated_at, description_text, story_points, labels, sprint_name, type_icon_url, due_date, project_key, reporter_display_name')
       .eq('parent_key', parentKey)
       .is('jira_removed_at', null)
+      .is('archived_at', null)
       .order('jira_updated_at', { ascending: false })
       .limit(100)
       .then(({ data: rows }) => {
