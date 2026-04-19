@@ -78,6 +78,12 @@ import type {
 } from '@/components/shared/JiraFilterAtlaskit';
 import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight } from 'lucide-react';
 
+// Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
+// migrated outer page wrapper (blue page bg + white card + h1) onto the
+// shared AtlaskitPageShell so this surface tracks the Dashboard's shell
+// padding (currently 8px) instead of carrying its own bespoke 24px.
+import { AtlaskitPageShell } from '@/components/ads';
+
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 /* ─── Unified model ────────────────────────────────────────────────────── */
@@ -323,7 +329,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     setSearchParams(params, { replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeFilter, search, sortKey, sortDir, page, detailItemId, panelMode, groupBy, collapsedGroups, expandedIds, visibleColumns]);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // containerRef was declared + attached to the outer wrapper but never
+  // read anywhere in this module. Removed Apr 19, 2026 as part of the
+  // AtlaskitPageShell migration (handover §4 step (b)). `useRef` import
+  // is still needed — JiraTable passes its own refs through helpers.
 
   const pageSize = 25;
 
@@ -1082,47 +1091,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   };
 
   return (
-    <div
-      ref={containerRef}
-      style={{
-        minHeight: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        // Measured verbatim from Jira BAU list DOM 2026-04-18:
-        //   - outer page bg: rgb(233, 242, 254) / #E9F2FE
-        //   - font-family: "Atlassian Sans" base stack
-        // The white table lives inside this as a rounded card — see the
-        // inner wrapper further down.
-        fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
-        background: '#E9F2FE',
-        padding: 24,
-      }}
-    >
-      {/* White table card — Jira's list view nests the table inside a
-          rounded white surface with 8px border-radius sitting on the light-
-          blue page background. Measured from Jira DOM 2026-04-18. */}
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          background: '#FFFFFF',
-          borderRadius: 8,
-          overflow: 'hidden',
-        }}
-      >
-      {/* Page header — clean h1, matches Jira's list-view header.
-          The page breadcrumb (ProjectHub / BAU) was removed as redundant —
-          the top nav already shows location. The bracketed work-item-type
-          list was removed as visual noise — Jira never inlines that kind
-          of detail in the h1. */}
-      <div style={{ padding: '16px 16px 4px' }}>
-        <h1 style={{ margin: 0, fontSize: 20, fontWeight: 600, color: token('color.text', '#172B4D'), letterSpacing: '-0.003em' }}>
-          Backlog
-        </h1>
-      </div>
-
+    <AtlaskitPageShell title="Backlog">
       {/* Type chips */}
       <div style={{ padding: '12px 16px 6px', display: 'flex', gap: 8 }}>
         {([
@@ -1447,7 +1416,6 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           </div>
         )}
       </div>
-      </div>
 
       {/* Atlaskit-native Edit modal (replaces shadcn Dialog wrapper).
           Mounts only when editingId is set — ModalTransition handles enter/exit. */}
@@ -1537,7 +1505,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />
-    </div>
+    </AtlaskitPageShell>
   );
 }
 

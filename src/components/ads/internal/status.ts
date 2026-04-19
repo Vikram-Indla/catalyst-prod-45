@@ -15,9 +15,9 @@ export type StatusCategory = 'todo' | 'inProgress' | 'done';
  * than throwing — UI must never crash on an unexpected status string.
  */
 export function toStatusCategory(raw: string | null | undefined): StatusCategory {
-  const v = (raw ?? '').trim().toLowerCase();
+  const v = (raw ?? '').trim().toLowerCase().replace(/_/g, ' ');
   if (!v) return 'todo';
-  if (['done', 'closed', 'resolved', 'released', 'approved', 'completed', 'archived'].includes(v)) {
+  if (['done', 'closed', 'resolved', 'released', 'approved', 'completed', 'archived', 'fixed', 'verified'].includes(v)) {
     return 'done';
   }
   if (
@@ -30,6 +30,24 @@ export function toStatusCategory(raw: string | null | undefined): StatusCategory
       'doing',
       'working',
       'selected for development',
+      // Jira workflow states that semantically sit between To-Do and Done —
+      // previously fell through to 'todo' (grey) which made "Ready for
+      // Production" tickets look already-closed. See BAU Dashboard blueprint
+      // §1c for the bug surfaced during migration.
+      'ready for production',
+      'ready for qa',
+      'ready for review',
+      'ready for test',
+      'ready for uat',
+      'in qa',
+      'in uat',
+      'in test',
+      'in testing',
+      'pending review',
+      'under review',
+      'open',
+      'new',
+      'reopened',
     ].includes(v)
   ) {
     return 'inProgress';

@@ -192,8 +192,9 @@ export function WorkItemCard({
               fontSize: d.titleSize,
               lineHeight: `${d.titleSize + 6}px`,
               color: tk.textPrimary,
-              fontWeight: 500,
+              fontWeight: 400,                          /* Jira parity: 400 */
               marginBottom: 4,
+              paddingRight: 32,                         /* reserve overflow-menu slot */
               display: '-webkit-box',
               WebkitLineClamp: d.titleClamp,
               WebkitBoxOrient: 'vertical',
@@ -239,29 +240,32 @@ export function WorkItemCard({
         )}
       </div>
 
-      {/* ─── BADGE ROW: Epic (dark charcoal) + Fix Version (bordered) ─── */}
+      {/* ─── BADGE ROW: Jira epic lozenge (light gray) + Fix Version (bordered) ─── */}
       {(epicLabel || fixVersionLabel) && (
         <div className="flex items-center flex-wrap" style={{ gap: 4, marginBottom: 4 }}>
           {epicLabel && (
             <span style={{
-              fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-              background: '#42526E', color: '#FFFFFF',
-              padding: '1px 6px', borderRadius: 3,
-              lineHeight: '18px', maxWidth: 200,
+              fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
+              /* Jira parity: #DDDEE1 surface, #292A2E text, 3px radius, 16px tall */
+              background: tk.epicLozengeBg, color: tk.epicLozengeText,
+              padding: '0 6px', borderRadius: 3,
+              height: 16, lineHeight: '16px',
+              maxWidth: 200,
               overflow: 'hidden', textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap', display: 'inline-block',
+              whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center',
               letterSpacing: '0.02em',
             }}>{epicLabel}</span>
           )}
           {fixVersionLabel && (
             <span style={{
-              fontSize: 10, fontWeight: 600,
-              background: 'transparent', color: tk.textSecondary,
-              padding: '1px 6px', borderRadius: 3,
+              fontSize: 11, fontWeight: 600,
+              background: 'transparent', color: tk.textMuted,
+              padding: '0 6px', borderRadius: 3,
               border: `1px solid ${tk.border}`,
-              lineHeight: '18px', maxWidth: 180,
+              height: 16, lineHeight: '14px',
+              maxWidth: 180,
               overflow: 'hidden', textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap', display: 'inline-block',
+              whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center',
               textTransform: 'uppercase',
             }}>{fixVersionLabel}</span>
           )}

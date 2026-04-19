@@ -19,43 +19,54 @@ export interface KanbanThemeTokens {
   cardBg: string;
   cardBorder: string;
   cardHoverBg: string;
+  cardShadowRest: string;
   cardHoverShadow: string;
   cardDragShadow: string;
   dropHighlight: string;
+  dropIndicator: string;
   selectedAccent: string;
   chipBg: string;
   chipText: string;
   inputBg: string;
   inputBorder: string;
   overlay: string;
+  /* Jira-parity epic lozenge */
+  epicLozengeBg: string;
+  epicLozengeText: string;
 }
 
 export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens } = {
   light: {
-    pageBg: '#F4F5F7',
+    /* Jira parity: page transparent, column surface #F8F8F8, card #FFFFFF */
+    pageBg: '#FFFFFF',
     surfaceBg: '#FFFFFF',
-    surfaceHover: '#F4F5F7',
-    surfaceAlt: '#FAFBFC',
-    headerBg: '#F4F5F7',
+    surfaceHover: '#F1F2F4',
+    surfaceAlt: '#F8F8F8',     /* column surface (Jira: rgb(248,248,248)) */
+    headerBg: '#F8F8F8',       /* column header — matches column body */
     border: '#DDDEE1',
     borderSubtle: '#EBECF0',
-    textPrimary: '#172B4D',
+    textPrimary: '#292A2E',    /* Jira primary text */
     textSecondary: '#42526E',
-    textMuted: '#5E6C84',
+    textMuted: '#505258',      /* Jira muted (column name, issue key) */
     textDisabled: '#94A3B8',
-    badgeBg: 'rgba(9,30,66,.08)',
+    badgeBg: 'transparent',    /* Jira: count badge is plain text, no pill */
     cardBg: '#FFFFFF',
-    cardBorder: '#DDDEE1',
-    cardHoverBg: '#F4F5F7',
-    cardHoverShadow: '0 1px 4px rgba(9,30,66,.15)',
-    cardDragShadow: '0 8px 16px rgba(9,30,66,.25)',
-    dropHighlight: 'rgba(37,99,235,0.04)',
+    cardBorder: 'transparent', /* Jira cards are shadow-only, no border */
+    cardHoverBg: '#FFFFFF',
+    /* Jira dual-stack shadow (rest): 1px offset drop + 1px blur outline */
+    cardShadowRest: 'rgba(30,31,33,.25) 0 1px 1px 0, rgba(30,31,33,.31) 0 0 1px 0',
+    cardHoverShadow: 'rgba(30,31,33,.35) 0 2px 4px 0, rgba(30,31,33,.31) 0 0 1px 0',
+    cardDragShadow: 'rgba(30,31,33,.45) 0 8px 16px 0, rgba(30,31,33,.31) 0 0 1px 0',
+    dropHighlight: '#DFE3E8',  /* Jira drop tint */
+    dropIndicator: '#2563EB',  /* 2px accent line on insertion */
     selectedAccent: '#2563EB',
     chipBg: '#DFE1E6',
     chipText: '#42526E',
     inputBg: '#FAFBFC',
     inputBorder: '#DDDEE1',
     overlay: 'rgba(9,30,66,.08)',
+    epicLozengeBg: '#DDDEE1',  /* Jira epic lozenge surface */
+    epicLozengeText: '#292A2E',
   },
   dark: {
     pageBg: '#0A0A0A',
@@ -67,21 +78,25 @@ export const KANBAN_TOKENS: { light: KanbanThemeTokens; dark: KanbanThemeTokens 
     borderSubtle: '#292929',
     textPrimary: '#EDEDED',
     textSecondary: '#A1A1A1',
-    textMuted: '#878787',
+    textMuted: '#A1A1A1',
     textDisabled: '#7D7D7D',
-    badgeBg: 'rgba(255,255,255,.08)',
+    badgeBg: 'transparent',
     cardBg: '#1A1A1A',
-    cardBorder: '#2E2E2E',
+    cardBorder: 'transparent',
     cardHoverBg: '#1F1F1F',
-    cardHoverShadow: '0 1px 4px rgba(0,0,0,.4)',
-    cardDragShadow: '0 8px 16px rgba(0,0,0,.6)',
-    dropHighlight: 'rgba(37,99,235,0.06)',
+    cardShadowRest: 'rgba(0,0,0,.45) 0 1px 1px 0, rgba(0,0,0,.55) 0 0 1px 0',
+    cardHoverShadow: 'rgba(0,0,0,.55) 0 2px 4px 0, rgba(0,0,0,.55) 0 0 1px 0',
+    cardDragShadow: 'rgba(0,0,0,.65) 0 8px 16px 0, rgba(0,0,0,.55) 0 0 1px 0',
+    dropHighlight: '#292929',
+    dropIndicator: '#2563EB',
     selectedAccent: '#2563EB',
     chipBg: '#292929',
     chipText: '#A1A1A1',
     inputBg: '#111111',
     inputBorder: '#2E2E2E',
     overlay: 'rgba(255,255,255,.04)',
+    epicLozengeBg: '#2E2E2E',
+    epicLozengeText: '#EDEDED',
   },
 };
 
@@ -100,10 +115,14 @@ export interface DensityConfig {
   cardMinHeight: number;
 }
 
+/**
+ * Density presets.
+ * comfortable = Jira parity (card pad 12px, title 14/20, gap 4px).
+ */
 export const DENSITY_CONFIG: Record<KanbanDensity, DensityConfig> = {
-  compact:     { cardPad: '4px 6px', titleSize: 11, titleClamp: 1, metaSize: 9, avatarSize: 20, cardGap: 2, footerHeight: 18, cardMinHeight: 80 },
-  dense:       { cardPad: '6px 8px', titleSize: 12, titleClamp: 2, metaSize: 10, avatarSize: 22, cardGap: 4, footerHeight: 20, cardMinHeight: 110 },
-  comfortable: { cardPad: '10px 12px', titleSize: 13, titleClamp: 3, metaSize: 10, avatarSize: 26, cardGap: 8, footerHeight: 22, cardMinHeight: 0 },
+  compact:     { cardPad: '6px 8px',   titleSize: 12, titleClamp: 1, metaSize: 10, avatarSize: 20, cardGap: 4, footerHeight: 18, cardMinHeight: 0 },
+  dense:       { cardPad: '8px 10px',  titleSize: 13, titleClamp: 2, metaSize: 11, avatarSize: 22, cardGap: 4, footerHeight: 20, cardMinHeight: 0 },
+  comfortable: { cardPad: '12px',      titleSize: 14, titleClamp: 3, metaSize: 12, avatarSize: 24, cardGap: 4, footerHeight: 22, cardMinHeight: 0 },
 };
 
 /* ═══ COLUMN CONFIG ═══ */

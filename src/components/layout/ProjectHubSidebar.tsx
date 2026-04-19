@@ -84,22 +84,22 @@ export function ProjectHubSidebar({ expanded, onToggle, className }: ProjectHubS
       badge: projectKey.slice(0, 2).toUpperCase(),
       label: projectKey.toUpperCase(),
       showFavorites: false,
+      // Design critique (2026-04-19): flattened from 3 sections ('', Boards,
+      // Planning) to a single unlabeled group. Rationale:
+      //   - "BOARDS" was tautological (one child: "Board").
+      //   - "PLANNING" as a 2-item group under a single-item group flipped
+      //     the hierarchy — labels implied more structure than existed.
+      //   - Four items fit comfortably in a flat list; section headers earn
+      //     their weight only once a group crosses ~4 children or the labels
+      //     disambiguate overlapping verbs. Neither was true here.
+      // If this list grows (e.g. Reports, Timeline, Releases are added),
+      // reintroduce section headers then — not pre-emptively.
       sections: [
         {
           title: '',
           items: [
             { id: 'dashboard', title: 'Dashboard', path: `${base}/dashboard`, icon: LayoutDashboard, exact: false },
-          ],
-        },
-        {
-          title: 'Boards',
-          items: [
             { id: 'board', title: 'Board', path: `${base}/boards`, icon: Columns3, exact: false },
-          ],
-        },
-        {
-          title: 'Planning',
-          items: [
             // Jira "List view" equivalent — unified, per-project. Combines
             // Epics, Features, Stories, Tasks, QA Bugs, Production Incidents,
             // Change Requests, Business Gaps, and API Requirements.

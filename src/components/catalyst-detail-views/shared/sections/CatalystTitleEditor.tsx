@@ -30,11 +30,15 @@ import type { PhIssue } from '../types';
    microlabel reads as a field-label and demotes the H1 to a field-value,
    flipping the page hierarchy — no peer issue tracker does this.
 
-   Also bumps the Atlaskit Heading-inside-InlineEdit to Jira-parity sizing
-   (~24px / weight 500, letter-spacing -0.01em) — Atlaskit's default
-   size="medium" renders 20px which reads too small against Jira's ~24px
-   issue title (Modern Jira Cloud 2024+). We target it via the wrapper
-   class so other InlineEdit instances keep their defaults. */
+   Jira-measured title typography (HANDOVER spec, Drawer Phase 3,
+   2026-04-19): 20px / font-weight 653 / line-height 1.4 / #292A2E /
+   Atlassian Sans. Atlaskit Heading size="medium" renders at 20px
+   natively; the scoped overrides below lock the weight/color/family
+   to the measured values. We target the wrapper class so other
+   InlineEdit instances keep their defaults.
+
+   Prior state (kept for traceability): 24/500/#172B4D with -0.01em
+   tracking. Superseded by the Jira-measured spec in HANDOVER.md. */
 const CV_TITLE_STYLE_ID = 'cv-title-edit-style';
 if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_ID)) {
   const s = document.createElement('style');
@@ -47,22 +51,22 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
       overflow: hidden !important; clip: rect(0, 0, 0, 0) !important;
       white-space: nowrap !important; border: 0 !important;
     }
-    /* Jira-parity title typography (2026-04-19). */
+    /* Jira-measured title typography — HANDOVER Drawer Phase 3 spec. */
     .cv-title-edit-hide-label h1 {
-      font-size: 24px !important;
-      font-weight: 500 !important;
-      line-height: 28px !important;
-      letter-spacing: -0.01em !important;
-      color: #172B4D !important;
+      font-size: 20px !important;
+      font-weight: 653 !important;
+      line-height: 1.4 !important;
+      color: #292A2E !important;
+      font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
       margin: 0 !important;
     }
     /* Match edit-view textfield to the display h1 so swap-in is seamless. */
     .cv-title-edit-hide-label input[type="text"] {
-      font-size: 24px !important;
-      font-weight: 500 !important;
-      line-height: 28px !important;
-      letter-spacing: -0.01em !important;
-      color: #172B4D !important;
+      font-size: 20px !important;
+      font-weight: 653 !important;
+      line-height: 1.4 !important;
+      color: #292A2E !important;
+      font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
     }
   `;
   document.head.appendChild(s);
@@ -91,9 +95,10 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
           defaultValue={summary}
           label="Issue title"
           readView={() => (
-            // size="large" → 24px; further tuned via scoped CSS above to hit
-            // Jira's exact title treatment (500 weight, -0.01em tracking).
-            <Heading size="large" as="h1">
+            // size="medium" → 20px natively (matches HANDOVER Phase 3 spec).
+            // Scoped CSS above locks the weight/color/family to the Jira-
+            // measured values (653 / #292A2E / Atlassian Sans).
+            <Heading size="medium" as="h1">
               {summary || '—'}
             </Heading>
           )}

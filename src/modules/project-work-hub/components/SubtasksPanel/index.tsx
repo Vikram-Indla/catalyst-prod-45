@@ -46,16 +46,14 @@ import { allowedChildTypes, panelTitleFor } from './hierarchy';
 import { InlineCreateWithAI } from './InlineCreateWithAI';
 import { DescriptionPopover } from './DescriptionPopover';
 import { subtaskCreateInputSchema } from './schemas';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button/new';
 import DynamicTable from '@atlaskit/dynamic-table';
 import './SubtasksPanel.css';
 
@@ -971,37 +969,62 @@ export function SubtasksPanel({
             />
           )}
 
-          {/* ═══ Destructive confirm (single row) ═══ */}
-          <AlertDialog open={pendingDelete !== null} onOpenChange={(o) => !o && setPendingDelete(null)}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete {effectiveTitle.toLowerCase().replace(/s$/, '')}</AlertDialogTitle>
-                <AlertDialogDescription>
+          {/* ═══ Destructive confirm (single row) — Phase F.b ═══
+              Atlaskit ModalDialog replaces shadcn AlertDialog. Matches
+              StoryDetailModal Phase H pattern: width="small", danger header,
+              subtle Cancel + danger Delete. Escape + overlay click inherited. */}
+          <ModalTransition>
+            {pendingDelete !== null && (
+              <Modal
+                onClose={() => setPendingDelete(null)}
+                width="small"
+              >
+                <ModalHeader>
+                  <ModalTitle appearance="danger">
+                    Delete {effectiveTitle.toLowerCase().replace(/s$/, '')}
+                  </ModalTitle>
+                </ModalHeader>
+                <ModalBody>
                   Delete <strong>{pendingDelete?.issue_key}</strong> — {pendingDelete?.summary}? This cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                </ModalBody>
+                <ModalFooter>
+                  <Button appearance="subtle" onClick={() => setPendingDelete(null)}>
+                    Cancel
+                  </Button>
+                  <Button appearance="danger" onClick={confirmDelete}>
+                    Delete
+                  </Button>
+                </ModalFooter>
+              </Modal>
+            )}
+          </ModalTransition>
 
-          {/* ═══ Destructive confirm (bulk) ═══ */}
-          <AlertDialog open={pendingBulkDelete} onOpenChange={setPendingBulkDelete}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'}</AlertDialogTitle>
-                <AlertDialogDescription>
+          {/* ═══ Destructive confirm (bulk) — Phase F.b ═══ */}
+          <ModalTransition>
+            {pendingBulkDelete && (
+              <Modal
+                onClose={() => setPendingBulkDelete(false)}
+                width="small"
+              >
+                <ModalHeader>
+                  <ModalTitle appearance="danger">
+                    Delete {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'}
+                  </ModalTitle>
+                </ModalHeader>
+                <ModalBody>
                   Delete {selectedIds.size} selected {effectiveTitle.toLowerCase()}? This cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={confirmBulkDelete}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                </ModalBody>
+                <ModalFooter>
+                  <Button appearance="subtle" onClick={() => setPendingBulkDelete(false)}>
+                    Cancel
+                  </Button>
+                  <Button appearance="danger" onClick={confirmBulkDelete}>
+                    Delete
+                  </Button>
+                </ModalFooter>
+              </Modal>
+            )}
+          </ModalTransition>
 
           {/* ═══ Inline create (AI-augmented) ═══ */}
           {creating && canCreate && (

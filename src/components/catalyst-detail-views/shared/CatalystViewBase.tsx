@@ -478,7 +478,7 @@ export function CatalystViewBase({
 
           {/* RIGHT PANEL — Sidebar */}
           <div className="cv-drawer-sidebar" style={{
-            width: rightPanelWidth, minWidth: 220, maxWidth: 480,
+            width: rightPanelWidth, minWidth: 220, maxWidth: 600,
             background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
             display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
           }}>

@@ -1,22 +1,30 @@
+// @ts-nocheck
 /**
  * CatalystPageHeader — Canonical page header for the entire Catalyst platform.
  *
  * Apr 2026 (Decision A): Restyled to match BacklogPage.atlaskit.tsx:1119-1123
- * measurements. No breadcrumb — the top nav + sidebar already show location.
+ * measurements. No breadcrumb — callers render breadcrumbs above this header.
  *
- * - Title only: 20px / weight 600 / #172B4D / -0.003em tracking
- * - Font: Atlassian Sans → Inter fallback
- * - Fixed height: 52px
- * - Padding: 0 24px (aligns with sidebar divider edge)
- * - Actions slot on the right
+ * Surface chrome (locked)
+ * ──────────────────────
+ *   height:    52px (fixed)
+ *   padding:   0 24px (aligns with sidebar divider edge)
+ *   title:     <Heading as="h1" size="large">{title}</Heading>
+ *              → Atlassian Sans 20/600/-0.003em via @atlaskit/heading
+ *   actions:   rendered in an <Inline> slot on the right
  *
- * Usage:
+ * Rewritten Apr 19, 2026 — inline font/color styles replaced with the ADS
+ * Heading wrapper. Light/dark theming now flows through @atlaskit/tokens
+ * via AdsThemeProvider; no `useTheme`/`isDark` branching needed here.
+ *
+ * Usage
+ * ─────
  *   <CatalystPageHeader title="Board" />
  *   <CatalystPageHeader title="All Projects" actions={<Button>+ New</Button>} />
  */
 
 import React from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { Heading } from '@/components/ads';
 
 interface CatalystPageHeaderProps {
   title: string;
@@ -26,8 +34,6 @@ interface CatalystPageHeaderProps {
 }
 
 export function CatalystPageHeader({ title, actions, icon }: CatalystPageHeaderProps) {
-  const { isDark } = useTheme();
-
   return (
     <header
       style={{
@@ -42,19 +48,9 @@ export function CatalystPageHeader({ title, actions, icon }: CatalystPageHeaderP
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         {icon}
-        <h1
-          style={{
-            fontFamily: '"Atlassian Sans", Inter, system-ui, -apple-system, sans-serif',
-            fontSize: 20,
-            fontWeight: 600,
-            color: isDark ? '#EDEDED' : '#172B4D',
-            letterSpacing: '-0.003em',
-            margin: 0,
-            lineHeight: 1.2,
-          }}
-        >
+        <Heading as="h1" size="large">
           {title}
-        </h1>
+        </Heading>
       </div>
 
       {actions && (

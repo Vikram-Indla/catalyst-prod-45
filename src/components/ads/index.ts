@@ -98,3 +98,12 @@ export type { FlagProps, FlagGroupProps, FlagAppearance } from './Flag';
 
 export { ProgressBar } from './ProgressBar';
 export type { ProgressBarProps, ProgressBarAppearance } from './ProgressBar';
+
+export { PageHeader } from './PageHeader';
+export type { PageHeaderProps } from './PageHeader';
+
+export { AtlaskitPageShell } from './AtlaskitPageShell';
+export type { AtlaskitPageShellProps } from './AtlaskitPageShell';
+
+export { TruncateCell } from './TruncateCell';
+export type { TruncateCellProps } from './TruncateCell';

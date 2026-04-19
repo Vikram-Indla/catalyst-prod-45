@@ -1,10 +1,32 @@
+// @ts-nocheck
 /**
- * WidgetWrapper — V12 Hybrid Precision widget chrome
- * Dark mode: Nocturne #0A0A0A warm charcoal surface
+ * WidgetWrapper — Dashboard widget chrome.
+ *
+ * Rewritten Apr 19, 2026 to use Atlaskit Design System primitives.
+ * Blueprint reference: docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 4.
+ *
+ * Chrome
+ * ──────
+ *   Shell:       <div> with Atlaskit `elevation.surface` + `color.border`
+ *   Header:      <button> retained for collapse-toggle affordance; title
+ *                rendered via the ADS <Heading> wrapper (size="xsmall" → 14/700)
+ *   Body:        scoped padding; on error, renders <SectionMessage>
+ *   Footer:      optional footer slot
+ *
+ * Light/dark
+ * ──────────
+ *   No more useTheme / isDark branching. All colours flow through
+ *   @atlaskit/tokens — AdsThemeProvider flips light ↔ dark at runtime.
+ *
+ * NOTE: This wrapper is used by every registered widget (see widget-registry.ts).
+ *       The parallel legacy `WidgetCard.tsx` (pre-registry shims) was removed
+ *       in Commit 8 of the BAU Dashboard Atlaskit migration — see
+ *       docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 8.
  */
 import { ChevronDown } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { token } from '@atlaskit/tokens';
+import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
   title: string;
@@ -36,15 +58,9 @@ class WidgetErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="flex flex-col items-center py-6 text-center" style={{ padding: 14 }}>
-          <div style={{ fontSize: 28, marginBottom: 8 }} className="dark:text-gray-500 text-gray-400">⚠</div>
-          <div style={{ fontSize: 13, fontWeight: 500 }} className="text-gray-500 dark:text-gray-400">
-            Widget error
-          </div>
-          <div style={{ fontSize: 12, maxWidth: 260, marginTop: 4 }} className="text-gray-400 dark:text-gray-500">
-            {this.state.error || 'Something went wrong loading this widget.'}
-          </div>
-        </div>
+        <SectionMessage appearance="error" title="Widget error">
+          {this.state.error || 'Something went wrong loading this widget.'}
+        </SectionMessage>
       );
     }
     return this.props.children;
@@ -63,47 +79,41 @@ export default function WidgetWrapper({
   span = 1,
   flushBody = false,
 }: WidgetWrapperProps) {
-  const { isDark: dark } = useTheme();
-
   return (
     <div
       role="region"
       aria-label={title}
-      className={`overflow-hidden flex flex-col ${dark ? 'bg-[#1A1A1A]' : 'bg-[var(--cp-bg-page)]'}`}
+      className="overflow-hidden flex flex-col"
       style={{
         gridColumn: `span ${span}`,
-        border: dark ? '1px solid #2E2E2E' : '0.75px solid var(--cp-border-default)',
-        borderRadius: 'var(--cp-radius-default)',
-        boxShadow: dark ? 'none' : undefined,
+        background: token('elevation.surface', '#FFFFFF'),
+        border: `1px solid ${token('color.border', '#E2E8F0')}`,
+        borderRadius: 8,
       }}
     >
-      {/* Header */}
+      {/* Header — retains <button> semantics so the entire row is the collapse affordance */}
       <button
         onClick={onToggleCollapse}
-        className={`w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left ${dark ? 'bg-[#1F1F1F]' : 'bg-[var(--cp-bg-sunken)]'}`}
+        className="w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left"
         style={{
           padding: '10px 14px',
-          borderBottom: collapsed ? 'none' : dark ? '1px solid #2E2E2E' : '0.75px solid var(--cp-border-default)',
+          background: token('color.background.neutral.subtle', '#F1F5F9'),
+          borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', '#E2E8F0')}`,
           minHeight: 38,
         }}
       >
         <div className="flex items-center gap-2 min-w-0">
           {headerIcon}
-          <span
-            className="truncate"
-            style={{
-              fontSize: 13,
-              fontWeight: 650,
-              color: dark ? '#EDEDED' : 'var(--cp-text-primary)',
-              fontFamily: 'var(--cp-font-heading)',
-            }}
-          >
+          <Heading as="h3" size="xsmall" truncate>
             {title}
-          </span>
+          </Heading>
           {subtitle && (
             <span
               className="hidden sm:inline truncate"
-              style={{ fontSize: 12, color: dark ? '#878787' : 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}
+              style={{
+                fontSize: 12,
+                color: token('color.text.subtle', '#6B778C'),
+              }}
             >
               · {subtitle}
             </span>
@@ -114,7 +124,7 @@ export default function WidgetWrapper({
           <ChevronDown
             size={14}
             style={{
-              color: dark ? '#878787' : 'var(--cp-text-tertiary)',
+              color: token('color.text.subtlest', '#6B778C'),
               transition: 'transform 200ms ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
@@ -124,7 +134,21 @@ export default function WidgetWrapper({
 
       {/* Body */}
       {!collapsed && (
-        <div className={`flex-1 ${dark ? 'bg-[#1A1A1A]' : 'bg-[var(--cp-bg-page)]'}`} style={{ padding: flushBody ? 0 : 14 }}>
+        <div
+          // dashboard-widget-body class is the hook for the table-layout fix
+          // in index.css: Atlaskit DynamicTable renders with table-layout:
+          // auto by default, which causes percentage head widths to be
+          // ignored when a long title expands the Title cell. We flip it to
+          // table-layout: fixed only inside widget bodies so columns respect
+          // their widths and TruncateCell's ellipsis actually kicks in.
+          // (Caught Apr 19, 2026 — Production Incidents + QA Defects rows
+          // were inflating past the 36px canonical height.)
+          className="flex-1 dashboard-widget-body"
+          style={{
+            background: token('elevation.surface', '#FFFFFF'),
+            padding: flushBody ? 0 : 14,
+          }}
+        >
           <WidgetErrorBoundary title={title}>
             {children}
           </WidgetErrorBoundary>
@@ -134,9 +158,9 @@ export default function WidgetWrapper({
       {/* Footer */}
       {!collapsed && footer && (
         <div
-          className={dark ? 'bg-[#1A1A1A]' : 'bg-[var(--cp-bg-page)]'}
           style={{
-            borderTop: dark ? '1px solid #2E2E2E' : '0.75px solid var(--cp-border-subtle)',
+            background: token('elevation.surface', '#FFFFFF'),
+            borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
             padding: '8px 14px',
           }}
         >

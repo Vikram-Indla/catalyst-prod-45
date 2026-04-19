@@ -73,6 +73,7 @@ import { groupIssues, findCol } from '@/components/kanban/kanban-utils';
 import { DroppableColumn } from '@/components/kanban/KanbanColumn';
 import { OverlayCard } from '@/components/kanban/SortableCard';
 import { SwimlaneRow } from '@/components/kanban/KanbanSwimlane';
+import { PragmaticBoard } from '@/components/kanban/PragmaticBoard';
 import {
   AvatarStackFilter,
 } from '@/components/kanban/KanbanToolbar';
@@ -839,13 +840,13 @@ export default function KanbanBoardPage() {
 
   if (isLoading) return (
     <div className="flex flex-col flex-1 min-h-0" style={{ background: tk.pageBg }}>
-      <div style={{ height: 44, borderBottom: `1px solid ${tk.border}`, background: tk.surfaceBg }} />
-      <div className="flex flex-1">
+      <div style={{ height: 48, background: 'transparent' }} />
+      <div className="flex flex-1" style={{ gap: 8, padding: '0 16px 16px 16px' }}>
         {KANBAN_COLUMNS.map(c => (
-          <div key={c.id} className="flex-1" style={{ borderLeft: `1px solid ${tk.border}` }}>
-            <div style={{ height: 32, background: tk.headerBg }} />
-            <div className="p-1 flex flex-col gap-1">
-              {[0, 1, 2].map(i => <div key={i} className="rounded animate-pulse" style={{ height: 56, background: tk.chipBg }} />)}
+          <div key={c.id} style={{ width: 267, background: tk.surfaceAlt, borderRadius: 6 }}>
+            <div style={{ height: 48, background: tk.surfaceAlt, borderRadius: '6px 6px 0 0' }} />
+            <div className="flex flex-col" style={{ gap: 4, padding: '0 10px 10px' }}>
+              {[0, 1, 2].map(i => <div key={i} className="animate-pulse" style={{ height: 72, background: '#FFFFFF', borderRadius: 4, boxShadow: tk.cardShadowRest }} />)}
             </div>
           </div>
         ))}
@@ -860,24 +861,25 @@ export default function KanbanBoardPage() {
       {/* ── Page header ── */}
       <CatalystPageHeader title="Board" />
 
-      {/* ── Toolbar ── */}
+      {/* ── Toolbar (Jira parity: 48h, transparent, no border) ── */}
       <div className="flex items-center gap-2 px-4 flex-wrap" style={{
-        minHeight: 44, background: tk.surfaceBg,
-        borderBottom: `1px solid ${tk.border}`, flexShrink: 0,
-        paddingTop: 6, paddingBottom: 6,
+        minHeight: 48, background: 'transparent',
+        flexShrink: 0,
+        paddingTop: 8, paddingBottom: 8,
       }}>
-        {/* Search */}
+        {/* Search — 32h, 3px radius */}
         <div className="relative" style={{ width: 220 }}>
           <Search size={14} style={{ color: tk.textMuted }} className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text" placeholder="Search board" value={search}
             onChange={e => setSearch(e.target.value)}
             style={{
-              width: '100%', height: 34, paddingLeft: 30, paddingRight: 8,
-              border: `1px solid ${tk.border}`, borderRadius: 6,
-              fontSize: 13.5, color: tk.textPrimary, background: tk.inputBg,
+              width: '100%', height: 32, paddingLeft: 30, paddingRight: 8,
+              border: `1px solid ${tk.border}`, borderRadius: 3,
+              fontSize: 14, fontWeight: 500,
+              color: tk.textPrimary, background: tk.surfaceBg,
               outline: 'none', fontFamily: "'Inter', sans-serif",
-              transition: 'border-color 120ms ease',
+              transition: 'border-color 150ms ease',
             }}
             onFocus={e => e.currentTarget.style.borderColor = tk.selectedAccent}
             onBlur={e => e.currentTarget.style.borderColor = tk.border}
@@ -939,12 +941,13 @@ export default function KanbanBoardPage() {
             onClick={() => { setShowBoardMenu(v => !v); setShowViewSettings(false); }}
             className="focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{
-              width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 6, border: `1px solid ${tk.border}`, background: tk.surfaceBg,
-              cursor: 'pointer', transition: 'all 120ms ease', outline: 'none',
+              /* Jira parity: 32h, 3px radius, transparent */
+              width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 3, border: 'none', background: 'transparent',
+              cursor: 'pointer', transition: 'background 150ms ease', outline: 'none',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
-            onMouseLeave={e => { e.currentTarget.style.background = tk.surfaceBg; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             aria-label="Board menu"
           >
             <MoreHorizontal size={16} style={{ color: tk.textSecondary }} />
@@ -1013,13 +1016,13 @@ export default function KanbanBoardPage() {
         </div>
       </div>
 
-      {/* ── Board content ── */}
-      <div className="flex-1 min-h-0" style={{ overflow: 'auto' }}>
+      {/* ── Board content (Jira parity: 8px inter-column gap, 16px outer padding) ── */}
+      <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px' }}>
         {groupBy !== 'none' ? (
           <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div style={{ background: tk.surfaceBg, minWidth: KANBAN_COLUMNS.length * 300 }}>
-              {/* Column headers for swimlane mode */}
-              <div className="flex sticky top-0 z-20" style={{ background: tk.headerBg, borderBottom: `1px solid ${tk.border}` }}>
+            <div style={{ background: 'transparent', minWidth: KANBAN_COLUMNS.length * 267 + (KANBAN_COLUMNS.length - 1) * 8 }}>
+              {/* Column headers for swimlane mode (Jira parity: 48h, 267w, transparent) */}
+              <div className="flex sticky top-0 z-20" style={{ background: tk.pageBg, gap: 8, paddingBottom: 4 }}>
                 {KANBAN_COLUMNS.map((col) => {
                   const count = groups.reduce((sum, g) => sum + g.issueIds.filter(id => {
                     const issue = issuesById.get(id);
@@ -1027,13 +1030,15 @@ export default function KanbanBoardPage() {
                   }).length, 0);
                   const categoryDot = col.category === 'done' ? '#006644' : col.category === 'in_progress' ? '#0747A6' : '#5E6C84';
                   return (
-                    <div key={col.id} className="flex items-center gap-2 px-3" style={{
-                      width: 300, minWidth: 300, maxWidth: 300, height: 36, flexShrink: 0,
-                      borderRight: `1px solid ${tk.border}`,
+                    <div key={col.id} className="flex items-center gap-2" style={{
+                      width: 267, minWidth: 267, maxWidth: 267, height: 48, flexShrink: 0,
+                      padding: '0 12px',
+                      background: tk.surfaceAlt,
+                      borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: tk.textMuted, letterSpacing: '0.04em' }}>{col.name}</span>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: tk.textSecondary, background: tk.badgeBg, borderRadius: 10, padding: '1px 7px', lineHeight: '18px', minWidth: 20, textAlign: 'center' }}>{count}</span>
+                      <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: "'Inter', sans-serif" }}>{col.name}</span>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: tk.textPrimary, lineHeight: '16px', fontFamily: "'Inter', sans-serif" }}>{count}</span>
                     </div>
                   );
                 })}
@@ -1082,43 +1087,60 @@ export default function KanbanBoardPage() {
             </DragOverlay>
           </DndContext>
         ) : (
-          <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={onDragStart} onDragOver={onDragOver} onDragEnd={onDragEnd}>
-            <div className="flex" style={{ minWidth: KANBAN_COLUMNS.length * 300 }}>
-              {KANBAN_COLUMNS.map((col, i) => (
-                <DroppableColumn
-                  key={col.id}
-                  column={col}
-                  issueIds={colMap[col.id] ?? []}
-                  issuesById={issuesById}
-                  avatarsByName={avatarsByName}
-                  onCardClick={id => setSelIssueId(id)}
-                  isFirst={i === 0}
-                  d={d}
-                  tk={tk}
-                  selectedId={selIssueId}
-                  focusedId={focusedId}
-                  onToggleFlag={handleToggleFlag}
-                  onCopyLink={handleCopyLink}
-                  onCopyKey={handleCopyKey}
-                  onChangeStatus={persistStatusChange}
-                  onSaveSummary={handleSaveSummary}
-                  onChangeAssignee={handleChangeAssignee}
-                  assigneeOptions={assigneeOptions}
-                  projectKey={key ?? ''}
-                  onLabelsUpdated={handleLabelsUpdated}
-                  onParentChange={handleParentChange}
-                  onArchive={handleArchive}
-                  onDelete={handleDelete}
-                  onMoved={handleMoved}
-                  onLinked={handleLinked}
-                  visibleFields={visibleFields}
-                />
-              ))}
-            </div>
-            <DragOverlay dropAnimation={null}>
-              {dragIssue ? <OverlayCard issue={dragIssue} avatarUrl={dragIssue.assigneeName ? avatarsByName.get(dragIssue.assigneeName.toLowerCase()) : null} d={d} tk={tk} /> : null}
-            </DragOverlay>
-          </DndContext>
+          /* Pragmatic drag-and-drop path (non-swimlane).
+             Monitor-based reconciliation; host owns colMap + supabase persist. */
+          <PragmaticBoard
+            columns={KANBAN_COLUMNS}
+            colMap={colMap}
+            issuesById={issuesById}
+            avatarsByName={avatarsByName}
+            onCardClick={id => setSelIssueId(id)}
+            d={d}
+            tk={tk}
+            selectedId={selIssueId}
+            focusedId={focusedId}
+            onToggleFlag={handleToggleFlag}
+            onCopyLink={handleCopyLink}
+            onCopyKey={handleCopyKey}
+            onChangeStatus={persistStatusChange}
+            onSaveSummary={handleSaveSummary}
+            onChangeAssignee={handleChangeAssignee}
+            assigneeOptions={assigneeOptions}
+            projectKey={key ?? ''}
+            onLabelsUpdated={handleLabelsUpdated}
+            onParentChange={handleParentChange}
+            onArchive={handleArchive}
+            onDelete={handleDelete}
+            onMoved={handleMoved}
+            onLinked={handleLinked}
+            visibleFields={visibleFields}
+            onDrop={({ cardId, sourceColId, destColId, insertIndex }) => {
+              /* 1. Optimistic local reorder. */
+              setColMap(prev => {
+                const next: typeof prev = { ...prev };
+                const src = [...(next[sourceColId] ?? [])];
+                const srcIdx = src.indexOf(cardId);
+                if (srcIdx < 0) return prev;
+                src.splice(srcIdx, 1);
+                if (destColId === sourceColId) {
+                  src.splice(insertIndex, 0, cardId);
+                  next[sourceColId] = src;
+                } else {
+                  const dst = [...(next[destColId] ?? [])];
+                  dst.splice(insertIndex, 0, cardId);
+                  next[sourceColId] = src;
+                  next[destColId] = dst;
+                }
+                return next;
+              });
+              /* 2. Persist status change on column switch.
+                 Same-column reorders are UI-only (no status change). */
+              if (destColId !== sourceColId) {
+                const newStatus = COL_PRIMARY_STATUS[destColId];
+                if (newStatus) persistStatusChange(cardId, newStatus);
+              }
+            }}
+          />
         )}
       </div>
 

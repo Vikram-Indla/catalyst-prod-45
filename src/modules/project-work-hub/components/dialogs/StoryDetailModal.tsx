@@ -380,7 +380,11 @@ export default function StoryDetailModal({
   const dotsMenuRef = useRef<HTMLDivElement>(null);
 
   // Resizable splitter state
-  const [rightPanelWidth, setRightPanelWidth] = useState(280);
+  // Default/max mirrored with CatalystViewBase (2026-04-19): measured against
+  // live Jira BAU-5419 — sidebar ~549px with 504px of content. Bumped default
+  // 280→380 and max 480→600 so values like Reporter "Nada alfassam" don't wrap
+  // in the default layout. Min stays at 220 for compact-drawer (@container) path.
+  const [rightPanelWidth, setRightPanelWidth] = useState(380);
   const isDraggingRef = useRef(false);
   const splitterRef = useRef<HTMLDivElement>(null);
 
@@ -390,7 +394,8 @@ export default function StoryDetailModal({
       const modalEl = document.querySelector('[data-sdm-scope]') as HTMLElement;
       if (!modalEl) return;
       const rect = modalEl.getBoundingClientRect();
-      const newWidth = Math.max(220, Math.min(480, rect.right - e.clientX));
+      // Clamp 220..600. Max was 480; raised to match Jira's ~549 sidebar.
+      const newWidth = Math.max(220, Math.min(600, rect.right - e.clientX));
       setRightPanelWidth(newWidth);
     };
     const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
@@ -1648,7 +1653,7 @@ export default function StoryDetailModal({
 
             {/* RIGHT PANEL — Sidebar details */}
             <div className="sdm-drawer-sidebar" style={{
-              width: rightPanelWidth, minWidth: 220, maxWidth: 480,
+              width: rightPanelWidth, minWidth: 220, maxWidth: 600,
               background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             }}>

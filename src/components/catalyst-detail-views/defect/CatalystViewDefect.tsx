@@ -13,6 +13,7 @@ import {
   CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
 } from '../shared/sections';
+import { CatalystDefectFields } from './CatalystDefectFields';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -40,6 +41,14 @@ export default function CatalystViewDefect({
         <span style={{ fontSize: 12, color: '#5E6C84' }}>·</span>
         <span style={{ fontSize: 12, color: '#FF5630', fontWeight: 600 }}>Bug / Defect</span>
       </div>
+
+      {/* DEFECT-UNIQUE: Jira-parity canonical field rail.
+          Severity / Environment / Steps to Reproduce / Found-in build /
+          Root Cause are read-only empty-state placeholders today — they
+          light up once the schema follow-up (ph_issues columns OR a
+          `defects` table join) lands. Fix-in build + Resolution already
+          read live from ph_issues. */}
+      <CatalystDefectFields issue={issue ?? null} />
 
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Expected Behavior" />

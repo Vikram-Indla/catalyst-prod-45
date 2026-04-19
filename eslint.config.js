@@ -37,10 +37,16 @@ const makeAdsForbidAtlaskit = (severity) => ({
   "no-restricted-imports": [severity, {
     patterns: [
       {
-        group: ["@atlaskit/*"],
+        // Forbid every @atlaskit/* component/primitive package. The token
+        // runtime resolver (@atlaskit/tokens) is intentionally exempted: it
+        // is a utility, not a component, and the Catalyst ADS wrapper
+        // layer is about *component* isolation — every migrated surface is
+        // expected to read colours / spacing through token(...).
+        group: ["@atlaskit/*", "!@atlaskit/tokens"],
         message:
           "Import Atlassian Design System primitives through the Catalyst wrapper at '@/components/ads'. " +
           "Direct '@atlaskit/*' imports are only allowed inside src/components/ads and src/theme/ads. " +
+          "The @atlaskit/tokens runtime resolver is exempted (utility, not a component). " +
           "See src/components/ads/README.md.",
       },
       {
@@ -64,6 +70,13 @@ const adsForbidAtlaskitError = makeAdsForbidAtlaskit("error");
 const adsMigratedFiles = [
   // WO-1 — Breadcrumbs (Story View surface)
   "src/modules/project-work-hub/components/TicketBreadcrumbs.tsx",
+  // BAU Dashboard Atlaskit conversion — per
+  // docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 7.
+  // Direct @atlaskit/* component imports in these paths are regressions.
+  "src/pages/project-hub/ProjectDashboardPage.tsx",
+  "src/components/shared/CatalystPageHeader.tsx",
+  "src/components/project-hub/dashboard/WidgetWrapper.tsx",
+  "src/components/project-hub/dashboard/widgets/**/*.{ts,tsx}",
 ];
 
 /**
@@ -77,6 +90,36 @@ const adsInternalRules = {
       message:
         "ADS wrappers must read colours through cp(adsTokens.*) — no hex literals. " +
         "See src/theme/ads/tokens.ts.",
+    },
+  ],
+};
+
+/**
+ * BAU Dashboard post-migration guardrails.
+ *
+ * Per docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 7. Flags
+ * legacy Catalyst `--cp-*` custom properties — every migrated dashboard
+ * surface should read colours / spacing through @atlaskit/tokens
+ * `token('color.*', fallbackHex)`. `var(--cp-font-mono)` is the one
+ * intentional exception (Catalyst mono stack is narrower than Atlaskit's
+ * default), but callers should migrate that too when the font token
+ * surface lands.
+ */
+const dashboardMigratedRules = {
+  "no-restricted-syntax": ["warn",
+    {
+      selector: "Literal[value=/var\\(--cp-(?!font-mono)/]",
+      message:
+        "BAU Dashboard: migrated surfaces should read colours/spacing through " +
+        "@atlaskit/tokens `token('color.*', fallback)` — not `var(--cp-*)`. " +
+        "See docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 7.",
+    },
+    {
+      selector: "TemplateElement[value.raw=/var\\(--cp-(?!font-mono)/]",
+      message:
+        "BAU Dashboard: migrated surfaces should read colours/spacing through " +
+        "@atlaskit/tokens `token('color.*', fallback)` — not `var(--cp-*)`. " +
+        "See docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 7.",
     },
   ],
 };
@@ -174,6 +217,22 @@ export default tseslint.config(
     ignores: ["src/components/ads/**/*.stories.{ts,tsx}"],
     rules: {
       ...adsInternalRules,
+    },
+  },
+  /**
+   * BAU Dashboard — post-migration surface. Flags var(--cp-*) drift so
+   * new token-migrated widgets don't silently regress back to legacy
+   * Catalyst custom properties. See §5 Commit 7 of the conversion blueprint.
+   */
+  {
+    files: [
+      "src/pages/project-hub/ProjectDashboardPage.tsx",
+      "src/components/project-hub/dashboard/WidgetWrapper.tsx",
+      "src/components/project-hub/dashboard/widgets/**/*.{ts,tsx}",
+      "src/components/shared/CatalystPageHeader.tsx",
+    ],
+    rules: {
+      ...dashboardMigratedRules,
     },
   },
 );

@@ -149,6 +149,9 @@
 
   /* ═══ CATALYST V12 HYBRID PRECISION — Wiki Design Tokens ═══ */
   --cp-bg-page: #FFFFFF;
+  /* Jira-blue page bg for migrated hub surfaces — consumed by
+     <AtlaskitPageShell>. Measured from Jira BAU list DOM (2026-04-18). */
+  --cp-bg-hub-page: #E9F2FE;
   --cp-bg-surface: #F8FAFC;
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;
@@ -366,6 +369,47 @@
 @keyframes ra-skeleton {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 0.25; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD WIDGET TABLES — TABLE-LAYOUT FIX
+   ═══════════════════════════════════════════════════════════════
+   Atlaskit <DynamicTable> renders with table-layout: auto, which
+   makes percentage head widths ignored whenever a long title cell
+   pushes the Title column wider than its fair share. That cascades
+   to row-height inflation (breaks CLAUDE.md §4 36px lock) and
+   Status-column wrapping ("READY FOR PRODUCTION" breaks across two
+   lines in span=2 widgets).
+
+   Scope the fix to .dashboard-widget-body so other DynamicTable
+   consumers across the app keep their default auto-layout.
+
+   Caught Apr 19, 2026 — Production Incidents + QA Defects widgets.
+   ═══════════════════════════════════════════════════════════════ */
+.dashboard-widget-body table {
+  table-layout: fixed;
+  width: 100%;
+}
+.dashboard-widget-body td,
+.dashboard-widget-body th {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* TruncateCell renders its own inner span with nowrap + ellipsis;
+   the td-level rule above is the safety net for any cell content
+   (Lozenges, avatar rows, Key cells) that would otherwise wrap when
+   the column is tight. Row height stays locked to the 36px density
+   because no cell can push two lines. */
+
+/* Title column (2nd td) gets a 16px right gutter so the ellipsis
+   clears the Status lozenge that follows. Without this gap the two
+   cells visually collide — e.g. "…to ad… READY FOR PRODUCTION"
+   reads as one blob. 16px matches the shell header's horizontal
+   rhythm (padding: '16px 16px 4px' in AtlaskitPageShell). */
+.dashboard-widget-body tbody td:nth-child(2),
+.dashboard-widget-body thead th:nth-child(2) {
+  padding-right: 16px;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -3116,6 +3160,8 @@ input[type="range"]::-moz-range-thumb {
   --cp-bg: #0A0A0A;
   --cp-bg-elevated: #1A1A1A;
   --cp-bg-page: #0A0A0A;
+  /* <AtlaskitPageShell> hub-page bg — NOCTURNE page bg in dark mode. */
+  --cp-bg-hub-page: #0A0A0A;
   --cp-bg-sunken: #1A1A1A;
   --cp-bg-surface: #1A1A1A;
   --cp-blue: #3B82F6;

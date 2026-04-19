@@ -29,10 +29,14 @@ const enterpriseSidebarConfig: SidebarConfig = {
   label: 'Strategy Hub',
   sections: [
     {
-      title: 'Strategy Hub',
+      // Design critique (2026-04-19): dropped "Strategy Hub" section label —
+      // tautological with the badge/hub name already shown above. "Strategic
+      // Themes" → "Themes" for the same reason; the hub context makes the
+      // "Strategic" prefix redundant.
+      title: '',
       items: [
         { id: 'strategy-room', title: 'Strategy Room', path: '/strategyhub', icon: LayoutDashboard, exact: true, activeMatchPaths: ['/strategyhub/executive-brief'] },
-        { id: 'themes', title: 'Strategic Themes', path: '/strategyhub/themes', icon: Layers, exact: false },
+        { id: 'themes', title: 'Themes', path: '/strategyhub/themes', icon: Layers, exact: false },
         { id: 'goals', title: 'Goals & Key Results', path: '/strategyhub/goals', icon: Target, exact: false, badge: 12, badgeVariant: 'info' },
         { id: 'investment', title: 'Investment Allocation', path: '/strategyhub/investment', icon: PieChart, exact: false },
         { id: 'snapshots', title: 'Snapshots', path: '/strategyhub/snapshots', icon: Calendar, exact: false },

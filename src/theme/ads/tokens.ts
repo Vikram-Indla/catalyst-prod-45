@@ -70,6 +70,15 @@ export interface AdsToken {
 export const adsTokens = {
   bg: {
     page:     { cp: '--cp-bg-page',     light: '#FFFFFF', dark: '#0A0A0A', atlaskit: 'color.background.neutral' } satisfies AdsToken,
+    /**
+     * hubPage — Jira-blue page background measured from Jira BAU list DOM
+     * (2026-04-18): rgb(233, 242, 254) / #E9F2FE. Used by the canonical
+     * <AtlaskitPageShell> outer wrapper for migrated hub surfaces
+     * (BacklogPage, ProjectDashboardPage, etc.) so every hub lands on the
+     * same tinted page under a rounded-white content card. Dark-mode value
+     * mirrors the NOCTURNE page bg (#0A0A0A, see CLAUDE.md §18).
+     */
+    hubPage:  { cp: '--cp-bg-hub-page', light: '#E9F2FE', dark: '#0A0A0A', atlaskit: '' } satisfies AdsToken,
     surface:  { cp: '--cp-bg-surface',  light: '#FFFFFF', dark: '#1A1A1A', atlaskit: 'elevation.surface' } satisfies AdsToken,
     overlay:  { cp: '--cp-bg-overlay',  light: '#F8FAFC', dark: '#1F1F1F', atlaskit: 'elevation.surface.overlay' } satisfies AdsToken,
     inset:    { cp: '--cp-bg-inset',    light: '#F1F5F9', dark: '#111111', atlaskit: 'color.background.neutral.subtle' } satisfies AdsToken,

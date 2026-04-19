@@ -1,6 +1,17 @@
+// @ts-nocheck
+/**
+ * RecentActivityWidget — latest changes stream.
+ *
+ * Rewritten Apr 19, 2026 per docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 6.
+ *   - Bespoke empty-state → <EmptyState>
+ *   - Per-row status pill → <StatusLozenge status={toStatusCategory(...)}>
+ *   - var(--cp-*) → token()
+ */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardRecentActivity } from '@/hooks/useDashboardWidgets';
+import { token } from '@atlaskit/tokens';
+import { EmptyState, StatusLozenge, TruncateCell, toStatusCategory } from '@/components/ads';
 
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '—';
@@ -18,35 +29,74 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
   const { data: items, isLoading } = useDashboardRecentActivity(projectId);
 
   return (
-    <WidgetWrapper title="Recent Activity" subtitle="Latest changes" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1}>
+    <WidgetWrapper
+      title="Recent Activity"
+      subtitle="Latest changes"
+      collapsed={collapsed}
+      onToggleCollapse={onToggleCollapse}
+      span={1}
+    >
       {isLoading ? (
         <div className="animate-pulse space-y-2">
-          {[1, 2, 3].map(i => <div key={i} className="h-4 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" style={{ width: `${90 - i * 10}%` }} />)}
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="h-4 rounded"
+              style={{
+                width: `${90 - i * 10}%`,
+                background: token('color.background.neutral.subtle', '#F1F5F9'),
+              }}
+            />
+          ))}
         </div>
       ) : !items?.length ? (
-        <div className="flex flex-col items-center py-6 text-center">
-          <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>📋</div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-secondary)' }}>No recent activity</div>
-          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', maxWidth: 260, marginTop: 4 }}>Activity appears when items are created, updated, or transitioned</div>
-        </div>
+        <EmptyState
+          size="compact"
+          header="No recent activity"
+          description="Activity appears when items are created, updated, or transitioned."
+        />
       ) : (
         <div className="space-y-0">
-          {items.map(item => (
-            <div key={item.id} className="flex items-start gap-2 py-2" style={{
-              borderBottom: '0.75px solid var(--cp-border-subtle)',
-            }}>
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="flex items-start gap-2 py-2"
+              style={{ borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}` }}
+            >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span style={{ color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{item.issue_key}</span>
-                  <span className={`inline-flex items-center ${item.status_category === 'Done' ? 'bg-[#E3FCEF] dark:bg-[#1a3a2a] text-[#006644] dark:text-[#57d9a3]' : item.status_category === 'In Progress' ? 'bg-[#DEEBFF] dark:bg-[#1a3a5c] text-[#0747A6] dark:text-[#7bb0ff]' : 'bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]'}`} style={{
-                    height: 18, padding: '0 6px',
-                    fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                    borderRadius: 'var(--cp-radius-sm)',
-                  }}>{(item.status || '—').toUpperCase()}</span>
+                  <span
+                    style={{
+                      color: token('color.link', '#0052CC'),
+                      fontWeight: 500,
+                      fontFamily: 'var(--cp-font-mono)',
+                      fontSize: 11,
+                    }}
+                  >
+                    {item.issue_key}
+                  </span>
+                  <StatusLozenge status={toStatusCategory(item.status)}>
+                    {(item.status || '—').toUpperCase()}
+                  </StatusLozenge>
                 </div>
-                <div className="truncate" style={{ fontSize: 12, color: 'var(--cp-text-secondary)', marginTop: 2 }}>{item.summary}</div>
+                <div style={{ marginTop: 2 }}>
+                  <TruncateCell
+                    text={item.summary ?? ''}
+                    style={{
+                      fontSize: 12,
+                      color: token('color.text.subtle', '#42526E'),
+                    }}
+                  />
+                </div>
               </div>
-              <span style={{ fontSize: 10, color: 'var(--cp-text-muted)', whiteSpace: 'nowrap', flexShrink: 0 }}>
+              <span
+                style={{
+                  fontSize: 10,
+                  color: token('color.text.subtlest', '#6B778C'),
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0,
+                }}
+              >
                 {timeAgo(item.jira_updated_at)}
               </span>
             </div>

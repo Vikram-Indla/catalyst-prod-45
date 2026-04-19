@@ -17,6 +17,20 @@ export interface WidgetDefinition {
   subtitle?: string;
   group: 'delivery' | 'quality' | 'team';
   defaultSpan: 1 | 2 | 3;
+  /**
+   * Minimum grid-span required for this widget to render legibly.
+   *
+   * Dashboard list-type widgets (top-10 tables with ≥4 columns: key, severity,
+   * title, status, assignee) need at least 2/3 of the grid width or their
+   * Title column crushes titles into 3–5 wrap lines. Invariant enforced by
+   * `DashboardWidgetGrid` — any layout row placing a `minSpan:2` widget at
+   * span=1 is auto-upgraded at render. Caught Apr 19, 2026 (QA Defects
+   * wrapping regression — see TruncateCell docstring).
+   *
+   * Omit or set to 1 for widgets that render fine anywhere (KPIs, progress,
+   * small charts). Default: 1.
+   */
+  minSpan?: 1 | 2 | 3;
   defaultPosition: number;
   component: ComponentType<WidgetProps>;
 }
@@ -97,6 +111,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     subtitle: 'Cross-hub from IncidentHub',
     group: 'quality',
     defaultSpan: 2,
+    minSpan: 2,
     defaultPosition: 6,
     component: ProductionIncidentsWidget,
   },
@@ -105,7 +120,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     title: 'QA Defects',
     subtitle: 'Cross-hub from TestHub',
     group: 'quality',
-    defaultSpan: 1,
+    defaultSpan: 2,
+    minSpan: 2,
     defaultPosition: 7,
     component: QADefectsWidget,
   },
@@ -133,7 +149,8 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
     title: 'Recent Activity',
     subtitle: 'Latest changes',
     group: 'team',
-    defaultSpan: 1,
+    defaultSpan: 2,
+    minSpan: 2,
     defaultPosition: 10,
     component: RecentActivityWidget,
   },

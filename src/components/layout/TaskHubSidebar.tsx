@@ -62,16 +62,23 @@ Priorities10Icon.displayName = 'Priorities10Icon';
 const taskHubSidebarConfig: SidebarConfig = {
   badge: 'TH',
   label: 'Task Hub',
+  // Design critique (2026-04-19): stripped redundant "Task" prefix from
+  // items where the hub badge ("TH / Task Hub") already provides context.
+  //   "Task Overview" → "Overview"
+  //   "Task Board"    → "Board"
+  //   "Task Timeline" → "Timeline"
+  // Kept on "My Tasks" (possessive — adds meaning) and "Task List" (leaving
+  // "List" alone reads as too generic in a flat list).
   sections: [
     {
       title: '',
       items: [
-        { id: 'dashboard', title: 'Task Overview', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
+        { id: 'dashboard', title: 'Overview', path: '/taskhub/dashboard', icon: LayoutDashboard, exact: true },
         { id: 'workstreams', title: 'Workstreams', path: '/taskhub/workstreams', icon: Layers, exact: true },
         { id: 'my-tasks', title: 'My Tasks', path: '/taskhub/my-tasks', icon: CheckSquare, exact: true },
-        { id: 'boards', title: 'Task Board', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
+        { id: 'boards', title: 'Board', path: '/taskhub/boards', icon: LayoutGrid, exact: true },
         { id: 'task-list', title: 'Task List', path: '/taskhub/task-list', icon: List, exact: true },
-        { id: 'timeline', title: 'Task Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
+        { id: 'timeline', title: 'Timeline', path: '/taskhub/timeline', icon: GanttChartSquare, exact: true },
         {
           id: 'priorities',
           title: 'Priorities',

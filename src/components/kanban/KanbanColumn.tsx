@@ -1,6 +1,7 @@
 /**
  * KanbanColumn — Fixed-width column with header + droppable area (memoized)
- * Width: 300px fixed. Vertical scroll inside. Enterprise empty state.
+ * Jira parity: 267px width, #F8F8F8 surface, 48px header with 6px top radius,
+ * column name 12px / weight 500 / no letter-spacing, count as plain text.
  */
 import { memo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
@@ -17,27 +18,30 @@ import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 function ColHeader({ name, count, category, tk }: { name: string; count: number; category: string; tk: KanbanThemeTokens }) {
   const categoryDot = category === 'done' ? '#006644' : category === 'in_progress' ? '#0747A6' : '#5E6C84';
   return (
-    <div className="flex items-center gap-2 px-3 sticky top-0 z-10" style={{
-      height: 38,
+    <div className="flex items-center gap-2 sticky top-0 z-10" style={{
+      height: 48,                                       /* Jira parity: 48px */
+      padding: '0 12px',
       background: tk.headerBg,
-      borderBottom: `1px solid ${tk.border}`,
+      borderRadius: '6px 6px 0 0',                      /* top-only radius */
       flexShrink: 0,
     }}>
       <span style={{
         width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0,
       }} />
       <span style={{
-        fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-        color: tk.textMuted, letterSpacing: '0.04em',
+        fontSize: 12, fontWeight: 500, textTransform: 'uppercase',
+        color: tk.textMuted,                            /* no letter-spacing (Jira: normal) */
         fontFamily: "'Inter', sans-serif",
+        lineHeight: '16px',
         flex: 1,
       }}>{name}</span>
       <span style={{
-        fontSize: 11, fontWeight: 600, color: tk.textSecondary,
-        background: tk.badgeBg, borderRadius: 10,
-        padding: '1px 7px', lineHeight: '18px',
-        minWidth: 22, textAlign: 'center',
-        fontFamily: "'JetBrains Mono', monospace",
+        /* Jira parity: plain text, no pill */
+        fontSize: 12, fontWeight: 500,
+        color: tk.textPrimary,
+        background: 'transparent',
+        padding: 0, lineHeight: '16px',
+        fontFamily: "'Inter', sans-serif",
       }}>{count}</span>
     </div>
   );
@@ -77,11 +81,12 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
     <div
       className="flex flex-col flex-shrink-0"
       style={{
-        width: 300,
-        minWidth: 300,
-        maxWidth: 300,
+        /* Jira parity: 267px fixed column, #F8F8F8 surface, no dividing border */
+        width: 267,
+        minWidth: 267,
+        maxWidth: 267,
         background: tk.surfaceAlt,
-        borderRight: `1px solid ${tk.border}`,
+        borderRadius: 6,                                /* full column radius; header overlays top */
       }}
       role="list"
       aria-label={`${column.name} column, ${issueIds.length} items`}
@@ -91,12 +96,13 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
         ref={setNodeRef}
         className="flex flex-col overflow-y-auto"
         style={{
-          padding: 6,
+          padding: '0 10px 10px 10px',                  /* 10px side gutters, no top (header sits above) */
           gap: d.cardGap,
           flex: 1,
           minHeight: 120,
           background: isOver ? tk.dropHighlight : 'transparent',
-          transition: 'background 120ms ease',
+          transition: 'background 150ms ease',
+          borderRadius: '0 0 6px 6px',
         }}
       >
         <SortableContext items={issueIds} strategy={verticalListSortingStrategy}>

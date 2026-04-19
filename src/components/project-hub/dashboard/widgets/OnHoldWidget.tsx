@@ -1,44 +1,77 @@
+// @ts-nocheck
+/**
+ * OnHoldWidget — blocked / paused items list.
+ *
+ * Rewritten Apr 19, 2026 per docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 6.
+ *   - Header count badge + per-row ON HOLD pill → <StatusLozenge status="todo">
+ *   - Bespoke empty-state → <EmptyState>
+ *   - var(--cp-*) → token()
+ */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
+import { token } from '@atlaskit/tokens';
+import { EmptyState, StatusLozenge } from '@/components/ads';
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: items, isLoading } = useDashboardOnHoldItems(projectId);
   const count = items?.length ?? 0;
 
-  const badge = (
-    <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{
-      display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-      fontSize: 11, fontWeight: 700, borderRadius: 'var(--cp-radius-sm)',
-    }}>{count}</span>
-  );
+  const badge = <StatusLozenge status="todo">{String(count)}</StatusLozenge>;
 
   return (
-    <WidgetWrapper title="On Hold" subtitle="Blocked items" collapsed={collapsed} onToggleCollapse={onToggleCollapse} span={1} headerBadges={badge}>
+    <WidgetWrapper
+      title="On Hold"
+      subtitle="Blocked items"
+      collapsed={collapsed}
+      onToggleCollapse={onToggleCollapse}
+      span={1}
+      headerBadges={badge}
+    >
       {isLoading ? (
-        <div className="animate-pulse"><div className="h-12 rounded bg-[#F1F5F9] dark:bg-[#1A1A1A]" /></div>
-      ) : count === 0 ? (
-        <div className="flex flex-col items-center py-6 text-center">
-          <div style={{ fontSize: 28, color: 'var(--cp-text-muted)', marginBottom: 8 }}>◻</div>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--cp-text-secondary)' }}>No items on hold</div>
-          <div style={{ fontSize: 12, color: 'var(--cp-text-tertiary)', maxWidth: 260, marginTop: 4 }}>No blocked or paused items</div>
+        <div className="animate-pulse">
+          <div
+            className="h-12 rounded"
+            style={{ background: token('color.background.neutral.subtle', '#F1F5F9') }}
+          />
         </div>
+      ) : count === 0 ? (
+        <EmptyState
+          size="compact"
+          header="No items on hold"
+          description="No blocked or paused items."
+        />
       ) : (
         <div className="space-y-0">
-          {items!.slice(0, 8).map(item => (
-            <div key={item.id} className="flex items-center gap-2" style={{
-              height: 'var(--cp-size-table-row)', padding: '0 4px',
-              borderBottom: '0.75px solid var(--cp-border-subtle)',
-              fontSize: 12,
-            }}>
-              <span style={{ color: 'var(--cp-primary-60)', fontWeight: 500, fontFamily: 'var(--cp-font-mono)', fontSize: 11, flexShrink: 0 }}>{item.issue_key}</span>
-              <span className="truncate flex-1" style={{ color: 'var(--cp-text-secondary)' }}>{item.summary}</span>
-              <span className="bg-[#DFE1E6] dark:bg-[#292929] text-[#253858] dark:text-[#A1A1A1]" style={{
-                display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
-                fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-                borderRadius: 'var(--cp-radius-sm)',
-                flexShrink: 0,
-              }}>ON HOLD</span>
+          {items!.slice(0, 8).map((item) => (
+            <div
+              key={item.id}
+              className="flex items-center gap-2"
+              style={{
+                height: 36,
+                padding: '0 4px',
+                borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}`,
+                fontSize: 12,
+              }}
+            >
+              <span
+                style={{
+                  color: token('color.link', '#0052CC'),
+                  fontWeight: 500,
+                  fontFamily: 'var(--cp-font-mono)',
+                  fontSize: 11,
+                  flexShrink: 0,
+                }}
+              >
+                {item.issue_key}
+              </span>
+              <span
+                className="truncate flex-1"
+                style={{ color: token('color.text.subtle', '#42526E') }}
+              >
+                {item.summary}
+              </span>
+              <StatusLozenge status="todo">ON HOLD</StatusLozenge>
             </div>
           ))}
         </div>

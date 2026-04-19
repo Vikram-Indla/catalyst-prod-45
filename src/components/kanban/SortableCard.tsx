@@ -1,6 +1,6 @@
 /**
  * SortableCard — DnD-enabled wrapper around WorkItemCard (memoized)
- * Card radius: 8px per spec. Smooth hover elevation. Selection accent bar with transition.
+ * Jira parity: 4px radius, shadow-only (no border), dual-stack shadow.
  */
 import React, { useCallback, memo } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
@@ -41,20 +41,20 @@ interface SortableCardProps {
 export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onClick, d, tk, isSelected, isFocused, onToggleFlag, onCopyLink, onCopyKey, onChangeStatus, onOpenDetail, onSaveSummary, onChangeAssignee, assigneeOptions, avatarsByName, projectKey, onLabelsUpdated, onParentChange, onArchive, onDelete, onMoved, onLinked, visibleFields }: SortableCardProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: issue.id });
 
-  const restShadow = '0 1px 2px rgba(0,0,0,0.06)';
+  const restShadow = tk.cardShadowRest;
   const hoverShadow = tk.cardHoverShadow;
   const focusShadow = `0 0 0 2px ${tk.selectedAccent}`;
 
   const cardStyle: React.CSSProperties = {
     background: tk.cardBg,
-    borderRadius: 8,
-    border: `1px solid ${tk.cardBorder}`,
-    borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : `1px solid ${tk.cardBorder}`,
+    borderRadius: 4,                                    /* Jira parity: 4px */
+    border: 'none',                                     /* Jira: shadow-only, no border */
+    borderLeft: isSelected ? `3px solid ${tk.selectedAccent}` : 'none',
     padding: d.cardPad,
     display: 'flex',
     flexDirection: 'column',
     cursor: 'pointer',
-    transition: transition || 'background 120ms ease, box-shadow 120ms ease, border-left 120ms ease',
+    transition: transition || 'background 150ms ease, box-shadow 150ms ease, border-left 120ms ease',
     transform: CSS.Transform.toString(transform),
     opacity: isDragging ? 0.35 : 1,
     zIndex: isDragging ? 999 : 'auto',
@@ -132,8 +132,9 @@ export const SortableCard = memo(function SortableCard({ issue, avatarUrl, onCli
 export const OverlayCard = memo(function OverlayCard({ issue, avatarUrl, d, tk }: { issue: BoardIssue; avatarUrl?: string | null; d: DensityConfig; tk: KanbanThemeTokens }) {
   return (
     <div style={{
-      background: tk.cardBg, borderRadius: 8, border: `1px solid ${tk.selectedAccent}`,
-      padding: d.cardPad, width: 280, minHeight: d.cardMinHeight, boxShadow: tk.cardDragShadow,
+      background: tk.cardBg, borderRadius: 4, border: 'none',
+      padding: d.cardPad, width: 247, minHeight: d.cardMinHeight,   /* 267 col - 2×10 gutter ≈ 247 */
+      boxShadow: tk.cardDragShadow,
       transform: 'rotate(2deg)', cursor: 'grabbing', display: 'flex', flexDirection: 'column',
     }}>
       <WorkItemCard issue={issue} avatarUrl={avatarUrl} d={d} tk={tk} />

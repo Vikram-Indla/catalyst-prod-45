@@ -63,13 +63,21 @@ export function DynamicTable({
   testId,
   ...rest
 }: DynamicTableProps) {
+  // Normalize rowsPerPage — wrapper contract says "0 disables pagination",
+  // but @atlaskit/dynamic-table treats rowsPerPage=0 as "slice(0, 0)" and
+  // renders an empty table. Convert 0 → undefined so the contract holds.
+  // Caught Apr 19, 2026 (BAU Dashboard: Production Incidents + QA Defects
+  // widgets rendered empty row area despite rows[] being populated).
+  const normalizedRowsPerPage =
+    rowsPerPage === 0 ? undefined : rowsPerPage;
+
   return (
     <AkDynamicTable
       head={head}
       rows={rows}
       emptyView={emptyView as React.ReactElement | undefined}
       isLoading={isLoading}
-      rowsPerPage={rowsPerPage}
+      rowsPerPage={normalizedRowsPerPage}
       defaultPage={defaultPage}
       defaultSortKey={defaultSortKey}
       defaultSortOrder={defaultSortOrder}
