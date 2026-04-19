@@ -27,6 +27,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { enqueueWriteBack } from '@/lib/jira-writeback';
 import { CloneIssueDialog } from './CloneIssueDialog';
 import { MoveIssueDialog } from './MoveIssueDialog';
+import { ArchiveConfirmDialog } from './ArchiveConfirmDialog';
+import { useProjectMemberRole } from '../../hooks/useProjectMemberRole';
 
 
 // Ring-fenced CSS for extension components
@@ -370,6 +372,7 @@ export default function StoryDetailModal({
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const [showMoveDialog, setShowMoveDialog] = useState(false);
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [descEditMode, setDescEditMode] = useState(false);
   const [acEditMode, setAcEditMode] = useState(false);
