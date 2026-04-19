@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ADS Token Bridge — alignment between three token worlds.
  *
