@@ -60,6 +60,8 @@ interface AddParentPickerProps {
   variant?: 'breadcrumb' | 'field';
   /** Source of parent candidates. Default 'epic' (ph_issues). 'business_request' restricts to Business Requests. */
   parentSource?: ParentSource;
+  /** Fallback parent summary used when ph_issues lookup returns nothing (e.g. parent lives outside ph_issues). */
+  parentSummaryFallback?: string | null;
 }
 
 interface CandidateRow {
