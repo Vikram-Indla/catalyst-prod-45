@@ -3,9 +3,11 @@
   <!-- Standalone mark for favicon, app icon, etc. on dark backgrounds -->
 
   <defs>
+    <!-- 2026-04-19: Lifted to Jira's dark-theme blue ramp (see wordmark-3-dark
+         for rationale). -->
     <linearGradient id="catalystBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60A5FA"/>
-      <stop offset="100%" stop-color="#3B82F6"/>
+      <stop offset="0%" stop-color="#579DFF"/>
+      <stop offset="100%" stop-color="#2684FF"/>
     </linearGradient>
   </defs>
 
