@@ -368,6 +368,8 @@ export default function StoryDetailModal({
   const [addMenuSearch, setAddMenuSearch] = useState('');
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [descEditMode, setDescEditMode] = useState(false);
   const [acEditMode, setAcEditMode] = useState(false);
