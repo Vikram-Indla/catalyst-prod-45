@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Resource360Drawer } from '@/components/capacity/resource360/Resource360Drawer';
 import { ResourceWorkDrawer } from '@/components/capacity/ResourceWorkDrawer';
-import { CapacityAIDrawer } from '@/components/capacity/CapacityAIDrawer';
+
 import { BulkEditModal } from '@/components/capacity/BulkEditModal';
 
 import { SleekCapacityHeader, PrimaryView, ResourceViewMode, ProjectViewMode } from '@/components/capacity/SleekCapacityHeader';
@@ -209,7 +209,7 @@ export default function CapacityPlannerPage() {
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
   const [selectedResource, setSelectedResource] = useState<ResourceMetric | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
+  
   const [resource360Id, setResource360Id] = useState<string | null>(null);
    const [workDrawerResourceId, setWorkDrawerResourceId] = useState<string | null>(null);
    const [workDrawerResourceName, setWorkDrawerResourceName] = useState<string | undefined>(undefined);
