@@ -9,12 +9,8 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import type { AllWorkItem } from '@/types/allwork.types';
-
-/* ── Avatar helpers ── */
-const AVATAR_COLORS = ['#6554C0', '#2684FF', '#36B37E', '#FF5630', '#FFAB00', '#00B8D9', '#EB2F96', '#722ED1'];
-function avatarBg(name: string) { return AVATAR_COLORS[name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length]; }
-function initials(name: string) { return name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase(); }
 
 /* ── Sort options (Jira parity — full set) ── */
 type SortKey = 'updated' | 'created' | 'key' | 'priority' | 'status' | 'assignee' | 'reporter' | 'summary' | 'work_type' | 'resolution';
@@ -275,31 +271,13 @@ export function IssueListPanel({
                         style={{ color: '#0052CC', textDecoration: 'none' }}
                       />
                     </div>
-                    {item.assignee_display_name ? (
-                      avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt={item.assignee_display_name}
-                          title={item.assignee_display_name}
-                          className="jlpCardAvatar"
-                        />
-                      ) : (
-                        <div
-                          className="jlpCardAvatarFallback"
-                          style={{ background: avatarBg(item.assignee_display_name) }}
-                          title={item.assignee_display_name}
-                        >
-                          {initials(item.assignee_display_name)}
-                        </div>
-                      )
-                    ) : (
-                      <div className="jlpCardAvatarEmpty" title="Unassigned">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B3BAC5" strokeWidth="1.5">
-                          <circle cx="12" cy="8" r="4" />
-                          <path d="M20 21a8 8 0 10-16 0" />
-                        </svg>
-                      </div>
-                    )}
+                    <CatalystOwnerAvatar
+                      type={item.assignee_display_name ? 'human' : 'placeholder'}
+                      name={item.assignee_display_name || undefined}
+                      avatarUrl={avatarUrl || undefined}
+                      size="md"
+                      showTooltip
+                    />
                   </div>
                 </div>
               );
