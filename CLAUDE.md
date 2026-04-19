@@ -600,6 +600,29 @@ There is **ONE** `.dark` block. Never add a second. Always consolidate.
 
 ---
 
+## 19. AVATAR IMAGE MIGRATION (CHOKEPOINT)
+
+User avatar photos resolve **exclusively** through `src/lib/avatars.ts`.
+Images are local assets in `src/assets/avatars/<slug>.png` (slug = `slugifyName(name)`).
+Auto-discovered at build time via `import.meta.glob` — no manifest edits needed.
+
+**Rules:**
+- ❌ Never hard-code an external URL (`https://…`, `gravatar`, `cdn.*`) into `<img src>` for a user avatar
+- ❌ Never add a second avatar resolver, manifest, or lookup map — one chokepoint only
+- ✅ New surfaces requiring a user photo import `resolveAvatarUrl` from `@/lib/avatars`
+- ✅ When `resolveAvatarUrl(name)` returns `null`, fall back to existing `CircleUser` + hash color
+
+**Canonical UserAvatar components (already wired):**
+- `src/components/admin/users/UserAvatar.tsx` — supports `avatarUrl` override + resolver fallback
+- `src/components/users/UserAvatar.tsx` — resolver-only
+
+**Migration backlog (existing `<img>` sites):** migrate opportunistically when touched for other work.
+Do NOT force-migrate all sites in a single pass — blast radius outweighs benefit.
+
+**Populating avatars:** `node scripts/download-avatars.mjs` (argv, stdin `-`, or `scripts/avatar-names.txt`).
+
+---
+
 > **THE PIPELINE IS THE PRODUCT.**  
 > **DIFFERENT > REPEAT — on failure, try a new approach.**  
 > **VERIFY > ASSUME — grep before writing.**  
