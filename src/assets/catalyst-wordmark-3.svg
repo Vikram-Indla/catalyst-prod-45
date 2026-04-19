@@ -2,9 +2,15 @@
   <!-- Catalyst Wordmark - Umbrella-C + "atalyst" - LIGHT MODE -->
   
   <defs>
+    <!-- 2026-04-19: Retuned to Atlassian Jira-parity blues. Previous stops
+         (#3B82F6 → #1D4ED8) read pale at favicon size because the start stop
+         was perceptually lighter than Jira's and the stop range was too wide
+         for small-size rendering. Atlassian Primary (#0052CC) → Atlassian
+         Deep (#0747A6) gives punch at 16/32px without losing warmth at
+         display size. -->
     <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#1D4ED8"/>
+      <stop offset="0%" stop-color="#0052CC"/>
+      <stop offset="100%" stop-color="#0747A6"/>
     </linearGradient>
   </defs>
   
