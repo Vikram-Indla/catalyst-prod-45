@@ -259,7 +259,8 @@ export default function StoryDetailModal({
           _jiraSynced: true,
         }));
       }
-      return [...phMapped, ...jiraMapped].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) as unknown as PhComment[];
+      const merged = [...phMapped, ...jiraMapped].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      return merged as unknown as PhComment[];
     },
   });
 
