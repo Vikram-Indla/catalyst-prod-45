@@ -14,10 +14,13 @@ export const DENSITY_STORAGE_KEY = 'kanban-density';
 
 const ALL: readonly KanbanDensity[] = ['compact', 'dense', 'comfortable'];
 
-export function readDensityPref(fallback: KanbanDensity = 'comfortable'): KanbanDensity {
+export function readDensityPref(
+  fallback: KanbanDensity = 'comfortable',
+  storageKey: string = DENSITY_STORAGE_KEY,
+): KanbanDensity {
   if (typeof window === 'undefined') return fallback;
   try {
-    const raw = window.localStorage.getItem(DENSITY_STORAGE_KEY);
+    const raw = window.localStorage.getItem(storageKey);
     if (raw && (ALL as readonly string[]).includes(raw)) {
       return raw as KanbanDensity;
     }
@@ -27,10 +30,13 @@ export function readDensityPref(fallback: KanbanDensity = 'comfortable'): Kanban
   return fallback;
 }
 
-export function writeDensityPref(d: KanbanDensity): void {
+export function writeDensityPref(
+  d: KanbanDensity,
+  storageKey: string = DENSITY_STORAGE_KEY,
+): void {
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.setItem(DENSITY_STORAGE_KEY, d);
+    window.localStorage.setItem(storageKey, d);
   } catch {
     // quota / disabled — swallow
   }
