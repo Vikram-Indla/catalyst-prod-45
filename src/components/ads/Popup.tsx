@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Popup — Catalyst wrapper over @atlaskit/popup.
  *

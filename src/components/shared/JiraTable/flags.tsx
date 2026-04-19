@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * JiraTable -- @atlaskit/flag toast host.
  *

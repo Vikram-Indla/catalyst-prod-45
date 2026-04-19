@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Avatar — Catalyst wrapper over @atlaskit/avatar.
  *

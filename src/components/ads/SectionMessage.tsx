@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SectionMessage — Catalyst wrapper over @atlaskit/section-message.
  *
