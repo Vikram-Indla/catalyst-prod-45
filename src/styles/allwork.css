@@ -1679,13 +1679,19 @@
    RESPONSIVE — narrow-viewport fallback (Apr 2026)
    ═══════════════════════════════════════════════════════════════════════
 
-   Geometry recap at default widths:
+   Geometry recap at default widths (inside the page — excludes the
+   Catalyst top/left app chrome, which also consumes ~232px horizontal
+   on the project-hub routes):
      [ awColNav 240px ] [ 1px ] [ awIssueContent 1fr ] [ 8px ]
      [ awDetailsSidebar 340px (flex-shrink:0) ]
 
-     Fixed + reserved width = 240 + 1 + 8 + 340 = 589px
-     Middle column minimum for non-overlap popovers ~= 500px
-     Therefore overlap begins below ~1089px → breakpoint set at 1100px.
+     Fixed + reserved width (page content): 240 + 1 + 8 + 340 = 589px
+     With Catalyst chrome the page-side reserved width ≈ 820px.
+     Middle column needs ≥ ~700px to render a Jira-parity title on one
+     line and keep Key Details rows from wrapping the label column.
+     Therefore breakpoint raised from 1100 → 1280 so the sidebar hides
+     any time the middle column would drop below ~700px at typical
+     Catalyst route widths.
 
    Strategy:
      1. Hide the right Details sidebar (it already supports display:none
@@ -1699,10 +1705,10 @@
         grid — that's Priority #2 and needs JS state to work (list ↔
         content stacked mode with a back button). This pass is CSS-only.
 
-   Above 1100px the manual chevron (sidebarOpen state) remains the
+   Above 1280px the manual chevron (sidebarOpen state) remains the
    source of truth — this media query only gates the narrow-viewport
    floor, it does not fight the desktop toggle. */
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
   .awDetailsSidebar { display: none; }
   .awSidebarDivider { display: none; }
 }

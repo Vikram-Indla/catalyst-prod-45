@@ -1,44 +1,152 @@
-import { useState } from 'react';
+/**
+ * KanbanBoardView — Team / Program / Portfolio board (Phase 6).
+ *
+ * Routes served by this page:
+ *   /team/:teamId/kanban-boards/:boardId
+ *   /programs/:programId/kanban-boards/:boardId
+ *   /kanban-boards/:boardId
+ *
+ * Migrated onto the canonical KanbanBoardShell. The bespoke 5-column flex
+ * grid with its custom Card rendering and static filter placeholder has
+ * been replaced by `<KanbanBoardShell adapter={...}/>`, reached through
+ * `buildTeamProgramBoardAdapter`.
+ *
+ * Architectural twist vs. Phases 3–5
+ *   This board's columns are *dynamic* — defined per-board in the
+ *   `kanban_columns` table. The adapter therefore accepts the live
+ *   column rows (from `useKanbanColumns`) and derives its
+ *   `KanbanColumnDef[]` at render time. See the adapter docstring for
+ *   the `status === column_id` identity contract.
+ *
+ * Preserved
+ *   - Back button + "Board Setup" + "Lean Analytics" controls rendered
+ *     above the canonical shell in a light, breadcrumb-free header row
+ *     (parity with `/project-hub/BAU/backlog` — no breadcrumb, single
+ *     title). The title itself is rendered by CatalystPageHeader inside
+ *     the shell.
+ *   - Loading + not-found + empty-board states (empty columns = CTA to
+ *     Board Setup).
+ *
+ * New capability
+ *   - Drag-drop between columns persists via `useMoveCard`.
+ *   - Jira-parity toolbar: search, avatar stack, basic filter, group-by,
+ *     density, view settings — free through the shell.
+ *
+ * Out of scope (deferred to Phase 9 / pixel-parity polish)
+ *   - Swim lanes (KanbanBoardShell doesn't declaratively model them yet).
+ *   - WIP-limit badges + red header colouring on overloaded columns
+ *     (legacy UX; canonical shell uses neutral column headers).
+ */
+import { useCallback, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useKanbanBoard, useKanbanColumns, useKanbanCards, useSwimLanes } from '@/hooks/useKanbanBoards';
+import { toast } from 'sonner';
+import {
+  useKanbanBoard,
+  useKanbanColumns,
+  useKanbanCards,
+  useMoveCard,
+} from '@/hooks/useKanbanBoards';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
+import { buildTeamProgramBoardAdapter } from '@/components/kanban/adapters/teamProgramBoardAdapter';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { ArrowLeft, Search, Settings, BarChart3, ChevronDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ArrowLeft, Settings, BarChart3, ChevronDown } from 'lucide-react';
 
 export default function KanbanBoardView() {
-  const { boardId, teamId, programId } = useParams<{ boardId: string; teamId?: string; programId?: string }>();
+  const { boardId, teamId, programId } = useParams<{
+    boardId: string;
+    teamId?: string;
+    programId?: string;
+  }>();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  
-  // Determine base path based on context
-  const basePath = teamId 
-    ? `/team/${teamId}/kanban-boards` 
-    : programId 
-    ? `/programs/${programId}/kanban-boards` 
+  const avatarsByName = useProfileAvatarsByName();
+
+  /* ═════ Route scope — drives Back + Setup + Analytics paths. ═════ */
+  const basePath = teamId
+    ? `/team/${teamId}/kanban-boards`
+    : programId
+    ? `/programs/${programId}/kanban-boards`
     : '/kanban-boards';
 
+  /* ═════ Data. ═════ */
   const { data: board, isLoading: boardLoading } = useKanbanBoard(boardId);
   const { data: columns = [] } = useKanbanColumns(boardId);
   const { data: cards = [] } = useKanbanCards(boardId);
-  const { data: swimLanes = [] } = useSwimLanes(boardId);
 
+  /* ═════ Page-owned filter + group-by state. ═════ */
+  const [search, setSearch] = useState('');
+  const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
+  const [filterSelected, setFilterSelected] = useState<Record<string, string[]>>({});
+  const [groupBy, setGroupBy] = useState<string>('none');
+
+  const onFilterChange = useCallback((categoryId: string, values: string[]) => {
+    setFilterSelected(prev => ({ ...prev, [categoryId]: values }));
+  }, []);
+  const onClearFilters = useCallback(() => {
+    setFilterSelected({});
+    setSelAssignees(new Set());
+    setSearch('');
+  }, []);
+
+  /* ═════ Move-card mutation (drag-drop persistence). ═════ */
+  const moveCard = useMoveCard();
+  const onMoveCard = useCallback(
+    async (cardId: string, toColumnId: string) => {
+      try {
+        await moveCard.mutateAsync({ card_id: cardId, to_column_id: toColumnId });
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Failed to move card');
+      }
+    },
+    [moveCard],
+  );
+
+  /* ═════ Build adapter. ═════ */
+  const adapter = useMemo(() => {
+    if (!board) return null;
+    return buildTeamProgramBoardAdapter({
+      board,
+      columns,
+      cards,
+      avatarsByName,
+      search,
+      onSearchChange: setSearch,
+      selAssignees,
+      onSelAssigneesChange: setSelAssignees,
+      filterSelected,
+      onFilterChange,
+      onClearFilters,
+      groupBy,
+      onGroupByChange: setGroupBy,
+      onMoveCard,
+    });
+  }, [
+    board, columns, cards, avatarsByName,
+    search, selAssignees, filterSelected, groupBy,
+    onFilterChange, onClearFilters, onMoveCard,
+  ]);
+
+  /* ═════ Loading state. ═════ */
   if (boardLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-muted-foreground">Loading board...</div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <div style={{
+          width: 32, height: 32,
+          border: '2px solid #2563EB', borderTopColor: 'transparent',
+          borderRadius: '50%', animation: 'spin 1s linear infinite',
+        }} />
       </div>
     );
   }
 
-  if (!board) {
+  /* ═════ Not-found state. ═════ */
+  if (!board || !adapter) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
         <div className="text-muted-foreground">Board not found</div>
@@ -50,167 +158,91 @@ export default function KanbanBoardView() {
     );
   }
 
-  // Group cards by column
-  const cardsByColumn = columns.reduce((acc, col) => {
-    acc[col.id] = cards.filter(card => card.column_id === col.id);
-    return acc;
-  }, {} as Record<string, typeof cards>);
-
-  return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="h-[72px] border-b border-border bg-background px-6 flex items-center">
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-4 min-w-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(basePath)}
-              className="flex-shrink-0"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
-            <div className="min-w-0">
-              <h1 className="text-lg font-semibold text-foreground truncate">{board.title}</h1>
-              {board.description && (
-                <p className="text-sm text-muted-foreground truncate">{board.description}</p>
-              )}
-        </div>
-      </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate(`${basePath}/${boardId}/setup`)}
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Board Setup
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  Options
-                  <ChevronDown className="w-4 h-4 ml-2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate(`${basePath}/${boardId}/analytics`)}>
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  Lean Analytics
-                </DropdownMenuItem>
-                <DropdownMenuItem>Run A Meeting</DropdownMenuItem>
-                <DropdownMenuItem>Quick Load Cards</DropdownMenuItem>
-                <DropdownMenuItem>Show Team</DropdownMenuItem>
-                <DropdownMenuItem>Show Tags</DropdownMenuItem>
-                <DropdownMenuItem>Macro View</DropdownMenuItem>
-                <DropdownMenuItem>Small Cards</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+  /* ═════ Empty board (no columns configured) — CTA to Board Setup. ═════ */
+  if (columns.length === 0) {
+    return (
+      <div className="flex flex-col h-full bg-background">
+        <BoardContextBar
+          basePath={basePath}
+          boardId={boardId}
+          onBack={() => navigate(basePath)}
+          onSetup={() => navigate(`${basePath}/${boardId}/setup`)}
+          onAnalytics={() => navigate(`${basePath}/${boardId}/analytics`)}
+        />
+        <div className="flex flex-col items-center justify-center flex-1 text-center">
+          <div className="text-muted-foreground mb-4">
+            No columns configured. Set up your board to get started.
           </div>
-        </div>
-      </div>
-
-      {/* Toolbar */}
-      <div className="border-b border-border bg-background px-6 py-3">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search by ID, name, or tag..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <Button variant="outline" size="sm">
-            Filter
-            <ChevronDown className="w-4 h-4 ml-2" />
+          <Button
+            onClick={() => navigate(`${basePath}/${boardId}/setup`)}
+            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Board Setup
           </Button>
         </div>
       </div>
+    );
+  }
 
-      {/* Kanban Board */}
-      <div className="flex-1 overflow-auto p-6">
-        {columns.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-64 text-center">
-            <div className="text-muted-foreground mb-4">
-              No columns configured. Set up your board to get started.
-            </div>
-            <Button
-              onClick={() => navigate(`${basePath}/${boardId}/setup`)}
-              className="bg-brand-primary hover:bg-brand-primary-hover text-white"
-            >
-              <Settings className="w-4 h-4 mr-2" />
-              Board Setup
+  /* ═════ Canonical board. ═════ */
+  return (
+    <div className="flex flex-col h-full">
+      <BoardContextBar
+        basePath={basePath}
+        boardId={boardId}
+        onBack={() => navigate(basePath)}
+        onSetup={() => navigate(`${basePath}/${boardId}/setup`)}
+        onAnalytics={() => navigate(`${basePath}/${boardId}/analytics`)}
+      />
+      <div className="flex-1 min-h-0">
+        <KanbanBoardShell adapter={adapter} title={board.title} />
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   BoardContextBar — slim back/setup/analytics row rendered above the
+   canonical shell. No breadcrumb, single-level controls, matches the
+   `/project-hub/BAU/backlog` visual grammar (shell's CatalystPageHeader
+   owns the actual title).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+interface BoardContextBarProps {
+  basePath: string;
+  boardId: string | undefined;
+  onBack: () => void;
+  onSetup: () => void;
+  onAnalytics: () => void;
+}
+
+function BoardContextBar({ basePath: _basePath, boardId: _boardId, onBack, onSetup, onAnalytics }: BoardContextBarProps) {
+  return (
+    <div className="h-10 border-b border-border bg-background px-4 flex items-center justify-between flex-shrink-0">
+      <Button variant="ghost" size="sm" onClick={onBack} className="flex-shrink-0">
+        <ArrowLeft className="w-4 h-4 mr-2" />
+        Boards
+      </Button>
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={onSetup}>
+          <Settings className="w-4 h-4 mr-2" />
+          Board Setup
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              Options
+              <ChevronDown className="w-4 h-4 ml-2" />
             </Button>
-          </div>
-        ) : (
-          <div className="flex gap-4 h-full">
-            {columns.map((column) => {
-              const columnCards = cardsByColumn[column.id] || [];
-              const isOverWIP = column.wip_limit && columnCards.length > column.wip_limit;
-              const isAtWIP = column.wip_limit && columnCards.length === column.wip_limit;
-
-              return (
-                <div key={column.id} className="flex-1 min-w-[280px] max-w-[320px]">
-                  <div
-                    className={`rounded-t-lg px-4 py-3 ${
-                      isOverWIP
-                        ? 'bg-destructive text-destructive-foreground'
-                        : isAtWIP
-                        ? 'bg-warning/20 text-warning-foreground border border-warning'
-                        : 'bg-muted'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold text-sm">
-                        {column.name}{' '}
-                        <span className="font-normal">
-                          ({columnCards.length}
-                          {column.wip_limit ? `/${column.wip_limit}` : ''})
-                        </span>
-                      </h3>
-                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                        ⋮
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3 pt-3 min-h-[400px]">
-                    {columnCards.length === 0 ? (
-                      <div className="text-center py-8 text-sm text-muted-foreground">
-                        No cards
-                      </div>
-                    ) : (
-                      columnCards.map((card) => (
-                        <Card
-                          key={card.id}
-                          className="p-3 cursor-pointer hover:shadow-md transition-shadow border-l-4 border-l-info"
-                        >
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <Badge variant="secondary" className="text-xs">
-                              {card.work_item_type}
-                            </Badge>
-                            {card.is_blocked && (
-                              <Badge variant="destructive" className="text-xs">
-                                Blocked
-                              </Badge>
-                            )}
-                          </div>
-                          <div className="text-sm font-medium text-foreground line-clamp-2">
-                            {card.work_item_id}
-                          </div>
-                        </Card>
-                      ))
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={onAnalytics}>
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Lean Analytics
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
