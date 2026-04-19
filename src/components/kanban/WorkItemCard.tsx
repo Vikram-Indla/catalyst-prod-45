@@ -194,7 +194,10 @@ export function WorkItemCard({
               color: tk.textPrimary,
               fontWeight: 400,                          /* Jira parity: 400 */
               marginBottom: 4,
-              paddingRight: 32,                         /* reserve overflow-menu slot */
+              /* No paddingRight here: the flex sibling (flag + edit + menu
+                 buttons) already reserves ~44px on the right. Adding an
+                 extra 32px double-padded the summary and forced titles to
+                 wrap a line earlier than necessary. */
               display: '-webkit-box',
               WebkitLineClamp: d.titleClamp,
               WebkitBoxOrient: 'vertical',
@@ -250,7 +253,10 @@ export function WorkItemCard({
               background: tk.epicLozengeBg, color: tk.epicLozengeText,
               padding: '0 6px', borderRadius: 3,
               height: 16, lineHeight: '16px',
-              maxWidth: 200,
+              /* Fill available card interior; ellipsis handles overflow.
+                 Previously a hard 200px cap left ~23px of dead space on
+                 the right of 267px columns. */
+              maxWidth: '100%', minWidth: 0,
               overflow: 'hidden', textOverflow: 'ellipsis',
               whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center',
               letterSpacing: '0.02em',
@@ -263,7 +269,9 @@ export function WorkItemCard({
               padding: '0 6px', borderRadius: 3,
               border: `1px solid ${tk.border}`,
               height: 16, lineHeight: '14px',
-              maxWidth: 180,
+              /* Same reasoning as epic lozenge above — let flex-wrap +
+                 ellipsis handle overflow, no hard cap. */
+              maxWidth: '100%', minWidth: 0,
               overflow: 'hidden', textOverflow: 'ellipsis',
               whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center',
               textTransform: 'uppercase',
