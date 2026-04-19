@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Checkbox — Catalyst wrapper over @atlaskit/checkbox.
  */

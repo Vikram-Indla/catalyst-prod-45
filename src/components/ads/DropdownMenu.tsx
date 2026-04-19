@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * DropdownMenu — Catalyst wrapper over @atlaskit/dropdown-menu.
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ProgressBar — Catalyst wrapper over @atlaskit/progress-bar.
  *

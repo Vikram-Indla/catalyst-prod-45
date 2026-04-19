@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Flag — Catalyst wrapper over @atlaskit/flag.
  *

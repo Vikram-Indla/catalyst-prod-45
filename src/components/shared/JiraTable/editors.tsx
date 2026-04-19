@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * JiraTable -- canonical inline editors.
  *

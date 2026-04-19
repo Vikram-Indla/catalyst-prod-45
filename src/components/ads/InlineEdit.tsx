@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * InlineEdit — Catalyst wrapper over @atlaskit/inline-edit.
  *

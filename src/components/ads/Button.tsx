@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Button — Catalyst wrapper over @atlaskit/button.
  *

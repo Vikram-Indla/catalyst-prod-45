@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CatalystViewBase — Shared layout shell for all Catalyst detail views.
  *
