@@ -30,7 +30,7 @@
  *   start. Vite's own error overlay is clearer than whatever we'd print.
  */
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, statSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, statSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -82,6 +82,67 @@ function hasCmd(cmd) {
 }
 
 /**
+ * Remove npm's "safe-remove" staging directories left behind by a crashed
+ * install.
+ *
+ * npm atomically replaces a package by renaming the old copy to
+ * `.<name>-<nanoid>` and then moving the new copy into place. If the
+ * install is interrupted (Ctrl-C, OOM, sleep/wake, another npm crashing)
+ * the `.<name>-<nanoid>` backup directory is stranded. The NEXT install
+ * then fails with:
+ *
+ *   ENOTEMPTY: directory not empty, rename
+ *     '.../node_modules/@atlaskit/editor-plugin-card'
+ *   -> '.../node_modules/@atlaskit/.editor-plugin-card-nUJmVndO'
+ *
+ * because npm tries to rename to the same temp name and the destination
+ * is already non-empty from the previous crash. Sweeping these before we
+ * install unblocks the loop without needing a full `rm -rf node_modules`.
+ *
+ * Pattern: `.name-<8+ alnum>` at the top level of node_modules AND inside
+ * any `@scope/` directory. We do NOT recurse deeper — npm's staging dirs
+ * only appear at those two levels.
+ */
+function cleanStaleStagingDirs() {
+  const nm = join(root, 'node_modules');
+  if (!existsSync(nm)) return 0;
+  // Matches npm staging: leading dot, a package name, dash, 8+ alphanumeric
+  // (nanoid-style). Excludes legitimate dotdirs like `.bin`, `.cache`,
+  // `.package-lock.json`, `.catalyst-sync-hash`.
+  const stale = /^\..+-[A-Za-z0-9]{8,}$/;
+  let removed = 0;
+  const sweep = (dir) => {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      if (!e.isDirectory()) continue;
+      if (!stale.test(e.name)) continue;
+      try {
+        rmSync(join(dir, e.name), { recursive: true, force: true });
+        removed++;
+      } catch {
+        // swallow — worst case, npm will error again and we surface it
+      }
+    }
+  };
+  sweep(nm);
+  let topEntries;
+  try {
+    topEntries = readdirSync(nm, { withFileTypes: true });
+  } catch {
+    return removed;
+  }
+  for (const e of topEntries) {
+    if (e.isDirectory() && e.name.startsWith('@')) sweep(join(nm, e.name));
+  }
+  return removed;
+}
+
+/**
  * Run a package manager quietly. We don't want npm's wall of deprecation
  * warnings flooding the terminal on every dev start, but we DO want real
  * errors surfaced. So:
@@ -121,11 +182,23 @@ function install() {
   // on some packages and pins behavior across dev environments. `--loglevel=error`
   // drops the uuid/rimraf/etc deprecation chorus; real errors still surface.
   if (hasCmd('npm')) {
-    if (runQuiet(
-      'npm',
-      ['install', '--registry=https://registry.npmjs.org/', '--no-audit', '--no-fund', '--loglevel=error'],
-      'npm install',
-    )) return true;
+    const swept = cleanStaleStagingDirs();
+    if (swept > 0) {
+      process.stderr.write(
+        `[sync-deps] cleaned ${swept} stale staging dir${swept === 1 ? '' : 's'} from a prior crashed install\n`,
+      );
+    }
+    const npmArgs = ['install', '--registry=https://registry.npmjs.org/', '--no-audit', '--no-fund', '--loglevel=error'];
+    if (runQuiet('npm', npmArgs, 'npm install')) return true;
+    // ENOTEMPTY retry: the first attempt can strand its own staging dirs when
+    // it fails midway. Sweep again and try once more before giving up.
+    const swept2 = cleanStaleStagingDirs();
+    if (swept2 > 0) {
+      process.stderr.write(
+        `[sync-deps] cleaned ${swept2} staging dir${swept2 === 1 ? '' : 's'}; retrying npm install…\n`,
+      );
+      if (runQuiet('npm', npmArgs, 'npm install (retry)')) return true;
+    }
   }
 
   process.stderr.write('[sync-deps] Could not install dependencies automatically. Run `bun install` or `npm install` manually.\n');
@@ -156,7 +229,23 @@ if (ok) {
   // mtimes (even when content is unchanged), so hashing BEFORE install would
   // loop-install on every run.
   markSynced(fingerprint());
+  process.exit(0);
 }
-// Exit 0 even on install failure so the caller (vite, tests) still runs and
-// surfaces its own error. We already warned.
+
+// Install failed. If vite's bin is present we let the caller run — a partial
+// node_modules plus an offline registry shouldn't block dev. But if vite
+// isn't even installed, running `&& vite` next produces a confusing
+// `sh: vite: command not found` and hides the real cause. Fail loudly here.
+const viteBin = join(
+  root,
+  'node_modules',
+  '.bin',
+  process.platform === 'win32' ? 'vite.cmd' : 'vite',
+);
+if (!existsSync(viteBin)) {
+  process.stderr.write(
+    '[sync-deps] node_modules is incomplete (vite binary missing). Run `npm install` manually to see the full npm error, then retry `npm run dev`.\n',
+  );
+  process.exit(1);
+}
 process.exit(0);
