@@ -5257,6 +5257,10 @@ input[type="range"]::-moz-range-thumb {
 .adf-content,
 .adf-description-content {
   overflow-x: auto;
+  /* Jira parity (Apr 2026): ADF-rendered body copy uses Atlassian Sans
+     to match Jira Cloud's description renderer. Falls back through the
+     Atlaskit token stack to system fonts if Atlassian Sans isn't loaded. */
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif;
 }
 
 .adf-content table,

@@ -1681,24 +1681,3 @@
 /* SubtasksPanel NOCTURNE overrides moved to SubtasksPanel.css — see
    src/modules/project-work-hub/components/SubtasksPanel/SubtasksPanel.css
    (consolidated per CLAUDE.md L35). */
-
-/* ═══════════════════════════════════════════════════════════════════════
-   RESPONSIVE — narrow-shell handling (Apr 2026, Pass 7 — pure CSS)
-   ═══════════════════════════════════════════════════════════════════════
-
-   After multiple JS/container-query attempts failed to reach the running
-   bundle reliably, falling back to a bulletproof viewport-level @media
-   query. This rule cascades regardless of JS state, service workers, or
-   HMR — once the CSS file is served, the rule applies.
-
-   Breakpoint: 1280px viewport width. Below this, the Details sidebar and
-   its divider are hidden outright, giving the middle column the full
-   width of the right panel. Above this, the sidebar renders normally and
-   the toggle chevron controls it. Uses !important to defeat any inline
-   styles or competing rules. */
-@media (max-width: 1280px) {
-  .awDetailsSidebar,
-  .awSidebarDivider {
-    display: none !important;
-  }
-}

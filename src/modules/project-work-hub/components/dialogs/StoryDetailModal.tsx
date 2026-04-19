@@ -892,7 +892,7 @@ export default function StoryDetailModal({
                       defaultValue={issue?.summary ?? ''}
                       label="Issue title"
                       readView={() => (
-                        <Heading size="medium" as="h1">
+                        <Heading size="large" as="h1">
                           {issue?.summary || '—'}
                         </Heading>
                       )}
@@ -1372,7 +1372,10 @@ export default function StoryDetailModal({
                             border: isActive ? '0.556px solid #1868DB' : '0.556px solid transparent',
                             borderRadius: 2,
                             background: isActive ? '#E9F2FE' : 'transparent',
-                            fontSize: 13.33, fontWeight: 500,
+                            // Jira parity (Apr 2026): activity-tab buttons computed as
+                            // Atlassian Sans 14px/400 in live Jira. Catalyst previously used
+                            // 13.33px/500 which rendered slightly smaller and heavier than Jira.
+                            fontSize: 14, fontWeight: 400,
                             color: isActive ? '#1868DB' : '#505258',
                             cursor: 'pointer', transition: 'background 150ms, border-color 150ms, color 150ms',
                             lineHeight: 'normal',

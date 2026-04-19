@@ -184,57 +184,7 @@ export function IssueContentView({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const moreMenuRef = useRef<HTMLDivElement>(null);
 
-  /* ─────────────────────────────────────────────────────────────────────
-     Responsive Details sidebar (Jira-parity ResizeObserver pattern).
-
-     Prior CSS-only attempts (container queries + viewport media) failed
-     to fire in the running bundle — the sidebar kept rendering at full
-     width while the middle column was crushed to fragments. JS is the
-     deterministic fix: measure .awIssueView's actual inline size and
-     auto-collapse the sidebar when the middle column would lose below
-     ~640px (Jira Cloud's observed comfort threshold).
-
-     Geometry: .awDetailsSidebar = 340px + divider 8px = 348px reserved.
-     Middle column comfortable minimum ≈ 640px.
-     Breakpoint: .awIssueView width < 988px → auto-collapse.
-
-     CALLBACK REF (not useRef + useEffect). The .awIssueView div unmounts
-     during the `loading` state (early return renders a skeleton) and
-     remounts once the issue resolves. A useEffect([]) would observe the
-     ref on initial mount when it's null, then never re-fire. A callback
-     ref runs the moment React attaches/detaches the DOM node — observer
-     wires up exactly when the element exists.
-     ───────────────────────────────────────────────────────────────── */
-  const userOverrodeSidebar = useRef(false);
-  const roRef = useRef<ResizeObserver | null>(null);
-  const lastDecisionRef = useRef<boolean | null>(null);
-  const setIssueViewRef = useCallback((el: HTMLDivElement | null) => {
-    // Detach previous observer (covers remount after loading or issue switch)
-    if (roRef.current) {
-      roRef.current.disconnect();
-      roRef.current = null;
-    }
-    if (!el || typeof ResizeObserver === 'undefined') return;
-    lastDecisionRef.current = null;
-    const RESPONSIVE_THRESHOLD = 988;
-    const ro = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const width = entry.contentRect.width;
-        const shouldBeOpen = width >= RESPONSIVE_THRESHOLD;
-        if (lastDecisionRef.current !== shouldBeOpen) {
-          lastDecisionRef.current = shouldBeOpen;
-          // Threshold crossing resets the manual override.
-          userOverrodeSidebar.current = false;
-          setSidebarOpen(shouldBeOpen);
-        }
-      }
-    });
-    ro.observe(el);
-    roRef.current = ro;
-  }, []);
-
   const handleToggleSidebar = useCallback(() => {
-    userOverrodeSidebar.current = true;
     setSidebarOpen((o) => !o);
   }, []);
 
@@ -434,7 +384,7 @@ export function IssueContentView({
   }
 
   return (
-    <div className="awIssueView" ref={setIssueViewRef}>
+    <div className="awIssueView">
       {/* ══ LEFT: Issue content ══ */}
       <div className="awIssueContent">
         {/* Header */}
