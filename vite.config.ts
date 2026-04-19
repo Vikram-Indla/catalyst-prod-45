@@ -277,6 +277,15 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/textfield',
       '@atlaskit/tokens',
       '@atlaskit/tooltip',
+      // Force-pre-bundle the popper chain pulled in transitively by
+      // @atlaskit/select + @atlaskit/user-picker. Without explicit entries,
+      // vite's hot re-optimize (triggered when a new @atlaskit/* dep lands
+      // mid-session) can leave esbuild with a stale manifest and fail with
+      //   "Could not resolve ./dom-utils/getLayoutRect.js" in @popperjs/core
+      // even though the files are on disk. Listing them here pins stable
+      // pre-bundle IDs so the manifest survives re-optimization.
+      '@popperjs/core',
+      'react-popper',
       // NOTE: @atlaskit/editor-core and @atlaskit/renderer are intentionally
       // EXCLUDED here. They bundle their own ProseMirror tree and clash with
       // Tiptap if eagerly loaded. AtlaskitEditor.tsx lazy-imports editor-core
