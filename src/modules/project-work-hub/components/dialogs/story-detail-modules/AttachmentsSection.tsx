@@ -1,13 +1,33 @@
 /**
- * AttachmentsSection — Jira-parity attachments table
- * Pixel-perfect replica: collapsible header, sortable columns,
- * thumbnail + filename, size, date, eye/download actions.
+ * AttachmentsSection — Jira-parity attachments table with full CRUD.
+ * - Drag-drop multi upload + per-file progress
+ * - Per-row delete (uploader OR project admin/owner)
+ * - Filename click → AttachmentPreviewModal (image/PDF/fallback)
+ * - "..." menu → Download all (zip via attachment-download-all edge function)
+ * - 25MB max, blocked extensions client-side
+ * - V12 tokens, ECLIPSE NOCTURNE-aware via Tailwind dark: classes (no inline overrides)
  */
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
+import { Trash2, Download, Loader2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { AttachmentPreviewModal } from './AttachmentPreviewModal';
 import './AttachmentsSection.css';
+
+const BUCKET = 'attachments';
+const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024; // 25MB
+const BLOCKED_EXTS = ['exe', 'bat', 'sh', 'msi', 'cmd', 'com', 'scr'];
 
 export interface PhAttachment {
   id: string;
@@ -24,10 +44,20 @@ interface AttachmentsSectionProps {
   attachments: PhAttachment[];
   itemId: string;
   userId: string;
+  projectKey?: string;
 }
 
 type SortKey = 'name' | 'size' | 'dateAdded';
 type SortDir = 'asc' | 'desc';
+
+interface UploadProgress {
+  id: string;
+  fileName: string;
+  pct: number;
+  status: 'uploading' | 'error';
+  error?: string;
+  controller?: AbortController;
+}
 
 function formatSize(bytes: number): string {
   if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
@@ -48,76 +78,237 @@ function splitFilename(name: string): [string, string] {
   return [name.slice(0, dotIdx), name.slice(dotIdx)];
 }
 
-export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsSectionProps) {
+function validateFile(file: File): string | null {
+  if (file.size > MAX_ATTACHMENT_BYTES) {
+    return `File too large (${formatSize(file.size)}). Max 25MB.`;
+  }
+  const ext = (file.name.split('.').pop() || '').toLowerCase();
+  if (BLOCKED_EXTS.includes(ext)) {
+    return `Blocked file type: .${ext}`;
+  }
+  return null;
+}
+
+export function AttachmentsSection({ attachments, itemId, userId, projectKey }: AttachmentsSectionProps) {
   const queryClient = useQueryClient();
   const [collapsed, setCollapsed] = useState(attachments.length === 0);
   const [sortKey, setSortKey] = useState<SortKey>('dateAdded');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploads, setUploads] = useState<UploadProgress[]>([]);
+  const [pendingDelete, setPendingDelete] = useState<PhAttachment | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [zipping, setZipping] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const moreMenuRef = useRef<HTMLDivElement>(null);
+  const dragCounter = useRef(0);
+
+  // Determine if current user is project admin/owner (used for canDelete)
+  const { data: userRole } = useQuery({
+    queryKey: ['ph-project-role', projectKey, userId],
+    enabled: !!projectKey && !!userId,
+    queryFn: async () => {
+      const { data: project } = await supabase.from('ph_projects').select('id').eq('key', projectKey!).maybeSingle();
+      if (!project?.id) return null;
+      const { data: member } = await supabase
+        .from('ph_project_members')
+        .select('role')
+        .eq('project_id', project.id)
+        .eq('user_id', userId)
+        .maybeSingle();
+      return member?.role ?? null;
+    },
+  });
+
+  const isProjectAdmin = userRole === 'admin' || userRole === 'owner';
+
+  // Close more menu on outside click
+  useEffect(() => {
+    if (!moreMenuOpen) return;
+    const onClickAway = (e: MouseEvent) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onClickAway);
+    return () => document.removeEventListener('mousedown', onClickAway);
+  }, [moreMenuOpen]);
 
   const handleSort = (key: SortKey) => {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
   };
 
-  const sorted = [...attachments].sort((a, b) => {
+  const sorted = useMemo(() => [...attachments].sort((a, b) => {
     let cmp = 0;
     if (sortKey === 'name') cmp = a.file_name.localeCompare(b.file_name);
     else if (sortKey === 'size') cmp = a.file_size - b.file_size;
     else cmp = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
     return sortDir === 'asc' ? cmp : -cmp;
-  });
+  }), [attachments, sortKey, sortDir]);
 
-  const handleUpload = useCallback(async (file: File) => {
-    const ext = file.name.split('.').pop();
-    const path = `attachments/${itemId}/${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from('attachments').upload(path, file);
-    if (uploadError) { toast.error('Failed to upload'); return; }
-    const { error: dbError } = await supabase.from('ph_attachments').insert({
-      work_item_id: itemId, file_name: file.name, file_size: file.size,
-      mime_type: file.type, storage_path: path, uploaded_by: userId,
-    });
-    if (dbError) { toast.error('Failed to save attachment'); return; }
-    toast.success('Attachment uploaded');
+  const invalidate = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
-  }, [itemId, userId, queryClient]);
+  }, [queryClient, itemId]);
+
+  /* ───── UPLOAD ───── */
+  const uploadFile = useCallback(async (file: File) => {
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const validationErr = validateFile(file);
+    if (validationErr) {
+      setUploads(u => [...u, { id, fileName: file.name, pct: 0, status: 'error', error: validationErr }]);
+      toast.error(validationErr);
+      return;
+    }
+
+    setUploads(u => [...u, { id, fileName: file.name, pct: 5, status: 'uploading' }]);
+
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `attachments/${itemId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+      // Simulate progress (Supabase JS upload doesn't expose progress events)
+      const progressTimer = setInterval(() => {
+        setUploads(u => u.map(x => x.id === id && x.status === 'uploading' && x.pct < 90
+          ? { ...x, pct: Math.min(90, x.pct + 10) } : x));
+      }, 200);
+
+      const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, file, {
+        contentType: file.type || 'application/octet-stream',
+      });
+      clearInterval(progressTimer);
+      if (uploadError) throw new Error(uploadError.message);
+
+      const { error: dbError } = await supabase.from('ph_attachments').insert({
+        work_item_id: itemId,
+        file_name: file.name,
+        file_size: file.size,
+        mime_type: file.type || 'application/octet-stream',
+        storage_path: path,
+        uploaded_by: userId,
+      });
+      if (dbError) {
+        // Best-effort cleanup of storage on DB failure
+        await supabase.storage.from(BUCKET).remove([path]);
+        throw new Error(dbError.message);
+      }
+
+      setUploads(u => u.map(x => x.id === id ? { ...x, pct: 100, status: 'uploading' } : x));
+      // Remove from list after a beat
+      setTimeout(() => setUploads(u => u.filter(x => x.id !== id)), 600);
+      invalidate();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'Upload failed';
+      setUploads(u => u.map(x => x.id === id ? { ...x, status: 'error', error: msg } : x));
+      toast.error(`Failed: ${file.name} — ${msg}`);
+    }
+  }, [itemId, userId, invalidate]);
+
+  const uploadFiles = useCallback(async (files: File[]) => {
+    if (collapsed) setCollapsed(false);
+    await Promise.allSettled(files.map(f => uploadFile(f)));
+  }, [collapsed, uploadFile]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) { Array.from(files).forEach(f => handleUpload(f)); }
+    if (files && files.length > 0) uploadFiles(Array.from(files));
     e.target.value = '';
   };
 
-  const getPublicUrl = (storagePath: string) =>
-    supabase.storage.from('attachments').getPublicUrl(storagePath).data.publicUrl;
-
-  const handleDownloadAll = () => {
-    attachments.forEach(att => {
-      const url = getPublicUrl(att.storage_path);
-      window.open(url, '_blank');
-    });
-    setMoreMenuOpen(false);
+  /* ───── DRAG / DROP ───── */
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!Array.from(e.dataTransfer?.types || []).includes('Files')) return;
+    dragCounter.current += 1;
+    setIsDragging(true);
+  };
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) { dragCounter.current = 0; setIsDragging(false); }
+  };
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); };
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounter.current = 0;
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) uploadFiles(files);
   };
 
-  const handleDeleteAttachment = useCallback(async (att: PhAttachment) => {
-    const { error } = await supabase.from('ph_attachments').delete().eq('id', att.id);
-    if (error) { toast.error('Failed to delete'); return; }
-    toast.success('Attachment deleted');
-    queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
-  }, [itemId, queryClient]);
+  /* ───── DELETE ───── */
+  const handleConfirmDelete = useCallback(async () => {
+    if (!pendingDelete) return;
+    const att = pendingDelete;
+    setPendingDelete(null);
+    try {
+      const { data, error } = await supabase.functions.invoke('attachment-delete', {
+        body: { attachmentId: att.id },
+      });
+      if (error) throw error;
+      if (data && (data as any).error) throw new Error((data as any).error);
+      toast.success('Attachment deleted');
+      invalidate();
+    } catch (e) {
+      toast.error(`Delete failed: ${e instanceof Error ? e.message : 'Unknown'}`);
+    }
+  }, [pendingDelete, invalidate]);
+
+  /* ───── DOWNLOAD ALL (zip) ───── */
+  const handleDownloadAll = useCallback(async () => {
+    if (attachments.length === 0) return;
+    setMoreMenuOpen(false);
+    setZipping(true);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess?.session?.access_token;
+      const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/attachment-download-all`;
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ issueId: itemId }),
+      });
+      if (!resp.ok) {
+        const errBody = await resp.json().catch(() => ({ error: 'Zip failed' }));
+        throw new Error(errBody.error || `HTTP ${resp.status}`);
+      }
+      const blob = await resp.blob();
+      const cd = resp.headers.get('Content-Disposition') || '';
+      const m = cd.match(/filename="([^"]+)"/);
+      const filename = m?.[1] || 'attachments.zip';
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(objectUrl);
+      toast.success('Download ready');
+    } catch (e) {
+      toast.error(`Download all failed: ${e instanceof Error ? e.message : 'Unknown'}`);
+    } finally {
+      setZipping(false);
+    }
+  }, [attachments.length, itemId]);
+
+  const canDelete = (att: PhAttachment) => att.uploaded_by === userId || isProjectAdmin;
 
   return (
-    <div className="att-section">
+    <div
+      className={`att-section ${isDragging ? 'att-section--dragging' : ''}`}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
       {/* Section Header */}
       <div role="heading" className="att-heading-wrapper">
         <div className="att-heading-inner">
-          {/* Left: chevron + label + badge */}
           <div className="att-heading-left">
             <div className="att-heading-toggle-area">
               <button
@@ -134,56 +325,96 @@ export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsS
             </div>
           </div>
 
-          {/* Right: more options + add — hidden when collapsed */}
-          {!collapsed && <div className="att-heading-actions">
-            <div style={{ position: 'relative' }} ref={moreMenuRef}>
-              <button
-                className="att-icon-btn"
-                title="More options for attachments"
-                onClick={() => setMoreMenuOpen(v => !v)}
-              >
-                <DotsIcon />
-              </button>
-              {moreMenuOpen && (
-                <div className="att-more-menu">
-                  {attachments.length > 0 && (
-                    <button className="att-menu-item" onClick={handleDownloadAll}>
-                      Download all
+          {!collapsed && (
+            <div className="att-heading-actions">
+              <div style={{ position: 'relative' }} ref={moreMenuRef}>
+                <button
+                  className="att-icon-btn"
+                  title="More options for attachments"
+                  onClick={() => setMoreMenuOpen(v => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={moreMenuOpen}
+                >
+                  <DotsIcon />
+                </button>
+                {moreMenuOpen && (
+                  <div className="att-more-menu" role="menu">
+                    <button
+                      className="att-menu-item"
+                      onClick={handleDownloadAll}
+                      disabled={attachments.length === 0 || zipping}
+                      role="menuitem"
+                    >
+                      {zipping ? <Loader2 size={14} className="att-spin" /> : <Download size={14} />}
+                      <span style={{ marginLeft: 6 }}>Download all</span>
                       <span className="att-menu-badge">{attachments.length}</span>
                     </button>
-                  )}
-                  <button className="att-menu-item" onClick={() => { setMoreMenuOpen(false); }}>
-                    Cancel
-                  </button>
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
+              <button
+                className="att-icon-btn"
+                title="Add Attachment"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <PlusIcon />
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
             </div>
-            <button
-              className="att-icon-btn"
-              title="Add Attachment"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <PlusIcon />
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-          </div>}
+          )}
         </div>
       </div>
+
+      {/* Drop overlay (visible only while dragging) */}
+      {isDragging && (
+        <div className="att-drop-overlay" aria-hidden="true">
+          <span>Drop files to upload</span>
+        </div>
+      )}
 
       {/* Body */}
       {!collapsed && (
         <div className="att-body">
-          {attachments.length === 0 ? (
-            <div className="att-empty">
-              No attachments — click + to add
+          {/* Upload progress rows */}
+          {uploads.length > 0 && (
+            <div className="att-upload-list">
+              {uploads.map(u => (
+                <div key={u.id} className={`att-upload-row att-upload-row--${u.status}`}>
+                  <div className="att-upload-name" title={u.fileName}>{u.fileName}</div>
+                  {u.status === 'uploading' ? (
+                    <>
+                      <div className="att-upload-bar"><div className="att-upload-bar-fill" style={{ width: `${u.pct}%` }} /></div>
+                      <span className="att-upload-pct">{u.pct}%</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="att-upload-error">{u.error}</span>
+                      <button
+                        className="att-upload-retry"
+                        onClick={() => setUploads(list => list.filter(x => x.id !== u.id))}
+                      >Dismiss</button>
+                    </>
+                  )}
+                </div>
+              ))}
             </div>
-          ) : (
+          )}
+
+          {attachments.length === 0 && uploads.length === 0 ? (
+            <div className="att-empty">
+              <div className="att-empty-text">No attachments yet</div>
+              <button
+                className="att-empty-cta"
+                onClick={() => fileInputRef.current?.click()}
+              >Drop files here or click to upload</button>
+            </div>
+          ) : attachments.length > 0 ? (
             <table className="att-table">
               <thead>
                 <tr>
@@ -205,8 +436,7 @@ export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsS
                       <SortIcon active={sortKey === 'dateAdded'} dir={sortDir} />
                     </button>
                   </th>
-                  <th className="att-th att-th-view" aria-label="View" />
-                  <th className="att-th att-th-download" aria-label="Download" />
+                  <th className="att-th att-th-actions" aria-label="Actions" />
                 </tr>
               </thead>
               <tbody>
@@ -214,53 +444,95 @@ export function AttachmentsSection({ attachments, itemId, userId }: AttachmentsS
                   <AttachmentRow
                     key={att.id}
                     attachment={att}
-                    publicUrl={getPublicUrl(att.storage_path)}
-                    onDelete={handleDeleteAttachment}
+                    canDelete={canDelete(att)}
+                    onPreview={() => setPreviewId(att.id)}
+                    onDelete={() => setPendingDelete(att)}
                   />
                 ))}
               </tbody>
             </table>
-          )}
+          ) : null}
         </div>
+      )}
+
+      {/* Delete confirm */}
+      <AlertDialog open={!!pendingDelete} onOpenChange={(o) => !o && setPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete attachment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {pendingDelete?.file_name} will be permanently removed. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-[#DE350B] hover:bg-[#BF2600] text-white"
+            >Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Preview modal */}
+      {previewId && (
+        <AttachmentPreviewModal
+          attachments={sorted}
+          initialId={previewId}
+          onClose={() => setPreviewId(null)}
+        />
       )}
     </div>
   );
 }
 
 /* ── Row ── */
-function AttachmentRow({ attachment, publicUrl, onDelete }: {
+function AttachmentRow({ attachment, canDelete, onPreview, onDelete }: {
   attachment: PhAttachment;
-  publicUrl: string;
-  onDelete: (a: PhAttachment) => void;
+  canDelete: boolean;
+  onPreview: () => void;
+  onDelete: () => void;
 }) {
   const [base, ext] = splitFilename(attachment.file_name);
   const isImage = attachment.mime_type?.startsWith('image/');
   const isVideo = attachment.mime_type?.startsWith('video/');
+  const [thumbUrl, setThumbUrl] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+
+  // Sign URL for thumbnail (image) and download
+  useEffect(() => {
+    let cancelled = false;
+    supabase.storage.from(BUCKET).createSignedUrl(attachment.storage_path, 600).then(({ data }) => {
+      if (cancelled) return;
+      const url = data?.signedUrl ?? null;
+      setDownloadUrl(url);
+      if (isImage) setThumbUrl(url);
+    });
+    return () => { cancelled = true; };
+  }, [attachment.storage_path, isImage]);
 
   return (
     <tr className="att-row">
-      {/* Name cell */}
       <td className="att-td att-td-name">
         <div
           className="att-file-row"
           role="button"
           tabIndex={0}
-          aria-label={attachment.file_name}
-          onClick={() => window.open(publicUrl, '_blank')}
+          aria-label={`Preview ${attachment.file_name}`}
+          onClick={onPreview}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPreview(); } }}
         >
-          {/* Thumbnail */}
           <div className="att-thumb">
-            {isImage ? (
-              <img src={publicUrl} alt={attachment.file_name} className="att-thumb-img" />
+            {isImage && thumbUrl ? (
+              <img src={thumbUrl} alt="" className="att-thumb-img" />
             ) : isVideo ? (
               <div className="att-thumb-fallback">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#42526E"><path d="M8 5v14l11-7z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#42526E"><path d="M8 5v14l11-7z" /></svg>
               </div>
             ) : (
               <FileIcon />
             )}
           </div>
-          {/* Filename */}
           <div className="att-filename">
             <div className="att-filename-inner">
               <span className="att-filename-base">{base}</span>
@@ -270,33 +542,34 @@ function AttachmentRow({ attachment, publicUrl, onDelete }: {
         </div>
       </td>
 
-      {/* Size */}
       <td className="att-td att-td-size">{formatSize(attachment.file_size)}</td>
-
-      {/* Date */}
       <td className="att-td att-td-date">{formatDate(attachment.created_at)}</td>
 
-      {/* Eye / preview */}
-      <td className="att-td att-td-action">
-        <button
-          className="att-action-btn att-eye-btn"
-          title="Preview"
-          onClick={() => window.open(publicUrl, '_blank')}
-        >
-          <EyeIcon />
-        </button>
-      </td>
-
-      {/* Download */}
-      <td className="att-td att-td-action att-td-download-cell">
-        <a
-          className="att-action-btn att-download-btn"
-          href={publicUrl}
-          download={attachment.file_name}
-          title="Download"
-        >
-          <DownloadIcon />
-        </a>
+      {/* Hover-revealed actions */}
+      <td className="att-td att-td-actions-cell">
+        <div className="att-row-actions">
+          {downloadUrl && (
+            <a
+              className="att-action-btn att-download-btn"
+              href={downloadUrl}
+              download={attachment.file_name}
+              title="Download"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Download size={16} />
+            </a>
+          )}
+          {canDelete && (
+            <button
+              className="att-action-btn att-delete-btn"
+              title="Delete"
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              aria-label="Delete attachment"
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -308,7 +581,7 @@ function ChevronIcon({ collapsed }: { collapsed: boolean }) {
   return (
     <svg
       width="12" height="12" viewBox="0 0 16 16"
-      style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease', color: 'rgb(80,82,88)' }}
+      style={{ transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}
       fill="none"
     >
       <path fill="currentColor"
@@ -344,7 +617,7 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   return (
     <svg
       width="16" height="16" viewBox="0 0 16 16" fill="none"
-      style={{ color: active ? 'rgb(80,82,88)' : 'transparent', flexShrink: 0 }}
+      style={{ color: active ? 'currentColor' : 'transparent', flexShrink: 0 }}
     >
       {dir === 'desc' || !active ? (
         <path fill="currentColor" fillRule="evenodd"
@@ -361,36 +634,13 @@ function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
   );
 }
 
-function EyeIcon() {
-  return (
-    <svg width="16" height="16" viewBox="-4 -4 24 24" fill="none">
-      <path fill="currentColor" fillRule="evenodd"
-        d="M8 3.5c-2.943 0-5.49 1.845-6.424 4.396a.3.3 0 0 0 0 .208C2.509 10.655 5.057 12.5 8 12.5s5.49-1.845 6.424-4.396a.3.3 0 0 0 0-.208C13.491 5.345 10.943 3.5 8 3.5M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0-1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function DownloadIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path fill="currentColor" fillRule="evenodd"
-        d="M8.75 1v7.44l2.72-2.72 1.06 1.06-4 4a.75.75 0 0 1-1.06 0l-4-4 1.06-1.06 2.72 2.72V1zM1 13V9h1.5v4a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V9H15v4a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
 function FileIcon() {
   return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
-      style={{ borderRadius: 4, background: '#F4F5F7' }}>
-      <rect width="32" height="32" rx="4" fill="#F4F5F7"/>
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <rect width="32" height="32" rx="4" fill="#F4F5F7" />
       <path d="M10 8h8l6 6v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z"
-        fill="#DDE1E6" stroke="#BFC4CE" strokeWidth="1"/>
-      <path d="M18 8v6h6" fill="none" stroke="#BFC4CE" strokeWidth="1"/>
+        fill="#DDE1E6" stroke="#BFC4CE" strokeWidth="1" />
+      <path d="M18 8v6h6" fill="none" stroke="#BFC4CE" strokeWidth="1" />
     </svg>
   );
 }
