@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useEffect } from "react";
+import { IntlProvider } from "react-intl-next";
 import { ENABLE_FULL_APP } from './lib/featureFlags';
 
 
@@ -63,6 +64,15 @@ const App = () => (
        * See src/theme/ads/AdsThemeProvider.tsx.
        */}
       <AdsThemeProvider>
+      {/**
+       * IntlProvider — required by Atlaskit components that internally use
+       * react-intl-next (e.g. @atlaskit/user-picker, @atlaskit/datetime-picker).
+       * Without this, those components throw "Could not find required `intl`
+       * object" on first render and crash the parent dialog.
+       * Empty messages={{}} is intentional — Atlaskit ships its own English
+       * defaults; the provider only supplies overrides.
+       */}
+      <IntlProvider locale="en" messages={{}}>
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
@@ -114,6 +124,7 @@ const App = () => (
         </NavigationProvider>
         </FeatureFlagProvider>
       </AuthProvider>
+      </IntlProvider>
       </AdsThemeProvider>
     </ThemeProvider>
   </QueryClientProvider>
