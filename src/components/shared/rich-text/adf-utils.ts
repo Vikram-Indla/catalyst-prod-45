@@ -190,7 +190,7 @@ export function parseAdfContent(raw: string | null | undefined): any | null {
 
 // ─── ADF → HTML (for read-only rendering) ───────────────────
 // Delegates to the canonical hardened converter in utils/adfToHtml.ts
-import { adfToHtml as _adfToHtml } from '../../utils/adfToHtml';
+import { adfToHtml as _adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 export const adfToHtml = _adfToHtml;
 
 // ─── Resolve content for TipTap editor ──────────────────────

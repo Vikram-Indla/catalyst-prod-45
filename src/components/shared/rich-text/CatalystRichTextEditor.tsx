@@ -31,7 +31,7 @@ import {
   List, ListOrdered, Code2, Link2, Image as ImageIcon,
   Undo2, Redo2, Sparkles, Loader2, MoreHorizontal,
 } from 'lucide-react';
-import { tiptapJsonToAdf, resolveEditorContent } from '@/modules/project-work-hub/components/story-detail/adf-utils';
+import { tiptapJsonToAdf, resolveEditorContent } from './adf-utils';
 import { supabase } from '@/integrations/supabase/client';
 import { ImageBubbleMenu } from './ImageBubbleMenu';
 

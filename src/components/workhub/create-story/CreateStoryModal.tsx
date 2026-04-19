@@ -26,7 +26,7 @@ import TipTapLink from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
-import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story-detail/StoryRichTextEditor';
+import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
 import './create-story.css';
 
 // ── Helpers ──
