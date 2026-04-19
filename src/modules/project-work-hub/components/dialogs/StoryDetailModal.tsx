@@ -178,6 +178,9 @@ export default function StoryDetailModal({
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const avatarsByName = useProfileAvatarsByName();
+  // F3 (Archive) FE role gate. RLS still enforces server-side via
+  // archived_at_update_admin_owner; this hook only hides/shows UI.
+  const { isAdminOrOwner: canArchive } = useProjectMemberRole(projectKey);
 
   /* ── QUERIES ───────────────────────────────── */
   const { data: currentProfile } = useQuery({
@@ -805,6 +808,12 @@ export default function StoryDetailModal({
                   <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200 }}>
                     <button onClick={() => { setShowDotsMenu(false); setShowCloneDialog(true); }} style={menuItemStyle}>Clone ticket</button>
                     <button onClick={() => { setShowDotsMenu(false); setShowMoveDialog(true); }} style={menuItemStyle}>Move to project</button>
+                    {canArchive && !(issue as any)?.archived_at && (
+                      <button onClick={() => { setShowDotsMenu(false); setShowArchiveDialog(true); }} style={menuItemStyle}>Archive ticket</button>
+                    )}
+                    {canArchive && (issue as any)?.archived_at && (
+                      <button onClick={() => { setShowDotsMenu(false); setShowArchiveDialog(true); }} style={menuItemStyle}>Restore from archive</button>
+                    )}
                     <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
                     <button onClick={() => { setShowDotsMenu(false); setShowConfirmDelete(true); }} style={{ ...menuItemStyle, color: '#DE350B' }}>Delete ticket</button>
                   </div>
@@ -2049,6 +2058,18 @@ export default function StoryDetailModal({
           open={showMoveDialog}
           onClose={() => setShowMoveDialog(false)}
           source={{ id: issue.id, issue_key: issue.issue_key, project_key: issue.project_key }}
+        />
+      )}
+      {issue && (
+        <ArchiveConfirmDialog
+          open={showArchiveDialog}
+          onClose={() => setShowArchiveDialog(false)}
+          mode={(issue as any).archived_at ? 'unarchive' : 'archive'}
+          issue={{ id: issue.id, issue_key: issue.issue_key, summary: issue.summary }}
+          onSuccess={() => {
+            // After archive, close the modal so the user returns to the (now-filtered) list.
+            if (!(issue as any).archived_at) onClose();
+          }}
         />
       )}
     </>
