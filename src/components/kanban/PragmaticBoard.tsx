@@ -235,10 +235,17 @@ const PragmaticColumn = memo(function PragmaticColumn({
 
   return (
     <div
-      className="flex flex-col flex-shrink-0"
+      className="flex flex-col"
       style={{
-        /* Jira parity: 267w, #F8F8F8 surface */
-        width: 267, minWidth: 267, maxWidth: 267,
+        /* Jira parity baseline: 267px min so narrow viewports still scroll
+           horizontally like Jira. On wider viewports columns flex-grow to
+           fill the board — prevents the ~950px right-side dead gutter
+           that appears on 2K+ monitors when 6 fixed-width columns only
+           occupy ~1650px. Cap at 360 so columns don't balloon past a
+           scannable card width. */
+        flex: '1 1 267px',
+        minWidth: 267,
+        maxWidth: 360,
         background: tk.surfaceAlt,
         borderRadius: 6,
       }}
@@ -447,6 +454,10 @@ export function PragmaticBoard({
       className="flex"
       style={{
         gap: 8,
+        /* Fill the viewport width so flex:1 on columns can distribute
+           extra space. minWidth still guarantees horizontal scroll on
+           viewports narrower than the natural column count * 267. */
+        width: '100%',
         minWidth: columns.length * 267 + (columns.length - 1) * 8,
       }}
     >

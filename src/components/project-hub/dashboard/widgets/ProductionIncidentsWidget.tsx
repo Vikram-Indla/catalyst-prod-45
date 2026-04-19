@@ -25,7 +25,6 @@ import {
   StatusLozenge,
   Avatar,
   EmptyState,
-  TruncateCell,
   toStatusCategory,
 } from '@/components/ads';
 
@@ -49,16 +48,17 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     </a>
   );
 
-  // Column widths sum to 100 — required for table-layout: fixed (applied via
-  // .dashboard-widget-body in index.css) to partition row width correctly.
-  // Without Title width, Atlaskit falls back to auto-sizing and long titles
-  // expand the Title cell past its fair share, crushing Status to wrap.
+  // No width hints — .dashboard-widget-body in index.css sets
+  //   table-layout: auto + min-width: max-content + white-space: nowrap
+  // so each column sizes to its longest cell and the widget body scrolls
+  // horizontally when the row is wider than the container. This gives
+  // users the full title text (no ellipsis) with comfortable margins.
   const head = {
     cells: [
-      { key: 'key', content: 'Key', isSortable: true, width: 12 },
-      { key: 'title', content: 'Title', isSortable: false, width: 56 },
-      { key: 'status', content: 'Status', isSortable: true, width: 18 },
-      { key: 'assignee', content: 'Assignee', isSortable: false, width: 14 },
+      { key: 'key', content: 'Key', isSortable: true },
+      { key: 'title', content: 'Title', isSortable: false },
+      { key: 'status', content: 'Status', isSortable: true },
+      { key: 'assignee', content: 'Assignee', isSortable: false },
     ],
   };
 
@@ -86,7 +86,11 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         },
         {
           key: 'title',
-          content: <TruncateCell text={inc.title ?? ''} />,
+          content: (
+            <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>
+              {inc.title ?? ''}
+            </span>
+          ),
         },
         {
           key: 'status',

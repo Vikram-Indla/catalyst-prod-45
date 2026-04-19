@@ -166,7 +166,11 @@ export function UnifiedSidebar({
           className
         )}
         style={{
-          width: expanded ? '240px' : '64px',
+          // Unified with SidebarBase (240/56) on 2026-04-19 — collapsed was
+          // previously 64px here, 56px in SidebarBase; layout jitter when
+          // switching workspaces. 56px matches Jira and fits the 28px badge
+          // with 14px padding either side.
+          width: expanded ? '240px' : '56px',
           background: 'var(--surface-1)',
           borderRight: '1px solid var(--divider)',
         }}

@@ -372,44 +372,52 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   DASHBOARD WIDGET TABLES — TABLE-LAYOUT FIX
+   DASHBOARD WIDGET TABLES — HORIZONTAL SCROLL + BREATHING ROOM
    ═══════════════════════════════════════════════════════════════
-   Atlaskit <DynamicTable> renders with table-layout: auto, which
-   makes percentage head widths ignored whenever a long title cell
-   pushes the Title column wider than its fair share. That cascades
-   to row-height inflation (breaks CLAUDE.md §4 36px lock) and
-   Status-column wrapping ("READY FOR PRODUCTION" breaks across two
-   lines in span=2 widgets).
+   Evolution Apr 19, 2026:
+     v1 (table-layout: fixed + ellipsis):
+        Kept rows to 36px but titles truncated aggressively and
+        users couldn't read full incident/defect titles. Status pill
+        stopped wrapping but the text "bled" into the pill with only
+        a 16px gutter — still felt cramped in the span=2 widget.
+     v2 (THIS BLOCK — horizontal scroll + generous margin):
+        Table auto-sizes to its natural content width. Widget body
+        scrolls horizontally when content exceeds the container. Rows
+        still lock to 36px via `white-space: nowrap`. Title column
+        gets a 24px right gutter so full titles read clean before the
+        Status lozenge. Users can scroll within the widget to see the
+        long titles end-to-end without leaving the dashboard.
 
-   Scope the fix to .dashboard-widget-body so other DynamicTable
-   consumers across the app keep their default auto-layout.
-
-   Caught Apr 19, 2026 — Production Incidents + QA Defects widgets.
+   Scope the rules to .dashboard-widget-body so other DynamicTable
+   consumers across the app keep their default layout behaviour.
    ═══════════════════════════════════════════════════════════════ */
+.dashboard-widget-body {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 .dashboard-widget-body table {
-  table-layout: fixed;
+  /* Auto layout — each column sizes to its longest cell. `min-width:
+     max-content` guarantees the table never collapses narrower than
+     its natural content width, which is what triggers the parent's
+     horizontal scrollbar when the widget is narrower than the row. */
+  table-layout: auto;
   width: 100%;
+  min-width: max-content;
 }
 .dashboard-widget-body td,
 .dashboard-widget-body th {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* Nowrap keeps every row on a single line (preserves CLAUDE.md §4
+     36px density lock). Horizontal scroll — not ellipsis — is how
+     long titles become reachable. */
   white-space: nowrap;
 }
-/* TruncateCell renders its own inner span with nowrap + ellipsis;
-   the td-level rule above is the safety net for any cell content
-   (Lozenges, avatar rows, Key cells) that would otherwise wrap when
-   the column is tight. Row height stays locked to the 36px density
-   because no cell can push two lines. */
-
-/* Title column (2nd td) gets a 16px right gutter so the ellipsis
-   clears the Status lozenge that follows. Without this gap the two
-   cells visually collide — e.g. "…to ad… READY FOR PRODUCTION"
-   reads as one blob. 16px matches the shell header's horizontal
-   rhythm (padding: '16px 16px 4px' in AtlaskitPageShell). */
+/* Title column (2nd td) gets a 24px right gutter so the title text
+   clears the Status lozenge with comfortable breathing room. 16px
+   was not enough under the span=2 span; the lozenge visually
+   collided with the title's tail. 24px matches V12 --cp-space-6. */
 .dashboard-widget-body tbody td:nth-child(2),
 .dashboard-widget-body thead th:nth-child(2) {
-  padding-right: 16px;
+  padding-right: 24px;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════

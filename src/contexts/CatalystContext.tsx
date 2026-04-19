@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { deriveWorkspaceType, WorkspaceType } from '@/lib/workspaceContext';
 
@@ -18,9 +18,14 @@ interface CatalystContextState {
   // Workspace context (derived from route + selections)
   workspaceType: WorkspaceType;
   
-  // Sidebar collapsed state (shared between shell + header)
+  // Sidebar chrome state (shared between shell + header).
+  // Three-state model: expanded (240px) → collapsed (56px) → hidden (0px).
+  // Press `[` (bound in CatalystShell) to cycle through them.
   sidebarExpanded: boolean;
   setSidebarExpanded: (expanded: boolean | ((prev: boolean) => boolean)) => void;
+  sidebarHidden: boolean;
+  setSidebarHidden: (hidden: boolean | ((prev: boolean) => boolean)) => void;
+  cycleSidebarState: () => void;
   
   // Entity IDs
   portfolioId: string | null;
@@ -65,6 +70,33 @@ interface CatalystContextState {
 const CatalystContext = createContext<CatalystContextState | undefined>(undefined);
 
 const STORAGE_KEY = 'catalyst-context';
+
+/**
+ * Sidebar chrome state is persisted in its own keys so UX preferences don't
+ * mix with the entity-selection blob ({@link STORAGE_KEY}). Added 2026-04-19
+ * to stop users having to re-collapse the sidebar on every session — the
+ * single biggest complaint on viewport-dense views (Board, All Work, Kanban).
+ */
+const SIDEBAR_STORAGE_KEYS = {
+  expanded: 'catalyst.sidebarExpanded',
+  hidden: 'catalyst.sidebarHidden',
+} as const;
+
+function loadSidebarState(): { expanded: boolean; hidden: boolean } {
+  try {
+    const expanded = localStorage.getItem(SIDEBAR_STORAGE_KEYS.expanded);
+    const hidden = localStorage.getItem(SIDEBAR_STORAGE_KEYS.hidden);
+    return {
+      // Default to expanded=true on first load so new users get the full nav.
+      expanded: expanded === null ? true : expanded === 'true',
+      // Never default to hidden — it's an explicit user action only, otherwise
+      // first-time users would boot into a blank shell.
+      hidden: hidden === 'true',
+    };
+  } catch {
+    return { expanded: true, hidden: false };
+  }
+}
 
 interface StoredContext {
   tier: TierType;
@@ -132,7 +164,46 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [industryFilters, setIndustryFilters] = useState<IndustryFilters>(initialState.industryFilters || DEFAULT_INDUSTRY_FILTERS);
   const [programName, setProgramName] = useState<string | null>(initialState.programName);
   const [projectName, setProjectName] = useState<string | null>(initialState.projectName);
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  // Sidebar chrome state — lazy-initialized from localStorage so the user's
+  // last collapse/hide preference persists across sessions. Previously
+  // always booted to `expanded=true`, forcing a re-collapse on every reload.
+  const [sidebarState, setSidebarState] = useState(loadSidebarState);
+  const sidebarExpanded = sidebarState.expanded;
+  const sidebarHidden = sidebarState.hidden;
+  const setSidebarExpanded = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
+    setSidebarState(prev => ({
+      ...prev,
+      expanded: typeof next === 'function' ? next(prev.expanded) : next,
+    }));
+  }, []);
+  const setSidebarHidden = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
+    setSidebarState(prev => ({
+      ...prev,
+      hidden: typeof next === 'function' ? next(prev.hidden) : next,
+    }));
+  }, []);
+  // Three-state cycle bound to `[`:
+  //   expanded (240px) → collapsed (56px) → hidden (0px) → back to expanded.
+  // Restoring from hidden returns to expanded rather than collapsed — the
+  // user explicitly hid it, so pulling it fully back is the more helpful
+  // default.
+  const cycleSidebarState = useCallback(() => {
+    setSidebarState(prev => {
+      if (prev.hidden) return { hidden: false, expanded: true };
+      if (prev.expanded) return { hidden: false, expanded: false };
+      return { hidden: true, expanded: prev.expanded };
+    });
+  }, []);
+  // Persist sidebar state on every change — fire-and-forget, swallow quota
+  // errors (private browsing, Safari ITP) without breaking the app.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_STORAGE_KEYS.expanded, String(sidebarExpanded));
+      localStorage.setItem(SIDEBAR_STORAGE_KEYS.hidden, String(sidebarHidden));
+    } catch {
+      // ignore — ephemeral preference, not worth surfacing
+    }
+  }, [sidebarExpanded, sidebarHidden]);
   // Derive workspace type PURELY from route (single source of truth)
   const workspaceType = useMemo(() => 
     deriveWorkspaceType(location.pathname),
@@ -194,6 +265,9 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     workspaceType,
     sidebarExpanded,
     setSidebarExpanded,
+    sidebarHidden,
+    setSidebarHidden,
+    cycleSidebarState,
     portfolioId,
     setPortfolioId,
     programId,
@@ -217,9 +291,10 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     projectName,
     setProjectName,
   }), [
-    tier, workspaceType, sidebarExpanded, portfolioId, programId,
-    projectId, productId, teamIds, piIds, selectedQuarter, snapshotId,
-    industryFilters, programName, projectName,
+    tier, workspaceType, sidebarExpanded, sidebarHidden, cycleSidebarState,
+    setSidebarExpanded, setSidebarHidden,
+    portfolioId, programId, projectId, productId, teamIds, piIds,
+    selectedQuarter, snapshotId, industryFilters, programName, projectName,
   ]);
 
   return (
