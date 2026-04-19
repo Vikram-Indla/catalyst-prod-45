@@ -80,6 +80,7 @@ export function AddParentPicker({
   onParentChange,
   variant = 'breadcrumb',
   parentSource = 'epic',
+  parentSummaryFallback = null,
 }: AddParentPickerProps) {
   const [showAllPanel, setShowAllPanel] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
