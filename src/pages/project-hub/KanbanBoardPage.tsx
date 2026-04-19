@@ -15,6 +15,7 @@
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import Button from '@atlaskit/button/new';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
