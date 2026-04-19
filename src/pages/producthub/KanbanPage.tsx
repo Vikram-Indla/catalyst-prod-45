@@ -101,7 +101,7 @@ export default function ProductHubKanbanPage() {
     mutationFn: async ({ id, status }: { id: string; status: InitiativeStatus }) => {
       const { error } = await supabase
         .from('ph_initiatives')
-        .update({ status, updated_at: new Date().toISOString() })
+        .update({ status: status as any, updated_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
     },
@@ -134,7 +134,7 @@ export default function ProductHubKanbanPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-        <CatalystPageHeader title="Product Kanban" subtitle="Initiative lifecycle · drag to progress" />
+        <CatalystPageHeader title="Product Kanban" />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{
             width: 32, height: 32,
@@ -148,7 +148,7 @@ export default function ProductHubKanbanPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', minHeight: 0 }}>
-      <CatalystPageHeader title="Product Kanban" subtitle="Initiative lifecycle · drag to progress" />
+      <CatalystPageHeader title="Product Kanban" />
 
       <CatalystKanban
         cards={cards}
