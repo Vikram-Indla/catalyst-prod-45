@@ -259,7 +259,9 @@ export default function StoryDetailModal({
           _jiraSynced: true,
         }));
       }
-      return [...phMapped, ...jiraMapped].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) as unknown as PhComment[];
+      const merged = [...phMapped, ...jiraMapped].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+      console.log('[CMT-DEBUG] hop1 phRows:', phRows.length, 'hop2 jiraMapped:', jiraMapped.length, 'hop3 merged:', merged.length, 'sample:', merged[0]);
+      return merged as unknown as PhComment[];
     },
   });
 
