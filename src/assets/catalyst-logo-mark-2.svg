@@ -3,9 +3,11 @@
   <!-- Standalone mark for favicon, app icon, etc. -->
 
   <defs>
+    <!-- 2026-04-19: Retuned to Atlassian Jira-parity blues (see wordmark-3
+         for rationale). Favicon-size punch matters most on this mark. -->
     <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6"/>
-      <stop offset="100%" stop-color="#1D4ED8"/>
+      <stop offset="0%" stop-color="#0052CC"/>
+      <stop offset="100%" stop-color="#0747A6"/>
     </linearGradient>
   </defs>
 
