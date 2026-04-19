@@ -260,7 +260,6 @@ export default function StoryDetailModal({
         }));
       }
       const merged = [...phMapped, ...jiraMapped].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
-      console.log('[CMT-DEBUG] hop1 phRows:', phRows.length, 'hop2 jiraMapped:', jiraMapped.length, 'hop3 merged:', merged.length, 'sample:', merged[0]);
       return merged as unknown as PhComment[];
     },
   });
@@ -1467,7 +1466,6 @@ export default function StoryDetailModal({
                         </div>
 
                         {/* Comments list */}
-                        {(() => { console.log('[CMT-DEBUG] render hop4 activeTab:', activeActivityTab, 'comments.length:', comments.length, 'sample:', comments[0]); return null; })()}
                         {activeActivityTab === 'comments' && comments.length === 0 && <div style={{ padding: '24px 0', color: '#97A0AF', fontSize: 14, textAlign: 'center' }}>No comments yet</div>}
                         {activeActivityTab === 'comments' && comments.map(c => (
                           <div key={c.id} style={{ display: 'flex', gap: 8, margin: '8px 0 32px 0', minHeight: 40 }}>
