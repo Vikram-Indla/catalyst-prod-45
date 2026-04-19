@@ -2,6 +2,7 @@
  * WorkItem CRUD Service — Interfaces with ph_work_items and related tables
  */
 import { supabase } from '@/integrations/supabase/client';
+import { enqueueWorkItemOperation } from '@/lib/jira-writeback';
 
 export interface CreateWorkItemInput {
   project_id: string;
@@ -117,14 +118,11 @@ export async function createWorkItem(input: CreateWorkItemInput) {
         project_key: mapping?.jira_project_key ?? null,
       };
 
-      await (supabase
-        .from('jira_write_back_queue') as any)
-        .insert({
-          ph_work_item_id: data.id,
-          operation: 'create',
-          operation_payload: payload,
-          status: 'pending',
-        });
+      await enqueueWorkItemOperation({
+        phWorkItemId: data.id,
+        operation: 'create',
+        operationPayload: payload,
+      });
 
       await (supabase
         .from('ph_work_items') as any)
@@ -277,14 +275,11 @@ export async function updateWorkItem(
       if (changes.assignee_id !== undefined) payload.assignee_id = changes.assignee_id;
       payload.jira_key = item.jira_key;
 
-      await (supabase
-        .from('jira_write_back_queue') as any)
-        .insert({
-          ph_work_item_id: id,
-          operation: 'update',
-          operation_payload: payload,
-          status: 'pending',
-        });
+      await enqueueWorkItemOperation({
+        phWorkItemId: id,
+        operation: 'update',
+        operationPayload: payload,
+      });
 
       await (supabase
         .from('ph_work_items') as any)
@@ -315,14 +310,11 @@ export async function deleteWorkItem(id: string) {
       .maybeSingle();
 
     if (connection && item?.jira_key) {
-      await (supabase
-        .from('jira_write_back_queue') as any)
-        .insert({
-          ph_work_item_id: id,
-          operation: 'delete',
-          operation_payload: { jira_key: item.jira_key },
-          status: 'pending',
-        });
+      await enqueueWorkItemOperation({
+        phWorkItemId: id,
+        operation: 'delete',
+        operationPayload: { jira_key: item.jira_key },
+      });
     }
   } catch (jiraErr) {
     console.error('Jira delete enqueue failed:', jiraErr);
