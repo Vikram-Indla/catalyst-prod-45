@@ -198,31 +198,39 @@ export function IssueContentView({
      Middle column comfortable minimum ≈ 640px.
      Breakpoint: .awIssueView width < 988px → auto-collapse.
 
-     The user can still manually expand/collapse via the chevron; their
-     explicit choice wins until the next resize threshold crossing.
+     CALLBACK REF (not useRef + useEffect). The .awIssueView div unmounts
+     during the `loading` state (early return renders a skeleton) and
+     remounts once the issue resolves. A useEffect([]) would observe the
+     ref on initial mount when it's null, then never re-fire. A callback
+     ref runs the moment React attaches/detaches the DOM node — observer
+     wires up exactly when the element exists.
      ───────────────────────────────────────────────────────────────── */
-  const issueViewRef = useRef<HTMLDivElement>(null);
   const userOverrodeSidebar = useRef(false);
-  useEffect(() => {
-    const el = issueViewRef.current;
+  const roRef = useRef<ResizeObserver | null>(null);
+  const lastDecisionRef = useRef<boolean | null>(null);
+  const setIssueViewRef = useCallback((el: HTMLDivElement | null) => {
+    // Detach previous observer (covers remount after loading or issue switch)
+    if (roRef.current) {
+      roRef.current.disconnect();
+      roRef.current = null;
+    }
     if (!el || typeof ResizeObserver === 'undefined') return;
-    let lastDecision: boolean | null = null;
+    lastDecisionRef.current = null;
     const RESPONSIVE_THRESHOLD = 988;
     const ro = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const width = entry.contentRect.width;
         const shouldBeOpen = width >= RESPONSIVE_THRESHOLD;
-        if (lastDecision !== shouldBeOpen) {
-          lastDecision = shouldBeOpen;
-          // Crossing the threshold resets any user override — resize
-          // events indicate a new layout context.
+        if (lastDecisionRef.current !== shouldBeOpen) {
+          lastDecisionRef.current = shouldBeOpen;
+          // Threshold crossing resets the manual override.
           userOverrodeSidebar.current = false;
           setSidebarOpen(shouldBeOpen);
         }
       }
     });
     ro.observe(el);
-    return () => ro.disconnect();
+    roRef.current = ro;
   }, []);
 
   const handleToggleSidebar = useCallback(() => {
@@ -426,7 +434,7 @@ export function IssueContentView({
   }
 
   return (
-    <div className="awIssueView" ref={issueViewRef}>
+    <div className="awIssueView" ref={setIssueViewRef}>
       {/* ══ LEFT: Issue content ══ */}
       <div className="awIssueContent">
         {/* Header */}

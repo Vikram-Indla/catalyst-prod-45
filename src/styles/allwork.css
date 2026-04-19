@@ -1683,24 +1683,22 @@
    (consolidated per CLAUDE.md L35). */
 
 /* ═══════════════════════════════════════════════════════════════════════
-   RESPONSIVE — narrow-shell handling (Apr 2026, Pass 5 — JS-driven)
+   RESPONSIVE — narrow-shell handling (Apr 2026, Pass 7 — pure CSS)
    ═══════════════════════════════════════════════════════════════════════
 
-   Responsive sidebar collapse is now owned by JS in IssueContentView.tsx
-   (ResizeObserver on .awIssueView). Four prior CSS passes (media query
-   at 1100/1280, container query at 1100, dual-trigger at 1280+1440) all
-   failed to fire reliably in the running bundle — diagnosed from
-   screenshots showing the middle column crushed while the right rail
-   remained at full 340px width.
+   After multiple JS/container-query attempts failed to reach the running
+   bundle reliably, falling back to a bulletproof viewport-level @media
+   query. This rule cascades regardless of JS state, service workers, or
+   HMR — once the CSS file is served, the rule applies.
 
-   JS approach is deterministic: measures .awIssueView's actual inline
-   size, calls setSidebarOpen(false) when width < 988px. Respects user's
-   manual chevron clicks until the next threshold crossing.
-
-   CSS rules retained:
-     - .awDetailsSidebar.collapsed { display: none } (toggled by React)
-     - container-type: inline-size on .awShellWrap (kept harmless for
-       future container query usage)
-
-   No @media / @container width rules here — they would conflict with
-   JS state at borderline widths and cause flicker. */
+   Breakpoint: 1280px viewport width. Below this, the Details sidebar and
+   its divider are hidden outright, giving the middle column the full
+   width of the right panel. Above this, the sidebar renders normally and
+   the toggle chevron controls it. Uses !important to defeat any inline
+   styles or competing rules. */
+@media (max-width: 1280px) {
+  .awDetailsSidebar,
+  .awSidebarDivider {
+    display: none !important;
+  }
+}

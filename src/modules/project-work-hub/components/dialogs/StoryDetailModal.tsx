@@ -138,18 +138,24 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
        the same protection against left-column crush. */
     .sdm-drawer-body { container-type: inline-size; }
     .sdm-drawer-left { min-width: 280px; }
+    /* v3 (2026-04-19 / Pass 7): hide the Details sidebar entirely at narrow
+       container widths instead of restacking. Rationale: the prior restack
+       relied on .sdm-drawer-body itself picking up flex-direction: column,
+       but @container rules can't target the container element itself —
+       .sdm-drawer-body IS the inline-size container and queries its OWN
+       ancestor, not itself. Net effect: splitter hid and sidebar stretched
+       to 100% width, but parent stayed flex-row so sidebar + left column
+       still sat side-by-side and the middle title column was crushed to
+       ~48px. Hiding the sidebar outright at narrow widths lets the left
+       (title + body) take the full panel width — matches Jira Cloud's
+       actual narrow-view behaviour. */
     @container (max-width: 899px) {
-      .sdm-drawer-body { flex-direction: column !important; }
       .sdm-drawer-splitter { display: none !important; }
-      .sdm-drawer-sidebar {
-        width: 100% !important;
-        max-width: none !important;
-        border-left: none !important;
-        border-top: 1px solid #EBECF0;
-      }
+      .sdm-drawer-sidebar { display: none !important; }
       .sdm-drawer-left {
         border-right: none !important;
-        min-width: 0 !important;   /* drop the floor once restacked */
+        min-width: 0 !important;
+        width: 100% !important;
       }
     }
   `;
