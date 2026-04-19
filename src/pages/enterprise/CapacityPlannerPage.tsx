@@ -1055,12 +1055,6 @@ export default function CapacityPlannerPage() {
           </SheetContent>
         </Sheet>
 
-        {/* AI Drawer - New Chat-based Interface */}
-        <CapacityAIDrawer 
-          isOpen={aiDrawerOpen} 
-          onClose={() => setAiDrawerOpen(false)} 
-        />
-
         {/* Book Resource Allocation Modal */}
         <BookResourceModal
           open={resourceModalOpen}
