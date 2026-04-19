@@ -22,6 +22,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  /* Establishes a query container so child elements can respond to the
+     shell's actual inline size instead of guessing viewport math. The
+     Catalyst chrome (collapsible project sidebar, etc.) silently shifts
+     the effective shell width by up to ~232px, so viewport media queries
+     mis-fire. See the @container rule at the bottom of this file. */
+  container-type: inline-size;
+  container-name: awshell;
 }
 
 /* ── Top Toolbar (Jira parity: Ask AI, Search, avatars, Filter, Saved filters, view toggle) ── */
@@ -1676,39 +1683,37 @@
    (consolidated per CLAUDE.md L35). */
 
 /* ═══════════════════════════════════════════════════════════════════════
-   RESPONSIVE — narrow-viewport fallback (Apr 2026)
+   RESPONSIVE — narrow-shell fallback (Apr 2026)
    ═══════════════════════════════════════════════════════════════════════
 
-   Geometry recap at default widths (inside the page — excludes the
-   Catalyst top/left app chrome, which also consumes ~232px horizontal
-   on the project-hub routes):
+   Measured against the SHELL container, not the viewport. The shell
+   lives inside Catalyst app chrome (BAU project sidebar, collapsible
+   nav rail — collectively up to ~232px), and that delta is invisible
+   to viewport @media rules, which is why two prior breakpoint guesses
+   mis-fired. Container queries fix this definitively: they measure the
+   actual awShellWrap inline size regardless of outer chrome state.
+
+   Geometry inside the shell:
      [ awColNav 240px ] [ 1px ] [ awIssueContent 1fr ] [ 8px ]
      [ awDetailsSidebar 340px (flex-shrink:0) ]
-
-     Fixed + reserved width (page content): 240 + 1 + 8 + 340 = 589px
-     With Catalyst chrome the page-side reserved width ≈ 820px.
-     Middle column needs ≥ ~700px to render a Jira-parity title on one
-     line and keep Key Details rows from wrapping the label column.
-     Therefore breakpoint raised from 1100 → 1280 so the sidebar hides
-     any time the middle column would drop below ~700px at typical
-     Catalyst route widths.
+     Fixed + reserved = 589px
+     Middle column needs ≥ ~500px for non-overlap rendering.
+     Therefore hide the sidebar when shell inline-size < 1100px
+     (500 + 589 = 1089, rounded up).
 
    Strategy:
-     1. Hide the right Details sidebar (it already supports display:none
-        via the .collapsed modifier — we're just triggering it by viewport
-        instead of by user chevron). All sidebar fields are duplicated in
-        the Key details rail on the left, so nothing becomes unreachable.
-     2. Hide the .awSidebarDivider toggle rail because there is no
-        sidebar to expand at this width; leaving it would render a
-        floating chevron button with no target.
-     3. Intentionally NOT collapsing the left list or restructuring the
-        grid — that's Priority #2 and needs JS state to work (list ↔
-        content stacked mode with a back button). This pass is CSS-only.
+     1. Hide the right Details sidebar. Everything in the sidebar is
+        already duplicated in the Key details rail on the left, so
+        nothing becomes unreachable.
+     2. Hide the .awSidebarDivider rail (otherwise the chevron button
+        floats with no target).
+     3. CSS-only — no JS, no grid-template-columns change. Left list
+        shrinking is a separate follow-up (Priority #2 in the critique).
 
-   Above 1280px the manual chevron (sidebarOpen state) remains the
-   source of truth — this media query only gates the narrow-viewport
-   floor, it does not fight the desktop toggle. */
-@media (max-width: 1280px) {
+   Browser support: container queries are universal since Feb 2023 —
+   Chromium, Firefox, Safari all shipped them. No polyfill needed in
+   April 2026. */
+@container awshell (max-width: 1100px) {
   .awDetailsSidebar { display: none; }
   .awSidebarDivider { display: none; }
 }
