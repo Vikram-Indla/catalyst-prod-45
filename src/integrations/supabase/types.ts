@@ -25204,6 +25204,48 @@ export type Database = {
         }
         Relationships: []
       }
+      ph_issue_remote_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          issue_id: string
+          title: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          issue_id: string
+          title?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          issue_id?: string
+          title?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ph_issue_remote_links_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "ph_issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ph_issue_remote_links_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "workhub_items_view"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ph_issue_type_icons: {
         Row: {
           bg_color: string
@@ -25249,8 +25291,11 @@ export type Database = {
       ph_issues: {
         Row: {
           acceptance_criteria: string | null
+          archived_at: string | null
+          archived_by: string | null
           assignee_account_id: string | null
           assignee_display_name: string | null
+          assignee_user_id: string | null
           baseline_date: string | null
           changelog: Json | null
           comments: Json | null
@@ -25284,6 +25329,7 @@ export type Database = {
           raw_json: Json | null
           reporter_account_id: string | null
           reporter_display_name: string | null
+          reporter_user_id: string | null
           resolution: string | null
           sort_order: number | null
           source: string
@@ -25300,8 +25346,11 @@ export type Database = {
         }
         Insert: {
           acceptance_criteria?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           assignee_account_id?: string | null
           assignee_display_name?: string | null
+          assignee_user_id?: string | null
           baseline_date?: string | null
           changelog?: Json | null
           comments?: Json | null
@@ -25335,6 +25384,7 @@ export type Database = {
           raw_json?: Json | null
           reporter_account_id?: string | null
           reporter_display_name?: string | null
+          reporter_user_id?: string | null
           resolution?: string | null
           sort_order?: number | null
           source?: string
@@ -25351,8 +25401,11 @@ export type Database = {
         }
         Update: {
           acceptance_criteria?: string | null
+          archived_at?: string | null
+          archived_by?: string | null
           assignee_account_id?: string | null
           assignee_display_name?: string | null
+          assignee_user_id?: string | null
           baseline_date?: string | null
           changelog?: Json | null
           comments?: Json | null
@@ -25386,6 +25439,7 @@ export type Database = {
           raw_json?: Json | null
           reporter_account_id?: string | null
           reporter_display_name?: string | null
+          reporter_user_id?: string | null
           resolution?: string | null
           sort_order?: number | null
           source?: string
