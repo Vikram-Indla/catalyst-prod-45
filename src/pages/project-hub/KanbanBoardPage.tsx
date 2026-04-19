@@ -15,6 +15,7 @@
  */
 import React, { useState, useRef, useCallback, useMemo, useEffect, lazy, Suspense } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import Button from '@atlaskit/button/new';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
 import { useParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -824,31 +825,17 @@ export default function KanbanBoardPage() {
       {/* ── Page header ── */}
       <CatalystPageHeader title="Board" />
 
-      {/* ── F3: Archived filter chip (admin/owner only) ── */}
+      {/* ── F3: Archived filter chip (admin/owner only) — Atlaskit Button ── */}
       {canArchive && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 16px', borderBottom: '1px solid #DFE1E6', background: '#FAFBFC' }}>
-          <button
-            type="button"
+          <Button
+            appearance={showArchived ? 'primary' : 'subtle'}
+            spacing="compact"
             onClick={() => setShowArchived(v => !v)}
             aria-pressed={showArchived}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 12,
-              fontWeight: 600,
-              padding: '4px 10px',
-              borderRadius: 12,
-              border: '1px solid',
-              borderColor: showArchived ? '#0747A6' : '#DFE1E6',
-              background: showArchived ? '#DEEBFF' : '#FFFFFF',
-              color: showArchived ? '#0747A6' : '#42526E',
-              cursor: 'pointer',
-              lineHeight: 1.2,
-            }}
           >
-            {showArchived ? 'Archived ON · click to hide' : 'Show archived'}
-          </button>
+            {showArchived ? 'Archived' : 'Show archived'}
+          </Button>
           {showArchived && (
             <span style={{ fontSize: 11, color: '#7A869A' }}>
               Showing archived issues only — restore from the issue overflow menu.
