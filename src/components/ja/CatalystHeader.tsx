@@ -209,28 +209,63 @@ export function CatalystHeader() {
         }}
       >
         {/* ===== LOGO ZONE (fixed-width brand zone — unified left column with sidebar) ===== */}
-        {/* Width = sidebar width minus header's 16px left padding, so first nav item aligns with sidebar edge */}
+        {/* Width = sidebar width minus header's 16px left padding, so first nav item aligns with sidebar edge.
+            2026-04-19: duration + easing unified with SidebarBase.tsx (180ms, Material emphasized decelerate).
+            overflow:hidden clips the wordmark when it's fading out during collapse — otherwise the ~120px-wide
+            asset would briefly spill into the nav zone before the parent width catches up. */}
         <div
-          className="flex items-center flex-shrink-0"
+          className="flex items-center flex-shrink-0 relative"
           style={{
             width: sidebarExpanded ? 'calc(240px - 16px)' : 'calc(56px - 16px)',
-            transition: 'width 200ms ease',
+            transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1)',
+            overflow: 'hidden',
           }}
         >
           <a
             className="flex items-center flex-shrink-0 cursor-pointer no-underline transition-opacity"
             style={{
               opacity: 1,
+              position: 'relative',
+              height: '30px',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
             onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
             onClick={() => navigate('/home')}
           >
-            {!sidebarExpanded ? (
-              <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '24px', width: '24px' }} />
-            ) : (
-              <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '24px', width: 'auto' }} />
-            )}
+            {/* Logo crossfade (2026-04-19): both assets are always rendered;
+                opacity toggles between them to eliminate the hard wordmark↔mark
+                cut at the sidebar-width midpoint. The mark is absolute-positioned
+                so it doesn't contribute to the anchor's flow size — the wordmark
+                determines layout, the mark overlays when collapsed.
+                30px height: see earlier comment on nav rhythm. */}
+            <img
+              src={isDark ? catalystLogoMark2Dark : catalystLogoMark2}
+              alt=""
+              aria-hidden="true"
+              style={{
+                height: '30px',
+                width: '30px',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                opacity: sidebarExpanded ? 0 : 1,
+                transition: sidebarExpanded
+                  ? 'opacity 80ms ease'
+                  : 'opacity 120ms ease 60ms',
+              }}
+            />
+            <img
+              src={isDark ? catalystWordmark3Dark : catalystWordmark3}
+              alt="Catalyst"
+              style={{
+                height: '30px',
+                width: 'auto',
+                opacity: sidebarExpanded ? 1 : 0,
+                transition: sidebarExpanded
+                  ? 'opacity 120ms ease 60ms'
+                  : 'opacity 80ms ease',
+              }}
+            />
           </a>
         </div>
         

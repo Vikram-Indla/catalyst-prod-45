@@ -179,7 +179,17 @@ export function SidebarBase({
           boxShadow: 'none',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
-          transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
+          // 2026-04-19: Unified all sidebar-adjacent transitions on 180ms +
+          // cubic-bezier(0.2, 0, 0, 1) (Material "emphasized decelerate").
+          // Previously 220ms while CatalystHeader's logo zone ran at 200ms
+          // with `ease` — the desync was a visible shear. willChange + CSS
+          // containment give the browser paint-layer hints so the width
+          // animation doesn't cascade a reflow into the main canvas every
+          // frame. Labels crossfade via opacity+max-width transitions below
+          // so they don't pop at the width midpoint.
+          transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1)',
+          willChange: 'width',
+          contain: 'layout style',
           scrollbarWidth: 'thin' as any,
           scrollbarColor: isDark ? '#454545 transparent' : '#DFE1E6 transparent',
         }}
@@ -477,46 +487,59 @@ function renderMenuItem(
           />
         )}
       </span>
-      {expanded && (
-        <>
-          <span
-            className="flex-1 text-left"
-            style={{ lineHeight: '20px', whiteSpace: 'nowrap' }}
-          >
-            {item.title}
-          </span>
-          {/* Star button - show on hover */}
-          {!isFooter && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleFavorite(item.path);
-              }}
-              className={cn(
-                "w-5 h-5 flex items-center justify-center rounded transition-opacity",
-                starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-              )}
-              style={{
-                color: starred ? '#f59e0b' : 'var(--text-4)',
-              }}
-              onMouseEnter={(e) => {
-                if (!starred) {
-                  e.currentTarget.style.color = '#f59e0b';
-                  e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!starred) {
-                  e.currentTarget.style.color = 'var(--text-4)';
-                  e.currentTarget.style.background = 'transparent';
-                }
-              }}
-            >
-              <Star size={14} fill={starred ? "currentColor" : "none"} />
-            </button>
+      {/* Label — always rendered, crossfaded via opacity+max-width so it
+          doesn't pop at the width animation midpoint. The max-width transition
+          collapses the span out of flow in lockstep with the sidebar width,
+          opacity fades 40ms into the expand (and 0ms on collapse) so the text
+          disappears before the sidebar contracts rather than snapping out. */}
+      <span
+        className="flex-1 text-left"
+        style={{
+          lineHeight: '20px',
+          whiteSpace: 'nowrap',
+          opacity: expanded ? 1 : 0,
+          maxWidth: expanded ? '100%' : 0,
+          overflow: 'hidden',
+          transition: expanded
+            ? 'opacity 120ms ease 40ms, max-width 180ms cubic-bezier(0.2, 0, 0, 1)'
+            : 'opacity 80ms ease, max-width 180ms cubic-bezier(0.2, 0, 0, 1)',
+          pointerEvents: expanded ? 'auto' : 'none',
+        }}
+      >
+        {item.title}
+      </span>
+      {/* Star button — expanded state only. Default opacity is already 0
+          (reveals on row hover), so not crossfading this one doesn't produce
+          a visible pop. */}
+      {expanded && !isFooter && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(item.path);
+          }}
+          className={cn(
+            "w-5 h-5 flex items-center justify-center rounded transition-opacity",
+            starred ? "opacity-100" : "opacity-0 group-hover:opacity-100"
           )}
-        </>
+          style={{
+            color: starred ? '#f59e0b' : 'var(--text-4)',
+          }}
+          onMouseEnter={(e) => {
+            if (!starred) {
+              e.currentTarget.style.color = '#f59e0b';
+              e.currentTarget.style.background = 'rgba(245, 158, 11, 0.1)';
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!starred) {
+              e.currentTarget.style.color = 'var(--text-4)';
+              e.currentTarget.style.background = 'transparent';
+            }
+          }}
+        >
+          <Star size={14} fill={starred ? "currentColor" : "none"} />
+        </button>
       )}
       {/* Text Badge (AI, NEW, BETA, etc.) */}
       {item.textBadge && (

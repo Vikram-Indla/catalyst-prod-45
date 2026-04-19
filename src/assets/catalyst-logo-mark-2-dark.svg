@@ -3,11 +3,12 @@
   <!-- Standalone mark for favicon, app icon, etc. on dark backgrounds -->
 
   <defs>
-    <!-- 2026-04-19: Lifted to Jira's dark-theme blue ramp (see wordmark-3-dark
-         for rationale). -->
+    <!-- 2026-04-19 (v3): Unified with the dark-mode wordmark palette (see
+         catalyst-logo-mark-2.svg for the coherence rationale). Range:
+         #85B8FF → #579DFF — matches catalyst-wordmark-3-dark.svg. -->
     <linearGradient id="catalystBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#579DFF"/>
-      <stop offset="100%" stop-color="#2684FF"/>
+      <stop offset="0%" stop-color="#85B8FF"/>
+      <stop offset="100%" stop-color="#579DFF"/>
     </linearGradient>
   </defs>
 

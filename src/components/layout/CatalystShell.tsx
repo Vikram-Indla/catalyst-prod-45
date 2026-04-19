@@ -71,7 +71,7 @@ function SidebarEdgeReveal({ onReveal }: { onReveal: () => void }) {
       onClick={onReveal}
       aria-label="Show sidebar (shortcut: [ )"
       title="Show sidebar  [  "
-      className="group flex items-center justify-center h-full transition-all"
+      className="group flex items-center justify-center h-full"
       style={{
         width: '8px',
         border: 'none',
@@ -80,6 +80,11 @@ function SidebarEdgeReveal({ onReveal }: { onReveal: () => void }) {
         color: 'var(--cp-text-muted, #94A3B8)',
         flexShrink: 0,
         padding: 0,
+        // 2026-04-19: Explicit transition aligned with SidebarBase (180ms,
+        // Material emphasized decelerate) instead of Tailwind's
+        // `transition-all` default, so reveal timing matches the sidebar's
+        // own width animation and the header logo zone.
+        transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1), background 180ms cubic-bezier(0.2, 0, 0, 1)',
       }}
       onMouseEnter={e => { e.currentTarget.style.width = '32px'; e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
       onMouseLeave={e => { e.currentTarget.style.width = '8px'; e.currentTarget.style.background = 'transparent'; }}
@@ -507,7 +512,20 @@ function CatalystShellContent() {
             When sidebarHidden is true the actual sidebar is unmounted (0 DOM
             cost) and replaced with a thin edge-reveal handle that restores
             the sidebar on click. Keyboard: `[` cycles between states. */}
-        <div data-catalyst-sidebar className="relative flex-shrink-0" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
+        <div
+          data-catalyst-sidebar
+          className="relative flex-shrink-0"
+          style={{
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            // 2026-04-19 Tier 2: CSS containment on the sidebar wrapper so its
+            // subtree's layout/paint work doesn't cascade into main during the
+            // 180ms width animation. Belt-and-suspenders with the SidebarBase
+            // `contain: layout style` — this one isolates the wrapper div,
+            // that one isolates the aside within.
+            contain: 'layout style',
+          }}
+        >
             {sidebarHidden ? (
               <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); }} />
             ) : (

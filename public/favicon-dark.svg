@@ -3,9 +3,12 @@
   <!-- Standalone mark for favicon, app icon, etc. on dark backgrounds -->
 
   <defs>
+    <!-- 2026-04-19 (v3): Unified with the dark-mode wordmark palette for
+         brand coherence. Range: #85B8FF Jira Blue-300 → #579DFF Blue-500.
+         See favicon.svg for the unification rationale. -->
     <linearGradient id="catalystBlueDark" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#60A5FA"/>
-      <stop offset="100%" stop-color="#3B82F6"/>
+      <stop offset="0%" stop-color="#85B8FF"/>
+      <stop offset="100%" stop-color="#579DFF"/>
     </linearGradient>
   </defs>
 

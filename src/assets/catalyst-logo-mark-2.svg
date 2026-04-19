@@ -3,11 +3,14 @@
   <!-- Standalone mark for favicon, app icon, etc. -->
 
   <defs>
-    <!-- 2026-04-19: Retuned to Atlassian Jira-parity blues (see wordmark-3
-         for rationale). Favicon-size punch matters most on this mark. -->
+    <!-- 2026-04-19 (v3): Unified with the wordmark palette. This mark renders
+         in the header when the sidebar is collapsed — if its blues diverge
+         from the expanded-state wordmark, toggling the sidebar would flip
+         the brand contrast. Range matches catalyst-wordmark-3.svg:
+         #2684FF → #0052CC. -->
     <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0052CC"/>
-      <stop offset="100%" stop-color="#0747A6"/>
+      <stop offset="0%" stop-color="#2684FF"/>
+      <stop offset="100%" stop-color="#0052CC"/>
     </linearGradient>
   </defs>
 

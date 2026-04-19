@@ -21,6 +21,26 @@
 @import './styles/goals-dark.css';
 /* @import './styles/priority-lists.css'; */
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION — A11y override (2026-04-19)
+   Respects user OS-level "reduce motion" preference by collapsing all
+   transitions + animations to near-zero. Scoped to the media query so it
+   doesn't touch the default experience. !important is the legitimate tool
+   here — transition values are set via inline styles across dozens of
+   components and there's no other mechanism to override them globally for
+   an a11y escape hatch.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

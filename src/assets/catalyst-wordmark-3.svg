@@ -2,15 +2,17 @@
   <!-- Catalyst Wordmark - Umbrella-C + "atalyst" - LIGHT MODE -->
   
   <defs>
-    <!-- 2026-04-19: Retuned to Atlassian Jira-parity blues. Previous stops
-         (#3B82F6 → #1D4ED8) read pale at favicon size because the start stop
-         was perceptually lighter than Jira's and the stop range was too wide
-         for small-size rendering. Atlassian Primary (#0052CC) → Atlassian
-         Deep (#0747A6) gives punch at 16/32px without losing warmth at
-         display size. -->
+    <!-- 2026-04-19 (v2): Wordmark-specific palette. First pass used Atlassian
+         Primary → Deep (#0052CC → #0747A6) but that read "painful" at the
+         30px display size — too saturated and dark against white chrome.
+         Split-strategy: keep Primary/Deep on favicon + mark-only assets where
+         small-size punch is the priority, but use Jira's wordmark range
+         (#2684FF Jira Product Blue → #0052CC Primary) here. Airy start stop
+         gives the wordmark lift at display size; Primary anchor prevents
+         drift to cyan. -->
     <linearGradient id="catalystBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0052CC"/>
-      <stop offset="100%" stop-color="#0747A6"/>
+      <stop offset="0%" stop-color="#2684FF"/>
+      <stop offset="100%" stop-color="#0052CC"/>
     </linearGradient>
   </defs>
   
