@@ -32,8 +32,8 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
       value,
     }: {
       field: string;
-      value: string;
-      oldValue?: string;
+      value: string | null;
+      oldValue?: string | null;
     }) => {
       await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
     },

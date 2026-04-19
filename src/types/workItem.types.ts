@@ -20,7 +20,12 @@ export type WorkItemStatus =
 export type WorkItemPriority = 'highest' | 'high' | 'medium' | 'low' | 'lowest';
 
 export interface WorkItem {
+  /** issue_key — used for routing / display (e.g. "BAU-5500"). */
   id: string;
+  /** ph_issues.id (UUID) — required for queries that hit the primary key.
+   *  Null-safe because legacy callers of mapPhIssue may not have selected
+   *  the column. (See CLAUDE.md §L39 for the UUID-column-mismatch gotcha.) */
+  dbId?: string | null;
   projectId: string;
   parentId: string | null;
   parentKey: string | null;

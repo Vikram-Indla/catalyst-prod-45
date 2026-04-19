@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search, ChevronDown, LogOut, Settings, Bell, User } from "lucide-react";
+import { Search, ChevronDown, LogOut, Settings, Bell, User, Sun, Moon } from "lucide-react";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { BADGE_DEBOUNCE_MS } from "@/constants/notificationConstants";
@@ -15,7 +15,6 @@ import { useModuleAccess } from "@/hooks/useModuleAccess";
 import { useFeatureFlags } from "@/contexts/FeatureFlagContext";
 import { useSingleItemNavigation } from "@/hooks/useSingleItemNavigation";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
 const CreateDropdown = lazy(() => import("./CreateDropdown").then(m => ({ default: m.CreateDropdown })));
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 const NotificationsPanel = lazy(() => import("./NotificationsPanel").then(m => ({ default: m.NotificationsPanel })));
@@ -53,7 +52,7 @@ import catalystLogoMark2Dark from "@/assets/catalyst-logo-mark-2-dark.svg";
 export function CatalystHeader() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { resolvedTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   const globalSearch = useGlobalSearchStore();
 
@@ -197,38 +196,46 @@ export function CatalystHeader() {
         ref={headerRef}
         className="sticky top-0 z-[100] flex items-center"
         style={{
-          height: 'calc(52px + var(--app-safe-top))',
+          height: 'calc(56px + var(--app-safe-top))',
           paddingTop: 'var(--app-safe-top)',
-          paddingLeft: '20px',
-          paddingRight: '20px',
-          borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`,
+          paddingLeft: '16px',
+          paddingRight: '16px',
+          borderBottom: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
           fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           backgroundColor: isDark ? '#0A0A0A' : '#FFFFFF',
-          boxShadow: isDark ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(15,23,42,0.06)',
+          boxShadow: 'none',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
         }}
       >
-        {/* ===== LOGO ZONE ===== */}
-        <a 
-          className="flex items-center flex-shrink-0 cursor-pointer no-underline transition-opacity"
-          style={{ 
-            marginRight: '16px',
-            opacity: 1,
+        {/* ===== LOGO ZONE (fixed-width brand zone — unified left column with sidebar) ===== */}
+        {/* Width = sidebar width minus header's 16px left padding, so first nav item aligns with sidebar edge */}
+        <div
+          className="flex items-center flex-shrink-0"
+          style={{
+            width: sidebarExpanded ? 'calc(240px - 16px)' : 'calc(56px - 16px)',
+            transition: 'width 200ms ease',
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
-          onClick={() => navigate('/home')}
         >
-          {!sidebarExpanded ? (
-            <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '24px', width: '24px' }} />
-          ) : (
-            <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '26px', width: 'auto' }} />
-          )}
-        </a>
+          <a
+            className="flex items-center flex-shrink-0 cursor-pointer no-underline transition-opacity"
+            style={{
+              opacity: 1,
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
+            onClick={() => navigate('/home')}
+          >
+            {!sidebarExpanded ? (
+              <img src={isDark ? catalystLogoMark2Dark : catalystLogoMark2} alt="Catalyst" style={{ height: '24px', width: '24px' }} />
+            ) : (
+              <img src={isDark ? catalystWordmark3Dark : catalystWordmark3} alt="Catalyst" style={{ height: '24px', width: 'auto' }} />
+            )}
+          </a>
+        </div>
         
         {/* ===== NAVIGATION ZONE ===== */}
-        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '2px', marginRight: '12px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
+        <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '0px', marginRight: '12px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
           <TooltipProvider>
             {navItems.map((item) => {
               if (!item.isEnabled) {
@@ -238,12 +245,12 @@ export function CatalystHeader() {
                       <button
                         className="flex items-center cursor-not-allowed opacity-40"
                         style={{
-                          height: '50px',
-                          padding: '0 14px',
+                          height: '100%',
+                          padding: '0 12px',
                           fontSize: '14px',
                           fontWeight: 500,
                           color: '#6B778C',
-                          borderRadius: '6px',
+                          borderRadius: '0',
                           gap: '4px',
                           border: 'none',
                           background: 'transparent',
@@ -272,13 +279,13 @@ export function CatalystHeader() {
               const hoverUnderline = isDark ? '#454545' : '#C1C7D0';
               const navButtonStyle: React.CSSProperties = {
                 height: '100%',
-                padding: '0 14px',
-                fontSize: '13.5px',
-                fontWeight: isActive ? 600 : 450,
+                padding: '0 12px',
+                fontSize: '14px',
+                fontWeight: isActive ? 600 : 500,
                 color: isActive ? activeColor : inactiveColor,
                 display: 'flex',
                 alignItems: 'center',
-                gap: '1px',
+                gap: '4px',
                 cursor: 'pointer',
                 transition: 'color 0.15s ease',
                 border: 'none',
@@ -286,15 +293,15 @@ export function CatalystHeader() {
                 position: 'relative' as const,
                 fontFamily: "'Inter', sans-serif",
                 outline: 'none',
-                letterSpacing: '-0.01em',
+                letterSpacing: '0',
                 borderRadius: '0',
-                borderBottom: isActive ? `3px solid ${activeUnderline}` : '3px solid transparent',
+                borderBottom: isActive ? `2px solid ${activeUnderline}` : '2px solid transparent',
               };
-              
+
               const handleHover = (e: React.MouseEvent<HTMLButtonElement>, isEnter: boolean) => {
                 if (!isActive) {
                   e.currentTarget.style.color = isEnter ? hoverColor : inactiveColor;
-                  e.currentTarget.style.borderBottom = isEnter ? `3px solid ${hoverUnderline}` : '3px solid transparent';
+                  e.currentTarget.style.borderBottom = isEnter ? `2px solid ${hoverUnderline}` : '2px solid transparent';
                   e.currentTarget.style.background = 'transparent';
                 }
               };
@@ -413,7 +420,7 @@ export function CatalystHeader() {
                           ...navButtonStyle,
                           color: location.pathname.startsWith('/release') ? '#0052CC' : navButtonStyle.color,
                           fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                          borderBottom: location.pathname.startsWith('/release') ? '3px solid #0052CC' : '3px solid transparent',
+                          borderBottom: location.pathname.startsWith('/release') ? '2px solid #0052CC' : '2px solid transparent',
                         }}
                         onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#172B4D'; }}
                         onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#6B778C'; }}
@@ -432,7 +439,7 @@ export function CatalystHeader() {
                               ...navButtonStyle,
                               color: location.pathname.startsWith('/release') ? '#0052CC' : navButtonStyle.color,
                               fontWeight: location.pathname.startsWith('/release') ? 600 : navButtonStyle.fontWeight,
-                              borderBottom: location.pathname.startsWith('/release') ? '3px solid #0052CC' : '3px solid transparent',
+                              borderBottom: location.pathname.startsWith('/release') ? '2px solid #0052CC' : '2px solid transparent',
                             }}
                             onMouseEnter={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#172B4D'; }}
                             onMouseLeave={(e) => { if (!location.pathname.startsWith('/release')) e.currentTarget.style.color = '#6B778C'; }}
@@ -454,7 +461,7 @@ export function CatalystHeader() {
                         ...navButtonStyle,
                         color: location.pathname.startsWith('/taskhub') ? '#0052CC' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/taskhub') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/taskhub') ? '3px solid #0052CC' : '3px solid transparent',
+                        borderBottom: location.pathname.startsWith('/taskhub') ? '2px solid #0052CC' : '2px solid transparent',
                       }}
                       onMouseEnter={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#172B4D'; }}
                       onMouseLeave={(e) => { if (!location.pathname.startsWith('/taskhub')) e.currentTarget.style.color = '#6B778C'; }}
@@ -468,7 +475,7 @@ export function CatalystHeader() {
                         ...navButtonStyle,
                         color: location.pathname.startsWith('/releases') ? '#0052CC' : navButtonStyle.color,
                         fontWeight: location.pathname.startsWith('/releases') ? 600 : navButtonStyle.fontWeight,
-                        borderBottom: location.pathname.startsWith('/releases') ? '3px solid #0052CC' : '3px solid transparent',
+                        borderBottom: location.pathname.startsWith('/releases') ? '2px solid #0052CC' : '2px solid transparent',
                       }}
                       onMouseEnter={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#172B4D'; }}
                       onMouseLeave={(e) => { if (!location.pathname.startsWith('/releases')) e.currentTarget.style.color = '#6B778C'; }}
@@ -479,13 +486,13 @@ export function CatalystHeader() {
                   ) : (item as any).isLabel ? (
                     <span
                       style={{
-                        height: '50px',
-                        padding: '0 14px',
-                        fontSize: '0.84rem',
+                        height: '100%',
+                        padding: '0 12px',
+                        fontSize: '14px',
                         fontWeight: 500,
                         fontFamily: "'Inter', sans-serif",
                         color: '#6B778C',
-                        borderRadius: '6px',
+                        borderRadius: '0',
                         display: 'flex',
                         alignItems: 'center',
                         opacity: 0.6,
@@ -524,56 +531,19 @@ export function CatalystHeader() {
           
           <TooltipProvider>
 
-            {/* Settings */}
-            {canAccessSettings && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    className="relative flex items-center justify-center rounded-lg transition-all"
-                    style={{
-                      width: '36px',
-                      height: '50px',
-                      color: location.pathname.startsWith('/admin') ? '#0052CC' : '#6B778C',
-                      background: location.pathname.startsWith('/admin') ? 'var(--cp-hover)' : 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      borderRadius: '8px',
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#172B4D';
-                      e.currentTarget.style.background = 'var(--cp-hover)';
-                    }}
-                    onMouseLeave={(e) => {
-                      const isOnAdmin = location.pathname.startsWith('/admin');
-                      e.currentTarget.style.color = isOnAdmin ? '#0052CC' : '#6B778C';
-                      e.currentTarget.style.background = isOnAdmin ? 'var(--cp-hover)' : 'transparent';
-                    }}
-                    onClick={() => navigate('/admin/users')}
-                    title="Settings"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Settings</p>
-                </TooltipContent>
-              </Tooltip>
-            )}
+            {/* Settings and Theme Toggle moved into user avatar dropdown (G4) */}
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
-
-            {/* Search Trigger */}
+            {/* Search Trigger (full field at xl+, icon only below) */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="hidden sm:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
+              className="hidden xl:flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--cp-focus-ring)] focus-visible:ring-offset-1"
               style={{
-                minWidth: '220px',
-                height: '34px',
+                minWidth: '280px',
+                height: '32px',
                 padding: '0 12px',
                 background: isDark ? '#1A1A1A' : '#F4F5F7',
-                border: `1.5px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
-                borderRadius: '6px',
+                border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`,
+                borderRadius: '3px',
                 cursor: 'pointer',
                 gap: '8px',
                 alignItems: 'center',
@@ -582,20 +552,22 @@ export function CatalystHeader() {
               onMouseEnter={(e) => { e.currentTarget.style.borderColor = isDark ? '#454545' : '#C1C7D0'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#EBECF0'; }}
               onMouseLeave={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#DFE1E6'; e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F4F5F7'; }}
             >
-              <Search style={{ width: '14px', height: '14px', color: isDark ? '#878787' : '#6B778C', flexShrink: 0 }} />
+              <Search style={{ width: '16px', height: '16px', color: isDark ? '#878787' : '#6B778C', flexShrink: 0 }} />
               <span style={{ flex: 1, fontSize: '13px', fontFamily: "'Inter', sans-serif", color: isDark ? '#878787' : '#6B778C', textAlign: 'left' }}>
                 Search...
               </span>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '4px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>⌘</kbd>
-              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '4px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>K</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '3px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>⌘</kbd>
+              <kbd style={{ fontSize: '10px', background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#DFE1E6'}`, borderRadius: '3px', padding: '2px 5px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#878787' : '#6B778C', fontWeight: 500 }}>K</kbd>
             </button>
-            {/* Mobile search icon */}
+            {/* Compact search icon (shown below xl to preserve right-side action space) */}
             <button
               onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-              className="sm:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
-              style={{ width: '36px', height: '50px', color: isDark ? '#A1A1A1' : '#94A3B8', background: 'transparent', borderRadius: '8px', border: 'none', cursor: 'pointer' }}
+              className="xl:hidden flex items-center justify-center rounded-lg transition-colors focus:outline-none"
+              style={{ width: '32px', height: '32px', color: isDark ? '#A1A1A1' : '#94A3B8', background: 'transparent', borderRadius: '3px', border: 'none', cursor: 'pointer' }}
+              title="Search (⌘K)"
+              aria-label="Search"
             >
-              <Search style={{ width: '18px', height: '18px' }} />
+              <Search style={{ width: '16px', height: '16px' }} />
             </button>
 
 
@@ -605,9 +577,9 @@ export function CatalystHeader() {
               aria-label={`Notifications${debouncedUnreadCount > 0 ? `, ${debouncedUnreadCount} unread` : ''}`}
               style={{
                 position: 'relative',
-                width: '36px', height: '36px',
+                width: '32px', height: '32px',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                background: 'transparent', border: 'none', borderRadius: '8px',
+                background: 'transparent', border: 'none', borderRadius: '3px',
                 cursor: 'pointer',
                 color: isDark ? '#A1A1A1' : '#6B778C',
                 transition: 'color 150ms ease, background 120ms ease',
@@ -615,12 +587,12 @@ export function CatalystHeader() {
               onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#172B4D'; e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F4F5F7'; }}
               onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#6B778C'; e.currentTarget.style.background = 'transparent'; }}
             >
-              <Bell style={{ width: '18px', height: '18px' }} />
+              <Bell style={{ width: '16px', height: '16px' }} />
               {debouncedUnreadCount > 0 && (
                 <span style={{
                   position: 'absolute', top: '4px', right: '4px',
                   width: '8px', height: '8px',
-                  background: '#EF4444',
+                  background: '#DE350B',
                   borderRadius: '50%',
                   border: `2px solid ${isDark ? '#0A0A0A' : '#FFFFFF'}`,
                   boxSizing: 'content-box',
@@ -637,10 +609,10 @@ export function CatalystHeader() {
                   aria-expanded={userMenuOpen}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-semibold cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background overflow-hidden"
                   style={{
-                    background: (userProfile?.avatar_url && !avatarImgError) ? 'transparent' : 'linear-gradient(135deg, #0052CC, #6366F1)',
+                    background: (userProfile?.avatar_url && !avatarImgError) ? 'transparent' : '#0052CC',
                     color: '#FFFFFF',
                     border: '2px solid',
-                    borderColor: isDark ? '#454545' : '#E2E8F0',
+                    borderColor: isDark ? '#454545' : '#DFE1E6',
                     transition: 'border-color 150ms ease, box-shadow 150ms ease',
                     padding: 0,
                   }}
@@ -693,6 +665,7 @@ export function CatalystHeader() {
                   {[
                     { icon: User, label: 'My Profile', onClick: () => { setUserMenuOpen(false); navigate('/profile'); } },
                     { icon: Bell, label: 'Notification Settings', onClick: () => { setUserMenuOpen(false); navigate('/admin/settings/notifications'); } },
+                    { icon: isDark ? Sun : Moon, label: isDark ? 'Switch to light mode' : 'Switch to dark mode', onClick: () => { setTheme(isDark ? 'light' : 'dark'); } },
                     ...(canAccessSettings ? [{ icon: Settings, label: 'Administration', onClick: () => { setUserMenuOpen(false); navigate('/admin/users'); } }] : []),
                     { icon: LogOut, label: 'Sign out', onClick: () => { setUserMenuOpen(false); void handleSignOut(); } },
                   ].map((menuItem) => (

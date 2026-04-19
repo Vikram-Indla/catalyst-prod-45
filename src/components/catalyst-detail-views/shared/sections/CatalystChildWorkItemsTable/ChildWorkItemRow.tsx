@@ -3,9 +3,12 @@
  * Jira parity: type icon, key (clickable blue link), summary, assignee avatar + name,
  * status lozenge with inline dropdown chevron to change status, fix version, priority SVG.
  */
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import Lozenge from '@atlaskit/lozenge';
+import { DropdownMenu } from '@/components/ads';
+import type { DropdownMenuGroup } from '@/components/ads';
 import {
   IssueIcon,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
@@ -45,13 +48,6 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
   Lowest: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M3 4l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><path d="M3 8l5 5 5-5" fill="none" stroke="#2684FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
 };
 
-/** Status lozenge colors by category */
-function getLozengeColors(category: string): { bg: string; text: string } {
-  if (category === 'done') return { bg: '#E3FCEF', text: '#006644' };
-  if (category === 'in_progress') return { bg: '#DEEBFF', text: '#0747A6' };
-  return { bg: '#DFE1E6', text: '#253858' };
-}
-
 interface ChildWorkItemRowProps {
   item: ChildWorkItem;
   columns: ChildColumnConfig;
@@ -60,19 +56,7 @@ interface ChildWorkItemRowProps {
 }
 
 export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: ChildWorkItemRowProps) {
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const statusRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!showStatusDropdown) return;
-    const h = (e: MouseEvent) => {
-      if (statusRef.current && !statusRef.current.contains(e.target as Node))
-        setShowStatusDropdown(false);
-    };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [showStatusDropdown]);
 
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
@@ -81,13 +65,31 @@ export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cv-child-items', parentIssueKey] });
-      setShowStatusDropdown(false);
     },
   });
 
   const isDone = item.status_category === 'done';
   const avatarColor = item.assignee_display_name ? getAvatarColor(item.assignee_display_name) : '#8993A4';
-  const lozengeColors = getLozengeColors(item.status_category);
+  // Phase F.2 (2026-04-18): Atlaskit Lozenge appearance by category.
+  // Locked to CLAUDE.md §5 three-colour guardrail (grey/blue/green).
+  const lozengeAppearance: 'default' | 'inprogress' | 'success' =
+    item.status_category === 'done'
+      ? 'success'
+      : item.status_category === 'in_progress'
+        ? 'inprogress'
+        : 'default';
+
+  // Build DropdownMenu groups from STATUS_OPTION_GROUPS. Each option calls
+  // updateStatusMutation; DropdownMenu owns open/close + focus trap + escape.
+  const statusGroups: DropdownMenuGroup[] = STATUS_OPTION_GROUPS.map((group) => ({
+    key: group.category,
+    title: group.groupLabel,
+    items: group.statuses.map((st) => ({
+      key: st,
+      label: st,
+      onClick: () => updateStatusMutation.mutate(st),
+    })),
+  }));
 
   const fixVersionNames: string[] = (() => {
     if (!item.fix_versions) return [];
@@ -150,55 +152,34 @@ export function ChildWorkItemRow({ item, columns, parentIssueKey, onOpenItem }: 
         </div>
       )}
 
-      {/* Status — colored pill with dropdown chevron */}
+      {/* Status — Atlaskit Lozenge trigger + DropdownMenu (Phase F.2, 2026-04-18).
+          The outer div stopPropagation prevents the row's onClick (which opens
+          the detail panel) from firing when the user clicks the status pill or
+          picks a new status. */}
       {columns.status && (
-        <div ref={statusRef} style={{ width: 150, flexShrink: 0, position: 'relative' }}>
-          <button
-            onClick={e => { e.stopPropagation(); setShowStatusDropdown(!showStatusDropdown); }}
-            style={{
-              background: lozengeColors.bg, color: lozengeColors.text,
-              border: 'none', cursor: 'pointer', padding: '0 8px',
-              height: 22, borderRadius: 3, fontSize: 11, fontWeight: 700,
-              textTransform: 'uppercase', letterSpacing: '0.03em',
-              display: 'inline-flex', alignItems: 'center', gap: 4,
-              lineHeight: 1, whiteSpace: 'nowrap',
-            }}
-          >
-            {item.status}
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-              <path d="M2 4L5 7L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          {showStatusDropdown && (
-            <div onClick={e => e.stopPropagation()} style={{
-              position: 'absolute', left: 0, top: '100%', marginTop: 4,
-              background: '#FFFFFF', borderRadius: 4,
-              boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)',
-              padding: '4px 0', zIndex: 9999, minWidth: 200, maxHeight: 300, overflowY: 'auto',
-            }}>
-              {STATUS_OPTION_GROUPS.map(group => (
-                <div key={group.category}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '6px 12px 2px', marginTop: 2 }}>
-                    {group.groupLabel}
-                  </div>
-                  {group.statuses.map(st => {
-                    const isActive = item.status === st;
-                    return (
-                      <div key={st} onClick={() => updateStatusMutation.mutate(st)}
-                        style={{ height: 32, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms' }}
-                        onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F4F5F7'; }}
-                        onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-                      >
-                        <span style={{ fontSize: 13, color: '#292A2E' }}>{st}</span>
-                        {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-            </div>
-          )}
+        <div
+          style={{ width: 150, flexShrink: 0 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <DropdownMenu
+            placement="bottom-start"
+            aria-label="Change status"
+            minWidth={200}
+            groups={statusGroups}
+            trigger={
+              <button
+                style={{
+                  background: 'transparent', border: 'none', cursor: 'pointer',
+                  padding: 0, display: 'inline-flex', alignItems: 'center', gap: 4,
+                }}
+              >
+                <Lozenge appearance={lozengeAppearance}>{item.status}</Lozenge>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                  <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            }
+          />
         </div>
       )}
 

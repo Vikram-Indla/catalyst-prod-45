@@ -14,12 +14,41 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Search, X, Check, Plus, ChevronDown } from 'lucide-react';
+import { Search, X, Check, Plus } from 'lucide-react';
 import type { PhIssue, CatalystItemType } from '../types';
 import { PARENT_LINK_RULES, type ParentLinkRule } from '../parent-rules';
 import {
   IssueIcon, StatusLozenge,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+
+/* ═══════════════════════════════════════════════
+   CANONICAL TRIGGER — single dashed "+ Add …" button reused across
+   all three sidebar pickers (BR / Single / Multi). Previous version
+   duplicated this exact 12-line block three times (Apr 2026 sweep).
+   Styling matches Catalyst sidebar convention (dashed ring + Plus icon);
+   breadcrumb-level Add-parent uses the separate AddParentPicker component
+   with Jira's SquarePen look.
+   ═══════════════════════════════════════════════ */
+function SidebarAddTrigger({
+  label, onClick, isOpen,
+}: { label: string; onClick: () => void; isOpen: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      aria-expanded={isOpen}
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
+        background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
+        cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap',
+        transition: 'border-color 0.15s, background 0.15s',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
+      onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
+    >
+      <Plus size={12} /> {label}
+    </button>
+  );
+}
 
 interface CatalystParentLinkerProps {
   /** The current issue */
@@ -160,16 +189,7 @@ function BusinessRequestParentPicker({
             </button>
           </div>
         ) : (
-          <button onClick={() => setShowPicker(!showPicker)} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
-            background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-            cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap', transition: 'border-color 0.15s, background 0.15s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
-          >
-            <Plus size={12} /> Add parent
-          </button>
+          <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
         )}
 
         {/* Picker dropdown */}
@@ -329,16 +349,7 @@ function SingleParentPicker({
             </button>
           </div>
         ) : (
-          <button onClick={() => setShowPicker(!showPicker)} style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
-            background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-            cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap', transition: 'border-color 0.15s, background 0.15s',
-          }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
-          >
-            <Plus size={12} /> Add parent
-          </button>
+          <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
         )}
 
         {/* Picker dropdown */}
@@ -501,16 +512,7 @@ function MultiLinkPicker({
           </div>
         )}
 
-        <button onClick={() => setShowPicker(!showPicker)} style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 8px',
-          background: 'none', border: '1px dashed #C1C7D0', borderRadius: 4,
-          cursor: 'pointer', fontSize: 13, color: '#5E6C84', whiteSpace: 'nowrap', transition: 'border-color 0.15s, background 0.15s',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = '#4C9AFF'; e.currentTarget.style.background = '#F4F5F7'; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = '#C1C7D0'; e.currentTarget.style.background = 'none'; }}
-        >
-          <Plus size={12} /> Add link
-        </button>
+        <SidebarAddTrigger label="Add link" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
 
         {/* Picker dropdown */}
         {showPicker && (

@@ -102,28 +102,42 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
   s.textContent = `
-    .cv-desc-body h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #292A2E; line-height: 1.3; }
-    .cv-desc-body h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: #292A2E; line-height: 1.3; }
-    .cv-desc-body h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; line-height: 1.4; }
-    .cv-desc-body h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; }
-    .cv-desc-body h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: #292A2E; }
-    .cv-desc-body h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: #5E6C84; text-transform: uppercase; }
-    .cv-desc-body ol, .cv-desc-body ul { margin: 4px 0 8px; padding-left: 24px; }
-    .cv-desc-body li { margin-bottom: 4px; }
-    .cv-desc-body ol { list-style-type: decimal; }
-    .cv-desc-body ul { list-style-type: disc; }
-    .cv-desc-body table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-    .cv-desc-body th { background: #F4F5F7; font-weight: 600; text-align: left; }
-    .cv-desc-body th, .cv-desc-body td { border: 1px solid #DFE1E6; padding: 8px 12px; font-size: 14px; vertical-align: top; }
-    .cv-desc-body blockquote { border-left: 2px solid #DFE1E6; padding: 8px 12px; margin: 8px 0; color: #5E6C84; }
-    .cv-desc-body pre { background: #F4F5F7; padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: 'JetBrains Mono', monospace; }
-    .cv-desc-body code { background: #F4F5F7; padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
-    .cv-desc-body pre code { background: none; padding: 0; }
-    .cv-desc-body p { margin: 0 0 8px; }
-    .cv-desc-body a { color: #0052CC; text-decoration: none; }
-    .cv-desc-body a:hover { text-decoration: underline; }
-    .cv-desc-body hr { border: none; border-top: 1px solid #DFE1E6; margin: 16px 0; }
-    .cv-desc-body img { max-width: 100%; border-radius: 4px; cursor: pointer; }
+    /* Scoped ADF content styles — target BOTH wrappers so list/typography
+       render correctly in the Atlaskit-success path (.adf-description-content
+       from AdfDescriptionRenderer) AND the sync fallback path (.cv-desc-body
+       from AtlaskitRendererPlaceholder). Without the .adf-description-content
+       selector, bullets/numbers disappear when the real Atlaskit renderer
+       chunk loads because list-style defaults to none in reset stylesheets.
+       Jira-parity bullet style: filled disc top-level, hollow circle nested,
+       square third-level (matching Atlassian's canonical ADF renderer). */
+    .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #292A2E; line-height: 1.3; }
+    .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: #292A2E; line-height: 1.3; }
+    .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; line-height: 1.4; }
+    .cv-desc-body h4, .adf-description-content h4 { font-size: 14px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; }
+    .cv-desc-body h5, .adf-description-content h5 { font-size: 13px; font-weight: 600; margin: 8px 0 4px; color: #292A2E; }
+    .cv-desc-body h6, .adf-description-content h6 { font-size: 12px; font-weight: 600; margin: 8px 0 4px; color: #5E6C84; text-transform: uppercase; }
+    .cv-desc-body ol, .cv-desc-body ul,
+    .adf-description-content ol, .adf-description-content ul { margin: 4px 0 8px; padding-left: 24px; }
+    .cv-desc-body li, .adf-description-content li { margin-bottom: 4px; }
+    .cv-desc-body ol, .adf-description-content ol { list-style-type: decimal; }
+    .cv-desc-body ul, .adf-description-content ul { list-style-type: disc; }
+    .cv-desc-body ul ul, .adf-description-content ul ul { list-style-type: circle; }
+    .cv-desc-body ul ul ul, .adf-description-content ul ul ul { list-style-type: square; }
+    .cv-desc-body ol ol, .adf-description-content ol ol { list-style-type: lower-alpha; }
+    .cv-desc-body ol ol ol, .adf-description-content ol ol ol { list-style-type: lower-roman; }
+    .cv-desc-body table, .adf-description-content table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+    .cv-desc-body th, .adf-description-content th { background: #F4F5F7; font-weight: 600; text-align: left; }
+    .cv-desc-body th, .cv-desc-body td,
+    .adf-description-content th, .adf-description-content td { border: 1px solid #DFE1E6; padding: 8px 12px; font-size: 14px; vertical-align: top; }
+    .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid #DFE1E6; padding: 8px 12px; margin: 8px 0; color: #5E6C84; }
+    .cv-desc-body pre, .adf-description-content pre { background: #F4F5F7; padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: 'JetBrains Mono', monospace; }
+    .cv-desc-body code, .adf-description-content code { background: #F4F5F7; padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+    .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
+    .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
+    .cv-desc-body a, .adf-description-content a { color: #0052CC; text-decoration: none; }
+    .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
+    .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid #DFE1E6; margin: 16px 0; }
+    .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
   `;
   document.head.appendChild(s);
 }

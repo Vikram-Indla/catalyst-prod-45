@@ -75,8 +75,16 @@ export default function CatalystViewIncident({
     <CatalystViewBase isOpen={isOpen} onClose={onClose} panelMode={panelMode} fullPageMode={fullPageMode}
       itemType={issue?.issue_type || 'Incident'} itemKey={issue?.issue_key || null}
       projectKey={issue?.project_key || projectKey} projectName={issue?.project_name || undefined}
-      parentKey={issue?.parent_key} parentType="Story"
+      parentKey={issue?.parent_key} parentType="Business Request"
       onParentClick={issue?.parent_key ? () => onOpenItem?.(issue.parent_key!) : undefined}
+      /* Canonical Add-parent (Catalyst rule): Production Incident → Story / Epic / Feature /
+         Business Request parent (only Incident + Epic can parent to a BR). */
+      parentSource="story_epic_feature_br"
+      onParentChange={async (newKey) => {
+        await mutations.updateField.mutateAsync({
+          field: 'parent_key', value: newKey, oldValue: issue?.parent_key ?? null,
+        });
+      }}
       onShare={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link copied'); }}
       moreMenuItems={[
         { label: 'Add flag', onClick: () => toast('Add flag — coming soon') },

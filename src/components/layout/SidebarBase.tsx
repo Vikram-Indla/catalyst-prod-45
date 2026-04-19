@@ -130,8 +130,8 @@ export function SidebarBase({
   const chevronColor = isDark ? 'var(--cp-blue)' : '#0052CC';
   const chevronHoverColor = isDark ? 'var(--cp-blue)' : '#0052CC';
   const sidebarBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const sidebarBorder = isDark ? '#2E2E2E' : '#E2E8F0';
-  const dividerColor = isDark ? '#2E2E2E' : '#EBECF0';
+  const sidebarBorder = isDark ? '#2E2E2E' : '#DFE1E6';
+  const dividerColor = isDark ? '#2E2E2E' : '#DFE1E6';
   const sectionLabel = isDark ? 'var(--cp-t2)' : '#6B778C';
   const hubLabel = isDark ? 'var(--cp-t1)' : '#172B4D';
 
@@ -167,16 +167,16 @@ export function SidebarBase({
           'h-full flex-shrink-0 relative flex flex-col overflow-visible',
           className
         )}
-        style={{ 
-          width: expanded ? '240px' : '64px',
+        style={{
+          width: expanded ? '240px' : '56px',
           background: sidebarBg,
           borderRight: `1px solid ${sidebarBorder}`,
-          boxShadow: isDark ? 'none' : '1px 0 0 rgba(15, 23, 42, 0.06)',
+          boxShadow: 'none',
           transform: 'translateZ(0)',
           backfaceVisibility: 'hidden',
           transition: 'width 220ms cubic-bezier(0.4, 0, 0.2, 1)',
           scrollbarWidth: 'thin' as any,
-          scrollbarColor: isDark ? '#454545 transparent' : '#E2E8F0 transparent',
+          scrollbarColor: isDark ? '#454545 transparent' : '#DFE1E6 transparent',
         }}
       >
         {/* Header with collapse toggle */}
@@ -187,10 +187,10 @@ export function SidebarBase({
               ? "flex items-center justify-between"
               : "flex flex-col items-center justify-center"
           )}
-          style={{ 
-            minHeight: '54px',
+          style={{
+            minHeight: '48px',
             borderColor: sidebarBorder,
-            padding: expanded ? '14px 14px 14px 16px' : '14px 0',
+            padding: expanded ? '12px 12px 12px 16px' : '12px 0',
             gap: expanded ? undefined : '4px',
             background: 'transparent',
           }}
@@ -291,14 +291,14 @@ export function SidebarBase({
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (
             <div className="mb-3">
-              <div style={{ padding: '8px 12px 6px' }}>
-                <span 
-                  style={{ 
+              <div style={{ padding: '16px 12px 4px' }}>
+                <span
+                  style={{
                     fontFamily: "'Sora', sans-serif",
                     color: sectionLabel,
                     fontSize: '11px',
                     fontWeight: 700,
-                    letterSpacing: '0.06em',
+                    letterSpacing: '0.07em',
                     textTransform: 'uppercase' as const,
                     lineHeight: 1,
                   }}
@@ -322,23 +322,23 @@ export function SidebarBase({
               return (
                 <div key={section.title}>
                   {sectionIndex > 0 && (
-                    <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 8px 6px' }} />
+                    <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px' }} />
                   )}
                   {/* Section Header — enterprise high-contrast labels */}
                   {expanded && section.title && (
                     <div
                       style={{
-                        padding: '6px 12px 6px',
+                        padding: '16px 12px 4px',
                         lineHeight: 1,
                       }}
                     >
-                      <span 
-                        style={{ 
+                      <span
+                        style={{
                           fontFamily: "'Sora', sans-serif",
                           color: sectionLabel,
                           fontSize: '11px',
                           fontWeight: 700,
-                          letterSpacing: '0.06em',
+                          letterSpacing: '0.07em',
                           textTransform: 'uppercase' as const,
                         }}
                       >
@@ -405,20 +405,20 @@ function renderMenuItem(
       onClick={() => handleNavigation(item.path)}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
-        height: '36px',
+        height: '32px',
         padding: expanded ? '0 12px' : '0',
         gap: '10px',
-        marginBottom: '1px',
-        fontSize: '13.5px',
-        fontWeight: active ? 600 : 450,
+        marginBottom: '0',
+        fontSize: '14px',
+        fontWeight: active ? 600 : 500,
         color: active ? tk.activeText : tk.itemText,
         fontFamily: "'Inter', sans-serif",
         outline: 'none',
         justifyContent: expanded ? 'flex-start' : 'center',
         background: active ? tk.activeBg : 'transparent',
         lineHeight: 1,
-        borderRadius: expanded ? '0 6px 6px 0' : '6px',
-        letterSpacing: '-0.01em',
+        borderRadius: '6px',
+        letterSpacing: '0',
       }}
       onMouseEnter={(e) => {
         prefetchRoute(item.path);
@@ -434,12 +434,12 @@ function renderMenuItem(
     >
       {/* Left Accent Bar — 3px, only when expanded and active */}
       {active && expanded && (
-        <span 
+        <span
           style={{
             position: 'absolute',
             left: 0,
-            top: '5px',
-            bottom: '5px',
+            top: '4px',
+            bottom: '4px',
             width: '3px',
             background: 'var(--cp-blue)',
             borderRadius: '0 3px 3px 0',
@@ -447,30 +447,30 @@ function renderMenuItem(
         />
       )}
       {/* Icon container */}
-      <span 
+      <span
         className="flex items-center justify-center flex-shrink-0"
-        style={{ 
-          width: '18px',
-          height: '18px',
+        style={{
+          width: '16px',
+          height: '16px',
           opacity: active ? 1.0 : tk.iconOpacityInactive,
           transition: 'opacity 150ms ease',
         }}
       >
         {CustomIcon && (
-          <CustomIcon 
-            className="h-[18px] w-[18px]" 
-            style={{ 
+          <CustomIcon
+            className="h-[16px] w-[16px]"
+            style={{
               color: active ? tk.activeText : tk.itemText,
-              strokeWidth: active ? 2 : 1.75,
+              strokeWidth: active ? 2 : 1.5,
             }}
           />
         )}
       </span>
       {expanded && (
         <>
-          <span 
+          <span
             className="flex-1 text-left"
-            style={{ lineHeight: '36px', whiteSpace: 'nowrap' }}
+            style={{ lineHeight: '20px', whiteSpace: 'nowrap' }}
           >
             {item.title}
           </span>

@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { AdsThemeProvider } from "@/theme/ads";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
@@ -55,6 +56,13 @@ const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
+      {/**
+       * AdsThemeProvider bridges Catalyst's resolvedTheme to @atlaskit/tokens.
+       * Must live inside ThemeProvider (needs useTheme) and above every
+       * surface that renders Atlaskit (everything else).
+       * See src/theme/ads/AdsThemeProvider.tsx.
+       */}
+      <AdsThemeProvider>
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
       <AuthProvider>
@@ -106,6 +114,7 @@ const App = () => (
         </NavigationProvider>
         </FeatureFlagProvider>
       </AuthProvider>
+      </AdsThemeProvider>
     </ThemeProvider>
   </QueryClientProvider>
   </ErrorBoundary>

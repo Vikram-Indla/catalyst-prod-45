@@ -17,8 +17,12 @@ import { useNavigate } from 'react-router-dom';
 import { X, Share2, MoreHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 import Modal from '@atlaskit/modal-dialog';
+import Button, { IconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
 import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
+import { AddParentPicker } from '@/components/shared/AddParentPicker';
+import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -36,17 +40,29 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     @keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
     /* ──────────────────────────────────────────────────────────────────────
-       Compact-drawer restack (task #74, 2026-04-18).
+       Compact-drawer restack (task #74 / #28, 2026-04-18 → 2026-04-19).
        When the detail drawer is rendered in a narrow panel (compact mode
-       = 400px from BacklogPage), the fixed 280px right sidebar crushed the
-       left content column to ~66px, forcing the title's word-break to
-       render one character per line.
-       Fix: use a CSS container query keyed off the body's inline-size.
-       Below 680px, flex-direction flips to column, splitter hides, and the
-       right sidebar spans full width below the left content.
+       = 400px from BacklogPage), the fixed 280–600px right sidebar crushed
+       the left content column, forcing the title's word-break to render
+       one character per line.
+
+       v1 (2026-04-18) used a 679px @container breakpoint. That worked for
+       compact (400px) mode but failed for expanded panel on mid-width
+       viewports where the drawer interior lands at 700–850px — above 679,
+       so no restack, and the sidebar still crushes the left column below
+       a usable width. v2 raises the threshold to 899px so the restack
+       fires on anything below desktop-wide (modal mode at 1100px stays
+       two-column; expanded panel on 1600px viewports stays two-column;
+       everything narrower flips to single-column).
+
+       ALSO v2: `.cv-drawer-left` now carries minWidth: 280 as belt-and-
+       suspenders. Even inside the two-column branch, the left column can
+       no longer shrink below 280px — enough to fit a normal title word
+       horizontally at 24px before word-break kicks in.
        ────────────────────────────────────────────────────────────────────── */
     .cv-drawer-body { container-type: inline-size; }
-    @container (max-width: 679px) {
+    .cv-drawer-left { min-width: 280px; }
+    @container (max-width: 899px) {
       .cv-drawer-body { flex-direction: column !important; }
       .cv-drawer-splitter { display: none !important; }
       .cv-drawer-sidebar {
@@ -55,7 +71,10 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
         border-left: none !important;
         border-top: 1px solid #EBECF0;
       }
-      .cv-drawer-left { border-right: none !important; }
+      .cv-drawer-left {
+        border-right: none !important;
+        min-width: 0 !important;   /* drop the floor once restacked */
+      }
     }
   `;
   document.head.appendChild(s);
@@ -80,6 +99,23 @@ export interface CatalystViewBaseLayoutProps {
   parentType?: string;
   onParentClick?: () => void;
   breadcrumbExtra?: React.ReactNode;
+  /**
+   * Canonical Add-parent wiring (Jira parity, 2026-04-19).
+   *
+   * When provided AND there is no current parent, the detail view's
+   * breadcrumb renders an AddParentPicker (bordered pencil chip) that
+   * opens the Recent <plural> dropdown and View-all search panel.
+   *
+   * `parentSource` must match Catalyst's parent-linking rules
+   * (see parent-rules.ts for canonical mapping):
+   *   Story / Feature             → 'epic'
+   *   Epic                        → 'business_request'
+   *   Subtask                     → 'story'
+   *   Defect / Task               → 'story_epic_feature'
+   *   Production Incident         → 'story_epic_feature_br'
+   */
+  onParentChange?: (newParentKey: string | null) => Promise<void> | void;
+  parentSource?: 'epic' | 'business_request' | 'story' | 'story_epic_feature' | 'story_epic_feature_br';
 
   /* Actions */
   onShare?: () => void;
@@ -105,6 +141,7 @@ export interface CatalystViewBaseLayoutProps {
 export function CatalystViewBase({
   isOpen, onClose, panelMode, fullPageMode,
   itemType, itemKey, projectKey, projectName, parentKey, parentType, onParentClick, breadcrumbExtra,
+  onParentChange, parentSource,
   onShare, moreMenuItems,
   onTogglePanelMode, navigationItems, currentItemId, onNavigate,
   leftContent, rightContent,
@@ -112,7 +149,14 @@ export function CatalystViewBase({
 }: CatalystViewBaseLayoutProps) {
 
   /* ── State ──────────────────────────────── */
-  const [rightPanelWidth, setRightPanelWidth] = useState(280);
+  // Default right sidebar width. Measured against live Jira 2026-04-18
+  // (digital-transformation.atlassian.net BAU-5419): Jira's right sidebar
+  // is 549px wide with 504px of content area. At 280px the Reporter name
+  // "Nada alfassam" wraps onto two lines because the value column has only
+  // ~130px after the 96px label + 20px gap. Bumping default to 380 and
+  // max to 600 so values have real estate to breathe. Min stays at 220
+  // for the compact-drawer (container-query) path used by Backlog.
+  const [rightPanelWidth, setRightPanelWidth] = useState(380);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
   const isDraggingRef = useRef(false);
   const dotsMenuRef = useRef<HTMLDivElement>(null);
@@ -124,7 +168,8 @@ export function CatalystViewBase({
       const modalEl = document.querySelector('[data-cv-scope]') as HTMLElement;
       if (!modalEl) return;
       const rect = modalEl.getBoundingClientRect();
-      setRightPanelWidth(Math.max(220, Math.min(480, rect.right - e.clientX)));
+      // Clamp 220..600. Max was 480; raised to match Jira's ~549 sidebar.
+      setRightPanelWidth(Math.max(220, Math.min(600, rect.right - e.clientX)));
     };
     const onMouseUp = () => { isDraggingRef.current = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; };
     document.addEventListener('mousemove', onMouseMove);
@@ -246,55 +291,96 @@ export function CatalystViewBase({
     <>
 
         {/* ── A. TOP BAR ─────────────────────────────────────────────────────
-            Jira-parity fix (Phase A.1, 2026-04-18, task #11):
-            In panel mode the OUTER BacklogPage toolbar already renders
-            Breadcrumbs + Prev/Next + Expand + Fullscreen + Close using
-            Atlaskit IconButtons. Drawing those again here stacked two
-            chrome bars on the BAU-5419 screenshot. The inner bar now
-            shrinks to a right-aligned action bar with just Share + More
-            (which the outer toolbar doesn't own) whenever panelMode is
-            active. Full chrome stays for modal + fullpage modes.
+            Jira-parity (2026-04-19): breadcrumb + inline Prev/Next chevrons
+            render in ALL modes (panel, modal, full-page). The BAU surface
+            at /project-hub/:key/allwork uses panelMode but has no outer
+            toolbar that owns the breadcrumb, so the detail view itself
+            must render it — matches Atlassian's pattern where chevrons
+            sit immediately after the issue key with tooltips such as
+            "Next work item 'BAU-5421'".
             ──────────────────────────────────────────────────────────────── */}
         <div style={{
           display: 'flex', alignItems: 'center',
-          justifyContent: panelMode ? 'flex-end' : 'space-between',
+          justifyContent: 'space-between',
           padding: '10px 20px', minHeight: 44, flexShrink: 0,
           borderBottom: '1px solid #EBECF0',
         }}>
-          {/* Canonical breadcrumb — hidden in panel mode (outer toolbar owns it). */}
-          {!panelMode && (
-            <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
-              {projectKey ? (
-                <TicketBreadcrumbs
-                  projectKey={projectKey}
-                  itemType={itemType}
-                  itemKey={itemKey}
-                  parentKey={parentKey}
-                  parentType={parentType}
-                  onParentClick={onParentClick}
+          {/* Canonical breadcrumb — shown in every mode. When the current
+              item has no parent and the owning view has wired onParentChange,
+              we swap the default "+ Add parent" text link for the canonical
+              AddParentPicker (Jira-parity bordered pencil chip). */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+            {projectKey ? (
+              <TicketBreadcrumbs
+                projectKey={projectKey}
+                itemType={itemType}
+                itemKey={itemKey}
+                parentKey={parentKey}
+                parentType={parentType}
+                onParentClick={onParentClick}
+                middleSlot={
+                  !parentKey && itemKey && onParentChange
+                    ? (
+                      <AddParentPicker
+                        issueKey={itemKey}
+                        parentKey={null}
+                        projectKey={projectKey}
+                        parentIssueType={parentType}
+                        onParentChange={onParentChange}
+                        variant="breadcrumb"
+                        parentSource={parentSource ?? 'epic'}
+                      />
+                    )
+                    : undefined
+                }
+              />
+            ) : null}
+            {breadcrumbExtra}
+
+            {/* Inline Prev/Next chevrons — Jira parity. Up = previous,
+                Down = next (Atlassian convention). Canonical component
+                IssueNavChevrons owns the 28×28 / 1px #DFE1E6 / 4px-radius
+                styling (verified against Jira Cloud, 2026-04-19). */}
+            {navigationItems && navigationItems.length > 1 && (() => {
+              const prevKey = canNavPrev ? (navigationItems[currentNavIndex - 1].issue_key ?? '') : '';
+              const nextKey = canNavNext ? (navigationItems[currentNavIndex + 1].issue_key ?? '') : '';
+              return (
+                <IssueNavChevrons
+                  style={{ marginLeft: 4 }}
+                  onPrev={navPrev}
+                  onNext={navNext}
+                  prevDisabled={!canNavPrev}
+                  nextDisabled={!canNavNext}
+                  prevTooltip={canNavPrev && prevKey ? `Previous work item '${prevKey}'` : 'No previous work item'}
+                  nextTooltip={canNavNext && nextKey ? `Next work item '${nextKey}'` : 'No next work item'}
                 />
-              ) : null}
-              {breadcrumbExtra}
-            </div>
-          )}
+              );
+            })()}
+          </div>
 
           {/* Right actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <button onClick={handleShare} style={hoverBtn}
-              onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+            {/* Phase B (2026-04-18): @atlaskit/button with iconBefore.
+                Hover state + typography owned by Atlaskit tokens. */}
+            <Button
+              appearance="subtle"
+              iconBefore={() => <Share2 size={16} />}
+              onClick={handleShare}
             >
-              <Share2 size={16} /> <span>Share</span>
-            </button>
+              Share
+            </Button>
 
             {moreMenuItems && moreMenuItems.length > 0 && (
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
-                <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  ...hoverBtn, background: showDotsMenu ? '#F4F5F7' : 'none', padding: '6px 8px',
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
-                ><MoreHorizontal size={18} /></button>
+                {/* Phase B (2026-04-18): Atlaskit IconButton trigger.
+                    Dropdown render below is unchanged — trigger swap only. */}
+                <IconButton
+                  appearance="subtle"
+                  isSelected={showDotsMenu}
+                  icon={() => <MoreHorizontal size={18} />}
+                  label="More actions"
+                  onClick={() => setShowDotsMenu(!showDotsMenu)}
+                />
                 {showDotsMenu && (
                   <div style={{
                     position: 'absolute', right: 0, top: 32, background: '#FFF',
@@ -319,55 +405,41 @@ export function CatalystViewBase({
             )}
 
             {/* Panel toggle — hidden in full-page mode AND panel mode
-                (outer BacklogPage toolbar has Expand/Fullscreen IconButtons). */}
+                (outer BacklogPage toolbar has Expand/Fullscreen IconButtons).
+                Phase B (2026-04-18): IconButton + Tooltip. SVG kept inline
+                since this is a custom glyph not in @atlaskit/icon. */}
             {onTogglePanelMode && !fullPageMode && !panelMode && (
-              <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={hoverBtn}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-              >
-                {panelMode ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                )}
-              </button>
+              <Tooltip content={panelMode ? 'Show as modal' : 'Show as side panel'}>
+                <IconButton
+                  appearance="subtle"
+                  icon={() => (panelMode ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                  ))}
+                  label={panelMode ? 'Show as modal' : 'Show as side panel'}
+                  onClick={onTogglePanelMode}
+                />
+              </Tooltip>
             )}
 
-            {/* Panel navigation — DEAD CODE in panel mode. Kept condition
-                so it lights up if CatalystViewBase is ever mounted in a
-                panel context without the outer BacklogPage toolbar; today
-                the outer toolbar owns Prev/Next so this branch is skipped. */}
-            {false && panelMode && navigationItems && navigationItems.length > 1 && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <button onClick={navPrev} disabled={!canNavPrev} style={{
-                  ...hoverBtn, cursor: canNavPrev ? 'pointer' : 'default', color: canNavPrev ? '#42526E' : '#C1C7D0', padding: '6px 6px',
-                }}
-                  onMouseEnter={e => { if (canNavPrev) e.currentTarget.style.background = '#F4F5F7'; }}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-                </button>
-                <span style={{ fontSize: 11, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
-                  {currentNavIndex + 1} / {navigationItems.length}
-                </span>
-                <button onClick={navNext} disabled={!canNavNext} style={{
-                  ...hoverBtn, cursor: canNavNext ? 'pointer' : 'default', color: canNavNext ? '#42526E' : '#C1C7D0', padding: '6px 6px',
-                }}
-                  onMouseEnter={e => { if (canNavNext) e.currentTarget.style.background = '#F4F5F7'; }}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-                </button>
-              </div>
-            )}
+            {/* Prev/Next removed from right actions — now rendered inline
+                next to the breadcrumb (Jira parity, 2026-04-19). */}
 
             {/* Close — hidden in full-page mode (back button replaces it)
-                AND hidden in panel mode (outer toolbar owns Close). */}
+                AND hidden in panel mode (outer toolbar owns Close).
+                Phase B (2026-04-18): IconButton + Tooltip. The hand-rolled
+                danger-red hover tint has been dropped for Atlaskit's token-
+                driven hover, consistent with the rest of the drawer chrome. */}
             {!fullPageMode && !panelMode && (
-              <button onClick={onClose} style={{ ...hoverBtn, padding: '6px 8px' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
-              ><X size={18} /></button>
+              <Tooltip content="Close (Esc)">
+                <IconButton
+                  appearance="subtle"
+                  icon={() => <X size={18} />}
+                  label="Close"
+                  onClick={onClose}
+                />
+              </Tooltip>
             )}
           </div>
         </div>

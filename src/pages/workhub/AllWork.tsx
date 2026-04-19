@@ -1,4 +1,14 @@
 /**
+ * @deprecated 2026-04-19 — DO NOT EDIT. Superseded by
+ *   src/pages/project-hub/jira-list/ProjectAllWorkView.tsx, which is the
+ *   canonical "All Work" surface at /project-hub/:key/allwork.
+ *
+ * This file is still wired to the legacy /workhub/all-work route but is
+ * a dead-end: bugs, UX copy, dark-mode, and Jira-parity fixes should land
+ * in ProjectAllWorkView (left list: WorkListPanel; detail: CatalystDetailRouter
+ * → StoryDetailModal). Remove this file + its route when the legacy
+ * /workhub/all-work URL is retired.
+ *
  * WorkHub "All Work" — Stage E: QA & Polish (GOD-TIER)
  * Full Supabase wiring, design-system compliant, all edge cases handled.
  */
@@ -166,6 +176,12 @@ export default function AllWork() {
             items={items}
             selectedItemKey={selectedItemKey}
             onSelectItem={setSelectedItemKey}
+            sortField={sortField}
+            sortDir={sortDir}
+            onSort={(f) => {
+              if (f === sortField) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+              else { setSortField(f); setSortDir('desc'); }
+            }}
           />
         )}
       </div>

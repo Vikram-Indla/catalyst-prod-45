@@ -66,7 +66,7 @@ const WORK_TYPES = [
 
 const PRIORITIES = ['Highest', 'High', 'Medium', 'Low', 'Lowest'];
 
-/** Jira-native priority SVGs — canonical (from StoryDetailView) */
+/** Jira-native priority SVGs — canonical (shared with StoryDetailModal priority cell) */
 const PRIORITY_SVG: Record<string, React.ReactNode> = {
   Highest: (
     <svg width="16" height="16" viewBox="0 0 16 16">
@@ -211,7 +211,7 @@ function SelectField({ label, required, value, options, onChange, placeholder, r
   );
 }
 
-// ── Parent Picker (Jira-parity — mirrors StoryDetailView's ParentFieldPicker) ──
+// ── Parent Picker (Jira-parity — mirrors AddParentPicker / StoryDetailModal parent field) ──
 const EpicIconInline = ({ size = 16 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
     <rect fill="#6554C0" width="16" height="16" rx="2"/>

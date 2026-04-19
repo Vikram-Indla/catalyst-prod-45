@@ -6,7 +6,7 @@
  */
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
-import { ChevronDown, ChevronRight, ChevronLeft, ChevronUp, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
@@ -28,6 +28,7 @@ import { TestHubSection } from '@/modules/project-work-hub/components/dialogs/st
 import { EditableAssignee, EditablePriority, EditableLabels } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
+import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
@@ -381,10 +382,17 @@ export function IssueContentView({
             <span style={{ color: 'var(--aw-text-subtle)' }}>/</span>
             {item && <JiraIssueTypeIcon type={item.issue_type} size={14} />}
             <IssueKeyLink issueKey={issueKey ?? ''} style={{ color: '#0052CC', textDecoration: 'none', fontSize: 13 }} />
-            {/* #12: Prev/Next navigation arrows */}
-            <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
-              <button className="awNavArrow" onClick={onPrev} title="Previous issue"><ChevronUp /></button>
-              <button className="awNavArrow" onClick={onNext} title="Next issue"><ChevronDown /></button>
+            {/* #12: Prev/Next navigation arrows — canonical IssueNavChevrons
+                (shared component, Jira-parity 28×28 / 1px #DFE1E6 / 4px). */}
+            <span style={{ marginLeft: 'auto', display: 'inline-flex' }}>
+              <IssueNavChevrons
+                onPrev={onPrev}
+                onNext={onNext}
+                prevDisabled={!onPrev}
+                nextDisabled={!onNext}
+                prevTooltip="Previous issue"
+                nextTooltip="Next issue"
+              />
             </span>
           </div>
 

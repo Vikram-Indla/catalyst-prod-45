@@ -1,20 +1,19 @@
 /**
- * ProjectAllWorkView — All Work: Table mode + 3-column Split mode
+ * ProjectAllWorkView — All Work split panel (2-column, Jira-parity)
  *
- * 2026-04-18 (WS7 of Jira-parity plan): Split mode now delegates the
- * center+right detail rendering to CatalystDetailRouter — the canonical
- * Atlaskit-native detail surface already used by BacklogPage.atlaskit.
- * This replaces ~460 lines of bespoke WorkItemDetailPanel with the same
- * type-aware views (story / epic / feature / defect / incident / task /
- * business_request / subtask) that /backlog uses, inheriting Jira-correct
- * typography, tokens, inline-edit fields, and description editor for free.
+ * 2026-04-18 history:
+ *  - WS7: detail rendering delegated to CatalystDetailRouter (the canonical
+ *    Atlaskit detail surface also used by /backlog). Replaces 460 lines of
+ *    bespoke WorkItemDetailPanel and inherits Jira-correct typography,
+ *    tokens, inline-edit fields, and description editor for free.
+ *  - Table/Split toggle removed per directive; Ask AI removed from left
+ *    toolbar (not used on this surface).
+ *  - dbId wiring added to avoid CLAUDE.md §L39 UUID/issue_key silent 400.
  */
 import React, { lazy, Suspense, useState, useMemo, useCallback } from 'react';
 import { token } from '@atlaskit/tokens';
-import { AllWorkTable } from './components/AllWorkTable';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
-import { LayoutGrid, Columns } from 'lucide-react';
 
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
@@ -26,13 +25,8 @@ interface Props {
   projectId?: string;
 }
 
-type ViewMode = 'list' | 'detail';
-
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
-  const { data: items = [], isLoading } = useProjectAllWorkItems(projectKey);
-  // Default to 'detail' (split view) — matches Jira's default behavior. Table
-  // remains available via the view toggle for power users.
-  const [viewMode, setViewMode] = useState<ViewMode>('detail');
+  const { data: items = [] } = useProjectAllWorkItems(projectKey);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
 
   const activeItem = useMemo(() =>
@@ -40,43 +34,37 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     [activeItemId, items]
   );
 
-  const handleOpenItem = useCallback((key: string) => {
-    const found = items.find(i => i.jiraKey === key);
-    if (found) {
-      setActiveItemId(found.id);
-      setViewMode('detail');
-    }
-  }, [items]);
-
   const handleNavigate = useCallback((id: string) => {
     setActiveItemId(id);
   }, []);
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      {/* View toggle bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '4px 16px',
-        borderBottom: '0.75px solid #DDDEE1',
-        background: '#FFFFFF',
-        flexShrink: 0,
-      }}>
-        <div style={{ display: 'flex', gap: 2 }}>
-          <ToggleBtn active={viewMode === 'list'} onClick={() => setViewMode('list')} title="Table view" side="left">
-            <LayoutGrid size={14} />
-          </ToggleBtn>
-          <ToggleBtn active={viewMode === 'detail'} onClick={() => { setViewMode('detail'); if (!activeItemId && items.length) setActiveItemId(items[0].id); }} title="Split view" side="right">
-            <Columns size={14} />
-          </ToggleBtn>
-        </div>
+    // Outer column — height 100% of the route slot, no scroll here. Both
+    // the header and the split region live inside; the SPLIT REGION is
+    // the only descendent that flexes to take remaining space, and each
+    // inner panel (left list, center/right router) owns its own scroll.
+    // Matches Jira's 3-region scroll model (measured 2026-04-18): left
+    // panel 256×717 scrolls cards; center body scrolls article; right
+    // details scrolls sidebar. Independent, not page-level.
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden', background: token('elevation.surface', '#FFFFFF') }}>
+      {/* ── Header card — mirrors /backlog's h1 block. No rule/line above;
+            tight vertical rhythm; page title same size Jira uses (20/600).
+      */}
+      <div style={{ padding: '16px 16px 4px', flexShrink: 0 }}>
+        <h1 style={{
+          margin: 0, fontSize: 20, fontWeight: 600,
+          color: token('color.text', '#292A2E'),
+          letterSpacing: '-0.003em',
+          fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+        }}>
+          All work
+        </h1>
       </div>
 
-      {/* Content */}
-      {viewMode === 'list' ? (
-        <AllWorkTable items={items} isLoading={isLoading} onOpenItem={handleOpenItem} pageTitle="All Work" subtitle="Global work view — all types, all statuses" />
-      ) : (
-        <div style={{ flex: 1, display: 'flex', overflow: 'hidden', background: '#FFFFFF', gap: 8, padding: 8 }}>
+      {/* Split region — claims remaining vertical space. `minHeight: 0` is
+          the magic that makes the inner panels' overflow:auto actually
+          scroll instead of blowing out the page. */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '6px 8px 8px' }}>
           {/* Left: WorkListPanel — Jira parity container
               (measured 2026-04-18): 260px wide / #F8F8F8 / 4px radius / no border.
               Inner cards are white so they elevate against the gray backdrop. */}
@@ -107,8 +95,13 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               }>
                 <CatalystDetailRouter
                   isOpen={true}
-                  onClose={() => { setActiveItemId(null); setViewMode('list'); }}
-                  itemId={activeItem.id}
+                  onClose={() => setActiveItemId(null)}
+                  // CatalystDetailRouter queries ph_issues by UUID PK —
+                  // WorkItem.id is the issue_key (e.g. "BAU-5500"), NOT a UUID.
+                  // Use dbId (ph_issues.id). CLAUDE.md §L39 warns that
+                  // passing the issue_key here yields a silent 400 and an
+                  // empty issue object → title falls back to "—".
+                  itemId={activeItem.dbId || activeItem.id}
                   itemType={activeItem.type}
                   projectId={projectId}
                   projectKey={projectKey}
@@ -128,30 +121,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               Select an item to view details
             </div>
           )}
-        </div>
-      )}
+      </div>
     </div>
-  );
-}
-
-function ToggleBtn({ active, onClick, title, side, children }: {
-  active: boolean; onClick: () => void; title: string; side: 'left' | 'right'; children: React.ReactNode;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      style={{
-        width: 30, height: 28, border: '1px solid',
-        borderColor: active ? '#2563EB' : '#DDDEE1',
-        borderRadius: side === 'left' ? '4px 0 0 4px' : '0 4px 4px 0',
-        background: active ? 'rgba(37,99,235,0.08)' : '#fff',
-        color: active ? '#2563EB' : '#94A3B8',
-        cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginLeft: side === 'right' ? -1 : 0,
-      }}
-    >
-      {children}
-    </button>
   );
 }

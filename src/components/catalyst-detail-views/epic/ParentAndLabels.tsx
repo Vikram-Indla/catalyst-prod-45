@@ -3,6 +3,12 @@
  *
  * Uses the canonical AddParentPicker (Story-parity styling) but with parentSource="business_request",
  * so only Business Requests are selectable. Visual UX is identical to the Story view (BAU-5398).
+ *
+ * Jira-parity rule (2026-04-19): when no parent is set, hide this body-level
+ * row entirely. The sidebar Key Details retains its own "Add parent" trigger,
+ * and the breadcrumb SquarePen is always available at the top. Rendering an
+ * empty "Parent" row inline with Description creates a double dead-end — Jira
+ * does not do this.
  */
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -32,6 +38,9 @@ export function ParentAndLabels({ issue, itemId, projectKey }: ParentAndLabelsPr
   });
 
   if (!issue) return null;
+  // Jira parity: suppress the body Parent row when there's no parent — the
+  // sidebar + breadcrumb already provide two Add-parent entry points.
+  if (!issue.parent_key) return null;
 
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0' }}>

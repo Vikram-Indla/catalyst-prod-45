@@ -8,7 +8,12 @@ import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import Modal from '@atlaskit/modal-dialog';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Button, { IconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
+import InlineEdit from '@atlaskit/inline-edit';
+import Textfield from '@atlaskit/textfield';
+import Heading from '@atlaskit/heading';
 import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Search, MessageSquare, Clock,
@@ -126,8 +131,14 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
        Story / Improvement detail drawers don't crush the title column to
        ~66px in compact (400px) panel mode.
        ────────────────────────────────────────────────────────────────────── */
+    /* v2 (2026-04-19 / task #28): threshold raised from 679 → 899 and
+       min-width: 280 added to .sdm-drawer-left. See CatalystViewBase for
+       the full rationale. Same fix mirrored here so Story / Improvement
+       (which renders through StoryDetailModal, not CatalystViewBase) gets
+       the same protection against left-column crush. */
     .sdm-drawer-body { container-type: inline-size; }
-    @container (max-width: 679px) {
+    .sdm-drawer-left { min-width: 280px; }
+    @container (max-width: 899px) {
       .sdm-drawer-body { flex-direction: column !important; }
       .sdm-drawer-splitter { display: none !important; }
       .sdm-drawer-sidebar {
@@ -136,7 +147,10 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
         border-left: none !important;
         border-top: 1px solid #EBECF0;
       }
-      .sdm-drawer-left { border-right: none !important; }
+      .sdm-drawer-left {
+        border-right: none !important;
+        min-width: 0 !important;   /* drop the floor once restacked */
+      }
     }
   `;
   document.head.appendChild(s);
@@ -349,7 +363,9 @@ export default function StoryDetailModal({
   const [acEditMode, setAcEditMode] = useState(false);
   const [descUnsaved, setDescUnsaved] = useState(false);
   const [acUnsaved, setAcUnsaved] = useState(false);
-  const [titleFocused, setTitleFocused] = useState(false);
+  // Phase C (2026-04-18) migrated the contentEditable h1 to @atlaskit/inline-edit,
+  // which owns its own focus state internally. The former `titleFocused` useState
+  // is removed as part of the cleanup sweep.
   const [commentSummary, setCommentSummary] = useState<string | null>(null);
   const [commentSummaryLoading, setCommentSummaryLoading] = useState(false);
   const [showCommentSummary, setShowCommentSummary] = useState(true);
@@ -718,53 +734,53 @@ export default function StoryDetailModal({
               ──────────────────────────────────────────────────────────── */}
           <div style={{
             display: 'flex', alignItems: 'center',
-            justifyContent: panelMode ? 'flex-end' : 'space-between',
+            justifyContent: 'space-between',
             padding: '10px 20px', minHeight: 44, flexShrink: 0,
             borderBottom: '1px solid #EBECF0',
           }}>
-            {/* Breadcrumb — hidden in panel mode (outer toolbar owns it). */}
-            {!panelMode && (
-              <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
-                {issue && (
-                  <TicketBreadcrumbs
-                    projectKey={issue.project_key}
-                    itemType={issue.issue_type ?? 'Story'}
-                    itemKey={issue.issue_key ?? null}
-                    middleSlot={
-                      <AddParentPicker
-                        issueKey={issue.issue_key}
-                        parentKey={issue.parent_key ?? null}
-                        projectKey={issue.project_key}
-                        onParentChange={handleParentChange}
-                        variant="breadcrumb"
-                      />
-                    }
-                  />
-                )}
-              </div>
-            )}
+            {/* Breadcrumb — always shown; Jira parity. Panel-mode callers
+                (ProjectAllWorkView, backlog pages) don't render their own
+                breadcrumb, so the detail panel owns it. */}
+            <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+              {issue && (
+                <TicketBreadcrumbs
+                  projectKey={issue.project_key}
+                  itemType={issue.issue_type ?? 'Story'}
+                  itemKey={issue.issue_key ?? null}
+                  middleSlot={
+                    <AddParentPicker
+                      issueKey={issue.issue_key}
+                      parentKey={issue.parent_key ?? null}
+                      projectKey={issue.project_key}
+                      onParentChange={handleParentChange}
+                      variant="breadcrumb"
+                    />
+                  }
+                />
+              )}
+            </div>
 
             {/* Right actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <button onClick={handleShare} style={{
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
-                borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
-              }}
-                onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'none')}
+              {/* Phase B (2026-04-18): @atlaskit/button with iconBefore.
+                  Hover state + typography owned by Atlaskit tokens. */}
+              <Button
+                appearance="subtle"
+                iconBefore={() => <Share2 size={16} />}
+                onClick={handleShare}
               >
-                <Share2 size={16} /> <span>Share</span>
-              </button>
+                Share
+              </Button>
               <div ref={dotsMenuRef} style={{ position: 'relative' }}>
-                <button onClick={() => setShowDotsMenu(!showDotsMenu)} style={{
-                  background: showDotsMenu ? '#F4F5F7' : 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                  borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
-                  transition: 'background 0.15s',
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => { if (!showDotsMenu) e.currentTarget.style.background = 'none'; }}
-                ><MoreHorizontal size={18} /></button>
+                {/* Phase B (2026-04-18): Atlaskit IconButton trigger.
+                    Dropdown render below is unchanged — trigger swap only. */}
+                <IconButton
+                  appearance="subtle"
+                  isSelected={showDotsMenu}
+                  icon={() => <MoreHorizontal size={18} />}
+                  label="More actions"
+                  onClick={() => setShowDotsMenu(!showDotsMenu)}
+                />
                 {showDotsMenu && (
                   <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200 }}>
                     <button onClick={() => { setShowDotsMenu(false); toast('Ticket cloned'); }} style={menuItemStyle}>Clone ticket</button>
@@ -775,22 +791,22 @@ export default function StoryDetailModal({
                 )}
               </div>
               {/* Expand/Collapse panel toggle — hidden in full-page mode
-                  AND in panel mode (outer toolbar has Expand/Fullscreen). */}
+                  AND in panel mode (outer toolbar has Expand/Fullscreen).
+                  Phase B (2026-04-18): IconButton + Tooltip. Custom SVG
+                  glyph kept inline (not in @atlaskit/icon). */}
               {onTogglePanelMode && !fullPageMode && !panelMode && (
-                <button onClick={onTogglePanelMode} title={panelMode ? 'Show as modal' : 'Show as side panel'} style={{
-                  background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                  borderRadius: 4, color: '#42526E', fontSize: 14, display: 'flex', alignItems: 'center',
-                  transition: 'background 0.15s',
-                }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'none')}
-                >
-                  {panelMode ? (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
-                  ) : (
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-                  )}
-                </button>
+                <Tooltip content={panelMode ? 'Show as modal' : 'Show as side panel'}>
+                  <IconButton
+                    appearance="subtle"
+                    icon={() => (panelMode ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                    ))}
+                    label={panelMode ? 'Show as modal' : 'Show as side panel'}
+                    onClick={onTogglePanelMode}
+                  />
+                </Tooltip>
               )}
               {/* Panel navigation — DEAD in panel mode today (outer toolbar
                   owns Prev/Next). Kept gated-false so the block re-lights if
@@ -824,16 +840,18 @@ export default function StoryDetailModal({
                 </div>
               )}
               {/* Close — hidden in full-page mode (back button replaces it)
-                  AND in panel mode (outer BacklogPage toolbar owns Close). */}
+                  AND in panel mode (outer BacklogPage toolbar owns Close).
+                  Phase B (2026-04-18): IconButton + Tooltip. Atlaskit token-
+                  driven hover replaces the hand-rolled danger-red tint. */}
               {!fullPageMode && !panelMode && (
-              <button onClick={onClose} style={{
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 8px',
-                borderRadius: 4, color: '#42526E', display: 'flex', alignItems: 'center',
-                transition: 'background 0.15s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#FFEBE6'; e.currentTarget.style.color = '#DE350B'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = '#42526E'; }}
-              ><X size={18} /></button>
+              <Tooltip content="Close (Esc)">
+                <IconButton
+                  appearance="subtle"
+                  icon={() => <X size={18} />}
+                  label="Close"
+                  onClick={onClose}
+                />
+              </Tooltip>
               )}
             </div>
           </div>
@@ -852,22 +870,36 @@ export default function StoryDetailModal({
                 </div>
               ) : (
                 <>
-                  {/* 1. TITLE */}
-                  <h1 contentEditable suppressContentEditableWarning
-                    onFocus={() => setTitleFocused(true)}
-                    onBlur={e => { setTitleFocused(false); const newTitle = e.currentTarget.textContent?.trim() ?? ''; if (newTitle && newTitle !== issue?.summary) { updateFieldMutation.mutate({ field: 'summary', value: newTitle, oldValue: issue?.summary ?? '' }); } }}
-                    onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); e.currentTarget.blur(); } if (e.key === 'Escape') { e.currentTarget.textContent = issue?.summary ?? ''; e.currentTarget.blur(); } }}
-                    style={{
-                      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-                      fontSize: 22, fontWeight: 700, color: '#172B4D', lineHeight: 1.3,
-                      margin: '0 0 12px', outline: 'none', cursor: 'text', borderRadius: 3,
-                      padding: '4px 6px', wordBreak: 'break-word', transition: 'background 0.15s, box-shadow 0.15s',
-                      background: titleFocused ? '#FFFFFF' : 'transparent',
-                      boxShadow: titleFocused ? '0 0 0 2px #4C9AFF' : 'none',
-                    }}
-                    onMouseEnter={e => { if (!titleFocused) e.currentTarget.style.background = '#F4F5F7'; }}
-                    onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
-                  >{issue?.summary ?? '—'}</h1>
+                  {/* 1. TITLE
+                      Phase C (2026-04-18): migrated to @atlaskit/inline-edit
+                      wrapping @atlaskit/heading (read) + @atlaskit/textfield
+                      (edit). Keyboard semantics + a11y from Atlaskit. The
+                      local titleFocused state is no longer referenced. */}
+                  <div style={{ marginBottom: 12 }}>
+                    <InlineEdit<string>
+                      key={issue?.id ?? 'empty'}
+                      defaultValue={issue?.summary ?? ''}
+                      label="Issue title"
+                      readView={() => (
+                        <Heading size="medium" as="h1">
+                          {issue?.summary || '—'}
+                        </Heading>
+                      )}
+                      editView={(fieldProps) => <Textfield {...fieldProps} autoFocus />}
+                      onConfirm={(value) => {
+                        const trimmed = value.trim();
+                        if (trimmed && trimmed !== issue?.summary) {
+                          updateFieldMutation.mutate({
+                            field: 'summary',
+                            value: trimmed,
+                            oldValue: issue?.summary ?? '',
+                          });
+                        }
+                      }}
+                      hideActionButtons
+                      readViewFitContainerWidth
+                    />
+                  </div>
 
                   {/* 2. Quick actions */}
                   <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
@@ -1882,52 +1914,96 @@ export default function StoryDetailModal({
     <>
       {drawer}
 
-      {/* ── MODALS ────────────────────────── */}
-      {showConfirmDelete && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }}>
-          <div style={{ background: '#FFF', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw', animation: 'sdm-confirm-in 200ms ease-out' }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Delete {issue?.issue_key}?</h3>
-            <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>This ticket will be soft-deleted. It can be restored from the admin panel within 30 days.</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowConfirmDelete(false)} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
-              <button onClick={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }} style={{ padding: '7px 16px', borderRadius: 4, background: '#DE350B', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── MODALS ────────────────────────────────────────────────────────
+          Phase H (2026-04-18): migrated three hand-rolled position:fixed
+          modals to @atlaskit/modal-dialog. Focus trap, Escape, click-outside,
+          body scroll lock all inherited. Matches E.1 sidebar delete pattern
+          and BacklogPage bulk-delete pattern. */}
+      <ModalTransition>
+        {showConfirmDelete && (
+          <Modal
+            onClose={() => setShowConfirmDelete(false)}
+            width="small"
+          >
+            <ModalHeader>
+              <ModalTitle appearance="danger">
+                Delete {issue?.issue_key}?
+              </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              This ticket will be soft-deleted. It can be restored from the admin panel within 30 days.
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setShowConfirmDelete(false)}>
+                Cancel
+              </Button>
+              <Button
+                appearance="danger"
+                onClick={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }}
+              >
+                Delete
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
-      {showWorkflow && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.55)' }}>
-          <div style={{ background: '#FFF', borderRadius: 8, width: 820, maxWidth: '95vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid #DFE1E6' }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: '#172B4D' }}>Workflow — {issue?.issue_type ?? 'Story'} Issue Type</span>
-              <button onClick={() => setShowWorkflow(false)} style={{ width: 28, height: 28, borderRadius: 4, border: 'none', background: 'transparent', cursor: 'pointer', color: '#5E6C84' }}><X size={16} /></button>
-            </div>
-            <div style={{ padding: '12px 20px', display: 'flex', gap: 16, borderBottom: '1px solid #DFE1E6', fontSize: 12 }}>
-              <span><span style={{ color: '#5E6C84' }}>Issue Type</span> <span style={{ fontWeight: 600 }}>{issue?.issue_type}</span></span>
-              <span><span style={{ color: '#5E6C84' }}>Current Status</span> <JiraStatusPill status={localStatus} category={statusCategory} /></span>
-            </div>
-            <div style={{ padding: '8px 20px', fontSize: 11, color: '#97A0AF', borderBottom: '1px solid #DFE1E6' }}>Transitions are open — any status can move to any.</div>
-            <div style={{ flex: 1, overflow: 'auto', padding: 20, textAlign: 'center', color: '#97A0AF', fontSize: 13 }}>
-              Workflow visualization — coming soon
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalTransition>
+        {showWorkflow && (
+          <Modal
+            onClose={() => setShowWorkflow(false)}
+            width="large"
+          >
+            <ModalHeader>
+              <ModalTitle>
+                Workflow — {issue?.issue_type ?? 'Story'} Issue Type
+              </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ padding: '12px 0', display: 'flex', gap: 16, borderBottom: '1px solid #DFE1E6', fontSize: 12 }}>
+                <span><span style={{ color: '#5E6C84' }}>Issue Type</span> <span style={{ fontWeight: 600 }}>{issue?.issue_type}</span></span>
+                <span><span style={{ color: '#5E6C84' }}>Current Status</span> <JiraStatusPill status={localStatus} category={statusCategory} /></span>
+              </div>
+              <div style={{ padding: '8px 0', fontSize: 11, color: '#97A0AF', borderBottom: '1px solid #DFE1E6' }}>Transitions are open — any status can move to any.</div>
+              <div style={{ padding: '20px 0', textAlign: 'center', color: '#97A0AF', fontSize: 13 }}>
+                Workflow visualization — coming soon
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setShowWorkflow(false)}>
+                Close
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
 
       {/* AI Regen Confirm */}
-      {showAiRegenConfirm && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(9,30,66,0.4)' }} onClick={() => setShowAiRegenConfirm(false)}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#FFF', borderRadius: 8, padding: 28, width: 400, maxWidth: '95vw', animation: 'sdm-confirm-in 200ms ease-out' }}>
-            <h3 style={{ fontFamily: "'Sora', sans-serif", fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8 }}>Regenerate AI output?</h3>
-            <p style={{ fontSize: 13, color: '#5E6C84', lineHeight: 1.6, marginBottom: 20 }}>Your edits will be discarded. This cannot be undone.</p>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button onClick={() => setShowAiRegenConfirm(false)} style={{ padding: '7px 16px', borderRadius: 4, background: '#FFF', border: '1px solid #DFE1E6', fontSize: 13, fontWeight: 500, cursor: 'pointer', color: '#5E6C84' }}>Cancel</button>
-              <button onClick={() => doAiGenerate()} style={{ padding: '7px 16px', borderRadius: 4, background: '#2563EB', color: '#FFF', border: 'none', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Regenerate</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalTransition>
+        {showAiRegenConfirm && (
+          <Modal
+            onClose={() => setShowAiRegenConfirm(false)}
+            width="small"
+          >
+            <ModalHeader>
+              <ModalTitle>
+                Regenerate AI output?
+              </ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              Your edits will be discarded. This cannot be undone.
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="subtle" onClick={() => setShowAiRegenConfirm(false)}>
+                Cancel
+              </Button>
+              <Button appearance="primary" onClick={() => doAiGenerate()}>
+                Regenerate
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
     </>
   );
 }

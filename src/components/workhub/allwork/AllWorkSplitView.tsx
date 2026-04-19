@@ -1,10 +1,16 @@
 /**
+ * @deprecated 2026-04-19 — DO NOT EDIT. Consumed only by the legacy
+ *   /workhub/all-work route (src/pages/workhub/AllWork.tsx, also deprecated).
+ *   The canonical "All Work" surface is
+ *   src/pages/project-hub/jira-list/ProjectAllWorkView.tsx, whose detail
+ *   panel is rendered by CatalystDetailRouter → StoryDetailModal.
+ *
  * AllWorkSplitView — Left card list + right detail panel (V12 compliant)
- * Now includes Sub-Tasks tab with navigation stack for nested drill-down.
+ * Now includes Child work items tab with navigation stack for nested drill-down.
  */
-import { useState, useMemo, memo, Fragment } from 'react';
+import { useState, useMemo, useRef, useEffect, memo, Fragment } from 'react';
 import { useTheme } from '@/hooks/useTheme';
-import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronDown, MessageSquare, Clock, History, ListTree, Link2, Paperclip, Tag, ArrowLeft, ArrowUp, ArrowDown, Check, Plus } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { AllWorkEmptyState } from './AllWorkEmptyState';
@@ -16,7 +22,22 @@ interface Props {
   items: AllWorkItem[];
   selectedItemKey: string | null;
   onSelectItem: (key: string) => void;
+  sortField: string;
+  sortDir: 'asc' | 'desc';
+  onSort: (field: string) => void;
+  /** Project display name for the detail-panel breadcrumb. Defaults to "Senaei BAU". */
+  projectName?: string;
 }
+
+/** Sort fields exposed in the left-panel dropdown. Values map directly to
+ *  columns accepted by supabase.order() in workhubService.fetchAllWorkList. */
+const SORT_OPTIONS: { field: string; label: string }[] = [
+  { field: 'updated_at', label: 'Last updated' },
+  { field: 'created_at', label: 'Created' },
+  { field: 'priority',   label: 'Priority' },
+  { field: 'item_key',   label: 'Key' },
+  { field: 'summary',    label: 'Title' },
+];
 
 const PRIORITY_COLORS: Record<string, string> = {
   Highest: '#ef4444', High: '#f97316', Medium: '#3b82f6', Low: '#22c55e', Lowest: '#8c8f96',
@@ -35,11 +56,69 @@ function nameToHash(name: string): number {
   return name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
 }
 
-export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props) {
+export function AllWorkSplitView({ items, selectedItemKey, onSelectItem, sortField, sortDir, onSort, projectName = 'Senaei BAU' }: Props) {
   const { isDark } = useTheme();
-  const [sortBy, setSortBy] = useState('Created');
+  const [sortOpen, setSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+  const [addOpen, setAddOpen] = useState(false);
+  const addRef = useRef<HTMLDivElement>(null);
+  const commentInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<DetailTab>('details');
   const [activityTab, setActivityTab] = useState<'all' | 'comments' | 'history' | 'worklog'>('all');
+
+  // Click-outside + Esc to close sort dropdown
+  useEffect(() => {
+    if (!sortOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) setSortOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setSortOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [sortOpen]);
+
+  // Click-outside + Esc to close Add menu (TC-H7)
+  useEffect(() => {
+    if (!addOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (addRef.current && !addRef.current.contains(e.target as Node)) setAddOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') setAddOpen(false); };
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onEsc);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onEsc);
+    };
+  }, [addOpen]);
+
+  // TC-AC7 — press M (outside inputs) focuses the comment composer.
+  // Switches to Details tab first, then focuses on next paint.
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key !== 'm' && e.key !== 'M') return;
+      const active = document.activeElement as HTMLElement | null;
+      if (active && (
+        active.tagName === 'INPUT' ||
+        active.tagName === 'TEXTAREA' ||
+        active.isContentEditable
+      )) return;
+      e.preventDefault();
+      setActiveTab('details');
+      requestAnimationFrame(() => {
+        commentInputRef.current?.focus();
+      });
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
+  const currentSortLabel = SORT_OPTIONS.find(o => o.field === sortField)?.label ?? 'Last updated';
 
   // Navigation stack for nested drill-down
   const [panelStack, setPanelStack] = useState<AllWorkItem[]>([]);
@@ -97,7 +176,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
   // Tab config
   const TABS: { key: DetailTab; label: string; icon: React.ReactNode; count?: number }[] = [
     { key: 'details', label: 'Details', icon: null },
-    { key: 'subtasks', label: 'Sub-Tasks', icon: <ListTree className="w-3.5 h-3.5" />, count: subTaskCount },
+    { key: 'subtasks', label: 'Child work items', icon: <ListTree className="w-3.5 h-3.5" />, count: subTaskCount },
     { key: 'attachments', label: 'Attachments', icon: <Paperclip className="w-3.5 h-3.5" /> },
     { key: 'comments', label: 'Comments', icon: <MessageSquare className="w-3.5 h-3.5" /> },
     { key: 'history', label: 'History', icon: <History className="w-3.5 h-3.5" /> },
@@ -109,9 +188,78 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
       {/* Left card list — 320px */}
       <div className="flex flex-col" style={{ width: 320, borderRight: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
         <div className="flex items-center justify-between px-3 py-2" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
-          <button className="flex items-center gap-1 text-[12px]" style={{ color: isDark ? '#A1A1A1' : '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
-            {sortBy} <ChevronDown className="w-3 h-3" />
-          </button>
+          {/* Sort dropdown + direction toggle (TC-L1, TC-L2) */}
+          <div className="relative flex items-center gap-0.5" ref={sortRef}>
+            <button
+              onClick={() => setSortOpen(v => !v)}
+              aria-haspopup="listbox"
+              aria-expanded={sortOpen}
+              aria-label={`Sort by ${currentSortLabel}. Click to change field.`}
+              className="flex items-center gap-1 text-[12px] px-1.5 py-0.5 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+              style={{
+                color: isDark ? '#A1A1A1' : '#6b6e76',
+                fontFamily: 'Inter, sans-serif',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              <span>Sort: {currentSortLabel}</span>
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => onSort(sortField)}
+              aria-label={sortDir === 'asc' ? 'Ascending. Click to reverse.' : 'Descending. Click to reverse.'}
+              title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
+              className="p-1 rounded transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+              style={{
+                color: isDark ? '#A1A1A1' : '#6b6e76',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {sortDir === 'asc'
+                ? <ArrowUp className="w-3 h-3" />
+                : <ArrowDown className="w-3 h-3" />}
+            </button>
+
+            {sortOpen && (
+              <div
+                className="absolute top-full left-0 mt-1 w-48 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
+                style={{
+                  borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)',
+                  backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-app)',
+                }}
+                role="listbox"
+                aria-label="Sort field"
+              >
+                {SORT_OPTIONS.map(opt => {
+                  const isSelected = opt.field === sortField;
+                  return (
+                    <button
+                      key={opt.field}
+                      onClick={() => { onSort(opt.field); setSortOpen(false); }}
+                      className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                      style={{
+                        color: isDark ? '#EDEDED' : 'var(--fg-1)',
+                        fontFamily: 'Inter, sans-serif',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                      }}
+                      role="option"
+                      aria-selected={isSelected}
+                    >
+                      <span>{opt.label}</span>
+                      {isSelected && <Check className="w-3 h-3" style={{ color: '#2563EB' }} />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           <span className="text-[11px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>
             {items.length} items
           </span>
@@ -167,6 +315,77 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
       {/* Detail panel */}
       {currentItem ? (
         <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)' }}>
+          {/* Breadcrumb — always rendered, Jira parity */}
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-1.5 px-5 py-2"
+            style={{
+              fontSize: 12,
+              lineHeight: '16px',
+              fontFamily: 'Inter, sans-serif',
+              borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)',
+              backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)',
+              minHeight: 32,
+              flexShrink: 0,
+            }}
+          >
+            <span style={{ color: isDark ? '#878787' : '#6b6e76' }}>Projects</span>
+            <span aria-hidden="true" style={{ color: isDark ? '#454545' : '#CBD5E1' }}>/</span>
+            <span style={{ color: isDark ? '#878787' : '#6b6e76' }}>{projectName}</span>
+            <span aria-hidden="true" style={{ color: isDark ? '#454545' : '#CBD5E1' }}>/</span>
+            {panelStack.length > 1 ? (
+              <>
+                {panelStack.slice(0, -1).map((item) => {
+                  const stackIndex = panelStack.indexOf(item);
+                  return (
+                    <Fragment key={item.issue_key}>
+                      <button
+                        onClick={() => handleBreadcrumbNav(stackIndex)}
+                        className="transition-colors duration-[80ms] hover:underline focus-visible:outline-2 focus-visible:outline-[#2563EB] rounded-sm"
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          cursor: 'pointer',
+                          color: '#2563EB',
+                          fontFamily: "'JetBrains Mono', monospace",
+                          fontSize: 11,
+                          fontWeight: 650,
+                        }}
+                      >
+                        {item.issue_key}
+                      </button>
+                      <span aria-hidden="true" style={{ color: isDark ? '#454545' : '#CBD5E1' }}>/</span>
+                    </Fragment>
+                  );
+                })}
+                <span
+                  aria-current="page"
+                  style={{
+                    fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 11,
+                    fontWeight: 650,
+                    color: isDark ? '#EDEDED' : 'var(--fg-1)',
+                  }}
+                >
+                  {currentItem.issue_key}
+                </span>
+              </>
+            ) : (
+              <span
+                aria-current="page"
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 11,
+                  fontWeight: 650,
+                  color: isDark ? '#EDEDED' : 'var(--fg-1)',
+                }}
+              >
+                {currentItem.issue_key}
+              </span>
+            )}
+          </nav>
+
           {/* Detail header */}
           <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>
             <div className="flex items-center gap-2">
@@ -208,33 +427,6 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
             </div>
           </div>
 
-          {/* Breadcrumb when navigated into sub-task */}
-          {panelStack.length > 1 && (
-            <div
-              className="flex items-center gap-1.5 px-5 py-2"
-              style={{ fontSize: 12, color: 'var(--fg-3)', borderBottom: isDark ? '1px solid #292929' : '1px solid var(--bd-subtle, #292929)', backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-1)' }}
-            >
-              {panelStack.slice(0, -1).map((item, i) => (
-                <Fragment key={item.issue_key}>
-                  <button
-                    onClick={() => handleBreadcrumbNav(i)}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer',
-                      color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace",
-                      fontSize: 11, fontWeight: 650, padding: 0,
-                    }}
-                  >
-                    {item.issue_key}
-                  </button>
-                  <span style={{ color: '#D4D4D8' }}>/</span>
-                </Fragment>
-              ))}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 650, color: 'var(--fg-1)' }}>
-                {currentItem.issue_key}
-              </span>
-            </div>
-          )}
-
           {/* Tabs */}
           <div
             className="flex items-center gap-0 px-5"
@@ -250,11 +442,11 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                   className="flex items-center gap-1.5 px-3 py-2.5 transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                   style={{
                     fontSize: 12, fontWeight: isActive ? 600 : 400,
-                    color: isActive ? '#1558bc' : isDark ? '#878787' : '#6b6e76',
-                    borderBottom: isActive ? '2px solid #1558bc' : '2px solid transparent',
+                    color: isActive ? '#2563EB' : isDark ? '#878787' : '#6b6e76',
+                    borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                     marginBottom: -1, fontFamily: 'Inter, sans-serif',
                     background: 'none', border: 'none', borderBottomStyle: 'solid',
-                    borderBottomWidth: 2, borderBottomColor: isActive ? '#1558bc' : 'transparent',
+                    borderBottomWidth: 2, borderBottomColor: isActive ? '#2563EB' : 'transparent',
                     cursor: 'pointer',
                   }}
                   role="tab"
@@ -267,8 +459,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       style={{
                         fontSize: 10, fontWeight: 700, minWidth: 18, textAlign: 'center',
                         padding: '1px 5px', borderRadius: 12,
-                        backgroundColor: isActive ? 'rgba(21,88,188,0.10)' : isDark ? '#292929' : 'var(--bd-subtle, #292929)',
-                        color: isActive ? '#1558bc' : 'var(--fg-3)',
+                        backgroundColor: isActive ? 'rgba(37,99,235,0.10)' : isDark ? '#292929' : 'var(--bd-subtle, #292929)',
+                        color: isActive ? '#2563EB' : 'var(--fg-3)',
                         fontFamily: "'JetBrains Mono', monospace",
                       }}
                     >
@@ -286,9 +478,66 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
               {/* ─── DETAILS TAB ─── */}
               {activeTab === 'details' && (
                 <>
-                  <h2 className="text-[20px] font-semibold mb-4" style={{ color: 'var(--fg-1)', lineHeight: '28px', fontFamily: 'Inter, sans-serif' }}>
+                  <h2 className="text-[20px] font-semibold mb-2" style={{ color: 'var(--fg-1)', lineHeight: '28px', fontFamily: 'Inter, sans-serif' }}>
                     {currentItem.summary}
                   </h2>
+
+                  {/* Quick-add (TC-H7) — labelled menu, not a naked + */}
+                  <div className="relative mb-4" ref={addRef}>
+                    <button
+                      onClick={() => setAddOpen(v => !v)}
+                      aria-haspopup="menu"
+                      aria-expanded={addOpen}
+                      aria-label="Add child issue, attachment, or link"
+                      className="inline-flex items-center gap-1 text-[12px] px-2 h-7 rounded border transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                      style={{
+                        borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)',
+                        color: isDark ? '#A1A1A1' : 'var(--fg-2)',
+                        backgroundColor: isDark ? '#0A0A0A' : 'var(--bg-app)',
+                        fontFamily: 'Inter, sans-serif',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add</span>
+                      <ChevronDown className="w-3 h-3" />
+                    </button>
+
+                    {addOpen && (
+                      <div
+                        className="absolute top-full left-0 mt-1 w-52 rounded-lg border shadow-lg z-50 py-1 animate-scale-in"
+                        style={{
+                          borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)',
+                          backgroundColor: isDark ? '#1A1A1A' : 'var(--bg-app)',
+                        }}
+                        role="menu"
+                        aria-label="Add to this work item"
+                      >
+                        {[
+                          { key: 'child',  label: 'Add child issue',  icon: <ListTree className="w-3.5 h-3.5" />,  tab: 'subtasks' as DetailTab },
+                          { key: 'attach', label: 'Add attachment',   icon: <Paperclip className="w-3.5 h-3.5" />, tab: 'attachments' as DetailTab },
+                          { key: 'link',   label: 'Add link',         icon: <Link2 className="w-3.5 h-3.5" />,     tab: 'links' as DetailTab },
+                        ].map(action => (
+                          <button
+                            key={action.key}
+                            onClick={() => { setActiveTab(action.tab); setAddOpen(false); }}
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-[12px] text-left transition-colors duration-[80ms] hover:bg-[var(--hover,#1F1F1F)] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
+                            style={{
+                              color: isDark ? '#EDEDED' : 'var(--fg-1)',
+                              fontFamily: 'Inter, sans-serif',
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                            }}
+                            role="menuitem"
+                          >
+                            <span style={{ color: isDark ? '#878787' : '#6b6e76' }}>{action.icon}</span>
+                            <span>{action.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
                   {/* Key details */}
                   <div className="mb-6">
@@ -333,12 +582,12 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                           onClick={() => setActivityTab(tab)}
                           className="text-[12px] pb-1 capitalize transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
                           style={{
-                            color: activityTab === tab ? '#1558bc' : isDark ? '#878787' : '#6b6e76',
+                            color: activityTab === tab ? '#2563EB' : isDark ? '#878787' : '#6b6e76',
                             fontWeight: activityTab === tab ? 600 : 400,
-                            borderBottom: activityTab === tab ? '2px solid #1558bc' : '2px solid transparent',
+                            borderBottom: activityTab === tab ? '2px solid #2563EB' : '2px solid transparent',
                             fontFamily: 'Inter, sans-serif',
                             background: 'none', border: 'none', borderBottomStyle: 'solid',
-                            borderBottomWidth: 2, borderBottomColor: activityTab === tab ? '#1558bc' : 'transparent',
+                            borderBottomWidth: 2, borderBottomColor: activityTab === tab ? '#2563EB' : 'transparent',
                             cursor: 'pointer',
                           }}
                           role="tab"
@@ -369,6 +618,8 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       </div>
                       <div className="flex-1 rounded-lg border px-3 py-2 focus-within:border-[#2563EB] transition-colors duration-[80ms]" style={{ borderColor: isDark ? '#2E2E2E' : 'var(--bd-default, #2E2E2E)' }}>
                         <input
+                          ref={commentInputRef}
+                          id="aw-comment-input"
                           type="text"
                           placeholder="Add a comment..."
                           className="w-full text-[13px] border-none outline-none shadow-none bg-transparent"
@@ -386,7 +637,7 @@ export function AllWorkSplitView({ items, selectedItemKey, onSelectItem }: Props
                       </div>
                     </div>
                     <p className="text-[10px] mt-2 ml-9" style={{ color: 'var(--fg-3)' }}>
-                      <b>Pro tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>M</kbd> to comment
+                      <b>Tip:</b> press <kbd className="px-1 py-0.5 rounded text-[10px]" style={{ backgroundColor: isDark ? '#292929' : 'var(--hover, #1F1F1F)', border: isDark ? '1px solid #2E2E2E' : '1px solid var(--bd-subtle, #292929)' }}>M</kbd> to comment
                     </p>
                   </div>
                 </>

@@ -1,24 +1,25 @@
 /**
- * ProjectJiraLayout — Project header + All Work view
+ * ProjectJiraLayout — Thin wrapper that resolves projectId from URL :key
+ * and delegates rendering to ProjectAllWorkView.
  *
- * 2026-04-18: List tab deprecated per Vikram directive. The List view was a
- * legacy table-only surface that duplicated functionality now owned by the
- * unified All Work view (which itself offers both table and split-panel
- * modes). Keeping two tabs that did almost the same thing caused confusion
- * and sessionStorage tab-memory bugs. Single surface now — route
- * /project-hub/:key/allwork renders ProjectAllWorkView directly, no tab bar.
+ * 2026-04-18 history:
+ *   - List tab deprecated (was redundant with All Work).
+ *   - "Senaei BAU" project header bar removed per Vikram — the top nav and
+ *     left sidebar already communicate project context, matching how
+ *     /project-hub/:key/backlog (the reference surface) is laid out.
+ *     All header chrome now lives inside ProjectAllWorkView's own header
+ *     card (h1 title + toolbar).
  */
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, MoreHorizontal, Share2, Zap, MessageSquare, Maximize2 } from 'lucide-react';
 import ProjectAllWorkView from './ProjectAllWorkView';
 
 export default function ProjectJiraLayout() {
   const { key } = useParams<{ key: string }>();
 
-  const { data: project, isLoading, error } = useQuery({
+  const { data: project, error } = useQuery({
     queryKey: ['project-info', key],
     queryFn: async () => {
       // @ts-ignore
@@ -33,7 +34,6 @@ export default function ProjectJiraLayout() {
     enabled: !!key,
   });
 
-  // Cycle 1 §1.8: project not found
   if (error) return (
     <div style={{ padding: 48, textAlign: 'center', color: 'var(--cp-text-tertiary)', fontFamily: 'Inter, sans-serif' }}>
       Project not found. <a href="/project-hub/projects" style={{ color: 'var(--cp-text-link)' }}>← Back to projects</a>
@@ -41,44 +41,24 @@ export default function ProjectJiraLayout() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--cp-bg-page)' }} data-testid="project-jira-layout">
-      {/* ── Project Header Bar ── */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '8px',
-        padding: '6px 16px', borderBottom: '0.75px solid rgba(15, 23, 42, 0.08)',
-        background: 'var(--cp-bg-page)', flexShrink: 0,
-      }}>
-        {isLoading ? (
-          <div style={{ height: 24, width: 160, borderRadius: 4, background: '#F1F5F9', animation: 'shimmer 1.5s infinite', backgroundSize: '200% 100%', backgroundImage: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)' }} />
-        ) : (
-          <>
-            <div style={{
-              width: 24, height: 24, borderRadius: 4,
-              background: project?.color || '#2563EB',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 11, fontWeight: 700, color: '#fff', flexShrink: 0,
-            }}>
-              {project?.key?.[0] ?? 'P'}
-            </div>
-            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--cp-text-primary)', fontFamily: 'Sora, sans-serif' }}>
-              {project?.name ?? 'Untitled Project'}
-            </span>
-          </>
-        )}
-        <button className="ph-icon-btn"><Users size={14} /></button>
-        <button className="ph-icon-btn"><MoreHorizontal size={14} /></button>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 2 }}>
-          <button className="ph-icon-btn"><Share2 size={14} /></button>
-          <button className="ph-icon-btn"><Zap size={14} /></button>
-          <button className="ph-icon-btn"><MessageSquare size={14} /></button>
-          <button className="ph-icon-btn"><Maximize2 size={14} /></button>
-        </div>
-      </div>
-
-      {/* ── View Content ── All Work only; List tab deprecated 2026-04-18 ── */}
-      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        <ProjectAllWorkView projectKey={key!} projectId={project?.id} />
-      </div>
+    // 2026-04-18: explicit height cap so child regions (left list cards,
+    // center body, right sidebar) can each own their own scroll — matches
+    // Jira's 3-region scroll model. The app shell's <main> has
+    // overflow-y: auto, but its intermediate wrappers have no height
+    // constraint → without an explicit cap here, our inner content grows
+    // to ~95,000px and the whole page scrolls instead of the inner regions.
+    // 52px = measured top-nav height (i=4 y=52 on 2026-04-18).
+    <div
+      data-testid="project-jira-layout"
+      style={{
+        display: 'flex', flexDirection: 'column',
+        height: 'calc(100vh - 52px)',
+        maxHeight: 'calc(100vh - 52px)',
+        minHeight: 0, overflow: 'hidden',
+        background: 'var(--cp-bg-page)',
+      }}
+    >
+      <ProjectAllWorkView projectKey={key!} projectId={project?.id} />
     </div>
   );
 }

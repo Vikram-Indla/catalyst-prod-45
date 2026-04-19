@@ -102,6 +102,11 @@ function mapPhIssue(row: any): WorkItem {
   const issueFlagReason = derivePhIssueFlagReason(row);
   return {
     id: row.issue_key,
+    // dbId = ph_issues.id (UUID PK). Required for any downstream call that
+    // queries ph_issues by primary key (e.g. CatalystDetailRouter).
+    // WorkItem.id stays the issue_key for backward-compat with existing
+    // callers that use it for routing/display. (See CLAUDE.md §L39.)
+    dbId: row.id ?? null,
     projectId: '',
     parentId: null,
     parentKey: row.parent_key ?? null,
@@ -139,7 +144,7 @@ function mapPhIssue(row: any): WorkItem {
   };
 }
 
-const PH_ISSUES_SELECT = 'issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
+const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
 
 /* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {
