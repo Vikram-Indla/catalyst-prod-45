@@ -37,6 +37,13 @@ import { StoryRichTextEditor } from '@/modules/project-work-hub/components/story
 import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
+/* Catalyst Defect anatomy — unifies the All Work view with the
+   CatalystViewDefect overlay so there is ONE canonical source of truth for
+   Defect-specific fields (Severity / Steps / Environment / Found-in /
+   Fix-in / Root Cause / Resolution). Only rendered when the work item's
+   issue_type is Bug or Defect. */
+import { CatalystDefectFields } from '@/components/catalyst-detail-views/defect/CatalystDefectFields';
+import type { PhIssue } from '@/components/catalyst-detail-views/shared/types';
 
 
 interface Props {
@@ -337,6 +344,29 @@ export function IssueContentView({
 
   const fixVersionName = item?.fix_version_name;
 
+  /* ── Catalyst Defect branch detection ─────────────────────────────
+     Matches the same predicate used by the section-visibility matrix
+     further down (`t.includes('bug') || t.includes('defect')`). Hoisted
+     so it can gate the Defect-anatomy injections earlier in the render.
+     Adapter constructs the minimal PhIssue shape CatalystDefectFields
+     actually reads — `fix_versions` (array of { name }) and `resolution` —
+     from the normalized AllWorkItem. Keeps the wire additive; no extra
+     Supabase round-trip. */
+  const _issueTypeLower = (item?.issue_type ?? '').toLowerCase();
+  const isBugDefect = _issueTypeLower.includes('bug') || _issueTypeLower.includes('defect');
+  const defectPhIssueAdapter: PhIssue | null = isBugDefect && item
+    ? ({
+        fix_versions: item.fix_version_name
+          ? item.fix_version_name
+              .split(',')
+              .map(s => s.trim())
+              .filter(Boolean)
+              .map(name => ({ name }))
+          : [],
+        resolution: item.resolution,
+      } as unknown as PhIssue)
+    : null;
+
   if (!issueKey) {
     return <div className="awBody" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <span style={{ color: 'var(--aw-text-subtle)', fontSize: 13 }}>Select an issue to view details</span>
@@ -546,6 +576,31 @@ export function IssueContentView({
               </div>
             )}
           </div>
+
+          {/* ── Catalyst Defect canonical field rail ──
+              Jira-parity anatomy for Bug/Defect items only: Severity /
+              Steps to Reproduce / Environment / Found-in build / Fix-in
+              build / Root Cause / Resolution. Mirrors the same block used
+              by the CatalystViewDefect overlay so BAU-5517 (and every
+              other defect opened via the All Work page) inherits the
+              same structure with no duplication of presentation logic.
+              Read-only in this pass — inline edit is a follow-up,
+              matching CatalystDefectFields itself. */}
+          {isBugDefect && (
+            <div className="awSection">
+              <div className="awSectionHead" onClick={() => toggle('defectfields')}>
+                <span className="awSectionLabel">
+                  {collapsed.defectfields ? <ChevronRight style={{ width: 16, height: 16 }} /> : <ChevronDown style={{ width: 16, height: 16 }} />}
+                  Defect details
+                </span>
+              </div>
+              {!collapsed.defectfields && (
+                <div className="awSectionBody">
+                  <CatalystDefectFields issue={defectPhIssueAdapter} />
+                </div>
+              )}
+            </div>
+          )}
 
           {/* ── Description (Story Detail Modal parity — ADF rich text with edit mode) ── */}
           <div className="awSection">
