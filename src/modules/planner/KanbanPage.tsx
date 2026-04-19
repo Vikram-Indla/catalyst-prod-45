@@ -1,82 +1,164 @@
-// ============================================================
-// KANBAN PAGE - STANDALONE ENTRY POINT
-// New Kanban board using planner_statuses and planner_tasks
-// ============================================================
-
-import { useState, useCallback } from 'react';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
-import { Plus } from 'lucide-react';
-import { KanbanBoard, CreateTaskModal, TaskDetailDrawer } from './components/kanban';
+/**
+ * PlanHub Kanban Page — /taskhub-kanban
+ *
+ * Migrated onto the canonical KanbanBoardShell (Phase 8 of the Catalyst
+ * Kanban consolidation). This page used to render a bespoke `KanbanBoard`
+ * component with @dnd-kit, custom columns, custom card surfaces, and no
+ * Jira-parity toolbar. After migration:
+ *
+ *   - Rendering flows through <KanbanBoardShell adapter={...}/>, so the
+ *     board inherits the Jira-parity toolbar, card surface, density /
+ *     view-settings controls, filter popovers, group-by, and the
+ *     Pragmatic drag-drop stack for free.
+ *
+ *   - Columns derive dynamically from `planner_statuses` — users who
+ *     have added custom statuses (e.g. "Review", "Blocked") see them as
+ *     columns without any config change.
+ *
+ *   - Drag between columns persists a status_id + position change via
+ *     useMoveKanbanTask, which handles both within-column reorder (RPC
+ *     reorder_planner_tasks_up/down) and cross-column moves.
+ *
+ *   - Clicking a card still opens the TaskDetailDrawer (full edit
+ *     surface), preserved verbatim from the legacy implementation.
+ *
+ *   - Create flow: "+ New task" is wired via the adapter's onCreate into
+ *     the canonical CreateTaskModal.
+ */
+import { useCallback, useMemo, useState } from 'react';
+import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
+import { buildPlannerBoardAdapter } from '@/components/kanban/adapters/plannerBoardAdapter';
+import {
+  useKanbanTasks,
+  useKanbanTasksRealtime,
+  useMoveKanbanTask,
+  useUpdateKanbanTask,
+} from './hooks/useKanbanTasks';
+import {
+  useKanbanStatuses,
+  useKanbanStatusesRealtime,
+} from './hooks/useKanbanStatuses';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import type { KanbanTask } from './types/kanban';
-import { useDeleteKanbanTask } from './hooks/useKanbanTasks';
-import { Button } from '@/components/ui/button';
+import { TaskDetailDrawer, CreateTaskModal } from './components/kanban';
 
 export function KanbanPage() {
+  const avatarsByName = useProfileAvatarsByName();
+
+  // Subscribe to realtime so drag/drop from other clients stays in sync.
+  useKanbanTasksRealtime();
+  useKanbanStatusesRealtime();
+
+  const { data: tasks = [], isLoading: tasksLoading } = useKanbanTasks();
+  const { data: statuses = [], isLoading: statusesLoading } = useKanbanStatuses();
+  const moveTask = useMoveKanbanTask();
+  const updateTask = useUpdateKanbanTask();
+
+  /* ═════ Page-owned filter + group-by state. ═════ */
+  const [search, setSearch] = useState('');
+  const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
+  const [filterSelected, setFilterSelected] = useState<Record<string, string[]>>({});
+  const [groupBy, setGroupBy] = useState<string>('none');
+
+  const onFilterChange = useCallback((categoryId: string, values: string[]) => {
+    setFilterSelected(prev => ({ ...prev, [categoryId]: values }));
+  }, []);
+  const onClearFilters = useCallback(() => {
+    setFilterSelected({});
+    setSelAssignees(new Set());
+    setSearch('');
+  }, []);
+
+  /* ═════ Drawer + create modal. ═════ */
   const [selectedTask, setSelectedTask] = useState<KanbanTask | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [createStatusId, setCreateStatusId] = useState<string | undefined>();
-  
-  const deleteTask = useDeleteKanbanTask();
 
-  const handleTaskClick = useCallback((task: KanbanTask) => {
-    setSelectedTask(task);
-    setIsDetailOpen(true);
+  const taskById = useMemo(() => {
+    const m = new Map<string, KanbanTask>();
+    for (const t of tasks) m.set(t.id, t);
+    return m;
+  }, [tasks]);
+
+  const onCardClick = useCallback((taskId: string) => {
+    const task = taskById.get(taskId);
+    if (task) {
+      setSelectedTask(task);
+      setIsDetailOpen(true);
+    }
+  }, [taskById]);
+
+  const handleDrawerOpenChange = useCallback((open: boolean) => {
+    setIsDetailOpen(open);
+    if (!open) setSelectedTask(null);
   }, []);
 
-  const handleTaskEdit = useCallback((task: KanbanTask) => {
-    setSelectedTask(task);
-    setIsDetailOpen(true);
-  }, []);
+  /* ═════ Persistence wiring. ═════ */
+  const onMove = useCallback(
+    (taskId: string, newStatusId: string, newPosition: number) => {
+      moveTask.mutate({ taskId, newStatusId, newPosition });
+    },
+    [moveTask],
+  );
 
-  const handleTaskDelete = useCallback((taskId: string) => {
-    deleteTask.mutate(taskId);
-  }, [deleteTask]);
+  const onToggleFlag = useCallback(
+    (taskId: string, next: boolean) => {
+      updateTask.mutate({ id: taskId, is_starred: next });
+    },
+    [updateTask],
+  );
 
-  const handleAddTask = useCallback((statusId: string) => {
-    setCreateStatusId(statusId);
-    setIsCreateOpen(true);
-  }, []);
+  /* ═════ Build the canonical adapter. ═════ */
+  const adapter = useMemo(() => buildPlannerBoardAdapter({
+    tasks,
+    statuses,
+    avatarsByName,
+    search,
+    onSearchChange: setSearch,
+    selAssignees,
+    onSelAssigneesChange: setSelAssignees,
+    filterSelected,
+    onFilterChange,
+    onClearFilters,
+    groupBy,
+    onGroupByChange: setGroupBy,
+    onMove,
+    onToggleFlag,
+    onCardClick,
+    onCreate: () => setIsCreateOpen(true),
+  }), [
+    tasks, statuses, avatarsByName,
+    search, selAssignees, filterSelected, groupBy,
+    onFilterChange, onClearFilters,
+    onMove, onToggleFlag, onCardClick,
+  ]);
 
-  const handleDrawerClose = useCallback(() => {
-    setIsDetailOpen(false);
-    setSelectedTask(null);
-  }, []);
+  if (tasksLoading || statusesLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <div style={{
+          width: 32, height: 32,
+          border: '2px solid #2563EB', borderTopColor: 'transparent',
+          borderRadius: '50%', animation: 'spin 1s linear infinite',
+        }} />
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      {/* Header */}
-      <div className="px-6 border-b border-border">
-        <CatalystPageHeader title="Kanban Board" actions={
-          <Button onClick={() => { setCreateStatusId(undefined); setIsCreateOpen(true); }}>
-            <Plus className="w-4 h-4 mr-2" />
-            New Task
-          </Button>
-        } />
-      </div>
+    <>
+      <KanbanBoardShell adapter={adapter} title="Kanban Board" />
 
-      {/* Board */}
-      <div className="flex-1 min-h-0">
-        <KanbanBoard
-          onTaskClick={handleTaskClick}
-          onTaskEdit={handleTaskEdit}
-          onTaskDelete={handleTaskDelete}
-          onAddTask={handleAddTask}
-        />
-      </div>
-
-      {/* Task Detail Drawer - uses new GOD-TIER drawer */}
       <TaskDetailDrawer
         task={selectedTask}
         open={isDetailOpen}
-        onClose={handleDrawerClose}
+        onOpenChange={handleDrawerOpenChange}
       />
 
-      {/* Create Task Modal - V10 */}
       <CreateTaskModal
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
       />
-    </div>
+    </>
   );
 }

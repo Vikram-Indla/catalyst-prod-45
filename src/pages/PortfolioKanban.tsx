@@ -1,25 +1,51 @@
-import { useState } from 'react';
-import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+/**
+ * PortfolioKanban — /portfolio-kanban
+ *
+ * Migrated onto the canonical KanbanBoardShell (Phase 8).
+ *
+ * Before: bespoke flex-grid + @hello-pangea/dnd + theme-swimlanes.
+ * After : <KanbanBoardShell adapter={buildPortfolioBoardAdapter(...)}/>
+ *
+ * Behaviour preserved:
+ *   - Five lifecycle columns: Proposed → Analyzing → Approved → In Progress → Done.
+ *   - Drag epic between columns persists status change.
+ *   - Strategic-theme grouping retained as a group-by dimension (was inline
+ *     swimlanes); user picks theme via the toolbar's Group-by popover.
+ */
+import { useCallback, useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { HealthBadge } from '@/components/shared/HealthBadge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, GripVertical } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { PermissionGuard } from '@/components/shared/PermissionGuard';
-
-type SwimlaneType = 'theme';
+import { toast } from 'sonner';
+import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
+import {
+  buildPortfolioBoardAdapter,
+  type EpicRow,
+  type EpicStatus,
+  type ThemeRow,
+} from '@/components/kanban/adapters/portfolioBoardAdapter';
+import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 export default function PortfolioKanban() {
-  const [swimlaneType] = useState<SwimlaneType>('theme');
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
+  const avatarsByName = useProfileAvatarsByName();
 
-  // Fetch epics
-  const { data: epics } = useQuery({
+  /* ═════ Page-owned filter + group-by state. ═════ */
+  const [search, setSearch] = useState('');
+  const [selAssignees, setSelAssignees] = useState<Set<string>>(new Set());
+  const [filterSelected, setFilterSelected] = useState<Record<string, string[]>>({});
+  const [groupBy, setGroupBy] = useState<string>('none');
+
+  const onFilterChange = useCallback((categoryId: string, values: string[]) => {
+    setFilterSelected(prev => ({ ...prev, [categoryId]: values }));
+  }, []);
+  const onClearFilters = useCallback(() => {
+    setFilterSelected({});
+    setSelAssignees(new Set());
+    setSearch('');
+  }, []);
+
+  /* ═════ Data. ═════ */
+  const { data: epics = [], isLoading: epicsLoading } = useQuery({
     queryKey: ['epics-kanban'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -27,230 +53,78 @@ export default function PortfolioKanban() {
         .select('*, strategic_themes(name)')
         .order('name');
       if (error) throw error;
-      return data;
+      return (data ?? []) as unknown as EpicRow[];
     },
   });
 
-  // Fetch themes for swimlanes
-  const { data: themes } = useQuery({
+  const { data: themes = [], isLoading: themesLoading } = useQuery({
     queryKey: ['strategic-themes'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('strategic_themes')
-        .select('*')
+        .select('id, name')
         .order('name');
       if (error) throw error;
-      return data;
+      return (data ?? []) as ThemeRow[];
     },
   });
 
-  // Fetch initiatives for swimlanes
-  const { data: initiatives } = useQuery({
-    queryKey: ['initiatives'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('initiatives')
-        .select('*')
-        .order('name');
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Update epic status
+  /* ═════ Status mutation. ═════ */
   const updateEpicStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: any }) => {
+    mutationFn: async ({ id, status }: { id: string; status: EpicStatus }) => {
       const { error } = await supabase
         .from('epics')
-        .update({ status })
+        .update({ status: status as any })
         .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['epics-kanban'] });
+      qc.invalidateQueries({ queryKey: ['epics-kanban'] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Failed to update epic status');
     },
   });
 
-  const columns = ['proposed', 'analyzing', 'approved', 'in_progress', 'done'];
-
-  const columnLabels: Record<string, string> = {
-    proposed: 'Proposed',
-    analyzing: 'Analyzing',
-    approved: 'Approved',
-    in_progress: 'In Progress',
-    done: 'Done',
-    cancelled: 'Cancelled',
-  };
-
-  const getItemsForColumn = (columnStatus: string, swimlaneId?: string) => {
-    return epics?.filter(epic => {
-      const statusMatch = epic.status === columnStatus;
-      if (!swimlaneId) return statusMatch;
-      return statusMatch && epic.theme_id === swimlaneId;
-    }) || [];
-  };
-
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
-    const sourceStatus = result.source.droppableId.split('-')[0];
-    const destStatus = result.destination.droppableId.split('-')[0];
-    
-    if (sourceStatus === destStatus) return;
-
-    const itemId = result.draggableId;
-    updateEpicStatus.mutate({ id: itemId, status: destStatus });
-  };
-
-  const swimlanes = themes;
-
-  return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card px-6 flex items-center">
-        <div className="flex items-center justify-between w-full">
-          <CatalystPageHeader title="Portfolio Kanban" />
-          <PermissionGuard requiredRole="program_manager" showMessage={false}>
-            <Button className="flex-shrink-0">
-              <Plus className="h-4 w-4 mr-2" />
-              New Item
-            </Button>
-          </PermissionGuard>
-        </div>
-      </div>
-
-      {/* Kanban Board */}
-      <div className="flex-1 overflow-hidden">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <ScrollArea className="h-full">
-            <div className="p-6">
-              {/* Column Headers */}
-              <div className="flex gap-4 mb-4 sticky top-0 bg-background z-10 pb-2">
-                {columns.map(column => (
-                  <div key={column} className="flex-1 min-w-[280px]">
-                    <div className="font-semibold text-sm px-3 py-2 bg-muted rounded-t-lg">
-                      {columnLabels[column]}
-                      <Badge variant="secondary" className="ml-2">
-                        {getItemsForColumn(column).length}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Swimlanes */}
-              {swimlanes?.map(swimlane => (
-                <div key={swimlane.id} className="mb-6">
-                  <div className="font-medium text-sm mb-2 px-3 text-muted-foreground">
-                    {swimlane.name}
-                  </div>
-                  <div className="flex gap-4">
-                    {columns.map(column => (
-                      <Droppable key={`${column}-${swimlane.id}`} droppableId={`${column}-${swimlane.id}`}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className={`flex-1 min-w-[280px] min-h-[100px] p-3 rounded-lg border-2 border-dashed transition-colors ${
-                              snapshot.isDraggingOver ? 'border-primary bg-primary/5' : 'border-transparent bg-muted/30'
-                            }`}
-                          >
-                            <div className="space-y-2">
-                              {getItemsForColumn(column, swimlane.id).map((item, index) => (
-                                <Draggable key={item.id} draggableId={item.id} index={index}>
-                                  {(provided, snapshot) => (
-                                    <Card
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      className={`p-3 cursor-move transition-shadow ${
-                                        snapshot.isDragging ? 'shadow-lg' : ''
-                                      }`}
-                                    >
-                                      <div {...provided.dragHandleProps} className="flex items-start gap-2">
-                                        <GripVertical className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                                         <div className="flex-1 min-w-0">
-                                          <p className="font-medium text-sm mb-2 line-clamp-2">{item.name}</p>
-                                          <div className="flex items-center gap-2 flex-wrap">
-                                            <HealthBadge health={item.health} />
-                                            {item.estimate && (
-                                              <Badge variant="outline" className="text-xs">
-                                                {item.estimate}
-                                              </Badge>
-                                            )}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </Card>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                          </div>
-                        )}
-                      </Droppable>
-                    ))}
-                  </div>
-                </div>
-              ))}
-
-              {/* No Swimlane Items */}
-              <div className="mt-6">
-                <div className="font-medium text-sm mb-2 px-3 text-muted-foreground">
-                  Unassigned
-                </div>
-                <div className="flex gap-4">
-                  {columns.map(column => (
-                    <Droppable key={`${column}-unassigned`} droppableId={`${column}-unassigned`}>
-                      {(provided, snapshot) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.droppableProps}
-                          className={`flex-1 min-w-[280px] min-h-[100px] p-3 rounded-lg border-2 border-dashed transition-colors ${
-                            snapshot.isDraggingOver ? 'border-primary bg-primary/5' : 'border-transparent bg-muted/30'
-                          }`}
-                        >
-                          <div className="space-y-2">
-                            {getItemsForColumn(column).filter(item => !item.theme_id).map((item, index) => (
-                              <Draggable key={item.id} draggableId={item.id} index={index}>
-                                {(provided, snapshot) => (
-                                  <Card
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    className={`p-3 cursor-move transition-shadow ${
-                                      snapshot.isDragging ? 'shadow-lg' : ''
-                                    }`}
-                                  >
-                                    <div {...provided.dragHandleProps} className="flex items-start gap-2">
-                                      <GripVertical className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                                       <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-sm mb-2 line-clamp-2">{item.name}</p>
-                                        <div className="flex items-center gap-2 flex-wrap">
-                                          <HealthBadge health={item.health} />
-                                          {item.estimate && (
-                                            <Badge variant="outline" className="text-xs">
-                                              {item.estimate}
-                                            </Badge>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </Card>
-                                )}
-                              </Draggable>
-                            ))}
-                            {provided.placeholder}
-                          </div>
-                        </div>
-                      )}
-                    </Droppable>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </ScrollArea>
-        </DragDropContext>
-      </div>
-    </div>
+  const onStatusChange = useCallback(
+    (epicId: string, status: EpicStatus) => {
+      updateEpicStatus.mutate({ id: epicId, status });
+    },
+    [updateEpicStatus],
   );
+
+  /* ═════ Build the canonical adapter. ═════ */
+  const adapter = useMemo(() => buildPortfolioBoardAdapter({
+    epics,
+    themes,
+    avatarsByName,
+    search,
+    onSearchChange: setSearch,
+    selAssignees,
+    onSelAssigneesChange: setSelAssignees,
+    filterSelected,
+    onFilterChange,
+    onClearFilters,
+    groupBy,
+    onGroupByChange: setGroupBy,
+    onStatusChange,
+  }), [
+    epics, themes, avatarsByName,
+    search, selAssignees, filterSelected, groupBy,
+    onFilterChange, onClearFilters, onStatusChange,
+  ]);
+
+  if (epicsLoading || themesLoading) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+        <div style={{
+          width: 32, height: 32,
+          border: '2px solid #2563EB', borderTopColor: 'transparent',
+          borderRadius: '50%', animation: 'spin 1s linear infinite',
+        }} />
+      </div>
+    );
+  }
+
+  return <KanbanBoardShell adapter={adapter} title="Portfolio Kanban" />;
 }

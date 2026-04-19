@@ -351,7 +351,7 @@ const IndustryComingSoon = lazy(() => import("../pages/enterprise/IndustryComing
 const DemandSummaryPage = lazy(() => import("../pages/enterprise/DemandSummaryPage"));
 const ProductRoomPage = lazy(() => import("../pages/ProductRoomPage"));
 const CapacityPlanningPage = lazy(() => import("../pages/CapacityPlanningPage"));
-const CatalystDemandKanban = lazy(() => import("../modules/kanban/pages/CatalystDemandKanban"));
+// CatalystDemandKanban removed during Kanban consolidation (Phase 8); route was never wired.
 const CatalystDemandList = lazy(() => import("../modules/product-backlog/pages/CatalystDemandList"));
 const CatalystDemandTable = lazy(() => import("../modules/product-backlog/pages/CatalystDemandTable"));
 const SubmitDemandRequest = lazy(() => import("../pages/SubmitDemandRequest"));
