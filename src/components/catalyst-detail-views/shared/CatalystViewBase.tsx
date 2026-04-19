@@ -32,52 +32,22 @@ const ANIM_STYLE_ID = 'catalyst-view-anims';
 if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) {
   const s = document.createElement('style');
   s.id = ANIM_STYLE_ID;
-  s.textContent = `
-    @keyframes cv-overlay-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes cv-card-in { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-    @keyframes cv-panel-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-    @keyframes cv-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-    @keyframes cv-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-    /* ──────────────────────────────────────────────────────────────────────
-       Compact-drawer restack (task #74 / #28, 2026-04-18 → 2026-04-19).
-       When the detail drawer is rendered in a narrow panel (compact mode
-       = 400px from BacklogPage), the fixed 280–600px right sidebar crushed
-       the left content column, forcing the title's word-break to render
-       one character per line.
-
-       v1 (2026-04-18) used a 679px @container breakpoint. That worked for
-       compact (400px) mode but failed for expanded panel on mid-width
-       viewports where the drawer interior lands at 700–850px — above 679,
-       so no restack, and the sidebar still crushes the left column below
-       a usable width. v2 raises the threshold to 899px so the restack
-       fires on anything below desktop-wide (modal mode at 1100px stays
-       two-column; expanded panel on 1600px viewports stays two-column;
-       everything narrower flips to single-column).
-
-       ALSO v2: `.cv-drawer-left` now carries minWidth: 280 as belt-and-
-       suspenders. Even inside the two-column branch, the left column can
-       no longer shrink below 280px — enough to fit a normal title word
-       horizontally at 24px before word-break kicks in.
-       ────────────────────────────────────────────────────────────────────── */
-    .cv-drawer-body { container-type: inline-size; }
-    .cv-drawer-left { min-width: 280px; }
-    @container (max-width: 899px) {
-      .cv-drawer-body { flex-direction: column !important; }
-      .cv-drawer-splitter { display: none !important; }
-      .cv-drawer-sidebar {
-        width: 100% !important;
-        max-width: none !important;
-        border-left: none !important;
-        border-top: 1px solid #EBECF0;
-      }
-      .cv-drawer-left {
-        border-right: none !important;
-        min-width: 0 !important;   /* drop the floor once restacked */
-      }
-    }
-  `;
+  s.textContent = [
+    '@keyframes cv-overlay-in { from { opacity: 0; } to { opacity: 1; } }',
+    '@keyframes cv-card-in { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }',
+    '@keyframes cv-panel-in { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }',
+    '@keyframes cv-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }',
+    '@keyframes cv-slide-down { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }',
+    '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
+    '.cv-drawer-body { container-type: inline-size; }',
+    '.cv-drawer-left { min-width: 280px; }',
+    '@container (max-width: 899px) {',
+    '  .cv-drawer-body { flex-direction: column !important; }',
+    '  .cv-drawer-splitter { display: none !important; }',
+    '  .cv-drawer-sidebar { width: 100% !important; max-width: none !important; border-left: none !important; border-top: 1px solid #EBECF0; }',
+    '  .cv-drawer-left { border-right: none !important; min-width: 0 !important; }',
+    '}',
+  ].join('\n');
   document.head.appendChild(s);
 }
 
