@@ -13,6 +13,12 @@
  *   - Enqueue write-back row (field_name='project_move').
  *
  * Status edge case: skipped per Decision F.
+ *
+ * TODO (post-Jira-sunset): Decision F (skip status-mismatch warn) is correct
+ * while ph_issues.status is Jira-sourced free-text. Once Catalyst becomes the
+ * authoritative workflow owner (Jira sunset), re-evaluate: validate destination
+ * project's workflow scheme accepts source.status, surface a warning or remap
+ * to the destination's initial status. No action this batch.
  */
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 

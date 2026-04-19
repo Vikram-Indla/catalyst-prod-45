@@ -197,6 +197,11 @@ Deno.serve(async (req) => {
     }
 
     // 7. Optionally clone immediate children (one level only).
+    // Child insert payload explicitly resets all timestamp/lifecycle/sync columns
+    // (Fix 2 audit). Spread copies domain fields from source child; the override
+    // block below ensures created_at/updated_at/first_synced_at/last_synced_at/
+    // synced_at/jira_created_at/jira_updated_at/deleted_at/archived_at/archived_by
+    // are NOT carried over from the source row.
     if (includeSubtasks) {
       const { data: children } = await admin
         .from('ph_issues')
@@ -205,14 +210,20 @@ Deno.serve(async (req) => {
       for (const child of (children ?? [])) {
         const { data: childKey } = await admin.rpc('next_issue_key', { p_project_id: proj.id });
         if (!childKey) continue;
-        const childRow = {
+        const childRow: Record<string, unknown> = {
           ...child,
+          // identity reset
           id: undefined,
           issue_key: childKey,
           parent_key: newIssueKey,
           parent_summary: summary,
+          // provenance
           source: 'catalyst',
           sync_status: 'pending',
+          reporter_user_id: actorId,
+          // lifecycle / timestamp reset (Fix 2)
+          created_at: null,
+          updated_at: null,
           first_synced_at: null,
           last_synced_at: null,
           synced_at: null,
@@ -221,7 +232,6 @@ Deno.serve(async (req) => {
           deleted_at: null,
           archived_at: null,
           archived_by: null,
-          reporter_user_id: actorId,
         };
         delete (childRow as any).id;
         await admin.from('ph_issues').insert(childRow);
@@ -229,14 +239,16 @@ Deno.serve(async (req) => {
     }
 
     // 8. Optionally clone outbound links (source-side only).
+    // Fix 1: ph_issue_links.source_id / target_id are UUID FKs to ph_issues.id,
+    // NOT issue_key TEXT. Query and insert use the UUID id, not the issue_key.
     if (includeLinks) {
       const { data: links } = await admin
         .from('ph_issue_links')
         .select('source_id, target_id, link_type')
-        .eq('source_id', source.issue_key);
+        .eq('source_id', source.id);
       for (const lk of (links ?? [])) {
         await admin.from('ph_issue_links').insert({
-          source_id: newIssueKey,
+          source_id: newIssueId,
           target_id: lk.target_id,
           link_type: lk.link_type,
           created_by: actorId,
