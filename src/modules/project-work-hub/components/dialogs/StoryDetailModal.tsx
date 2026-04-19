@@ -25,6 +25,8 @@ import {
 import { RichTextCommentEditor } from './story-detail-modules/RichTextCommentEditor';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { enqueueWriteBack } from '@/lib/jira-writeback';
+import { CloneIssueDialog } from './CloneIssueDialog';
+import { MoveIssueDialog } from './MoveIssueDialog';
 
 
 // Ring-fenced CSS for extension components
@@ -366,6 +368,8 @@ export default function StoryDetailModal({
   const [addMenuSearch, setAddMenuSearch] = useState('');
   const [showAiMenu, setShowAiMenu] = useState(false);
   const [showDotsMenu, setShowDotsMenu] = useState(false);
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
   const [descEditMode, setDescEditMode] = useState(false);
   const [acEditMode, setAcEditMode] = useState(false);
@@ -796,8 +800,8 @@ export default function StoryDetailModal({
                 />
                 {showDotsMenu && (
                   <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFF', border: '1px solid #DFE1E6', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.18)', padding: '6px 0', zIndex: 50, minWidth: 200 }}>
-                    <button onClick={() => { setShowDotsMenu(false); toast('Ticket cloned'); }} style={menuItemStyle}>Clone ticket</button>
-                    <button onClick={() => { setShowDotsMenu(false); toast('Move to project — coming soon'); }} style={menuItemStyle}>Move to project</button>
+                    <button onClick={() => { setShowDotsMenu(false); setShowCloneDialog(true); }} style={menuItemStyle}>Clone ticket</button>
+                    <button onClick={() => { setShowDotsMenu(false); setShowMoveDialog(true); }} style={menuItemStyle}>Move to project</button>
                     <div style={{ height: 1, background: '#EBECF0', margin: '6px 0' }} />
                     <button onClick={() => { setShowDotsMenu(false); setShowConfirmDelete(true); }} style={{ ...menuItemStyle, color: '#DE350B' }}>Delete ticket</button>
                   </div>
@@ -2021,6 +2025,29 @@ export default function StoryDetailModal({
           </Modal>
         )}
       </ModalTransition>
+
+      {/* Clone & Move dialogs (BATCH-B Features 1 & 2) */}
+      {issue && (
+        <CloneIssueDialog
+          open={showCloneDialog}
+          onClose={() => setShowCloneDialog(false)}
+          source={{
+            id: issue.id,
+            issue_key: issue.issue_key,
+            summary: issue.summary,
+            project_key: issue.project_key,
+            assignee_account_id: issue.assignee_account_id ?? null,
+            assignee_display_name: issue.assignee_display_name ?? null,
+          }}
+        />
+      )}
+      {issue && (
+        <MoveIssueDialog
+          open={showMoveDialog}
+          onClose={() => setShowMoveDialog(false)}
+          source={{ id: issue.id, issue_key: issue.issue_key, project_key: issue.project_key }}
+        />
+      )}
     </>
   );
 }
