@@ -41,10 +41,9 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
     '@keyframes cv-confirm-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }',
     '.cv-drawer-body { container-type: inline-size; }',
     '.cv-drawer-left { min-width: 280px; }',
-    '@container (max-width: 899px) {',
-    '  .cv-drawer-body { flex-direction: column !important; }',
+    '@container (max-width: 1120px) {',
     '  .cv-drawer-splitter { display: none !important; }',
-    '  .cv-drawer-sidebar { width: 100% !important; max-width: none !important; border-left: none !important; border-top: 1px solid #EBECF0; }',
+    '  .cv-drawer-sidebar { display: none !important; }',
     '  .cv-drawer-left { border-right: none !important; min-width: 0 !important; }',
     '}',
   ].join('\n');

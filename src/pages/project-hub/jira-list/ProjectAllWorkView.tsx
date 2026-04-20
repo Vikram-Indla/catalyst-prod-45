@@ -27,13 +27,13 @@ interface Props {
 
 /**
  * Below this width the split region cannot host both the 260px list and a
- * legible Jira-parity detail body (~640px of comfortable reading width
- * + gutters). At narrower widths the detail panel hides and the list
- * panel reclaims the full row — no overlap, no horizontal scroll. The
- * breakpoint is the panel's own width (ResizeObserver), NOT window width,
- * so the rule still works when the user has the platform sidebar open.
+ * legible Jira-parity detail shell. The real lower bound is higher than the
+ * raw article width because CatalystDetailRouter itself contains a left body,
+ * a splitter, and a right sidebar. Hide the entire detail panel sooner so it
+ * never visually crowds or overlaps the list in responsive preview mode.
+ * The breakpoint is the split panel's own width, not the window width.
  */
-const SPLIT_BREAKPOINT_PX = 900;
+const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
