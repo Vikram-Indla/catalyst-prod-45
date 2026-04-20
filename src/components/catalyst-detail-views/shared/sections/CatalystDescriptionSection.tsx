@@ -109,7 +109,7 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
        some Jira ADFs because list-style defaults to 'none' in the
        Atlaskit reset. Jira-parity bullet style: filled disc top-level,
        hollow circle nested, square third-level (matching Atlassian's
-       canonical ADF renderer). The legacy `.adf-description-content`
+       canonical ADF renderer). The legacy '.adf-description-content'
        selector is retained defensively in case any stale prerender DOM
        sneaks in; safe to drop in a future pass. */
     .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #292A2E; line-height: 1.3; }
