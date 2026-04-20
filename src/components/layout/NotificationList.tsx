@@ -1,5 +1,4 @@
 import { Section, MenuGroup } from '@atlaskit/menu';
-import Heading from '@atlaskit/heading';
 import { Box, Text, xcss } from '@atlaskit/primitives';
 import { NotificationItem, type LayoutNotification } from './NotificationItem';
 
@@ -17,7 +16,7 @@ export function NotificationList({ notifications, onItemClick }: NotificationLis
   return (
     <Box xcss={scrollStyles}>
       <MenuGroup menuLabel="Notifications" spacing="cozy">
-        <Section title={<Heading size="small">Notifications</Heading>}>
+        <Section title="Notifications">
           {notifications.length === 0 ? (
             <Box xcss={emptyStyles}>
               <Text color="color.text.subtle">You're all caught up</Text>

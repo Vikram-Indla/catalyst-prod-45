@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import { LinkItem } from '@atlaskit/menu';
-import { Box, Stack, Text, xcss } from '@atlaskit/primitives';
+import { Box, Flex, Stack, Text, xcss } from '@atlaskit/primitives';
 
 export type LayoutNotification = {
   id: string;
@@ -32,7 +32,6 @@ export function NotificationItem({ title, body, timestamp, read, href, sourceIco
     <LinkItem
       href={href ?? '#'}
       iconBefore={sourceIcon ?? <Avatar size="small" />}
-      elemAfter={!read ? <Lozenge appearance="inprogress">NEW</Lozenge> : undefined}
       description={
         <Stack space="space.025">
           <Box xcss={bodyStyles}><Text>{body}</Text></Box>
@@ -40,7 +39,10 @@ export function NotificationItem({ title, body, timestamp, read, href, sourceIco
         </Stack>
       }
     >
-      {title}
+      <Flex alignItems="center" justifyContent="space-between" gap="space.100">
+        <Text weight="semibold">{title}</Text>
+        {!read ? <Lozenge appearance="inprogress">NEW</Lozenge> : null}
+      </Flex>
     </LinkItem>
   );
 }
