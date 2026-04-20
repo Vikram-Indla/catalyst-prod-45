@@ -30,7 +30,7 @@ interface ReleaseHubSidebarProps {
 //   - unlabeled top: Command Center (dashboard entry point)
 //   - Releases: All Releases, Release Compare, Triage Queue, Production Events
 //       → Production Events is release-adjacent (post-ship monitoring)
-//   - Change Management: All Changes, Sign-off Queue, Freeze Windows
+//   - Change Management: All Changes, Signoff Queue, Freeze Windows
 //       → Freeze Windows gates changes, belongs with the governance cluster
 // The previous "Settings" section also collided with the footer Settings
 // item; that ambiguity is gone now.
@@ -54,7 +54,7 @@ const buildSections = (triageCount: number, pendingSignoffs: number): SidebarSec
     title: 'Change Management',
     items: [
       { id: 'all-changes', title: 'All Changes', path: '/release-hub/changes', icon: ArrowLeftRight, exact: false },
-      { id: 'sign-off-queue', title: 'Sign-off Queue', path: '/release-hub/sign-off-queue', icon: CheckSquare, exact: false, badge: pendingSignoffs > 0 ? pendingSignoffs : undefined, badgeVariant: 'danger' as const },
+      { id: 'sign-off-queue', title: 'Signoff Queue', path: '/release-hub/sign-off-queue', icon: CheckSquare, exact: false, badge: pendingSignoffs > 0 ? pendingSignoffs : undefined, badgeVariant: 'danger' as const },
       { id: 'freeze-windows', title: 'Freeze Windows', path: '/release-hub/freeze-windows', icon: CalendarOff, exact: true },
     ],
   },

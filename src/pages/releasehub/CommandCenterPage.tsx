@@ -454,13 +454,13 @@ export default function CommandCenterPage() {
         </div>
       </div>
 
-      {/* Row 4: Sign-off Queue + Production Events */}
+      {/* Row 4: Signoff Queue + Production Events */}
       <div className="grid grid-cols-2 gap-4">
-        {/* Sign-off Queue Widget */}
+        {/* Signoff Queue Widget */}
         <div className="rounded-[6px] overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}` }}>
           <div className="px-5 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Sign-off Queue</h2>
+              <h2 className="text-[14px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Signoff Queue</h2>
               <span className="inline-flex items-center h-5 px-1.5 rounded text-[11px] font-bold" style={{ background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB' }}>AI Prioritized</span>
             </div>
             <button onClick={() => navigate('/release-hub/sign-off-queue')} className="text-[12px] font-medium text-[#2563EB] hover:underline">View all</button>

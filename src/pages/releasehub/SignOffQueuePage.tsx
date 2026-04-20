@@ -58,7 +58,7 @@ export default function SignOffQueuePage() {
   return (
     <div className="p-6" style={{ background: isDark ? '#0A0A0A' : '#FFFFFF' }}>
       <div className="mb-5">
-        <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Sign-off Queue</h1>
+        <h1 className="text-[24px]" style={{ fontFamily: RH.fontDisplay, fontWeight: 650, color: isDark ? '#EDEDED' : RH.ink1 }}>Signoff Queue</h1>
         <p className="text-[13px] mt-1" style={{ color: isDark ? '#878787' : '#64748B' }}>All pending approvals — notifications sent to approver's For You homepage</p>
       </div>
 
