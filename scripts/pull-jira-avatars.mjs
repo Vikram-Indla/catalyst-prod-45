@@ -67,26 +67,23 @@ async function loadEnv() {
   return env;
 }
 
-async function fetchIdentityMap(supabaseUrl, anonKey) {
-  // Read directly via REST. RLS on jira_identity_map should permit anon read of
-  // identity columns; if not, fall back to a service-role key in env.
-  const url = new URL(`${supabaseUrl}/rest/v1/jira_identity_map`);
-  url.searchParams.set('select', 'jira_account_id,display_name,email,avatar_url,is_active_in_jira');
-  url.searchParams.set('is_active_in_jira', 'eq.true');
-  url.searchParams.set('avatar_url', 'not.is.null');
-
-  const res = await fetch(url, {
-    headers: {
-      apikey: anonKey,
-      Authorization: `Bearer ${anonKey}`,
-      Accept: 'application/json',
-    },
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Failed to read jira_identity_map: HTTP ${res.status} — ${body.slice(0, 300)}`);
-  }
-  return res.json();
+async function fetchIdentityMap() {
+  // jira_identity_map has RLS that blocks the anon key. The script reads a
+  // pre-exported JSON dump instead — produced by an operator with DB access:
+  //
+  //   psql -t -A -c "SELECT json_agg(json_build_object(
+  //     'display_name',display_name,'email',email,
+  //     'jira_account_id',jira_account_id,'avatar_url',avatar_url))
+  //     FROM public.jira_identity_map
+  //     WHERE is_active_in_jira AND avatar_url IS NOT NULL;" \
+  //     > /tmp/jira-identity.json
+  //
+  // This avoids needing SUPABASE_SERVICE_ROLE_KEY in the script env.
+  const dumpPath = process.env.JIRA_IDENTITY_DUMP || '/tmp/jira-identity.json';
+  const text = await readFile(dumpPath, 'utf8');
+  const rows = JSON.parse(text);
+  if (!Array.isArray(rows)) throw new Error(`Expected JSON array in ${dumpPath}`);
+  return rows;
 }
 
 async function downloadAvatar(url) {
