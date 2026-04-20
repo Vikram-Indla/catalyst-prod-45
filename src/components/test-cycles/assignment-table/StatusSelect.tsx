@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { CheckCircle, XCircle, AlertTriangle, Clock, PlayCircle, ChevronDown } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { CATALYST_V5, TEST_STATUS_COLORS } from '@/lib/catalyst-colors';
 import type { TestStatus } from '@/types/assignment-table.types';
+
+const STATUS_APPEARANCE: Record<TestStatus, LozengeAppearance> = {
+  not_started: 'default',
+  in_progress: 'inprogress',
+  passed: 'success',
+  failed: 'removed',
+  blocked: 'removed',
+};
 
 interface StatusSelectProps {
   value: TestStatus;
@@ -29,22 +37,16 @@ const STATUS_CONFIG: Record<TestStatus, { label: string; icon: typeof CheckCircl
 
 export function StatusSelect({ value, onChange }: StatusSelectProps) {
   const config = STATUS_CONFIG[value];
-  const style = TEST_STATUS_COLORS[value];
-  const Icon = config.icon;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-1 group">
-          <Badge 
-            className="text-xs px-2 py-0.5 gap-1 border-0 cursor-pointer"
-            style={{ backgroundColor: style?.bg, color: style?.text }}
-          >
-            <Icon className="w-3 h-3" />
+          <Lozenge appearance={STATUS_APPEARANCE[value]}>
             {config.label}
-          </Badge>
-          <ChevronDown 
-            className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" 
+          </Lozenge>
+          <ChevronDown
+            className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity"
             style={{ color: CATALYST_V5.slate[400] }}
           />
         </button>

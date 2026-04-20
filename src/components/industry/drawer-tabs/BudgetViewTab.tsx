@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, Wallet, TrendingUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -172,20 +172,16 @@ function POTagsInput({
         "focus-within:border-[#2563eb] focus-within:ring-1 focus-within:ring-[#2563eb]/20"
       )}>
         {tags.map((tag, index) => (
-          <Badge 
-            key={index}
-            variant="secondary"
-            className="h-6 gap-1 pr-1 bg-[#2563eb]/10 text-[#1d4ed8] dark:bg-[#2563eb]/20 dark:text-[#60a5fa] border-[#2563eb]/20"
-          >
-            {tag}
-            <button 
+          <span key={index} className="inline-flex items-center gap-1">
+            <Lozenge appearance="default">{tag}</Lozenge>
+            <button
               type="button"
               onClick={() => removeTag(tag)}
               className="hover:bg-[#2563eb]/20 rounded-full p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
-          </Badge>
+          </span>
         ))}
         <input
           type="text"

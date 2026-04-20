@@ -1,6 +1,6 @@
 import { Link2, Plus, ExternalLink, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import type { LinkedItem } from '@/types/release';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
@@ -13,16 +13,6 @@ interface LinkedItemsPanelProps {
 
 const getTypeIconComponent = (type: string) => {
   return <JiraIssueTypeIcon type={type} size={16} />;
-};
-
-const getTypeColor = (type: string) => {
-  switch (type) {
-    case 'story': return 'bg-workitem-story/20 text-workitem-story';
-    case 'defect': return 'bg-destructive/20 text-destructive';
-    case 'task': return 'bg-[var(--sem-info-bg)] text-[var(--sem-info)]';
-    case 'epic': return 'bg-workitem-epic/20 text-workitem-epic';
-    default: return 'bg-muted text-muted-foreground';
-  }
 };
 
 export function LinkedItemsPanel({
@@ -52,9 +42,9 @@ export function LinkedItemsPanel({
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
                 {getTypeIconComponent(item.type)}
-                <Badge variant="secondary" className={getTypeColor(item.type) + " text-[10px] uppercase"}>
+                <Lozenge appearance="default">
                   {item.type}
-                </Badge>
+                </Lozenge>
                 <span className="text-xs font-medium text-[#2563eb] dark:text-[#60a5fa]">{item.id}</span>
                 <span className="text-xs text-muted-foreground truncate">{item.summary}</span>
               </div>

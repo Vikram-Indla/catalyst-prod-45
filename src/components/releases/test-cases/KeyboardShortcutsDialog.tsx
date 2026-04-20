@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -163,7 +163,7 @@ export function KeyboardShortcutsDialog({ open, onOpenChange }: KeyboardShortcut
 
         <div className="flex items-center justify-between pt-4">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <Badge variant="secondary" className="text-xs">Pro Tip</Badge>
+            <Lozenge appearance="default">Pro Tip</Lozenge>
             <span>Press <Key>?</Key> anytime to show this dialog</span>
           </div>
           <button

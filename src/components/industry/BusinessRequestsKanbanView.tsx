@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -149,9 +149,9 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                     <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-primary/30 transition-colors">
                       <div className="h-full flex flex-col items-center py-4">
                         <div className="w-3 h-3 rounded-full shadow-sm bg-muted border border-border" />
-                        <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
-                          {columnRequests.length}
-                        </Badge>
+                        <span className="mb-3">
+                          <Lozenge appearance="inprogress">{columnRequests.length}</Lozenge>
+                        </span>
                         <div className="flex-1 flex items-center justify-center">
                           <span 
                             className="text-sm font-semibold tracking-tight text-foreground/80 whitespace-nowrap"
@@ -186,9 +186,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                           <div className="w-3 h-3 rounded-full shadow-sm bg-muted border border-border" />
                           <CardTitle className="text-sm font-semibold tracking-tight">{column.label}</CardTitle>
                         </div>
-                        <Badge variant="secondary" className="rounded-full text-xs font-medium px-2.5 py-0.5 bg-muted/80">
-                          {columnRequests.length}
-                        </Badge>
+                        <Lozenge appearance="inprogress">{columnRequests.length}</Lozenge>
                       </div>
                     </CardHeader>
                     <Droppable droppableId={column.id}>

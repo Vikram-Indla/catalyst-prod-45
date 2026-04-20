@@ -10,7 +10,7 @@
 
 import { AlertTriangle, Clock, CheckCircle, XCircle, Shield, UserPlus, ChevronRight, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -27,21 +27,17 @@ interface CommitteeQueueDrawerProps {
 
 // Status badge (tokens)
 function StatusBadge({ status }: { status: CommitteeDecisionStatus }) {
-  const cfg: Record<CommitteeDecisionStatus, { label: string; bg: string; fg: string; icon: typeof Clock }> = {
-    pending: { label: 'Pending', bg: 'var(--status-warning-bg)', fg: 'var(--status-warning)', icon: Clock },
-    approved: { label: 'Approved', bg: 'var(--status-success-bg)', fg: 'var(--status-success)', icon: CheckCircle },
-    vetoed: { label: 'Vetoed', bg: 'var(--status-danger-bg)', fg: 'var(--status-danger)', icon: XCircle },
+  const cfg: Record<CommitteeDecisionStatus, { label: string; appearance: LozengeAppearance; icon: typeof Clock }> = {
+    pending: { label: 'Pending', appearance: 'moved', icon: Clock },
+    approved: { label: 'Approved', appearance: 'success', icon: CheckCircle },
+    vetoed: { label: 'Vetoed', appearance: 'removed', icon: XCircle },
   };
-  const { label, bg, fg, icon: Icon } = cfg[status];
+  const { label, appearance, icon: Icon } = cfg[status];
   return (
-    <Badge
-      variant="outline"
-      className="gap-1 text-[11px] font-medium"
-      style={{ background: bg, color: fg, borderColor: 'var(--border-default)' }}
-    >
-      <Icon className="h-3 w-3" />
-      {label}
-    </Badge>
+    <span className="inline-flex items-center gap-1">
+      <Icon className="h-3 w-3" aria-hidden="true" />
+      <Lozenge appearance={appearance}>{label}</Lozenge>
+    </span>
   );
 }
 
@@ -71,9 +67,7 @@ function ApproverRow({ approver }: { approver: CommitteeApprover }) {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-medium text-[var(--text-primary)] text-sm">{approver.userName}</span>
             {approver.hasVeto && (
-              <Badge variant="outline" className="text-[9px] px-1 py-0" style={{ color: 'var(--status-warning)', borderColor: 'var(--status-warning)' }}>
-                VETO POWER
-              </Badge>
+              <Lozenge appearance="moved">VETO POWER</Lozenge>
             )}
           </div>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -220,26 +214,22 @@ export function CommitteeQueueDrawer({ open, onOpenChange, item, onEditApprovers
               <div className="p-3 rounded-lg border space-y-2" style={{ background: 'var(--surface-subtle)', borderColor: 'var(--border-default)' }}>
                 <div className="text-sm font-medium text-[var(--text-primary)]">{item.incident.title}</div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className="text-xs"
-                    style={{
-                      color:
-                        item.incident.severity === 'SEV1'
-                          ? 'var(--status-danger)'
-                          : item.incident.severity === 'SEV2'
-                          ? 'var(--status-warning)'
-                          : 'var(--text-secondary)',
-                      borderColor: 'var(--border-default)',
-                    }}
+                  <Lozenge
+                    appearance={
+                      (item.incident.severity === 'SEV1'
+                        ? 'removed'
+                        : item.incident.severity === 'SEV2'
+                        ? 'moved'
+                        : 'default') as LozengeAppearance
+                    }
                   >
                     {item.incident.severity}
-                  </Badge>
+                  </Lozenge>
                   {item.incident.is_major_incident && (
-                    <Badge variant="outline" className="text-xs gap-1" style={{ color: 'var(--status-warning)', borderColor: 'var(--border-default)' }}>
-                      <AlertTriangle className="h-3 w-3" />
-                      Major
-                    </Badge>
+                    <span className="inline-flex items-center gap-1">
+                      <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                      <Lozenge appearance="moved">Major</Lozenge>
+                    </span>
                   )}
                 </div>
               </div>

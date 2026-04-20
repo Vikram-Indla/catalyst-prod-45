@@ -1,7 +1,6 @@
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { GripVertical } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

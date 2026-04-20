@@ -7,7 +7,7 @@
 
 import { memo } from 'react';
 import { Shield, Users, Eye } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
 import {
   Tooltip,
@@ -31,12 +31,12 @@ const HUB_LABELS: Record<string, string> = {
   CrossHub: 'Cross-Hub',
 };
 
-// ── Priority badge colors (per CLAUDE.md — no HSL, hex only) ────
-const PRIORITY_STYLES: Record<string, string> = {
-  P1: 'bg-[#FFEBE6] text-[#BF2600] border-transparent',
-  P2: 'bg-[#FFF0B3] text-[#974F0C] border-transparent',
-  P3: 'bg-[#DEEBFF] text-[#0747A6] border-transparent',
-  P4: 'bg-[#DFE1E6] text-[#253858] border-transparent',
+// ── Priority → Lozenge appearance (per CLAUDE.md guardrails) ────
+const PRIORITY_APPEARANCE: Record<string, LozengeAppearance> = {
+  P1: 'removed',
+  P2: 'moved',
+  P3: 'inprogress',
+  P4: 'default',
 };
 
 // ── Tab route labels ────────────────────────────────────────────
@@ -121,9 +121,9 @@ export const TriggerRow = memo(function TriggerRow({
                   <span className="text-[10px] font-mono text-muted-foreground">
                     {triggerKey}
                   </span>
-                  <Badge variant="outline" className="text-[9px] h-4 px-1">
+                  <Lozenge appearance="default">
                     {TAB_LABELS[tab] || tab}
-                  </Badge>
+                  </Lozenge>
                 </div>
               </div>
             </TooltipContent>
@@ -146,12 +146,9 @@ export const TriggerRow = memo(function TriggerRow({
 
         {/* Silent badge */}
         {isSilent && (
-          <Badge
-            variant="outline"
-            className="text-[8px] h-3.5 px-1 border-[#CBD5E1] text-[#94A3B8] leading-none"
-          >
+          <Lozenge appearance="default">
             SILENT
-          </Badge>
+          </Lozenge>
         )}
 
         {/* Override indicator dot */}
@@ -180,21 +177,16 @@ export const TriggerRow = memo(function TriggerRow({
 
       {/* ── Hub Badge ────────────────────────────────────────────── */}
       <div>
-        <Badge
-          variant="outline"
-          className="text-[9px] h-5 px-1.5 font-medium border-[var(--bd-default, #E2E8F0)] text-[#475569] whitespace-nowrap"
-        >
+        <Lozenge appearance="default">
           {HUB_LABELS[hubSource] || hubSource}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* ── Priority Badge ───────────────────────────────────────── */}
       <div>
-        <Badge
-          className={`text-[9px] h-5 px-1.5 font-bold border ${PRIORITY_STYLES[priority]}`}
-        >
+        <Lozenge appearance={PRIORITY_APPEARANCE[priority] ?? 'default'}>
           {priority}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* ── Channel Toggles (in_app, email, toast, slack) ────────── */}

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { KPIWidgetCard } from '@/components/shared/KPIWidgetCard';
 import { LayoutGrid, ListTodo, Target, AlertTriangle, TrendingUp, TrendingDown, Activity } from 'lucide-react';
@@ -280,9 +280,9 @@ export default function TeamRoom() {
                   <div className="p-4 bg-muted rounded-lg">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Sprint Status</span>
-                      <Badge className={isOnTrack ? "bg-success" : "bg-warning"}>
+                      <Lozenge appearance={isOnTrack ? "success" : "moved"}>
                         {isOnTrack ? "On Track" : "At Risk"}
-                      </Badge>
+                      </Lozenge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
                       Day {sprintDaysElapsed} of {sprintTotalDays} • {Math.round((sprintDaysElapsed / sprintTotalDays) * 100)}% elapsed
@@ -364,16 +364,16 @@ export default function TeamRoom() {
                       <div className="flex items-center gap-2">
                         <div className="font-medium">{feature.name}</div>
                         {feature.blocked && (
-                          <Badge variant="destructive" className="text-xs">Blocked</Badge>
+                          <Lozenge appearance="removed">Blocked</Lozenge>
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground mt-1">
                         {feature.estimate_points} points • {feature.progress_pct}% complete
                       </div>
                     </div>
-                    <Badge variant="outline" className="capitalize">
+                    <Lozenge appearance="default">
                       {feature.status?.replace('_', ' ')}
-                    </Badge>
+                    </Lozenge>
                   </div>
                 ))}
               </div>

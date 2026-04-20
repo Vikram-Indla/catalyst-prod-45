@@ -5,7 +5,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ListChecks, Check } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TestCase } from '@/types/test-cases';

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Label } from '@/components/ui/label';
 import { CalendarDays, Users } from 'lucide-react';
 import { format, isWithinInterval, parseISO } from 'date-fns';
@@ -155,14 +155,10 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
                         <div className="flex items-center gap-2">
                           <span>{sprint.short_name || sprint.name}</span>
                           {status === 'active' && (
-                            <Badge variant="default" className="text-[10px] px-1 py-0 bg-green-500">
-                              Active
-                            </Badge>
+                            <Lozenge appearance="success">Active</Lozenge>
                           )}
                           {status === 'past' && (
-                            <Badge variant="secondary" className="text-[10px] px-1 py-0">
-                              Past
-                            </Badge>
+                            <Lozenge appearance="default">Past</Lozenge>
                           )}
                         </div>
                       </SelectItem>
@@ -180,7 +176,7 @@ export function SprintSelector({ storyId, currentSprintId, teamId, onSprintChang
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{currentSprint.name}</span>
               {getSprintStatus(currentSprint) === 'active' && (
-                <Badge className="bg-green-500 text-white text-xs">Active</Badge>
+                <Lozenge appearance="success">Active</Lozenge>
               )}
             </div>
             

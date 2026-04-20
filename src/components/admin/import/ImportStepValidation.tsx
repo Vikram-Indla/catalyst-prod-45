@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { CheckCircle, XCircle, AlertTriangle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
@@ -202,11 +202,11 @@ export function ImportStepValidation({
                             </td>
                             <td className="px-3 py-1.5">
                               {hasErrors ? (
-                                <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Invalid</Badge>
+                                <Lozenge appearance="removed">Invalid</Lozenge>
                               ) : hasWarnings ? (
-                                <Badge className="bg-amber-100 text-amber-700 text-[10px] px-1.5 py-0">Warning</Badge>
+                                <Lozenge appearance="moved">Warning</Lozenge>
                               ) : (
-                                <Badge className="bg-green-100 text-green-700 text-[10px] px-1.5 py-0">Valid</Badge>
+                                <Lozenge appearance="success">Valid</Lozenge>
                               )}
                             </td>
                             {mappedFields.map(f => {

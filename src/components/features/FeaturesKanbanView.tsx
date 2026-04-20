@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
@@ -75,9 +75,9 @@ export function FeaturesKanbanView({ features, onFeatureSelect, onRefetch }: Fea
                       <div className={cn("w-3 h-3 rounded-full", column.color)} />
                       <CardTitle className="text-sm font-medium">{column.label}</CardTitle>
                     </div>
-                    <Badge variant="secondary" className="rounded-full">
+                    <Lozenge appearance="inprogress">
                       {columnFeatures.length}
-                    </Badge>
+                    </Lozenge>
                   </div>
                 </CardHeader>
                 <Droppable droppableId={column.id}>
@@ -134,9 +134,9 @@ export function FeaturesKanbanView({ features, onFeatureSelect, onRefetch }: Fea
                                 {feature.estimate_points && (
                                   <div className="flex items-center justify-between text-xs">
                                     <span className="text-muted-foreground">Points</span>
-                                    <Badge variant="outline" className="text-xs">
+                                    <Lozenge appearance="default">
                                       {feature.estimate_points}
-                                    </Badge>
+                                    </Lozenge>
                                   </div>
                                 )}
                               </CardContent>

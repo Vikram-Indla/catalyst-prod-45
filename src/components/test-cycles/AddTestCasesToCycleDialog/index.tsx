@@ -8,7 +8,7 @@ import { Search, FileText, Check, X, Folder } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useFoldersWithCounts } from '@/hooks/test-management/useFolders';
 import { useQuery } from '@tanstack/react-query';
@@ -119,7 +119,7 @@ export function AddTestCasesToCycleDialog({
               <div className="flex items-center gap-2 mb-3">
                 <FileText className="w-4 h-4 text-slate-500" />
                 <span className="font-medium text-slate-700">Available</span>
-                <Badge variant="secondary">{testCases.length} total</Badge>
+                <Lozenge appearance="default">{testCases.length} total</Lozenge>
               </div>
               <div className="relative mb-3">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -152,7 +152,7 @@ export function AddTestCasesToCycleDialog({
               <div className="flex items-center gap-2 mb-3">
                 <Check className="w-4 h-4 text-teal-600" />
                 <span className="font-medium text-slate-700">Selected</span>
-                <Badge className="bg-teal-100 text-teal-700">{selection.count} tests</Badge>
+                <Lozenge appearance="success">{selection.count} tests</Lozenge>
               </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />

@@ -21,7 +21,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { TestCaseFormData, TestCaseStep, StepMode } from './types';
@@ -77,24 +77,9 @@ function StepCard({
           <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white text-sm font-semibold">
             {index + 1}
           </div>
-          <Badge 
-            variant={isComplete ? "default" : "secondary"}
-            className={cn(
-              "text-xs",
-              isComplete 
-                ? "bg-teal-100 text-teal-700 border-teal-200" 
-                : "bg-amber-100 text-amber-700 border-amber-200"
-            )}
-          >
-            {isComplete ? (
-              <>
-                <Check className="w-3 h-3 mr-1" />
-                Complete
-              </>
-            ) : (
-              'Incomplete'
-            )}
-          </Badge>
+          <Lozenge appearance={isComplete ? 'success' : 'moved'}>
+            {isComplete ? 'Complete' : 'Incomplete'}
+          </Lozenge>
         </div>
 
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

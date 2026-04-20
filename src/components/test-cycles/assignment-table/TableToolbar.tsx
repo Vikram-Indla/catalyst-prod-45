@@ -6,7 +6,7 @@ import React, { useState, useCallback } from 'react';
 import { Search, Filter, X, Columns, Download, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -97,12 +97,9 @@ export function TableToolbar({
         <Button variant="outline" size="sm" className="h-8 gap-1.5">
           {label}
           {selected.length > 0 && (
-            <Badge 
-              className="h-4 px-1 text-[10px] rounded-full"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
-            >
+            <Lozenge appearance="inprogress">
               {selected.length}
-            </Badge>
+            </Lozenge>
           )}
           <ChevronDown className="h-3.5 w-3.5 opacity-50" />
         </Button>
@@ -215,74 +212,62 @@ export function TableToolbar({
           <Filter className="h-3.5 w-3.5" style={{ color: CATALYST_V5.slate[400] }} />
           
           {filters.status.map(status => (
-            <Badge 
-              key={status} 
-              variant="secondary" 
-              className="gap-1 pr-1 capitalize"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
-            >
-              {status.replace('_', ' ')}
-              <button 
+            <span key={status} className="inline-flex items-center gap-1">
+              <Lozenge appearance="inprogress">
+                {status.replace('_', ' ')}
+              </Lozenge>
+              <button
                 onClick={() => handleFilterChange('status', filters.status.filter(s => s !== status))}
-                className="ml-0.5 p-0.5 rounded hover:bg-primary/20"
+                className="p-0.5 rounded hover:bg-primary/20"
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           ))}
-          
+
           {filters.assignee.map(assigneeId => {
             const assignee = filterOptions.assignees.find(a => a.value === assigneeId);
             return (
-              <Badge 
-                key={assigneeId} 
-                variant="secondary" 
-                className="gap-1 pr-1"
-                style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
-              >
-                {assignee?.label || 'Unassigned'}
-                <button 
+              <span key={assigneeId} className="inline-flex items-center gap-1">
+                <Lozenge appearance="inprogress">
+                  {assignee?.label || 'Unassigned'}
+                </Lozenge>
+                <button
                   onClick={() => handleFilterChange('assignee', filters.assignee.filter(a => a !== assigneeId))}
-                  className="ml-0.5 p-0.5 rounded hover:bg-primary/20"
+                  className="p-0.5 rounded hover:bg-primary/20"
                 >
                   <X className="h-3 w-3" />
                 </button>
-              </Badge>
+              </span>
             );
           })}
-          
+
           {filters.priority.map(priority => (
-            <Badge 
-              key={priority} 
-              variant="secondary" 
-              className="gap-1 pr-1 capitalize"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
-            >
-              {priority}
-              <button 
+            <span key={priority} className="inline-flex items-center gap-1">
+              <Lozenge appearance="inprogress">
+                {priority}
+              </Lozenge>
+              <button
                 onClick={() => handleFilterChange('priority', filters.priority.filter(p => p !== priority))}
-                className="ml-0.5 p-0.5 rounded hover:bg-primary/20"
+                className="p-0.5 rounded hover:bg-primary/20"
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           ))}
-          
+
           {filters.module.map(module => (
-            <Badge 
-              key={module} 
-              variant="secondary" 
-              className="gap-1 pr-1"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
-            >
-              {module}
-              <button 
+            <span key={module} className="inline-flex items-center gap-1">
+              <Lozenge appearance="inprogress">
+                {module}
+              </Lozenge>
+              <button
                 onClick={() => handleFilterChange('module', filters.module.filter(m => m !== module))}
-                className="ml-0.5 p-0.5 rounded hover:bg-primary/20"
+                className="p-0.5 rounded hover:bg-primary/20"
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           ))}
           
           <button 

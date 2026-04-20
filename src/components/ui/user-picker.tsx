@@ -15,7 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 
@@ -295,43 +295,32 @@ export function UserPicker({
       {multiSelect && selectedUsers.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {Array.isArray(value) && value.includes('UNASSIGNED') && (
-            <Badge
-              variant="secondary"
-              className="h-6 gap-1 pr-1 bg-muted text-muted-foreground"
-            >
-              Unassigned
+            <span className="inline-flex items-center gap-1">
+              <Lozenge appearance="default">Unassigned</Lozenge>
               <button
                 type="button"
                 onClick={() => handleRemove('UNASSIGNED')}
-                className="ml-1 rounded-full hover:bg-muted-foreground/20 p-0.5"
+                className="rounded-full hover:bg-muted-foreground/20 p-0.5"
+                aria-label="Remove Unassigned"
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           )}
           {selectedUsers.map((user) => (
-            <Badge
-              key={user.id}
-              variant="secondary"
-              className="h-6 gap-1 pr-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
-            >
-              <Avatar className="h-4 w-4">
-                <AvatarImage src={user.avatar_url || undefined} />
-                <AvatarFallback className="text-[8px] bg-brand-primary/20 text-brand-primary">
-                  {getInitials(user.full_name, user.email)}
-                </AvatarFallback>
-              </Avatar>
-              <span className="max-w-[100px] truncate">
+            <span key={user.id} className="inline-flex items-center gap-1">
+              <Lozenge appearance="inprogress">
                 {user.full_name || user.email}
-              </span>
+              </Lozenge>
               <button
                 type="button"
                 onClick={() => handleRemove(user.id)}
-                className="ml-1 rounded-full hover:bg-brand-primary/20 p-0.5"
+                className="rounded-full hover:bg-brand-primary/20 p-0.5"
+                aria-label={`Remove ${user.full_name || user.email}`}
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           ))}
         </div>
       )}

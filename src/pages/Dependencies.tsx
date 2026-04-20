@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
@@ -267,20 +267,20 @@ export default function Dependencies() {
                     {dependency.to_feature?.projects?.name}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">{dependency.type}</Badge>
+                    <Lozenge appearance="default">{dependency.type}</Lozenge>
                   </TableCell>
                   <TableCell className="text-sm">
                     {dependency.due_iteration?.name || '-'}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      className={`capitalize ${
-                        dependency.risk_level === 'high' ? 'bg-destructive' :
-                        dependency.risk_level === 'med' ? 'bg-warning' : 'bg-success'
-                      }`}
+                    <Lozenge
+                      appearance={
+                        dependency.risk_level === 'high' ? 'removed' :
+                        dependency.risk_level === 'med' ? 'moved' : 'success'
+                      }
                     >
                       {dependency.risk_level}
-                    </Badge>
+                    </Lozenge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -294,9 +294,9 @@ export default function Dependencies() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">
+                    <Lozenge appearance="default">
                       {dependency.status?.replace('_', ' ')}
-                    </Badge>
+                    </Lozenge>
                   </TableCell>
                 </TableRow>
               ))}
@@ -320,7 +320,7 @@ export default function Dependencies() {
                         Blocking: {dep.from_feature?.blocked || dep.to_feature?.blocked ? 'Yes' : 'No'}
                       </div>
                     </div>
-                    <Badge className="bg-destructive">Critical</Badge>
+                    <Lozenge appearance="removed">Critical</Lozenge>
                   </div>
                 </div>
               ))}
@@ -348,7 +348,7 @@ export default function Dependencies() {
                         {dep.from_feature?.name} → {dep.to_feature?.name}
                       </div>
                     </div>
-                    <Badge variant="outline">{dep.status}</Badge>
+                    <Lozenge appearance="default">{dep.status}</Lozenge>
                   </div>
                 </div>
               ))}

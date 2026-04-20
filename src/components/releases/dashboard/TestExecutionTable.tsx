@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { TestCase } from '@/types/release-dashboard';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -12,19 +13,19 @@ interface TestExecutionTableProps {
   onTestClick: (test: TestCase) => void;
 }
 
-const statusStyles: Record<string, string> = {
-  passed: 'bg-teal-100 text-teal-700',
-  failed: 'bg-destructive/10 text-destructive',
-  blocked: 'bg-amber-100 text-amber-700',
-  'not-run': 'bg-muted text-muted-foreground',
-  'in-progress': 'bg-primary/10 text-primary',
+const statusAppearance: Record<string, LozengeAppearance> = {
+  passed: 'success',
+  failed: 'removed',
+  blocked: 'moved',
+  'not-run': 'default',
+  'in-progress': 'inprogress',
 };
 
-const priorityStyles: Record<TestCase['priority'], string> = {
-  critical: 'bg-destructive/10 text-destructive',
-  high: 'bg-amber-100 text-amber-700',
-  medium: 'bg-primary/10 text-primary',
-  low: 'bg-muted text-muted-foreground',
+const priorityAppearance: Record<TestCase['priority'], LozengeAppearance> = {
+  critical: 'removed',
+  high: 'moved',
+  medium: 'inprogress',
+  low: 'default',
 };
 
 type SortField = 'id' | 'title' | 'priority' | 'status';
@@ -148,9 +149,11 @@ export function TestExecutionTable({ tests, onTestClick }: TestExecutionTablePro
                 <td className="px-3.5 py-3 text-primary font-medium">{test.id}</td>
                 <td className="px-3.5 py-3 font-medium text-foreground">{test.title}</td>
                 <td className="px-3.5 py-3">
-                  <Badge className={cn("text-[10px] font-semibold capitalize", priorityStyles[test.priority])}>
-                    {test.priority}
-                  </Badge>
+                  <span className="capitalize">
+                    <Lozenge appearance={priorityAppearance[test.priority]}>
+                      {test.priority}
+                    </Lozenge>
+                  </span>
                 </td>
                 <td className="px-3.5 py-3">
                   {test.assigneeId ? (
@@ -169,9 +172,11 @@ export function TestExecutionTable({ tests, onTestClick }: TestExecutionTablePro
                   )}
                 </td>
                 <td className="px-3.5 py-3">
-                  <Badge className={cn("text-[10px] font-semibold capitalize", statusStyles[test.status])}>
-                    {test.status.replace('-', ' ')}
-                  </Badge>
+                  <span className="capitalize">
+                    <Lozenge appearance={statusAppearance[test.status] ?? 'default'}>
+                      {test.status.replace('-', ' ')}
+                    </Lozenge>
+                  </span>
                 </td>
                 <td className="px-3.5 py-3 text-muted-foreground">
                   {test.duration ? `${Math.floor(test.duration / 60)}m ${test.duration % 60}s` : '—'}

@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { toast } from "sonner";
 import { Loader2, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
@@ -136,7 +136,7 @@ export function ConflictResolutionDialog({
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="destructive">Conflict</Badge>
+                          <Lozenge appearance="removed">Conflict</Lozenge>
                           <span className="text-sm text-muted-foreground">
                             {conflict.entity_type} • {conflict.sync_type}
                           </span>

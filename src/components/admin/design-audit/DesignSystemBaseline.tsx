@@ -9,7 +9,7 @@ import {
   ChevronDown, ChevronRight, Copy, Check, Lock 
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -64,7 +64,7 @@ export function DesignSystemBaseline() {
                 </p>
               </div>
             </div>
-            <Badge className="bg-brand-primary text-white">Locked</Badge>
+            <Lozenge appearance="inprogress">Locked</Lozenge>
           </div>
         </CardContent>
       </Card>
@@ -98,9 +98,9 @@ export function DesignSystemBaseline() {
                       )}
                       <Icon className="h-4 w-4 text-brand-primary" />
                       <span className="font-medium text-sm">{category.name}</span>
-                      <Badge variant="outline" className="ml-auto text-xs">
-                        {category.tokens.length}
-                      </Badge>
+                      <span className="ml-auto">
+                        <Lozenge appearance="default">{String(category.tokens.length)}</Lozenge>
+                      </span>
                     </button>
                     
                     {isExpanded && (

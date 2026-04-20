@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { getDistributionHealth } from '@/lib/assignment-algorithm';
@@ -19,11 +20,11 @@ interface AssignmentPreviewProps {
   onMoveTest: (testId: string, fromMemberId: string, toMemberId: string) => void;
 }
 
-const HEALTH_COLORS = {
-  teal: { bg: CATALYST_V5.tealLight, text: CATALYST_V5.teal },
-  primary: { bg: CATALYST_V5.primaryLight, text: CATALYST_V5.primary },
-  warning: { bg: CATALYST_V5.warningLight, text: CATALYST_V5.warning },
-  danger: { bg: CATALYST_V5.dangerLight, text: CATALYST_V5.danger },
+const HEALTH_APPEARANCE: Record<string, LozengeAppearance> = {
+  teal: 'success',
+  primary: 'inprogress',
+  warning: 'moved',
+  danger: 'removed',
 };
 
 export function AssignmentPreview({
@@ -34,7 +35,7 @@ export function AssignmentPreview({
   onMoveTest,
 }: AssignmentPreviewProps) {
   const health = getDistributionHealth(distributionScore);
-  const healthColors = HEALTH_COLORS[health.color];
+  const healthAppearance = HEALTH_APPEARANCE[health.color] ?? 'default';
 
   return (
     <div className="flex flex-col h-full">
@@ -65,14 +66,9 @@ export function AssignmentPreview({
           >
             Balance Score:
           </span>
-          <Badge
-            style={{
-              backgroundColor: healthColors.bg,
-              color: healthColors.text,
-            }}
-          >
+          <Lozenge appearance={healthAppearance}>
             {distributionScore}/100 - {health.label}
-          </Badge>
+          </Lozenge>
         </div>
       </div>
 

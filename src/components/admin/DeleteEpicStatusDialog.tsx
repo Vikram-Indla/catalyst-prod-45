@@ -19,7 +19,7 @@ import {
 import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { useLinkedEpics, useReassignEpics, useDeleteEpicStatus, EpicStatus } from '@/hooks/useEpicStatuses';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 
 interface DeleteEpicStatusDialogProps {
   open: boolean;
@@ -120,9 +120,9 @@ export function DeleteEpicStatusDialog({
                         key={epic.id} 
                         className="flex items-center gap-2 text-sm p-1.5 rounded hover:bg-muted/50"
                       >
-                        <Badge variant="outline" className="font-mono text-xs shrink-0">
+                        <Lozenge appearance="default">
                           {epic.epic_key || 'N/A'}
-                        </Badge>
+                        </Lozenge>
                         <span className="truncate text-muted-foreground">
                           {epic.title}
                         </span>

@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ChevronUp, ChevronDown, GripVertical, Pencil, MoreVertical, Columns, Check } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
@@ -354,13 +354,7 @@ export function EpicTableView({
         return (
           <div className="flex items-center gap-1">
             {row.quarters.slice(0, 2).map((q, i) => (
-              <Badge 
-                key={i} 
-                variant="outline" 
-                className="text-[10px] px-1.5 py-0 h-5 border-brand-primary/50 text-brand-primary"
-              >
-                {q}
-              </Badge>
+              <Lozenge key={i} appearance="default">{q}</Lozenge>
             ))}
           </div>
         );

@@ -4,9 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, AlertTriangle, ArrowRight } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Collapsible,
   CollapsibleContent,
@@ -20,8 +20,16 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { CATALYST_V5, TEST_PRIORITY_COLORS } from '@/lib/catalyst-colors';
+import { CATALYST_V5 } from '@/lib/catalyst-colors';
+import type { LozengeAppearance } from '@/components/ads';
 import type { SmartAssignmentTeamMember, DistributionSummary } from '@/types/smart-assignment.types';
+
+const PRIORITY_APPEARANCE: Record<string, LozengeAppearance> = {
+  critical: 'removed',
+  high: 'moved',
+  medium: 'inprogress',
+  low: 'default',
+};
 
 interface TeamMemberCardProps {
   member: SmartAssignmentTeamMember;
@@ -80,28 +88,11 @@ export function TeamMemberCard({
               </span>
               
               {isOverloaded && (
-                <Badge
-                  className="text-[10px] px-1.5 py-0 gap-1"
-                  style={{
-                    backgroundColor: CATALYST_V5.dangerLight,
-                    color: CATALYST_V5.danger,
-                  }}
-                >
-                  <AlertTriangle className="h-3 w-3" />
-                  Overloaded
-                </Badge>
+                <Lozenge appearance="removed">Overloaded</Lozenge>
               )}
 
               {summary.proposedCount > 0 && (
-                <Badge
-                  className="text-[10px] px-1.5 py-0"
-                  style={{
-                    backgroundColor: CATALYST_V5.primaryLight,
-                    color: CATALYST_V5.primary,
-                  }}
-                >
-                  +{summary.proposedCount} new
-                </Badge>
+                <Lozenge appearance="inprogress">+{summary.proposedCount} new</Lozenge>
               )}
             </div>
 
@@ -218,34 +209,28 @@ export function TeamMemberCard({
               style={{ borderColor: CATALYST_V5.slate[200] }}
             >
               {summary.tests.map(test => {
-                const priorityColors = TEST_PRIORITY_COLORS[test.priority];
+                const priorityAppearance = PRIORITY_APPEARANCE[test.priority] ?? 'default';
                 return (
                   <div
                     key={test.id}
                     className="px-4 py-2 flex items-center gap-2 border-b last:border-b-0"
                     style={{ borderColor: CATALYST_V5.slate[100] }}
                   >
-                    <span 
+                    <span
                       className="text-xs font-mono shrink-0"
                       style={{ color: CATALYST_V5.primary }}
                     >
                       {test.testCaseId}
                     </span>
-                    <span 
+                    <span
                       className="text-xs flex-1 truncate"
                       style={{ color: CATALYST_V5.slate[600] }}
                     >
                       {test.title}
                     </span>
-                    <Badge
-                      className="text-[9px] px-1 py-0 shrink-0"
-                      style={{
-                        backgroundColor: priorityColors.bg,
-                        color: priorityColors.text,
-                      }}
-                    >
-                      {test.priority}
-                    </Badge>
+                    <span className="shrink-0">
+                      <Lozenge appearance={priorityAppearance}>{test.priority}</Lozenge>
+                    </span>
                     
                     {/* Move to dropdown */}
                     <Select

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
@@ -104,9 +104,11 @@ export function MassMoveDialog({
         <div className="space-y-4 py-4">
           <div>
             <Label>Selected Epics</Label>
-            <Badge variant="secondary" className="mt-2">
-              {selectedEpics.length} epic(s) selected
-            </Badge>
+            <div className="mt-2">
+              <Lozenge appearance="inprogress">
+                {selectedEpics.length} epic(s) selected
+              </Lozenge>
+            </div>
           </div>
 
           <div>

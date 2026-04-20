@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { Clock, Users, Calendar as CalendarIcon, Play, Pause, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { TestCycle, CycleStats } from '@/hooks/test-cycles/useCycleDetails';
@@ -16,11 +17,11 @@ interface CycleHeaderProps {
   isLoading: boolean;
 }
 
-const STATUS_STYLES: Record<string, { bg: string; text: string; label: string; pulse?: boolean }> = {
-  planned: { bg: '#f1f5f9', text: '#475569', label: 'Planned' },
-  in_progress: { bg: CATALYST_V5.primaryLight, text: CATALYST_V5.primary, label: 'In Progress', pulse: true },
-  paused: { bg: CATALYST_V5.warningLight, text: CATALYST_V5.warning, label: 'Paused' },
-  completed: { bg: CATALYST_V5.tealLight, text: CATALYST_V5.teal, label: 'Completed' },
+const STATUS_STYLES: Record<string, { appearance: LozengeAppearance; label: string }> = {
+  planned: { appearance: 'default', label: 'Planned' },
+  in_progress: { appearance: 'inprogress', label: 'In Progress' },
+  paused: { appearance: 'moved', label: 'Paused' },
+  completed: { appearance: 'success', label: 'Completed' },
 };
 
 export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
@@ -46,7 +47,7 @@ export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
   if (!cycle || !stats) return null;
 
   const progress = stats.executionRate;
-  const status = STATUS_STYLES[cycle.status] || STATUS_STYLES.draft;
+  const status = STATUS_STYLES[cycle.status] || STATUS_STYLES.planned;
   
   // Progress ring calculations
   const size = 80;
@@ -109,18 +110,9 @@ export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
               {cycle.cycleKey}
             </span>
             
-            <Badge
-              className="text-xs font-medium px-2 py-0.5 rounded-full border-0"
-              style={{ backgroundColor: status.bg, color: status.text }}
-            >
-              {status.pulse && (
-                <span 
-                  className="w-1.5 h-1.5 rounded-full mr-1.5 animate-pulse"
-                  style={{ backgroundColor: status.text }}
-                />
-              )}
+            <Lozenge appearance={status.appearance}>
               {status.label}
-            </Badge>
+            </Lozenge>
           </div>
 
           <h1 className="text-xl font-semibold text-foreground truncate mb-1">
@@ -177,9 +169,9 @@ export function CycleHeader({ cycle, stats, isLoading }: CycleHeaderProps) {
 
             {/* Environment */}
             {cycle.environment && (
-              <Badge variant="outline" className="text-xs capitalize">
-                {cycle.environment}
-              </Badge>
+              <span className="capitalize">
+                <Lozenge appearance="default">{cycle.environment}</Lozenge>
+              </span>
             )}
           </div>
         </div>

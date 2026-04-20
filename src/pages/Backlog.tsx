@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 
@@ -153,7 +153,7 @@ export default function Backlog() {
               <TableCell>{story.features?.name}</TableCell>
               <TableCell>{story.estimate_points || '-'}</TableCell>
               <TableCell>
-                <Badge variant="outline" className="capitalize">{story.status}</Badge>
+                <Lozenge appearance="default">{story.status}</Lozenge>
               </TableCell>
             </TableRow>
           ))}

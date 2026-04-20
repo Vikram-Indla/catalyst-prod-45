@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { AlertTriangle, History, Trash2 } from 'lucide-react';
 
 interface QualityGate {
@@ -64,7 +64,9 @@ export function DeleteGateConfirmationDialog({
                 <div className="border rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-foreground">{gate.name}</span>
-                    <Badge variant="outline" className="capitalize">{gate.category}</Badge>
+                    <span className="capitalize">
+                      <Lozenge appearance="default">{gate.category}</Lozenge>
+                    </span>
                   </div>
                   
                   {gate.description && (

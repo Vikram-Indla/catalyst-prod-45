@@ -17,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 
 interface BusinessOwnerPickerProps {
   value?: string[];
@@ -158,20 +158,19 @@ export function BusinessOwnerPicker({
       {value && value.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {value.map((owner) => (
-            <Badge
-              key={owner}
-              variant="secondary"
-              className="h-6 gap-1 pr-1 bg-brand-primary/10 text-brand-primary border-brand-primary/20"
-            >
-              <span className="max-w-[120px] truncate">{owner}</span>
+            <span key={owner} className="inline-flex items-center gap-1">
+              <Lozenge appearance="inprogress" maxWidth={120}>
+                {owner}
+              </Lozenge>
               <button
                 type="button"
                 onClick={() => handleRemove(owner)}
-                className="ml-1 rounded-full hover:bg-brand-primary/20 p-0.5"
+                className="rounded-full hover:bg-brand-primary/20 p-0.5"
+                aria-label={`Remove ${owner}`}
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           ))}
         </div>
       )}

@@ -4,7 +4,7 @@ import { X, Calendar, User, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { MilestoneMarker } from './MilestoneMarker';
 import { 
   STATUS_CALENDAR_COLORS, 
@@ -82,9 +82,9 @@ export function DayDetailPanel({
         <div className="flex items-center gap-2 mt-3">
           {isCycleStart && <MilestoneMarker type="start" label="Cycle Starts" />}
           {isCycleEnd && <MilestoneMarker type="end" label="Cycle Ends" />}
-          <Badge variant="secondary" className="bg-[#f1f5f9] text-[#475569]">
+          <Lozenge appearance="default">
             {events.length} tests
-          </Badge>
+          </Lozenge>
         </div>
       </div>
 
@@ -127,9 +127,11 @@ export function DayDetailPanel({
                           </div>
                         </div>
                         {(event.priority === 'critical' || event.priority === 'high') && (
-                          <Badge className={cn('shrink-0 text-[10px]', PRIORITY_COLORS[event.priority])}>
-                            {event.priority}
-                          </Badge>
+                          <span className="shrink-0">
+                            <Lozenge appearance={event.priority === 'critical' ? 'removed' : 'moved'}>
+                              {event.priority}
+                            </Lozenge>
+                          </span>
                         )}
                       </div>
 

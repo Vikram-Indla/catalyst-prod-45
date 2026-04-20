@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Button } from '@/components/ui/button';
 import { Plus, MoreVertical, Settings, Trash2 } from 'lucide-react';
@@ -174,9 +174,9 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
                       <div className="w-4 h-4 rounded" style={{ backgroundColor: col.color }} />
                       <span className="flex-1">{col.label}</span>
                       {col.wip_limit && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Lozenge appearance="default">
                           WIP: {col.wip_limit}
-                        </Badge>
+                        </Lozenge>
                       )}
                       {customColumns.length > 0 && (
                         <Button size="icon" variant="ghost" onClick={() => deleteColumnMutation.mutate(col.id)}>
@@ -266,14 +266,14 @@ export function EpicKanbanCustom({ epics, onEpicClick, onContextMenu }: EpicKanb
                             <div className="flex items-center gap-2 flex-wrap">
                               {epic.health && <HealthBadge health={epic.health as any} />}
                               {epic.strategic_themes && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Lozenge appearance="default">
                                   {epic.strategic_themes.name}
-                                </Badge>
+                                </Lozenge>
                               )}
                               {epic.estimate && (
-                                <Badge variant="outline" className="text-xs">
+                                <Lozenge appearance="default">
                                   {epic.estimate} pts
-                                </Badge>
+                                </Lozenge>
                               )}
                             </div>
                           </Card>

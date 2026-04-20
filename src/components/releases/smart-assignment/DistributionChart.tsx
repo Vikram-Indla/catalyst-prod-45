@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { getDistributionHealth } from '@/lib/assignment-algorithm';
 import type { DistributionSummary } from '@/types/smart-assignment.types';
@@ -25,11 +26,11 @@ const CHART_COLORS = [
   '#ec4899',
 ];
 
-const HEALTH_COLORS = {
-  teal: { bg: CATALYST_V5.tealLight, text: CATALYST_V5.teal },
-  primary: { bg: CATALYST_V5.primaryLight, text: CATALYST_V5.primary },
-  warning: { bg: CATALYST_V5.warningLight, text: CATALYST_V5.warning },
-  danger: { bg: CATALYST_V5.dangerLight, text: CATALYST_V5.danger },
+const HEALTH_APPEARANCE: Record<string, LozengeAppearance> = {
+  teal: 'success',
+  primary: 'inprogress',
+  warning: 'moved',
+  danger: 'removed',
 };
 
 export function DistributionChart({
@@ -37,7 +38,7 @@ export function DistributionChart({
   distributionScore,
 }: DistributionChartProps) {
   const health = getDistributionHealth(distributionScore);
-  const healthColors = HEALTH_COLORS[health.color];
+  const healthAppearance = HEALTH_APPEARANCE[health.color] ?? 'default';
 
   const chartData = distributionSummary
     .filter(d => d.proposedCount > 0)
@@ -161,15 +162,7 @@ export function DistributionChart({
                 >
                   Balance:
                 </span>
-                <Badge
-                  className="text-[10px]"
-                  style={{
-                    backgroundColor: healthColors.bg,
-                    color: healthColors.text,
-                  }}
-                >
-                  {health.label}
-                </Badge>
+                <Lozenge appearance={healthAppearance}>{health.label}</Lozenge>
               </div>
             </div>
           </div>

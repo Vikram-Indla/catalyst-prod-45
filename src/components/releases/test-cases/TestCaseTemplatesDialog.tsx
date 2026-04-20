@@ -30,7 +30,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -279,9 +279,7 @@ export function TestCaseTemplatesDialog({
                       </div>
                       <div className="flex items-center gap-1">
                         {template.popular && (
-                          <Badge className="text-[10px] px-1.5 py-0 bg-blue-100 text-blue-700 border-0">
-                            Popular
-                          </Badge>
+                          <Lozenge appearance="inprogress">Popular</Lozenge>
                         )}
                         {isSelected && (
                           <CheckCircle2 className="w-5 h-5 text-primary" />

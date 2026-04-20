@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   CheckCircle2, 
@@ -35,6 +36,13 @@ const STATUS_COLORS = {
   at_risk: 'text-orange-600',
   ready: 'text-green-600',
   approved: 'text-blue-600',
+};
+
+const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+  not_ready: 'removed',
+  at_risk: 'moved',
+  ready: 'success',
+  approved: 'inprogress',
 };
 
 export function ReadinessHistoryTable({ releaseId }: ReadinessHistoryTableProps) {
@@ -76,13 +84,11 @@ export function ReadinessHistoryTable({ releaseId }: ReadinessHistoryTableProps)
                     <Icon className={cn('h-5 w-5 mt-0.5', color)} />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className={color}>
+                        <Lozenge appearance={STATUS_APPEARANCE[snapshot.overall_status] ?? 'default'}>
                           {snapshot.overall_status.replace('_', ' ').toUpperCase()}
-                        </Badge>
+                        </Lozenge>
                         {snapshot.approved_at && (
-                          <Badge variant="secondary" className="text-xs">
-                            Approved
-                          </Badge>
+                          <Lozenge appearance="success">Approved</Lozenge>
                         )}
                       </div>
                       <div className="text-sm text-muted-foreground">

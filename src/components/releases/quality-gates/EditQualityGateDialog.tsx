@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -248,7 +248,7 @@ export function EditQualityGateDialog({ open, gate, onOpenChange, onSuccess }: E
                       className="flex-1"
                     />
                     {rule.isRequired && (
-                      <Badge variant="secondary" className="text-xs">Required</Badge>
+                      <Lozenge appearance="default">Required</Lozenge>
                     )}
                     <Button 
                       variant="ghost" 

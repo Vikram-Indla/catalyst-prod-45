@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Label } from '@/components/ui/label';
 import {
   OptionSet,
@@ -213,7 +213,7 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
           <div className="flex items-center gap-2">
             <SheetTitle className="text-brand-primary">{optionSet.name}</SheetTitle>
             {optionSet.is_system && (
-              <Badge variant="outline" className="text-xs">System</Badge>
+              <Lozenge appearance="default">System</Lozenge>
             )}
           </div>
           <SheetDescription>
@@ -320,9 +320,9 @@ export function OptionValuesDrawer({ optionSet, open, onOpenChange }: OptionValu
                                 {/* Color */}
                                 <div className="flex justify-center">
                                   {value.color ? (
-                                    <Badge className={cn('text-xs', value.color)}>
+                                    <Lozenge appearance="default">
                                       Color
-                                    </Badge>
+                                    </Lozenge>
                                   ) : (
                                     <span className="text-xs text-muted-foreground">—</span>
                                   )}

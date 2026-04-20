@@ -1,6 +1,6 @@
 import { Clock, AlertTriangle, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 
 interface SlaRecord {
   id: string;
@@ -160,26 +160,23 @@ export function SlaStatusCard({ slaRecord, createdAt }: SlaStatusCardProps) {
 function SlaStatusBadge({ status }: { status: 'pending' | 'met' | 'breached' }) {
   if (status === 'met') {
     return (
-      <Badge variant="outline" className="bg-secondary-green/20 text-secondary-green border-secondary-green/30">
-        <CheckCircle className="h-3 w-3 mr-1" />
+      <Lozenge appearance="success">
         Met
-      </Badge>
+      </Lozenge>
     );
   }
-  
+
   if (status === 'breached') {
     return (
-      <Badge variant="destructive">
-        <AlertTriangle className="h-3 w-3 mr-1" />
+      <Lozenge appearance="removed">
         Breached
-      </Badge>
+      </Lozenge>
     );
   }
-  
+
   return (
-    <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">
-      <Clock className="h-3 w-3 mr-1" />
+    <Lozenge appearance="moved">
       Pending
-    </Badge>
+    </Lozenge>
   );
 }

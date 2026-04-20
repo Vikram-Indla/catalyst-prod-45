@@ -3,7 +3,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { 
@@ -60,7 +60,7 @@ export function NotificationCenter() {
           <Bell className="h-5 w-5 text-brand-primary" />
           <h2 className="text-lg font-semibold">Notifications</h2>
           {unreadCount > 0 && (
-            <Badge variant="secondary">{unreadCount} unread</Badge>
+            <Lozenge appearance="inprogress">{`${unreadCount} unread`}</Lozenge>
           )}
         </div>
         {unreadCount > 0 && (
@@ -77,9 +77,9 @@ export function NotificationCenter() {
           <TabsTrigger value="unread">
             Unread
             {unreadCount > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 px-1.5">
-                {unreadCount}
-              </Badge>
+              <span className="ml-1">
+                <Lozenge appearance="inprogress">{String(unreadCount)}</Lozenge>
+              </span>
             )}
           </TabsTrigger>
         </TabsList>

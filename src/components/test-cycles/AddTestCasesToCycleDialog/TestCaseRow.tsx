@@ -5,10 +5,16 @@
 
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { TMTestCase } from '@/types/test-management';
-import { getPriorityBadgeClass } from './utils';
+
+const priorityAppearance = (name: string): LozengeAppearance => {
+  const n = name.toLowerCase();
+  if (n === 'critical' || n === 'highest') return 'removed';
+  if (n === 'high') return 'moved';
+  return 'default';
+};
 
 interface TestCaseRowProps {
   testCase: TMTestCase;
@@ -65,19 +71,15 @@ export function TestCaseRow({
       </span>
 
       {isAlreadyInCycle ? (
-        <Badge variant="outline" className="text-xs text-slate-400 border-slate-200 shrink-0">
-          In Cycle
-        </Badge>
+        <span className="shrink-0">
+          <Lozenge appearance="default">In Cycle</Lozenge>
+        </span>
       ) : priorityName ? (
-        <Badge 
-          variant="outline" 
-          className={cn(
-            'text-xs shrink-0 border',
-            getPriorityBadgeClass(priorityName)
-          )}
-        >
-          {priorityName.charAt(0).toUpperCase()}
-        </Badge>
+        <span className="shrink-0">
+          <Lozenge appearance={priorityAppearance(priorityName)}>
+            {priorityName.charAt(0).toUpperCase()}
+          </Lozenge>
+        </span>
       ) : null}
     </div>
   );

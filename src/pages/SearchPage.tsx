@@ -35,9 +35,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth';
 
@@ -288,26 +287,20 @@ export default function SearchPage() {
     navigate(`/browse/${item.key}`);
   }
 
-  function getTypeBadgeColor(type: WorkItemType) {
-    switch (type) {
-      case 'epic': return 'bg-workitem-epic/20 text-workitem-epic';
-      case 'feature': return 'bg-workitem-feature/20 text-workitem-feature';
-      case 'story': return 'bg-workitem-story/20 text-workitem-story';
-      case 'subtask': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
-      case 'demand': return 'bg-amber-100 text-amber-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
+  function getTypeAppearance(_type: WorkItemType): LozengeAppearance {
+    // Work item type chips are structural identifiers — neutral grey.
+    return 'default';
   }
 
-  function getStatusBadgeColor(status: string) {
+  function getStatusAppearance(status: string): LozengeAppearance {
     const normalized = status?.toLowerCase() || '';
     if (['done', 'accepted', 'closed', 'complete'].includes(normalized)) {
-      return 'bg-green-100 text-green-800';
+      return 'success';
     }
     if (['in_progress', 'implementing', 'in_development', 'review'].includes(normalized)) {
-      return 'bg-yellow-100 text-yellow-800';
+      return 'inprogress';
     }
-    return 'bg-gray-100 text-gray-800';
+    return 'default';
   }
 
   return (
@@ -411,9 +404,9 @@ export default function SearchPage() {
         {(query || typeFilter !== 'all' || statusFilter !== 'all') && (
           <div className="flex items-center gap-2 mt-3">
             <span className="text-sm text-muted-foreground">Active filters:</span>
-            {query && <Badge variant="secondary" className="text-xs">text: "{query}"</Badge>}
-            {typeFilter !== 'all' && <Badge variant="secondary" className="text-xs">type: {typeFilter}</Badge>}
-            {statusFilter !== 'all' && <Badge variant="secondary" className="text-xs">status: {statusFilter}</Badge>}
+            {query && <Lozenge appearance="inprogress">text: "{query}"</Lozenge>}
+            {typeFilter !== 'all' && <Lozenge appearance="inprogress">type: {typeFilter}</Lozenge>}
+            {statusFilter !== 'all' && <Lozenge appearance="inprogress">status: {statusFilter}</Lozenge>}
             <Button
               variant="ghost"
               size="sm"
@@ -453,13 +446,13 @@ export default function SearchPage() {
                 >
                   <TableCell className="font-medium text-brand-primary">{item.key}</TableCell>
                   <TableCell>
-                    <Badge className={cn('text-xs capitalize', getTypeBadgeColor(item.type))}>{item.type}</Badge>
+                    <Lozenge appearance={getTypeAppearance(item.type)}>{item.type}</Lozenge>
                   </TableCell>
                   <TableCell className="max-w-[400px] truncate">{item.summary}</TableCell>
                   <TableCell>
-                    <Badge className={cn('text-xs capitalize', getStatusBadgeColor(item.status))}>
+                    <Lozenge appearance={getStatusAppearance(item.status)}>
                       {item.status.replace(/_/g, ' ')}
-                    </Badge>
+                    </Lozenge>
                   </TableCell>
                   <TableCell className="text-muted-foreground">{item.assignee || '—'}</TableCell>
                   <TableCell><ExternalLink className="h-4 w-4 text-muted-foreground" /></TableCell>

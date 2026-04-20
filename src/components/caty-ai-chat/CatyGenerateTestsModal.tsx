@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { useGenerateCatyTestCases, useSaveCatyGeneratedTests } from '@/hooks/useCatyAI';
 import { useFolders } from '@/hooks/test-management/useFolders';
 import { useAuth } from '@/lib/auth';
@@ -49,7 +49,12 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
   const handleClose = () => { setInputText(''); setGeneratedTests(null); setSuggestionIds([]); onClose(); };
   const toggleSelect = (i: number) => { const s = new Set(selectedIndexes); s.has(i) ? s.delete(i) : s.add(i); setSelectedIndexes(s); };
 
-  const priorityColors: Record<string, string> = { critical: 'bg-red-100 text-red-700', high: 'bg-orange-100 text-orange-700', medium: 'bg-yellow-100 text-yellow-700', low: 'bg-green-100 text-green-700' };
+  const priorityAppearance: Record<string, LozengeAppearance> = {
+    critical: 'removed',
+    high: 'moved',
+    medium: 'default',
+    low: 'success',
+  };
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
@@ -141,7 +146,7 @@ export function CatyGenerateTestsModal({ open, onClose, projectId }: Props) {
                       <p className="font-medium text-sm truncate text-foreground">{tc.title}</p>
                       <p className="text-xs text-muted-foreground">{tc.steps?.length || 0} steps</p>
                     </div>
-                    <Badge className={cn("capitalize", priorityColors[tc.priority])}>{tc.priority}</Badge>
+                    <Lozenge appearance={priorityAppearance[tc.priority] ?? 'default'}>{tc.priority}</Lozenge>
                     {expandedIndex === i ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                   </div>
                   {expandedIndex === i && (

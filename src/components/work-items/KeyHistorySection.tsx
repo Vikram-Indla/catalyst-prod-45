@@ -1,6 +1,6 @@
 import { useWorkItemKeyHistory } from '@/hooks/useWorkItemKeyHistory';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { History, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -39,8 +39,8 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="text-sm text-muted-foreground">
-            Current key: <Badge variant="outline" className="ml-1">{currentKey}</Badge>
+          <div className="text-sm text-muted-foreground flex items-center gap-1">
+            Current key: <Lozenge appearance="inprogress">{currentKey}</Lozenge>
           </div>
           <p className="text-xs text-muted-foreground mt-2">No key changes recorded.</p>
         </CardContent>
@@ -57,23 +57,19 @@ export function KeyHistorySection({ workItemId, workItemType, currentKey }: KeyH
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
-        <div className="text-sm text-muted-foreground">
-          Current key: <Badge variant="outline" className="ml-1">{currentKey}</Badge>
+        <div className="text-sm text-muted-foreground flex items-center gap-1">
+          Current key: <Lozenge appearance="inprogress">{currentKey}</Lozenge>
         </div>
-        
+
         <div className="space-y-2">
           {history.map((entry) => (
-            <div 
-              key={entry.id} 
+            <div
+              key={entry.id}
               className="flex items-center gap-2 text-xs p-2 bg-muted/30 rounded-md"
             >
-              <Badge variant="secondary" className="font-mono text-xs">
-                {entry.old_key}
-              </Badge>
+              <Lozenge appearance="default">{entry.old_key}</Lozenge>
               <ArrowRight className="h-3 w-3 text-muted-foreground" />
-              <Badge variant="secondary" className="font-mono text-xs">
-                {entry.new_key}
-              </Badge>
+              <Lozenge appearance="default">{entry.new_key}</Lozenge>
               <span className="text-muted-foreground ml-auto">
                 {format(new Date(entry.changed_at), 'MMM d, yyyy')}
               </span>

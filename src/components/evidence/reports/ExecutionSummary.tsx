@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { EvidenceStats } from './EvidenceStats';
 import { cn } from '@/lib/utils';
 
@@ -39,18 +39,18 @@ interface ExecutionSummaryProps {
 }
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
-  const variants: Record<string, string> = {
-    passed: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-    failed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-    blocked: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-    skipped: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400',
-    pending: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  const appearances: Record<string, LozengeAppearance> = {
+    passed: 'success',
+    failed: 'removed',
+    blocked: 'moved',
+    skipped: 'default',
+    pending: 'moved',
   };
 
   return (
-    <Badge className={cn('capitalize', variants[status] || variants.pending)}>
+    <Lozenge appearance={appearances[status] || 'moved'}>
       {status}
-    </Badge>
+    </Lozenge>
   );
 };
 

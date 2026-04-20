@@ -10,11 +10,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { WorkItem, ItemStatus } from './types';
 import { ExternalLink, Calendar, User, Link2, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 
 interface WorkbenchDetailsDrawerProps {
@@ -24,24 +23,19 @@ interface WorkbenchDetailsDrawerProps {
   onOpenFullDrawer?: (item: WorkItem) => void;
 }
 
-function getStatusColor(status: ItemStatus): string {
+function getStatusAppearance(status: ItemStatus): LozengeAppearance {
   switch (status) {
-    case 'Done': return 'bg-secondary-green/20 text-secondary-green border-secondary-green/30';
-    case 'In Progress': return 'bg-brand-gold/20 text-brand-gold border-brand-gold/30';
-    case 'Backlog': return 'bg-muted text-muted-foreground border-border';
-    case 'Blocked': return 'bg-destructive/20 text-destructive border-destructive/30';
-    default: return 'bg-muted text-muted-foreground';
+    case 'Done': return 'success';
+    case 'In Progress': return 'inprogress';
+    case 'Backlog': return 'default';
+    case 'Blocked': return 'removed';
+    default: return 'default';
   }
 }
 
-function getTypeColor(type: string): string {
-  switch (type) {
-    case 'epic': return 'bg-workitem-epic/20 text-workitem-epic border-workitem-epic/30';
-    case 'feature': return 'bg-workitem-feature/20 text-workitem-feature border-workitem-feature/30';
-    case 'story': return 'bg-workitem-story/20 text-workitem-story border-workitem-story/30';
-    case 'subtask': return 'bg-muted text-muted-foreground border-border';
-    default: return 'bg-muted text-muted-foreground';
-  }
+function getTypeAppearance(_type: string): LozengeAppearance {
+  // Work item type chips are structural identifiers — neutral grey.
+  return 'default';
 }
 
 function getOwnerInitials(owner: { full_name: string } | null): string {
@@ -64,9 +58,9 @@ export function WorkbenchDetailsDrawer({ item, open, onOpenChange, onOpenFullDra
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-sm font-mono text-brand-gold">{item.key}</span>
-              <Badge variant="outline" className={cn("text-xs capitalize", getTypeColor(item.type))}>
+              <Lozenge appearance={getTypeAppearance(item.type)}>
                 {item.type}
-              </Badge>
+              </Lozenge>
             </div>
             <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
               <X className="h-4 w-4" />
@@ -81,9 +75,9 @@ export function WorkbenchDetailsDrawer({ item, open, onOpenChange, onOpenFullDra
             <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-2">
               Status
             </label>
-            <Badge variant="outline" className={cn("text-xs", getStatusColor(item.status))}>
+            <Lozenge appearance={getStatusAppearance(item.status)}>
               {item.status}
-            </Badge>
+            </Lozenge>
           </div>
 
           {/* Progress */}
@@ -142,17 +136,17 @@ export function WorkbenchDetailsDrawer({ item, open, onOpenChange, onOpenFullDra
               </label>
               <div className="flex flex-wrap gap-2">
                 {item.team && (
-                  <Badge variant="outline" className="text-xs">{item.team}</Badge>
+                  <Lozenge appearance="default">{item.team}</Lozenge>
                 )}
                 {item.businessRequest && (
-                  <Badge variant="outline" className="text-xs bg-blue-500/10 text-blue-600 border-blue-500/30">
+                  <Lozenge appearance="inprogress">
                     BR {item.businessRequest.key}
-                  </Badge>
+                  </Lozenge>
                 )}
                 {item.theme && (
-                  <Badge variant="outline" className="text-xs bg-purple-500/10 text-purple-600 border-purple-500/30">
+                  <Lozenge appearance="new">
                     {item.theme.name}
-                  </Badge>
+                  </Lozenge>
                 )}
               </div>
             </div>
@@ -195,9 +189,9 @@ export function WorkbenchDetailsDrawer({ item, open, onOpenChange, onOpenFullDra
                     key={child.id}
                     className="flex items-center gap-2 text-sm p-2 rounded bg-muted/50"
                   >
-                    <Badge variant="outline" className={cn("text-[10px] capitalize", getTypeColor(child.type))}>
+                    <Lozenge appearance={getTypeAppearance(child.type)}>
                       {child.type}
-                    </Badge>
+                    </Lozenge>
                     <span className="font-mono text-xs text-muted-foreground">{child.key}</span>
                     <span className="truncate flex-1">{child.title}</span>
                   </div>

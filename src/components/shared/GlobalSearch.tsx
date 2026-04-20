@@ -10,7 +10,7 @@ import {
   CommandSeparator,
 } from '@/components/ui/command';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
@@ -262,9 +262,9 @@ export function GlobalSearch() {
                       className="flex items-center gap-3 py-2"
                     >
                       <Icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                      <Badge variant="outline" className={`${config.color} text-xs shrink-0`}>
-                        {item.key}
-                      </Badge>
+                      <span className="shrink-0">
+                        <Lozenge appearance="default">{item.key}</Lozenge>
+                      </span>
                       <span className="truncate flex-1">{item.name}</span>
                       {item.status && (
                         <span className="text-xs text-muted-foreground shrink-0">

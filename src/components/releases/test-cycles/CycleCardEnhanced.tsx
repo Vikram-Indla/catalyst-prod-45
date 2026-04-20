@@ -10,7 +10,7 @@ import {
   Package, FileText, CheckCircle, XCircle, Clock 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,13 +39,20 @@ interface CycleCardEnhancedProps {
   onArchive?: (cycleId: string) => void;
 }
 
-const envColors: Record<string, string> = {
-  dev: 'bg-blue-100 text-blue-700 border-blue-200',
-  qa: 'bg-cyan-100 text-cyan-700 border-cyan-200',
-  staging: 'bg-orange-100 text-orange-700 border-orange-200',
-  uat: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-  prod: 'bg-red-100 text-red-700 border-red-200',
-  production: 'bg-red-100 text-red-700 border-red-200',
+const envAppearance = (env: string | null | undefined): LozengeAppearance => {
+  switch (env) {
+    case 'production':
+    case 'prod':
+      return 'removed';
+    case 'staging':
+      return 'moved';
+    case 'dev':
+    case 'qa':
+    case 'uat':
+      return 'inprogress';
+    default:
+      return 'default';
+  }
 };
 
 const avatarColors = [
@@ -151,12 +158,9 @@ export function CycleCardEnhanced({
             <span className="font-mono text-sm font-semibold text-primary hover:underline">
               {cycle.key}
             </span>
-            <Badge 
-              variant="outline" 
-              className={cn("text-xs capitalize", envColors[cycle.environment] || 'bg-gray-100 text-gray-700')}
-            >
+            <Lozenge appearance={envAppearance(cycle.environment)}>
               {cycle.environment}
-            </Badge>
+            </Lozenge>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>

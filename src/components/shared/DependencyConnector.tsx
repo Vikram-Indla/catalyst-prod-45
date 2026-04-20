@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { AlertTriangle, ArrowRight, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -162,17 +162,20 @@ export function DependencyConnector({ dependencies, containerId }: DependencyCon
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold text-sm">Dependency</h4>
-                <Badge
-                  variant={
-                    dependency.risk_level === 'high' ? 'destructive' :
-                    dependency.risk_level === 'med' ? 'secondary' :
-                    'outline'
-                  }
-                  className="text-xs"
-                >
-                  <AlertTriangle className="h-3 w-3 mr-1" />
-                  {dependency.risk_level} risk
-                </Badge>
+                <span className="inline-flex items-center gap-1">
+                  <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                  <Lozenge
+                    appearance={
+                      (dependency.risk_level === 'high'
+                        ? 'removed'
+                        : dependency.risk_level === 'med'
+                        ? 'moved'
+                        : 'default') as LozengeAppearance
+                    }
+                  >
+                    {`${dependency.risk_level} risk`}
+                  </Lozenge>
+                </span>
               </div>
 
               <div className="space-y-2 text-sm">
@@ -194,20 +197,23 @@ export function DependencyConnector({ dependencies, containerId }: DependencyCon
               </div>
 
               <div className="flex items-center gap-2 pt-2 border-t">
-                <Badge variant="outline" className="text-xs">
+                <Lozenge appearance="default">
                   {dependency.type === 'sequential' ? 'Sequential' : 'Concurrent'}
-                </Badge>
-                <Badge
-                  variant={
-                    dependency.status === 'done' ? 'default' :
-                    dependency.status === 'in_progress' ? 'secondary' :
-                    'outline'
-                  }
-                  className="text-xs"
-                >
-                  <Clock className="h-3 w-3 mr-1" />
-                  {dependency.status}
-                </Badge>
+                </Lozenge>
+                <span className="inline-flex items-center gap-1">
+                  <Clock className="h-3 w-3" aria-hidden="true" />
+                  <Lozenge
+                    appearance={
+                      (dependency.status === 'done'
+                        ? 'success'
+                        : dependency.status === 'in_progress'
+                        ? 'inprogress'
+                        : 'default') as LozengeAppearance
+                    }
+                  >
+                    {dependency.status}
+                  </Lozenge>
+                </span>
               </div>
             </div>
           </PopoverContent>

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { Progress } from "@/components/ui/progress";
 import { ChevronDown, ChevronRight, Plus, Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -165,9 +165,7 @@ export function FeatureStatusModal({
                               {feature.externalId && (
                                 <span className="text-xs text-muted-foreground">({feature.externalId})</span>
                               )}
-                              <Badge variant="secondary" className="text-xs">
-                                {feature.processStep}
-                              </Badge>
+                              <Lozenge appearance="default">{feature.processStep}</Lozenge>
                             </div>
                             <h4 className="font-medium">{feature.title}</h4>
                           </div>
@@ -228,9 +226,7 @@ export function FeatureStatusModal({
                                 <span className="text-sm">{story.title}</span>
                               </div>
                               <div className="flex items-center gap-3">
-                                <Badge variant="outline" className="text-xs">
-                                  {story.state}
-                                </Badge>
+                                <Lozenge appearance="default">{story.state}</Lozenge>
                                 <span className="text-sm font-medium">{story.points} pts</span>
                               </div>
                             </div>

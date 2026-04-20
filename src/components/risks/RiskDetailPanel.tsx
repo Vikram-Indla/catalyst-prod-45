@@ -5,7 +5,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Risk, RiskFormData } from "@/types/risks";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { RoamBadge } from "./RoamBadge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
@@ -120,9 +120,9 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge variant={risk.status === 'Open' ? 'destructive' : 'default'}>
+                  <Lozenge appearance={risk.status === 'Open' ? 'moved' : 'default'}>
                     {risk.status}
-                  </Badge>
+                  </Lozenge>
                 )}
               </div>
               <div>
@@ -210,9 +210,9 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
                     </SelectContent>
                   </Select>
                 ) : (
-                  <Badge variant={risk.critical_path === 'Yes' ? 'destructive' : 'secondary'}>
+                  <Lozenge appearance={risk.critical_path === 'Yes' ? 'removed' : 'default'}>
                     {risk.critical_path || '—'}
-                  </Badge>
+                  </Lozenge>
                 )}
               </div>
             </div>

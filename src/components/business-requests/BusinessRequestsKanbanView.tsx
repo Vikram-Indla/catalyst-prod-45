@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -230,13 +230,9 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                       border: '1px solid var(--divider)',
                     }}
                   >
-                    <Badge 
-                      variant="secondary" 
-                      className="rounded-full text-xs font-semibold px-2 py-0.5 mb-3"
-                      style={{ background: 'var(--surface-2)' }}
-                    >
-                      {columnRequests.length}
-                    </Badge>
+                    <span className="mb-3">
+                      <Lozenge appearance="inprogress">{columnRequests.length}</Lozenge>
+                    </span>
                     <div className="flex-1 flex items-center justify-center">
                       <span 
                         className="text-sm font-semibold tracking-tight whitespace-nowrap"
@@ -292,13 +288,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                       <span className="text-sm font-semibold" style={{ color: 'var(--text-1)' }}>
                         {column.label}
                       </span>
-                      <Badge 
-                        variant="secondary" 
-                        className="rounded-full text-xs font-semibold px-2 py-0.5"
-                        style={{ background: 'var(--brand-primary)', color: 'white' }}
-                      >
-                        {columnRequests.length}
-                      </Badge>
+                      <Lozenge appearance="inprogress">{columnRequests.length}</Lozenge>
                     </div>
                     
                     {/* Column menu */}

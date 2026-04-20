@@ -10,7 +10,7 @@ import { CommentsSection } from '@/components/shared/CommentsSection';
 import { AttachmentsSection } from '@/components/shared/AttachmentsSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { HealthBadge } from '@/components/shared/HealthBadge';
@@ -63,14 +63,14 @@ export default function Features() {
   const selectedData = items?.find(i => i.id === selectedItem);
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      funnel: 'secondary',
-      analyzing: 'secondary',
+    const variants: Record<string, LozengeAppearance> = {
+      funnel: 'default',
+      analyzing: 'default',
       backlog: 'default',
-      implementing: 'default',
-      done: 'outline',
+      implementing: 'inprogress',
+      done: 'success',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
+    return <Lozenge appearance={variants[status] || 'default'}>{status}</Lozenge>;
   };
 
   const handleCreate = () => {

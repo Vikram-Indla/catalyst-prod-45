@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Check, X, Users, AlertTriangle, UserPlus, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
@@ -121,23 +121,14 @@ export function CommitteeCard({
 
   const existingApproverIds = members.map(m => m.user?.id).filter(Boolean) as string[];
 
-  const getStatusConfig = (status: string) => {
+  const getStatusConfig = (status: string): { label: string; appearance: LozengeAppearance } => {
     switch (status) {
       case 'approved':
-        return { 
-          label: 'Approved', 
-          className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800' 
-        };
+        return { label: 'Approved', appearance: 'success' };
       case 'rejected':
-        return { 
-          label: hasVetoRejection ? 'Vetoed' : 'Rejected', 
-          className: 'bg-rose-100 text-rose-800 dark:bg-rose-950/30 dark:text-rose-400 border-rose-200 dark:border-rose-800' 
-        };
+        return { label: hasVetoRejection ? 'Vetoed' : 'Rejected', appearance: 'removed' };
       default:
-        return { 
-          label: 'Pending', 
-          className: 'bg-amber-100 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400 border-amber-200 dark:border-amber-800' 
-        };
+        return { label: 'Pending', appearance: 'moved' };
     }
   };
 
@@ -151,9 +142,9 @@ export function CommitteeCard({
           <Shield className="h-4 w-4 text-muted-foreground" />
           <h3 className="text-sm font-semibold text-foreground">Committee</h3>
         </div>
-        <Badge variant="outline" className={cn('text-xs px-2 py-0.5 font-medium border', statusConfig.className)}>
+        <Lozenge appearance={statusConfig.appearance}>
           {statusConfig.label}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* Progress Line */}
@@ -218,16 +209,14 @@ export function CommitteeCard({
                 </div>
                 <div>
                   {voteStatus === 'approved' && (
-                    <Badge variant="outline" className="text-xs px-1.5 py-0 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800">
-                      <Check className="h-3 w-3 mr-0.5" />
+                    <Lozenge appearance="success">
                       Approved
-                    </Badge>
+                    </Lozenge>
                   )}
                   {(voteStatus === 'rejected' || voteStatus === 'vetoed') && (
-                    <Badge variant="outline" className="text-xs px-1.5 py-0 bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800">
-                      <X className="h-3 w-3 mr-0.5" />
+                    <Lozenge appearance="removed">
                       {isVeto ? 'Vetoed' : 'Rejected'}
-                    </Badge>
+                    </Lozenge>
                   )}
                   {voteStatus === 'pending' && (
                     <span className="text-xs text-muted-foreground">Pending</span>
@@ -324,19 +313,19 @@ export function CommitteeSummary({
   const totalMembers = members.length;
   const status = committee?.status || 'pending';
 
-  const getStatusInfo = () => {
-    if (!committee) return { label: 'Setup', variant: 'warning' as const };
+  const getStatusInfo = (): { label: string; appearance: LozengeAppearance } => {
+    if (!committee) return { label: 'Setup', appearance: 'moved' };
     switch (status) {
-      case 'approved': return { label: 'Approved', variant: 'success' as const };
-      case 'rejected': return { label: 'Rejected', variant: 'destructive' as const };
-      default: return { label: totalMembers > 0 ? `${approvedCount}/${totalMembers}` : 'Pending', variant: 'default' as const };
+      case 'approved': return { label: 'Approved', appearance: 'success' };
+      case 'rejected': return { label: 'Rejected', appearance: 'removed' };
+      default: return { label: totalMembers > 0 ? `${approvedCount}/${totalMembers}` : 'Pending', appearance: 'moved' };
     }
   };
 
   const statusInfo = getStatusInfo();
 
   return (
-    <button 
+    <button
       onClick={onClick}
       className="w-full flex items-center justify-between p-2.5 rounded-md border border-border bg-background hover:bg-muted/50 transition-colors text-left"
     >
@@ -344,18 +333,9 @@ export function CommitteeSummary({
         <Shield className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm font-medium">Committee</span>
       </div>
-      <Badge 
-        variant="outline" 
-        className={cn(
-          'text-xs px-1.5 py-0 border',
-          statusInfo.variant === 'success' && 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800',
-          statusInfo.variant === 'destructive' && 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-800',
-          statusInfo.variant === 'warning' && 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800',
-          statusInfo.variant === 'default' && 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800',
-        )}
-      >
+      <Lozenge appearance={statusInfo.appearance}>
         {statusInfo.label}
-      </Badge>
+      </Lozenge>
     </button>
   );
 }

@@ -14,7 +14,7 @@ import {
   ListChecks,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -163,9 +163,7 @@ function KanbanColumn({ status, label, color, testCases, onCardClick }: KanbanCo
         <div className="flex items-center gap-2">
           <div className={cn("w-2.5 h-2.5 rounded-full", color)} />
           <h3 className="font-semibold text-sm">{label}</h3>
-          <Badge variant="secondary" className="text-xs font-medium">
-            {testCases.length}
-          </Badge>
+          <Lozenge appearance="default">{testCases.length}</Lozenge>
         </div>
         <Button variant="ghost" size="icon" className="h-7 w-7">
           <Plus className="w-4 h-4" />

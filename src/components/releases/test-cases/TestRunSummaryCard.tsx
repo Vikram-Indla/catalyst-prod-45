@@ -3,7 +3,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import {
   CheckCircle2,
@@ -48,18 +48,16 @@ export function TestRunSummaryCard({ run, onClick, className }: TestRunSummaryCa
     ? passRate - run.previousPassRate 
     : null;
 
-  const getStatusColor = () => {
+  const getStatusAppearance = (): LozengeAppearance => {
     switch (run.status) {
       case 'running':
-        return 'bg-blue-500/10 text-blue-600 border-blue-200';
+        return 'inprogress';
       case 'completed':
-        return passRate >= 80 
-          ? 'bg-green-500/10 text-green-600 border-green-200'
-          : 'bg-orange-500/10 text-orange-600 border-orange-200';
+        return passRate >= 80 ? 'success' : 'moved';
       case 'aborted':
-        return 'bg-red-500/10 text-red-600 border-red-200';
+        return 'removed';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'default';
     }
   };
 
@@ -80,12 +78,9 @@ export function TestRunSummaryCard({ run, onClick, className }: TestRunSummaryCa
           <h3 className="font-semibold text-sm">{run.name}</h3>
           <p className="text-xs text-muted-foreground mt-0.5">{run.id}</p>
         </div>
-        <Badge variant="outline" className={cn("text-xs", getStatusColor())}>
-          {run.status === 'running' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse mr-1.5" />
-          )}
+        <Lozenge appearance={getStatusAppearance()}>
           {run.status.charAt(0).toUpperCase() + run.status.slice(1)}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* Progress */}

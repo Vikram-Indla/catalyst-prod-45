@@ -1,9 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { TesterPerformance } from '@/types/reports';
-import { cn } from '@/lib/utils';
+
+const getPassRateAppearance = (rate: number): LozengeAppearance => {
+  if (rate >= 90) return 'success';
+  if (rate >= 70) return 'moved';
+  return 'removed';
+};
 
 interface TesterLeaderboardProps { data: TesterPerformance[]; isLoading?: boolean; }
 
@@ -36,11 +41,7 @@ export function TesterLeaderboard({ data, isLoading }: TesterLeaderboardProps) {
                 </div>
                 <div className="text-right">
                   <p className="text-sm font-semibold">{tester.total_executed}</p>
-                  <Badge variant="outline" className={cn("text-xs",
-                    tester.pass_rate >= 90 && "border-green-500 text-green-600",
-                    tester.pass_rate >= 70 && tester.pass_rate < 90 && "border-yellow-500 text-yellow-600",
-                    tester.pass_rate < 70 && "border-red-500 text-red-600"
-                  )}>{tester.pass_rate}%</Badge>
+                  <Lozenge appearance={getPassRateAppearance(tester.pass_rate)}>{tester.pass_rate}%</Lozenge>
                 </div>
               </div>
             ))}

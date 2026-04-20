@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Check, ChevronsUpDown, X, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Command,
   CommandEmpty,
@@ -88,22 +88,21 @@ export function BusinessProcessesField({ epicId }: BusinessProcessesFieldProps) 
       {/* Selected chips */}
       <div className="flex flex-wrap gap-1.5 min-h-[32px]">
         {selectedProcesses.map((process) => (
-          <Badge
+          <span
             key={process.id}
-            variant="secondary"
             className={cn(
-              'gap-1 pr-1',
+              'inline-flex items-center gap-1',
               !process.active && 'opacity-60 line-through'
             )}
           >
-            {process.name_en}
+            <Lozenge appearance="default">{process.name_en}</Lozenge>
             <button
               onClick={() => handleRemove(process.id)}
-              className="ml-1 hover:bg-muted rounded p-0.5"
+              className="hover:bg-muted rounded p-0.5"
             >
               <X className="h-3 w-3" />
             </button>
-          </Badge>
+          </span>
         ))}
       </div>
 

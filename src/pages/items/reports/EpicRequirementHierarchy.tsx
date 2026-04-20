@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Printer, Download, ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ReportTemplatesDialog } from "@/components/items/epics/dialogs/ReportTemplatesDialog";
 
@@ -171,7 +171,7 @@ export default function EpicRequirementHierarchy() {
         {/* Epic Details */}
         <div className="mb-8 pb-6 border-b">
           <div className="flex items-start gap-4">
-            <Badge variant="secondary" className="text-lg px-3 py-1">{epic?.epic_key}</Badge>
+            <Lozenge appearance="default">{epic?.epic_key}</Lozenge>
             <div className="flex-1">
               <h2 className="text-2xl font-bold mb-2">{epic?.name}</h2>
               {epic?.description && (
@@ -180,11 +180,11 @@ export default function EpicRequirementHierarchy() {
               <div className="flex gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">State:</span>{" "}
-                  <Badge variant="outline">{epic?.state || 'N/A'}</Badge>
+                  <Lozenge appearance="default">{epic?.state || 'N/A'}</Lozenge>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Health:</span>{" "}
-                  <Badge variant="outline">{epic?.health || 'N/A'}</Badge>
+                  <Lozenge appearance="default">{epic?.health || 'N/A'}</Lozenge>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Total Story Points:</span>{" "}
@@ -213,13 +213,13 @@ export default function EpicRequirementHierarchy() {
                       )}
                       <div className="flex-1 text-left">
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-primary">{feature.display_id}</Badge>
+                          <Lozenge appearance="default">{feature.display_id}</Lozenge>
                           <h3 className="text-lg font-semibold">{feature.name}</h3>
                         </div>
                         <div className="flex gap-4 text-sm text-muted-foreground">
                           <span>{feature.estimate_points || 0} points</span>
                           <span>{featureStories.length} stories</span>
-                          <Badge variant="outline" className="text-xs">{feature.status}</Badge>
+                          <Lozenge appearance="default">{feature.status}</Lozenge>
                         </div>
                         {feature.acceptance_criteria && (
                           <p className="text-sm mt-2 text-muted-foreground line-clamp-2">
@@ -250,14 +250,12 @@ export default function EpicRequirementHierarchy() {
                                   )}
                                   <div className="flex-1 text-left">
                                     <div className="flex items-center gap-2 mb-1">
-                                      <Badge variant="secondary" className="bg-success/10 text-success">
-                                        {story.id.slice(0, 8)}
-                                      </Badge>
+                                      <Lozenge appearance="default">{story.id.slice(0, 8)}</Lozenge>
                                       <span className="font-medium">{story.name}</span>
                                     </div>
                                     <div className="flex gap-3 text-xs text-muted-foreground">
                                       <span>{story.estimate_points || 0} points</span>
-                                      <Badge variant="outline" className="text-xs">{story.status}</Badge>
+                                      <Lozenge appearance="default">{story.status}</Lozenge>
                                       {storySubtasks.length > 0 && (
                                         <span>{storySubtasks.length} subtasks</span>
                                       )}
@@ -276,13 +274,11 @@ export default function EpicRequirementHierarchy() {
                                   <div className="ml-6 mt-2 space-y-2">
                                     {storySubtasks.map((subtask) => (
                                       <div key={subtask.id} className="flex items-center gap-2 border-l-2 border-warning pl-3 py-1">
-                                        <Badge variant="outline" className="text-xs bg-warning/10 text-warning">
-                                          {subtask.id.slice(0, 8)}
-                                        </Badge>
+                                        <Lozenge appearance="default">{subtask.id.slice(0, 8)}</Lozenge>
                                         <span className="text-sm">{subtask.name}</span>
-                                        <Badge variant="outline" className="text-xs ml-auto">
-                                          {subtask.status}
-                                        </Badge>
+                                        <span className="ml-auto">
+                                          <Lozenge appearance="default">{subtask.status}</Lozenge>
+                                        </span>
                                       </div>
                                     ))}
                                   </div>

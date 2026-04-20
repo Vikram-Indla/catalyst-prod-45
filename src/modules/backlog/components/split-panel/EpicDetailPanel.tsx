@@ -11,7 +11,7 @@ import {
   Link2, Edit, Copy, Trash2, 
   FileText, Check, ArrowLeft, ExternalLink
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -215,9 +215,7 @@ export function EpicDetailPanel({
                   <span className="text-xs">Open</span>
                 </Button>
                 {epic.mvp && (
-                  <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-0 text-xs">
-                    MVP
-                  </Badge>
+                  <Lozenge appearance="default">MVP</Lozenge>
                 )}
               </div>
               {/* Title */}

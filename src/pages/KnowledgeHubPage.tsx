@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateDocumentDialog } from '@/components/knowledge-hub/CreateDocumentDialog';
@@ -204,9 +204,11 @@ export default function KnowledgeHubPage() {
                         </p>
                       </div>
                       {doc.linked_work_item_type && (
-                        <Badge variant="secondary" className="capitalize mr-2">
-                          {doc.linked_work_item_type}
-                        </Badge>
+                        <span className="mr-2">
+                          <Lozenge appearance="default">
+                            {doc.linked_work_item_type}
+                          </Lozenge>
+                        </span>
                       )}
                       <DocumentFavorite documentId={doc.id} variant="icon" />
                     </div>

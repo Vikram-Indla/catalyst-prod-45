@@ -21,7 +21,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 
 // Status category types
 type StatusCategory = 
@@ -171,11 +171,20 @@ function detectCategory(status: string): StatusCategory {
   return DEFAULT_STATUS_CATEGORY[normalized] || 'neutral';
 }
 
+const CATEGORY_TO_APPEARANCE: Record<StatusCategory, LozengeAppearance> = {
+  success: 'success',
+  warning: 'moved',
+  critical: 'removed',
+  neutral: 'default',
+  info: 'default',
+  progress: 'inprogress',
+};
+
 export function GenericStatusBadge({
   status,
   label,
-  size = 'sm',
-  showDot = true,
+  size,
+  showDot,
   category,
   customColor,
   className,
@@ -186,44 +195,25 @@ export function GenericStatusBadge({
 
   // Determine styling
   const resolvedCategory = category || detectCategory(status);
-  const styles = customColor || CATEGORY_STYLES[resolvedCategory];
+  const appearance = CATEGORY_TO_APPEARANCE[resolvedCategory];
   const displayLabel = label || formatStatusLabel(status);
 
-  // Size classes
-  const sizeClasses = {
-    xs: 'text-[10px] px-2 py-0.5',
-    sm: 'text-[11px] px-2.5 py-1',
-    md: 'text-xs px-3 py-1.5',
-  };
+  // size/showDot/customColor are legacy props — Atlaskit Lozenge owns its
+  // own visual language. We preserve the prop surface for call-site
+  // compatibility but no longer apply the custom dot/size/inline color.
+  void size;
+  void showDot;
+  void customColor;
 
-  const dotSizes = {
-    xs: 'w-1.5 h-1.5',
-    sm: 'w-1.5 h-1.5',
-    md: 'w-2 h-2',
-  };
+  if (className) {
+    return (
+      <span className={cn('inline-flex', className)}>
+        <Lozenge appearance={appearance}>{displayLabel}</Lozenge>
+      </span>
+    );
+  }
 
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1.5 rounded-full font-medium whitespace-nowrap',
-        sizeClasses[size],
-        className
-      )}
-      style={{
-        backgroundColor: styles.bg,
-        color: styles.text,
-        border: styles.border !== 'transparent' ? `1px solid ${styles.border}` : undefined,
-      }}
-    >
-      {showDot && (
-        <span
-          className={cn('rounded-full flex-shrink-0', dotSizes[size])}
-          style={{ backgroundColor: styles.dot || styles.text }}
-        />
-      )}
-      {displayLabel}
-    </span>
-  );
+  return <Lozenge appearance={appearance}>{displayLabel}</Lozenge>;
 }
 
 // Export utilities for use elsewhere

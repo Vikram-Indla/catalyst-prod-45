@@ -5,7 +5,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
@@ -86,19 +86,19 @@ export default function EnterpriseEpics() {
   const selectedEpic = epics?.find(e => e.id === selectedEpicId);
 
   const getStateBadge = (state: string | null) => {
-    if (!state) return <Badge variant="secondary">New</Badge>;
-    const colors: Record<string, string> = {
-      'funnel': 'bg-gray-500',
-      'analyzing': 'bg-blue-500',
-      'portfolio_backlog': 'bg-amber-500',
-      'implementing': 'bg-sky-500',
-      'validating_in_production': 'bg-emerald-500',
-      'done': 'bg-green-500',
+    if (!state) return <Lozenge appearance="new">New</Lozenge>;
+    const appearances: Record<string, LozengeAppearance> = {
+      'funnel': 'default',
+      'analyzing': 'default',
+      'portfolio_backlog': 'default',
+      'implementing': 'inprogress',
+      'validating_in_production': 'moved',
+      'done': 'success',
     };
     return (
-      <Badge variant="secondary" className={`${colors[state] || 'bg-gray-500'} text-white`}>
+      <Lozenge appearance={appearances[state] || 'default'}>
         {state.replace(/_/g, ' ')}
-      </Badge>
+      </Lozenge>
     );
   };
 

@@ -5,7 +5,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Target, AlertCircle } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -198,7 +198,7 @@ export default function PIObjectives() {
                           className="h-2"
                         />
                       </div>
-                      <Badge variant="default">Committed</Badge>
+                      <Lozenge appearance="success">Committed</Lozenge>
                     </CardContent>
                   </Card>
                 ))
@@ -239,7 +239,7 @@ export default function PIObjectives() {
                           className="h-2"
                         />
                       </div>
-                      <Badge variant="outline">Uncommitted</Badge>
+                      <Lozenge appearance="default">Uncommitted</Lozenge>
                     </CardContent>
                   </Card>
                 ))
@@ -280,7 +280,7 @@ export default function PIObjectives() {
                           className="h-2"
                         />
                       </div>
-                      <Badge variant="secondary">Stretch</Badge>
+                      <Lozenge appearance="default">Stretch</Lozenge>
                     </CardContent>
                   </Card>
                 ))

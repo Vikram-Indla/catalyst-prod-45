@@ -19,7 +19,7 @@ import {
 import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { useLinkedFeatures, useReassignFeatures, useDeleteFeatureStatus, FeatureStatus } from '@/hooks/useFeatureStatuses';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 
 interface DeleteFeatureStatusDialogProps {
   open: boolean;
@@ -120,9 +120,9 @@ export function DeleteFeatureStatusDialog({
                         key={feature.id} 
                         className="flex items-center gap-2 text-sm p-1.5 rounded hover:bg-muted/50"
                       >
-                        <Badge variant="outline" className="font-mono text-xs shrink-0">
+                        <Lozenge appearance="default">
                           {feature.display_id || 'N/A'}
-                        </Badge>
+                        </Lozenge>
                         <span className="truncate text-muted-foreground">
                           {feature.title}
                         </span>

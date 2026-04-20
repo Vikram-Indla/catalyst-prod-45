@@ -7,7 +7,7 @@ import { ImportDialog } from '@/components/shared/ImportDialog';
 import { CommentsSection } from '@/components/shared/CommentsSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { InitiativeDialog } from '@/components/forms/InitiativeDialog';
@@ -46,13 +46,13 @@ export default function Initiatives() {
   const selectedData = items?.find(i => i.id === selectedItem);
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      active: 'default',
-      proposed: 'secondary',
-      done: 'outline',
-      cancelled: 'destructive',
+    const variants: Record<string, LozengeAppearance> = {
+      active: 'inprogress',
+      proposed: 'default',
+      done: 'success',
+      cancelled: 'removed',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
+    return <Lozenge appearance={variants[status] || 'default'}>{status}</Lozenge>;
   };
 
   const handleCreate = () => {

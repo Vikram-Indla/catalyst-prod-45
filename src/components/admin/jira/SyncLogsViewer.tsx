@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge, type LozengeAppearance } from "@/components/ads";
 import { Loader2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 
@@ -56,15 +56,15 @@ export function SyncLogsViewer({ open, onOpenChange, connectionId }: SyncLogsVie
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, any> = {
-      success: "default",
-      error: "destructive",
-      warning: "outline",
+    const appearances: Record<string, LozengeAppearance> = {
+      success: "success",
+      error: "removed",
+      warning: "moved",
     };
     return (
-      <Badge variant={variants[status] || "outline"} className={status === "success" ? "bg-brand-primary" : ""}>
+      <Lozenge appearance={appearances[status] || "default"}>
         {status}
-      </Badge>
+      </Lozenge>
     );
   };
 

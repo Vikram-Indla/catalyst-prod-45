@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
@@ -163,9 +163,7 @@ export function SpendDrilldownModal({
                   {story.title}
                 </div>
                 <div className="col-span-2">
-                  <Badge variant="secondary" className="text-xs">
-                    {story.team || "None"}
-                  </Badge>
+                  <Lozenge appearance="default">{story.team || "None"}</Lozenge>
                 </div>
                 <div className="col-span-2 text-xs text-muted-foreground truncate">
                   {story.teamSprintName || "-"}

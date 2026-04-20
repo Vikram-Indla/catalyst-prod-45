@@ -9,7 +9,7 @@ import { CatalystEnterpriseTable, CatalystColumn } from '@/components/industry/C
 import { BacklogItem, BacklogMeta } from '../types';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { getEpicStatusConfigFromList, getEpicStatusStyles } from '@/components/items/epics/drawer';
 import { useActiveEpicStatuses } from '@/hooks/useEpicStatuses';
@@ -106,13 +106,7 @@ export function EpicTable({
     return (
       <div className="flex items-center gap-1">
         {quarters.slice(0, 2).map((q, i) => (
-          <Badge 
-            key={i} 
-            variant="outline" 
-            className="text-[10px] px-1.5 py-0 h-5 border-brand-primary/50 text-brand-primary"
-          >
-            {q}
-          </Badge>
+          <Lozenge key={i} appearance="default">{q}</Lozenge>
         ))}
       </div>
     );
@@ -240,9 +234,7 @@ export function EpicTable({
       width: '110px',
       sortable: true,
       render: (value) => (
-        <Badge variant="outline" className="text-[11px]">
-          {value || '—'}
-        </Badge>
+        <Lozenge appearance="default">{value || '—'}</Lozenge>
       ),
     },
     {
@@ -286,9 +278,7 @@ export function EpicTable({
         return (
           <div className="flex flex-wrap gap-1">
             {tags.slice(0, 2).map((t: string) => (
-              <Badge key={t} variant="outline" className="text-[10px] h-5 px-1.5">
-                {t}
-              </Badge>
+              <Lozenge key={t} appearance="default">{t}</Lozenge>
             ))}
           </div>
         );

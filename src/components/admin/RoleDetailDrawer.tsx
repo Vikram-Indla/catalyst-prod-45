@@ -9,7 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -121,9 +121,9 @@ export function RoleDetailDrawer({
               <p className="text-xs text-muted-foreground mt-0.5">
                 {roleCode}
                 {isSystemRole && (
-                  <Badge variant="secondary" className="ml-2 text-[10px]">
-                    System Role
-                  </Badge>
+                  <span className="ml-2">
+                    <Lozenge appearance="default">System Role</Lozenge>
+                  </span>
                 )}
               </p>
             </div>

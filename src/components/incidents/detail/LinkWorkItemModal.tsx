@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -140,19 +140,18 @@ export function LinkWorkItemModal({
                       onClick={() => setSelectedItem(item)}
                     >
                       <div className="flex items-start gap-3">
-                        <Badge 
-                          variant="outline" 
-                          className={cn('text-[10px] px-1.5 py-0 flex-shrink-0 mt-0.5', typeConfig.className)}
-                        >
-                          {typeConfig.label}
-                        </Badge>
+                        <span className="flex-shrink-0 mt-0.5">
+                          <Lozenge appearance="default">
+                            {typeConfig.label}
+                          </Lozenge>
+                        </span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-mono text-xs text-primary">{item.key}</span>
                             {item.status && (
-                              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+                              <Lozenge appearance="default">
                                 {item.status}
-                              </Badge>
+                              </Lozenge>
                             )}
                           </div>
                           <p className="text-sm font-medium truncate mt-0.5">{item.name}</p>
@@ -178,12 +177,9 @@ export function LinkWorkItemModal({
           {/* Selected Item Preview */}
           {selectedItem && (
             <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-md border border-border">
-              <Badge 
-                variant="outline" 
-                className={cn('text-[10px] px-1.5 py-0', TYPE_BADGES[selectedItem.type].className)}
-              >
+              <Lozenge appearance="default">
                 {TYPE_BADGES[selectedItem.type].label}
-              </Badge>
+              </Lozenge>
               <span className="font-mono text-xs text-primary">{selectedItem.key}</span>
               <span className="text-sm truncate flex-1">{selectedItem.name}</span>
               <Button

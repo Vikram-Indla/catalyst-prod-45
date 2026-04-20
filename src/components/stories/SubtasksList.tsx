@@ -6,7 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -223,12 +223,9 @@ export function SubtasksList({ storyId }: SubtasksListProps) {
               )}
 
               {/* Status Badge */}
-              <Badge
-                variant={subtask.status === 'done' ? 'default' : 'outline'}
-                className="text-xs"
-              >
+              <Lozenge appearance={subtask.status === 'done' ? 'success' : 'default'}>
                 {subtask.status === 'done' ? 'Done' : 'To Do'}
-              </Badge>
+              </Lozenge>
 
               {/* Actions */}
               <DropdownMenu>

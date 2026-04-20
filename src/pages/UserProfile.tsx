@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { User, Mail, Briefcase, Save, Shield, History } from 'lucide-react';
@@ -20,12 +20,12 @@ const ROLE_LABELS = {
   user: 'User',
 };
 
-const ROLE_COLORS = {
-  admin: 'destructive',
-  program_manager: 'default',
-  team_lead: 'secondary',
-  user: 'outline',
-} as const;
+const ROLE_COLORS: Record<string, LozengeAppearance> = {
+  admin: 'removed',
+  program_manager: 'inprogress',
+  team_lead: 'default',
+  user: 'default',
+};
 
 export default function UserProfile() {
   const queryClient = useQueryClient();
@@ -251,9 +251,9 @@ export default function UserProfile() {
               <div className="space-y-3">
                 <div>
                   <p className="text-sm text-muted-foreground mb-2">Current Role</p>
-                  <Badge variant={ROLE_COLORS[userAppRole as keyof typeof ROLE_COLORS]} className="text-base px-4 py-1">
+                  <Lozenge appearance={ROLE_COLORS[userAppRole] ?? 'default'}>
                     {ROLE_LABELS[userAppRole as keyof typeof ROLE_LABELS]}
-                  </Badge>
+                  </Lozenge>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   This role determines your system-wide permissions and access levels.
@@ -289,14 +289,14 @@ export default function UserProfile() {
                 {roleHistory.map((history: any) => (
                   <TableRow key={history.id}>
                     <TableCell>
-                      <Badge variant={ROLE_COLORS[history.role as keyof typeof ROLE_COLORS]}>
+                      <Lozenge appearance={ROLE_COLORS[history.role] ?? 'default'}>
                         {ROLE_LABELS[history.role as keyof typeof ROLE_LABELS]}
-                      </Badge>
+                      </Lozenge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={history.action === 'assigned' ? 'default' : 'outline'}>
+                      <Lozenge appearance={history.action === 'assigned' ? 'inprogress' : 'default'}>
                         {history.action}
-                      </Badge>
+                      </Lozenge>
                     </TableCell>
                     <TableCell className="text-sm">
                       {history.changed_by_profile?.full_name || history.changed_by_profile?.email || 'System'}

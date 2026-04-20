@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MoreHorizontal, Eye, Play, Pencil, Copy, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +11,42 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+
+const cycleStatusAppearance = (status: string): LozengeAppearance => {
+  switch (status) {
+    case 'active':
+    case 'in_progress':
+      return 'inprogress';
+    case 'completed':
+      return 'success';
+    case 'paused':
+      return 'moved';
+    case 'aborted':
+      return 'removed';
+    case 'draft':
+    case 'planned':
+    case 'archived':
+    default:
+      return 'default';
+  }
+};
+
+const envAppearance = (env: string): LozengeAppearance => {
+  switch (env) {
+    case 'production':
+    case 'prod':
+      return 'removed';
+    case 'staging':
+    case 'beta':
+      return 'moved';
+    case 'dev':
+    case 'qa':
+    case 'uat':
+      return 'inprogress';
+    default:
+      return 'default';
+  }
+};
 
 interface TestCycle {
   id: string;
@@ -43,27 +79,6 @@ interface CycleTableViewProps {
   onDuplicate: (cycle: TestCycle) => void;
   onDelete: (cycleId: string) => void;
 }
-
-const statusColors: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  planned: 'bg-gray-100 text-gray-700',
-  active: 'bg-blue-100 text-blue-700',
-  in_progress: 'bg-blue-100 text-blue-700',
-  paused: 'bg-amber-100 text-amber-700',
-  completed: 'bg-green-100 text-green-700',
-  archived: 'bg-gray-100 text-gray-500',
-  aborted: 'bg-red-100 text-red-700'
-};
-
-const envColors: Record<string, string> = {
-  dev: 'bg-blue-100 text-blue-700',
-  qa: 'bg-cyan-100 text-cyan-700',
-  beta: 'bg-amber-100 text-amber-700',
-  staging: 'bg-orange-100 text-orange-700',
-  uat: 'bg-indigo-100 text-indigo-700',
-  production: 'bg-red-100 text-red-700',
-  prod: 'bg-red-100 text-red-700'
-};
 
 const avatarColors: Record<string, string> = {
   blue: 'bg-blue-100 text-blue-700',
@@ -142,17 +157,17 @@ export function CycleTableView({ cycles, onEdit, onDuplicate, onDelete }: CycleT
                 </td>
                 <td className="px-4 py-3">
                   {cycle.environment ? (
-                    <Badge className={cn("text-xs", envColors[cycle.environment] || 'bg-gray-100 text-gray-700')}>
+                    <Lozenge appearance={envAppearance(cycle.environment)}>
                       {cycle.environment}
-                    </Badge>
+                    </Lozenge>
                   ) : (
                     <span className="text-sm text-muted-foreground">-</span>
                   )}
                 </td>
                 <td className="px-4 py-3">
-                  <Badge className={cn("text-xs", statusColors[cycle.status] || 'bg-gray-100 text-gray-700')}>
+                  <Lozenge appearance={cycleStatusAppearance(cycle.status)}>
                     {cycle.status.replace('_', ' ')}
-                  </Badge>
+                  </Lozenge>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">

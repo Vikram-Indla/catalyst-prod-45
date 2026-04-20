@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { GripVertical, Plus } from 'lucide-react';
 import { EpicContextMenu } from './EpicContextMenu';
 import { cn } from '@/lib/utils';
@@ -168,33 +168,25 @@ export function EpicBacklogListView({
   };
 
   const getStateBadge = (state?: string) => {
-    const stateConfig: Record<string, { label: string; className: string }> = {
-      'not_started': { label: 'not started', className: 'bg-muted text-muted-foreground' },
-      'in_progress': { label: 'in progress', className: 'bg-info/20 text-info' },
-      'done': { label: 'done', className: 'bg-success/20 text-success' },
-      'blocked': { label: 'blocked', className: 'bg-destructive/20 text-destructive' },
+    const stateConfig: Record<string, { label: string; appearance: LozengeAppearance }> = {
+      'not_started': { label: 'not started', appearance: 'default' },
+      'in_progress': { label: 'in progress', appearance: 'inprogress' },
+      'done': { label: 'done', appearance: 'success' },
+      'blocked': { label: 'blocked', appearance: 'removed' },
     };
     const config = stateConfig[state || ''] || stateConfig['not_started'];
-    return (
-      <Badge variant="secondary" className={cn("text-xs font-normal", config.className)}>
-        {config.label}
-      </Badge>
-    );
+    return <Lozenge appearance={config.appearance}>{config.label}</Lozenge>;
   };
 
   const getHealthBadge = (health?: string) => {
-    const healthConfig: Record<string, { label: string; className: string }> = {
-      'green': { label: 'green', className: 'bg-success/20 text-success border-success/30' },
-      'yellow': { label: 'yellow', className: 'bg-warning/20 text-warning border-warning/30' },
-      'amber': { label: 'amber', className: 'bg-warning/20 text-warning border-warning/30' },
-      'red': { label: 'red', className: 'bg-destructive/20 text-destructive border-destructive/30' },
+    const healthConfig: Record<string, { label: string; appearance: LozengeAppearance }> = {
+      'green': { label: 'green', appearance: 'success' },
+      'yellow': { label: 'yellow', appearance: 'moved' },
+      'amber': { label: 'amber', appearance: 'moved' },
+      'red': { label: 'red', appearance: 'removed' },
     };
     const config = healthConfig[health || 'green'] || healthConfig['green'];
-    return (
-      <Badge variant="outline" className={cn("text-xs font-normal border", config.className)}>
-        {config.label}
-      </Badge>
-    );
+    return <Lozenge appearance={config.appearance}>{config.label}</Lozenge>;
   };
 
   const formatDates = (startDate?: string, endDate?: string) => {

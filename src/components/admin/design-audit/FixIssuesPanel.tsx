@@ -9,7 +9,7 @@ import {
   RefreshCw, FileCode, AlertTriangle, Zap, ArrowRight 
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -244,7 +244,7 @@ export function FixIssuesPanel() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{task.gap.component}</span>
-                        <Badge variant="outline" className="text-[10px]">{task.gap.property}</Badge>
+                        <Lozenge appearance="default">{task.gap.property}</Lozenge>
                       </div>
                       <div className="text-xs text-muted-foreground">
                         {task.gap.current} → {task.gap.expected}

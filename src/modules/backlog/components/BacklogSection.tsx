@@ -10,7 +10,7 @@ import { QuickAddRow } from './QuickAddRow';
 import { BacklogContextMenu } from './BacklogContextMenu';
 import { useBacklogActions } from '../hooks/useBacklogActions';
 import { useBacklogState } from '../hooks/useBacklogState';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -244,13 +244,7 @@ function BacklogItemRow({
   const formatQuarters = (quarters?: string[]) => {
     if (!quarters || quarters.length === 0) return '—';
     return quarters.slice(0, 2).map((q, i) => (
-      <Badge 
-        key={i} 
-        variant="outline" 
-        className="text-[10px] px-1.5 py-0 h-5 border-brand-primary/50 text-brand-primary"
-      >
-        {q}
-      </Badge>
+      <Lozenge key={i} appearance="default">{q}</Lozenge>
     ));
   };
 

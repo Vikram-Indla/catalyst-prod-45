@@ -12,7 +12,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -315,9 +315,7 @@ export function TestCaseDetailDrawer({
                   <div className="flex flex-wrap gap-2">
                     {testCase.tags && testCase.tags.length > 0 ? (
                       testCase.tags.map(tag => (
-                        <Badge key={tag} variant="secondary" className="text-xs">
-                          {tag}
-                        </Badge>
+                        <Lozenge key={tag} appearance="default">{tag}</Lozenge>
                       ))
                     ) : (
                       <span className="text-sm text-muted-foreground italic">No tags</span>
@@ -470,9 +468,9 @@ export function TestCaseDetailDrawer({
                         className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
                       >
                         <div className="flex items-center gap-3">
-                          <Badge variant="outline" className="text-xs">
+                          <Lozenge appearance="default">
                             {REQUIREMENT_TYPE_LABELS[link.requirement_type] || link.requirement_type}
-                          </Badge>
+                          </Lozenge>
                           <div>
                             <p className="text-sm font-medium">
                               {link.external_key || link.requirement_id || '—'}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -113,13 +113,13 @@ export function RoleDetails({
 
           {/* Chips */}
           <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="text-xs">
+            <Lozenge appearance="default">
               Scope: {role.scope}
-            </Badge>
+            </Lozenge>
             {businessLines.length > 0 && (
-              <Badge variant="secondary" className="text-xs">
+              <Lozenge appearance="default">
                 Business Lines: {businessLines.join(', ')}
-              </Badge>
+              </Lozenge>
             )}
           </div>
         </CardContent>
@@ -177,12 +177,9 @@ export function RoleDetails({
                     </TableCell>
                     <TableCell>
                       {userRole.has_overrides ? (
-                        <Badge 
-                          variant="secondary"
-                          className="bg-orange-100 text-orange-700 hover:bg-orange-100 text-xs"
-                        >
+                        <Lozenge appearance="moved">
                           Custom
-                        </Badge>
+                        </Lozenge>
                       ) : (
                         <span className="text-sm text-muted-foreground">None</span>
                       )}

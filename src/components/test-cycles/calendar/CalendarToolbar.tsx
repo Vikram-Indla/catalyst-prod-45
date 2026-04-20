@@ -1,7 +1,7 @@
 import React from 'react';
 import { Filter, X, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -69,9 +69,9 @@ export function CalendarToolbar({
               <Filter className="h-3.5 w-3.5" />
               Status
               {filters.statuses.length > 0 && (
-                <Badge className="h-5 px-1.5 bg-[#2563eb] text-white">
+                <Lozenge appearance="inprogress">
                   {filters.statuses.length}
-                </Badge>
+                </Lozenge>
               )}
             </Button>
           </DropdownMenuTrigger>
@@ -96,9 +96,9 @@ export function CalendarToolbar({
             <Button variant="outline" size="sm" className="h-8 gap-2 border-[#e2e8f0]">
               Assignee
               {filters.assignees.length > 0 && (
-                <Badge className="h-5 px-1.5 bg-[#2563eb] text-white">
+                <Lozenge appearance="inprogress">
                   {filters.assignees.length}
-                </Badge>
+                </Lozenge>
               )}
             </Button>
           </DropdownMenuTrigger>
@@ -123,9 +123,9 @@ export function CalendarToolbar({
             <Button variant="outline" size="sm" className="h-8 gap-2 border-[#e2e8f0]">
               Module
               {filters.modules.length > 0 && (
-                <Badge className="h-5 px-1.5 bg-[#2563eb] text-white">
+                <Lozenge appearance="inprogress">
                   {filters.modules.length}
-                </Badge>
+                </Lozenge>
               )}
             </Button>
           </DropdownMenuTrigger>

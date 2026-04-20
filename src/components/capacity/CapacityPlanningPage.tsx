@@ -23,7 +23,7 @@ import { ResourceDetailModal } from './ResourceDetailModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, Info } from 'lucide-react';
 import { toast } from 'sonner';
@@ -252,7 +252,7 @@ export function CapacityPlanningPage() {
               className="rounded-full px-4 py-2 data-[state=active]:bg-brand-primary data-[state=active]:text-white data-[state=inactive]:text-foreground"
             >
               Vacancies
-              <Badge variant="secondary" className="ml-2 text-xs">{openVacancies}</Badge>
+              <span className="ml-2"><Lozenge appearance="inprogress">{openVacancies}</Lozenge></span>
             </TabsTrigger>
             <TabsTrigger 
               value="reports" 
@@ -402,9 +402,9 @@ export function CapacityPlanningPage() {
                   >
                     <Filter className="h-4 w-4" />
                     {filterCount > 0 && (
-                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-brand-primary text-white text-xs">
-                        {filterCount}
-                      </Badge>
+                      <span className="absolute -top-2 -right-2 inline-flex">
+                        <Lozenge appearance="inprogress">{filterCount}</Lozenge>
+                      </span>
                     )}
                   </Button>
                 </TooltipTrigger>

@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import {
@@ -27,7 +27,6 @@ import {
   Database,
   Paperclip,
   Settings,
-  Check,
   AlertCircle,
   Loader2,
   Save,
@@ -542,9 +541,7 @@ export function CreateTestCaseDialogV2({
                 <Icon className="w-4 h-4" />
                 {tab.label}
                 {badge && (
-                  <Badge variant="secondary" className="h-5 px-1.5 text-xs">
-                    {badge}
-                  </Badge>
+                  <Lozenge appearance="default">{badge}</Lozenge>
                 )}
                 {hasError && <AlertCircle className="w-3.5 h-3.5" />}
               </button>
@@ -593,9 +590,9 @@ export function CreateTestCaseDialogV2({
                 Draft saved
               </div>
             )}
-            <Badge variant={completedCount === totalRequired ? "default" : "secondary"} className={cn(completedCount === totalRequired ? "bg-teal-100 text-teal-700" : "")}>
-              {completedCount === totalRequired ? <><Check className="w-3 h-3 mr-1" /> All good</> : `${totalRequired - completedCount} issues`}
-            </Badge>
+            <Lozenge appearance={completedCount === totalRequired ? 'success' : 'default'}>
+              {completedCount === totalRequired ? 'All good' : `${totalRequired - completedCount} issues`}
+            </Lozenge>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancel</Button>

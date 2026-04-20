@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { Tag, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
@@ -143,19 +143,15 @@ export function DocumentLabels({ documentId }: DocumentLabelsProps) {
           <span className="text-xs text-muted-foreground">Loading...</span>
         ) : labels && labels.length > 0 ? (
           labels.map((label) => (
-            <Badge 
-              key={label.id} 
-              variant="secondary"
-              className="text-xs group pr-1"
-            >
-              {label.label}
+            <span key={label.id} className="inline-flex items-center gap-1 group">
+              <Lozenge appearance="default">{label.label}</Lozenge>
               <button
                 onClick={() => removeLabelMutation.mutate(label.id)}
-                className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <X className="h-3 w-3" />
               </button>
-            </Badge>
+            </span>
           ))
         ) : (
           <span className="text-xs text-muted-foreground">No labels</span>

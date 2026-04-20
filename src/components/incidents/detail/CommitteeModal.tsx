@@ -13,7 +13,7 @@
 import { useState } from 'react';
 import { Users, Plus, X, Check, XCircle, AlertTriangle, Search, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -80,23 +80,23 @@ interface CommitteeModalProps {
   isSubmitting: boolean;
 }
 
-// Status badge config with token-based colors
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  pending: { 
-    label: 'Pending', 
-    className: 'bg-muted text-muted-foreground border-border' 
+// Status badge config - maps to Lozenge appearances
+const STATUS_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  pending: {
+    label: 'Pending',
+    appearance: 'moved',
   },
-  approved: { 
-    label: 'Approved', 
-    className: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800' 
+  approved: {
+    label: 'Approved',
+    appearance: 'success',
   },
-  rejected: { 
-    label: 'Rejected', 
-    className: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800' 
+  rejected: {
+    label: 'Rejected',
+    appearance: 'removed',
   },
-  vetoed: { 
-    label: 'Vetoed', 
-    className: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-950/40 dark:text-rose-400 dark:border-rose-800' 
+  vetoed: {
+    label: 'Vetoed',
+    appearance: 'removed',
   },
 };
 
@@ -199,12 +199,9 @@ export function CommitteeModal({
           {/* Committee status badge in header */}
           {committee && (
             <div className="pt-2">
-              <Badge 
-                variant="outline" 
-                className={cn('text-xs px-2 py-0.5', getStatusConfig(committee.status).className)}
-              >
+              <Lozenge appearance={getStatusConfig(committee.status).appearance}>
                 {getStatusConfig(committee.status).label}
-              </Badge>
+              </Lozenge>
             </div>
           )}
         </DialogHeader>
@@ -214,17 +211,21 @@ export function CommitteeModal({
             <TabsTrigger value="approvers" className="text-xs h-7 px-4 data-[state=active]:bg-background">
               Approvers
               {members.length > 0 && (
-                <Badge variant="secondary" className="ml-2 h-4 px-1.5 text-[10px] font-medium">
-                  {members.length}
-                </Badge>
+                <span className="ml-2">
+                  <Lozenge appearance="inprogress">
+                    {members.length}
+                  </Lozenge>
+                </span>
               )}
             </TabsTrigger>
             <TabsTrigger value="log" className="text-xs h-7 px-4 data-[state=active]:bg-background">
               Activity Log
               {historyLog.length > 0 && (
-                <Badge variant="secondary" className="ml-2 h-4 px-1.5 text-[10px] font-medium">
-                  {historyLog.length}
-                </Badge>
+                <span className="ml-2">
+                  <Lozenge appearance="inprogress">
+                    {historyLog.length}
+                  </Lozenge>
+                </span>
               )}
             </TabsTrigger>
           </TabsList>
@@ -278,9 +279,11 @@ export function CommitteeModal({
                                     {member.full_name}
                                   </span>
                                   {member.has_veto && (
-                                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4 bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800 shrink-0">
-                                      Veto
-                                    </Badge>
+                                    <span className="shrink-0">
+                                      <Lozenge appearance="moved">
+                                        Veto
+                                      </Lozenge>
+                                    </span>
                                   )}
                                 </div>
                                 <span className="text-[11px] text-muted-foreground">Approver</span>
@@ -289,12 +292,9 @@ export function CommitteeModal({
                             
                             {/* Right: Status + Remove */}
                             <div className="flex items-center gap-3 shrink-0">
-                              <Badge 
-                                variant="outline" 
-                                className={cn('text-[10px] px-2 py-0.5', statusConfig.className)}
-                              >
+                              <Lozenge appearance={statusConfig.appearance}>
                                 {statusConfig.label}
-                              </Badge>
+                              </Lozenge>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -540,12 +540,9 @@ export function CommitteeModal({
                             <span className="text-xs text-muted-foreground">
                               {entry.action}
                             </span>
-                            <Badge 
-                              variant="outline" 
-                              className={cn('text-[10px] px-1.5 py-0 h-4', statusConfig.className)}
-                            >
+                            <Lozenge appearance={statusConfig.appearance}>
                               {statusConfig.label}
-                            </Badge>
+                            </Lozenge>
                             <span className="text-[10px] text-muted-foreground ml-auto shrink-0">
                               {formatDate(entry.timestamp)}
                             </span>

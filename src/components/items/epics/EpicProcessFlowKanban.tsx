@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { MoreVertical, Clock } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -244,14 +244,14 @@ function EpicCard({ epic, index, onEpicClick, onContextMenu, timeInStep }: {
           <div className="flex items-center gap-2 flex-wrap">
             {epic.health && <HealthBadge health={epic.health as any} />}
             {epic.strategic_themes && (
-              <Badge variant="secondary" className="text-xs">
+              <Lozenge appearance="default">
                 {epic.strategic_themes.name}
-              </Badge>
+              </Lozenge>
             )}
             {epic.estimate && (
-              <Badge variant="outline" className="text-xs">
+              <Lozenge appearance="default">
                 {epic.estimate} pts
-              </Badge>
+              </Lozenge>
             )}
           </div>
         </Card>

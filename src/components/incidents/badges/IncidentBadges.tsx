@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 import type { IncidentStatus, SeverityLevel, PriorityLevel, SupportLevel } from '@/types/incident';
@@ -167,23 +167,24 @@ interface SupportLevelBadgeProps {
   size?: 'xs' | 'sm';
 }
 
+const SUPPORT_LEVEL_APPEARANCE: Record<SupportLevel, LozengeAppearance> = {
+  L1: 'default',
+  L2: 'inprogress',
+  L3: 'moved',
+};
+
 export function SupportLevelBadge({ level, size = 'xs' }: SupportLevelBadgeProps) {
   if (!level) return <span className="text-muted-foreground text-xs">-</span>;
-  
+
   const config = SUPPORT_LEVEL_CONFIG[level as SupportLevel];
   if (!config) return <span className="text-muted-foreground text-xs">-</span>;
-  
+
+  const appearance = SUPPORT_LEVEL_APPEARANCE[level as SupportLevel] ?? 'default';
+
   return (
-    <Badge 
-      variant="outline" 
-      className={cn(
-        'font-medium px-1.5 py-0 border',
-        size === 'xs' ? 'text-[10px]' : 'text-xs',
-        config.className
-      )}
-    >
+    <Lozenge appearance={appearance}>
       {config.label}
-    </Badge>
+    </Lozenge>
   );
 }
 

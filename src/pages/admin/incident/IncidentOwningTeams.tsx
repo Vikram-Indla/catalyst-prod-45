@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Plus, Pencil, Search, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Table,
   TableBody,
@@ -190,9 +190,9 @@ export default function IncidentOwningTeams() {
                       {team.description || '—'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={team.is_active ? 'default' : 'secondary'}>
+                      <Lozenge appearance={team.is_active ? 'inprogress' : 'default'}>
                         {team.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
+                      </Lozenge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {team.sort_order}

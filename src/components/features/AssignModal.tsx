@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   User, Users, Search, X, Check, Circle, Plus, Loader2 
@@ -170,9 +170,11 @@ export function AssignModal({
               <Users className="h-4 w-4" />
               Contributors
               {selectedContributorIds.length > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5">
-                  {selectedContributorIds.length}
-                </Badge>
+                <span className="ml-1">
+                  <Lozenge appearance="inprogress">
+                    {selectedContributorIds.length}
+                  </Lozenge>
+                </span>
               )}
             </TabsTrigger>
           </TabsList>

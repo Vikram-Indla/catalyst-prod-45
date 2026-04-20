@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -98,20 +98,17 @@ export function AdditionalTab({ data, onChange }: AdditionalTabProps) {
             )}
           >
             {data.tags.map((tag) => (
-              <Badge
-                key={tag}
-                variant="secondary"
-                className="gap-1 pl-2 pr-1 py-1"
-              >
-                {tag}
+              <span key={tag} className="inline-flex items-center gap-1">
+                <Lozenge appearance="default">{tag}</Lozenge>
                 <button
                   type="button"
                   onClick={() => handleRemoveTag(tag)}
-                  className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                  className="hover:bg-destructive/20 rounded-full p-0.5"
+                  aria-label={`Remove ${tag}`}
                 >
                   <X className="w-3 h-3" />
                 </button>
-              </Badge>
+              </span>
             ))}
             <Input
               value={tagInput}

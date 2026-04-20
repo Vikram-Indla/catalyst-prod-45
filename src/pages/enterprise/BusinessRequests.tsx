@@ -7,7 +7,7 @@ import { ImportDialog } from '@/components/shared/ImportDialog';
 import { CommentsSection } from '@/components/shared/CommentsSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { HealthBadge } from '@/components/shared/HealthBadge';
@@ -48,15 +48,15 @@ export default function BusinessRequests() {
   const selectedData = items?.find(i => i.id === selectedItem);
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      proposed: 'secondary',
-      analyzing: 'secondary',
-      approved: 'default',
-      in_progress: 'default',
-      done: 'outline',
-      cancelled: 'destructive',
+    const variants: Record<string, LozengeAppearance> = {
+      proposed: 'default',
+      analyzing: 'default',
+      approved: 'success',
+      in_progress: 'inprogress',
+      done: 'success',
+      cancelled: 'removed',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{status.replace('_', ' ')}</Badge>;
+    return <Lozenge appearance={variants[status] || 'default'}>{status.replace('_', ' ')}</Lozenge>;
   };
 
   const handleCreate = () => {

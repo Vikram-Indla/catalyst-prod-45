@@ -21,7 +21,7 @@ import {
 import { toast } from "sonner";
 import { Loader2, Save, Trash2, FileText } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 
 interface ReportTemplatesDialogProps {
   open: boolean;
@@ -218,9 +218,7 @@ export function ReportTemplatesDialog({
                       <p className="font-medium">{template.name}</p>
                       {template.is_scheduled && (
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="secondary" className="text-xs">
-                            Scheduled
-                          </Badge>
+                          <Lozenge appearance="inprogress">Scheduled</Lozenge>
                           <span className="text-xs text-muted-foreground">
                             {getScheduleLabel(template.schedule_cron || "")}
                           </span>

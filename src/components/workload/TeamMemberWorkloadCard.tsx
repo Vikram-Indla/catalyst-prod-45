@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Eye, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
@@ -18,17 +18,17 @@ interface TeamMemberWorkloadCardProps {
   onViewDetails: () => void;
 }
 
-function getStatusBadge(member: TeamMemberWorkload) {
+function getStatusBadge(member: TeamMemberWorkload): { label: string; appearance: LozengeAppearance } {
   if (!member.isAvailable) {
-    return { label: 'Out', bg: CATALYST_V5.slate[100], color: CATALYST_V5.slate[500] };
+    return { label: 'Out', appearance: 'default' };
   }
   if (member.utilization > 100) {
-    return { label: 'Overloaded', bg: CATALYST_V5.dangerLight, color: CATALYST_V5.danger };
+    return { label: 'Overloaded', appearance: 'removed' };
   }
   if (member.utilization > 85) {
-    return { label: 'Busy', bg: CATALYST_V5.warningLight, color: CATALYST_V5.warning };
+    return { label: 'Busy', appearance: 'moved' };
   }
-  return { label: 'Available', bg: CATALYST_V5.tealLight, color: CATALYST_V5.teal };
+  return { label: 'Available', appearance: 'success' };
 }
 
 function getBorderColor(member: TeamMemberWorkload): string {
@@ -74,9 +74,9 @@ export function TeamMemberWorkloadCard({ member, onReassign, onViewDetails }: Te
               </p>
             </div>
           </div>
-          <Badge style={{ backgroundColor: statusBadge.bg, color: statusBadge.color }}>
+          <Lozenge appearance={statusBadge.appearance}>
             {statusBadge.label}
-          </Badge>
+          </Lozenge>
         </div>
         
         {/* Capacity Bar */}
@@ -144,17 +144,9 @@ export function TeamMemberWorkloadCard({ member, onReassign, onViewDetails }: Te
                     style={{ backgroundColor: CATALYST_V5.slate[50] }}
                   >
                     <span style={{ color: CATALYST_V5.slate[700] }}>{cycle.cycleName}</span>
-                    <Badge 
-                      variant="outline" 
-                      className="text-xs"
-                      style={{ 
-                        backgroundColor: CATALYST_V5.primaryLight, 
-                        color: CATALYST_V5.primary,
-                        borderColor: 'transparent'
-                      }}
-                    >
-                      {cycle.testCount} tests
-                    </Badge>
+                    <Lozenge appearance="inprogress">
+                      {`${cycle.testCount} tests`}
+                    </Lozenge>
                   </div>
                 ))}
               </div>

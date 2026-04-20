@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Settings2 } from 'lucide-react';
 
@@ -205,9 +205,8 @@ function CustomFieldInput({ field, value, onChange, disabled }: CustomFieldInput
             {multiOptions.map((opt) => {
               const isSelected = selectedValues.includes(opt);
               return (
-                <Badge
+                <span
                   key={opt}
-                  variant={isSelected ? 'default' : 'outline'}
                   className="cursor-pointer"
                   onClick={() => {
                     if (disabled) return;
@@ -217,8 +216,10 @@ function CustomFieldInput({ field, value, onChange, disabled }: CustomFieldInput
                     onChange(newValues);
                   }}
                 >
-                  {opt}
-                </Badge>
+                  <Lozenge appearance={isSelected ? 'inprogress' : 'default'}>
+                    {opt}
+                  </Lozenge>
+                </span>
               );
             })}
           </div>

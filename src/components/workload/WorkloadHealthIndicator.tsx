@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown, ChevronUp, CheckCircle, AlertCircle, AlertTriangle, XCircle } from 'lucide-react';
@@ -82,16 +82,9 @@ export function WorkloadHealthIndicator({ health }: WorkloadHealthIndicatorProps
               <span className="text-sm" style={{ color: CATALYST_V5.slate[600] }}>
                 Overloaded Members
               </span>
-              <Badge 
-                variant="outline"
-                style={{ 
-                  backgroundColor: health.overloadedCount > 0 ? CATALYST_V5.dangerLight : CATALYST_V5.slate[100],
-                  color: health.overloadedCount > 0 ? CATALYST_V5.danger : CATALYST_V5.slate[600],
-                  borderColor: 'transparent'
-                }}
-              >
-                {health.overloadedCount}
-              </Badge>
+              <Lozenge appearance={health.overloadedCount > 0 ? 'removed' : 'default'}>
+                {String(health.overloadedCount)}
+              </Lozenge>
             </div>
             
             {/* Underutilized count */}
@@ -99,16 +92,9 @@ export function WorkloadHealthIndicator({ health }: WorkloadHealthIndicatorProps
               <span className="text-sm" style={{ color: CATALYST_V5.slate[600] }}>
                 Underutilized Members
               </span>
-              <Badge 
-                variant="outline"
-                style={{ 
-                  backgroundColor: health.underutilizedCount > 0 ? CATALYST_V5.primaryLight : CATALYST_V5.slate[100],
-                  color: health.underutilizedCount > 0 ? CATALYST_V5.primary : CATALYST_V5.slate[600],
-                  borderColor: 'transparent'
-                }}
-              >
-                {health.underutilizedCount}
-              </Badge>
+              <Lozenge appearance={health.underutilizedCount > 0 ? 'inprogress' : 'default'}>
+                {String(health.underutilizedCount)}
+              </Lozenge>
             </div>
             
             {/* Imbalance score */}

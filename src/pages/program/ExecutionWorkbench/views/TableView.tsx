@@ -9,7 +9,7 @@ import { WorkItem, ItemStatus, ColumnConfig, DEFAULT_COLUMNS, DensityMode, WorkT
 import { ChevronRight, ChevronDown, MoreHorizontal, ChevronsUpDown, ChevronsDownUp, Columns, Copy, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import {
@@ -151,8 +151,8 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns
             {/* Epic badges */}
             {item.type === 'epic' && (
               <div className="flex items-center gap-1 ml-1.5">
-                {item.team && <Badge variant="outline" className="text-[9px] py-0 px-1 h-4">{item.team}</Badge>}
-                {item.businessRequest && <Badge variant="outline" className="text-[9px] py-0 px-1 h-4 bg-blue-500/10 text-blue-600 border-blue-500/30">BR {item.businessRequest.key}</Badge>}
+                {item.team && <Lozenge appearance="default">{item.team}</Lozenge>}
+                {item.businessRequest && <Lozenge appearance="inprogress">BR {item.businessRequest.key}</Lozenge>}
               </div>
             )}
           </div>
@@ -167,7 +167,7 @@ function TableRow({ item, depth, onItemClick, expandedIds, toggleExpand, columns
         )}
         {isVisible('dependencies') && (
           <td className="px-3 py-0">
-            {item.dependencyCount > 0 ? <Badge variant="outline" className="text-[9px] py-0 h-4">{item.dependencyCount}</Badge> : <span className="text-foreground/40 text-[11px]">—</span>}
+            {item.dependencyCount > 0 ? <Lozenge appearance="default">{item.dependencyCount}</Lozenge> : <span className="text-foreground/40 text-[11px]">—</span>}
           </td>
         )}
         {isVisible('actions') && (

@@ -2,30 +2,19 @@ import { useState } from 'react';
 import { Plus, Star, MoreVertical, Trash2, Edit, Play, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useReportDefinitions, useDeleteReport } from '@/hooks/useReportAnalytics';
 import { ReportBuilder } from './ReportBuilder';
 import { ReportDefinition } from '@/types/reports';
 import { formatDistanceToNow } from 'date-fns';
-import { cn } from '@/lib/utils';
 
 export function SavedReportsList() {
   const { data: reports, isLoading } = useReportDefinitions();
   const deleteReport = useDeleteReport();
   const [showBuilder, setShowBuilder] = useState(false);
   const [editingReport, setEditingReport] = useState<ReportDefinition | null>(null);
-
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'execution': return 'bg-blue-100 text-blue-700';
-      case 'coverage': return 'bg-purple-100 text-purple-700';
-      case 'defect': return 'bg-red-100 text-red-700';
-      case 'team': return 'bg-green-100 text-green-700';
-      default: return 'bg-gray-100 text-gray-700';
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -51,7 +40,7 @@ export function SavedReportsList() {
                     </div>
                     <p className="text-sm text-muted-foreground truncate mb-2">{report.description || 'No description'}</p>
                     <div className="flex items-center gap-2">
-                      <Badge className={cn("text-xs", getTypeColor(report.report_type))}>{report.report_type}</Badge>
+                      <Lozenge appearance="default">{report.report_type}</Lozenge>
                       <span className="text-xs text-muted-foreground">Updated {formatDistanceToNow(new Date(report.updated_at), { addSuffix: true })}</span>
                     </div>
                   </div>

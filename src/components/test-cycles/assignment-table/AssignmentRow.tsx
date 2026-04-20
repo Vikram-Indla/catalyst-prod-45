@@ -9,7 +9,7 @@ import {
   Bot, User, Settings, ExternalLink
 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -184,16 +184,9 @@ export function AssignmentRow({
       {/* Type */}
       {visibleColumns.includes('type') && (
         <td className={cellClass}>
-          <Badge 
-            variant="outline" 
-            className="text-xs capitalize"
-            style={{ 
-              borderColor: CATALYST_V5.slate[200],
-              color: CATALYST_V5.slate[600],
-            }}
-          >
+          <Lozenge appearance="default">
             {assignment.testType}
-          </Badge>
+          </Lozenge>
         </td>
       )}
 
@@ -212,15 +205,9 @@ export function AssignmentRow({
       {visibleColumns.includes('defects') && (
         <td className={cellClass}>
           {assignment.defectCount > 0 ? (
-            <Badge 
-              className="text-xs"
-              style={{ 
-                backgroundColor: CATALYST_V5.dangerLight, 
-                color: CATALYST_V5.danger 
-              }}
-            >
+            <Lozenge appearance="removed">
               {assignment.defectCount}
-            </Badge>
+            </Lozenge>
           ) : (
             <span style={{ color: CATALYST_V5.slate[400] }}>—</span>
           )}

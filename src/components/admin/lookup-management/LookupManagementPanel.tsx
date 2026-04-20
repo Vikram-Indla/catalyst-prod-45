@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Loader2, Search, Settings2, Database, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -86,21 +86,15 @@ export function LookupManagementPanel() {
                   {set.description || '—'}
                 </td>
                 <td className="px-4 py-3 text-center">
-                  <Badge
-                    variant={set.is_active ? 'default' : 'secondary'}
-                    className={cn(
-                      'text-xs',
-                      set.is_active && 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100'
-                    )}
-                  >
+                  <Lozenge appearance={set.is_active ? 'inprogress' : 'default'}>
                     {set.is_active ? 'Active' : 'Inactive'}
-                  </Badge>
+                  </Lozenge>
                 </td>
                 <td className="px-4 py-3 text-center">
                   {set.is_system && (
-                    <Badge variant="outline" className="text-xs">
+                    <Lozenge appearance="default">
                       System
-                    </Badge>
+                    </Lozenge>
                   )}
                 </td>
                 <td className="px-4 py-3 text-right">

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { CheckCircle2, Circle } from "lucide-react";
 
 interface JiraSetupGuideProps {
@@ -106,9 +106,9 @@ export function JiraSetupGuide({ hasConnections }: JiraSetupGuideProps) {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
-                  <Badge variant="outline" className="text-xs">
+                  <Lozenge appearance="default">
                     Step {step.id}
-                  </Badge>
+                  </Lozenge>
                   <h3 className="font-semibold">{step.title}</h3>
                 </div>
                 <p className="text-sm text-muted-foreground mb-3">{step.description}</p>

@@ -37,7 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Check, ChevronsUpDown, Upload, X, FileText, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
@@ -754,16 +754,7 @@ export function CreateEpicDialog({
                         </span>
                       )}
                       {sf.status === 'uploaded' && (
-                        <Badge 
-                          className="text-[10px]"
-                          style={{ 
-                            backgroundColor: 'rgba(13, 148, 136, 0.1)',
-                            color: '#0d9488',
-                            border: '1px solid rgba(13, 148, 136, 0.3)'
-                          }}
-                        >
-                          Uploaded
-                        </Badge>
+                        <Lozenge appearance="success">Uploaded</Lozenge>
                       )}
                       {sf.status === 'error' && (
                         <span className="text-xs text-destructive">{sf.error}</span>

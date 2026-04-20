@@ -133,10 +133,9 @@ export function RiskDetailsTab({ risk, formData, onChange, isEditing }: RiskDeta
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { cn } from '@/lib/utils';
 
 interface RiskFormDetailsSectionProps {
   mode: 'view' | 'edit';
@@ -145,9 +144,9 @@ interface RiskFormDetailsSectionProps {
   profiles: { id: string; full_name: string | null; email: string | null }[];
 }
 
-const STATUS_OPTIONS = [
-  { value: 'Open', label: 'Open', color: 'bg-red-100 text-red-700' },
-  { value: 'Closed', label: 'Closed', color: 'bg-muted text-muted-foreground' },
+const STATUS_OPTIONS: Array<{ value: string; label: string; appearance: LozengeAppearance }> = [
+  { value: 'Open', label: 'Open', appearance: 'moved' },
+  { value: 'Closed', label: 'Closed', appearance: 'default' },
 ];
 
 const RESOLUTION_METHOD_OPTIONS = [
@@ -202,9 +201,9 @@ function RiskFormDetailsSection({ mode, value, onChange, profiles }: RiskFormDet
             </Select>
           ) : (
             <div className="mt-1 h-9 flex items-center">
-              <Badge className={cn("text-xs", getStatusConfig(value.status).color)}>
+              <Lozenge appearance={getStatusConfig(value.status).appearance}>
                 {value.status}
-              </Badge>
+              </Lozenge>
             </div>
           )}
         </div>
@@ -330,7 +329,7 @@ function RiskFormDetailsSection({ mode, value, onChange, profiles }: RiskFormDet
           ) : (
             <div className="mt-1 h-9 flex items-center">
               {value.critical_path === 'Yes' ? (
-                <Badge variant="destructive" className="bg-red-500 text-white">Yes</Badge>
+                <Lozenge appearance="removed">Yes</Lozenge>
               ) : (
                 <span className="text-sm">{value.critical_path || '—'}</span>
               )}

@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { format, parseISO } from 'date-fns';
 import { Json } from '@/integrations/supabase/types';
@@ -34,12 +34,12 @@ interface AuditDetailsDrawerProps {
 export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDrawerProps) {
   if (!event) return null;
 
-  const getActionColor = (action: string) => {
+  const getActionAppearance = (action: string): LozengeAppearance => {
     switch (action) {
-      case 'INSERT': return 'text-green-600 bg-green-50';
-      case 'UPDATE': return 'text-blue-600 bg-blue-50';
-      case 'DELETE': return 'text-red-600 bg-red-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'INSERT': return 'success';
+      case 'UPDATE': return 'inprogress';
+      case 'DELETE': return 'removed';
+      default: return 'default';
     }
   };
 
@@ -106,9 +106,9 @@ export function AuditDetailsDrawer({ event, open, onOpenChange }: AuditDetailsDr
       <SheetContent className="w-[480px] sm:max-w-[480px] overflow-y-auto">
         <SheetHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <Badge className={cn('text-xs', getActionColor(event.action))}>
+            <Lozenge appearance={getActionAppearance(event.action)}>
               {event.action}
-            </Badge>
+            </Lozenge>
             <SheetTitle className="text-base">{event.entity_type}</SheetTitle>
           </div>
           <SheetDescription className="font-mono text-xs">

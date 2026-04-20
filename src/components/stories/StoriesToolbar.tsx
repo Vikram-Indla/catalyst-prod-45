@@ -2,7 +2,7 @@
 // Citation: Catalyst_Stories_PRD_v2.pdf
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -114,9 +114,9 @@ export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch,
     <>
       <div className="flex items-center justify-between p-3 bg-accent/10 border rounded-lg">
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-sm">
+          <Lozenge appearance="inprogress">
             {selectedCount} selected
-          </Badge>
+          </Lozenge>
           <Button
             variant="ghost"
             size="sm"

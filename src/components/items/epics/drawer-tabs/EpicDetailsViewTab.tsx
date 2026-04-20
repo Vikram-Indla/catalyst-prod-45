@@ -28,7 +28,7 @@ import { Label } from '@/components/ui/label';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Lock, Unlock, Check, ChevronsUpDown, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -232,9 +232,11 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
                         />
                         <span>{theme.name}</span>
                         {theme.status && (
-                          <Badge variant="outline" className="ml-auto text-xs">
-                            {theme.status}
-                          </Badge>
+                          <span className="ml-auto text-xs">
+                            <Lozenge appearance="default">
+                              {theme.status}
+                            </Lozenge>
+                          </span>
                         )}
                       </CommandItem>
                     ))}
@@ -310,14 +312,18 @@ export function EpicDetailsViewTab({ data, onChange }: EpicDetailsViewTabProps) 
                         </div>
                         <div className="flex items-center gap-1 shrink-0 ml-2">
                           {br.rank && (
-                            <Badge variant="outline" className="text-[10px]">
-                              Rank #{br.rank}
-                            </Badge>
+                            <span className="text-[10px]">
+                              <Lozenge appearance="default">
+                                Rank #{br.rank}
+                              </Lozenge>
+                            </span>
                           )}
                           {br.business_score && (
-                            <Badge variant="secondary" className="text-[10px]">
-                              Score: {br.business_score}
-                            </Badge>
+                            <span className="text-[10px]">
+                              <Lozenge appearance="default">
+                                Score: {br.business_score}
+                              </Lozenge>
+                            </span>
                           )}
                         </div>
                       </CommandItem>

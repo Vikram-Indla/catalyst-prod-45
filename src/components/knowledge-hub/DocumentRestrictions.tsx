@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { Lock, Unlock, Plus, X, Shield, Eye, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Dialog,
   DialogContent,
@@ -279,9 +279,9 @@ function RestrictionItem({ restriction, onRemove }: RestrictionItemProps) {
   return (
     <div className="flex items-center justify-between p-2 rounded-md bg-card border">
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="text-xs">
+        <Lozenge appearance="default">
           {restriction.entity_type}
-        </Badge>
+        </Lozenge>
         <span className="text-sm">{restriction.entity_id}</span>
       </div>
       <Button

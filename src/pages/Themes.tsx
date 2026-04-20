@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
@@ -68,16 +68,16 @@ export default function Themes() {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      active: 'default',
-      proposed: 'secondary',
-      done: 'outline',
-      cancelled: 'destructive',
+    const variants: Record<string, LozengeAppearance> = {
+      active: 'inprogress',
+      proposed: 'default',
+      done: 'success',
+      cancelled: 'removed',
     };
     return (
-      <Badge variant={variants[status] || 'secondary'}>
+      <Lozenge appearance={variants[status] || 'default'}>
         {status}
-      </Badge>
+      </Lozenge>
     );
   };
 

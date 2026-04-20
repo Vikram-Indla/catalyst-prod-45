@@ -1,23 +1,28 @@
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { HEALTH_TOKENS, type SemanticHealth } from '@/lib/semantic-tokens';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 
 interface HealthBadgeProps {
   health: 'green' | 'yellow' | 'red' | null;
   className?: string;
 }
 
+const HEALTH_APPEARANCE: Record<'green' | 'yellow' | 'red', LozengeAppearance> = {
+  green: 'success',
+  yellow: 'moved',
+  red: 'removed',
+};
+
 export function HealthBadge({ health, className }: HealthBadgeProps) {
   if (!health) return null;
 
-  const healthConfig = HEALTH_TOKENS[health as SemanticHealth];
+  const appearance = HEALTH_APPEARANCE[health];
 
-  return (
-    <Badge 
-      variant="outline" 
-      className={cn('border', healthConfig?.chipClass, className)}
-    >
-      {health}
-    </Badge>
-  );
+  if (className) {
+    return (
+      <span className={className}>
+        <Lozenge appearance={appearance}>{health}</Lozenge>
+      </span>
+    );
+  }
+
+  return <Lozenge appearance={appearance}>{health}</Lozenge>;
 }

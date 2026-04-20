@@ -3,7 +3,7 @@ import { Plus, Pencil, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Table,
   TableBody,
@@ -151,15 +151,15 @@ export default function IncidentWorkgroups() {
           <h3 className="font-medium mb-2">Support Level Mapping</h3>
           <div className="flex gap-4 text-sm">
             <div className="flex items-center gap-2">
-              <Badge variant="outline">L1</Badge>
+              <Lozenge appearance="default">L1</Lozenge>
               <span className="text-muted-foreground">→ Operations (First Line)</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">L2</Badge>
+              <Lozenge appearance="default">L2</Lozenge>
               <span className="text-muted-foreground">→ Operations (Technical)</span>
             </div>
             <div className="flex items-center gap-2">
-              <Badge variant="outline">L3</Badge>
+              <Lozenge appearance="default">L3</Lozenge>
               <span className="text-muted-foreground">→ Delivery (Development)</span>
             </div>
           </div>
@@ -206,10 +206,10 @@ export default function IncidentWorkgroups() {
                   <TableRow key={workgroup.id}>
                     <TableCell className="font-medium">{workgroup.name}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{workgroup.code}</Badge>
+                      <Lozenge appearance="default">{workgroup.code}</Lozenge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{workgroup.support_level_default || 'L1'}</Badge>
+                      <Lozenge appearance="default">{workgroup.support_level_default || 'L1'}</Lozenge>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {workgroup.description || '—'}

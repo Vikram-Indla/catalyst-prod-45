@@ -9,7 +9,7 @@ import {
   FileCode, Zap, Smartphone, Copy, Send
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -125,13 +125,13 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
     onFixSelected?.(gaps);
   };
 
-  const getSeverityColor = (severity: string) => {
+  const getSeverityAppearance = (severity: string): LozengeAppearance => {
     switch (severity) {
-      case 'P0': return 'bg-destructive text-destructive-foreground';
-      case 'P1': return 'bg-warning text-warning-foreground';
-      case 'P2': return 'bg-info text-info-foreground';
-      case 'P3': return 'bg-muted text-muted-foreground';
-      default: return 'bg-secondary';
+      case 'P0': return 'removed';
+      case 'P1': return 'moved';
+      case 'P2': return 'inprogress';
+      case 'P3': return 'default';
+      default: return 'default';
     }
   };
 
@@ -267,9 +267,9 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                       onCheckedChange={() => toggleGap(gap.id)}
                     />
                     
-                    <Badge className={cn("text-xs shrink-0", getSeverityColor(gap.severity))}>
+                    <Lozenge appearance={getSeverityAppearance(gap.severity)}>
                       {gap.severity}
-                    </Badge>
+                    </Lozenge>
                     
                     <div className="flex items-center gap-1.5 shrink-0 text-muted-foreground">
                       {getCategoryIcon(gap.category)}
@@ -292,12 +292,9 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                     </div>
                     
                     {gap.autoFixable ? (
-                      <Badge variant="outline" className="text-xs bg-success/10 text-success border-success/20">
-                        <Zap className="h-3 w-3 mr-1" />
-                        Auto-fix
-                      </Badge>
+                      <Lozenge appearance="success">Auto-fix</Lozenge>
                     ) : (
-                      <Badge variant="outline" className="text-xs">Manual</Badge>
+                      <Lozenge appearance="default">Manual</Lozenge>
                     )}
                     
                     {gap.file && (
@@ -359,19 +356,18 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                       </td>
                       <td className="px-4 py-2 text-muted-foreground">{gap.viewport}</td>
                       <td className="px-4 py-2 text-center">
-                        <Badge className={cn(
-                          "text-xs",
-                          gap.score >= 80 ? "bg-success/10 text-success" :
-                          gap.score >= 60 ? "bg-warning/10 text-warning" :
-                          "bg-destructive/10 text-destructive"
-                        )}>
+                        <Lozenge appearance={
+                          gap.score >= 80 ? 'success' :
+                          gap.score >= 60 ? 'moved' :
+                          'removed'
+                        }>
                           {gap.score}%
-                        </Badge>
+                        </Lozenge>
                       </td>
                       <td className="px-4 py-2 text-center font-medium">{gap.issues}</td>
                       <td className="px-4 py-2 text-center">
-                        {gap.p0 > 0 && <Badge className="bg-destructive text-xs mr-1">{gap.p0}</Badge>}
-                        {gap.p1 > 0 && <Badge className="bg-warning text-xs">{gap.p1}</Badge>}
+                        {gap.p0 > 0 && <span className="mr-1"><Lozenge appearance="removed">{String(gap.p0)}</Lozenge></span>}
+                        {gap.p1 > 0 && <Lozenge appearance="moved">{String(gap.p1)}</Lozenge>}
                         {gap.p0 === 0 && gap.p1 === 0 && <span className="text-muted-foreground">-</span>}
                       </td>
                       <td className="px-4 py-2 text-xs text-muted-foreground">{gap.topIssue}</td>

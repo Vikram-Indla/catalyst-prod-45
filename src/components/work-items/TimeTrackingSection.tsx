@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Clock, Plus, Trash2, Calendar } from 'lucide-react';
 import { format } from 'date-fns';
@@ -146,9 +146,9 @@ export function TimeTrackingSection({ workItemId, workItemType }: TimeTrackingSe
               className={`h-2 ${isOverBudget ? '[&>div]:bg-destructive' : ''}`}
             />
             {isOverBudget && (
-              <Badge variant="destructive" className="text-xs">
-                Over by {formatMinutes(spentMinutes - originalMinutes)}
-              </Badge>
+              <Lozenge appearance="removed">
+                {`Over by ${formatMinutes(spentMinutes - originalMinutes)}`}
+              </Lozenge>
             )}
           </div>
         )}
@@ -220,9 +220,9 @@ export function TimeTrackingSection({ workItemId, workItemType }: TimeTrackingSe
                   <div className="flex items-center gap-2">
                     <Calendar className="h-3 w-3 text-muted-foreground" />
                     <span>{format(new Date(log.work_date), 'MMM d')}</span>
-                    <Badge variant="secondary" className="text-xs">
+                    <Lozenge appearance="default">
                       {formatMinutes(log.minutes_logged)}
-                    </Badge>
+                    </Lozenge>
                   </div>
                   <button
                     onClick={() => deleteTimeLog.mutate(log.id)}

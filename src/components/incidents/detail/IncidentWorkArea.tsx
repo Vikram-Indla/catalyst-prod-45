@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -126,9 +126,9 @@ function SectionHeader({
         {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
         <h2 className="font-medium text-sm text-foreground">{title}</h2>
         {count !== undefined && (
-          <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
+          <Lozenge appearance="inprogress">
             {count}
-          </Badge>
+          </Lozenge>
         )}
       </div>
       {actions}
@@ -346,9 +346,9 @@ export function IncidentWorkArea({
         <div className="p-4">
           {convertedToId ? (
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="text-sm">
+              <Lozenge appearance="default">
                 Converted to {convertedToType}
-              </Badge>
+              </Lozenge>
               <span className="font-medium text-primary text-sm">{convertedToId}</span>
             </div>
           ) : (
@@ -365,9 +365,11 @@ export function IncidentWorkArea({
               <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
               Comments
               {userComments.length > 0 && (
-                <Badge variant="secondary" className="ml-1.5 text-[10px] px-1 py-0 h-4">
-                  {userComments.length}
-                </Badge>
+                <span className="ml-1.5">
+                  <Lozenge appearance="inprogress">
+                    {userComments.length}
+                  </Lozenge>
+                </span>
               )}
             </TabsTrigger>
             <TabsTrigger value="sla" className="text-sm h-8 px-3 data-[state=active]:bg-background">
@@ -382,9 +384,11 @@ export function IncidentWorkArea({
               <History className="h-3.5 w-3.5 mr-1.5" />
               Audit Log
               {history.length > 0 && (
-                <Badge variant="secondary" className="ml-1.5 text-[10px] px-1 py-0 h-4">
-                  {history.length}
-                </Badge>
+                <span className="ml-1.5">
+                  <Lozenge appearance="inprogress">
+                    {history.length}
+                  </Lozenge>
+                </span>
               )}
             </TabsTrigger>
           </TabsList>
@@ -464,19 +468,17 @@ export function IncidentWorkArea({
                       {sla.responded_at && ` • Done ${new Date(sla.responded_at).toLocaleString()}`}
                     </span>
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className={cn(
-                      'text-[10px] h-5 px-1.5',
-                      sla.response_breached 
-                        ? 'bg-destructive/10 text-destructive border-destructive/30'
-                        : sla.responded_at 
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
-                          : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800'
-                    )}
+                  <Lozenge
+                    appearance={
+                      sla.response_breached
+                        ? 'removed'
+                        : sla.responded_at
+                          ? 'success'
+                          : 'moved'
+                    }
                   >
                     {sla.response_breached ? 'Breached' : sla.responded_at ? 'Met' : 'On track'}
-                  </Badge>
+                  </Lozenge>
                 </div>
                 {/* Resolution SLA - compact row */}
                 <div className="flex items-center justify-between px-3 py-2">
@@ -487,19 +489,17 @@ export function IncidentWorkArea({
                       {sla.resolved_at && ` • Done ${new Date(sla.resolved_at).toLocaleString()}`}
                     </span>
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className={cn(
-                      'text-[10px] h-5 px-1.5',
-                      sla.resolution_breached 
-                        ? 'bg-destructive/10 text-destructive border-destructive/30'
-                        : sla.resolved_at 
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800'
-                          : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800'
-                    )}
+                  <Lozenge
+                    appearance={
+                      sla.resolution_breached
+                        ? 'removed'
+                        : sla.resolved_at
+                          ? 'success'
+                          : 'moved'
+                    }
                   >
                     {sla.resolution_breached ? 'Breached' : sla.resolved_at ? 'Met' : 'On track'}
-                  </Badge>
+                  </Lozenge>
                 </div>
               </div>
             ) : (
@@ -516,18 +516,20 @@ export function IncidentWorkArea({
                   <span className="text-xs">
                     {committee.members?.filter(m => m.vote?.vote === 'approved').length || 0}/{committee.required_approvals || 2} approvals
                   </span>
-                  <Badge 
-                    variant="outline"
-                    className={cn(
-                      'text-[10px] h-5 px-1.5',
-                      committee.status === 'approved' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                      committee.status === 'rejected' && 'bg-rose-50 text-rose-700 border-rose-200',
-                      committee.status === 'pending' && 'bg-amber-50 text-amber-700 border-amber-200'
-                    )}
+                  <Lozenge
+                    appearance={
+                      committee.status === 'approved'
+                        ? 'success'
+                        : committee.status === 'rejected'
+                          ? 'removed'
+                          : committee.status === 'pending'
+                            ? 'moved'
+                            : 'default'
+                    }
                   >
-                    {committee.status === 'pending' ? 'In Review' : 
+                    {committee.status === 'pending' ? 'In Review' :
                      committee.status.charAt(0).toUpperCase() + committee.status.slice(1)}
-                  </Badge>
+                  </Lozenge>
                 </div>
                 {/* Approvers - compact rows */}
                 {committee.members?.map(member => (
@@ -542,19 +544,20 @@ export function IncidentWorkArea({
                       {member.has_veto && <span className="ml-1 text-[10px] text-amber-600">(V)</span>}
                       {member.role && <span className="ml-1 text-[10px] text-muted-foreground">• {member.role}</span>}
                     </span>
-                    <Badge 
-                      variant="outline"
-                      className={cn(
-                        'text-[10px] h-4 px-1',
-                        member.vote?.vote === 'approved' && 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                        member.vote?.vote === 'rejected' && 'bg-rose-50 text-rose-700 border-rose-200',
-                        member.vote?.vote === 'vetoed' && 'bg-amber-50 text-amber-700 border-amber-200',
-                        (!member.vote || member.vote.vote === 'pending') && 'bg-muted text-muted-foreground'
-                      )}
+                    <Lozenge
+                      appearance={
+                        member.vote?.vote === 'approved'
+                          ? 'success'
+                          : member.vote?.vote === 'rejected'
+                            ? 'removed'
+                            : member.vote?.vote === 'vetoed'
+                              ? 'moved'
+                              : 'default'
+                      }
                     >
-                      {member.vote?.vote === 'pending' ? 'Pending' : 
+                      {member.vote?.vote === 'pending' ? 'Pending' :
                        member.vote?.vote ? member.vote.vote.charAt(0).toUpperCase() + member.vote.vote.slice(1) : 'Pending'}
-                    </Badge>
+                    </Lozenge>
                   </div>
                 ))}
               </div>
@@ -666,10 +669,10 @@ export function IncidentWorkArea({
 
 // Comment Item Component
 function CommentItem({ comment }: { comment: Comment }) {
-  const COMMENT_TYPE_COLORS: Record<string, string> = {
-    decision: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400',
-    action: 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400',
-    rca: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+  const COMMENT_TYPE_APPEARANCE: Record<string, 'moved' | 'inprogress' | 'new'> = {
+    decision: 'moved',
+    action: 'inprogress',
+    rca: 'new',
   };
 
   const isEdited = comment.updated_at && comment.updated_at !== comment.created_at;
@@ -686,10 +689,10 @@ function CommentItem({ comment }: { comment: Comment }) {
           <span className="text-sm font-medium">
             {comment.author?.full_name || comment.author_name || 'Unknown'}
           </span>
-          {comment.comment_type !== 'update' && COMMENT_TYPE_COLORS[comment.comment_type] && (
-            <Badge variant="outline" className={cn('text-xs px-1.5 py-0', COMMENT_TYPE_COLORS[comment.comment_type])}>
+          {comment.comment_type !== 'update' && COMMENT_TYPE_APPEARANCE[comment.comment_type] && (
+            <Lozenge appearance={COMMENT_TYPE_APPEARANCE[comment.comment_type]}>
               {comment.comment_type.charAt(0).toUpperCase() + comment.comment_type.slice(1)}
-            </Badge>
+            </Lozenge>
           )}
           <span className="text-xs text-muted-foreground">
             {new Date(comment.created_at).toLocaleString()}

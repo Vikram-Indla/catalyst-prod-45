@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Search, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProductRole } from '@/hooks/useProductRoles';
@@ -79,15 +79,9 @@ export function RolesList({ roles, selectedRoleId, onSelectRole, isLoading }: Ro
                   <Users className="h-3 w-3" />
                   {role.user_count || 0}
                 </span>
-                <Badge 
-                  variant={role.is_active ? "default" : "secondary"}
-                  className={cn(
-                    "text-xs",
-                    role.is_active && "bg-green-100 text-green-700 hover:bg-green-100"
-                  )}
-                >
+                <Lozenge appearance={role.is_active ? 'inprogress' : 'default'}>
                   {role.is_active ? 'Active' : 'Inactive'}
-                </Badge>
+                </Lozenge>
               </div>
             </li>
           ))}

@@ -11,7 +11,7 @@
 import { useState } from 'react';
 import { useWorkItemDependencies, WorkItemDependency } from '@/hooks/useWorkItemDependencies';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Loader2, Plus, ArrowRight, ArrowLeft, AlertTriangle, Clock, CheckCircle2, ExternalLink } from 'lucide-react';
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
@@ -58,7 +58,7 @@ export function EpicDependenciesTab({ epicId, epicName }: EpicDependenciesTabPro
         <div className="flex items-center gap-2 mb-3">
           <ArrowRight className="h-4 w-4 text-brand-primary" />
           <h4 className="text-sm font-medium">Outgoing Dependencies</h4>
-          <Badge variant="secondary" className="text-xs">{outgoing.length}</Badge>
+          <Lozenge appearance="inprogress">{outgoing.length}</Lozenge>
         </div>
         <p className="text-xs text-muted-foreground mb-3">
           This Epic depends on the following work items
@@ -85,7 +85,7 @@ export function EpicDependenciesTab({ epicId, epicName }: EpicDependenciesTabPro
         <div className="flex items-center gap-2 mb-3">
           <ArrowLeft className="h-4 w-4 text-amber-600" />
           <h4 className="text-sm font-medium">Incoming Dependencies</h4>
-          <Badge variant="secondary" className="text-xs">{incoming.length}</Badge>
+          <Lozenge appearance="inprogress">{incoming.length}</Lozenge>
         </div>
         <p className="text-xs text-muted-foreground mb-3">
           These work items depend on this Epic
@@ -136,18 +136,17 @@ function DependencyRow({ dependency, onSelect }: DependencyRowProps) {
     ? { key: dependency.target_key, name: dependency.target_name, type: dependency.target_type }
     : { key: dependency.source_key, name: dependency.source_name, type: dependency.source_type };
 
-  const statusConfig: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: any }> = {
-    draft: { variant: 'outline', icon: Clock },
-    pending_commit: { variant: 'outline', icon: Clock },
-    committed: { variant: 'default', icon: CheckCircle2 },
-    in_progress: { variant: 'secondary', icon: Clock },
-    delivered: { variant: 'default', icon: CheckCircle2 },
-    cancelled: { variant: 'outline', icon: AlertTriangle },
-    not_required: { variant: 'outline', icon: AlertTriangle },
+  const statusConfig: Record<string, { appearance: LozengeAppearance; icon: any }> = {
+    draft: { appearance: 'default', icon: Clock },
+    pending_commit: { appearance: 'default', icon: Clock },
+    committed: { appearance: 'success', icon: CheckCircle2 },
+    in_progress: { appearance: 'inprogress', icon: Clock },
+    delivered: { appearance: 'success', icon: CheckCircle2 },
+    cancelled: { appearance: 'removed', icon: AlertTriangle },
+    not_required: { appearance: 'default', icon: AlertTriangle },
   };
 
-  const config = statusConfig[dependency.status || 'draft'] || { variant: 'outline' as const, icon: Clock };
-  const StatusIcon = config.icon;
+  const config = statusConfig[dependency.status || 'draft'] || { appearance: 'default' as const, icon: Clock };
 
   return (
     <div 
@@ -158,20 +157,18 @@ function DependencyRow({ dependency, onSelect }: DependencyRowProps) {
         {/* Direction indicator */}
         <div className="flex-shrink-0">
           {isOutgoing ? (
-            <Badge variant="outline" className="text-xs bg-brand-primary/10 text-brand-primary border-brand-primary/30">
-              Outgoing
-            </Badge>
+            <Lozenge appearance="inprogress">Outgoing</Lozenge>
           ) : (
-            <Badge variant="outline" className="text-xs bg-amber-500/10 text-amber-600 border-amber-500/30">
-              Incoming
-            </Badge>
+            <Lozenge appearance="moved">Incoming</Lozenge>
           )}
         </div>
 
         {/* Type badge */}
-        <Badge variant="secondary" className="text-xs flex-shrink-0">
-          {linkedItem.type === 'epic' ? 'E' : 'F'}
-        </Badge>
+        <span className="flex-shrink-0">
+          <Lozenge appearance="default">
+            {linkedItem.type === 'epic' ? 'E' : 'F'}
+          </Lozenge>
+        </span>
 
         {/* Work item info */}
         <div className="min-w-0">
@@ -194,10 +191,9 @@ function DependencyRow({ dependency, onSelect }: DependencyRowProps) {
         )}
 
         {/* Status badge */}
-        <Badge variant={config.variant} className="text-xs gap-1">
-          <StatusIcon className="h-3 w-3" />
+        <Lozenge appearance={config.appearance}>
           {(dependency.status || 'Draft').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-        </Badge>
+        </Lozenge>
 
         {/* Date */}
         {dependency.needed_by_date && (

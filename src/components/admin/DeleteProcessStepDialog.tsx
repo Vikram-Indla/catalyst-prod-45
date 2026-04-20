@@ -20,7 +20,7 @@ import { AlertTriangle, Trash2, RefreshCw } from 'lucide-react';
 import { useLinkedTickets, useReassignTickets, useDeleteProcessStep } from '@/hooks/useDeleteProcessStep';
 import { DemandProcessStep } from '@/hooks/useDemandProcessSteps';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 
 interface DeleteProcessStepDialogProps {
   open: boolean;
@@ -121,9 +121,9 @@ export function DeleteProcessStepDialog({
                         key={ticket.id} 
                         className="flex items-center gap-2 text-sm p-1.5 rounded hover:bg-muted/50"
                       >
-                        <Badge variant="outline" className="font-mono text-xs shrink-0">
+                        <Lozenge appearance="default">
                           {ticket.request_key || 'N/A'}
-                        </Badge>
+                        </Lozenge>
                         <span className="truncate text-muted-foreground">
                           {ticket.title}
                         </span>

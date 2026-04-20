@@ -3,7 +3,7 @@ import { RefreshCw, AlertTriangle, CheckCircle, TrendingUp, Sparkles, Info, Aler
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAnalyzeCatyCoverage } from '@/hooks/useCatyAI';
@@ -45,11 +45,11 @@ export function CatyAICoverageAnalysis({ projectId, onGenerateFromGap }: Props) 
   const critical = gaps.filter((g: any) => g.severity === 'critical').length;
   const high = gaps.filter((g: any) => g.severity === 'high').length;
 
-  const severityConfig: Record<string, any> = {
-    critical: { icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50 border-red-200', badge: 'bg-red-100 text-red-700' },
-    high: { icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-50 border-orange-200', badge: 'bg-orange-100 text-orange-700' },
-    medium: { icon: Info, color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-200', badge: 'bg-yellow-100 text-yellow-700' },
-    low: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', badge: 'bg-blue-100 text-blue-700' },
+  const severityConfig: Record<string, { icon: any; color: string; bg: string; appearance: LozengeAppearance }> = {
+    critical: { icon: AlertTriangle, color: 'text-red-600', bg: 'bg-red-50 border-red-200', appearance: 'removed' },
+    high: { icon: AlertCircle, color: 'text-orange-600', bg: 'bg-orange-50 border-orange-200', appearance: 'moved' },
+    medium: { icon: Info, color: 'text-yellow-600', bg: 'bg-yellow-50 border-yellow-200', appearance: 'moved' },
+    low: { icon: Info, color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200', appearance: 'inprogress' },
   };
 
   return (
@@ -98,7 +98,7 @@ export function CatyAICoverageAnalysis({ projectId, onGenerateFromGap }: Props) 
                   <div className="flex items-start gap-3">
                     <Icon className={cn("h-5 w-5 mt-0.5", cfg.color)} />
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1"><h4 className="font-medium">{gap.area}</h4><Badge className={cn("capitalize text-xs ml-auto", cfg.badge)}>{gap.severity}</Badge></div>
+                      <div className="flex items-center gap-2 mb-1"><h4 className="font-medium">{gap.area}</h4><span className="ml-auto"><Lozenge appearance={cfg.appearance}>{gap.severity}</Lozenge></span></div>
                       <p className="text-sm text-muted-foreground mb-2">{gap.description}</p>
                       <p className="text-sm mb-3"><strong>Recommendation:</strong> {gap.recommendation}</p>
                       <div className="flex items-center gap-2">

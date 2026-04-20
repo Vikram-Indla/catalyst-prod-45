@@ -5,7 +5,7 @@ import {
   Package, FileText, CheckCircle, XCircle, Clock 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,20 +23,20 @@ interface CycleCardProps {
   onDelete: (cycleId: string) => void;
 }
 
-const statusColors: Record<string, string> = {
-  planned: 'bg-gray-100 text-gray-700',
-  in_progress: 'bg-blue-100 text-blue-700',
-  completed: 'bg-green-100 text-green-700',
-  aborted: 'bg-red-100 text-red-700'
-};
-
-const envColors: Record<string, string> = {
-  dev: 'bg-blue-100 text-blue-700',
-  qa: 'bg-cyan-100 text-cyan-700',
-  beta: 'bg-amber-100 text-amber-700',
-  staging: 'bg-orange-100 text-orange-700',
-  uat: 'bg-indigo-100 text-indigo-700',
-  production: 'bg-red-100 text-red-700'
+const envAppearance = (env: string | null | undefined): LozengeAppearance => {
+  switch (env) {
+    case 'production':
+      return 'removed';
+    case 'staging':
+    case 'beta':
+      return 'moved';
+    case 'dev':
+    case 'qa':
+    case 'uat':
+      return 'inprogress';
+    default:
+      return 'default';
+  }
 };
 
 const avatarColors: Record<string, string> = {
@@ -84,9 +84,9 @@ export function CycleCard({ cycle, onEdit, onDuplicate, onDelete }: CycleCardPro
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="font-mono text-sm font-semibold text-primary">{cycle.id}</span>
-            <Badge className={cn("text-xs", envColors[cycle.environment])}>
+            <Lozenge appearance={envAppearance(cycle.environment)}>
               {cycle.environment}
-            </Badge>
+            </Lozenge>
           </div>
           <h3 className="font-semibold text-gray-900">{cycle.name}</h3>
         </div>

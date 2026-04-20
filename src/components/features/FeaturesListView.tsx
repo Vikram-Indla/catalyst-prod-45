@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -100,16 +100,16 @@ export function FeaturesListView({
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      funnel: 'secondary',
-      analyzing: 'secondary',
+    const appearances: Record<string, LozengeAppearance> = {
+      funnel: 'default',
+      analyzing: 'default',
       backlog: 'default',
-      implementing: 'default',
-      validating: 'default',
-      deploying: 'default',
-      done: 'outline',
+      implementing: 'inprogress',
+      validating: 'inprogress',
+      deploying: 'inprogress',
+      done: 'success',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
+    return <Lozenge appearance={appearances[status] || 'default'}>{status}</Lozenge>;
   };
 
   const getStatusColor = (status?: string) => {

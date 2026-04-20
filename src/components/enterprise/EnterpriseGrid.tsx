@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -350,7 +350,7 @@ export function EnterpriseGrid<T extends Record<string, unknown>>({
       case 'date':
         return new Date(value as string).toLocaleDateString();
       case 'badge':
-        return <Badge variant="outline" className="text-xs">{String(value)}</Badge>;
+        return <Lozenge appearance="default">{String(value)}</Lozenge>;
       default:
         return <span className="truncate">{String(value)}</span>;
     }
@@ -389,9 +389,9 @@ export function EnterpriseGrid<T extends Record<string, unknown>>({
                     <Filter className="h-3.5 w-3.5 mr-1.5" />
                     Filters
                     {grid.filterConfig.length > 0 && (
-                      <Badge className="ml-1.5 h-4 px-1 text-[10px] bg-accent-primary text-white">
-                        {grid.filterConfig.length}
-                      </Badge>
+                      <span className="ml-1.5">
+                        <Lozenge appearance="inprogress">{grid.filterConfig.length}</Lozenge>
+                      </span>
                     )}
                   </Button>
                 </PopoverTrigger>

@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Filter, X, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
@@ -83,9 +83,11 @@ export function FilterBar({
           >
             Priority
             {filters.priorities.length > 0 && (
-              <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
-                {filters.priorities.length}
-              </Badge>
+              <span className="ml-1.5">
+                <Lozenge appearance="inprogress">
+                  {filters.priorities.length}
+                </Lozenge>
+              </span>
             )}
             <ChevronDown className="ml-1 h-3 w-3" />
           </Button>
@@ -126,9 +128,11 @@ export function FilterBar({
           >
             Type
             {filters.types.length > 0 && (
-              <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
-                {filters.types.length}
-              </Badge>
+              <span className="ml-1.5">
+                <Lozenge appearance="inprogress">
+                  {filters.types.length}
+                </Lozenge>
+              </span>
             )}
             <ChevronDown className="ml-1 h-3 w-3" />
           </Button>
@@ -165,9 +169,11 @@ export function FilterBar({
           >
             Status
             {filters.statuses.length > 0 && (
-              <Badge variant="secondary" className="ml-1.5 h-4 px-1 text-[10px]">
-                {filters.statuses.length}
-              </Badge>
+              <span className="ml-1.5">
+                <Lozenge appearance="inprogress">
+                  {filters.statuses.length}
+                </Lozenge>
+              </span>
             )}
             <ChevronDown className="ml-1 h-3 w-3" />
           </Button>

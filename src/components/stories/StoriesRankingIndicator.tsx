@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { RankingContext } from '@/hooks/useWorkItemRanking';
 
 interface StoriesRankingIndicatorProps {
@@ -7,26 +7,26 @@ interface StoriesRankingIndicatorProps {
   isFilterActive?: boolean;
 }
 
-export function StoriesRankingIndicator({ 
-  context, 
-  rank, 
-  isFilterActive 
+export function StoriesRankingIndicator({
+  context,
+  rank,
+  isFilterActive
 }: StoriesRankingIndicatorProps) {
   if (isFilterActive) {
     return (
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
-        <Badge variant="outline" className="text-xs">
+        <Lozenge appearance="default">
           Ranking Disabled (Filters Active)
-        </Badge>
+        </Lozenge>
       </div>
     );
   }
 
   return (
     <div className="flex items-center gap-2 text-xs">
-      <Badge variant="secondary" className="text-xs">
+      <Lozenge appearance="default">
         {context.label}
-      </Badge>
+      </Lozenge>
       {rank !== null && (
         <span className="text-muted-foreground">#{rank}</span>
       )}

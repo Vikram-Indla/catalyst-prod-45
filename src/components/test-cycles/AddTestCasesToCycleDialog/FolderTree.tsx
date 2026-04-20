@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { ChevronRight, Folder, FolderOpen, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { TMTestCase } from '@/types/test-management';
 import { FolderNode, UseTestCaseSelectionReturn } from './types';
@@ -92,9 +92,11 @@ export function FolderTree({
             {node.folder.name}
           </span>
           
-          <Badge variant="secondary" className="text-xs shrink-0">
-            {node.totalCount}
-          </Badge>
+          <span className="shrink-0">
+            <Lozenge appearance="default">
+              {node.totalCount}
+            </Lozenge>
+          </span>
           
           {node.selectableCount > 0 && (
             <Button
@@ -154,9 +156,9 @@ export function FolderTree({
           <div className="flex items-center gap-2 px-3 py-2 bg-slate-50 border-b border-slate-100">
             <Folder className="w-4 h-4 text-slate-400" />
             <span className="flex-1 text-sm text-slate-500 italic">Unfiled</span>
-            <Badge variant="secondary" className="text-xs">
+            <Lozenge appearance="default">
               {unfiledCases.length}
-            </Badge>
+            </Lozenge>
           </div>
           {unfiledCases.map(tc => (
             <TestCaseRow

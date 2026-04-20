@@ -1,4 +1,4 @@
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Loader2 } from 'lucide-react';
 
@@ -21,12 +21,12 @@ interface StoriesGridProps {
   onRefetch: () => void;
 }
 
-const getStateColor = (state: string | null) => {
+const getStateAppearance = (state: string | null): LozengeAppearance => {
   switch (state) {
-    case 'done': return 'bg-green-500/10 text-green-700 border-green-500/20';
-    case 'in_progress': return 'bg-blue-500/10 text-blue-700 border-blue-500/20';
-    case 'backlog': return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
-    default: return 'bg-gray-500/10 text-gray-700 border-gray-500/20';
+    case 'done': return 'success';
+    case 'in_progress': return 'inprogress';
+    case 'backlog': return 'default';
+    default: return 'default';
   }
 };
 
@@ -81,9 +81,9 @@ export function StoriesGrid({ stories, isLoading, onStoryClick }: StoriesGridPro
             <TableCell className="font-mono text-sm">{story.story_key || '—'}</TableCell>
             <TableCell className="font-medium">{story.name}</TableCell>
             <TableCell>
-              <Badge variant="outline" className={getStateColor(story.state)}>
+              <Lozenge appearance={getStateAppearance(story.state)}>
                 {story.state || 'backlog'}
-              </Badge>
+              </Lozenge>
             </TableCell>
             <TableCell className="text-center">{story.story_points || '—'}</TableCell>
             <TableCell>

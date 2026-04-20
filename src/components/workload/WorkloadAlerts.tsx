@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { 
   AlertTriangle, 
   UserMinus, 
@@ -76,14 +76,9 @@ export function WorkloadAlerts({ alerts, onAction, onDismiss }: WorkloadAlertsPr
             <span className="font-medium" style={{ color: CATALYST_V5.slate[900] }}>
               Workload Alerts
             </span>
-            <Badge 
-              style={{ 
-                backgroundColor: CATALYST_V5.warningLight, 
-                color: CATALYST_V5.warning 
-              }}
-            >
-              {visibleAlerts.length}
-            </Badge>
+            <Lozenge appearance="moved">
+              {String(visibleAlerts.length)}
+            </Lozenge>
           </div>
           {isExpanded ? (
             <ChevronUp className="h-5 w-5" style={{ color: CATALYST_V5.slate[400] }} />

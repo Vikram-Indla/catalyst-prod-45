@@ -10,9 +10,8 @@
  * (Same formula as WSJF, rebranded for Catalyst)
  */
 
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TrendingUp } from 'lucide-react';
 
 interface TechnicalScoreBadgeProps {
   score: number | null;
@@ -35,20 +34,22 @@ export function TechnicalScoreBadge({
 }: TechnicalScoreBadgeProps) {
   if (!score || score === 0) {
     return (
-      <Badge variant="outline" className="text-xs cursor-pointer" onClick={onClick}>
-        {compact ? '-' : 'No Score'}
-      </Badge>
+      <span className="cursor-pointer" onClick={onClick}>
+        <Lozenge appearance="default">
+          {compact ? '-' : 'No Score'}
+        </Lozenge>
+      </span>
     );
   }
-  
+
   // Color code based on Technical Score thresholds
-  const getVariant = (): 'default' | 'secondary' | 'outline' => {
-    if (score >= 50) return 'default'; // High priority
-    if (score >= 20) return 'secondary'; // Medium priority
-    return 'outline'; // Low priority
+  const getAppearance = (): LozengeAppearance => {
+    if (score >= 50) return 'success'; // High priority
+    if (score >= 20) return 'moved'; // Medium priority
+    return 'removed'; // Low priority
   };
-  
-  const variant = getVariant();
+
+  const appearance = getAppearance();
   
   const tooltipContent = technicalValue !== undefined && (
     <div className="space-y-1">
@@ -69,14 +70,14 @@ export function TechnicalScoreBadge({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge 
-            variant={variant} 
-            className="text-xs gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+          <span
+            className="cursor-pointer hover:opacity-80 transition-opacity"
             onClick={onClick}
           >
-            <TrendingUp className="h-3 w-3" />
-            {score.toFixed(2)}
-          </Badge>
+            <Lozenge appearance={appearance}>
+              {score.toFixed(2)}
+            </Lozenge>
+          </span>
         </TooltipTrigger>
         {tooltipContent && (
           <TooltipContent>

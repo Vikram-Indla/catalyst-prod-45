@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
@@ -32,7 +32,15 @@ import {
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { STORY_STATUS_LABELS } from '@/types/story.types';
-import type { StoryWithRelations } from '@/types/story.types';
+import type { StoryStatus, StoryWithRelations } from '@/types/story.types';
+
+const STORY_STATUS_APPEARANCE: Record<StoryStatus, LozengeAppearance> = {
+  todo: 'default',
+  in_progress: 'inprogress',
+  done: 'success',
+  accepted: 'success',
+  blocked: 'removed',
+};
 
 import { StoryActivityLog } from './StoryActivityLog';
 import { StoryLinks } from './StoryLinks';
@@ -120,13 +128,13 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
           <div className="flex-1 pr-2 min-w-0 flex items-center gap-2">
             <SheetTitle className="executive-drawer-title truncate text-base font-semibold">{story.name}</SheetTitle>
             <div className="flex items-center gap-2">
-              <Badge variant="outline" className="capitalize text-xs">
+              <Lozenge appearance={story.status ? STORY_STATUS_APPEARANCE[story.status] : 'default'}>
                 {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
-              </Badge>
+              </Lozenge>
               {story.estimate_points && (
-                <Badge variant="secondary" className="bg-brand-primary/10 text-brand-primary border-brand-primary/20 text-xs">
+                <Lozenge appearance="inprogress">
                   {story.estimate_points} pts
-                </Badge>
+                </Lozenge>
               )}
             </div>
             {story.id && <WorkItemPresence workItemType="stories" workItemId={story.id} />}
@@ -266,9 +274,9 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   </SelectContent>
                 </Select>
               ) : (
-                <Badge variant="outline" className="capitalize">
+                <Lozenge appearance={story.status ? STORY_STATUS_APPEARANCE[story.status] : 'default'}>
                   {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
-                </Badge>
+                </Lozenge>
               )}
             </div>
 

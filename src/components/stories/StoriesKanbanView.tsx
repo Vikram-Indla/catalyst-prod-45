@@ -1,7 +1,7 @@
 // Stories Kanban View - reusing patterns from Features/Epics Kanban
 // Citation: Catalyst_Stories_PRD_v2.pdf
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -55,9 +55,9 @@ export function StoriesKanbanView({ stories, onStorySelect, onRefetch }: Stories
                       <div className={cn("w-3 h-3 rounded-full", column.color)} />
                       <CardTitle className="text-sm font-medium">{column.label}</CardTitle>
                     </div>
-                    <Badge variant="secondary" className="rounded-full">
+                    <Lozenge appearance="inprogress">
                       {columnStories.length}
-                    </Badge>
+                    </Lozenge>
                   </div>
                 </CardHeader>
                 <Droppable droppableId={column.id}>
@@ -109,9 +109,9 @@ export function StoriesKanbanView({ stories, onStorySelect, onRefetch }: Stories
                                 {story.estimate_points !== null && story.estimate_points !== undefined && (
                                   <div className="flex items-center justify-between text-xs">
                                     <span className="text-muted-foreground">Points</span>
-                                    <Badge variant="outline" className="text-xs">
+                                    <Lozenge appearance="default">
                                       {story.estimate_points}
-                                    </Badge>
+                                    </Lozenge>
                                   </div>
                                 )}
 

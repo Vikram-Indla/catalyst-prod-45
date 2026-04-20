@@ -10,7 +10,7 @@ import { MessageCircle, Send, Check, MoreVertical, Trash2, Reply } from 'lucide-
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -136,7 +136,7 @@ export function DocumentComments({ documentId }: DocumentCommentsProps) {
         <MessageCircle className="h-5 w-5 text-brand-primary" />
         <h3 className="font-semibold">Comments</h3>
         {comments && comments.length > 0 && (
-          <Badge variant="secondary">{comments.length}</Badge>
+          <Lozenge appearance="inprogress">{comments.length}</Lozenge>
         )}
       </div>
 
@@ -237,10 +237,9 @@ function CommentThread({
                 {new Date(comment.created_at).toLocaleDateString()}
               </span>
               {comment.resolved && (
-                <Badge variant="secondary" className="text-xs">
-                  <Check className="h-3 w-3 mr-1" />
+                <Lozenge appearance="success">
                   Resolved
-                </Badge>
+                </Lozenge>
               )}
             </div>
             <DropdownMenu>

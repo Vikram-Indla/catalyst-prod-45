@@ -4,12 +4,20 @@ import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { GripVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { StoryWithRelations, STORY_STATUS_LABELS } from '@/types/story.types';
+import { StoryWithRelations, STORY_STATUS_LABELS, type StoryStatus } from '@/types/story.types';
 import { useWorkItemRanking, RankingContext } from '@/hooks/useWorkItemRanking';
 import { StoriesRankingIndicator } from './StoriesRankingIndicator';
+
+const STORY_STATUS_APPEARANCE: Record<StoryStatus, LozengeAppearance> = {
+  todo: 'default',
+  in_progress: 'inprogress',
+  done: 'success',
+  accepted: 'success',
+  blocked: 'removed',
+};
 
 interface StoriesListViewProps {
   stories: StoryWithRelations[];
@@ -162,9 +170,9 @@ export function StoriesListView({
                           <TableCell>{story.estimate_points || '-'}</TableCell>
                           <TableCell>Unassigned</TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="capitalize">
+                            <Lozenge appearance={story.status ? STORY_STATUS_APPEARANCE[story.status as StoryStatus] : 'default'}>
                               {story.status ? STORY_STATUS_LABELS[story.status as keyof typeof STORY_STATUS_LABELS] : 'To Do'}
-                            </Badge>
+                            </Lozenge>
                           </TableCell>
                         </TableRow>
                       )}

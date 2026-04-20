@@ -6,7 +6,7 @@
 import React from 'react';
 import { Clock, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { formatDuration } from './utils';
 
 interface SelectionSummaryProps {
@@ -48,16 +48,16 @@ export function SelectionSummary({
       </div>
       <div className="flex items-center gap-2 flex-wrap">
         {priorityBreakdown.critical > 0 && (
-          <Badge className="bg-red-100 text-red-700 text-xs">{priorityBreakdown.critical} Critical</Badge>
+          <Lozenge appearance="removed">{priorityBreakdown.critical} Critical</Lozenge>
         )}
         {priorityBreakdown.high > 0 && (
-          <Badge className="bg-amber-100 text-amber-700 text-xs">{priorityBreakdown.high} High</Badge>
+          <Lozenge appearance="moved">{priorityBreakdown.high} High</Lozenge>
         )}
         {priorityBreakdown.medium > 0 && (
-          <Badge className="bg-blue-100 text-blue-700 text-xs">{priorityBreakdown.medium} Medium</Badge>
+          <Lozenge appearance="default">{priorityBreakdown.medium} Medium</Lozenge>
         )}
         {priorityBreakdown.low > 0 && (
-          <Badge className="bg-slate-100 text-slate-600 text-xs">{priorityBreakdown.low} Low</Badge>
+          <Lozenge appearance="default">{priorityBreakdown.low} Low</Lozenge>
         )}
       </div>
     </div>

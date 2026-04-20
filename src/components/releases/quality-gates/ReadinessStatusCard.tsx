@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { 
   CheckCircle2, 
@@ -183,9 +183,9 @@ export function ReadinessStatusCard({ releaseId, userId }: ReadinessStatusCardPr
               Last evaluated: {format(new Date(latestReadiness.snapshot_at), 'MMM d, yyyy h:mm a')}
             </span>
             {latestReadiness.approved_at && (
-              <Badge variant="outline" className="text-green-600 border-green-600">
+              <Lozenge appearance="success">
                 Approved by {latestReadiness.approved_by_name}
-              </Badge>
+              </Lozenge>
             )}
           </div>
         )}

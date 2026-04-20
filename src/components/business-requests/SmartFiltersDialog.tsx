@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 import { useProcessSteps } from '@/contexts/ProcessStepsContext';
 import { useDepartments } from '@/hooks/useDepartmentsAndOwners';
@@ -196,9 +196,7 @@ export function SmartFiltersDialog({
           <DialogTitle className="text-foreground flex items-center gap-2">
             Filter Demands
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-brand-primary/20 text-brand-primary">
-                {activeFilterCount} active
-              </Badge>
+              <Lozenge appearance="inprogress">{activeFilterCount} active</Lozenge>
             )}
           </DialogTitle>
         </DialogHeader>

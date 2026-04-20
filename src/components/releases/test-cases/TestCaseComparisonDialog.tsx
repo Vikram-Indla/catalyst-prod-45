@@ -26,7 +26,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -274,15 +274,10 @@ export function TestCaseComparisonDialog({
         {/* Summary */}
         <div className="flex items-center gap-4 p-3 bg-muted/50 rounded-lg text-sm">
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className="gap-1">
-              <ArrowLeftRight className="w-3 h-3" />
-              {changedFieldsCount} field changes
-            </Badge>
+            <Lozenge appearance="default">{changedFieldsCount} field changes</Lozenge>
           </div>
           {stepsChanged && (
-            <Badge variant="outline" className="gap-1 border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-950/30 dark:text-amber-400">
-              Steps modified
-            </Badge>
+            <Lozenge appearance="moved">Steps modified</Lozenge>
           )}
           {left && right && (
             <div className="ml-auto text-xs text-muted-foreground flex items-center gap-4">
@@ -361,8 +356,8 @@ export function TestCaseComparisonDialog({
                           )}
                         >
                           <div className="flex items-center gap-2 mb-1">
-                            <Badge variant="outline" className="text-xs">{step.stepNumber}</Badge>
-                            {!rightStep && <Badge variant="destructive" className="text-[10px]">Removed</Badge>}
+                            <Lozenge appearance="default">{step.stepNumber}</Lozenge>
+                            {!rightStep && <Lozenge appearance="removed">Removed</Lozenge>}
                           </div>
                           <p className="font-medium">{step.action}</p>
                           <p className="text-muted-foreground text-xs mt-1">Expected: {step.expectedResult}</p>
@@ -392,8 +387,8 @@ export function TestCaseComparisonDialog({
                           )}
                         >
                           <div className="flex items-center gap-2 mb-1">
-                            <Badge variant="outline" className="text-xs">{step.stepNumber}</Badge>
-                            {!leftStep && <Badge className="text-[10px] bg-green-600">Added</Badge>}
+                            <Lozenge appearance="default">{step.stepNumber}</Lozenge>
+                            {!leftStep && <Lozenge appearance="success">Added</Lozenge>}
                           </div>
                           <p className="font-medium">{step.action}</p>
                           <p className="text-muted-foreground text-xs mt-1">Expected: {step.expectedResult}</p>
@@ -412,17 +407,12 @@ export function TestCaseComparisonDialog({
                     {left.tags.map((tag) => {
                       const inRight = right.tags.includes(tag);
                       return (
-                        <Badge
+                        <Lozenge
                           key={tag}
-                          variant="outline"
-                          className={cn(
-                            "text-xs",
-                            !inRight && "bg-red-50 dark:bg-red-950/30 border-red-200 text-red-800 dark:text-red-400"
-                          )}
+                          appearance={inRight ? 'default' : 'removed'}
                         >
                           {tag}
-                          {!inRight && <Minus className="w-3 h-3 ml-1" />}
-                        </Badge>
+                        </Lozenge>
                       );
                     })}
                   </div>
@@ -430,17 +420,12 @@ export function TestCaseComparisonDialog({
                     {right.tags.map((tag) => {
                       const inLeft = left.tags.includes(tag);
                       return (
-                        <Badge
+                        <Lozenge
                           key={tag}
-                          variant="outline"
-                          className={cn(
-                            "text-xs",
-                            !inLeft && "bg-green-50 dark:bg-green-950/30 border-green-200 text-green-800 dark:text-green-400"
-                          )}
+                          appearance={inLeft ? 'default' : 'success'}
                         >
                           {tag}
-                          {!inLeft && <Plus className="w-3 h-3 ml-1" />}
-                        </Badge>
+                        </Lozenge>
                       );
                     })}
                   </div>

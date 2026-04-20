@@ -8,7 +8,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { ChevronDown, ChevronRight, Shield, CheckCircle2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { TriggerRow } from './TriggerRow';
 import type { TriggerCategoryGroup, TriggerRowData, ChannelsConfig } from '@/types/notification-triggers';
 import type { HubSource } from '@/constants/notificationEvents';
@@ -123,12 +123,9 @@ function CategoryAccordion({
           </span>
 
           {/* Enabled / Total badge */}
-          <Badge
-            variant="secondary"
-            className="text-[10px] h-5 px-1.5 bg-[#F1F5F9] text-[#475569] font-['JetBrains_Mono']"
-          >
+          <Lozenge appearance="inprogress">
             {group.enabledCount}/{group.totalCount}
-          </Badge>
+          </Lozenge>
 
           {/* Mandatory indicator */}
           {mandatoryCount > 0 && (

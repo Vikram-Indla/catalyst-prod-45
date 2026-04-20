@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Plus, Trash2, GripVertical, Shield, ShieldCheck, ShieldAlert } from 'lucide-react';
 import {
   useReleaseQualityGates,
@@ -134,9 +134,9 @@ export function QualityGateEditor({ releaseId }: QualityGateEditorProps) {
                   {gate.gate_type.includes('rate') && '%'}
                 </div>
               </div>
-              <Badge variant={gate.is_blocking ? 'destructive' : 'secondary'}>
+              <Lozenge appearance={gate.is_blocking ? 'removed' : 'moved'}>
                 {gate.is_blocking ? 'Blocking' : 'Warning'}
-              </Badge>
+              </Lozenge>
               <Switch
                 checked={gate.is_blocking}
                 onCheckedChange={() => handleToggleBlocking(gate)}

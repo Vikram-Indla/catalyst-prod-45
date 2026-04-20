@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { History, Clock, User, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -84,13 +84,13 @@ export function DocumentVersionHistory({
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge variant={index === 0 ? "default" : "secondary"}>
+                        <Lozenge appearance={index === 0 ? 'inprogress' : 'default'}>
                           v{version.version_number}
-                        </Badge>
+                        </Lozenge>
                         {index === 0 && (
-                          <Badge variant="outline" className="text-xs">
+                          <Lozenge appearance="inprogress">
                             Current
-                          </Badge>
+                          </Lozenge>
                         )}
                       </div>
                       <h4 className="font-medium text-sm">{version.title}</h4>

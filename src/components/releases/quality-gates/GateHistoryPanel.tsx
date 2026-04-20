@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -101,7 +101,7 @@ export function GateHistoryPanel({ open, gate, onClose }: GateHistoryPanelProps)
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             Evaluation History
-            {gate && <Badge variant="outline">{gate.name}</Badge>}
+            {gate && <Lozenge appearance="default">{gate.name}</Lozenge>}
           </SheetTitle>
           <SheetDescription>
             View past evaluations and performance trends

@@ -8,7 +8,7 @@ import { memo, useCallback } from 'react';
 import { Search, Filter, Shield, RotateCcw, SlidersHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import {
   Select,
@@ -190,9 +190,9 @@ export const TriggerSearch = memo(function TriggerSearch({
             <RotateCcw className="h-3 w-3 mr-1" />
             Reset
             {activeFilterCount > 0 && (
-              <Badge className="ml-1 h-4 w-4 p-0 text-[9px] bg-[#2563EB] text-white justify-center">
-                {activeFilterCount}
-              </Badge>
+              <span className="ml-1">
+                <Lozenge appearance="inprogress">{activeFilterCount}</Lozenge>
+              </span>
             )}
           </Button>
         )}

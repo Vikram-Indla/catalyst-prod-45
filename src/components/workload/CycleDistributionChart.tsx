@@ -5,16 +5,16 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { useCycleDistribution } from '@/hooks/workload';
 
 const MEMBER_COLORS = ['#2563eb', '#0d9488', '#3b82f6', '#14b8a6', '#64748b'];
 
-const urgencyColors = {
-  overdue: { bg: CATALYST_V5.dangerLight, text: CATALYST_V5.danger },
-  due_soon: { bg: CATALYST_V5.warningLight, text: CATALYST_V5.warning },
-  on_track: { bg: CATALYST_V5.tealLight, text: CATALYST_V5.teal },
+const URGENCY_APPEARANCE: Record<'overdue' | 'due_soon' | 'on_track', LozengeAppearance> = {
+  overdue: 'removed',
+  due_soon: 'moved',
+  on_track: 'success',
 };
 
 export function CycleDistributionChart({ projectId }: { projectId: string }) {
@@ -41,7 +41,7 @@ export function CycleDistributionChart({ projectId }: { projectId: string }) {
       </CardHeader>
       <CardContent className="space-y-4">
         {cycles?.map((cycle) => {
-          const urgency = urgencyColors[cycle.urgency];
+          const appearance = URGENCY_APPEARANCE[cycle.urgency];
           return (
             <div key={cycle.cycleId}>
               <div className="flex items-center justify-between mb-1">
@@ -49,9 +49,9 @@ export function CycleDistributionChart({ projectId }: { projectId: string }) {
                   {cycle.cycleName}
                 </span>
                 <div className="flex items-center gap-2">
-                  <Badge style={{ backgroundColor: urgency.bg, color: urgency.text }} className="text-xs">
+                  <Lozenge appearance={appearance}>
                     {cycle.urgency === 'overdue' ? 'Overdue' : cycle.urgency === 'due_soon' ? 'Due Soon' : 'On Track'}
-                  </Badge>
+                  </Lozenge>
                   <span className="text-sm" style={{ color: CATALYST_V5.slate[500] }}>
                     {cycle.totalTests}
                   </span>

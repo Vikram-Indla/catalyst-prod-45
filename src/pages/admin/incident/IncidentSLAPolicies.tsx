@@ -3,7 +3,7 @@ import { Pencil, Clock, AlertTriangle, Pause, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -201,17 +201,17 @@ export default function IncidentSLAPolicies() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="font-mono">
+                          <Lozenge appearance="default">
                             {formatMinutes(sla.response_minutes)}
-                          </Badge>
+                          </Lozenge>
                           <span className="text-xs text-muted-foreground ml-2">
                             ({sla.response_minutes} min)
                           </span>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="font-mono">
+                          <Lozenge appearance="default">
                             {formatMinutes(sla.resolution_minutes)}
-                          </Badge>
+                          </Lozenge>
                           <span className="text-xs text-muted-foreground ml-2">
                             ({sla.resolution_minutes} min)
                           </span>
@@ -273,9 +273,9 @@ export default function IncidentSLAPolicies() {
                     pauseConditions.map((condition) => (
                       <TableRow key={condition.id}>
                         <TableCell>
-                          <Badge variant="secondary" className="capitalize">
+                          <Lozenge appearance="default">
                             {condition.condition_type}
-                          </Badge>
+                          </Lozenge>
                         </TableCell>
                         <TableCell className="font-medium capitalize">
                           {condition.condition_value.replace(/_/g, ' ')}

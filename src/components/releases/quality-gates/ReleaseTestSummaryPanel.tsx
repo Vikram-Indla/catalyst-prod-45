@@ -6,8 +6,9 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { 
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
+import {
   CheckCircle2, 
   XCircle, 
   AlertTriangle, 
@@ -17,7 +18,12 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { useReleaseTestSummary } from '@/lib/shared-quality/hooks/useQualityGates';
-import { cn } from '@/lib/utils';
+
+const CYCLE_STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+  completed: 'success',
+  in_progress: 'inprogress',
+  planned: 'default',
+};
 
 interface ReleaseTestSummaryPanelProps {
   releaseId: string;
@@ -167,16 +173,9 @@ export function ReleaseTestSummaryPanel({ releaseId }: ReleaseTestSummaryPanelPr
                       {cycle.total_cases} cases · {cycle.execution_pct}% executed
                     </div>
                   </div>
-                  <Badge 
-                    variant="outline"
-                    className={cn(
-                      cycle.status === 'completed' && 'border-green-500 text-green-600',
-                      cycle.status === 'in_progress' && 'border-blue-500 text-blue-600',
-                      cycle.status === 'planned' && 'border-muted-foreground'
-                    )}
-                  >
+                  <Lozenge appearance={CYCLE_STATUS_APPEARANCE[cycle.status] ?? 'default'}>
                     {cycle.status}
-                  </Badge>
+                  </Lozenge>
                   <div className="text-right">
                     <div className="font-medium text-green-600">{cycle.pass_pct}%</div>
                     <div className="text-xs text-muted-foreground">pass rate</div>

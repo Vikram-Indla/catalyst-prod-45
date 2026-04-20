@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigation } from "@/contexts/NavigationContext";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from '@/components/ads';
 import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Clock, Zap, Activity } from "lucide-react";
 
@@ -174,7 +174,7 @@ export default function ValueStreamView() {
                 <div key={status} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="secondary">{status}</Badge>
+                      <Lozenge appearance="default">{status}</Lozenge>
                       <span className="text-sm text-muted-foreground">{count} features</span>
                     </div>
                     <span className="text-sm font-medium">{percentage.toFixed(1)}%</span>
@@ -197,7 +197,7 @@ export default function ValueStreamView() {
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold">Analyzing Stage</h4>
-                <Badge variant="destructive">High WIP</Badge>
+                <Lozenge appearance="removed">High WIP</Lozenge>
               </div>
               <p className="text-sm text-muted-foreground">
                 {features?.filter(f => f.status === 'analyzing').length} features waiting for analysis.
@@ -208,7 +208,7 @@ export default function ValueStreamView() {
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold">Implementation Stage</h4>
-                <Badge className="bg-warning text-warning-foreground">Medium WIP</Badge>
+                <Lozenge appearance="moved">Medium WIP</Lozenge>
               </div>
               <p className="text-sm text-muted-foreground">
                 {features?.filter(f => f.status === 'implementing').length} features in development.

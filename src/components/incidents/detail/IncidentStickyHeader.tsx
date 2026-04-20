@@ -4,7 +4,7 @@ import {
   Check, X, Pencil, Eye, EyeOff, Plus, Users, ChevronDown 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
@@ -255,12 +255,11 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                 <Users className="h-4 w-4 mr-1.5" />
                 Committee
                 {committeeApproverCount > 0 && (
-                  <Badge 
-                    variant="secondary" 
-                    className="ml-1.5 h-5 px-1.5 text-xs bg-primary/10 text-primary"
-                  >
-                    {committeeApproverCount}
-                  </Badge>
+                  <span className="ml-1.5">
+                    <Lozenge appearance="inprogress">
+                      {committeeApproverCount}
+                    </Lozenge>
+                  </span>
                 )}
               </Button>
 

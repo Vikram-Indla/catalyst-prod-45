@@ -6,7 +6,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Scale, Download, X } from 'lucide-react';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { WorkloadFilters } from '@/types/workload.types';
@@ -142,34 +142,37 @@ export function WorkloadHeader({ filters, onFilterChange, onRebalance }: Workloa
       {hasActiveFilters && (
         <div className="flex items-center gap-2 mt-3">
           {filters.cycleId && (
-            <Badge
-              className="gap-1 cursor-pointer"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
+            <span
+              className="inline-flex items-center gap-1 cursor-pointer"
               onClick={() => onFilterChange({ cycleId: undefined })}
             >
-              {MOCK_CYCLES.find(c => c.id === filters.cycleId)?.name}
+              <Lozenge appearance="inprogress">
+                {MOCK_CYCLES.find(c => c.id === filters.cycleId)?.name}
+              </Lozenge>
               <X className="h-3 w-3" />
-            </Badge>
+            </span>
           )}
           {filters.dateRange !== 'this_week' && (
-            <Badge
-              className="gap-1 cursor-pointer"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
+            <span
+              className="inline-flex items-center gap-1 cursor-pointer"
               onClick={() => onFilterChange({ dateRange: 'this_week' })}
             >
-              {DATE_RANGES.find(r => r.value === filters.dateRange)?.label}
+              <Lozenge appearance="inprogress">
+                {DATE_RANGES.find(r => r.value === filters.dateRange)?.label}
+              </Lozenge>
               <X className="h-3 w-3" />
-            </Badge>
+            </span>
           )}
           {filters.memberId && (
-            <Badge
-              className="gap-1 cursor-pointer"
-              style={{ backgroundColor: CATALYST_V5.primaryLight, color: CATALYST_V5.primary }}
+            <span
+              className="inline-flex items-center gap-1 cursor-pointer"
               onClick={() => onFilterChange({ memberId: undefined })}
             >
-              {MOCK_MEMBERS.find(m => m.id === filters.memberId)?.name}
+              <Lozenge appearance="inprogress">
+                {MOCK_MEMBERS.find(m => m.id === filters.memberId)?.name}
+              </Lozenge>
               <X className="h-3 w-3" />
-            </Badge>
+            </span>
           )}
         </div>
       )}

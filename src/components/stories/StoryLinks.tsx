@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Link as LinkIcon, Plus, X, ExternalLink, Trash2 } from 'lucide-react';
@@ -23,14 +23,6 @@ const LINK_TYPE_LABELS: Record<LinkType, string> = {
   relates_to: 'Relates To',
   duplicates: 'Duplicates',
   duplicated_by: 'Duplicated By',
-};
-
-const LINK_TYPE_COLORS: Record<LinkType, string> = {
-  blocks: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
-  blocked_by: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
-  relates_to: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
-  duplicates: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',
-  duplicated_by: 'bg-brand-primary/10 text-brand-primary border-brand-primary/20',
 };
 
 export function StoryLinks({ storyId }: StoryLinksProps) {
@@ -275,9 +267,9 @@ export function StoryLinks({ storyId }: StoryLinksProps) {
                 className="flex items-center justify-between p-3 border rounded-lg hover:bg-accent/50 transition-colors"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <Badge variant="outline" className={`text-xs ${LINK_TYPE_COLORS[link.link_type as LinkType]}`}>
+                  <Lozenge appearance="default">
                     {LINK_TYPE_LABELS[link.link_type as LinkType]}
-                  </Badge>
+                  </Lozenge>
                   
                   {link.to_story_id ? (
                     <div className="flex-1 min-w-0">

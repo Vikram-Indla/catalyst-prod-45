@@ -7,7 +7,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Search, Circle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface EpicListItem {
@@ -150,9 +150,7 @@ export function EpicListPanel({
                       </span>
 
                       {epic.mvp && (
-                        <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 border-0 text-[10px] px-1.5 py-0">
-                          MVP
-                        </Badge>
+                        <Lozenge appearance="default">MVP</Lozenge>
                       )}
                     </div>
 

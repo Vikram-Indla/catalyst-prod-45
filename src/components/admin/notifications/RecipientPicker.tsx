@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import type { RecipientsConfig, TriggerRowData } from '@/types/notification-triggers';
 
@@ -162,9 +162,9 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
 
         {/* Trigger info bar */}
         <div className="flex items-center gap-2 px-3 py-2 bg-[#F8FAFC] rounded-md border border-[var(--bd-default, #E2E8F0)]">
-          <Badge variant="outline" className="text-[9px] h-5 px-1.5">
+          <Lozenge appearance="default">
             {trigger.hubSource}
-          </Badge>
+          </Lozenge>
           <span className="text-xs text-[#475569]">{trigger.description}</span>
         </div>
 

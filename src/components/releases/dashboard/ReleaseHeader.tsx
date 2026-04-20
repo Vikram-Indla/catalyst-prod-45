@@ -1,5 +1,6 @@
 import { Release } from '@/types/release-dashboard';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { differenceInDays } from 'date-fns';
 
@@ -7,11 +8,11 @@ interface ReleaseHeaderProps {
   release: Release;
 }
 
-const statusStyles: Record<Release['status'], string> = {
-  draft: 'bg-slate-100 text-slate-600',
-  active: 'bg-primary/10 text-primary',
-  completed: 'bg-teal-100 text-teal-700',
-  archived: 'bg-slate-100 text-slate-500',
+const statusAppearance: Record<Release['status'], LozengeAppearance> = {
+  draft: 'default',
+  active: 'inprogress',
+  completed: 'success',
+  archived: 'default',
 };
 
 export function ReleaseHeader({ release }: ReleaseHeaderProps) {
@@ -31,12 +32,11 @@ export function ReleaseHeader({ release }: ReleaseHeaderProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <h1 className="text-lg font-bold text-foreground truncate">{release.name}</h1>
-          <Badge className={`${statusStyles[release.status]} capitalize text-[10px] font-semibold px-2 py-0.5`}>
-            {release.status === 'active' && (
-              <span className="w-1.5 h-1.5 bg-primary rounded-full mr-1.5 animate-pulse" />
-            )}
-            {release.status}
-          </Badge>
+          <span className="capitalize">
+            <Lozenge appearance={statusAppearance[release.status]}>
+              {release.status}
+            </Lozenge>
+          </span>
         </div>
         <p className="text-xs text-muted-foreground mt-0.5">
           {release.description} • Sprint {release.sprintId?.slice(-2) || '—'}

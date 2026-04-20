@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge, type LozengeAppearance } from "@/components/ads";
 import { Loader2, CheckCircle2, AlertTriangle, XCircle, Activity } from "lucide-react";
 import { format } from "date-fns";
 
@@ -123,24 +123,19 @@ export function SyncHealthDashboard({ connectionId }: SyncHealthDashboardProps) 
                   className="flex items-center justify-between p-2 border rounded hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
-                    <Badge
-                      variant={
-                        log.status === "success"
-                          ? "default"
+                    <Lozenge
+                      appearance={
+                        (log.status === "success"
+                          ? "success"
                           : log.status === "failed"
-                          ? "destructive"
-                          : "outline"
-                      }
-                      className={
-                        log.status === "success"
-                          ? "bg-green-500 hover:bg-green-600"
+                          ? "removed"
                           : log.status === "conflict"
-                          ? "bg-amber-500 hover:bg-amber-600"
-                          : ""
+                          ? "moved"
+                          : "default") as LozengeAppearance
                       }
                     >
                       {log.status}
-                    </Badge>
+                    </Lozenge>
                     <div>
                       <div className="text-sm font-medium">
                         {log.entity_type} • {log.sync_type}

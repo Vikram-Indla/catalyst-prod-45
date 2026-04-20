@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ArrowUpDown } from 'lucide-react';
 
 interface WSJFPrioritizationDialogProps {
@@ -111,9 +111,11 @@ export function WSJFPrioritizationDialog({
                       {epic.job_size || 1}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Badge variant="default" className="font-mono">
-                        {calculateWSJF(epic)}
-                      </Badge>
+                      <span className="font-mono">
+                        <Lozenge appearance="default">
+                          {calculateWSJF(epic)}
+                        </Lozenge>
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))

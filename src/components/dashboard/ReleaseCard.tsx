@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar, FileText, FlaskConical, RotateCcw } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarGroup } from '@/components/ui/avatar';
 import { QualityGauge } from './QualityGauge';
 
@@ -24,13 +24,13 @@ export interface ReleaseCardProps {
   animationDelay?: number;
 }
 
-// FIX 5: Add 'at-risk' status with warning variant
-const statusBadgeVariant: Record<string, 'draft' | 'active' | 'approved' | 'rejected' | 'warning'> = {
-  draft: 'draft',
-  active: 'active',
-  approved: 'approved',
-  rejected: 'rejected',
-  'at-risk': 'warning',
+// FIX 5: Add 'at-risk' status with warning appearance
+const statusLozengeAppearance: Record<string, LozengeAppearance> = {
+  draft: 'default',
+  active: 'inprogress',
+  approved: 'success',
+  rejected: 'removed',
+  'at-risk': 'moved',
 };
 
 export function ReleaseCard({
@@ -74,9 +74,9 @@ export function ReleaseCard({
             <span className="text-xs font-mono font-medium text-muted-foreground">
               {releaseKey}
             </span>
-            <Badge variant={statusBadgeVariant[status] || 'default'} size="sm">
+            <Lozenge appearance={statusLozengeAppearance[status] || 'default'}>
               {status === 'at-risk' ? 'At Risk' : status.charAt(0).toUpperCase() + status.slice(1)}
-            </Badge>
+            </Lozenge>
           </div>
           <h3 className="text-base font-semibold text-foreground truncate group-hover:text-primary transition-colors">
             {name}

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from 'recharts';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
@@ -27,7 +27,12 @@ export function WorkloadTrendChart({ teamId }: { teamId: string }) {
 
   const trendIcon = data?.stats.trend === 'improving' ? TrendingUp : data?.stats.trend === 'declining' ? TrendingDown : Minus;
   const TrendIcon = trendIcon;
-  const trendColor = data?.stats.trend === 'improving' ? CATALYST_V5.teal : data?.stats.trend === 'declining' ? CATALYST_V5.danger : CATALYST_V5.slate[500];
+  const trendAppearance: LozengeAppearance =
+    data?.stats.trend === 'improving'
+      ? 'success'
+      : data?.stats.trend === 'declining'
+      ? 'removed'
+      : 'default';
 
   return (
     <Card>
@@ -36,10 +41,10 @@ export function WorkloadTrendChart({ teamId }: { teamId: string }) {
           <CardTitle className="text-lg" style={{ color: CATALYST_V5.slate[900] }}>
             Execution Trend
           </CardTitle>
-          <Badge style={{ backgroundColor: `${trendColor}20`, color: trendColor }} className="gap-1">
-            <TrendIcon className="h-3 w-3" />
-            {data?.stats.trend}
-          </Badge>
+          <span className="inline-flex items-center gap-1">
+            <TrendIcon className="h-3 w-3" aria-hidden="true" />
+            <Lozenge appearance={trendAppearance}>{data?.stats.trend}</Lozenge>
+          </span>
         </div>
       </CardHeader>
       <CardContent>

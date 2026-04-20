@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { ChevronDown, Check } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,21 +21,23 @@ interface PrioritySelectProps {
 
 const PRIORITY_ORDER: TestPriority[] = ['critical', 'high', 'medium', 'low'];
 
-export function PrioritySelect({ value, onChange }: PrioritySelectProps) {
-  const style = TEST_PRIORITY_COLORS[value];
+const PRIORITY_APPEARANCE: Record<TestPriority, LozengeAppearance> = {
+  critical: 'removed',
+  high: 'moved',
+  medium: 'default',
+  low: 'default',
+};
 
+export function PrioritySelect({ value, onChange }: PrioritySelectProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="flex items-center gap-1 group">
-          <Badge 
-            className="text-xs px-2 py-0.5 border-0 cursor-pointer capitalize"
-            style={{ backgroundColor: style?.bg, color: style?.text }}
-          >
+          <Lozenge appearance={PRIORITY_APPEARANCE[value]}>
             {value}
-          </Badge>
-          <ChevronDown 
-            className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" 
+          </Lozenge>
+          <ChevronDown
+            className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity"
             style={{ color: CATALYST_V5.slate[400] }}
           />
         </button>
