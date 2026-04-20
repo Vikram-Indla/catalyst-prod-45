@@ -1454,13 +1454,24 @@ export default function StoryDetailModal({
                     )}
                   </div>
 
-                  {/* 6. ATTACHMENTS — Jira-parity component */}
-                  <AttachmentsSection
-                    attachments={attachments}
-                    itemId={itemId}
-                    userId={user!.id}
-                    projectKey={issue?.project_key}
-                  />
+                  {/* 6. ATTACHMENTS — Jira-parity component
+                      2026-04-20: guard on `user` to prevent mount crash when
+                      the modal renders before auth resolves (e.g. deep-link
+                      into ?issue=BAU-XXXX while the session is loading, or a
+                      signed-out session). `user!.id` here was crashing with
+                      "Cannot read properties of null (reading 'id')" and
+                      tripping the page-level ErrorBoundary. AttachmentsSection
+                      needs `userId` for uploads, so hide it entirely rather
+                      than pass a placeholder — matches the `{issue && ...}`
+                      guard used by SubtasksPanel etc. below. */}
+                  {user && (
+                    <AttachmentsSection
+                      attachments={attachments}
+                      itemId={itemId}
+                      userId={user.id}
+                      projectKey={issue?.project_key}
+                    />
+                  )}
 
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (
