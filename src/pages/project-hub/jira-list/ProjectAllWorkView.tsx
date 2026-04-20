@@ -41,6 +41,9 @@ const SPLIT_BREAKPOINT_PX = 1120;
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
+  /** In narrow mode the middle panel is hidden — clicking a card opens
+   *  StoryDetailModal as a full overlay instead (Jira parity). */
+  const [overlayItemId, setOverlayItemId] = useState<string | null>(null);
 
   const splitRef = useRef<HTMLDivElement>(null);
   const [isNarrow, setIsNarrow] = useState(false);
