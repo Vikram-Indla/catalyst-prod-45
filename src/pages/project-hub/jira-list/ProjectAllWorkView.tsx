@@ -87,13 +87,17 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
 
       {/* Split region — claims remaining vertical space. `minHeight: 0` is
           the magic that makes the inner panels' overflow:auto actually
-          scroll instead of blowing out the page. */}
-      <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '6px 8px 8px' }}>
+          scroll instead of blowing out the page. ResizeObserver on this
+          element drives the responsive collapse. */}
+      <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '6px 8px 8px' }}>
           {/* Left: WorkListPanel — Jira parity container
               (measured 2026-04-18): 260px wide / #F8F8F8 / 4px radius / no border.
-              Inner cards are white so they elevate against the gray backdrop. */}
+              Inner cards are white so they elevate against the gray backdrop.
+              On narrow viewports the list flexes to fill the row (detail
+              panel hidden). */}
           <div style={{
-            width: 260, flexShrink: 0, background: '#F8F8F8',
+            width: isNarrow ? '100%' : 260,
+            flexShrink: 0, background: '#F8F8F8',
             border: 'none', borderRadius: 4,
             overflow: 'hidden', display: 'flex', flexDirection: 'column',
             padding: '0 2px',
@@ -105,8 +109,10 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             />
           </div>
 
-          {/* Center + Right: CatalystDetailRouter (canonical Atlaskit detail) */}
-          {activeItem ? (
+          {/* Center + Right: CatalystDetailRouter (canonical Atlaskit detail).
+              Hidden when the split region is narrower than SPLIT_BREAKPOINT_PX
+              so the list isn't visually overlapped by the detail panel. */}
+          {!isNarrow && (activeItem ? (
             <div style={{
               flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
               background: token('elevation.surface', '#FFFFFF'),
@@ -144,7 +150,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             }}>
               Select an item to view details
             </div>
-          )}
+          ))}
       </div>
     </div>
   );
