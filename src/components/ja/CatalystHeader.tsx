@@ -43,6 +43,7 @@ export function CatalystHeader() {
       renderNotifications={NotificationsPanel}
       renderSettings={SettingsMenu}
       renderProfile={ProfileMenu}
+      primaryItems={[]}
     />
   );
 }
