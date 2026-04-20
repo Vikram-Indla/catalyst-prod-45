@@ -5,7 +5,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const searchContainerStyles = xcss({
-  width: '720px',
+  width: '100%',
   maxWidth: '100%',
   flexShrink: 1,
 });
