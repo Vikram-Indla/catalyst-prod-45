@@ -24,6 +24,7 @@ import React, {
 } from 'react';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 import { createEmptyADF } from '@/utils/adf';
+import { normalizeAdfForAtlaskit } from '@/components/shared/rich-text/atlaskit';
 
 // ─── Lazy-loaded Atlaskit editor ──────────────────────────────
 // Wrap the named export `Editor` into a default export for React.lazy.
@@ -31,6 +32,17 @@ const LazyEditor = lazy(async () => {
   const mod = await import('@atlaskit/editor-core');
   return { default: mod.Editor as unknown as React.ComponentType<any> };
 });
+
+const mediaOptions = {
+  allowMediaSingle: true,
+  allowMediaGroup: true,
+  allowMediaInlineImages: true,
+  allowAltTextOnImages: true,
+  allowImagePreview: true,
+  allowResizing: true,
+  enableDownloadButton: true,
+  isExternalMediaUploadDisabled: true,
+};
 
 // EditorActions is a class — we only need the type at runtime via dynamic import.
 type EditorActionsLike = {
@@ -69,8 +81,9 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
     },
     ref
   ) {
+    const normalizedDefaultValue = normalizeAdfForAtlaskit(defaultValue || createEmptyADF());
     const actionsRef = useRef<EditorActionsLike | null>(null);
-    const contentRef = useRef<ADFEntity>(defaultValue || createEmptyADF());
+    const contentRef = useRef<ADFEntity>(normalizedDefaultValue);
 
     useImperativeHandle(ref, () => ({
       replaceDocument: (adf: ADFEntity) => {
@@ -134,7 +147,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
         >
           <LazyEditor
             appearance={appearance}
-            defaultValue={defaultValue ? JSON.stringify(defaultValue) : undefined}
+            defaultValue={JSON.stringify(normalizedDefaultValue)}
             placeholder={placeholder}
             disabled={disabled}
             onChange={handleChange}
@@ -149,6 +162,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
             allowTables={{ advanced: false }}
             allowPanel
             allowTasksAndDecisions
+            media={mediaOptions}
             shouldFocus={false}
           />
         </Suspense>
