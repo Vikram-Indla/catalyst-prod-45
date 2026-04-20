@@ -17,11 +17,7 @@
  *    reach for the hook rather than re-implementing the pattern.
  *    Behaviour unchanged — the hook encodes the exact prior semantics.
  */
-<<<<<<< Updated upstream
-import React, { lazy, Suspense, useState, useMemo, useCallback, useRef, useEffect } from 'react';
-=======
-import React, { lazy, Suspense, useCallback } from 'react';
->>>>>>> Stashed changes
+import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
