@@ -48,7 +48,7 @@ export function NotificationsPanel() {
       trigger={(triggerProps) => (
         <IconButton
           {...triggerProps}
-          icon={(iconProps) => <NotificationIcon {...iconProps} label="" />}
+          icon={<NotificationIcon label="" />}
           label="Notifications"
           tooltip="Notifications"
           isSelected={open}
