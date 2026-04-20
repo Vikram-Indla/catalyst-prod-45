@@ -4,8 +4,7 @@
  */
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Tags, X, Plus, Check } from 'lucide-react';
+import { Tags, X, Plus } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -19,7 +18,6 @@ import { Input } from '@/components/ui/input';
 import { Lozenge } from '@/components/ads';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
 
 interface BulkTagsDialogProps {
   open: boolean;
@@ -172,15 +170,14 @@ export function BulkTagsDialog({
                 <Label className="text-xs text-muted-foreground">Tags to remove</Label>
                 <div className="flex flex-wrap gap-1.5">
                   {tagsToRemove.map((tag) => (
-                    <Badge
+                    <button
                       key={tag}
-                      variant="destructive"
-                      className="gap-1 cursor-pointer"
+                      type="button"
                       onClick={() => handleToggleRemoveTag(tag)}
+                      className="inline-flex items-center gap-1"
                     >
-                      {tag}
-                      <X className="w-3 h-3" />
-                    </Badge>
+                      <Lozenge appearance="removed">{tag}</Lozenge>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -191,18 +188,14 @@ export function BulkTagsDialog({
               <Label className="text-xs text-muted-foreground">Select tags to remove</Label>
               <div className="flex flex-wrap gap-1.5">
                 {SUGGESTED_TAGS.filter(t => !tagsToRemove.includes(t)).map((tag) => (
-                  <Badge
+                  <button
                     key={tag}
-                    variant="outline"
-                    className={cn(
-                      "cursor-pointer transition-colors",
-                      "hover:bg-destructive/10 hover:border-destructive hover:text-destructive"
-                    )}
+                    type="button"
                     onClick={() => handleToggleRemoveTag(tag)}
+                    className="inline-flex items-center gap-1"
                   >
-                    <X className="w-3 h-3 mr-1" />
-                    {tag}
-                  </Badge>
+                    <Lozenge appearance="default">{tag}</Lozenge>
+                  </button>
                 ))}
               </div>
             </div>
@@ -216,9 +209,11 @@ export function BulkTagsDialog({
           <Button onClick={handleApply} disabled={!hasChanges}>
             Apply Changes
             {hasChanges && (
-              <Badge variant="secondary" className="ml-2 text-xs">
-                {tagsToAdd.length + tagsToRemove.length}
-              </Badge>
+              <span className="ml-2">
+                <Lozenge appearance="default">
+                  {tagsToAdd.length + tagsToRemove.length}
+                </Lozenge>
+              </span>
             )}
           </Button>
         </DialogFooter>

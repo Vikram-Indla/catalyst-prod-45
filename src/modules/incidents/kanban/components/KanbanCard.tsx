@@ -19,7 +19,7 @@ import {
   ArrowUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Incident } from '@/types/incident';
@@ -202,9 +202,7 @@ export const KanbanCard = memo(function KanbanCard({
             </span>
           )}
           {incident.requires_committee && incident.status !== 'to_committee' && (
-            <Badge variant="outline" className="h-5 px-1.5 text-[10px]">
-              CAB
-            </Badge>
+            <Lozenge appearance="default">CAB</Lozenge>
           )}
           {incident.attachments && incident.attachments.length > 0 && (
             <Tooltip>

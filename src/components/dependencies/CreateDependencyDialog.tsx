@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -361,9 +361,9 @@ export function CreateDependencyDialog({
             {/* Dependency Level Indicator */}
             <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
               <span className="text-sm text-muted-foreground">Dependency Level:</span>
-              <Badge variant="secondary">
+              <Lozenge appearance="inprogress">
                 {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
-              </Badge>
+              </Lozenge>
             </div>
 
             {/* Requesting Work Item */}

@@ -7,7 +7,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,21 +99,13 @@ export function TemplateCard({
                 {template.name}
               </h3>
               <div className="flex items-center gap-2 mt-0.5">
-                <Badge 
-                  variant="secondary" 
-                  className="text-xs px-1.5 py-0"
-                  style={{ 
-                    backgroundColor: typeInfo.bgColor, 
-                    color: typeInfo.color,
-                    border: 'none',
-                  }}
-                >
+                <Lozenge appearance="default">
                   {typeInfo.label}
-                </Badge>
+                </Lozenge>
                 {isSystemTemplate && (
-                  <Badge variant="outline" className="text-xs px-1.5 py-0 border-[#2563eb] text-[#2563eb]">
+                  <Lozenge appearance="inprogress">
                     System
-                  </Badge>
+                  </Lozenge>
                 )}
               </div>
             </div>

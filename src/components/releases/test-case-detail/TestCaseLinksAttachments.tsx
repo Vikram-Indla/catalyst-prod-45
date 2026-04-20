@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { Plus, Upload, FileText, Bug, BookOpen, Image, FileSpreadsheet, ExternalLink, X, Loader2, Link2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import {
   Dialog,
@@ -167,9 +167,9 @@ export function TestCaseLinksAttachments({ testCaseId }: TestCaseLinksAttachment
                     </span>
                   </div>
                   {item.coverage_status && (
-                    <Badge variant="outline" className="text-xs">
+                    <Lozenge appearance="default">
                       {item.coverage_status}
-                    </Badge>
+                    </Lozenge>
                   )}
                   <Button
                     variant="ghost"

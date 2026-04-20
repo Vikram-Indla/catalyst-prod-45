@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Command,
@@ -167,19 +167,17 @@ export function SetCommitteeApproversModal({
             {selectedApprovers.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {selectedApprovers.map(approver => (
-                  <Badge
-                    key={approver.id}
-                    variant="secondary"
-                    className="pl-2 pr-1 py-1 bg-[var(--surface-2)] text-[var(--text-2)] border border-[var(--border-subtle)] hover:bg-[var(--surface-3)]"
-                  >
-                    <span className="text-xs">{approver.full_name}</span>
+                  <span key={approver.id} className="inline-flex items-center gap-1">
+                    <Lozenge appearance="default">
+                      {approver.full_name}
+                    </Lozenge>
                     <button
                       onClick={() => handleRemoveApprover(approver.id)}
-                      className="ml-1 p-0.5 rounded hover:bg-destructive/20 hover:text-destructive transition-colors"
+                      className="p-0.5 rounded hover:bg-destructive/20 hover:text-destructive transition-colors"
                     >
                       <X className="h-3 w-3" />
                     </button>
-                  </Badge>
+                  </span>
                 ))}
               </div>
             )}

@@ -44,7 +44,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import {
   Popover,
@@ -658,16 +658,16 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Status</Label>
-              <Badge variant="outline">{dep.status || 'open'}</Badge>
+              <Lozenge appearance="default">{dep.status || 'open'}</Lozenge>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-xs text-muted-foreground">Risk Level</Label>
-              <Badge variant={dep.risk_level === 'high' ? 'destructive' : dep.risk_level === 'med' ? 'secondary' : 'outline'}>
+              <Lozenge appearance={(dep.risk_level === 'high' ? 'removed' : dep.risk_level === 'med' ? 'moved' : 'default') as LozengeAppearance}>
                 {dep.risk_level?.toUpperCase() || 'MED'}
-              </Badge>
+              </Lozenge>
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Needed By</Label>
@@ -880,9 +880,9 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                     >
                       <Layers className="h-4 w-4" style={{ color: 'var(--text-muted, var(--fg-3))' }} />
                       <span className="text-sm" style={{ color: 'var(--text-muted, var(--fg-3))' }}>Dependency Level:</span>
-                      <Badge variant="secondary">
+                      <Lozenge appearance="inprogress">
                         {DEPENDENCY_LEVEL_LABELS[derivedLevel]}
-                      </Badge>
+                      </Lozenge>
                     </div>
 
                     {/* Requesting Work Item */}

@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { FeatureBacklogItem } from '../../types';
 
@@ -132,21 +132,21 @@ export function FeatureListPanel({
                       </span>
 
                       {(feature as any).blocked && (
-                        <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-0 text-[10px] px-1.5 py-0">
+                        <Lozenge appearance="removed">
                           BLOCKED
-                        </Badge>
+                        </Lozenge>
                       )}
-                      
+
                       {feature.priority === 'critical' && (
-                        <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-0 text-[10px] px-1.5 py-0">
+                        <Lozenge appearance="removed">
                           CRITICAL
-                        </Badge>
+                        </Lozenge>
                       )}
-                      
+
                       {feature.priority === 'high' && (
-                        <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-0 text-[10px] px-1.5 py-0">
+                        <Lozenge appearance="moved">
                           HIGH
-                        </Badge>
+                        </Lozenge>
                       )}
                     </div>
 

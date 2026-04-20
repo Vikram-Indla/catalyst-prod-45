@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -95,13 +95,13 @@ const calculatePriority = (impact: string, urgency: string): 'P1' | 'P2' | 'P3' 
   return matrix[impact]?.[urgency] || null;
 };
 
-const getPriorityColor = (priority: string | null) => {
+const getPriorityAppearance = (priority: string | null): LozengeAppearance => {
   switch (priority) {
-    case 'P1': return 'bg-destructive text-destructive-foreground';
-    case 'P2': return 'bg-orange-500 text-white';
-    case 'P3': return 'bg-yellow-500 text-white';
-    case 'P4': return 'bg-muted text-muted-foreground';
-    default: return 'bg-muted text-muted-foreground';
+    case 'P1': return 'removed';
+    case 'P2': return 'moved';
+    case 'P3': return 'default';
+    case 'P4': return 'default';
+    default: return 'default';
   }
 };
 
@@ -742,9 +742,9 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
                   <FieldLabel tooltip="Priority is derived from Impact × Urgency">Priority</FieldLabel>
                   <div className="flex items-center justify-between p-2 h-10 bg-muted/50 rounded-md border border-border">
                     {calculatedPriority ? (
-                      <Badge className={cn("text-xs", getPriorityColor(calculatedPriority))}>
+                      <Lozenge appearance={getPriorityAppearance(calculatedPriority)}>
                         {calculatedPriority}
-                      </Badge>
+                      </Lozenge>
                     ) : (
                       <span className="text-sm text-muted-foreground">—</span>
                     )}

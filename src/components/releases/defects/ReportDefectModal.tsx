@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import {
   Dialog,
   DialogContent,
@@ -530,10 +530,9 @@ export function ReportDefectModal({
             <DialogTitle className="flex items-center gap-2 text-lg">
               <Bug className="w-5 h-5 text-red-600" />
               Report Defect
-              <Badge variant="outline" className="ml-2 text-xs font-normal">
-                <Sparkles className="w-3 h-3 mr-1 text-primary" />
-                AI-Assisted
-              </Badge>
+              <span className="ml-2">
+                <Lozenge appearance="new">AI-Assisted</Lozenge>
+              </span>
             </DialogTitle>
             <DialogDescription className="mt-1">
               Fields marked <span className="text-red-500">*</span> are required.

@@ -3,18 +3,17 @@ import { UserPlus, X, Shield, User, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePlanTeam, useAddTeamMember, useRemoveTeamMember } from '@/hooks/useTestPlansG26';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { cn } from '@/lib/utils';
 
-const ROLE_CONFIG: Record<string, { label: string; icon: typeof Shield; color: string }> = {
-  lead: { label: 'Lead', icon: Shield, color: 'bg-purple-100 text-purple-700' },
-  tester: { label: 'Tester', icon: User, color: 'bg-blue-100 text-blue-700' },
-  reviewer: { label: 'Reviewer', icon: Eye, color: 'bg-green-100 text-green-700' },
+const ROLE_CONFIG: Record<string, { label: string; icon: typeof Shield; appearance: LozengeAppearance }> = {
+  lead: { label: 'Lead', icon: Shield, appearance: 'default' },
+  tester: { label: 'Tester', icon: User, appearance: 'inprogress' },
+  reviewer: { label: 'Reviewer', icon: Eye, appearance: 'success' },
 };
 
 export function TeamTab({ planId }: { planId: string }) {
@@ -50,7 +49,7 @@ export function TeamTab({ planId }: { planId: string }) {
                       <Avatar><AvatarImage src={member.user?.avatar_url || undefined} /><AvatarFallback>{member.user?.full_name?.slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
                       <div>
                         <p className="font-medium">{member.user?.full_name}</p>
-                        <Badge className={cn('text-xs', rc.color)}>{rc.label}</Badge>
+                        <Lozenge appearance={rc.appearance}>{rc.label}</Lozenge>
                       </div>
                     </div>
                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:text-destructive" onClick={() => removeMember.mutate({ memberId: member.id, planId })}><X className="h-4 w-4" /></Button>

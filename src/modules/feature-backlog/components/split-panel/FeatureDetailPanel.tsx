@@ -7,7 +7,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ExternalLink, Copy, Trash2, ChevronLeft, Edit } from 'lucide-react';
 import { format } from 'date-fns';
 import type { FeatureBacklogItem } from '../../types';
@@ -22,12 +22,12 @@ interface FeatureDetailPanelProps {
 }
 
 // Status badge config
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  funnel: { label: 'Funnel', className: 'bg-muted text-muted-foreground' },
-  analyzing: { label: 'Analyzing', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
-  backlog: { label: 'Backlog', className: 'bg-slate-100 text-slate-700 dark:bg-slate-800/50 dark:text-slate-300' },
-  implementing: { label: 'In Progress', className: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
-  done: { label: 'Done', className: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
+const STATUS_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  funnel: { label: 'Funnel', appearance: 'default' },
+  analyzing: { label: 'Analyzing', appearance: 'inprogress' },
+  backlog: { label: 'Backlog', appearance: 'default' },
+  implementing: { label: 'In Progress', appearance: 'inprogress' },
+  done: { label: 'Done', appearance: 'success' },
 };
 
 export function FeatureDetailPanel({
@@ -79,9 +79,11 @@ export function FeatureDetailPanel({
             <span className="text-xs font-mono font-semibold" style={{ color: 'hsl(var(--secondary-bronze))' }}>
               {feature.key}
             </span>
-            <Badge className={cn('ml-2 text-[10px]', statusConfig.className)}>
-              {statusConfig.label}
-            </Badge>
+            <span className="ml-2">
+              <Lozenge appearance={statusConfig.appearance}>
+                {statusConfig.label}
+              </Lozenge>
+            </span>
           </div>
         </div>
 

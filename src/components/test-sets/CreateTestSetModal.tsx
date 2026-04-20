@@ -10,7 +10,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { X } from 'lucide-react';
 import { TestSet, TEST_SET_TYPE_CONFIG, TestSetType, TestSetMembership, DynamicCriteria } from '@/types/test-sets';
 import { useCreateTestSet, useUpdateTestSet } from '@/hooks/useTestSets';
@@ -167,12 +167,12 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
                 <Label className="text-sm mb-1.5 block">Priority</Label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {(criteria.priority || []).map(p => (
-                    <Badge key={p} variant="secondary" className="capitalize">
-                      {p}
-                      <button type="button" onClick={() => removePriority(p)} className="ml-1 hover:text-destructive">
+                    <span key={p} className="inline-flex items-center gap-1">
+                      <Lozenge appearance="default">{p}</Lozenge>
+                      <button type="button" onClick={() => removePriority(p)} className="hover:text-destructive">
                         <X className="h-3 w-3" />
                       </button>
-                    </Badge>
+                    </span>
                   ))}
                 </div>
                 <Select onValueChange={addPriority}>
@@ -190,12 +190,12 @@ export function CreateTestSetModal({ open, onClose, editingSet, projectId }: Pro
                 <Label className="text-sm mb-1.5 block">Tags</Label>
                 <div className="flex flex-wrap gap-1.5 mb-2">
                   {(criteria.tags || []).map(tag => (
-                    <Badge key={tag} variant="secondary" className="capitalize">
-                      {tag}
-                      <button type="button" onClick={() => removeTag(tag)} className="ml-1 hover:text-destructive">
+                    <span key={tag} className="inline-flex items-center gap-1">
+                      <Lozenge appearance="default">{tag}</Lozenge>
+                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-destructive">
                         <X className="h-3 w-3" />
                       </button>
-                    </Badge>
+                    </span>
                   ))}
                 </div>
                 <Select onValueChange={addTag}>

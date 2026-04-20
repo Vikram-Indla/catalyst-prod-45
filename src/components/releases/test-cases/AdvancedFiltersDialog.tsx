@@ -29,7 +29,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -97,18 +98,24 @@ const DEFAULT_FILTERS: FilterState = {
   automationStatus: [],
 };
 
-const FILTER_OPTIONS = {
+const FILTER_OPTIONS: {
+  statuses: Array<{ value: string; label: string; appearance: LozengeAppearance }>;
+  priorities: Array<{ value: string; label: string; appearance: LozengeAppearance }>;
+  types: Array<{ value: string; label: string }>;
+  executionStatus: Array<{ value: string; label: string; appearance: LozengeAppearance }>;
+  automationStatus: Array<{ value: string; label: string }>;
+} = {
   statuses: [
-    { value: 'draft', label: 'Draft', color: 'bg-gray-100 text-gray-800' },
-    { value: 'ready', label: 'Ready', color: 'bg-blue-100 text-blue-800' },
-    { value: 'approved', label: 'Approved', color: 'bg-green-100 text-green-800' },
-    { value: 'deprecated', label: 'Deprecated', color: 'bg-red-100 text-red-800' },
+    { value: 'draft', label: 'Draft', appearance: 'default' },
+    { value: 'ready', label: 'Ready', appearance: 'inprogress' },
+    { value: 'approved', label: 'Approved', appearance: 'success' },
+    { value: 'deprecated', label: 'Deprecated', appearance: 'removed' },
   ],
   priorities: [
-    { value: 'critical', label: 'Critical', color: 'bg-red-100 text-red-800' },
-    { value: 'high', label: 'High', color: 'bg-orange-100 text-orange-800' },
-    { value: 'medium', label: 'Medium', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'low', label: 'Low', color: 'bg-green-100 text-green-800' },
+    { value: 'critical', label: 'Critical', appearance: 'removed' },
+    { value: 'high', label: 'High', appearance: 'moved' },
+    { value: 'medium', label: 'Medium', appearance: 'moved' },
+    { value: 'low', label: 'Low', appearance: 'success' },
   ],
   types: [
     { value: 'functional', label: 'Functional' },
@@ -120,10 +127,10 @@ const FILTER_OPTIONS = {
     { value: 'security', label: 'Security' },
   ],
   executionStatus: [
-    { value: 'passed', label: 'Passed', color: 'bg-green-100 text-green-800' },
-    { value: 'failed', label: 'Failed', color: 'bg-red-100 text-red-800' },
-    { value: 'blocked', label: 'Blocked', color: 'bg-yellow-100 text-yellow-800' },
-    { value: 'not_run', label: 'Not Run', color: 'bg-gray-100 text-gray-800' },
+    { value: 'passed', label: 'Passed', appearance: 'success' },
+    { value: 'failed', label: 'Failed', appearance: 'removed' },
+    { value: 'blocked', label: 'Blocked', appearance: 'moved' },
+    { value: 'not_run', label: 'Not Run', appearance: 'default' },
   ],
   automationStatus: [
     { value: 'automated', label: 'Automated' },
@@ -229,7 +236,7 @@ export function AdvancedFiltersDialog({
             </div>
             Advanced Filters
             {activeFilterCount > 0 && (
-              <Badge variant="secondary">{activeFilterCount} active</Badge>
+              <Lozenge appearance="default">{activeFilterCount} active</Lozenge>
             )}
           </DialogTitle>
           <DialogDescription>
@@ -334,9 +341,9 @@ export function AdvancedFiltersDialog({
                     <CheckCircle2 className="w-4 h-4" />
                     Status
                     {filters.statuses.length > 0 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {filters.statuses.length}
-                      </Badge>
+                      <span className="ml-2">
+                        <Lozenge appearance="default">{filters.statuses.length}</Lozenge>
+                      </span>
                     )}
                   </div>
                 </AccordionTrigger>
@@ -352,7 +359,7 @@ export function AdvancedFiltersDialog({
                         onClick={() => toggleArrayFilter('statuses', opt.value)}
                       >
                         <Checkbox checked={filters.statuses.includes(opt.value)} />
-                        <Badge className={cn("text-xs", opt.color)}>{opt.label}</Badge>
+                        <Lozenge appearance={opt.appearance}>{opt.label}</Lozenge>
                       </div>
                     ))}
                   </div>
@@ -366,9 +373,9 @@ export function AdvancedFiltersDialog({
                     <Star className="w-4 h-4" />
                     Priority
                     {filters.priorities.length > 0 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {filters.priorities.length}
-                      </Badge>
+                      <span className="ml-2">
+                        <Lozenge appearance="default">{filters.priorities.length}</Lozenge>
+                      </span>
                     )}
                   </div>
                 </AccordionTrigger>
@@ -384,7 +391,7 @@ export function AdvancedFiltersDialog({
                         onClick={() => toggleArrayFilter('priorities', opt.value)}
                       >
                         <Checkbox checked={filters.priorities.includes(opt.value)} />
-                        <Badge className={cn("text-xs", opt.color)}>{opt.label}</Badge>
+                        <Lozenge appearance={opt.appearance}>{opt.label}</Lozenge>
                       </div>
                     ))}
                   </div>
@@ -398,9 +405,9 @@ export function AdvancedFiltersDialog({
                     <Tag className="w-4 h-4" />
                     Test Type
                     {filters.types.length > 0 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {filters.types.length}
-                      </Badge>
+                      <span className="ml-2">
+                        <Lozenge appearance="default">{filters.types.length}</Lozenge>
+                      </span>
                     )}
                   </div>
                 </AccordionTrigger>
@@ -430,9 +437,9 @@ export function AdvancedFiltersDialog({
                     <Clock className="w-4 h-4" />
                     Last Execution
                     {filters.executionStatus.length > 0 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {filters.executionStatus.length}
-                      </Badge>
+                      <span className="ml-2">
+                        <Lozenge appearance="default">{filters.executionStatus.length}</Lozenge>
+                      </span>
                     )}
                   </div>
                 </AccordionTrigger>
@@ -448,7 +455,7 @@ export function AdvancedFiltersDialog({
                         onClick={() => toggleArrayFilter('executionStatus', opt.value)}
                       >
                         <Checkbox checked={filters.executionStatus.includes(opt.value)} />
-                        <Badge className={cn("text-xs", opt.color)}>{opt.label}</Badge>
+                        <Lozenge appearance={opt.appearance}>{opt.label}</Lozenge>
                       </div>
                     ))}
                   </div>
@@ -462,7 +469,9 @@ export function AdvancedFiltersDialog({
                     <Calendar className="w-4 h-4" />
                     Date Range
                     {(filters.createdAfter || filters.createdBefore) && (
-                      <Badge variant="secondary" className="ml-2 text-xs">Active</Badge>
+                      <span className="ml-2">
+                        <Lozenge appearance="default">Active</Lozenge>
+                      </span>
                     )}
                   </div>
                 </AccordionTrigger>
@@ -515,9 +524,9 @@ export function AdvancedFiltersDialog({
                     <FolderOpen className="w-4 h-4" />
                     Automation Status
                     {filters.automationStatus.length > 0 && (
-                      <Badge variant="secondary" className="ml-2 text-xs">
-                        {filters.automationStatus.length}
-                      </Badge>
+                      <span className="ml-2">
+                        <Lozenge appearance="default">{filters.automationStatus.length}</Lozenge>
+                      </span>
                     )}
                   </div>
                 </AccordionTrigger>

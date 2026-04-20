@@ -7,7 +7,7 @@
 import { X, ArrowLeft, RotateCcw, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import type { IncidentWithSLA, DrilldownFilter, TimeRange } from '../types';
 
@@ -102,13 +102,13 @@ export function DrilldownDrawer({
             
             {/* Context Chips */}
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="secondary" className="text-sm font-medium px-3 py-1">
+              <Lozenge appearance="inprogress">
                 {filter.label}
-              </Badge>
+              </Lozenge>
               <span className="text-muted-foreground text-sm">•</span>
-              <Badge variant="outline" className="text-sm px-3 py-1">
+              <Lozenge appearance="default">
                 {TIME_RANGE_LABELS[timeRange]}
-              </Badge>
+              </Lozenge>
               <span className="text-muted-foreground text-sm">•</span>
               <span className="text-sm text-muted-foreground font-medium tabular-nums">
                 {incidents.length} incident{incidents.length !== 1 ? 's' : ''}

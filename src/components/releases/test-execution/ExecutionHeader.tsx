@@ -3,7 +3,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { AlertTriangle, Clock, User, Layers } from 'lucide-react';
 import { ExecutionTestCase } from '@/data/testExecutionData';
 
@@ -49,9 +49,9 @@ export function ExecutionHeader({
           {/* Badges Row */}
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm font-semibold text-primary">{testCase.id}</span>
-            <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+            <Lozenge appearance="default">
               {testCase.type}
-            </Badge>
+            </Lozenge>
             <span className={cn("flex items-center gap-1 text-xs font-medium", priorityColor)}>
               <PriorityIcon className="w-3.5 h-3.5" />
               {testCase.priority.charAt(0).toUpperCase() + testCase.priority.slice(1)}

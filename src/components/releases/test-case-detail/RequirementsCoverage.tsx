@@ -12,7 +12,8 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import {
   Tooltip,
@@ -85,10 +86,10 @@ const statusConfig = {
   },
 };
 
-const priorityConfig = {
-  must: { className: 'bg-red-50 text-red-700 border-red-200' },
-  should: { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  could: { className: 'bg-gray-50 text-gray-600 border-gray-200' },
+const priorityConfig: Record<Requirement['priority'], { appearance: LozengeAppearance }> = {
+  must: { appearance: 'removed' },
+  should: { appearance: 'inprogress' },
+  could: { appearance: 'default' },
 };
 
 export function RequirementsCoverage({ requirements = defaultRequirements }: RequirementsCoverageProps) {
@@ -169,9 +170,9 @@ export function RequirementsCoverage({ requirements = defaultRequirements }: Req
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-mono text-primary font-semibold">{req.id}</span>
-                  <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", priority.className)}>
+                  <Lozenge appearance={priority.appearance}>
                     {req.priority.toUpperCase()}
-                  </Badge>
+                  </Lozenge>
                 </div>
                 <p className="text-sm text-foreground truncate mt-0.5">{req.title}</p>
               </div>

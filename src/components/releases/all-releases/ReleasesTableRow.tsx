@@ -11,7 +11,7 @@ import { Lozenge } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Pencil, Archive, Trash2, AlertTriangle } from 'lucide-react';
+import { Pencil, Archive, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { differenceInDays, parseISO } from 'date-fns';
 
@@ -52,12 +52,11 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
   const statusConfig = STATUS_CONFIG[release.status] || STATUS_CONFIG.planning;
   const healthConfig = HEALTH_CONFIG[release.health];
   
-  const getDaysBadgeStyle = () => {
-    if (daysRemaining === null) return 'bg-slate-100 text-slate-400';
-    if (daysRemaining < 0) return 'bg-red-100 text-red-600';
-    if (daysRemaining === 0) return 'bg-amber-100 text-amber-600';
-    if (daysRemaining <= 3) return 'bg-amber-100 text-amber-600';
-    return 'bg-teal-100 text-teal-600';
+  const getDaysAppearance = (): LozengeAppearance => {
+    if (daysRemaining === null) return 'default';
+    if (daysRemaining < 0) return 'removed';
+    if (daysRemaining <= 3) return 'moved';
+    return 'success';
   };
   
   const getDaysLabel = () => {
@@ -95,10 +94,9 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
           <div className="text-sm font-semibold text-slate-800 flex items-center gap-2 truncate">
             <span className="truncate">{release.name}</span>
             {release.is_blocked && (
-              <Badge variant="destructive" className="text-[10px] px-2 py-0 shrink-0">
-                <AlertTriangle className="w-3 h-3 mr-1" />
-                BLOCKED
-              </Badge>
+              <span className="shrink-0">
+                <Lozenge appearance="removed">BLOCKED</Lozenge>
+              </span>
             )}
           </div>
           <div className="text-xs text-slate-400 truncate">{release.description || 'No description'}</div>
@@ -107,9 +105,9 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
       
       {/* Status */}
       <div>
-        <Badge className={cn("text-[11px] font-semibold uppercase", statusConfig.className)}>
+        <Lozenge appearance={STATUS_APPEARANCE[release.status] ?? 'default'}>
           {statusConfig.label}
-        </Badge>
+        </Lozenge>
       </div>
       
       {/* Progress */}
@@ -167,9 +165,9 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
       
       {/* Days */}
       <div>
-        <Badge className={cn("text-[11px] font-semibold", getDaysBadgeStyle())}>
+        <Lozenge appearance={getDaysAppearance()}>
           {getDaysLabel()}
-        </Badge>
+        </Lozenge>
       </div>
       
       {/* Owner */}

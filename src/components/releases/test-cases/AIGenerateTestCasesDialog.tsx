@@ -12,15 +12,12 @@ import {
   AlertCircle,
   Plus,
   Loader2,
-  Copy,
   ChevronDown,
   ChevronUp,
   Settings2,
   Zap,
   Shield,
-  Bug,
   TrendingUp,
-  X,
 } from 'lucide-react';
 import {
   Dialog,
@@ -33,7 +30,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -175,23 +173,13 @@ export function AIGenerateTestCasesDialog({
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityAppearance = (priority: string): LozengeAppearance => {
     switch (priority) {
-      case 'critical': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-      case 'high': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'low': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-      default: return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'functional': return <CheckCircle2 className="w-3 h-3" />;
-      case 'api': return <Zap className="w-3 h-3" />;
-      case 'security': return <Shield className="w-3 h-3" />;
-      case 'performance': return <TrendingUp className="w-3 h-3" />;
-      default: return <Bug className="w-3 h-3" />;
+      case 'critical': return 'removed';
+      case 'high': return 'moved';
+      case 'medium': return 'moved';
+      case 'low': return 'success';
+      default: return 'default';
     }
   };
 
@@ -430,9 +418,9 @@ export function AIGenerateTestCasesDialog({
               {generationResult.metadata && (
                 <div className="flex flex-wrap gap-2 shrink-0">
                   {generationResult.metadata.coverageAreas?.map((area, i) => (
-                    <Badge key={i} variant="secondary" className="text-xs">
+                    <Lozenge key={i} appearance="default">
                       {area}
-                    </Badge>
+                    </Lozenge>
                   ))}
                 </div>
               )}
@@ -467,22 +455,21 @@ export function AIGenerateTestCasesDialog({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="font-medium truncate">{tc.title}</span>
-                            <Badge className={cn("text-[10px]", getPriorityColor(tc.priority))}>
+                            <Lozenge appearance={getPriorityAppearance(tc.priority)}>
                               {tc.priority}
-                            </Badge>
-                            <Badge variant="outline" className="text-[10px] gap-1">
-                              {getTypeIcon(tc.testType)}
+                            </Lozenge>
+                            <Lozenge appearance="default">
                               {tc.testType}
-                            </Badge>
+                            </Lozenge>
                           </div>
                           <p className="text-sm text-muted-foreground truncate mt-0.5">
                             {tc.summary}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
+                          <Lozenge appearance="default">
                             {tc.steps.length} steps
-                          </Badge>
+                          </Lozenge>
                           <Button
                             variant="ghost"
                             size="sm"
@@ -558,9 +545,9 @@ export function AIGenerateTestCasesDialog({
                               {tc.tags?.length > 0 && (
                                 <div className="flex flex-wrap gap-1">
                                   {tc.tags.map((tag, i) => (
-                                    <Badge key={i} variant="outline" className="text-xs">
+                                    <Lozenge key={i} appearance="default">
                                       {tag}
-                                    </Badge>
+                                    </Lozenge>
                                   ))}
                                 </div>
                               )}

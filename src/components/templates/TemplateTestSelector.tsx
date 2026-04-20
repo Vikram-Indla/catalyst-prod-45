@@ -7,7 +7,7 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TestTube, Clock, Tag, X } from 'lucide-react';
@@ -182,13 +182,12 @@ export function TemplateTestSelector({
           {(criteria.tags?.length || 0) > 0 && (
             <div className="flex flex-wrap gap-2">
               {criteria.tags?.map(tag => (
-                <Badge key={tag} variant="secondary" className="gap-1">
-                  <Tag className="w-3 h-3" />
-                  {tag}
-                  <button onClick={() => removeTag(tag)} className="ml-1 hover:text-red-500">
+                <span key={tag} className="inline-flex items-center gap-1">
+                  <Lozenge appearance="default">{tag}</Lozenge>
+                  <button onClick={() => removeTag(tag)} className="hover:text-red-500">
                     <X className="w-3 h-3" />
                   </button>
-                </Badge>
+                </span>
               ))}
             </div>
           )}
@@ -275,9 +274,9 @@ export function TemplateTestSelector({
                 <h4 className="text-xs font-medium text-slate-500 mb-2">Modules included</h4>
                 <div className="flex flex-wrap gap-1">
                   {preview.modules.map(module => (
-                    <Badge key={module} variant="outline" className="text-xs">
+                    <Lozenge key={module} appearance="default">
                       {module}
-                    </Badge>
+                    </Lozenge>
                   ))}
                 </div>
               </div>

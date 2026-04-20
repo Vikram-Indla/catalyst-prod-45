@@ -9,11 +9,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
-import { Upload, FileText, Table2, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Upload, AlertCircle, CheckCircle2, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
 import { useCapacityImport } from './useCapacityImport';
 import { RESOURCE_IMPORT_FIELDS } from './fieldConfig';
 import { WIZARD_STEPS, type ImportMode, type ParsedRow, type ImportPreviewRow } from './types';
@@ -145,12 +145,8 @@ export function CapacityImportWizard({ open, onOpenChange }: CapacityImportWizar
               <div className="space-y-3">
                 <Label className="text-sm font-medium">Paste CSV or Markdown Table</Label>
                 <div className="flex gap-2 text-xs text-muted-foreground">
-                  <Badge variant="outline" className="gap-1">
-                    <FileText className="h-3 w-3" /> CSV
-                  </Badge>
-                  <Badge variant="outline" className="gap-1">
-                    <Table2 className="h-3 w-3" /> Markdown
-                  </Badge>
+                  <Lozenge appearance="default">CSV</Lozenge>
+                  <Lozenge appearance="default">Markdown</Lozenge>
                 </div>
                 <Textarea
                   value={rawData}
@@ -204,10 +200,10 @@ Markdown Example:
                       <div className="text-xs text-muted-foreground">{field.dbColumn}</div>
                     </div>
                     {field.required && (
-                      <Badge variant="secondary" className="text-[10px]">Required</Badge>
+                      <Lozenge appearance="removed">Required</Lozenge>
                     )}
                     {field.lookupTable && (
-                      <Badge variant="outline" className="text-[10px]">Lookup</Badge>
+                      <Lozenge appearance="default">Lookup</Lozenge>
                     )}
                   </div>
                 ))}
@@ -223,9 +219,9 @@ Markdown Example:
                   <strong>{previewRows.filter(r => r.status === 'valid').length}</strong> valid, 
                   <strong className="text-destructive ml-2">{previewRows.filter(r => r.status === 'error').length}</strong> errors
                 </div>
-                <Badge variant={mode === 'rewrite' ? 'destructive' : 'secondary'}>
+                <Lozenge appearance={mode === 'rewrite' ? 'removed' : 'default'}>
                   Mode: {mode === 'rewrite' ? 'Rewrite All' : 'Update'}
-                </Badge>
+                </Lozenge>
               </div>
 
               <div className="border rounded-lg overflow-hidden">

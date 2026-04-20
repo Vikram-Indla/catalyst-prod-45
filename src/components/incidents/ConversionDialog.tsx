@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AlertTriangle, FileText, Layers, Square, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
@@ -166,9 +166,11 @@ export function ConversionDialog({
                 L3 incidents require committee approval before conversion. The incident will be reviewed by designated approvers.
               </p>
               {sendToCommittee && (
-                <Badge variant="outline" className="mt-2 text-[10px] bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]">
-                  Recommended for L3
-                </Badge>
+                <span className="mt-2 inline-block">
+                  <Lozenge appearance="moved">
+                    Recommended for L3
+                  </Lozenge>
+                </span>
               )}
             </div>
           </div>
@@ -179,7 +181,7 @@ export function ConversionDialog({
             <div className="mt-2 space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">Work Item:</span>
-                <Badge variant="outline" className="text-xs capitalize">{convertType}</Badge>
+                <Lozenge appearance="default">{convertType}</Lozenge>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground">Title:</span>

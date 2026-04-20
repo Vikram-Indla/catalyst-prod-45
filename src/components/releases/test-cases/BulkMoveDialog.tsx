@@ -15,7 +15,8 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
@@ -44,10 +45,10 @@ const RELEASES: Release[] = [
   { id: '5', name: 'Performance Update', version: 'REL-26.01.03', status: 'active', testCaseCount: 8 },
 ];
 
-const statusColors = {
-  planning: 'bg-blue-100 text-blue-800 dark:bg-blue-950/50 dark:text-blue-400',
-  active: 'bg-green-100 text-green-800 dark:bg-green-950/50 dark:text-green-400',
-  released: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400',
+const statusAppearance: Record<Release['status'], LozengeAppearance> = {
+  planning: 'inprogress',
+  active: 'success',
+  released: 'default',
 };
 
 export function BulkMoveDialog({
@@ -109,14 +110,14 @@ export function BulkMoveDialog({
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-medium text-sm">{release.name}</span>
                       {isCurrent && (
-                        <Badge variant="secondary" className="text-[10px]">Current</Badge>
+                        <Lozenge appearance="default">Current</Lozenge>
                       )}
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted-foreground font-mono">{release.version}</span>
-                      <Badge className={cn("text-[10px]", statusColors[release.status])}>
+                      <Lozenge appearance={statusAppearance[release.status]}>
                         {release.status}
-                      </Badge>
+                      </Lozenge>
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
                       {release.testCaseCount} test cases

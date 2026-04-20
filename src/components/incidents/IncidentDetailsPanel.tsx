@@ -1,6 +1,6 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
 import { X } from 'lucide-react';
@@ -201,23 +201,21 @@ export function IncidentDetailsPanel({
       {/* Labels */}
       <div className="bg-white dark:bg-[#1A1A1A] border border-[#E8E8E8] dark:border-[#2E2E2E] rounded-lg p-4">
         <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Labels</h4>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 items-center">
           {currentLabels.map(label => (
-            <Badge 
-              key={label} 
-              variant="secondary" 
-              className="bg-[#F0F0F0] text-[#5C5C5C] text-xs font-medium"
-            >
-              {label}
+            <span key={label} className="inline-flex items-center gap-1">
+              <Lozenge appearance="default">
+                {label}
+              </Lozenge>
               {isEditMode && (
                 <button
                   onClick={() => handleRemoveLabel(label)}
-                  className="ml-1 hover:text-red-500"
+                  className="hover:text-red-500"
                 >
                   <X className="w-3 h-3" />
                 </button>
               )}
-            </Badge>
+            </span>
           ))}
           {currentLabels.length === 0 && !isEditMode && (
             <span className="text-[13px] text-[#8C8C8C]">No labels</span>

@@ -17,7 +17,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -202,9 +202,9 @@ export function ApplyTemplateModal({
                 <div className="text-xs text-slate-500 mb-2">Milestones</div>
                 <div className="flex flex-wrap gap-2">
                   {milestones.map(milestone => (
-                    <Badge key={milestone.id} variant="outline" className="text-xs">
+                    <Lozenge key={milestone.id} appearance="default">
                       Day {milestone.day}: {milestone.name}
-                    </Badge>
+                    </Lozenge>
                   ))}
                 </div>
               </div>

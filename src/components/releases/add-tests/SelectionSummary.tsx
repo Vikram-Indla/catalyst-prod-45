@@ -5,9 +5,10 @@
 import React, { useState } from 'react';
 import { X, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { CATALYST_V5, TEST_PRIORITY_COLORS } from '@/lib/catalyst-colors';
+import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { TestCase } from '@/types/add-tests.types';
 
 interface SelectionSummaryProps {
@@ -51,11 +52,11 @@ export function SelectionSummary({
     : selectedTests.slice(0, 8);
   const remainingCount = selectedTests.length - 8;
 
-  const priorityStats = [
-    { label: 'Critical', count: byPriority.critical, colors: TEST_PRIORITY_COLORS.critical },
-    { label: 'High', count: byPriority.high, colors: TEST_PRIORITY_COLORS.high },
-    { label: 'Medium', count: byPriority.medium, colors: TEST_PRIORITY_COLORS.medium },
-    { label: 'Low', count: byPriority.low, colors: TEST_PRIORITY_COLORS.low },
+  const priorityStats: Array<{ label: string; count: number; appearance: LozengeAppearance }> = [
+    { label: 'Critical', count: byPriority.critical, appearance: 'removed' },
+    { label: 'High', count: byPriority.high, appearance: 'moved' },
+    { label: 'Medium', count: byPriority.medium, appearance: 'moved' },
+    { label: 'Low', count: byPriority.low, appearance: 'success' },
   ].filter(s => s.count > 0);
 
   const typeStats = [
@@ -103,9 +104,9 @@ export function SelectionSummary({
           >
             Selected Tests
           </h3>
-          <Badge style={{ backgroundColor: CATALYST_V5.primary, color: 'white' }}>
+          <Lozenge appearance="inprogress">
             {selectedTests.length}
-          </Badge>
+          </Lozenge>
         </div>
         <Button
           variant="ghost"
@@ -207,16 +208,9 @@ export function SelectionSummary({
               </span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {priorityStats.map(stat => (
-                  <Badge
-                    key={stat.label}
-                    className="text-[10px] px-1.5 py-0"
-                    style={{
-                      backgroundColor: stat.colors.bg,
-                      color: stat.colors.text,
-                    }}
-                  >
+                  <Lozenge key={stat.label} appearance={stat.appearance}>
                     {stat.count} {stat.label}
-                  </Badge>
+                  </Lozenge>
                 ))}
               </div>
             </div>
@@ -233,17 +227,9 @@ export function SelectionSummary({
               </span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {typeStats.map(stat => (
-                  <Badge
-                    key={stat.label}
-                    variant="outline"
-                    className="text-[10px] px-1.5 py-0"
-                    style={{
-                      borderColor: CATALYST_V5.slate[300],
-                      color: CATALYST_V5.slate[600],
-                    }}
-                  >
+                  <Lozenge key={stat.label} appearance="default">
                     {stat.count} {stat.label}
-                  </Badge>
+                  </Lozenge>
                 ))}
               </div>
             </div>

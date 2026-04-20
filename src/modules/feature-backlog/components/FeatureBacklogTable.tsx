@@ -5,7 +5,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
@@ -33,26 +33,26 @@ interface FeatureBacklogTableProps {
   onPageSizeChange: (size: number) => void;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; className: string }> = {
-  funnel: { label: 'Funnel', className: 'bg-muted text-muted-foreground border-border' },
-  analyzing: { label: 'Analyzing', className: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]' },
-  backlog: { label: 'Backlog', className: 'bg-muted text-muted-foreground border-border' },
-  implementing: { label: 'In Progress', className: 'bg-brand-primary/15 text-brand-primary border-brand-primary/30' },
-  done: { label: 'Done', className: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
+const STATUS_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  funnel: { label: 'Funnel', appearance: 'default' },
+  analyzing: { label: 'Analyzing', appearance: 'inprogress' },
+  backlog: { label: 'Backlog', appearance: 'default' },
+  implementing: { label: 'In Progress', appearance: 'inprogress' },
+  done: { label: 'Done', appearance: 'success' },
 };
 
-const PRIORITY_CONFIG: Record<string, { label: string; className: string }> = {
-  critical: { label: 'Critical', className: 'bg-[var(--sem-critical-bg)] text-[var(--sem-critical)] border-[var(--sem-critical-border)]' },
-  high: { label: 'High', className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
-  medium: { label: 'Medium', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
-  low: { label: 'Low', className: 'bg-muted text-muted-foreground border-border' },
+const PRIORITY_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  critical: { label: 'Critical', appearance: 'removed' },
+  high: { label: 'High', appearance: 'removed' },
+  medium: { label: 'Medium', appearance: 'moved' },
+  low: { label: 'Low', appearance: 'default' },
 };
 
-const HEALTH_CONFIG: Record<string, { label: string; className: string }> = {
-  green: { label: 'On Track', className: 'bg-[var(--sem-success-bg)] text-[var(--sem-success)] border-[var(--sem-success-border)]' },
-  yellow: { label: 'At Risk', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
-  amber: { label: 'At Risk', className: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]' },
-  red: { label: 'Off Track', className: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]' },
+const HEALTH_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  green: { label: 'On Track', appearance: 'success' },
+  yellow: { label: 'At Risk', appearance: 'moved' },
+  amber: { label: 'At Risk', appearance: 'moved' },
+  red: { label: 'Off Track', appearance: 'removed' },
 };
 
 export function FeatureBacklogTable({
@@ -242,17 +242,17 @@ function renderCell(item: FeatureBacklogItem, columnId: string) {
     case 'status': {
       const config = STATUS_CONFIG[item.status || 'funnel'] || STATUS_CONFIG.funnel;
       return (
-        <Badge variant="outline" className={cn("text-xs font-medium whitespace-nowrap", config.className)}>
+        <Lozenge appearance={config.appearance}>
           {config.label}
-        </Badge>
+        </Lozenge>
       );
     }
     case 'priority': {
       const config = PRIORITY_CONFIG[item.priority || 'medium'] || PRIORITY_CONFIG.medium;
       return (
-        <Badge variant="outline" className={cn("text-xs font-medium whitespace-nowrap", config.className)}>
+        <Lozenge appearance={config.appearance}>
           {config.label}
-        </Badge>
+        </Lozenge>
       );
     }
     case 'assignee':
@@ -286,9 +286,9 @@ function renderCell(item: FeatureBacklogItem, columnId: string) {
     case 'health': {
       const config = HEALTH_CONFIG[item.health || 'green'] || HEALTH_CONFIG.green;
       return (
-        <Badge variant="outline" className={cn("text-xs font-normal whitespace-nowrap", config.className)}>
+        <Lozenge appearance={config.appearance}>
           {config.label}
-        </Badge>
+        </Lozenge>
       );
     }
     case 'progress':

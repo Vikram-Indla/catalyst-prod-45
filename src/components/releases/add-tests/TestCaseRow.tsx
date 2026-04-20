@@ -5,10 +5,11 @@
 import React from 'react';
 import { Clock, Bot, User, Settings } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { CATALYST_V5, TEST_PRIORITY_COLORS } from '@/lib/catalyst-colors';
+import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { TestCase } from '@/types/add-tests.types';
 
 interface TestCaseRowProps {
@@ -24,8 +25,15 @@ const TYPE_LABELS: Record<string, string> = {
   performance: 'Perf',
 };
 
+const PRIORITY_APPEARANCE: Record<string, LozengeAppearance> = {
+  critical: 'removed',
+  high: 'moved',
+  medium: 'moved',
+  low: 'success',
+};
+
 export function TestCaseRow({ testCase, isSelected, onToggle }: TestCaseRowProps) {
-  const priorityColors = TEST_PRIORITY_COLORS[testCase.priority] || TEST_PRIORITY_COLORS.medium;
+  const priorityAppearance: LozengeAppearance = PRIORITY_APPEARANCE[testCase.priority] ?? 'default';
   const isDisabled = testCase.alreadyInCycle;
 
   const getAutomationIcon = () => {
@@ -104,27 +112,18 @@ export function TestCaseRow({ testCase, isSelected, onToggle }: TestCaseRowProps
       </TooltipProvider>
 
       {/* Type Badge */}
-      <Badge 
-        variant="outline" 
-        className="text-[10px] px-1.5 py-0 shrink-0"
-        style={{ 
-          borderColor: isDisabled ? CATALYST_V5.slate[300] : CATALYST_V5.slate[300],
-          color: isDisabled ? CATALYST_V5.slate[400] : CATALYST_V5.slate[600],
-        }}
-      >
-        {TYPE_LABELS[testCase.test_type] || testCase.test_type}
-      </Badge>
+      <span className="shrink-0">
+        <Lozenge appearance="default">
+          {TYPE_LABELS[testCase.test_type] || testCase.test_type}
+        </Lozenge>
+      </span>
 
       {/* Priority Badge */}
-      <Badge 
-        className="text-[10px] px-1.5 py-0 shrink-0"
-        style={{
-          backgroundColor: isDisabled ? CATALYST_V5.slate[200] : priorityColors.bg,
-          color: isDisabled ? CATALYST_V5.slate[400] : priorityColors.text,
-        }}
-      >
-        {testCase.priority.charAt(0).toUpperCase() + testCase.priority.slice(1)}
-      </Badge>
+      <span className="shrink-0">
+        <Lozenge appearance={isDisabled ? 'default' : priorityAppearance}>
+          {testCase.priority.charAt(0).toUpperCase() + testCase.priority.slice(1)}
+        </Lozenge>
+      </span>
 
       {/* Duration */}
       <div 
@@ -151,15 +150,11 @@ export function TestCaseRow({ testCase, isSelected, onToggle }: TestCaseRowProps
 
       {/* Already Added Badge */}
       {isDisabled && (
-        <Badge 
-          className="text-[10px] px-1.5 py-0 shrink-0"
-          style={{
-            backgroundColor: CATALYST_V5.slate[200],
-            color: CATALYST_V5.slate[500],
-          }}
-        >
-          Added
-        </Badge>
+        <span className="shrink-0">
+          <Lozenge appearance="default">
+            Added
+          </Lozenge>
+        </span>
       )}
     </div>
   );

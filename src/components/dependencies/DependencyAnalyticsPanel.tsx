@@ -5,7 +5,7 @@
 
 import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -209,13 +209,13 @@ export function DependencyAnalyticsPanel({
           <Tabs value={directionTab || 'outgoing'} onValueChange={(v) => { setDirectionTab(v as DependencyDirection); setSelectedPartner(null); }}>
             <TabsList className="w-full grid grid-cols-3">
               <TabsTrigger value="outgoing" className="gap-1.5">
-                Outgoing <Badge variant="secondary" className="ml-1">{summary?.outgoing || 0}</Badge>
+                Outgoing <span className="ml-1"><Lozenge appearance="inprogress">{summary?.outgoing || 0}</Lozenge></span>
               </TabsTrigger>
               <TabsTrigger value="incoming" className="gap-1.5">
-                Incoming <Badge variant="secondary" className="ml-1">{summary?.incoming || 0}</Badge>
+                Incoming <span className="ml-1"><Lozenge appearance="inprogress">{summary?.incoming || 0}</Lozenge></span>
               </TabsTrigger>
               <TabsTrigger value="internal" className="gap-1.5">
-                Internal <Badge variant="secondary" className="ml-1">{summary?.internal || 0}</Badge>
+                Internal <span className="ml-1"><Lozenge appearance="inprogress">{summary?.internal || 0}</Lozenge></span>
               </TabsTrigger>
             </TabsList>
 
@@ -410,7 +410,7 @@ function DirectionTabContent({
                   {idx + 1}
                 </span>
                 <span className="flex-1 text-sm font-medium">{partner.programName}</span>
-                <Badge variant="secondary">{partner.count}</Badge>
+                <Lozenge appearance="inprogress">{partner.count}</Lozenge>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </button>
             ))}
@@ -517,11 +517,11 @@ interface DependencyRowProps {
 }
 
 function DependencyRow({ dep, workItemMaps, programId, programs, onClick }: DependencyRowProps) {
-  const statusColors: Record<string, string> = {
-    proposed: 'bg-brand-gold/10 text-brand-gold border-brand-gold/30',
-    committed: 'bg-brand-primary/10 text-brand-primary border-brand-primary/30',
-    delivered: 'bg-status-success/10 text-status-success border-status-success/30',
-    rejected: 'bg-status-danger/10 text-status-danger border-status-danger/30',
+  const statusAppearance: Record<string, LozengeAppearance> = {
+    proposed: 'moved',
+    committed: 'inprogress',
+    delivered: 'success',
+    rejected: 'removed',
   };
 
   const riskColors: Record<string, string> = {
@@ -539,9 +539,11 @@ function DependencyRow({ dep, workItemMaps, programId, programs, onClick }: Depe
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <span className="text-sm font-medium line-clamp-2">{dep.description || 'Untitled dependency'}</span>
-        <Badge className={cn("shrink-0 text-xs", statusColors[dep.status] || 'bg-muted')}>
-          {dep.status}
-        </Badge>
+        <span className="shrink-0">
+          <Lozenge appearance={statusAppearance[dep.status] || 'default'}>
+            {dep.status}
+          </Lozenge>
+        </span>
       </div>
       <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <span>{dep.quarter}</span>

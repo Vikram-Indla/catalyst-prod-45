@@ -6,7 +6,8 @@
 
 import { useState, useEffect } from 'react';
 import { Pencil, CheckCircle, XCircle, Circle, AlertTriangle, ArrowUp, Minus, ArrowDown, Loader2, Check, X } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -23,11 +24,11 @@ interface TestCaseHeaderProps {
   testCase: TestCaseDetailData;
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  'DRAFT': { label: 'Draft', className: 'bg-muted text-muted-foreground border-border' },
-  'REVIEW': { label: 'Ready', className: 'bg-primary/10 text-primary border-primary/20' },
-  'APPROVED': { label: 'Approved', className: 'bg-green-50 text-green-700 border-green-200' },
-  'DEPRECATED': { label: 'Deprecated', className: 'bg-destructive/10 text-destructive border-destructive/20' },
+const statusConfig: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  'DRAFT': { label: 'Draft', appearance: 'default' },
+  'REVIEW': { label: 'Ready', appearance: 'inprogress' },
+  'APPROVED': { label: 'Approved', appearance: 'success' },
+  'DEPRECATED': { label: 'Deprecated', appearance: 'removed' },
 };
 
 const lastRunConfig: Record<string, { label: string; icon: typeof CheckCircle; className: string }> = {
@@ -44,14 +45,14 @@ const priorityConfig: Record<string, { icon: typeof AlertTriangle; className: st
   'Low': { icon: ArrowDown, className: 'text-muted-foreground', label: 'Low' },
 };
 
-const typeConfig: Record<string, { className: string }> = {
-  'Functional': { className: 'bg-primary/10 text-primary border-primary/20' },
-  'Regression': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'Smoke': { className: 'bg-orange-50 text-orange-700 border-orange-200' },
-  'Integration': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
-  'E2E': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  'Performance': { className: 'bg-pink-50 text-pink-700 border-pink-200' },
-  'Security': { className: 'bg-destructive/10 text-destructive border-destructive/20' },
+const typeConfig: Record<string, { appearance: LozengeAppearance }> = {
+  'Functional': { appearance: 'default' },
+  'Regression': { appearance: 'default' },
+  'Smoke': { appearance: 'moved' },
+  'Integration': { appearance: 'default' },
+  'E2E': { appearance: 'default' },
+  'Performance': { appearance: 'default' },
+  'Security': { appearance: 'removed' },
 };
 
 function getInitials(name: string): string {
@@ -122,7 +123,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <span className="text-sm font-mono text-primary font-semibold">{testCase.key}</span>
-          <Badge variant="outline" className={cn('text-xs font-medium', status.className)}>{status.label}</Badge>
+          <Lozenge appearance={status.appearance}>{status.label}</Lozenge>
           <div className={cn('flex items-center gap-1.5 text-sm', lastRun.className)}>
             <LastRunIcon className="w-4 h-4" />
             <span>Last Run: {lastRun.label}</span>
@@ -155,7 +156,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
       <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{testCase.objective || testCase.preconditions || 'No description provided.'}</p>
 
       <div className="flex items-center gap-6 text-sm flex-wrap">
-        <div className="flex items-center gap-2"><span className="text-muted-foreground">Type:</span><Badge variant="outline" className={cn('text-xs font-medium capitalize', type.className)}>{typeName}</Badge></div>
+        <div className="flex items-center gap-2"><span className="text-muted-foreground">Type:</span><Lozenge appearance={type.appearance}>{typeName}</Lozenge></div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Priority:</span><span className={cn('flex items-center gap-1', priority.className)}><PriorityIcon className="w-4 h-4" />{priority.label}</span></div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Assignee:</span><div className="flex items-center gap-1.5"><Avatar className="h-5 w-5">{assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}<AvatarFallback className="text-xs bg-primary/10 text-primary">{getInitials(assigneeName)}</AvatarFallback></Avatar><span>{assigneeName}</span></div></div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Est. Time:</span><span>{estimatedTime}</span></div>

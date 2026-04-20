@@ -13,7 +13,7 @@ import {
   GitCompare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Tooltip,
@@ -115,9 +115,9 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
           <GitCommit className="w-4 h-4 text-muted-foreground" />
           <h4 className="font-medium text-foreground">Version History</h4>
         </div>
-        <Badge variant="outline" className="text-xs">
+        <Lozenge appearance="default">
           {versions.length} version{versions.length !== 1 ? 's' : ''}
-        </Badge>
+        </Lozenge>
         {versions.length >= 2 && (
           <Button variant="outline" size="sm" onClick={() => setShowDiff(true)} className="ml-2">
             <GitCompare className="w-3.5 h-3.5 mr-1" />
@@ -175,9 +175,9 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
                       {formatTimestamp(version.created_at)}
                     </span>
                     {isCurrent && (
-                      <Badge className="text-[10px] px-1.5 py-0 bg-primary/10 text-primary border-0">
+                      <Lozenge appearance="inprogress">
                         Current
-                      </Badge>
+                      </Lozenge>
                     )}
                   </div>
 

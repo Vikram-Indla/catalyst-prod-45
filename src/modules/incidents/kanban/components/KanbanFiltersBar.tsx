@@ -8,7 +8,7 @@ import { ChevronDown, X, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -165,9 +165,11 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
               <span className="font-medium text-[#171717] dark:text-[#fafafa]">{getSeverityLabel(selectedSeverity)}</span>
               <ChevronDown className="h-3 w-3" />
               {selectedSeverity && stats.severityCounts[selectedSeverity] > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs">
-                  {stats.severityCounts[selectedSeverity]}
-                </Badge>
+                <span className="ml-1">
+                  <Lozenge appearance="inprogress">
+                    {stats.severityCounts[selectedSeverity]}
+                  </Lozenge>
+                </span>
               )}
             </Button>
           </DropdownMenuTrigger>
@@ -186,7 +188,9 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
                   )}>
                     {sev}
                   </span>
-                  <Badge variant="outline" className="ml-2">{stats.severityCounts[sev]}</Badge>
+                  <span className="ml-2">
+                    <Lozenge appearance="default">{stats.severityCounts[sev]}</Lozenge>
+                  </span>
                 </div>
               </DropdownMenuItem>
             ))}
@@ -211,18 +215,22 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
               <div className="flex items-center gap-2 w-full">
                 <div className="h-2 w-2 rounded-full bg-[#ef4444]" />
                 <span>Breached</span>
-                <Badge className="ml-auto border-0 bg-[rgba(239,68,68,0.2)] text-[#f87171] dark:bg-[rgba(239,68,68,0.25)]">
-                  {stats.breachedCount}
-                </Badge>
+                <span className="ml-auto">
+                  <Lozenge appearance="removed">
+                    {stats.breachedCount}
+                  </Lozenge>
+                </span>
               </div>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onStatusChange('at_risk')}>
               <div className="flex items-center gap-2 w-full">
                 <div className="h-2 w-2 rounded-full bg-[#f59e0b]" />
                 <span>At Risk</span>
-                <Badge className="ml-auto border-0 bg-[rgba(245,158,11,0.15)] text-[#fbbf24] dark:bg-[rgba(245,158,11,0.25)]">
-                  {stats.atRiskCount}
-                </Badge>
+                <span className="ml-auto">
+                  <Lozenge appearance="moved">
+                    {stats.atRiskCount}
+                  </Lozenge>
+                </span>
               </div>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -249,7 +257,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span>Unassigned</span>
                 </div>
-                <Badge variant="outline">{stats.unassignedCount}</Badge>
+                <Lozenge appearance="default">{stats.unassignedCount}</Lozenge>
               </div>
             </DropdownMenuItem>
             {stats.assignees.length > 0 && <DropdownMenuSeparator />}
@@ -262,7 +270,9 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
                     </AvatarFallback>
                   </Avatar>
                   <span className="truncate flex-1">{assignee.name}</span>
-                  <Badge variant="outline" className="ml-auto">{assignee.count}</Badge>
+                  <span className="ml-auto">
+                    <Lozenge appearance="default">{assignee.count}</Lozenge>
+                  </span>
                 </div>
               </DropdownMenuItem>
             ))}

@@ -3,7 +3,7 @@ import { Check, X, Clock, UserPlus, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,7 +11,6 @@ import { usePlanApprovals, useRequestApproval, useApprove, useReject } from '@/h
 import { useAuth } from '@/lib/auth';
 import { PlanApproval, PlanStatus } from '@/types/testPlans';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -29,13 +28,13 @@ export function ApprovalsTab({ planId, planStatus }: Props) {
   const myApproval = approvals?.find(a => a.approver_id === user?.id && a.status === 'pending');
 
   const statusBadge = (status: string) => {
-    const cfg: Record<string, { label: string; cls: string }> = {
-      pending: { label: 'Pending', cls: 'bg-yellow-100 text-yellow-700' },
-      approved: { label: 'Approved', cls: 'bg-green-100 text-green-700' },
-      rejected: { label: 'Rejected', cls: 'bg-red-100 text-red-700' },
+    const cfg: Record<string, { label: string; appearance: LozengeAppearance }> = {
+      pending: { label: 'Pending', appearance: 'moved' },
+      approved: { label: 'Approved', appearance: 'success' },
+      rejected: { label: 'Rejected', appearance: 'removed' },
     };
     const c = cfg[status] || cfg.pending;
-    return <Badge className={cn('text-xs', c.cls)}>{c.label}</Badge>;
+    return <Lozenge appearance={c.appearance}>{c.label}</Lozenge>;
   };
 
   return (

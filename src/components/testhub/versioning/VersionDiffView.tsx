@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { GitCompare, X, ChevronDown, Plus, Minus, Equal } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import type { TestCaseVersion } from '@/hooks/test-management/useTestCaseVersions';
@@ -41,7 +41,7 @@ function DiffField({ label, left, right }: { label: string; left?: string | null
     <div className={cn('rounded-lg border p-3 mb-3', changed ? 'border-amber-300 bg-amber-50/50 dark:border-amber-700 dark:bg-amber-950/20' : 'border-border')}>
       <div className="flex items-center gap-2 mb-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
-        {changed && <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Changed</Badge>}
+        {changed && <Lozenge appearance="moved">Changed</Lozenge>}
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className={cn('text-sm', changed ? 'bg-red-50 dark:bg-red-950/20 rounded p-2 border border-red-200 dark:border-red-800' : '')}>
@@ -81,7 +81,7 @@ function StepsDiff({ leftSteps, rightSteps }: { leftSteps: StepSnapshot[]; right
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-muted-foreground">Step {left.step_number}</span>
-                    {isRemoved && <Badge variant="outline" className="text-[10px] text-red-600 border-red-300"><Minus size={8} className="mr-1" />Removed</Badge>}
+                    {isRemoved && <Lozenge appearance="removed">Removed</Lozenge>}
                   </div>
                   <p className="text-sm">{left.action}</p>
                   {left.expected_result && <p className="text-xs text-muted-foreground mt-1">Expected: {left.expected_result}</p>}
@@ -95,8 +95,8 @@ function StepsDiff({ leftSteps, rightSteps }: { leftSteps: StepSnapshot[]; right
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-semibold text-muted-foreground">Step {right.step_number}</span>
-                    {isNew && <Badge variant="outline" className="text-[10px] text-green-600 border-green-300"><Plus size={8} className="mr-1" />New</Badge>}
-                    {isChanged && <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-300">Modified</Badge>}
+                    {isNew && <Lozenge appearance="success">New</Lozenge>}
+                    {isChanged && <Lozenge appearance="moved">Modified</Lozenge>}
                   </div>
                   <p className="text-sm">{right.action}</p>
                   {right.expected_result && <p className="text-xs text-muted-foreground mt-1">Expected: {right.expected_result}</p>}
@@ -137,7 +137,7 @@ export function VersionDiffView({ open, onOpenChange, versions, initialLeft, ini
             <GitCompare className="w-5 h-5 text-primary" />
             Compare Versions
             {changedCount > 0 && (
-              <Badge variant="secondary" className="text-xs">{changedCount} change{changedCount !== 1 ? 's' : ''}</Badge>
+              <Lozenge appearance="inprogress">{changedCount} change{changedCount !== 1 ? 's' : ''}</Lozenge>
             )}
           </DialogTitle>
         </DialogHeader>
@@ -200,9 +200,9 @@ export function VersionDiffView({ open, onOpenChange, versions, initialLeft, ini
             <div className="mt-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Steps</span>
-                <Badge variant="outline" className="text-[10px]">
+                <Lozenge appearance="default">
                   {leftSteps.length} → {rightSteps.length}
-                </Badge>
+                </Lozenge>
               </div>
               <StepsDiff leftSteps={leftSteps} rightSteps={rightSteps} />
             </div>

@@ -15,7 +15,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,9 +59,9 @@ export function TestCaseExecutionHistory({ history }: TestCaseExecutionHistoryPr
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h3 className="font-semibold text-foreground">Execution History</h3>
-          <Badge variant="outline" className="text-xs">
+          <Lozenge appearance="default">
             {filteredHistory.length} of {history.length}
-          </Badge>
+          </Lozenge>
         </div>
         
         <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Link2, Settings, Eye, EyeOff, ChevronDown } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -98,9 +98,9 @@ export function DefectKanbanView({ defects, onUpdateStatus }: DefectKanbanViewPr
                       WORKFLOW_COLORS[col.color].solid
                     )} />
                     <span className="text-sm">{col.name}</span>
-                    <Badge variant="secondary" className="text-[10px] h-4">
+                    <Lozenge appearance="default">
                       {defectsByColumn[col.id]?.length || 0}
-                    </Badge>
+                    </Lozenge>
                   </div>
                   {col.isVisible ? (
                     <Eye className="w-4 h-4 text-green-600" />
@@ -164,7 +164,7 @@ function KanbanColumn({ column, defects, headerColorClass }: KanbanColumnProps) 
       <div className="p-3 border-b border-gray-200 dark:border-[#2E2E2E] bg-white/50 dark:bg-[#1A1A1A]/50">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-gray-900">{column.name}</h3>
-          <Badge variant="secondary">{defects.length}</Badge>
+          <Lozenge appearance="inprogress">{defects.length}</Lozenge>
         </div>
         
         {/* Sub-status counts */}

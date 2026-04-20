@@ -3,7 +3,8 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Search, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -44,11 +45,11 @@ const mockUnlinkedTestCases: TestCase[] = [
   { id: 'tc-10', caseKey: 'TC-110', title: 'Test transaction logging', priority: 'medium', status: 'active' },
 ];
 
-const priorityColors: Record<string, string> = {
-  critical: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-  high: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
-  medium: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-  low: 'bg-slate-100 text-slate-800 dark:bg-slate-900/30 dark:text-slate-400',
+const priorityAppearance: Record<string, LozengeAppearance> = {
+  critical: 'removed',
+  high: 'moved',
+  medium: 'inprogress',
+  low: 'default',
 };
 
 export function AddTestsToCoverageDialog({ 
@@ -131,7 +132,7 @@ export function AddTestsToCoverageDialog({
           <DialogDescription>
             {requirement && (
               <span className="flex items-center gap-2 mt-1">
-                <Badge variant="outline" className="font-mono">{requirement.id}</Badge>
+                <Lozenge appearance="default">{requirement.id}</Lozenge>
                 <span className="truncate">{requirement.title}</span>
               </span>
             )}
@@ -183,12 +184,9 @@ export function AddTestsToCoverageDialog({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm text-primary font-medium">{tc.caseKey}</span>
-                      <Badge 
-                        variant="secondary" 
-                        className={`text-xs ${priorityColors[tc.priority] || priorityColors.medium}`}
-                      >
+                      <Lozenge appearance={priorityAppearance[tc.priority] ?? 'default'}>
                         {tc.priority}
-                      </Badge>
+                      </Lozenge>
                     </div>
                     <p className="text-sm text-muted-foreground truncate mt-0.5">{tc.title}</p>
                   </div>

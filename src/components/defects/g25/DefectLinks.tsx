@@ -1,7 +1,7 @@
 import { FileText, Play, Bug, Link, RefreshCw, BookOpen, GitBranch, Tag, AlertCircle, Plus, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { useDefectLinksG25, useDeleteDefectLinkG25 } from '@/hooks/useDefectsG25';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DefectLink } from '@/types/defects';
@@ -81,9 +81,9 @@ export function DefectLinks({ defectId, onAddLink }: { defectId: string; onAddLi
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm text-primary">{getDisplayLabel(link)}</span>
-                      <Badge variant="outline" className="text-xs capitalize">{config.label}</Badge>
+                      <Lozenge appearance="default">{config.label}</Lozenge>
                       {isAuto && (
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Auto</Badge>
+                        <Lozenge appearance="inprogress">Auto</Lozenge>
                       )}
                     </div>
                     {getDisplayTitle(link) && (

@@ -11,7 +11,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   Dialog,
   DialogContent,
@@ -277,31 +277,28 @@ export function DependencyMatrix({ quarter, onDependencyClick }: DependencyMatri
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs capitalize">
-                          {dep.dependency_level_v2 
-                            ? DEPENDENCY_LEVEL_LABELS[dep.dependency_level_v2 as keyof typeof DEPENDENCY_LEVEL_LABELS]?.split(' ')[0] 
+                        <Lozenge appearance="default">
+                          {dep.dependency_level_v2
+                            ? DEPENDENCY_LEVEL_LABELS[dep.dependency_level_v2 as keyof typeof DEPENDENCY_LEVEL_LABELS]?.split(' ')[0]
                             : dep.type || 'Epic'}
-                        </Badge>
+                        </Lozenge>
                       </TableCell>
                       <TableCell className="text-sm">
                         {dep.needed_by_date || '-'}
                       </TableCell>
                       <TableCell>
-                        <Badge variant={dep.status === 'committed' ? 'default' : 'outline'} className="text-xs">
+                        <Lozenge appearance={dep.status === 'committed' ? 'inprogress' : 'default'}>
                           {dep.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
-                        </Badge>
+                        </Lozenge>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            dep.risk_level === 'high' ? 'destructive' :
-                            dep.risk_level === 'med' ? 'secondary' :
-                            'outline'
-                          }
-                          className="text-xs"
-                        >
+                        <Lozenge appearance={(
+                            dep.risk_level === 'high' ? 'removed' :
+                            dep.risk_level === 'med' ? 'moved' :
+                            'default'
+                          ) as LozengeAppearance}>
                           {dep.risk_level?.toUpperCase() || 'LOW'}
-                        </Badge>
+                        </Lozenge>
                       </TableCell>
                     </TableRow>
                   ))}

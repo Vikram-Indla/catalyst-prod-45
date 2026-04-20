@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FileText, AlertCircle, CheckCircle2, XCircle, ChevronRight, Circle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -74,35 +74,15 @@ export function DependencyWheelDetailsPanel({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'NOT_COMMITTED':
-        return (
-          <Badge variant="outline" className="text-xs">
-            <AlertCircle className="h-3 w-3 mr-1" />
-            Not Committed
-          </Badge>
-        );
+        return <Lozenge appearance="default">Not Committed</Lozenge>;
       case 'COMMITTED':
-        return (
-          <Badge className="text-xs bg-brand-primary text-white">
-            <CheckCircle2 className="h-3 w-3 mr-1" />
-            Committed
-          </Badge>
-        );
+        return <Lozenge appearance="inprogress">Committed</Lozenge>;
       case 'DONE':
-        return (
-          <Badge className="text-xs bg-success text-success-foreground">
-            <CheckCircle2 className="h-3 w-3 mr-1" />
-            Done
-          </Badge>
-        );
+        return <Lozenge appearance="success">Done</Lozenge>;
       case 'BLOCKED':
-        return (
-          <Badge variant="destructive" className="text-xs">
-            <XCircle className="h-3 w-3 mr-1" />
-            Blocked
-          </Badge>
-        );
+        return <Lozenge appearance="removed">Blocked</Lozenge>;
       default:
-        return <Badge variant="secondary" className="text-xs">{status}</Badge>;
+        return <Lozenge appearance="default">{status}</Lozenge>;
     }
   };
 
@@ -166,13 +146,9 @@ export function DependencyWheelDetailsPanel({
                       {link.fromFeature?.display_id || 'F-'} {link.fromFeature?.name || 'Feature'}
                     </span>
                     <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
-                      <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5 py-0">
-                        TRA
-                      </Badge>
+                      <Lozenge appearance="default">TRA</Lozenge>
                       <ChevronRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-muted-foreground" />
-                      <Badge variant="outline" className="text-[10px] sm:text-xs px-1 sm:px-1.5 py-0">
-                        BAL
-                      </Badge>
+                      <Lozenge appearance="default">BAL</Lozenge>
                     </div>
                   </div>
                   

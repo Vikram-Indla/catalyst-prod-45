@@ -6,7 +6,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -25,11 +25,11 @@ interface Props {
   existingTestCaseIds: string[];
 }
 
-const priorityColors: Record<string, string> = {
-  critical: 'bg-destructive/10 text-destructive border-destructive/20',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400',
-  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
-  low: 'bg-muted text-muted-foreground',
+const priorityAppearance = (name: string | undefined): LozengeAppearance => {
+  const n = (name || '').toLowerCase();
+  if (n === 'critical' || n === 'highest') return 'removed';
+  if (n === 'high') return 'moved';
+  return 'default';
 };
 
 export function AddTestCasesModal({ open, onClose, testSetId, projectId, existingTestCaseIds }: Props) {
@@ -130,7 +130,7 @@ export function AddTestCasesModal({ open, onClose, testSetId, projectId, existin
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
                       <span className="text-sm font-mono text-primary">{tc.case_key}</span>
-                      <Badge variant="outline" className={cn('capitalize text-[10px]', priorityColors[(tc.priority?.name || '').toLowerCase()])}>{tc.priority?.name || '-'}</Badge>
+                      <Lozenge appearance={priorityAppearance(tc.priority?.name)}>{tc.priority?.name || '-'}</Lozenge>
                     </div>
                     <p className="text-sm text-foreground truncate">{tc.title}</p>
                     {tc.folder && <p className="text-xs text-muted-foreground mt-0.5"><Folder className="h-3 w-3 inline mr-1" />{tc.folder.name}</p>}

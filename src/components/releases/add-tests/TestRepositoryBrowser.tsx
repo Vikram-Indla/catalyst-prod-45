@@ -7,7 +7,7 @@ import { Search, ChevronDown, ChevronRight, X, Check, Layers } from 'lucide-reac
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Select, 
@@ -220,59 +220,52 @@ export function TestRepositoryBrowser({
         {hasActiveFilters && (
           <div className="flex flex-wrap gap-2 items-center">
             {filters.search && (
-              <Badge 
-                variant="secondary" 
-                className="gap-1"
-                style={{ 
-                  backgroundColor: CATALYST_V5.primaryLight, 
-                  color: CATALYST_V5.primary 
-                }}
-              >
-                Search: {filters.search}
-                <X 
-                  className="h-3 w-3 cursor-pointer" 
+              <span className="inline-flex items-center gap-1">
+                <Lozenge appearance="inprogress">Search: {filters.search}</Lozenge>
+                <button
+                  type="button"
+                  aria-label="Clear search filter"
                   onClick={() => { setSearchValue(''); onClearFilter('search'); }}
-                />
-              </Badge>
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
             )}
             {filters.module && (
-              <Badge 
-                variant="secondary" 
-                className="gap-1"
-                style={{ 
-                  backgroundColor: CATALYST_V5.primaryLight, 
-                  color: CATALYST_V5.primary 
-                }}
-              >
-                Module: {filters.module}
-                <X className="h-3 w-3 cursor-pointer" onClick={() => onClearFilter('module')} />
-              </Badge>
+              <span className="inline-flex items-center gap-1">
+                <Lozenge appearance="inprogress">Module: {filters.module}</Lozenge>
+                <button
+                  type="button"
+                  aria-label="Clear module filter"
+                  onClick={() => onClearFilter('module')}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
             )}
             {filters.testType && (
-              <Badge 
-                variant="secondary" 
-                className="gap-1"
-                style={{ 
-                  backgroundColor: CATALYST_V5.primaryLight, 
-                  color: CATALYST_V5.primary 
-                }}
-              >
-                Type: {filters.testType}
-                <X className="h-3 w-3 cursor-pointer" onClick={() => onClearFilter('testType')} />
-              </Badge>
+              <span className="inline-flex items-center gap-1">
+                <Lozenge appearance="inprogress">Type: {filters.testType}</Lozenge>
+                <button
+                  type="button"
+                  aria-label="Clear test type filter"
+                  onClick={() => onClearFilter('testType')}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
             )}
             {filters.priority && (
-              <Badge 
-                variant="secondary" 
-                className="gap-1"
-                style={{ 
-                  backgroundColor: CATALYST_V5.primaryLight, 
-                  color: CATALYST_V5.primary 
-                }}
-              >
-                Priority: {filters.priority}
-                <X className="h-3 w-3 cursor-pointer" onClick={() => onClearFilter('priority')} />
-              </Badge>
+              <span className="inline-flex items-center gap-1">
+                <Lozenge appearance="inprogress">Priority: {filters.priority}</Lozenge>
+                <button
+                  type="button"
+                  aria-label="Clear priority filter"
+                  onClick={() => onClearFilter('priority')}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
             )}
             <button
               onClick={onClearAllFilters}

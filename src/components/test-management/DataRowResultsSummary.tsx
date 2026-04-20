@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Tooltip,
   TooltipContent,
@@ -189,7 +189,7 @@ export function DataRowResultsSummary({
           <div className="flex items-center gap-2">
             <Database className="w-5 h-5 text-muted-foreground" />
             <h3 className="font-semibold">Data Rows</h3>
-            <Badge variant="secondary">{summary.total}</Badge>
+            <Lozenge appearance="default">{summary.total}</Lozenge>
           </div>
           
           <div className="flex items-center gap-2 flex-wrap">
@@ -306,9 +306,9 @@ export function DataRowResultsSummary({
                 />
                 
                 <div className="w-16">
-                  <Badge variant="outline" className="font-mono">
+                  <Lozenge appearance="default">
                     Row {row.rowOrder + 1}
-                  </Badge>
+                  </Lozenge>
                 </div>
                 
                 <div className="flex-1 text-sm text-muted-foreground truncate">

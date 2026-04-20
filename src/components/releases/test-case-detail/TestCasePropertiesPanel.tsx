@@ -24,7 +24,8 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -82,11 +83,11 @@ interface TestCasePropertiesPanelProps {
   testCase: TestCaseDetailData;
 }
 
-const statusConfig: Record<string, { label: string; className: string }> = {
-  'DRAFT': { label: 'Draft', className: 'bg-gray-100 text-gray-600 border-gray-200' },
-  'REVIEW': { label: 'Ready', className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'APPROVED': { label: 'Approved', className: 'bg-green-50 text-green-700 border-green-200' },
-  'DEPRECATED': { label: 'Deprecated', className: 'bg-red-50 text-red-600 border-red-200' },
+const statusConfig: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  'DRAFT': { label: 'Draft', appearance: 'default' },
+  'REVIEW': { label: 'Ready', appearance: 'inprogress' },
+  'APPROVED': { label: 'Approved', appearance: 'success' },
+  'DEPRECATED': { label: 'Deprecated', appearance: 'removed' },
 };
 
 const priorityConfig: Record<string, { label: string; icon: typeof AlertTriangle; className: string }> = {
@@ -96,15 +97,15 @@ const priorityConfig: Record<string, { label: string; icon: typeof AlertTriangle
   'Low': { label: 'Low', icon: ArrowDown, className: 'text-blue-600' },
 };
 
-const typeConfig: Record<string, { className: string }> = {
-  'Functional': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'Regression': { className: 'bg-blue-50 text-blue-700 border-blue-200' },
-  'Smoke': { className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  'Integration': { className: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  'End-to-End': { className: 'bg-cyan-50 text-cyan-700 border-cyan-200' },
-  'Performance': { className: 'bg-pink-50 text-pink-700 border-pink-200' },
-  'Security': { className: 'bg-red-50 text-red-700 border-red-200' },
-  'Usability': { className: 'bg-teal-50 text-teal-700 border-teal-200' },
+const typeConfig: Record<string, { appearance: LozengeAppearance }> = {
+  'Functional': { appearance: 'default' },
+  'Regression': { appearance: 'default' },
+  'Smoke': { appearance: 'moved' },
+  'Integration': { appearance: 'default' },
+  'End-to-End': { appearance: 'default' },
+  'Performance': { appearance: 'default' },
+  'Security': { appearance: 'removed' },
+  'Usability': { appearance: 'default' },
 };
 
 function getInitials(name: string): string {
@@ -437,9 +438,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{release.name}</span>
                       {release.status && (
-                        <Badge variant="outline" className="text-[10px] px-1 py-0 h-4">
+                        <Lozenge appearance="default">
                           {release.status}
-                        </Badge>
+                        </Lozenge>
                       )}
                     </div>
                   </SelectItem>
@@ -499,9 +500,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             </Select>
           ) : (
             <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('status')}>
-              <Badge variant="outline" className={cn('text-xs', status.className)}>
+              <Lozenge appearance={status.appearance}>
                 {status.label}
-              </Badge>
+              </Lozenge>
               <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           )}
@@ -570,9 +571,9 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
             </Select>
           ) : (
             <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('type')}>
-              <Badge variant="outline" className={cn('text-xs capitalize', type.className)}>
+              <Lozenge appearance={type.appearance}>
                 {typeName}
-              </Badge>
+              </Lozenge>
               <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
           )}
@@ -648,13 +649,17 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
           </label>
           <div className="flex flex-wrap gap-1">
             {dbLabels.map((label) => (
-              <Badge key={label.id} variant="outline" className="text-xs group/tag">
-                {label.name}
-                <X 
-                  className="w-3 h-3 ml-1 opacity-0 group-hover/tag:opacity-100 cursor-pointer transition-opacity" 
+              <span key={label.id} className="inline-flex items-center gap-1 group/tag">
+                <Lozenge appearance="default">{label.name}</Lozenge>
+                <button
+                  type="button"
+                  aria-label={`Remove tag ${label.name}`}
                   onClick={() => handleRemoveTag(label.id)}
-                />
-              </Badge>
+                  className="opacity-0 group-hover/tag:opacity-100 transition-opacity"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </span>
             ))}
             
             {isAddingTag ? (
