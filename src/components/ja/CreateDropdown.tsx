@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@atlaskit/button/new";
+import AddIcon from "@atlaskit/icon/glyph/add";
 import { ButtonItem, MenuGroup, Section } from "@atlaskit/menu";
 import Popup from "@atlaskit/popup";
 import { CreateStoryModal } from "@/components/workhub/create-story";
@@ -84,6 +85,7 @@ export function CreateDropdown() {
           <Button
             {...triggerProps}
             appearance="primary"
+            iconBefore={() => <AddIcon label="" size="small" />}
             onClick={() => setOpen((current) => !current)}
           >
             Create

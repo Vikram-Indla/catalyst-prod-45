@@ -37,26 +37,28 @@ export function CatalystHeader() {
     >
       <Box as="nav" aria-label="Global navigation">
         <Flex alignItems="center" justifyContent="space-between" gap="space.300">
-          <Flex alignItems="center" gap="space.100" grow="hug">
+          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
             <AppSwitcher />
-            <Box as="a" href="/for-you" xcss={productMarkStyles} aria-label="Catalyst home">
-              <img src={catalystLogoMark2} alt="" width="24" height="24" />
-            </Box>
-            <Box as="a" href="/for-you" style={{ textDecoration: 'none' }}>
+            <a href="/for-you" aria-label="Catalyst home" style={{ textDecoration: 'none' }}>
+              <Box xcss={productMarkStyles}>
+                <img src={catalystLogoMark2} alt="" width="24" height="24" />
+              </Box>
+            </a>
+            <a href="/for-you" style={{ textDecoration: 'none' }}>
               <Text size="medium" weight="semibold" color="color.text">Catalyst</Text>
-            </Box>
-          </Flex>
+            </a>
+          </Box>
 
-          <Flex alignItems="center" justifyContent="center" grow="fill">
+          <Box style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: '1 1 auto', minWidth: 0 }}>
             <GlobalSearch />
-          </Flex>
+          </Box>
 
-          <Flex alignItems="center" gap="space.100" grow="hug">
+          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
             <CreateDropdown />
             <NotificationsPanel />
             <SettingsMenu />
             <ProfileMenu />
-          </Flex>
+          </Box>
         </Flex>
       </Box>
     </Box>

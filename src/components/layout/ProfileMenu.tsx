@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
+import Tooltip from '@atlaskit/tooltip';
+import { IconButton } from '@atlaskit/atlassian-navigation';
 import Lozenge from '@atlaskit/lozenge';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
@@ -41,6 +43,10 @@ export function ProfileMenu({ name, email, avatarUrl }: ProfileMenuProps) {
           <Section hasSeparator><ButtonItem iconBefore={<SwitcherIcon label="" />}>Switch account</ButtonItem><ButtonItem iconBefore={<SignOutIcon label="" />} onClick={() => void signOut()}>Log out</ButtonItem></Section>
         </MenuGroup>
       </Box>
-    )} trigger={(props) => <button {...props} type="button" aria-label="Profile" onClick={() => setOpen((v) => !v)}><Avatar size="small" src={avatarUrl ?? undefined} name={displayName} /></button>} />
+    )} trigger={(props) => (
+      <Tooltip content="Profile" position="bottom">
+        <IconButton {...props} label="Profile" tooltip="Profile" isSelected={open} onClick={() => setOpen((v) => !v)} icon={<Avatar size="small" src={avatarUrl ?? undefined} name={displayName} />} />
+      </Tooltip>
+    )} />
   );
 }
