@@ -131,9 +131,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             />
           </div>
 
-          {/* Middle + Right detail surface — hidden in narrow mode. Right
-              sidebar inside CatalystViewBase auto-hides via @container query
-              before this entire panel collapses. */}
+          {/* Middle + Right detail surface — hidden in narrow mode. */}
           {!isNarrow && (
             activeItem ? (
               <div style={{
