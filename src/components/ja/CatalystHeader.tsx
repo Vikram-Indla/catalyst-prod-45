@@ -1,4 +1,5 @@
 import { AtlassianNavigation, CustomProductHome } from '@atlaskit/atlassian-navigation';
+import { Flex } from '@atlaskit/primitives';
 import { AppSwitcher } from '@/components/layout/AppSwitcher';
 import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
@@ -22,18 +23,27 @@ function ProductHome() {
   );
 }
 
+function CreateAndAskActions() {
+  return (
+    <Flex alignItems="center" gap="space.150">
+      <CreateDropdown />
+      <AskCatalystPill />
+    </Flex>
+  );
+}
+
 export function CatalystHeader() {
   return (
     <AtlassianNavigation
       label="Catalyst"
       renderProductHome={ProductHome}
       renderAppSwitcher={AppSwitcher}
-      renderCreate={CreateDropdown}
-      renderSearch={GlobalSearch}
+      renderSearch={() => <GlobalSearch />}
+      renderCreate={CreateAndAskActions}
       renderNotifications={NotificationsPanel}
       renderSettings={SettingsMenu}
       renderProfile={ProfileMenu}
-      primaryItems={[<AskCatalystPill key="ask-catalyst" />]}
+      primaryItems={[]}
     />
   );
 }
