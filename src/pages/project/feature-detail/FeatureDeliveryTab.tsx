@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { Plus, ChevronDown, Search, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import {
@@ -40,12 +40,12 @@ interface Story {
   iteration?: { name: string } | null;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; class: string }> = {
-  backlog: { label: 'Backlog', class: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' },
-  todo: { label: 'To Do', class: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' },
-  in_progress: { label: 'In Progress', class: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' },
-  done: { label: 'Done', class: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' },
-  blocked: { label: 'Blocked', class: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' },
+const STATUS_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  backlog: { label: 'Backlog', appearance: 'default' },
+  todo: { label: 'To Do', appearance: 'default' },
+  in_progress: { label: 'In Progress', appearance: 'inprogress' },
+  done: { label: 'Done', appearance: 'success' },
+  blocked: { label: 'Blocked', appearance: 'removed' },
 };
 
 function getInitials(name: string): string {
@@ -178,9 +178,9 @@ export function FeatureDeliveryTab({ featureId, projectId }: FeatureDeliveryTabP
                       <span className="text-sm text-foreground">{story.name}</span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className={cn("text-xs", statusConfig.class)}>
+                      <Lozenge appearance={statusConfig.appearance}>
                         {statusConfig.label}
-                      </Badge>
+                      </Lozenge>
                     </TableCell>
                     <TableCell>
                       {story.assignee ? (

@@ -6,13 +6,23 @@ import { memo } from 'react';
 import { Loader2, Calendar, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { CycleTimeline } from './CycleTimeline';
 import { MilestoneEditor } from './MilestoneEditor';
 import { TesterAssignmentGrid } from './TesterAssignmentGrid';
 import { CycleScopeSelector } from './CycleScopeSelector';
 import { useCycleDetails } from '../hooks/useCycleDetails';
 import { CYCLE_STATUS_CONFIG } from '../types/cycle-config';
+import type { CycleStatus } from '../types/cycle-config';
+
+const CYCLE_STATUS_APPEARANCE: Record<CycleStatus, LozengeAppearance> = {
+  draft: 'default',
+  planned: 'default',
+  active: 'inprogress',
+  paused: 'moved',
+  completed: 'success',
+  archived: 'default',
+};
 
 interface CycleConfigPanelProps {
   cycleId: string;
@@ -58,17 +68,14 @@ export const CycleConfigPanel = memo(function CycleConfigPanel({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <Badge variant="outline" className="font-mono text-sm">
-                {cycle.cycle_key}
-              </Badge>
-              <Badge
-                style={{
-                  backgroundColor: statusConfig.bgColor,
-                  color: statusConfig.color,
-                }}
-              >
+              <span className="font-mono text-sm">
+                <Lozenge appearance="default">
+                  {cycle.cycle_key}
+                </Lozenge>
+              </span>
+              <Lozenge appearance={CYCLE_STATUS_APPEARANCE[cycle.status]}>
                 {statusConfig.label}
-              </Badge>
+              </Lozenge>
             </div>
             <h2 className="text-xl font-semibold text-foreground">{cycle.name}</h2>
             {cycle.description && (

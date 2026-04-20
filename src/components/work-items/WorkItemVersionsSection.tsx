@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Tag, Plus, X, Wrench, AlertTriangle } from 'lucide-react';
+import { Plus, X, Wrench, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -90,22 +90,20 @@ export function WorkItemVersionsSection({
         </div>
         <div className="flex flex-wrap gap-2">
           {fixVersions.map((version) => (
-            <Badge
-              key={version.id}
-              variant="secondary"
-              className="flex items-center gap-1 bg-emerald-100 text-emerald-800 border-emerald-200"
-            >
-              <Tag className="h-3 w-3" />
-              {version.release?.name || 'Unknown'}
+            <span key={version.id} className="inline-flex items-center gap-1">
+              <Lozenge appearance="success">
+                {version.release?.name || 'Unknown'}
+              </Lozenge>
               {!readOnly && (
                 <button
                   onClick={() => handleRemoveVersion(version)}
-                  className="ml-1 hover:text-destructive"
+                  className="hover:text-destructive"
+                  aria-label="Remove fix version"
                 >
                   <X className="h-3 w-3" />
                 </button>
               )}
-            </Badge>
+            </span>
           ))}
           {fixVersions.length === 0 && !addingFix && (
             <span className="text-sm text-muted-foreground">None</span>
@@ -151,22 +149,20 @@ export function WorkItemVersionsSection({
         </div>
         <div className="flex flex-wrap gap-2">
           {affectsVersions.map((version) => (
-            <Badge
-              key={version.id}
-              variant="secondary"
-              className="flex items-center gap-1 bg-amber-100 text-amber-800 border-amber-200"
-            >
-              <Tag className="h-3 w-3" />
-              {version.release?.name || 'Unknown'}
+            <span key={version.id} className="inline-flex items-center gap-1">
+              <Lozenge appearance="moved">
+                {version.release?.name || 'Unknown'}
+              </Lozenge>
               {!readOnly && (
                 <button
                   onClick={() => handleRemoveVersion(version)}
-                  className="ml-1 hover:text-destructive"
+                  className="hover:text-destructive"
+                  aria-label="Remove affects version"
                 >
                   <X className="h-3 w-3" />
                 </button>
               )}
-            </Badge>
+            </span>
           ))}
           {affectsVersions.length === 0 && !addingAffects && (
             <span className="text-sm text-muted-foreground">None</span>

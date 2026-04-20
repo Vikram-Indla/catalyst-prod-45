@@ -3,7 +3,7 @@ import { Archive, RotateCcw, Loader2 } from 'lucide-react';
 import { useArchivedItems, useRestoreItem } from '../../hooks/useArchivedItems';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { format } from 'date-fns';
 
 interface ArchivedTabProps {
@@ -75,9 +75,9 @@ export const ArchivedTab: React.FC<ArchivedTabProps> = ({ projectId }) => {
 
               {/* Type */}
               <div>
-                <Badge variant="secondary" className="text-xs">
+                <Lozenge appearance="default">
                   {item.type}
-                </Badge>
+                </Lozenge>
               </div>
 
               {/* Status */}

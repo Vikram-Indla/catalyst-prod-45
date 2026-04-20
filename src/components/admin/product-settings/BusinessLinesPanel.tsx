@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useBusinessLines, useCreateBusinessLine, useUpdateBusinessLine, useDeleteBusinessLine, BusinessLine } from '@/hooks/useProductSettings';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -159,13 +159,13 @@ export function BusinessLinesPanel({ onChanges }: BusinessLinesPanelProps = {}) 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{line.name}</span>
-                          <Badge variant="outline" className="text-xs">
+                          <Lozenge appearance="default">
                             {line.key}
-                          </Badge>
+                          </Lozenge>
                           {line.is_default && (
-                            <Badge className="bg-brand-primary text-white text-xs">
+                            <Lozenge appearance="inprogress">
                               Default
-                            </Badge>
+                            </Lozenge>
                           )}
                         </div>
                         {line.description && (

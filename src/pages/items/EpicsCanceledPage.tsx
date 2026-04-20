@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Search, RotateCcw, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -68,9 +68,9 @@ export default function EpicsCanceledPage() {
             </Button>
             <CatalystPageHeader title="Canceled Epics" />
           </div>
-          <Badge variant="secondary">
+          <Lozenge appearance="removed">
             {canceledEpics?.length || 0} canceled items
-          </Badge>
+          </Lozenge>
         </div>
       </div>
 

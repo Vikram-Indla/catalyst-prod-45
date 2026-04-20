@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -363,9 +363,11 @@ export default function EpicEstimationPage() {
                     </TableCell>
                     <TableCell className="text-center">
                       {getTechScore(epic) !== null ? (
-                        <Badge variant="secondary" className="font-mono">
-                          {getTechScore(epic)}
-                        </Badge>
+                        <span className="font-mono">
+                          <Lozenge appearance="default">
+                            {getTechScore(epic)}
+                          </Lozenge>
+                        </span>
                       ) : (
                         <span className="text-muted-foreground">-</span>
                       )}
@@ -426,9 +428,11 @@ export default function EpicEstimationPage() {
                     >
                       <div className="font-semibold text-sm mb-3 text-center">
                         Unscored
-                        <Badge variant="secondary" className="ml-2">
-                          {getEpicsByColumn()['unscored'].length}
-                        </Badge>
+                        <span className="ml-2">
+                          <Lozenge appearance="default">
+                            {getEpicsByColumn()['unscored'].length}
+                          </Lozenge>
+                        </span>
                       </div>
                       <div className="space-y-2 min-h-[200px]">
                         {getEpicsByColumn()['unscored'].map((epic, index) => (
@@ -471,9 +475,11 @@ export default function EpicEstimationPage() {
                       >
                         <div className="font-semibold text-sm mb-3 text-center">
                           {col}
-                          <Badge variant="secondary" className="ml-2">
-                            {getEpicsByColumn()[col]?.length || 0}
-                          </Badge>
+                          <span className="ml-2">
+                            <Lozenge appearance="default">
+                              {getEpicsByColumn()[col]?.length || 0}
+                            </Lozenge>
+                          </span>
                         </div>
                         <div className="space-y-2 min-h-[200px]">
                           {getEpicsByColumn()[col]?.map((epic, index) => (
@@ -494,9 +500,11 @@ export default function EpicEstimationPage() {
                                     {epic.name}
                                   </div>
                                   {getTechScore(epic) !== null && (
-                                    <Badge variant="outline" className="mt-2 text-xs">
-                                      Tech Score: {getTechScore(epic)}
-                                    </Badge>
+                                    <span className="mt-2 text-xs inline-block">
+                                      <Lozenge appearance="default">
+                                        Tech Score: {getTechScore(epic)}
+                                      </Lozenge>
+                                    </span>
                                   )}
                                 </Card>
                               )}

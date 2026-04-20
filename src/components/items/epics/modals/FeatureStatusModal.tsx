@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Search, ChevronRight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -125,9 +125,9 @@ export function FeatureStatusModal({ epicId, open, onOpenChange }: FeatureStatus
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <Badge variant={progress === 100 ? 'default' : 'secondary'}>
+                          <Lozenge appearance={progress === 100 ? 'success' : 'inprogress'}>
                             {progress === 100 ? 'On Track' : 'In Progress'}
-                          </Badge>
+                          </Lozenge>
                           <div className="text-sm text-muted-foreground">
                             {accepted}/{total} pts
                           </div>
@@ -142,9 +142,9 @@ export function FeatureStatusModal({ epicId, open, onOpenChange }: FeatureStatus
                           <div key={story.id} className="flex items-center justify-between p-2 bg-muted/50 rounded">
                             <div className="text-sm">{story.name}</div>
                             <div className="flex items-center gap-2">
-                              <Badge variant={story.status === 'done' ? 'default' : 'outline'} className="text-xs">
+                              <Lozenge appearance={story.status === 'done' ? 'success' : 'default'}>
                                 {story.status}
-                              </Badge>
+                              </Lozenge>
                               <span className="text-xs text-muted-foreground">{story.estimate_points} pts</span>
                             </div>
                           </div>

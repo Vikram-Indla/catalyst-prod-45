@@ -18,7 +18,7 @@ import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -44,27 +44,27 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-const STATUS_CONFIG: Record<AssignmentStatus, { label: string; color: string }> = {
-  yet_to_start: { label: 'Yet to Start', color: 'bg-muted text-muted-foreground' },
-  on_hold: { label: 'On Hold', color: 'bg-amber-500/15 text-amber-600' },
-  in_progress: { label: 'In Progress', color: 'bg-blue-500/15 text-blue-600' },
-  completed: { label: 'Completed', color: 'bg-emerald-500/15 text-emerald-600' },
+const STATUS_CONFIG: Record<AssignmentStatus, { label: string; appearance: LozengeAppearance }> = {
+  yet_to_start: { label: 'Yet to Start', appearance: 'default' },
+  on_hold: { label: 'On Hold', appearance: 'moved' },
+  in_progress: { label: 'In Progress', appearance: 'inprogress' },
+  completed: { label: 'Completed', appearance: 'success' },
 };
 
-const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; color: string }> = {
-  not_applicable: { label: 'N/A', color: 'bg-muted text-muted-foreground' },
-  unpaid: { label: 'Unpaid', color: 'bg-red-500/15 text-red-600' },
-  on_track: { label: 'On Track', color: 'bg-blue-500/15 text-blue-600' },
-  paid: { label: 'Paid', color: 'bg-emerald-500/15 text-emerald-600' },
-  closed: { label: 'Closed', color: 'bg-gray-500/15 text-gray-600' },
+const PAYMENT_STATUS_CONFIG: Record<PaymentStatus, { label: string; appearance: LozengeAppearance }> = {
+  not_applicable: { label: 'N/A', appearance: 'default' },
+  unpaid: { label: 'Unpaid', appearance: 'removed' },
+  on_track: { label: 'On Track', appearance: 'inprogress' },
+  paid: { label: 'Paid', appearance: 'success' },
+  closed: { label: 'Closed', appearance: 'default' },
 };
 
 const ASSIGNMENT_TYPE_ORDER = ['Outsourced', 'Cosourced', 'Insourced', 'Unspecified'];
-const ASSIGNMENT_TYPE_COLORS: Record<string, string> = {
-  Insourced: 'bg-blue-500/10 text-blue-700 border-blue-200',
-  Outsourced: 'bg-amber-500/10 text-amber-700 border-amber-200',
-  Cosourced: 'bg-emerald-500/10 text-emerald-700 border-emerald-200',
-  Unspecified: 'bg-muted text-muted-foreground border-border',
+const ASSIGNMENT_TYPE_APPEARANCES: Record<string, LozengeAppearance> = {
+  Insourced: 'inprogress',
+  Outsourced: 'moved',
+  Cosourced: 'success',
+  Unspecified: 'default',
 };
 
 // Normalize assignment types - BAU is permanently replaced by Insourced
@@ -89,7 +89,7 @@ interface Vendor {
 interface SortableRowProps {
   assignment: ResourceAssignment;
   status: AssignmentStatus;
-  statusConfig: { label: string; color: string };
+  statusConfig: { label: string; appearance: LozengeAppearance };
   vendors: Vendor[];
   budgetData?: AssignmentBudgetData;
   onStatusChange: (assignment: ResourceAssignment, value: string) => void;
@@ -189,9 +189,9 @@ function SortableRow({
           onValueChange={(value) => onStatusChange(assignment, value)}
         >
           <SelectTrigger className="h-8 w-[130px] bg-background text-xs">
-            <Badge variant="secondary" className={`${statusConfig.color} text-xs`}>
+            <Lozenge appearance={statusConfig.appearance}>
               {statusConfig.label}
-            </Badge>
+            </Lozenge>
           </SelectTrigger>
           <SelectContent className="bg-popover z-[400]">
             <SelectItem value="yet_to_start">Yet to Start</SelectItem>
@@ -321,18 +321,18 @@ function SortableRow({
       <td className="px-4 py-3">
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' || assignment.assignment_type === 'BAU' ? (
           // Insourced: Always show "On Track" as read-only
-          <Badge variant="secondary" className={`${PAYMENT_STATUS_CONFIG['on_track'].color} text-xs`}>
+          <Lozenge appearance={PAYMENT_STATUS_CONFIG['on_track'].appearance}>
             {PAYMENT_STATUS_CONFIG['on_track'].label}
-          </Badge>
+          </Lozenge>
         ) : (assignment.assignment_type === 'Outsourced' || assignment.assignment_type === 'Cosourced') ? (
           <Select
             value={assignment.payment_status || 'unpaid'}
             onValueChange={(value) => onPaymentStatusChange(assignment, value)}
           >
             <SelectTrigger className="h-8 w-[100px] bg-background text-xs">
-              <Badge variant="secondary" className={`${PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].color} text-xs`}>
+              <Lozenge appearance={PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].appearance}>
                 {PAYMENT_STATUS_CONFIG[assignment.payment_status || 'unpaid'].label}
-              </Badge>
+              </Lozenge>
             </SelectTrigger>
             <SelectContent className="bg-popover z-[400]">
               <SelectItem value="unpaid">Unpaid</SelectItem>
@@ -781,7 +781,7 @@ export default function ResourceAssignmentsPage() {
       <div className="space-y-4">
         {groupedAssignments.map((group) => {
           const isCollapsed = collapsedGroups.has(group.type);
-          const typeColor = ASSIGNMENT_TYPE_COLORS[group.type] || ASSIGNMENT_TYPE_COLORS.Unspecified;
+          const typeAppearance = ASSIGNMENT_TYPE_APPEARANCES[group.type] || ASSIGNMENT_TYPE_APPEARANCES.Unspecified;
 
           return (
             <div key={group.type} className="bg-card border border-border rounded-xl overflow-hidden">
@@ -795,9 +795,9 @@ export default function ResourceAssignmentsPage() {
                 ) : (
                   <ChevronDown className="h-4 w-4 text-muted-foreground" />
                 )}
-                <Badge variant="outline" className={`${typeColor} text-xs font-medium`}>
+                <Lozenge appearance={typeAppearance}>
                   {group.type}
-                </Badge>
+                </Lozenge>
                 <span className="text-xs text-muted-foreground">
                   {group.items.length} assignment{group.items.length !== 1 ? 's' : ''}
                 </span>
@@ -1175,9 +1175,9 @@ export default function ResourceAssignmentsPage() {
                 {/* Footer Summary */}
                 <div className="flex items-center justify-between px-4 py-3 mt-3 bg-muted/30 rounded-lg border border-border">
                   <span className="text-sm text-muted-foreground">Total Resources</span>
-                  <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-700">
+                  <Lozenge appearance="success">
                     {resourceModalResources.length}
-                  </Badge>
+                  </Lozenge>
                 </div>
               </div>
             )}

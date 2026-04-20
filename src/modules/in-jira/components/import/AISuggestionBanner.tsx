@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Sparkles, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -78,10 +78,10 @@ export function AISuggestionBanner({ suggestions, issueId, onAccept, onReject }:
     }
   };
 
-  const getConfidenceColor = (score: number) => {
-    if (score >= 0.8) return 'bg-green-100 text-green-800';
-    if (score >= 0.5) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-gray-100 text-gray-800';
+  const getConfidenceAppearance = (score: number): LozengeAppearance => {
+    if (score >= 0.8) return 'success';
+    if (score >= 0.5) return 'moved';
+    return 'default';
   };
 
   const formatType = (type: string) => {
@@ -114,12 +114,12 @@ export function AISuggestionBanner({ suggestions, issueId, onAccept, onReject }:
                   className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3 space-y-2"
                 >
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">{formatType(suggestion.suggestion_type)}</Badge>
-                    <Badge className={getConfidenceColor(suggestion.confidence_score)}>
+                    <Lozenge appearance="default">{formatType(suggestion.suggestion_type)}</Lozenge>
+                    <Lozenge appearance={getConfidenceAppearance(suggestion.confidence_score)}>
                       {Math.round(suggestion.confidence_score * 100)}% confident
-                    </Badge>
+                    </Lozenge>
                     {suggestion.suggestion_data.value && (
-                      <Badge variant="secondary">{suggestion.suggestion_data.value}</Badge>
+                      <Lozenge appearance="default">{suggestion.suggestion_data.value}</Lozenge>
                     )}
                   </div>
                   <AlertDescription className="text-sm text-muted-foreground">

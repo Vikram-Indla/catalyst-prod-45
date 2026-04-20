@@ -11,7 +11,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Search, Briefcase, Target } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge, type LozengeAppearance } from "@/components/ads";
 
 interface AddChildObjectiveDialogProps {
   open: boolean;
@@ -19,14 +19,18 @@ interface AddChildObjectiveDialogProps {
   parentObjectiveId: string;
 }
 
-// Status badge variant helper
-const getStatusBadgeVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
+// §L38 Atlaskit Lozenge appearance — maps status to canonical 3-colour guardrail + risk signals.
+const getStatusAppearance = (status: string): LozengeAppearance => {
   switch (status) {
-    case 'completed': return 'default';
-    case 'on_track': return 'secondary';
-    case 'at_risk': 
-    case 'off_track': return 'destructive';
-    default: return 'outline';
+    case 'completed':
+    case 'on_track':
+      return 'success';   // green
+    case 'at_risk':
+      return 'moved';     // yellow
+    case 'off_track':
+      return 'removed';   // red
+    default:
+      return 'default';   // grey (pending)
   }
 };
 
@@ -156,29 +160,33 @@ export function AddChildObjectiveDialog({
                     {/* Secondary line: Badges */}
                     <div className="flex items-center gap-2 flex-wrap">
                       {/* Tier badge */}
-                      <Badge variant="outline" className="text-xs capitalize">
+                      <Lozenge appearance="default">
                         {obj.tier}
-                      </Badge>
-                      
+                      </Lozenge>
+
                       {/* Status badge */}
-                      <Badge variant={getStatusBadgeVariant(obj.status)} className="text-xs">
+                      <Lozenge appearance={getStatusAppearance(obj.status)}>
                         {formatStatus(obj.status)}
-                      </Badge>
-                      
+                      </Lozenge>
+
                       {/* Context badge - Portfolio or Program */}
                       {obj.tier === 'portfolio' && obj.portfolioName && (
-                        <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                          <Briefcase className="w-3 h-3" />
-                          {obj.portfolioName}
-                        </Badge>
+                        <Lozenge appearance="default">
+                          <span className="inline-flex items-center gap-1">
+                            <Briefcase className="w-3 h-3" />
+                            {obj.portfolioName}
+                          </span>
+                        </Lozenge>
                       )}
                       {obj.tier === 'program' && obj.programName && (
-                        <Badge variant="secondary" className="text-xs flex items-center gap-1">
-                          <Target className="w-3 h-3" />
-                          {obj.programName}
-                        </Badge>
+                        <Lozenge appearance="default">
+                          <span className="inline-flex items-center gap-1">
+                            <Target className="w-3 h-3" />
+                            {obj.programName}
+                          </span>
+                        </Lozenge>
                       )}
-                      
+
                       {/* ID (subtle) */}
                       <span className="text-[10px] text-muted-foreground font-mono">
                         {obj.id.slice(0, 8)}

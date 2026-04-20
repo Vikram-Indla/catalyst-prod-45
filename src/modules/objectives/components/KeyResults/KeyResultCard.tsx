@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ChevronDown, ChevronUp, TrendingUp, Calendar, MessageSquare, MoreHorizontal, Trash2 } from 'lucide-react';
@@ -33,12 +33,13 @@ export function KeyResultCard({ keyResult, objectiveId, readOnly = false, classN
   
   const clampedProgress = Math.min(100, Math.max(0, progress));
   
-  const getConfidenceColor = () => {
+  // §L38 Atlaskit Lozenge appearances replace bespoke className overrides.
+  const getConfidenceAppearance = (): LozengeAppearance => {
     const confidence = keyResult.confidence_score;
-    if (!confidence) return 'bg-muted text-muted-foreground';
-    if (confidence >= 0.7) return 'bg-success/20 text-success border-success/30';
-    if (confidence >= 0.4) return 'bg-warning/20 text-warning border-warning/30';
-    return 'bg-destructive/20 text-destructive border-destructive/30';
+    if (!confidence) return 'default';      // grey (N/A)
+    if (confidence >= 0.7) return 'success'; // green (high confidence)
+    if (confidence >= 0.4) return 'moved';   // yellow (medium confidence)
+    return 'removed';                         // red (low confidence)
   };
 
   const handleDelete = async () => {
@@ -67,9 +68,9 @@ export function KeyResultCard({ keyResult, objectiveId, readOnly = false, classN
           </div>
           
           <div className="flex items-center gap-2">
-            <Badge variant="outline" className={getConfidenceColor()}>
+            <Lozenge appearance={getConfidenceAppearance()}>
               {keyResult.confidence_score ? `${(keyResult.confidence_score * 100).toFixed(0)}%` : 'N/A'}
-            </Badge>
+            </Lozenge>
             
             {!readOnly && (
               <DropdownMenu>

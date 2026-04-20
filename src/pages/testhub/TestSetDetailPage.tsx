@@ -15,7 +15,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTestSet, useTestSetCases, useRemoveTestCasesFromSet, useReorderTestSetCases, useRefreshDynamicSet } from '@/hooks/useTestSets';
 import { SetTypeBadge } from '@/components/test-sets/SetTypeBadge';
@@ -24,11 +24,11 @@ import { AddTestCasesModal } from '@/components/test-sets/AddTestCasesModal';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 
-const priorityColors: Record<string, string> = {
-  critical: 'bg-destructive/10 text-destructive',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-400',
-  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
-  low: 'bg-muted text-muted-foreground',
+const priorityAppearance: Record<string, LozengeAppearance> = {
+  critical: 'removed',
+  high: 'removed',
+  medium: 'moved',
+  low: 'default',
 };
 
 function DraggableRow({ item, isSelected, onToggle, navigate }: any) {
@@ -45,7 +45,7 @@ function DraggableRow({ item, isSelected, onToggle, navigate }: any) {
       <Checkbox checked={isSelected} onCheckedChange={ch => onToggle(tc.id, ch as boolean)} />
       <span className="text-sm font-mono text-primary">{tc.case_key}</span>
       <span className="text-sm text-foreground truncate">{tc.title}</span>
-      <Badge variant="outline" className={cn('text-[10px] capitalize w-fit', priorityColors[(tc.priority?.name || '').toLowerCase()])}>{tc.priority?.name || '-'}</Badge>
+      <Lozenge appearance={priorityAppearance[(tc.priority?.name || '').toLowerCase()] || 'default'}>{tc.priority?.name || '-'}</Lozenge>
       <button onClick={() => navigate(`/testhub/repository?view=${tc.id}`)} className="h-7 w-7 p-0 flex items-center justify-center hover:bg-muted rounded transition-colors">
         <ExternalLink className="h-4 w-4" />
       </button>
@@ -138,9 +138,7 @@ export default function TestSetDetailPage() {
               <span className="text-xs font-mono text-muted-foreground">{testSet.set_key}</span>
               <SetTypeBadge type={testSet.set_type} size="sm" />
               {testSet.membership_type === 'dynamic' && (
-                <Badge variant="outline" className="text-[10px] gap-0.5 text-primary border-primary/30">
-                  <Zap className="h-3 w-3" />Dynamic
-                </Badge>
+                <Lozenge appearance="inprogress">Dynamic</Lozenge>
               )}
             </div>
             <CatalystPageHeader title={testSet.name} />

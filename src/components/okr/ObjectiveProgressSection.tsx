@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge, type LozengeAppearance } from "@/components/ads";
 import { TrendingUp, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { ConfidenceScoreModal } from "./ConfidenceScoreModal";
@@ -14,20 +14,12 @@ interface ObjectiveProgressSectionProps {
 export function ObjectiveProgressSection({ objective, onUpdateConfidence }: ObjectiveProgressSectionProps) {
   const [showConfidenceModal, setShowConfidenceModal] = useState(false);
 
-  // Calculate score color based on value
-  const getScoreColor = (score: number | null) => {
-    if (score === null) return "gray";
-    if (score >= 0.7) return "green";
-    if (score >= 0.4) return "yellow";
-    return "red";
-  };
-
-  const getScoreVariant = (score: number | null) => {
-    const color = getScoreColor(score);
-    if (color === "green") return "default";
-    if (color === "yellow") return "secondary";
-    if (color === "red") return "destructive";
-    return "outline";
+  // §L38 Atlaskit Lozenge appearance — maps score threshold to canonical colour.
+  const getScoreAppearance = (score: number | null): LozengeAppearance => {
+    if (score === null) return "default";  // grey (N/A)
+    if (score >= 0.7) return "success";     // green (high)
+    if (score >= 0.4) return "moved";       // yellow (medium)
+    return "removed";                        // red (low)
   };
 
   const score = objective.confidence_score ?? objective.score;
@@ -56,9 +48,9 @@ export function ObjectiveProgressSection({ objective, onUpdateConfidence }: Obje
           {/* Objective Score */}
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Objective Score</span>
-            <Badge variant={getScoreVariant(score)}>
+            <Lozenge appearance={getScoreAppearance(score)}>
               {score !== null ? (score * 100).toFixed(0) + "%" : "N/A"}
-            </Badge>
+            </Lozenge>
           </div>
 
           {objective.confidence_score && (

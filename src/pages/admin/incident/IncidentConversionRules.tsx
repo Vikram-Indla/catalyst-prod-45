@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { RefreshCw, Lock, CheckSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -166,9 +166,9 @@ export default function IncidentConversionRules() {
                         onCheckedChange={() => handleToggleStatus(status.value)}
                       />
                       <Label htmlFor={`status-${status.value}`} className="cursor-pointer">
-                        <Badge variant="outline" className="capitalize">
+                        <Lozenge appearance="default">
                           {status.label}
-                        </Badge>
+                        </Lozenge>
                       </Label>
                     </div>
                   ))}

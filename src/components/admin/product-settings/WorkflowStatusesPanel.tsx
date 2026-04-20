@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useProductStatusConfigs, useUpdateProductStatusConfig, useCreateProductStatusConfig, useDeleteProductStatusConfig, ProductStatusConfig } from '@/hooks/useProductSettings';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -27,6 +27,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   inprogress: 'In Progress',
   done: 'Done',
   other: 'Other',
+};
+
+// §5 StatusLozenge — map category to canonical 3-colour guardrail.
+const CATEGORY_APPEARANCE: Record<string, LozengeAppearance> = {
+  todo: 'default',        // grey
+  inprogress: 'inprogress',// blue
+  done: 'success',        // green
+  other: 'default',       // grey
 };
 
 export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps) {
@@ -189,20 +197,20 @@ export function WorkflowStatusesPanel({ onChanges }: WorkflowStatusesPanelProps)
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{status.name}</span>
-                          <Badge variant="outline" className="text-xs">
+                          <Lozenge appearance="default">
                             {status.status_key}
-                          </Badge>
+                          </Lozenge>
                           {status.is_default && (
-                            <Badge className="bg-brand-primary text-white text-xs">
+                            <Lozenge appearance="inprogress">
                               Default
-                            </Badge>
+                            </Lozenge>
                           )}
                         </div>
                       </div>
 
-                      <Badge className={cn("text-xs border", CATEGORY_COLORS[status.category])}>
+                      <Lozenge appearance={CATEGORY_APPEARANCE[status.category] ?? 'default'}>
                         {CATEGORY_LABELS[status.category]}
-                      </Badge>
+                      </Lozenge>
 
                       <div className="flex items-center gap-1">
                         <Button

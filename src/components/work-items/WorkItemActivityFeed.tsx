@@ -2,7 +2,7 @@ import { Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { useWorkItemActivityFeed } from '@/hooks/useWorkItemActivityFeed';
 import { cn } from '@/lib/utils';
 
@@ -70,17 +70,19 @@ export function WorkItemActivityFeed({ entityType, entityId, className }: WorkIt
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Badge 
-                    variant="outline" 
-                    className={cn(
-                      "text-xs capitalize",
-                      activity.action === 'created' && "border-green-500/30 text-green-700 bg-green-50",
-                      activity.action === 'updated' && "border-brand-primary/30 text-brand-primary bg-brand-primary/10",
-                      activity.action === 'deleted' && "border-red-500/30 text-red-700 bg-red-50"
-                    )}
+                  <Lozenge
+                    appearance={
+                      (activity.action === 'created'
+                        ? 'success'
+                        : activity.action === 'updated'
+                        ? 'inprogress'
+                        : activity.action === 'deleted'
+                        ? 'removed'
+                        : 'default') as LozengeAppearance
+                    }
                   >
                     {activity.action}
-                  </Badge>
+                  </Lozenge>
                   <span className="text-xs text-muted-foreground">
                     {activity.relativeTime}
                   </span>

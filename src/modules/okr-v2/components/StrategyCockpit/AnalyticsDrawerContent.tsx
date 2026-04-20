@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { TrendingUp, Shield, Link2, Lightbulb, ChevronDown, ChevronRight, AlertTriangle, Clock, Target } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
@@ -16,6 +16,29 @@ import {
   getStatusColor,
   getDaysUntilDue,
 } from '../../lib/okrMetrics';
+
+// §L38 Atlaskit Lozenge appearance — maps status code to canonical 3-colour guardrail + risk signals.
+const getStatusAppearance = (status: StatusCode | string | undefined): LozengeAppearance => {
+  switch (status) {
+    case 'completed':
+    case 'on-track':
+    case 'on_track':
+      return 'success';   // green
+    case 'at-risk':
+    case 'at_risk':
+      return 'moved';     // yellow
+    case 'off-track':
+    case 'off_track':
+    case 'missed':
+      return 'removed';   // red
+    case 'in-progress':
+    case 'in_progress':
+    case 'active':
+      return 'inprogress';// blue
+    default:
+      return 'default';   // grey
+  }
+};
 
 interface AnalyticsDrawerContentProps {
   selectedItem: TreeItem;
@@ -164,9 +187,9 @@ export function AnalyticsDrawerContent({ selectedItem, themes }: AnalyticsDrawer
           <span className="px-2.5 py-1 rounded text-xs font-semibold uppercase tracking-wider" style={{ backgroundColor: `${themeColor}15`, color: themeColor }}>
             {headerLabel}
           </span>
-          <Badge variant={selectedItem.status === 'on-track' || selectedItem.status === 'completed' ? 'secondary' : 'destructive'}>
+          <Lozenge appearance={getStatusAppearance(selectedItem.status)}>
             {getStatusLabel(selectedItem.status)}
-          </Badge>
+          </Lozenge>
         </div>
 
         <h3 className="text-lg font-semibold text-foreground leading-snug mb-3">{selectedItem.name}</h3>

@@ -4,7 +4,7 @@
 
 import React, { memo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import type { BoardIssue } from '../../hooks/useBoardData';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -66,9 +66,9 @@ export const IssueCard = memo(function IssueCard({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {issue.storyPoints && (
-            <Badge variant="secondary" className="text-xs px-1.5 py-0">
+            <Lozenge appearance="default">
               {issue.storyPoints} SP
-            </Badge>
+            </Lozenge>
           )}
         </div>
         

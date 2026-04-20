@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -49,9 +49,6 @@ import {
   Table as TableIcon,
   Braces,
   Sheet,
-  CheckCircle2,
-  XCircle,
-  Loader2,
   RefreshCw,
 } from 'lucide-react';
 import {
@@ -140,13 +137,13 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
   const getStatusBadge = (job: ExportJob) => {
     switch (job.status) {
       case 'completed':
-        return <Badge variant="default" className="bg-teal-500"><CheckCircle2 className="h-3 w-3 mr-1" />Completed</Badge>;
+        return <Lozenge appearance="success">Completed</Lozenge>;
       case 'failed':
-        return <Badge variant="destructive"><XCircle className="h-3 w-3 mr-1" />Failed</Badge>;
+        return <Lozenge appearance="removed">Failed</Lozenge>;
       case 'processing':
-        return <Badge variant="secondary"><Loader2 className="h-3 w-3 mr-1 animate-spin" />Processing</Badge>;
+        return <Lozenge appearance="inprogress">Processing</Lozenge>;
       default:
-        return <Badge variant="outline">Pending</Badge>;
+        return <Lozenge appearance="default">Pending</Lozenge>;
     }
   };
 
@@ -370,9 +367,9 @@ export function ScheduledReportsPanel({ releaseId }: ScheduledReportsPanelProps)
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-sm">{report.name}</span>
-                        <Badge variant="outline" className="text-xs">
+                        <Lozenge appearance="default">
                           {SCHEDULE_FREQUENCY_LABELS[report.schedule.frequency]}
-                        </Badge>
+                        </Lozenge>
                       </div>
                       <div className="text-xs text-muted-foreground mt-1 flex items-center gap-3">
                         <span className="flex items-center gap-1">

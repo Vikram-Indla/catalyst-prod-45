@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Shield, Users, Vote, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -329,7 +329,7 @@ export default function IncidentCAPPolicy() {
                         </TableCell>
                         <TableCell>
                           {member.role ? (
-                            <Badge variant="secondary">{member.role}</Badge>
+                            <Lozenge appearance="default">{member.role}</Lozenge>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}

@@ -3,7 +3,7 @@ import { UserAvatar } from './UserAvatar';
 import { Card, CardHeader, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
@@ -404,15 +404,15 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
   const getApprovalBadge = (approvalStatus: ApprovalStatus | null) => {
     switch (approvalStatus) {
       case 'PENDING_APPROVAL':
-        return <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
+        return <Lozenge appearance="moved">Pending</Lozenge>;
       case 'APPROVED':
-        return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle className="h-3 w-3 mr-1" />Approved</Badge>;
+        return <Lozenge appearance="success">Approved</Lozenge>;
       case 'REJECTED':
-        return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200"><XCircle className="h-3 w-3 mr-1" />Rejected</Badge>;
+        return <Lozenge appearance="removed">Rejected</Lozenge>;
       case 'DISABLED':
-        return <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200"><PowerOff className="h-3 w-3 mr-1" />Disabled</Badge>;
+        return <Lozenge appearance="default">Disabled</Lozenge>;
       default:
-        return <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">Unknown</Badge>;
+        return <Lozenge appearance="default">Unknown</Lozenge>;
     }
   };
 
@@ -709,7 +709,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 {user.department_name && (
                   <div>
                     <span className="text-muted-foreground">Dept:</span>{' '}
-                    <Badge variant="outline" className="text-xs ml-1">{user.department_name}</Badge>
+                    <span className="ml-1"><Lozenge appearance="default">{user.department_name}</Lozenge></span>
                   </div>
                 )}
                 {user.vendor && (
@@ -733,7 +733,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                 {user.location && (
                   <div>
                     <span className="text-muted-foreground">Location:</span>{' '}
-                    <Badge variant="outline" className="text-xs ml-1">{user.location}</Badge>
+                    <span className="ml-1"><Lozenge appearance="default">{user.location}</Lozenge></span>
                   </div>
                 )}
               </div>
@@ -951,7 +951,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                         type="select"
                         value={user.department_id || null}
                         displayValue={user.department_name ? (
-                          <Badge variant="outline" className="text-xs">{user.department_name}</Badge>
+                          <Lozenge appearance="default">{user.department_name}</Lozenge>
                         ) : undefined}
                         options={departmentOptions}
                         placeholder="-"
@@ -1051,7 +1051,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                         type="select"
                         value={user.resource_type}
                         displayValue={user.resource_type ? (
-                          <Badge variant="outline" className="text-xs">{user.resource_type}</Badge>
+                          <Lozenge appearance="default">{user.resource_type}</Lozenge>
                         ) : undefined}
                         options={resourceTypeOptions}
                         placeholder="-"
@@ -1099,7 +1099,7 @@ export const UsersTable = memo(function UsersTable({ users, isLoading }: UsersTa
                         type="select"
                         value={locations.find(l => l.name === user.location)?.id || null}
                         displayValue={user.location ? (
-                          <Badge variant="outline" className="text-xs">{user.location}</Badge>
+                          <Lozenge appearance="default">{user.location}</Lozenge>
                         ) : undefined}
                         options={locationOptions}
                         placeholder="-"

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -132,13 +132,13 @@ export default function SprintBoard() {
     <div className="p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow">
       <div className="font-medium text-sm line-clamp-2">{story.name}</div>
       <div className="flex items-center justify-between">
-        <Badge variant="outline" className="text-xs">
+        <Lozenge appearance="default">
           {story.features?.name}
-        </Badge>
+        </Lozenge>
         {story.estimate_points && (
-          <Badge variant="secondary" className="text-xs">
+          <Lozenge appearance="default">
             {story.estimate_points} pts
-          </Badge>
+          </Lozenge>
         )}
       </div>
       {story.assignee_id && (
@@ -171,7 +171,7 @@ export default function SprintBoard() {
             <div className="flex items-center justify-between mb-4">
               <h4 className="font-medium flex items-center gap-2">
                 <span>{column.title}</span>
-                <Badge variant="secondary">{columnStories.length}</Badge>
+                <Lozenge appearance="inprogress">{columnStories.length}</Lozenge>
               </h4>
               {column.wipLimit && (
                 <div className={`text-xs flex items-center gap-1 ${isOverLimit ? 'text-destructive' : 'text-muted-foreground'}`}>

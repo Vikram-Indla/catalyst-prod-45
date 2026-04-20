@@ -4,7 +4,7 @@
 
 import { Zap, FileText, Link2, ArrowUp, ArrowDown, Ban, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -36,6 +36,17 @@ const MOCK_DEPENDENCIES = [
 const MOCK_CHANGE_LINKS = [
   { id: 'chg-1', key: 'CHG-12042', name: 'Production deployment for compliance module', status: 'approved' },
 ];
+
+const STORY_STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+  done: 'success',
+  in_progress: 'inprogress',
+  todo: 'default',
+};
+
+const DEPENDENCY_STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+  resolved: 'success',
+  pending: 'moved',
+};
 
 export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
   return (
@@ -100,17 +111,9 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
                 {story.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{story.name}</span>
-              <Badge 
-                variant="secondary" 
-                className={cn(
-                  "text-xs",
-                  story.status === 'done' && "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
-                  story.status === 'in_progress' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-                  story.status === 'todo' && "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                )}
-              >
+              <Lozenge appearance={STORY_STATUS_APPEARANCE[story.status] ?? 'default'}>
                 {story.status === 'done' ? 'Done' : story.status === 'in_progress' ? 'In Progress' : 'To Do'}
-              </Badge>
+              </Lozenge>
             </div>
           ))}
         </div>
@@ -154,17 +157,9 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
                 {dep.itemKey}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{dep.itemName}</span>
-              <Badge 
-                variant="secondary" 
-                className={cn(
-                  "text-xs",
-                  dep.status === 'resolved' 
-                    ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400" 
-                    : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                )}
-              >
+              <Lozenge appearance={DEPENDENCY_STATUS_APPEARANCE[dep.status] ?? 'default'}>
                 {dep.status === 'resolved' ? 'Resolved' : 'Pending'}
-              </Badge>
+              </Lozenge>
             </div>
           ))}
         </div>
@@ -198,9 +193,9 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
                 {change.key}
               </span>
               <span className="text-sm text-foreground flex-1 truncate">{change.name}</span>
-              <Badge variant="secondary" className="text-xs bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">
+              <Lozenge appearance="success">
                 Approved
-              </Badge>
+              </Lozenge>
             </div>
           ))}
         </div>

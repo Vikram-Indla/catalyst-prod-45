@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List, Filter, X, Layers } from 'lucide-react';
@@ -312,46 +312,43 @@ export default function DependenciesPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline'; icon: any }> = {
-      draft: { variant: 'outline', icon: Clock },
-      pending_commit: { variant: 'outline', icon: Clock },
-      negotiation: { variant: 'secondary', icon: Clock },
-      committed: { variant: 'default', icon: CheckCircle2 },
-      in_progress: { variant: 'secondary', icon: Clock },
-      delivered: { variant: 'default', icon: CheckCircle2 },
-      blocked: { variant: 'destructive', icon: AlertTriangle },
-      rejected: { variant: 'destructive', icon: AlertTriangle },
-      cancelled: { variant: 'outline', icon: AlertTriangle },
-      not_required: { variant: 'outline', icon: Clock },
+    const statusAppearance: Record<string, LozengeAppearance> = {
+      draft: 'default',
+      pending_commit: 'default',
+      negotiation: 'inprogress',
+      committed: 'success',
+      in_progress: 'inprogress',
+      delivered: 'success',
+      blocked: 'removed',
+      rejected: 'removed',
+      cancelled: 'default',
+      not_required: 'default',
     };
 
-    const config = statusConfig[status] || { variant: 'outline' as const, icon: Clock };
-    const Icon = config.icon;
+    const appearance = statusAppearance[status] || 'default';
 
     return (
-      <Badge variant={config.variant} className="text-xs gap-1">
-        <Icon className="h-3 w-3" />
+      <Lozenge appearance={appearance}>
         {status?.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-      </Badge>
+      </Lozenge>
     );
   };
 
   const getLevelBadge = (level: string | null) => {
-    if (!level) return <Badge variant="outline" className="text-xs">-</Badge>;
-    
-    const levelConfig: Record<string, string> = {
-      execution: 'bg-status-info-bg text-status-info',
-      delivery: 'bg-brand-primary-muted text-brand-primary',
-      cross_level: 'bg-status-warning-bg text-status-warning',
+    if (!level) return <Lozenge appearance="default">-</Lozenge>;
+
+    const levelAppearance: Record<string, LozengeAppearance> = {
+      execution: 'inprogress',
+      delivery: 'inprogress',
+      cross_level: 'moved',
     };
 
-    const label = DEPENDENCY_LEVEL_LABELS[level as keyof typeof DEPENDENCY_LEVEL_LABELS] || level;
     const shortLabel = level === 'execution' ? 'Exec' : level === 'delivery' ? 'Deliv' : 'X-Level';
 
     return (
-      <Badge variant="outline" className={cn("text-xs", levelConfig[level])}>
+      <Lozenge appearance={levelAppearance[level] || 'default'}>
         {shortLabel}
-      </Badge>
+      </Lozenge>
     );
   };
 
@@ -478,10 +475,12 @@ export default function DependenciesPage() {
               {/* Right: Scoped badge */}
               <div className="flex items-center gap-3">
                 {activeProgramId && (
-                  <Badge variant="outline" className="bg-brand-gold/10 text-brand-gold border-brand-gold/30 flex items-center gap-1.5">
-                    <Filter className="h-3 w-3" />
-                    Scoped to: {currentProgram?.name || 'Program'}
-                  </Badge>
+                  <span className="flex items-center gap-1.5">
+                    <Filter className="h-3 w-3 text-brand-gold" />
+                    <Lozenge appearance="moved">
+                      Scoped to: {currentProgram?.name || 'Program'}
+                    </Lozenge>
+                  </span>
                 )}
               </div>
             </div>
@@ -711,9 +710,9 @@ export default function DependenciesPage() {
 
                               {/* Type */}
                               <TableCell>
-                                <Badge variant="outline" className="text-xs">
+                                <Lozenge appearance="default">
                                   {DEPENDENCY_TYPE_LABELS[dep.type as keyof typeof DEPENDENCY_TYPE_LABELS] || dep.type || '-'}
-                                </Badge>
+                                </Lozenge>
                               </TableCell>
 
                               {/* Need By */}
@@ -733,16 +732,15 @@ export default function DependenciesPage() {
 
                               {/* Risk */}
                               <TableCell>
-                                <Badge
-                                  variant={
-                                    dep.risk_level === 'high' ? 'destructive' :
-                                    dep.risk_level === 'med' ? 'secondary' :
-                                    'outline'
+                                <Lozenge
+                                  appearance={
+                                    dep.risk_level === 'high' ? 'removed' :
+                                    dep.risk_level === 'med' ? 'moved' :
+                                    'default'
                                   }
-                                  className="text-xs"
                                 >
                                   {(dep.risk_level || 'low').toUpperCase()}
-                                </Badge>
+                                </Lozenge>
                               </TableCell>
 
                               {/* Blocked indicator */}

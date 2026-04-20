@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { logAuditEntry } from '@/lib/auditLogger';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -308,11 +308,11 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
                       ) : (
                         <Layers className="h-3.5 w-3.5 text-brand-primary" />
                       )}
-                      <Badge variant="outline" className="text-xs capitalize">
+                      <Lozenge appearance="default">
                         {contribution.work_item_type}
-                      </Badge>
+                      </Lozenge>
                       {contribution.isNew && (
-                        <Badge variant="secondary" className="text-xs">New</Badge>
+                        <Lozenge appearance="new">New</Lozenge>
                       )}
                     </div>
                     <span className="text-sm font-medium block truncate">

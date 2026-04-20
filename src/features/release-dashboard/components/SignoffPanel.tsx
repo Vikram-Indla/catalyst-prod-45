@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -43,7 +43,6 @@ import {
   Send,
   Loader2,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import {
   useReleaseSignoffs,
@@ -92,6 +91,15 @@ function SignoffRow({
   const config = SIGNOFF_DECISION_CONFIG[signoff.decision];
   const isCurrentUser = currentUserId === signoff.stakeholderId;
   const canDecide = isCurrentUser && signoff.decision === 'pending';
+
+  const decisionAppearance: LozengeAppearance =
+    signoff.decision === 'approve'
+      ? 'success'
+      : signoff.decision === 'reject'
+      ? 'removed'
+      : signoff.decision === 'abstain'
+      ? 'moved'
+      : 'default';
   
   const initials = signoff.stakeholderName
     .split(' ')
@@ -110,7 +118,7 @@ function SignoffRow({
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">{signoff.stakeholderName}</span>
             {signoff.isRequired && (
-              <Badge variant="outline" className="text-xs">Required</Badge>
+              <Lozenge appearance="inprogress">Required</Lozenge>
             )}
           </div>
           <p className="text-xs text-muted-foreground">
@@ -127,10 +135,9 @@ function SignoffRow({
           </span>
         )}
         
-        <Badge className={cn('gap-1', config.bgColor, config.color)}>
-          <DecisionIcon decision={signoff.decision} className="h-3 w-3" />
+        <Lozenge appearance={decisionAppearance}>
           {config.label}
-        </Badge>
+        </Lozenge>
         
         {canDecide ? (
           <Button 

@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { MessageSquare, History, Clock, Send, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -174,13 +174,13 @@ export function FeatureActivityTab({ featureId }: FeatureActivityTabProps) {
                 <div className="py-2">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-muted-foreground">{(item as any).action}:</span>
-                    <Badge variant="outline" className="text-xs">
+                    <Lozenge appearance="default">
                       {(item as any).from}
-                    </Badge>
+                    </Lozenge>
                     <span className="text-muted-foreground">→</span>
-                    <Badge variant="outline" className="text-xs">
+                    <Lozenge appearance="default">
                       {(item as any).to}
-                    </Badge>
+                    </Lozenge>
                   </div>
                   <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(item.timestamp, { addSuffix: true })}
@@ -192,9 +192,9 @@ export function FeatureActivityTab({ featureId }: FeatureActivityTabProps) {
                 <div className="bg-blue-500/5 border border-blue-500/20 rounded-lg p-3">
                   <div className="flex items-center justify-between mb-1">
                     <span className="font-medium text-sm text-foreground">{item.user}</span>
-                    <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                    <Lozenge appearance="inprogress">
                       {(item as any).hours}h logged
-                    </Badge>
+                    </Lozenge>
                   </div>
                   <p className="text-sm text-foreground/90">{(item as any).description}</p>
                   <span className="text-xs text-muted-foreground">

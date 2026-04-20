@@ -11,7 +11,7 @@ import { Bell, Search, Filter, Download, Upload, Info, Shield, ChevronDown, Chev
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -345,9 +345,9 @@ export default function NotificationTriggers() {
                     <ChevronRight className="h-4 w-4 text-[#475569]" />
                   )}
                   <span className="text-sm font-semibold text-[#0F172A]">{group.label}</span>
-                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-[#F1F5F9] text-[#475569]">
+                  <Lozenge appearance="default">
                     {group.enabledCount}/{group.totalCount}
-                  </Badge>
+                  </Lozenge>
                 </div>
               </button>
 
@@ -476,9 +476,9 @@ function TriggerRow({
                   <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
                 )}
                 {trigger.isSilent && (
-                  <Badge variant="outline" className="text-[9px] h-4 px-1 border-[#CBD5E1] text-[#94A3B8]">
+                  <Lozenge appearance="default">
                     Silent
-                  </Badge>
+                  </Lozenge>
                 )}
                 {trigger.isOverridden && (
                   <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
@@ -496,19 +496,16 @@ function TriggerRow({
 
       {/* Hub badge */}
       <div>
-        <Badge
-          variant="outline"
-          className="text-[9px] h-5 px-1.5 font-medium border-[var(--bd-default, #E2E8F0)] text-[#475569]"
-        >
+        <Lozenge appearance="default">
           {HUB_LABELS[trigger.hubSource] || trigger.hubSource}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* Priority */}
       <div>
-        <Badge className={`text-[9px] h-5 px-1.5 font-bold ${PRIORITY_COLORS[trigger.priority]}`}>
+        <Lozenge appearance={trigger.priority === 'P1' ? 'removed' : trigger.priority === 'P2' ? 'moved' : trigger.priority === 'P3' ? 'inprogress' : 'default'}>
           {trigger.priority}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* Channel toggles */}

@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -33,13 +32,6 @@ import { StatusPill } from './StatusPill';
 import { TransitionControls } from './TransitionControls';
 import { AISuggestionBanner } from './import/AISuggestionBanner';
 import { Issue } from '../types';
-
-// Status category colors
-const STATUS_COLORS: Record<string, string> = {
-  'to-do': 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-  'in-progress': 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  'done': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-};
 
 // Mock users for demo
 const MOCK_USERS = [

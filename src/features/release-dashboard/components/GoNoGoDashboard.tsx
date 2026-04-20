@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -44,6 +44,20 @@ interface GoNoGoDashboardProps {
   userId?: string;
 }
 
+const DECISION_APPEARANCE: Record<GoNoGoDecision, LozengeAppearance> = {
+  go: 'success',
+  no_go: 'removed',
+  conditional: 'moved',
+  pending: 'default',
+};
+
+const RISK_SEVERITY_APPEARANCE: Record<RiskFactor['severity'], LozengeAppearance> = {
+  low: 'default',
+  medium: 'moved',
+  high: 'moved',
+  critical: 'removed',
+};
+
 // Decision icon component
 function DecisionIcon({ decision, className }: { decision: GoNoGoDecision; className?: string }) {
   const icons = {
@@ -68,7 +82,7 @@ function GateRow({ gate }: { gate: GateStatus }) {
         )}
         <span className="text-sm font-medium">{gate.name}</span>
         {gate.isBlocking && (
-          <Badge variant="outline" className="text-xs">Blocking</Badge>
+          <Lozenge appearance="default">Blocking</Lozenge>
         )}
       </div>
       <div className="text-sm text-muted-foreground">
@@ -88,9 +102,9 @@ function RiskCard({ risk }: { risk: RiskFactor }) {
         <span className={cn('text-sm font-medium', config.color)}>
           {risk.description}
         </span>
-        <Badge variant="outline" className={config.color}>
+        <Lozenge appearance={RISK_SEVERITY_APPEARANCE[risk.severity]}>
           {config.label}
-        </Badge>
+        </Lozenge>
       </div>
       <p className="text-xs text-muted-foreground">{risk.impact}</p>
       {risk.mitigation && (
@@ -180,17 +194,9 @@ export function GoNoGoDashboard({ releaseId, userId }: GoNoGoDashboardProps) {
               </div>
             </div>
             <div className="text-right">
-              <Badge 
-                className={cn(
-                  'text-lg px-4 py-1', 
-                  config.bgColor, 
-                  config.color,
-                  'border',
-                  config.borderColor
-                )}
-              >
+              <Lozenge appearance={DECISION_APPEARANCE[summary.decision]}>
                 {config.label}
-              </Badge>
+              </Lozenge>
               <p className="text-sm text-muted-foreground mt-1">
                 Confidence: {summary.confidence}%
               </p>

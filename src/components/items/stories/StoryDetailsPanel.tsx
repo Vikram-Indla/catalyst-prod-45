@@ -1,5 +1,5 @@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
 
@@ -12,16 +12,16 @@ interface StoryDetailsPanelProps {
 export function StoryDetailsPanel({ story, open, onClose }: StoryDetailsPanelProps) {
   if (!story) return null;
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      'backlog': 'bg-muted text-muted-foreground',
-      'ready': 'bg-secondary text-secondary-foreground',
-      'in_progress': 'bg-primary/20 text-primary',
-      'done': 'bg-success/20 text-success',
-      'accepted': 'bg-success/20 text-success',
-      'blocked': 'bg-destructive/20 text-destructive'
+  const getStatusAppearance = (status: string): LozengeAppearance => {
+    const map: Record<string, LozengeAppearance> = {
+      'backlog': 'default',
+      'ready': 'default',
+      'in_progress': 'inprogress',
+      'done': 'success',
+      'accepted': 'success',
+      'blocked': 'removed'
     };
-    return colors[status] || 'bg-muted text-muted-foreground';
+    return map[status] || 'default';
   };
 
   return (
@@ -33,9 +33,9 @@ export function StoryDetailsPanel({ story, open, onClose }: StoryDetailsPanelPro
               <span className="text-sm font-mono text-muted-foreground">
                 {story.story_key || story.id?.slice(0, 8)}
               </span>
-              <Badge className={getStatusColor(story.status || 'backlog')}>
+              <Lozenge appearance={getStatusAppearance(story.status || 'backlog')}>
                 {(story.status || 'backlog').replace(/_/g, ' ')}
-              </Badge>
+              </Lozenge>
             </div>
             <SheetTitle className="executive-drawer-title truncate">{story.name || story.title}</SheetTitle>
             <SheetDescription className="executive-drawer-subtitle mt-1">

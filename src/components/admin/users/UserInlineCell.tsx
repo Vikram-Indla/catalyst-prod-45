@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 
@@ -134,7 +134,7 @@ export function UserInlineCell({
     }
 
     if (showBadge) {
-      return <Badge variant="outline" className="text-xs">{value}</Badge>;
+      return <Lozenge appearance="default">{value}</Lozenge>;
     }
 
     return value;

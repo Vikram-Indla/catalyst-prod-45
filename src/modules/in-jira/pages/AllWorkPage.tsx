@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
@@ -104,11 +104,11 @@ const TYPE_COLORS: Record<IssueType, string> = {
   incident: 'bg-orange-500',
 };
 
-// Status colors
-const STATUS_COLORS: Record<string, string> = {
-  'to-do': 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-  'in-progress': 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  'done': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+// Status → Lozenge appearance mapping
+const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+  'to-do': 'default',
+  'in-progress': 'inprogress',
+  'done': 'success',
 };
 
 export function AllWorkPage() {
@@ -178,18 +178,19 @@ export function AllWorkPage() {
           </span>
 
           {/* Status */}
-          <Badge 
-            variant="secondary" 
-            className={cn("text-xs flex-shrink-0", STATUS_COLORS[issue.statusCategory])}
-          >
-            {issue.status}
-          </Badge>
+          <span className="flex-shrink-0">
+            <Lozenge appearance={STATUS_APPEARANCE[issue.statusCategory] ?? 'default'}>
+              {issue.status}
+            </Lozenge>
+          </span>
 
           {/* Story points */}
           {issue.storyPoints && (
-            <Badge variant="outline" className="text-xs flex-shrink-0">
-              {issue.storyPoints}
-            </Badge>
+            <span className="flex-shrink-0">
+              <Lozenge appearance="default">
+                {issue.storyPoints}
+              </Lozenge>
+            </span>
           )}
 
           {/* Children count */}

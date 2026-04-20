@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Download, FileText, Clock, RefreshCw, Vote, Search, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -169,13 +169,13 @@ export default function IncidentAuditCompliance() {
   const getVoteBadge = (vote: string) => {
     switch (vote) {
       case 'approved':
-        return <Badge className="bg-green-500">Approved</Badge>;
+        return <Lozenge appearance="success">Approved</Lozenge>;
       case 'rejected':
-        return <Badge className="bg-red-500">Rejected</Badge>;
+        return <Lozenge appearance="removed">Rejected</Lozenge>;
       case 'pending':
-        return <Badge variant="secondary">Pending</Badge>;
+        return <Lozenge appearance="default">Pending</Lozenge>;
       default:
-        return <Badge variant="outline">{vote}</Badge>;
+        return <Lozenge appearance="default">{vote}</Lozenge>;
     }
   };
 
@@ -333,16 +333,16 @@ export default function IncidentAuditCompliance() {
                             </TableCell>
                             <TableCell>
                               {breach.response_breached ? (
-                                <Badge className="bg-red-500">Breached</Badge>
+                                <Lozenge appearance="removed">Breached</Lozenge>
                               ) : (
-                                <Badge variant="outline" className="text-green-600">Met</Badge>
+                                <Lozenge appearance="success">Met</Lozenge>
                               )}
                             </TableCell>
                             <TableCell>
                               {breach.resolution_breached ? (
-                                <Badge className="bg-red-500">Breached</Badge>
+                                <Lozenge appearance="removed">Breached</Lozenge>
                               ) : (
-                                <Badge variant="outline" className="text-green-600">Met</Badge>
+                                <Lozenge appearance="success">Met</Lozenge>
                               )}
                             </TableCell>
                             <TableCell className="text-muted-foreground">
@@ -413,9 +413,9 @@ export default function IncidentAuditCompliance() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="secondary" className="capitalize">
+                              <Lozenge appearance="default">
                                 {log.converted_to_type?.replace('_', ' ')}
-                              </Badge>
+                              </Lozenge>
                             </TableCell>
                             <TableCell className="max-w-[250px] truncate">
                               {log.conversion_reason || '—'}
@@ -487,9 +487,9 @@ export default function IncidentAuditCompliance() {
                               {log.incident?.incident_key || log.incident_id.slice(0, 8)}
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="capitalize">
+                              <Lozenge appearance="default">
                                 {log.field_name.replace(/_/g, ' ')}
-                              </Badge>
+                              </Lozenge>
                             </TableCell>
                             <TableCell className="text-muted-foreground max-w-[150px] truncate">
                               {log.old_value || '—'}

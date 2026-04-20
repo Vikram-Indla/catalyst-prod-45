@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -93,11 +93,11 @@ const TYPE_COLORS: Record<IssueType, string> = {
   incident: 'bg-orange-500',
 };
 
-// Status colors
-const STATUS_COLORS: Record<string, string> = {
-  'to-do': 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
-  'in-progress': 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-  'done': 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+// Status → Lozenge appearance mapping
+const STATUS_APPEARANCE: Record<string, LozengeAppearance> = {
+  'to-do': 'default',
+  'in-progress': 'inprogress',
+  'done': 'success',
 };
 
 export function ListPage() {
@@ -168,9 +168,9 @@ export function ListPage() {
         );
       case 'status':
         return (
-          <Badge variant="secondary" className={cn("text-xs", STATUS_COLORS[issue.statusCategory])}>
+          <Lozenge appearance={STATUS_APPEARANCE[issue.statusCategory] ?? 'default'}>
             {issue.status}
-          </Badge>
+          </Lozenge>
         );
       case 'priority':
         return (
@@ -192,7 +192,7 @@ export function ListPage() {
         );
       case 'storyPoints':
         return issue.storyPoints ? (
-          <Badge variant="outline" className="text-xs">{issue.storyPoints}</Badge>
+          <Lozenge appearance="default">{issue.storyPoints}</Lozenge>
         ) : (
           <span className="text-text-tertiary">—</span>
         );

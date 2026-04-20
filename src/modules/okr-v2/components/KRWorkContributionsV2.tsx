@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -63,9 +63,9 @@ export function KRWorkContributionsV2({ keyResultId }: KRWorkContributionsV2Prop
             >
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <Badge variant="outline" className="text-xs">
+                  <Lozenge appearance="default">
                     {contribution.work_item_type}
-                  </Badge>
+                  </Lozenge>
                   <span className="text-sm font-medium truncate">
                     {contribution.work_item_name || contribution.work_item_id}
                   </span>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Zap, AlertTriangle } from 'lucide-react';
+import { Search, AlertTriangle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
-import { getStatusLabel, getStatusColor } from '@/types/approval';
+import { getStatusLabel } from '@/types/approval';
 
 interface AddApproverModalProps {
   isOpen: boolean;
@@ -88,27 +88,13 @@ export function AddApproverModal({
         <div className="rounded-lg bg-muted/50 p-3">
           <p className="text-xs text-muted-foreground mb-2">Adding approver for transition:</p>
           <div className="flex items-center gap-2">
-            <Badge 
-              variant="outline" 
-              className="text-xs"
-              style={{ 
-                borderColor: getStatusColor(fromStatus),
-                color: getStatusColor(fromStatus),
-              }}
-            >
+            <Lozenge appearance="default">
               {getStatusLabel(fromStatus)}
-            </Badge>
+            </Lozenge>
             <span className="text-muted-foreground">→</span>
-            <Badge 
-              variant="outline"
-              className="text-xs"
-              style={{ 
-                borderColor: getStatusColor(toStatus),
-                color: getStatusColor(toStatus),
-              }}
-            >
+            <Lozenge appearance="default">
               {getStatusLabel(toStatus)}
-            </Badge>
+            </Lozenge>
           </div>
         </div>
 
@@ -210,17 +196,9 @@ export function AddApproverModal({
             <div className="space-y-1">
               <label htmlFor="veto" className="text-sm font-medium cursor-pointer flex items-center gap-2">
                 Grant Veto Power
-                <Badge 
-                  className="text-[10px] px-1.5 py-0 h-5 font-semibold border-0"
-                  style={{
-                    // §L38 hex-only. Atlaskit yellow.bold → warning.bold gradient; yellow.bolder text.
-                    background: 'linear-gradient(135deg, #FFC400 0%, #FF991F 100%)',
-                    color: '#7F5F01',
-                  }}
-                >
-                  <Zap className="h-3 w-3 mr-0.5" />
+                <Lozenge appearance="moved">
                   VETO
-                </Badge>
+                </Lozenge>
               </label>
               <p className="text-xs text-muted-foreground">
                 Veto approval immediately unlocks the transition, overriding all other approvals.

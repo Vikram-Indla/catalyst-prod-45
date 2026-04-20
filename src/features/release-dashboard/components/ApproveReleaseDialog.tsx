@@ -15,11 +15,20 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ReleaseDetail } from '../types';
 import { STATUS_LABELS } from '../types';
+
+const STATUS_APPEARANCE: Record<ReleaseDetail['status'], LozengeAppearance> = {
+  planning: 'default',
+  in_progress: 'inprogress',
+  testing: 'inprogress',
+  staging: 'inprogress',
+  released: 'success',
+  cancelled: 'removed',
+};
 
 interface ApprovalChecklistItem {
   id: string;
@@ -134,9 +143,9 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
           <div className="p-4 bg-slate-50 rounded-lg border space-y-2">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-slate-900">{release.version}</span>
-              <Badge className="bg-blue-100 text-blue-700 border-0">
+              <Lozenge appearance={STATUS_APPEARANCE[release.status]}>
                 {STATUS_LABELS[release.status]}
-              </Badge>
+              </Lozenge>
             </div>
             <p className="text-sm text-slate-600">{release.name}</p>
             <p className="text-xs text-slate-500">
@@ -171,9 +180,9 @@ export function ApproveReleaseDialog({ open, onOpenChange, release, onApprove }:
                       {item.label}
                     </span>
                     {item.required && (
-                      <Badge variant="outline" className="text-[10px] px-1 py-0 text-destructive border-destructive/30">
+                      <Lozenge appearance="removed">
                         Required
-                      </Badge>
+                      </Lozenge>
                     )}
                   </div>
                   <p className="text-xs text-slate-500 mt-0.5">{item.description}</p>

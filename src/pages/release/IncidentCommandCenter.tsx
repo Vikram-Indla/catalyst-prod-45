@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { Button } from '@/components/ui/button';
@@ -106,18 +106,18 @@ function MajorIncidentSpotlight({ incidents, onIncidentClick }: {
             onClick={() => onIncidentClick(incident.id)}
           >
             <div className="flex-shrink-0">
-              <Badge variant="destructive" className="text-xs">
+              <Lozenge appearance="removed">
                 {incident.severity}
-              </Badge>
+              </Lozenge>
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-mono text-sm font-medium text-brand-primary">
                   {incident.incident_key}
                 </span>
-                <Badge variant="outline" className="text-[10px] capitalize">
+                <Lozenge appearance="default">
                   {incident.status.replace('_', ' ')}
-                </Badge>
+                </Lozenge>
               </div>
               <p className="text-sm text-foreground truncate">{incident.title}</p>
             </div>
@@ -132,17 +132,13 @@ function MajorIncidentSpotlight({ incidents, onIncidentClick }: {
                   <span>{incident.assignee_name}</span>
                 </div>
               )}
-              <Badge 
-                variant="outline" 
-                className={cn(
-                  'text-[10px]',
-                  incident.sla_status === 'breached' && 'border-red-500 text-red-600 bg-red-50',
-                  incident.sla_status === 'at_risk' && 'border-orange-500 text-orange-600 bg-orange-50',
-                  incident.sla_status === 'ok' && 'border-green-500 text-green-600 bg-green-50'
-                )}
-              >
+              <Lozenge appearance={
+                incident.sla_status === 'breached' ? 'removed' :
+                incident.sla_status === 'at_risk' ? 'moved' :
+                'success'
+              }>
                 SLA: {incident.sla_status === 'breached' ? 'Breached' : incident.sla_status === 'at_risk' ? 'At Risk' : 'OK'}
-              </Badge>
+              </Lozenge>
             </div>
             <ArrowRight className="h-4 w-4 text-muted-foreground" />
           </div>
@@ -370,9 +366,9 @@ function ReleaseImpactSection({
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
                 <span className="text-sm font-medium text-yellow-700">Missing Release Assignment</span>
               </div>
-              <Badge variant="outline" className="border-yellow-500 text-yellow-600 bg-yellow-50">
+              <Lozenge appearance="moved">
                 {missingReleaseCount}
-              </Badge>
+              </Lozenge>
             </div>
           </div>
         )}
@@ -399,14 +395,14 @@ function ReleaseImpactSection({
                     <td className="py-3 font-medium">{release.releaseVersion}</td>
                     <td className="py-3 text-center">
                       {release.blocking > 0 ? (
-                        <Badge variant="destructive" className="text-xs">{release.blocking}</Badge>
+                        <Lozenge appearance="removed">{release.blocking}</Lozenge>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="py-3 text-center">
                       {release.inTesting > 0 ? (
-                        <Badge variant="outline" className="text-xs">{release.inTesting}</Badge>
+                        <Lozenge appearance="default">{release.inTesting}</Lozenge>
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Search, ExternalLink, Shield, Users, Eye, Edit, Loader2 } from 'lucide-react';
@@ -208,9 +208,9 @@ export function AccessControlPanel() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold">{role.name}</h3>
-                  <Badge variant="secondary" className="text-xs">
+                  <Lozenge appearance="default">
                     {role.userCount} users
-                  </Badge>
+                  </Lozenge>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
                   {role.description}
@@ -226,9 +226,9 @@ export function AccessControlPanel() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {role.permissions.map((permission) => (
-                  <Badge key={permission} variant="outline" className="text-xs">
+                  <Lozenge key={permission} appearance="default">
                     {permission}
-                  </Badge>
+                  </Lozenge>
                 ))}
               </div>
             </div>

@@ -7,7 +7,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Plus, Play, CheckCircle, Calendar, Target, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -119,7 +119,7 @@ export function ScrumBoard({ boardId, projectId, tenantId, onIssueClick }: Scrum
             <Card>
               <CardHeader className="py-3">
                 <CardTitle className="text-base flex items-center gap-2">
-                  Backlog <Badge variant="secondary">{backlogIssues.length}</Badge>
+                  Backlog <Lozenge appearance="inprogress">{backlogIssues.length}</Lozenge>
                 </CardTitle>
               </CardHeader>
               <Droppable droppableId="backlog">
@@ -189,8 +189,8 @@ function SprintPanel({ sprint, issues, onStart, onComplete, onIssueClick }: {
           <CardTitle className="text-base flex items-center gap-2">
             {sprint.state === 'active' && <Play className="w-4 h-4 text-primary" />}
             {sprint.name}
-            <Badge variant="secondary">{issues.length} issues</Badge>
-            <Badge variant="outline">{storyPoints} SP</Badge>
+            <Lozenge appearance="inprogress">{issues.length} issues</Lozenge>
+            <Lozenge appearance="default">{storyPoints} SP</Lozenge>
           </CardTitle>
           <div className="flex gap-2">
             {sprint.state === 'future' && onStart && (

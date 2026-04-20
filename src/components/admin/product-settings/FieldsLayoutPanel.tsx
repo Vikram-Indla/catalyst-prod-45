@@ -4,7 +4,7 @@ import { useDrawerTabConfigs, useBulkUpdateDrawerTabConfigs, DrawerTabConfig } f
 import { useOptionSets, OptionSet } from '@/hooks/useOptionSets';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronRight, GripVertical, Settings2, Loader2, List } from 'lucide-react';
@@ -206,7 +206,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
               <div className="flex-1 flex items-center gap-2">
                 <span className="text-sm">{tab.display_name}</span>
                 {tab.is_required && (
-                  <Badge variant="secondary" className="text-xs">Required</Badge>
+                  <Lozenge appearance="inprogress">Required</Lozenge>
                 )}
               </div>
               <Switch
@@ -242,7 +242,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   <div className="flex-1 flex items-center gap-2">
                     <span className="text-sm">{section.name}</span>
                     {section.is_required && (
-                      <Badge variant="secondary" className="text-xs">Required</Badge>
+                      <Lozenge appearance="inprogress">Required</Lozenge>
                     )}
                   </div>
                   <div className="flex items-center gap-4">
@@ -294,7 +294,7 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   <div className="flex items-center gap-2">
                     <span>{field.label}</span>
                     {field.is_system && (
-                      <Badge variant="outline" className="text-xs">System</Badge>
+                      <Lozenge appearance="default">System</Lozenge>
                     )}
                   </div>
                 </td>
@@ -302,9 +302,9 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
                   {sections.find(s => s.key === field.section)?.name || field.section}
                 </td>
                 <td className="px-4 py-2 text-center">
-                  <Badge variant="secondary" className="text-xs capitalize">
+                  <Lozenge appearance="default">
                     {field.fieldType}
-                  </Badge>
+                  </Lozenge>
                 </td>
                 <td className="px-4 py-2 text-center">
                   <Switch

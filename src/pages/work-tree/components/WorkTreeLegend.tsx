@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Star, Target, FileText, CheckSquare, ListTodo, AlertCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 
 interface WorkTreeLegendProps {
   open: boolean;
@@ -75,15 +75,15 @@ export function WorkTreeLegend({ open, onClose }: WorkTreeLegendProps) {
             <h3 className="text-sm font-semibold mb-3">Indicators</h3>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="h-5 px-1 text-xs">MP</Badge>
+                <Lozenge appearance="default">MP</Lozenge>
                 <span className="text-sm">Multiple Programs</span>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="h-5 px-1 text-xs">🔗</Badge>
+                <Lozenge appearance="default">🔗</Lozenge>
                 <span className="text-sm">Has Links</span>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="h-5 px-1 text-xs">💬</Badge>
+                <Lozenge appearance="default">💬</Lozenge>
                 <span className="text-sm">Has Discussions</span>
               </div>
               <div className="flex items-center gap-2">
@@ -91,7 +91,7 @@ export function WorkTreeLegend({ open, onClose }: WorkTreeLegendProps) {
                 <span className="text-sm">Has Questions</span>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className="h-5 px-1 text-xs">🏷️</Badge>
+                <Lozenge appearance="default">🏷️</Lozenge>
                 <span className="text-sm">Has Tags</span>
               </div>
             </div>

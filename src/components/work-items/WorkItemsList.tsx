@@ -7,7 +7,7 @@ import { useWorkItems, WorkItemFilters } from '@/hooks/useWorkItemsRA';
 import { Loader2, Inbox, ChevronRight, Check, FileText, Layers, List, CheckSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Database } from '@/integrations/supabase/types';
 
 type WorkItem = Database['public']['Tables']['work_items']['Row'];
@@ -96,24 +96,22 @@ function WorkItemRow({
 
       {/* Confidence Score */}
       <div className="flex-shrink-0 mr-4">
-        <Badge 
-          variant="outline" 
-          className={cn(
-            'text-xs',
-            confidencePercent >= 85 ? 'border-green-300 text-green-700' :
-            confidencePercent >= 70 ? 'border-yellow-300 text-yellow-700' :
-            'border-red-300 text-red-700'
-          )}
+        <Lozenge
+          appearance={
+            (confidencePercent >= 85
+              ? 'success'
+              : confidencePercent >= 70
+              ? 'moved'
+              : 'removed') as LozengeAppearance
+          }
         >
-          {confidencePercent}%
-        </Badge>
+          {`${confidencePercent}%`}
+        </Lozenge>
       </div>
 
       {/* Type Badge */}
       <div className="flex-shrink-0">
-        <Badge variant="secondary" className="text-xs">
-          {config.label}
-        </Badge>
+        <Lozenge appearance="default">{config.label}</Lozenge>
       </div>
 
       {/* Expand Arrow */}

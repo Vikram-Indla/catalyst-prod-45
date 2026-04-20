@@ -18,7 +18,7 @@ import {
   Package
 } from 'lucide-react';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -200,9 +200,9 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
           <div className="flex flex-wrap gap-1">
             {issue.labels && issue.labels.length > 0 ? (
               issue.labels.map((label) => (
-                <Badge key={label} variant="outline" className="text-xs">
+                <Lozenge key={label} appearance="default">
                   {label}
-                </Badge>
+                </Lozenge>
               ))
             ) : (
               <Button variant="ghost" size="sm" className="h-6 text-xs text-text-tertiary">
@@ -248,9 +248,9 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
           <div className="flex flex-wrap gap-1">
             {issue.fixVersions && issue.fixVersions.length > 0 ? (
               issue.fixVersions.map((version) => (
-                <Badge key={version} variant="outline" className="text-xs">
+                <Lozenge key={version} appearance="default">
                   {version}
-                </Badge>
+                </Lozenge>
               ))
             ) : (
               <Button 

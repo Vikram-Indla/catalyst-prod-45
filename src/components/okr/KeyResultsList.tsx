@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Plus, ChevronDown, ChevronRight, TrendingUp, Edit, Trash2 } from 'lucide-react';
 import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useDeleteKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
 import { CheckInModal } from './CheckInModal';
@@ -158,7 +158,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
                 <div className="flex-1">
                   <div className="font-medium">{kr.summary}</div>
                 </div>
-                <Badge variant="outline">{kr.metric_type}</Badge>
+                <Lozenge appearance="default">{kr.metric_type}</Lozenge>
               </div>
 
               {expandedKrs.has(kr.id) && (

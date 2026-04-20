@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { HealthBadge } from '@/components/shared/HealthBadge';
@@ -168,9 +168,9 @@ export default function PortfolioRoadmap() {
               </span>
               <HealthBadge health={item.health} />
               {type === 'feature' && item.wsjf_score && (
-                <Badge variant="outline" className="text-xs shrink-0">
+                <Lozenge appearance="default">
                   WSJF: {item.wsjf_score}
-                </Badge>
+                </Lozenge>
               )}
             </div>
           </div>
@@ -180,9 +180,9 @@ export default function PortfolioRoadmap() {
             <div>
               <h4 className="font-semibold text-base mb-1">{item.name}</h4>
               <div className="flex items-center gap-2">
-                <Badge variant="outline">{item.status}</Badge>
+                <Lozenge appearance="default">{item.status}</Lozenge>
                 <HealthBadge health={item.health} />
-                {item.blocked && <Badge variant="destructive">Blocked</Badge>}
+                {item.blocked && <Lozenge appearance="removed">Blocked</Lozenge>}
               </div>
             </div>
 
@@ -334,9 +334,9 @@ export default function PortfolioRoadmap() {
                             {swimlane}
                           </div>
                           <div className="h-px flex-1 bg-border" />
-                          <Badge variant="secondary" className="text-xs">
+                          <Lozenge appearance="default">
                             {items.length} features
-                          </Badge>
+                          </Lozenge>
                         </div>
 
                         <div className="relative space-y-1 min-h-[40px]">
@@ -412,9 +412,9 @@ export default function PortfolioRoadmap() {
                             {swimlane}
                           </div>
                           <div className="h-px flex-1 bg-border" />
-                          <Badge variant="secondary" className="text-xs">
+                          <Lozenge appearance="default">
                             {items.length} epics
-                          </Badge>
+                          </Lozenge>
                         </div>
 
                         <div className="relative space-y-1 min-h-[40px]">

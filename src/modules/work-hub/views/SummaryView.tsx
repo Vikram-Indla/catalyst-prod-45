@@ -2,7 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink, FileText, CheckSquare, Square } from 'lucide-react';
@@ -179,9 +179,9 @@ function RecentActivity() {
                 <a href="#" className="text-primary hover:underline">
                   {activity.itemKey}: {activity.itemSummary}
                 </a>
-                <Badge variant="outline" className="ml-2 text-xs bg-amber-100 text-amber-700 border-amber-200">
-                  {activity.itemStatus}
-                </Badge>
+                <span className="ml-2">
+                  <Lozenge appearance="moved">{activity.itemStatus}</Lozenge>
+                </span>
               </div>
             </div>
             {activity.comment && (

@@ -3,7 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge, type LozengeAppearance } from "@/components/ads";
 import { KeyResultsList } from "./KeyResultsList";
 import { ObjectiveProgressSection } from "./ObjectiveProgressSection";
 import { AlignedWorkTab } from "./AlignedWorkTab";
@@ -114,18 +114,19 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
     );
   }
 
-  const getStatusVariant = (status: string) => {
+  // §L38 Atlaskit Lozenge appearances — maps status to canonical 3-colour guardrail + risk signals.
+  const getStatusAppearance = (status: string): LozengeAppearance => {
     switch (status) {
       case "on_track":
-        return "default";
-      case "at_risk":
-        return "secondary";
-      case "off_track":
-        return "destructive";
+        return "success";   // green
       case "completed":
-        return "outline";
+        return "success";   // green
+      case "at_risk":
+        return "moved";     // yellow
+      case "off_track":
+        return "removed";   // red
       default:
-        return "outline";
+        return "default";   // grey (pending / unknown)
     }
   };
 
@@ -135,9 +136,11 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
         <SheetHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <SheetTitle className="text-xl">
-              <Badge variant="outline" className="mr-2">
-                {objective.id.slice(0, 8)}
-              </Badge>
+              <span className="mr-2 inline-block">
+                <Lozenge appearance="default">
+                  {objective.id.slice(0, 8)}
+                </Lozenge>
+              </span>
             </SheetTitle>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={handleShare}>
@@ -176,10 +179,10 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
             />
             
             <div className="flex items-center gap-2">
-              <Badge variant={getStatusVariant(objective.status)}>
-                {objective.status?.replace("_", " ").toUpperCase() || "N/A"}
-              </Badge>
-              <Badge variant="outline">{objective.tier}</Badge>
+              <Lozenge appearance={getStatusAppearance(objective.status)}>
+                {objective.status?.replace("_", " ") || "N/A"}
+              </Lozenge>
+              <Lozenge appearance="default">{objective.tier}</Lozenge>
             </div>
           </div>
 

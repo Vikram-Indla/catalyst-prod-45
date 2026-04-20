@@ -2,7 +2,7 @@ import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -105,21 +105,18 @@ export default function Announcements() {
                         <TableCell className="font-medium">{announcement.title}</TableCell>
                         <TableCell className="max-w-xs truncate">{announcement.message}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="capitalize">
+                          <Lozenge appearance="default">
                             {announcement.type}
-                          </Badge>
+                          </Lozenge>
                         </TableCell>
                         <TableCell className="capitalize">{announcement.target_audience}</TableCell>
                         <TableCell className="text-sm text-muted-foreground">
                           {format(new Date(announcement.start_date), 'MMM d')} - {format(new Date(announcement.end_date), 'MMM d, yyyy')}
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant={announcement.is_active ? 'default' : 'secondary'}
-                            className={announcement.is_active ? 'bg-success/20 text-success-600' : ''}
-                          >
+                          <Lozenge appearance={announcement.is_active ? 'inprogress' : 'default'}>
                             {announcement.is_active ? 'Active' : 'Inactive'}
-                          </Badge>
+                          </Lozenge>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">

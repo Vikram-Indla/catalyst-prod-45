@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { SubtaskDialog } from '@/components/forms/SubtaskDialog';
 import { Plus } from 'lucide-react';
@@ -117,9 +117,9 @@ export default function Subtasks() {
               <TableCell>{subtask.stories?.features?.name}</TableCell>
               <TableCell>{subtask.original_estimate_hours || '-'}</TableCell>
               <TableCell>
-                <Badge variant="outline" className="capitalize">
+                <Lozenge appearance="default">
                   {subtask.status?.replace('_', ' ')}
-                </Badge>
+                </Lozenge>
               </TableCell>
             </TableRow>
           ))}

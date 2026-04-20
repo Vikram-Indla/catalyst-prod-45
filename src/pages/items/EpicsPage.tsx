@@ -22,7 +22,7 @@ import {
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { EpicDialog } from '@/components/forms/EpicDialog';
@@ -150,16 +150,16 @@ export default function EpicsPage() {
   const selectedEpic = epics?.find(e => e.id === selectedEpicId);
 
   const getStateBadge = (state: string | null) => {
-    if (!state) return <Badge variant="secondary">New</Badge>;
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      'funnel': 'secondary',
-      'analyzing': 'secondary',
-      'portfolio_backlog': 'outline',
-      'implementing': 'default',
-      'validating_in_production': 'default',
-      'done': 'outline',
+    if (!state) return <Lozenge appearance="default">New</Lozenge>;
+    const appearances: Record<string, LozengeAppearance> = {
+      'funnel': 'default',
+      'analyzing': 'default',
+      'portfolio_backlog': 'default',
+      'implementing': 'inprogress',
+      'validating_in_production': 'inprogress',
+      'done': 'success',
     };
-    return <Badge variant={variants[state] || 'secondary'}>{state.replace(/_/g, ' ')}</Badge>;
+    return <Lozenge appearance={appearances[state] || 'default'}>{state.replace(/_/g, ' ')}</Lozenge>;
   };
 
   const duplicateEpicMutation = useMutation({
@@ -630,7 +630,7 @@ export default function EpicsPage() {
             />
           </div>
           {selectedRows.length > 0 && (
-            <Badge variant="secondary">{selectedRows.length} selected</Badge>
+            <Lozenge appearance="inprogress">{selectedRows.length} selected</Lozenge>
           )}
         </div>
       </div>

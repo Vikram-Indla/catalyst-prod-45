@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import { Plus, Trash2, ExternalLink } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -101,7 +101,7 @@ export function AlignedWorkTab({ objectiveId }: AlignedWorkTabProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{epic.epic_key}</span>
                   <span className="text-sm">{epic.name}</span>
-                  <Badge variant="outline">{epic.state}</Badge>
+                  <Lozenge appearance="default">{epic.state}</Lozenge>
                 </div>
                 <div className="flex items-center gap-1">
                   <Button variant="ghost" size="sm">
@@ -147,7 +147,7 @@ export function AlignedWorkTab({ objectiveId }: AlignedWorkTabProps) {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium">{feature.display_id}</span>
                   <span className="text-sm">{feature.name}</span>
-                  <Badge variant="outline">{feature.status}</Badge>
+                  <Lozenge appearance="default">{feature.status}</Lozenge>
                 </div>
                 <div className="flex items-center gap-1">
                   <Button variant="ghost" size="sm">

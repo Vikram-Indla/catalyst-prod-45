@@ -10,7 +10,7 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Settings, User, Calendar, Zap, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { format } from 'date-fns';
@@ -260,9 +260,9 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
         <div className="grid grid-cols-2 gap-3">
           <FieldRow label="Priority">
             {PLACEHOLDER_FIELDS.priority ? (
-              <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+              <Lozenge appearance="removed">
                 {PLACEHOLDER_FIELDS.priority}
-              </Badge>
+              </Lozenge>
             ) : (
               <span className="text-muted-foreground">—</span>
             )}
@@ -270,9 +270,9 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
 
           <FieldRow label="Risk">
             {PLACEHOLDER_FIELDS.risk ? (
-              <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">
+              <Lozenge appearance="moved">
                 {PLACEHOLDER_FIELDS.risk}
-              </Badge>
+              </Lozenge>
             ) : (
               <span className="text-muted-foreground">—</span>
             )}
@@ -286,9 +286,9 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
           <div className="flex flex-wrap gap-1">
             {PLACEHOLDER_FIELDS.labels.length > 0 ? (
               PLACEHOLDER_FIELDS.labels.map((label) => (
-                <Badge key={label} variant="outline" className="text-xs">
+                <Lozenge key={label} appearance="default">
                   {label}
-                </Badge>
+                </Lozenge>
               ))
             ) : (
               <span className="text-muted-foreground">None</span>
@@ -300,9 +300,9 @@ export function FeatureRightRail({ feature, collapsed, onToggleCollapse, onUpdat
           <div className="flex flex-wrap gap-1">
             {PLACEHOLDER_FIELDS.components.length > 0 ? (
               PLACEHOLDER_FIELDS.components.map((component) => (
-                <Badge key={component} variant="outline" className="text-xs">
+                <Lozenge key={component} appearance="default">
                   {component}
-                </Badge>
+                </Lozenge>
               ))
             ) : (
               <span className="text-muted-foreground">None</span>

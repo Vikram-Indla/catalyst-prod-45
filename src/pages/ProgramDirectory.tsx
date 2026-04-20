@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Plus, Search, LayoutGrid, List, Star, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -296,7 +296,7 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
                 {program.name}
               </h3>
               {program.isDefault && (
-                <Badge variant="secondary">Default</Badge>
+                <Lozenge appearance="default">Default</Lozenge>
               )}
             </div>
             
@@ -396,7 +396,7 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
               {program.name}
             </h4>
             {program.isDefault && (
-              <Badge variant="secondary" className="text-xs">Default</Badge>
+              <Lozenge appearance="default">Default</Lozenge>
             )}
           </div>
           

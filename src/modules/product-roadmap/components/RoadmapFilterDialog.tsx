@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { X, RotateCcw } from 'lucide-react';
 import type { RoadmapFilters } from '../types/roadmap';
 import { EMPTY_FILTERS, STATUS_CONFIG, PRIORITY_CONFIG } from '../types/roadmap';
@@ -124,9 +124,9 @@ export function RoadmapFilterDialog({
             <DialogTitle className="flex items-center gap-2">
               Filters
               {activeCount > 0 && (
-                <Badge variant="secondary" className="h-5 px-1.5">
+                <Lozenge appearance="inprogress">
                   {activeCount}
-                </Badge>
+                </Lozenge>
               )}
             </DialogTitle>
             {activeCount > 0 && (

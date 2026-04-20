@@ -12,7 +12,7 @@ import {
   FileText, Check, Lock, Star, Calendar, ArrowLeft
 } from 'lucide-react';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -438,9 +438,9 @@ export function RequestDetailPanel({
                   {request.id}
                 </span>
                 {request.rank && (
-                  <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5">
+                  <Lozenge appearance="default">
                     #{request.rank}
-                  </Badge>
+                  </Lozenge>
                 )}
               </div>
               {/* Title */}
@@ -668,9 +668,9 @@ export function RequestDetailPanel({
           <Paperclip className="w-3.5 h-3.5" />
           <span className="hidden xs:inline">Attach</span>
           {attachmentCount > 0 && (
-            <Badge variant="secondary" className="ml-0.5 h-5 min-w-5 px-1.5 text-xs">
+            <Lozenge appearance="default">
               {attachmentCount}
-            </Badge>
+            </Lozenge>
           )}
         </Button>
         <Button variant="outline" size="sm" className="gap-1 px-2 md:px-3 shrink-0" onClick={onClone}>

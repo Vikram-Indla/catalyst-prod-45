@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ArrowLeft, Plus, Trash2, Save, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -136,28 +136,28 @@ export default function EpicResponsibilityMatrix() {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="flex items-start gap-2">
-              <Badge className="bg-blue-500 text-white">R</Badge>
+              <Lozenge appearance="inprogress">R</Lozenge>
               <div>
                 <p className="font-medium">Responsible</p>
                 <p className="text-muted-foreground text-xs">Who does the work</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Badge className="bg-green-500 text-white">A</Badge>
+              <Lozenge appearance="success">A</Lozenge>
               <div>
                 <p className="font-medium">Accountable</p>
                 <p className="text-muted-foreground text-xs">Who makes final decisions</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Badge className="bg-yellow-500 text-black">C</Badge>
+              <Lozenge appearance="moved">C</Lozenge>
               <div>
                 <p className="font-medium">Consulted</p>
                 <p className="text-muted-foreground text-xs">Who provides advice</p>
               </div>
             </div>
             <div className="flex items-start gap-2">
-              <Badge className="bg-gray-500 text-white">I</Badge>
+              <Lozenge appearance="default">I</Lozenge>
               <div>
                 <p className="font-medium">Informed</p>
                 <p className="text-muted-foreground text-xs">Who needs progress updates</p>

@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight, Filter, Download, Loader2, Plus, ArrowUpDown, ArrowUp, ArrowDown, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
 import type { IncidentFilters, IncidentStatus, SupportLevel, Incident } from '@/types/incident';
@@ -302,9 +302,9 @@ export default function IncidentsListPage() {
             <Filter className="h-3.5 w-3.5 mr-1.5" />
             Filters
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-1 h-4 px-1 bg-brand-primary text-white rounded-full text-[10px]">
+              <Lozenge appearance="inprogress">
                 {activeFilterCount}
-              </Badge>
+              </Lozenge>
             )}
           </Button>
 
@@ -342,13 +342,9 @@ export default function IncidentsListPage() {
         <div className="h-9 border-b border-border bg-muted/30 flex-shrink-0 px-4 flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Filters:</span>
           {activeUrlFilters.map((f) => (
-            <Badge 
-              key={f.key} 
-              variant="secondary" 
-              className="h-6 text-xs bg-brand-primary/10 text-brand-primary border border-brand-primary/20"
-            >
+            <Lozenge key={f.key} appearance="inprogress">
               {f.label}
-            </Badge>
+            </Lozenge>
           ))}
           <Button 
             variant="ghost" 
@@ -425,7 +421,7 @@ export default function IncidentsListPage() {
                       {incident.incident_key || '-'}
                     </span>
                     {incident.is_major_incident && (
-                      <Badge variant="destructive" className="ml-1.5 text-[9px] px-1 py-0">M</Badge>
+                      <span className="ml-1.5"><Lozenge appearance="removed">M</Lozenge></span>
                     )}
                   </td>
                   <td className="px-3 py-2">

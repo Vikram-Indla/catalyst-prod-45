@@ -16,7 +16,7 @@ import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -67,12 +67,19 @@ const EXEC_ICONS: Record<string, { icon: any; color: string; label: string }> = 
   not_run: { icon: Clock, color: 'text-muted-foreground/60', label: 'Not Run' },
 };
 
-function getCoverageLevel(pct: number) {
-  if (pct === 100) return { label: 'Full', className: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-[rgba(34,197,94,0.12)] dark:text-emerald-400 dark:border-[rgba(34,197,94,0.2)]' };
-  if (pct >= 50) return { label: 'Partial', className: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-[rgba(251,191,36,0.12)] dark:text-amber-400 dark:border-[rgba(251,191,36,0.2)]' };
-  if (pct > 0) return { label: 'Low', className: 'bg-orange-100 text-orange-700 border-orange-200 dark:bg-[rgba(251,146,60,0.12)] dark:text-orange-400 dark:border-[rgba(251,146,60,0.2)]' };
-  return { label: 'None', className: 'bg-red-100 text-destructive border-red-200 dark:bg-[rgba(248,113,113,0.12)] dark:text-red-400 dark:border-[rgba(248,113,113,0.2)]' };
+function getCoverageLevel(pct: number): { label: string; appearance: LozengeAppearance } {
+  if (pct === 100) return { label: 'Full', appearance: 'success' };
+  if (pct >= 50) return { label: 'Partial', appearance: 'moved' };
+  if (pct > 0) return { label: 'Low', appearance: 'moved' };
+  return { label: 'None', appearance: 'removed' };
 }
+
+const priorityAppearance: Record<string, LozengeAppearance> = {
+  critical: 'removed',
+  high: 'removed',
+  medium: 'moved',
+  low: 'default',
+};
 
 function getHeatmapColor(pct: number): string {
   if (pct === 100) return 'bg-emerald-500 dark:bg-emerald-500';
@@ -378,13 +385,11 @@ export default function CoverageMatrixPage() {
                       )}
                       <span className="text-xs font-semibold text-primary">{req.req_key}</span>
                       <span className="text-sm text-foreground truncate pr-2">{req.title}</span>
-                      <Badge variant="outline" className="text-[10px] capitalize w-fit">{req.priority}</Badge>
+                      <span className="w-fit"><Lozenge appearance={priorityAppearance[(req.priority || '').toLowerCase()] || 'default'}>{req.priority}</Lozenge></span>
                       <span className="text-xs font-medium text-emerald-600">{req.passed_tests}</span>
                       <span className="text-xs font-medium text-destructive">{req.failed_tests}</span>
                       <span className="text-xs font-medium text-muted-foreground">{req.not_run_tests}</span>
-                      <Badge variant="outline" className={cn('text-[10px] w-fit', level.className)}>
-                        {req.coverage_percent}%
-                      </Badge>
+                      <span className="w-fit"><Lozenge appearance={level.appearance}>{req.coverage_percent}%</Lozenge></span>
                     </button>
 
                     <AnimatePresence>
@@ -630,7 +635,7 @@ function GapAnalysisView({
             <span className={cn('text-sm font-semibold uppercase', priorityColors[priority] || 'text-foreground')}>
               {priority} Priority
             </span>
-            <Badge variant="outline" className="text-[10px]">{reqs.length}</Badge>
+            <Lozenge appearance="default">{reqs.length}</Lozenge>
           </div>
           <div className="space-y-2">
             {reqs.map(req => (

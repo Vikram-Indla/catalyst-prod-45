@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -77,11 +77,11 @@ import { CreateEditTestPlanDialog } from '@/components/test-plans/dialogs';
 
 type ViewMode = 'list' | 'grid';
 
-const STATUS_CONFIG: Record<TestPlanStatus, { label: string; color: string; bgColor: string }> = {
-  draft: { label: 'Draft', color: 'text-gray-600', bgColor: 'bg-gray-100' },
-  active: { label: 'Active', color: 'text-blue-600', bgColor: 'bg-blue-100' },
-  completed: { label: 'Completed', color: 'text-green-600', bgColor: 'bg-green-100' },
-  archived: { label: 'Archived', color: 'text-amber-600', bgColor: 'bg-amber-100' },
+const STATUS_CONFIG: Record<TestPlanStatus, { label: string; appearance: LozengeAppearance }> = {
+  draft: { label: 'Draft', appearance: 'default' },
+  active: { label: 'Active', appearance: 'inprogress' },
+  completed: { label: 'Completed', appearance: 'success' },
+  archived: { label: 'Archived', appearance: 'default' },
 };
 
 export default function TestPlansPage() {
@@ -520,9 +520,9 @@ export default function TestPlansPage() {
                       )}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={cn(statusConfig.bgColor, statusConfig.color, 'border-0')}>
+                      <Lozenge appearance={statusConfig.appearance}>
                         {statusConfig.label}
-                      </Badge>
+                      </Lozenge>
                     </TableCell>
                     <TableCell>
                       {plan.owner ? (
@@ -593,9 +593,9 @@ export default function TestPlansPage() {
                       <p className="font-mono text-xs text-muted-foreground">{plan.plan_key}</p>
                       <h3 className="font-semibold text-foreground line-clamp-2">{plan.name}</h3>
                     </div>
-                    <Badge variant="outline" className={cn(statusConfig.bgColor, statusConfig.color, 'border-0')}>
+                    <Lozenge appearance={statusConfig.appearance}>
                       {statusConfig.label}
-                    </Badge>
+                    </Lozenge>
                   </div>
 
                   {plan.description && (

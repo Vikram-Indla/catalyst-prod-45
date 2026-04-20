@@ -13,7 +13,7 @@ import {
 } from '@/hooks/useSlackAdmin';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -230,13 +230,13 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                   <h3 className="font-semibold text-slate-900">
                     {config.workspace_name || 'Slack Integration'}
                   </h3>
-                  <Badge variant={config.is_active ? 'default' : 'secondary'}>
+                  <Lozenge appearance={config.is_active ? 'success' : 'default'}>
                     {config.is_active ? 'Connected' : 'Not Connected'}
-                  </Badge>
+                  </Lozenge>
                   {config.last_test_status && (
-                    <Badge variant={config.last_test_status === 'success' ? 'outline' : 'destructive'}>
+                    <Lozenge appearance={config.last_test_status === 'success' ? 'success' : 'removed'}>
                       Last test: {config.last_test_status}
-                    </Badge>
+                    </Lozenge>
                   )}
                 </div>
                 <p className="text-sm text-slate-500">
@@ -316,7 +316,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
           <TabsTrigger value="users">
             Connected Users
             {users && users.length > 0 && (
-              <Badge variant="secondary" className="ml-2">{users.filter(u => u.is_active).length}</Badge>
+              <span className="ml-2"><Lozenge appearance="inprogress">{users.filter(u => u.is_active).length}</Lozenge></span>
             )}
           </TabsTrigger>
           <TabsTrigger value="audit">Audit Log</TabsTrigger>
@@ -364,12 +364,12 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                 <div className="pt-4 border-t">
                   <p className="text-sm text-slate-500 mb-2">Delivery Settings</p>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant={config.send_dm_by_default ? 'default' : 'secondary'}>
+                    <Lozenge appearance={config.send_dm_by_default ? 'inprogress' : 'default'}>
                       DM: {config.send_dm_by_default ? 'Enabled' : 'Disabled'}
-                    </Badge>
-                    <Badge variant={config.send_to_channel ? 'default' : 'secondary'}>
+                    </Lozenge>
+                    <Lozenge appearance={config.send_to_channel ? 'inprogress' : 'default'}>
                       Channel: {config.send_to_channel ? 'Enabled' : 'Disabled'}
-                    </Badge>
+                    </Lozenge>
                   </div>
                 </div>
 
@@ -509,9 +509,9 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                           </code>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={user.is_active ? 'default' : 'secondary'}>
+                          <Lozenge appearance={user.is_active ? 'inprogress' : 'removed'}>
                             {user.is_active ? 'Active' : 'Disconnected'}
-                          </Badge>
+                          </Lozenge>
                         </TableCell>
                         <TableCell className="text-sm text-slate-500">
                           {formatDistanceToNow(new Date(user.connected_at), { addSuffix: true })}
@@ -614,9 +614,9 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                           {log.target_user_email || '—'}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={log.status === 'success' ? 'outline' : 'destructive'}>
+                          <Lozenge appearance={log.status === 'success' ? 'success' : 'removed'}>
                             {log.status}
-                          </Badge>
+                          </Lozenge>
                         </TableCell>
                         <TableCell className="text-sm text-slate-500">
                           {format(new Date(log.created_at), 'MMM d, HH:mm')}

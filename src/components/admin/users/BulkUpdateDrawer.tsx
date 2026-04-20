@@ -7,7 +7,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -373,16 +373,16 @@ function MatchedResultRow({ result }: { result: MatchResult }) {
           <ArrowRight className="h-3 w-3 text-muted-foreground" />
           <span className="text-muted-foreground">{result.matchedUser?.full_name}</span>
         </div>
-        <Badge variant="outline" className="text-xs">
+        <Lozenge appearance="default">
           {result.matchType.replace('_', ' ')}
-        </Badge>
+        </Lozenge>
       </div>
       {hasChanges && (
         <div className="mt-1 flex flex-wrap gap-1">
           {Object.entries(result.changes!).map(([field, change]) => (
-            <Badge key={field} variant="secondary" className="text-xs">
+            <Lozenge key={field} appearance="default">
               {field}: {change.old || '∅'} → {change.new}
-            </Badge>
+            </Lozenge>
           ))}
         </div>
       )}

@@ -6,7 +6,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tag, Plus, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -22,6 +22,9 @@ const LABEL_COLORS: Record<string, string> = {
   cyan: 'bg-blue-400',
   gray: 'bg-gray-500',
 };
+
+// Color dot is kept as visual indicator inside the lozenge for structural
+// categorization; colorClass still needed for the dot swatches in the popover.
 
 interface WorkItemLabelSelectorProps {
   entityType: 'epic' | 'feature' | 'story';
@@ -52,15 +55,9 @@ export function WorkItemLabelSelector({
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {assignedLabels.map((label) => (
-        <Badge
-          key={label.id}
-          className={cn(
-            "text-xs px-2 py-0.5 font-medium border-0 text-white",
-            getColorClass(label.color)
-          )}
-        >
+        <Lozenge key={label.id} appearance="default">
           {label.name}
-        </Badge>
+        </Lozenge>
       ))}
       
       <Popover open={open} onOpenChange={setOpen}>

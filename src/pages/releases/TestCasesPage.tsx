@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -476,9 +476,9 @@ export default function TestCasesPage() {
           <span className="text-muted-foreground uppercase tracking-wide text-xs font-medium">RELEASES</span>
           <span className="text-muted-foreground">/</span>
           <span className="font-semibold text-foreground">Test Cases</span>
-          <Badge variant="secondary" className="ml-2 text-xs">
+          <Lozenge appearance="default">
             {totalCount} total
-          </Badge>
+          </Lozenge>
         </div>
         
         <div className="flex items-center gap-3">
@@ -602,9 +602,9 @@ export default function TestCasesPage() {
           
           {activeFilterCount > 0 && (
             <>
-              <Badge variant="secondary" className="text-xs">
+              <Lozenge appearance="inprogress">
                 {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
-              </Badge>
+              </Lozenge>
               <Button 
                 variant="ghost" 
                 size="sm" 

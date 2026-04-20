@@ -9,7 +9,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Progress } from '@/components/ui/progress';
 import { ArrowUpDown, AlertCircle } from 'lucide-react';
@@ -52,13 +52,13 @@ export function FeatureTable({
   };
 
   const getStatusBadge = (status: string | null) => {
-    if (!status) return <Badge variant="secondary">New</Badge>;
-    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
-      'funnel': 'secondary',
-      'analyzing': 'outline',
-      'backlog': 'outline',
-      'implementing': 'default',
-      'done': 'secondary',
+    if (!status) return <Lozenge appearance="default">New</Lozenge>;
+    const appearances: Record<string, LozengeAppearance> = {
+      'funnel': 'default',
+      'analyzing': 'default',
+      'backlog': 'default',
+      'implementing': 'inprogress',
+      'done': 'success',
     };
     const labels: Record<string, string> = {
       'funnel': 'Funnel',
@@ -67,7 +67,7 @@ export function FeatureTable({
       'implementing': 'Implementing',
       'done': 'Done',
     };
-    return <Badge variant={variants[status] || 'secondary'}>{labels[status] || status}</Badge>;
+    return <Lozenge appearance={appearances[status] || 'default'}>{labels[status] || status}</Lozenge>;
   };
 
   return (

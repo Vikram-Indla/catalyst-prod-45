@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -362,7 +362,7 @@ export function DashboardBuilder({ releaseId, onDashboardSelect }: DashboardBuil
                 }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge variant="outline">{template.category}</Badge>
+                  <Lozenge appearance="default">{template.category}</Lozenge>
                 </div>
                 <div className="font-medium">{template.name}</div>
                 <div className="text-sm text-muted-foreground mt-1">

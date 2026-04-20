@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -177,9 +177,9 @@ export default function Releases() {
                 {release.target_date ? format(new Date(release.target_date), 'MMM d, yyyy') : '-'}
               </TableCell>
               <TableCell>
-                <Badge variant="outline">
+                <Lozenge appearance="default">
                   {releaseFeatures?.length || 0} features
-                </Badge>
+                </Lozenge>
               </TableCell>
               <TableCell>
                 <div className="space-y-1 min-w-[120px]">
@@ -190,12 +190,9 @@ export default function Releases() {
                 </div>
               </TableCell>
               <TableCell>
-                <Badge
-                  variant={release.status === 'shipped' ? 'default' : 'outline'}
-                  className="capitalize"
-                >
+                <Lozenge appearance={release.status === 'shipped' ? 'success' : 'default'}>
                   {release.status}
-                </Badge>
+                </Lozenge>
               </TableCell>
             </TableRow>
           ))}
@@ -267,9 +264,9 @@ export default function Releases() {
                         ) : (
                           <AlertCircle className="h-5 w-5 text-warning" />
                         )}
-                        <Badge variant="outline" className="capitalize">
+                        <Lozenge appearance="default">
                           {rf.features?.status}
-                        </Badge>
+                        </Lozenge>
                       </div>
                     </div>
                   </div>
@@ -296,9 +293,9 @@ export default function Releases() {
                           {rs.stories?.estimate_points} points
                         </div>
                       </div>
-                      <Badge variant="outline" className="capitalize">
+                      <Lozenge appearance="default">
                         {rs.stories?.status}
-                      </Badge>
+                      </Lozenge>
                     </div>
                   </div>
                 ))}

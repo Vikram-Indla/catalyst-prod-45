@@ -19,7 +19,7 @@ import { useThemeGroupsWithCounts, useUpdateThemeStatus, ThemeGroupWithCounts } 
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
 import { DeleteThemeDialog } from '@/components/admin/DeleteThemeDialog';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 
@@ -176,14 +176,14 @@ export default function ThemeGroups() {
                           <td className="p-3 text-sm">
                             <div className="flex items-center gap-2">
                               {theme.epic_count > 0 && (
-                                <Badge variant="secondary" className="text-xs">
+                                <Lozenge appearance="default">
                                   {theme.epic_count} epic{theme.epic_count !== 1 ? 's' : ''}
-                                </Badge>
+                                </Lozenge>
                               )}
                               {theme.objective_count > 0 && (
-                                <Badge variant="outline" className="text-xs">
+                                <Lozenge appearance="default">
                                   {theme.objective_count} obj.
-                                </Badge>
+                                </Lozenge>
                               )}
                               {!hasLinkedItems && (
                                 <span className="text-muted-foreground text-xs">None</span>

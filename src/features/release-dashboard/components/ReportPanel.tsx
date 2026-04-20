@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -29,7 +29,6 @@ import {
   Lightbulb,
   CheckCircle2,
   XCircle,
-  Clock,
   Loader2,
   FileJson,
   FileCode,
@@ -64,20 +63,21 @@ function SectionIcon({ section, className }: { section: ReportSection; className
 
 // Decision badge component
 function DecisionBadge({ decision }: { decision: string }) {
-  const config = {
-    go: { label: 'GO', color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
-    no_go: { label: 'NO-GO', color: 'bg-red-100 text-red-700', icon: XCircle },
-    conditional: { label: 'CONDITIONAL', color: 'bg-amber-100 text-amber-700', icon: AlertTriangle },
-    pending: { label: 'PENDING', color: 'bg-slate-100 text-slate-600', icon: Clock },
-  }[decision] || { label: decision, color: 'bg-slate-100', icon: Clock };
-
-  const Icon = config.icon;
+  const config: { label: string; appearance: LozengeAppearance } =
+    decision === 'go'
+      ? { label: 'GO', appearance: 'success' }
+      : decision === 'no_go'
+      ? { label: 'NO-GO', appearance: 'removed' }
+      : decision === 'conditional'
+      ? { label: 'CONDITIONAL', appearance: 'moved' }
+      : decision === 'pending'
+      ? { label: 'PENDING', appearance: 'default' }
+      : { label: decision, appearance: 'default' };
 
   return (
-    <Badge className={cn('gap-1 text-sm px-3 py-1', config.color)}>
-      <Icon className="h-3.5 w-3.5" />
+    <Lozenge appearance={config.appearance}>
       {config.label}
-    </Badge>
+    </Lozenge>
   );
 }
 

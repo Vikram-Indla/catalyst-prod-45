@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -14,8 +14,6 @@ import {
   CheckCircle2,
   XCircle,
   Bug,
-  TrendingUp,
-  TrendingDown,
   BarChart3,
   PieChart,
   Clock,
@@ -412,10 +410,9 @@ function MetricCard({ title, value, subtitle, icon, color, trend }: MetricCardPr
             {icon}
           </div>
           {trend && (
-            <Badge variant={trend === 'up' ? 'default' : 'destructive'} className="text-xs">
-              {trend === 'up' ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+            <Lozenge appearance={trend === 'up' ? 'success' : 'removed'}>
               {trend === 'up' ? 'Good' : 'Low'}
-            </Badge>
+            </Lozenge>
           )}
         </div>
         <div className="mt-3">

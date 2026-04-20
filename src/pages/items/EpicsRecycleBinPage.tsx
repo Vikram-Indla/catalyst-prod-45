@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Search, RotateCcw, Trash2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
@@ -97,9 +97,9 @@ export default function EpicsRecycleBinPage() {
             </Button>
             <CatalystPageHeader title="Epics Recycle Bin" />
           </div>
-          <Badge variant="secondary">
+          <Lozenge appearance="removed">
             {deletedEpics?.length || 0} deleted items
-          </Badge>
+          </Lozenge>
         </div>
       </div>
 

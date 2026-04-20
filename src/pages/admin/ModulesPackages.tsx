@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Package, Building2, Briefcase, Layers, Users, Loader2 } from 'lucide-react';
 import { 
   useModules, 
@@ -227,9 +227,9 @@ export default function ModulesPackages() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Label className="text-base font-medium">{module.name}</Label>
-                          <Badge variant={isEnabled ? "default" : "secondary"}>
+                          <Lozenge appearance={isEnabled ? 'success' : 'default'}>
                             {isEnabled ? 'Enabled' : 'Disabled'}
-                          </Badge>
+                          </Lozenge>
                         </div>
                         <p className="text-sm text-muted-foreground">
                           {module.description}

@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Slider } from '@/components/ui/slider';
@@ -298,9 +298,9 @@ export function OKRSmartFiltersDialog({
           <div className="flex items-center gap-2">
             <h2 className="text-base font-semibold text-foreground">Filter Objectives</h2>
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="bg-brand-primary/20 text-brand-primary">
+              <Lozenge appearance="inprogress">
                 {activeFilterCount} active
-              </Badge>
+              </Lozenge>
             )}
           </div>
           <button 

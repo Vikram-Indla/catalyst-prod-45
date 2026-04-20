@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useWorkItemLinks, LINK_TYPE_LABELS, LinkType, WorkItemType } from '@/hooks/useWorkItemLinks';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -23,14 +23,14 @@ interface WorkItemLinksSectionProps {
   workItemId: string;
 }
 
-const LINK_TYPE_COLORS: Record<string, string> = {
-  blocks: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
-  is_blocked_by: 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
-  relates_to: 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
-  duplicates: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
-  is_duplicated_by: 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
-  parent_of: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]',
-  child_of: 'bg-[var(--accent-bg)] text-[var(--accent-text)] border-[var(--accent-border)]',
+const LINK_TYPE_APPEARANCES: Record<string, LozengeAppearance> = {
+  blocks: 'removed',
+  is_blocked_by: 'removed',
+  relates_to: 'inprogress',
+  duplicates: 'moved',
+  is_duplicated_by: 'moved',
+  parent_of: 'default',
+  child_of: 'default',
 };
 
 export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinksSectionProps) {
@@ -190,12 +190,11 @@ export function WorkItemLinksSection({ workItemType, workItemId }: WorkItemLinks
                 className="flex items-center justify-between p-2 rounded-md border bg-background transition-[background-color] duration-100 hover:bg-accent/40"
               >
                 <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <Badge 
-                    variant="outline" 
-                    className={cn("text-xs shrink-0", LINK_TYPE_COLORS[link.link_type])}
-                  >
-                    {LINK_TYPE_LABELS[link.link_type] || link.link_type}
-                  </Badge>
+                  <span className="shrink-0">
+                    <Lozenge appearance={LINK_TYPE_APPEARANCES[link.link_type] ?? 'default'}>
+                      {LINK_TYPE_LABELS[link.link_type] || link.link_type}
+                    </Lozenge>
+                  </span>
                   <span className="text-xs font-medium text-brand-primary shrink-0">
                     {link.linked_item_key}
                   </span>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useBusinessLines, useProductStatusConfigs } from '@/hooks/useProductSettings';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GripVertical, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -110,9 +110,9 @@ export function IntakeViewsPanel({ onChanges }: IntakeViewsPanelProps) {
                   <div className="flex-1 flex items-center gap-2">
                     <span className="text-sm">{column.name}</span>
                     {column.is_default_sort && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Lozenge appearance="inprogress">
                         Default Sort ({column.sort_direction?.toUpperCase()})
-                      </Badge>
+                      </Lozenge>
                     )}
                   </div>
                   <Switch

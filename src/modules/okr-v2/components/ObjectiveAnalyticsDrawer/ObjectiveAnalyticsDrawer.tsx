@@ -9,7 +9,6 @@ import { X, Shield, Link2, Lightbulb, ChevronDown, ChevronUp, AlertTriangle, Arr
 import { RiskBadge } from '@/components/risks/RiskBadge';
 import { RISK_COLORS } from '@/config/riskColors';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useObjectiveAnalytics } from '../../hooks/useObjectiveAnalytics';

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import {
   DropdownMenu,
@@ -29,7 +29,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { cn } from '@/lib/utils';
 import type { VersionWithProgress } from '../../hooks/useVersions';
 
 interface VersionCardProps {
@@ -43,21 +42,21 @@ interface VersionCardProps {
   onViewDetails: (versionId: string) => void;
 }
 
-function getVersionStatus(version: VersionWithProgress) {
+function getVersionStatus(version: VersionWithProgress): { label: string; icon: typeof Archive; appearance: LozengeAppearance } {
   if (version.archived) {
-    return { label: 'Archived', icon: Archive, colorClass: 'text-muted-foreground' };
+    return { label: 'Archived', icon: Archive, appearance: 'default' };
   }
   if (version.released) {
-    return { label: 'Released', icon: CheckCircle2, colorClass: 'text-green-600 dark:text-green-400' };
+    return { label: 'Released', icon: CheckCircle2, appearance: 'success' };
   }
-  
+
   if (version.progress >= 75) {
-    return { label: 'On Track', icon: Clock, colorClass: 'text-blue-600 dark:text-blue-400' };
+    return { label: 'On Track', icon: Clock, appearance: 'inprogress' };
   }
   if (version.progress >= 50) {
-    return { label: 'In Progress', icon: Clock, colorClass: 'text-yellow-600 dark:text-yellow-400' };
+    return { label: 'In Progress', icon: Clock, appearance: 'moved' };
   }
-  return { label: 'At Risk', icon: AlertCircle, colorClass: 'text-orange-600 dark:text-orange-400' };
+  return { label: 'At Risk', icon: AlertCircle, appearance: 'removed' };
 }
 
 function formatDate(dateString?: string): string {
@@ -91,13 +90,9 @@ export function VersionCard({
                 <h3 className="text-base font-semibold text-foreground">
                   {version.name}
                 </h3>
-                <Badge 
-                  variant="secondary" 
-                  className={cn("text-xs gap-1", status.colorClass)}
-                >
-                  <status.icon className="h-3 w-3" />
+                <Lozenge appearance={status.appearance}>
                   {status.label}
-                </Badge>
+                </Lozenge>
               </div>
               {version.description && (
                 <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">

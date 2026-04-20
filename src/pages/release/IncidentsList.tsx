@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
@@ -31,31 +31,26 @@ const KANBAN_COLUMNS = [
 
 // Severity badge component
 const SeverityBadge = ({ severity }: { severity: string }) => {
-  const colors: Record<string, string> = {
-    SEV1: 'bg-red-100 text-red-800 border-red-200',
-    SEV2: 'bg-orange-100 text-orange-800 border-orange-200',
-    SEV3: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    SEV4: 'bg-blue-100 text-blue-800 border-blue-200',
+  const appearances: Record<string, 'removed' | 'moved' | 'default'> = {
+    SEV1: 'removed',
+    SEV2: 'moved',
+    SEV3: 'default',
+    SEV4: 'default',
   };
   return (
-    <Badge variant="outline" className={cn('text-xs font-medium', colors[severity] || 'bg-gray-100')}>
+    <Lozenge appearance={appearances[severity] || 'default'}>
       {severity}
-    </Badge>
+    </Lozenge>
   );
 };
 
 // Support Level badge
 const SupportLevelBadge = ({ level }: { level: string | null | undefined }) => {
   if (!level) return <span className="text-muted-foreground text-sm">-</span>;
-  const colors: Record<string, string> = {
-    L1: 'bg-green-100 text-green-800',
-    L2: 'bg-blue-100 text-blue-800',
-    L3: 'bg-gray-100 text-gray-800',
-  };
   return (
-    <Badge variant="outline" className={cn('text-xs font-medium', colors[level] || 'bg-gray-100')}>
+    <Lozenge appearance="default">
       {level}
-    </Badge>
+    </Lozenge>
   );
 };
 
@@ -272,9 +267,9 @@ export default function IncidentsList() {
               <Filter className="h-4 w-4 mr-2" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-primary text-primary-foreground rounded-full text-xs">
+                <Lozenge appearance="inprogress">
                   {activeFilterCount}
-                </Badge>
+                </Lozenge>
               )}
             </Button>
             <Button variant="outline" size="sm" className="border-border">
@@ -355,7 +350,7 @@ export default function IncidentsList() {
                             {incident.incident_key || '-'}
                           </button>
                           {incident.is_major_incident && (
-                            <Badge variant="destructive" className="ml-2 text-[10px] px-1.5">Major</Badge>
+                            <span className="ml-2"><Lozenge appearance="removed">Major</Lozenge></span>
                           )}
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[350px]">
@@ -366,7 +361,7 @@ export default function IncidentsList() {
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           {incident.priority ? (
-                            <Badge variant="outline" className="text-xs">{incident.priority}</Badge>
+                            <Lozenge appearance="default">{incident.priority}</Lozenge>
                           ) : (
                             <span className="text-muted-foreground text-sm">-</span>
                           )}
@@ -468,9 +463,11 @@ export default function IncidentsList() {
                         <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-primary/30 transition-colors">
                           <div className="h-full flex flex-col items-center py-4">
                             <div className={cn("w-3 h-3 rounded-full shadow-sm mb-3", column.color)} />
-                            <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
-                              {columnIncidents.length}
-                            </Badge>
+                            <div className="mb-3">
+                              <Lozenge appearance="default">
+                                {columnIncidents.length}
+                              </Lozenge>
+                            </div>
                             <div className="flex-1 flex items-center justify-center">
                               <span 
                                 className="text-sm font-semibold tracking-tight text-foreground/80 whitespace-nowrap"
@@ -505,9 +502,9 @@ export default function IncidentsList() {
                               <div className={cn("w-3 h-3 rounded-full shadow-sm", column.color)} />
                               <CardTitle className="text-sm font-semibold tracking-tight">{column.label}</CardTitle>
                             </div>
-                            <Badge variant="secondary" className="rounded-full text-xs font-medium px-2.5 py-0.5 bg-muted/80">
+                            <Lozenge appearance="default">
                               {columnIncidents.length}
-                            </Badge>
+                            </Lozenge>
                           </div>
                         </CardHeader>
                         <CardContent className="space-y-3 min-h-[200px] flex-1 overflow-y-auto p-3">
@@ -521,7 +518,7 @@ export default function IncidentsList() {
                                 <div className="flex items-start justify-between gap-2">
                                   <span className="text-sm font-medium line-clamp-2 text-foreground/90">{incident.title}</span>
                                   {incident.is_major_incident && (
-                                    <Badge variant="destructive" className="text-[10px] px-1.5 shrink-0">Major</Badge>
+                                    <Lozenge appearance="removed">Major</Lozenge>
                                   )}
                                 </div>
                                 

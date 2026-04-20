@@ -30,7 +30,6 @@ import {
   Ban,
   X,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { useFeatureProgress } from '@/hooks/useFeatureProgress';
 import { useProjects } from '@/hooks/useProjects';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';

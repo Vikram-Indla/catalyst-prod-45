@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -139,9 +139,7 @@ export default function TestSetsPage() {
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-mono text-muted-foreground">{set.set_key}</span>
                     {set.membership_type === 'dynamic' && (
-                      <Badge variant="outline" className="text-[10px] gap-0.5 text-primary border-primary/30">
-                        <Zap className="h-3 w-3" />Dynamic
-                      </Badge>
+                      <Lozenge appearance="inprogress">Dynamic</Lozenge>
                     )}
                   </div>
                   <SetTypeBadge type={set.set_type} size="sm" />

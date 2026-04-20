@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -377,7 +377,7 @@ export default function TestCyclesPage() {
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                 <h2 className="font-semibold text-foreground">In Progress</h2>
-                <Badge variant="secondary">{groupedCycles.in_progress.length}</Badge>
+                <Lozenge appearance="inprogress">{groupedCycles.in_progress.length}</Lozenge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {groupedCycles.in_progress.map(cycle => (
@@ -423,7 +423,7 @@ export default function TestCyclesPage() {
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 rounded-full bg-muted-foreground"></div>
                 <h2 className="font-semibold text-foreground">Planned</h2>
-                <Badge variant="secondary">{groupedCycles.planned.length}</Badge>
+                <Lozenge appearance="default">{groupedCycles.planned.length}</Lozenge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {groupedCycles.planned.map(cycle => (
@@ -469,7 +469,7 @@ export default function TestCyclesPage() {
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 rounded-full bg-green-500"></div>
                 <h2 className="font-semibold text-foreground">Completed</h2>
-                <Badge variant="secondary">{groupedCycles.completed.length}</Badge>
+                <Lozenge appearance="success">{groupedCycles.completed.length}</Lozenge>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {groupedCycles.completed.map(cycle => (

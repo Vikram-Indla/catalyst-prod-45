@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -480,9 +480,9 @@ export default function Roadmaps() {
                       {feature.estimate_points || 0}
                     </div>
                     <div className="w-32 px-3 py-2 flex flex-col items-center justify-center gap-1">
-                      <Badge variant="secondary" className="text-xs uppercase">
+                      <Lozenge appearance="default">
                         {feature.status?.replace('_', ' ')}
-                      </Badge>
+                      </Lozenge>
                       <div className="flex gap-0.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <div

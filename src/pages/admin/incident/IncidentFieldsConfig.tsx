@@ -3,7 +3,7 @@ import { Plus, Pencil, Search, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
@@ -254,7 +254,7 @@ export default function IncidentFieldsConfig() {
                       <TableRow key={option.id}>
                         <TableCell className="text-muted-foreground">{option.sort_order}</TableCell>
                         <TableCell>
-                          <Badge variant="secondary">{option.option_value}</Badge>
+                          <Lozenge appearance="default">{option.option_value}</Lozenge>
                         </TableCell>
                         <TableCell className="font-medium">{option.option_label}</TableCell>
                         <TableCell>

@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   CheckCircle,
@@ -384,7 +384,7 @@ export function SlackSetupWizard({ existingConfig }: WizardProps) {
                               {scope.id}
                             </code>
                             {scope.required && (
-                              <Badge variant="secondary" className="text-xs">Required</Badge>
+                              <Lozenge appearance="default">Required</Lozenge>
                             )}
                           </div>
                           <p className="text-sm text-slate-500 mt-0.5">{scope.description}</p>

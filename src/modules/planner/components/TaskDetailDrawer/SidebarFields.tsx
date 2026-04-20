@@ -6,7 +6,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { Check, ChevronDown, Star, User, Plus, Loader2, X, Tag } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -659,18 +659,10 @@ function LabelsField({ taskId }: { taskId: string }) {
           {assignedLabels.length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {assignedLabels.slice(0, 3).map(label => {
-                const colors = getColorClasses(label.color);
                 return (
-                  <Badge
-                    key={label.id}
-                    className={cn(
-                      "text-[11px] px-1.5 py-0 font-medium border-0 h-5",
-                      colors.bg,
-                      colors.text
-                    )}
-                  >
+                  <Lozenge key={label.id} appearance="default">
                     {label.name}
-                  </Badge>
+                  </Lozenge>
                 );
               })}
               {assignedLabels.length > 3 && (

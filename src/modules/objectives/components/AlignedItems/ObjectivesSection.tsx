@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Plus, Target, ExternalLink, X } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,7 +9,6 @@ import { useState } from 'react';
 import { LinkObjectiveDialog } from './LinkObjectiveDialog';
 import { ObjectiveScoreBadge } from '../shared/ObjectiveScoreBadge';
 import { ProgressBar } from '../shared/ProgressBar';
-import { cn } from '@/lib/utils';
 
 interface ObjectivesSectionProps {
   workItemId: string;
@@ -73,15 +72,16 @@ export function ObjectivesSection({ workItemId, workItemType, readOnly = false }
     },
   });
 
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, string> = {
-      on_track: 'bg-success/10 text-success border-success/20',
-      at_risk: 'bg-warning/10 text-warning border-warning/20',
-      off_track: 'bg-destructive/10 text-destructive border-destructive/20',
-      completed: 'bg-info/10 text-info border-info/20',
-      pending: 'bg-muted text-muted-foreground border-border',
+  // §L38 Atlaskit Lozenge appearances replace bespoke className overrides.
+  const getStatusAppearance = (status: string): LozengeAppearance => {
+    const map: Record<string, LozengeAppearance> = {
+      on_track:  'success',    // green
+      completed: 'success',    // green
+      at_risk:   'moved',      // yellow
+      off_track: 'removed',    // red
+      pending:   'default',    // grey
     };
-    return colors[status] || colors.pending;
+    return map[status] || 'default';
   };
 
   if (isLoading) {
@@ -147,12 +147,12 @@ export function ObjectivesSection({ workItemId, workItemType, readOnly = false }
                       <span className="text-xs font-mono text-muted-foreground">
                         {objective.id.slice(0, 8)}
                       </span>
-                      <Badge variant="outline" className="text-xs capitalize">
+                      <Lozenge appearance="default">
                         {objective.tier}
-                      </Badge>
-                      <Badge className={cn('text-xs', getStatusColor(objective.status))}>
-                        {objective.status?.replace('_', ' ').toUpperCase()}
-                      </Badge>
+                      </Lozenge>
+                      <Lozenge appearance={getStatusAppearance(objective.status)}>
+                        {objective.status?.replace('_', ' ')}
+                      </Lozenge>
                     </div>
                     <h4 className="text-sm font-medium truncate">{objective.summary}</h4>
                   </div>

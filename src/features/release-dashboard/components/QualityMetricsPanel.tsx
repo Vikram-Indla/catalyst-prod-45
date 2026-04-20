@@ -18,9 +18,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { useReleaseHealth } from '../hooks/useQualityMetrics';
 import { HEALTH_LEVEL_CONFIG, METRIC_THRESHOLDS } from '../types/quality-metrics';
+import type { ReleaseHealthData } from '../types/quality-metrics';
+
+const HEALTH_LEVEL_APPEARANCE: Record<ReleaseHealthData['level'], LozengeAppearance> = {
+  healthy: 'success',
+  attention: 'inprogress',
+  at_risk: 'moved',
+  critical: 'removed',
+};
 
 interface QualityMetricsPanelProps {
   releaseId: string;
@@ -88,13 +96,11 @@ export const QualityMetricsPanel = memo(function QualityMetricsPanel({
 
             {/* Status */}
             <div className="flex-1">
-              <Badge 
-                variant="outline" 
-                className="mb-2"
-                style={{ borderColor: levelConfig.color, color: levelConfig.color }}
-              >
-                {levelConfig.label}
-              </Badge>
+              <div className="mb-2">
+                <Lozenge appearance={HEALTH_LEVEL_APPEARANCE[health.level]}>
+                  {levelConfig.label}
+                </Lozenge>
+              </div>
               <p className="text-sm text-muted-foreground">{levelConfig.description}</p>
             </div>
 
@@ -158,10 +164,10 @@ export const QualityMetricsPanel = memo(function QualityMetricsPanel({
               <div className="text-2xl font-bold">{metrics.defects.open}</div>
               <div className="flex gap-2 mt-2">
                 {metrics.defects.blocker > 0 && (
-                  <Badge variant="destructive" className="text-xs">{metrics.defects.blocker} Blocker</Badge>
+                  <Lozenge appearance="removed">{metrics.defects.blocker} Blocker</Lozenge>
                 )}
                 {metrics.defects.critical > 0 && (
-                  <Badge variant="outline" className="text-xs border-warning text-warning">{metrics.defects.critical} Critical</Badge>
+                  <Lozenge appearance="moved">{metrics.defects.critical} Critical</Lozenge>
                 )}
               </div>
             </CardContent>

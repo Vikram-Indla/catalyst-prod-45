@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -44,7 +44,14 @@ import {
 } from 'recharts';
 import { useReleaseComparison, useComparableReleases } from '../hooks/useAnalytics';
 import { COMPARISON_METRICS, type ReleaseComparisonItem } from '../types/analytics';
-import { CATALYST_COLORS, getHealthColor } from '../types';
+import { CATALYST_COLORS } from '../types';
+
+const HEALTH_APPEARANCE: Record<ReleaseComparisonItem['healthLevel'], LozengeAppearance> = {
+  healthy: 'success',
+  attention: 'inprogress',
+  at_risk: 'moved',
+  critical: 'removed',
+};
 
 interface ReleaseComparisonViewProps {
   projectId: string;
@@ -249,15 +256,9 @@ export function ReleaseComparisonView({ projectId, currentReleaseId }: ReleaseCo
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge
-                              variant="outline"
-                              style={{
-                                borderColor: getHealthColor(release.healthLevel),
-                                color: getHealthColor(release.healthLevel),
-                              }}
-                            >
+                            <Lozenge appearance={HEALTH_APPEARANCE[release.healthLevel]}>
                               {release.healthScore}
-                            </Badge>
+                            </Lozenge>
                           </TableCell>
                           <TableCell className="text-right">
                             <MetricValue

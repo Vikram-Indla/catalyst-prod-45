@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -305,16 +305,10 @@ export function KanbanBoardPage() {
                       <span className="text-sm font-medium text-text-primary">
                         {column.name}
                       </span>
-                      <Badge 
-                        variant={isOverLimit ? "destructive" : isAtLimit ? "secondary" : "secondary"} 
-                        className={cn(
-                          "text-xs h-5 px-1.5",
-                          isAtLimit && "bg-yellow-500/20 text-yellow-600"
-                        )}
-                      >
+                      <Lozenge appearance={isOverLimit ? 'removed' : isAtLimit ? 'moved' : 'inprogress'}>
                         {columnIssues.length}
                         {column.maxLimit !== null && `/${column.maxLimit}`}
-                      </Badge>
+                      </Lozenge>
                       {isOverLimit && (
                         <TooltipProvider>
                           <Tooltip>
@@ -393,9 +387,9 @@ export function KanbanBoardPage() {
                                     <div className="flex items-center gap-2">
                                       <Flag className={cn("h-3.5 w-3.5", PRIORITY_COLORS[issue.priority] || 'text-gray-400')} />
                                       {issue.storyPoints && (
-                                        <Badge variant="outline" className="text-xs h-5 px-1.5">
+                                        <Lozenge appearance="default">
                                           {issue.storyPoints}
-                                        </Badge>
+                                        </Lozenge>
                                       )}
                                     </div>
                                     {issue.assigneeId ? (

@@ -9,7 +9,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Search, BarChart3, Download, Plus, X, Filter, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Sheet,
@@ -233,9 +233,11 @@ export function StrategyCockpit({ snapshotId }: StrategyCockpitProps) {
             <Filter className="h-4 w-4" />
             Filters
             {activeFilterCount > 0 && (
-              <Badge variant="secondary" className="ml-1 bg-brand-primary/20 text-brand-primary">
-                {activeFilterCount}
-              </Badge>
+              <span className="ml-1 inline-flex">
+                <Lozenge appearance="inprogress">
+                  {activeFilterCount}
+                </Lozenge>
+              </span>
             )}
           </Button>
 

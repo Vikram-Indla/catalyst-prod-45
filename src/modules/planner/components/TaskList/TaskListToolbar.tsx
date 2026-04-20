@@ -30,7 +30,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
 import { usePlannerUsers } from '../../hooks/usePlannerUsers';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
 import { PRIORITY_CONFIG } from '../../types';

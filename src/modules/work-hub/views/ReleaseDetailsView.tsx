@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Plus, MoreHorizontal, Edit2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
@@ -190,7 +190,7 @@ export function ReleaseDetailsView() {
                     <div className={cn('w-3 h-3 rounded-sm', typeColors[item.type])} />
                     <span className="text-sm font-medium text-primary">{item.key}</span>
                     <span className="text-sm flex-1 truncate">{item.summary}</span>
-                    <Badge variant="outline" className="text-xs">{item.status}</Badge>
+                    <Lozenge appearance="default">{item.status}</Lozenge>
                     {item.assignee ? (
                       <Avatar className="h-6 w-6">
                         <AvatarFallback className="text-xs">
@@ -278,7 +278,7 @@ export function ReleaseDetailsView() {
                 </Button>
               ) : (
                 release.approvers.map((approver) => (
-                  <Badge key={approver} variant="secondary">{approver}</Badge>
+                  <Lozenge key={approver} appearance="default">{approver}</Lozenge>
                 ))
               )}
             </div>

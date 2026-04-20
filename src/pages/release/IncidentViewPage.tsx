@@ -8,7 +8,7 @@ import {
   UserPlus, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -234,38 +234,34 @@ export default function IncidentViewPage() {
         {/* Badge Chips Row */}
         <div className="flex flex-wrap items-center gap-2 mt-3">
           {incident.is_major_incident && (
-            <Badge className="bg-red-100 text-red-700 border-red-200 font-medium">Major Incident</Badge>
+            <Lozenge appearance="removed">Major Incident</Lozenge>
           )}
-          <Badge className={cn(
-            "font-semibold",
-            incident.severity === 'SEV1' ? 'bg-red-500 text-white' :
-            incident.severity === 'SEV2' ? 'bg-orange-500 text-white' :
-            incident.severity === 'SEV3' ? 'bg-yellow-500 text-white' :
-            'bg-gray-400 text-white'
-          )}>
+          <Lozenge appearance={
+            incident.severity === 'SEV1' ? 'removed' :
+            incident.severity === 'SEV2' ? 'moved' :
+            'default'
+          }>
             {incident.severity}
-          </Badge>
+          </Lozenge>
           {incident.delivery_stage && (
-            <Badge variant="secondary" className="bg-muted text-muted-foreground capitalize">
+            <Lozenge appearance="default">
               {incident.delivery_stage === 'prod' ? 'Prod' : incident.delivery_stage}
-            </Badge>
+            </Lozenge>
           )}
           {incident.support_level && (
-            <Badge variant="secondary" className="bg-muted text-muted-foreground">
+            <Lozenge appearance="default">
               {incident.support_level}
-            </Badge>
+            </Lozenge>
           )}
-          <Badge className={cn(
-            "font-medium",
-            incident.status === 'open' ? 'bg-slate-100 text-slate-700' :
-            incident.status === 'triage' ? 'bg-amber-100 text-amber-700' :
-            incident.status === 'in_progress' ? 'bg-sky-100 text-sky-700' :
-            incident.status === 'resolved' ? 'bg-green-100 text-green-700' :
-            incident.status === 'closed' ? 'bg-gray-100 text-gray-700' :
-            'bg-amber-100 text-amber-700'
-          )}>
+          <Lozenge appearance={
+            incident.status === 'resolved' || incident.status === 'closed' ? 'success' :
+            incident.status === 'triage' ? 'moved' :
+            incident.status === 'in_progress' ? 'inprogress' :
+            incident.status === 'open' ? 'inprogress' :
+            'moved'
+          }>
             {STATUS_OPTIONS.find(s => s.value === incident.status)?.label || incident.status}
-          </Badge>
+          </Lozenge>
         </div>
       </div>
 
@@ -373,29 +369,29 @@ export default function IncidentViewPage() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="border-b border-border">
                 <TabsList className="h-auto p-0 bg-transparent rounded-none border-0">
-                  <TabsTrigger 
-                    value="activity" 
+                  <TabsTrigger
+                    value="activity"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 py-3 text-sm"
                   >
-                    Activity <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-xs">{activityItems.length}</Badge>
+                    Activity <span className="ml-1.5"><Lozenge appearance="default">{activityItems.length}</Lozenge></span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="sla-history" 
+                  <TabsTrigger
+                    value="sla-history"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 py-3 text-sm"
                   >
-                    SLA History <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-xs">3</Badge>
+                    SLA History <span className="ml-1.5"><Lozenge appearance="default">3</Lozenge></span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="approvals" 
+                  <TabsTrigger
+                    value="approvals"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 py-3 text-sm"
                   >
-                    Approvals <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-xs">{approvers.length}</Badge>
+                    Approvals <span className="ml-1.5"><Lozenge appearance="default">{approvers.length}</Lozenge></span>
                   </TabsTrigger>
-                  <TabsTrigger 
-                    value="audit-log" 
+                  <TabsTrigger
+                    value="audit-log"
                     className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-primary data-[state=active]:bg-transparent px-4 py-3 text-sm"
                   >
-                    Audit Log <Badge variant="secondary" className="ml-1.5 h-5 px-1.5 text-xs">{auditItems.length}</Badge>
+                    Audit Log <span className="ml-1.5"><Lozenge appearance="default">{auditItems.length}</Lozenge></span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -471,15 +467,11 @@ export default function IncidentViewPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-muted-foreground uppercase">Response SLA</span>
               {responseSla?.met ? (
-                <Badge className="bg-green-100 text-green-700 border-green-200">
-                  <CheckCircle className="h-3 w-3 mr-1" /> Met
-                </Badge>
+                <Lozenge appearance="success">Met</Lozenge>
               ) : responseSla?.breached ? (
-                <Badge className="bg-red-100 text-red-700 border-red-200">
-                  <XCircle className="h-3 w-3 mr-1" /> Breached
-                </Badge>
+                <Lozenge appearance="removed">Breached</Lozenge>
               ) : (
-                <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> Pending</Badge>
+                <Lozenge appearance="default">Pending</Lozenge>
               )}
             </div>
             <p className="text-xs text-muted-foreground">{responseSla?.detail || 'N/A'}</p>
@@ -490,15 +482,11 @@ export default function IncidentViewPage() {
             <div className="flex items-center justify-between">
               <span className="text-xs font-medium text-muted-foreground uppercase">Resolution SLA</span>
               {resolutionSla?.met ? (
-                <Badge className="bg-green-100 text-green-700 border-green-200">
-                  <CheckCircle className="h-3 w-3 mr-1" /> Met
-                </Badge>
+                <Lozenge appearance="success">Met</Lozenge>
               ) : resolutionSla?.breached ? (
-                <Badge className="bg-red-100 text-red-700 border-red-200">
-                  <XCircle className="h-3 w-3 mr-1" /> Breached
-                </Badge>
+                <Lozenge appearance="removed">Breached</Lozenge>
               ) : (
-                <Badge variant="secondary"><Clock className="h-3 w-3 mr-1" /> Pending</Badge>
+                <Lozenge appearance="default">Pending</Lozenge>
               )}
             </div>
             <p className={cn("text-xs", resolutionSla?.breached ? "text-red-600" : "text-muted-foreground")}>
@@ -525,9 +513,9 @@ export default function IncidentViewPage() {
               <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block mb-2">Priority</label>
                 <div className="h-10 flex items-center">
-                  <Badge variant="outline" className="text-sm font-semibold">
+                  <Lozenge appearance="default">
                     {incident.priority || 'P3'}
-                  </Badge>
+                  </Lozenge>
                 </div>
               </div>
             </div>
@@ -558,14 +546,13 @@ export default function IncidentViewPage() {
           <div className="bg-card border border-border rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <span className="text-sm font-semibold text-foreground">CAP Committee</span>
-              <Badge className={cn(
-                "text-xs",
-                isCommitteeApproved ? "bg-green-100 text-green-700" :
-                hasVeto ? "bg-red-100 text-red-700" :
-                "bg-yellow-100 text-yellow-700"
-              )}>
+              <Lozenge appearance={
+                isCommitteeApproved ? 'success' :
+                hasVeto ? 'removed' :
+                'moved'
+              }>
                 {isCommitteeApproved ? 'Approved' : hasVeto ? 'Vetoed' : 'Pending'}
-              </Badge>
+              </Lozenge>
             </div>
             
             <div className="p-4 space-y-4">
@@ -594,9 +581,7 @@ export default function IncidentViewPage() {
                         <div className="flex items-center gap-1.5">
                           <span className="text-sm font-medium text-foreground truncate">{member.user?.full_name}</span>
                           {member.has_veto && (
-                            <Badge variant="outline" className="text-[9px] px-1 py-0 text-orange-700 border-orange-300 bg-orange-50">
-                              VETO
-                            </Badge>
+                            <Lozenge appearance="moved">VETO</Lozenge>
                           )}
                         </div>
                         <span className="text-xs text-muted-foreground">{member.role || 'Committee Member'}</span>
@@ -695,9 +680,7 @@ function Timeline({ items }: { items: Array<{ id: string; user: string; text: st
             <div className="flex items-center gap-2 text-sm">
               <span className="font-medium text-foreground">{item.user}</span>
               {item.hasVeto && (
-                <Badge variant="outline" className="text-[9px] px-1 py-0 text-orange-700 border-orange-300 bg-orange-50">
-                  VETO
-                </Badge>
+                <Lozenge appearance="moved">VETO</Lozenge>
               )}
               <span className="text-xs text-muted-foreground">
                 {item.time ? format(new Date(item.time), 'MMM d, h:mm a') : 'Pending'}

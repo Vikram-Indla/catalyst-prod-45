@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge } from "@/components/ads";
 import {
   Select,
   SelectContent,
@@ -220,21 +220,21 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
               {linkedThemes.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-2">
                   {linkedThemes.map((theme) => (
-                    <Badge 
-                      key={theme.id} 
-                      variant="secondary" 
-                      className="flex items-center gap-1 pr-1"
+                    <div
+                      key={theme.id}
+                      className="inline-flex items-center gap-1"
                     >
-                      {theme.name}
+                      <Lozenge appearance="default">{theme.name}</Lozenge>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-4 w-4 hover:bg-destructive/20"
                         onClick={() => handleRemoveTheme(theme.id)}
+                        aria-label={`Remove ${theme.name} theme`}
                       >
                         <X className="h-3 w-3" />
                       </Button>
-                    </Badge>
+                    </div>
                   ))}
                 </div>
               )}
@@ -302,7 +302,7 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
         <div className="grid grid-cols-3 gap-4">
           <div>
             <div className="text-sm text-muted-foreground mb-1">Health</div>
-            <Badge variant="outline">{objective.health || "N/A"}</Badge>
+            <Lozenge appearance="default">{objective.health || "N/A"}</Lozenge>
           </div>
           <div>
             <div className="text-sm text-muted-foreground mb-1">Score</div>
@@ -314,9 +314,9 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
           </div>
           <div>
             <div className="text-sm text-muted-foreground mb-1">Blocked</div>
-            <Badge variant={objective.is_blocked ? "destructive" : "outline"}>
+            <Lozenge appearance={objective.is_blocked ? "removed" : "default"}>
               {objective.is_blocked ? "Yes" : "No"}
-            </Badge>
+            </Lozenge>
           </div>
         </div>
       </Card>
@@ -369,9 +369,9 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
             <div className="flex flex-wrap gap-1 mt-1">
               {objective.program_increment_ids?.length > 0 ? (
                 objective.program_increment_ids.map((piId: string) => (
-                  <Badge key={piId} variant="outline">
+                  <Lozenge key={piId} appearance="default">
                     {piId.slice(0, 8)}
-                  </Badge>
+                  </Lozenge>
                 ))
               ) : (
                 <span className="text-sm text-muted-foreground">None</span>

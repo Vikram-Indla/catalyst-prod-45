@@ -6,7 +6,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { CheckCircle2, XCircle, Clock, Shield, AlertTriangle, User, MinusCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import {
   Table,
@@ -46,12 +46,12 @@ function getApprovalIcon(status: ApprovalStatus) {
 function getApprovalBadge(status: ApprovalStatus) {
   switch (status) {
     case 'approved':
-      return <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400">Approved</Badge>;
+      return <Lozenge appearance="success">Approved</Lozenge>;
     case 'pending':
-      return <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Pending</Badge>;
+      return <Lozenge appearance="moved">Pending</Lozenge>;
     case 'not_started':
     default:
-      return <Badge className="bg-muted text-muted-foreground">Not Started</Badge>;
+      return <Lozenge appearance="default">Not Started</Lozenge>;
   }
 }
 

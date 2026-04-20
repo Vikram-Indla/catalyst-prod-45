@@ -1,18 +1,19 @@
 import { Briefcase, FolderKanban } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import type { ObjectiveTier } from '../../types/objective.types';
 import { cn } from '@/lib/utils';
 
-// Only Portfolio and Program tiers are supported in OKR module
-const TIER_CONFIG: Record<ObjectiveTier, { label: string; className: string; icon: typeof Briefcase }> = {
+// Only Portfolio and Program tiers are supported in OKR module.
+// Atlaskit Lozenge appearances replace bespoke Tailwind overrides (§L38).
+const TIER_CONFIG: Record<ObjectiveTier, { label: string; appearance: LozengeAppearance; icon: typeof Briefcase }> = {
   portfolio: {
     label: 'Portfolio',
-    className: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
+    appearance: 'default', // grey
     icon: Briefcase,
   },
   program: {
     label: 'Program',
-    className: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
+    appearance: 'success', // green
     icon: FolderKanban,
   },
 };
@@ -30,15 +31,11 @@ export function ObjectiveTierBadge({ tier, showIcon = true, size = 'md' }: Objec
   const Icon = config.icon;
 
   return (
-    <Badge
-      variant="secondary"
-      className={cn(
-        config.className,
-        size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-sm px-3 py-1'
-      )}
-    >
-      {showIcon && <Icon className={cn('mr-1', size === 'sm' ? 'h-3 w-3' : 'h-4 w-4')} />}
-      {config.label}
-    </Badge>
+    <Lozenge appearance={config.appearance}>
+      <span className="inline-flex items-center">
+        {showIcon && <Icon className={cn('mr-1', size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5')} />}
+        {config.label}
+      </span>
+    </Lozenge>
   );
 }

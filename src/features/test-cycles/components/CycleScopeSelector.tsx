@@ -7,7 +7,7 @@ import { Plus, Search, CheckCircle2, Loader2, FileCheck, X } from 'lucide-react'
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -135,26 +135,29 @@ export const CycleScopeSelector = memo(function CycleScopeSelector({
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs font-mono">
-                      {item.test_case?.key || 'TC-???'}
-                    </Badge>
+                    <span className="text-xs font-mono">
+                      <Lozenge appearance="default">
+                        {item.test_case?.key || 'TC-???'}
+                      </Lozenge>
+                    </span>
                     <span className="text-sm truncate">
                       {item.test_case?.title || 'Unknown Test Case'}
                     </span>
                   </div>
                 </div>
-                <Badge
-                  variant="outline"
-                  className={cn(
-                    'text-xs',
-                    item.status === 'PASSED' && 'text-emerald-600 border-emerald-200',
-                    item.status === 'FAILED' && 'text-destructive border-destructive/30',
-                    item.status === 'BLOCKED' && 'text-amber-600 border-amber-200',
-                    item.status === 'NOT_RUN' && 'text-muted-foreground'
-                  )}
+                <Lozenge
+                  appearance={
+                    item.status === 'PASSED'
+                      ? 'success'
+                      : item.status === 'FAILED'
+                      ? 'removed'
+                      : item.status === 'BLOCKED'
+                      ? 'moved'
+                      : 'default'
+                  }
                 >
                   {item.status.replace('_', ' ')}
-                </Badge>
+                </Lozenge>
                 <Button
                   size="icon"
                   variant="ghost"
@@ -236,14 +239,16 @@ export const CycleScopeSelector = memo(function CycleScopeSelector({
                         checked={selectedIds.has(testCase.id)}
                         onCheckedChange={() => handleToggle(testCase.id)}
                       />
-                      <Badge variant="outline" className="text-xs font-mono">
-                        {testCase.key}
-                      </Badge>
+                      <span className="text-xs font-mono">
+                        <Lozenge appearance="default">
+                          {testCase.key}
+                        </Lozenge>
+                      </span>
                       <span className="text-sm flex-1 truncate">{testCase.title}</span>
                       {testCase.priority && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Lozenge appearance="default">
                           {testCase.priority.name}
-                        </Badge>
+                        </Lozenge>
                       )}
                     </div>
                   ))}

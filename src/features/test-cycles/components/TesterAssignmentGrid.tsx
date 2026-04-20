@@ -7,7 +7,7 @@ import { Plus, Trash2, Users, Loader2, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import {
   Select,
@@ -185,13 +185,13 @@ export const TesterAssignmentGrid = memo(function TesterAssignmentGrid({
                   {/* Pass/Fail badges */}
                   {workload.assigned > 0 && (
                     <div className="flex items-center gap-2 mt-2">
-                      <Badge variant="outline" className="text-xs text-emerald-600 border-emerald-200">
-                        ✓ {workload.passed}
-                      </Badge>
+                      <Lozenge appearance="success">
+                        {`Passed ${workload.passed}`}
+                      </Lozenge>
                       {workload.failed > 0 && (
-                        <Badge variant="outline" className="text-xs text-destructive border-destructive/30">
-                          ✗ {workload.failed}
-                        </Badge>
+                        <Lozenge appearance="removed">
+                          {`Failed ${workload.failed}`}
+                        </Lozenge>
                       )}
                       {passRate > 0 && (
                         <span className="text-xs text-muted-foreground ml-auto">

@@ -18,7 +18,7 @@ import {
   Download, AlertCircle, CheckCircle, XCircle, Timer, FileText, ChevronDown, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -144,13 +144,9 @@ function SLABreachReport({ incidents, onRowClick }: { incidents: Incident[]; onR
     { key: 'assignee', label: 'Assignee', minWidth: 140, render: (i) => <span className="truncate">{i.assignee?.full_name || '—'}</span> },
     { key: 'age', label: 'Age', minWidth: 60, centered: true, render: (i) => <span className="font-mono text-xs">{getAgingTime(i.created_at)}</span> },
     { key: 'slaState', label: 'SLA State', minWidth: 90, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap', 
-        i.sla?.response_breached || i.sla?.resolution_breached 
-          ? 'bg-destructive/10 text-destructive border-destructive/20' 
-          : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-      )}>
+      <Lozenge appearance={i.sla?.response_breached || i.sla?.resolution_breached ? 'removed' : 'success'}>
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACHED' : 'ON TRACK'}
-      </Badge>
+      </Lozenge>
     )},
   ];
 
@@ -224,23 +220,19 @@ function AgingReport({ incidents, onRowClick }: { incidents: Incident[]; onRowCl
       else if (days >= 3) bucket = '3-7d';
       else if (days >= 1) bucket = '1-3d';
       return (
-        <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
-          days >= 7 ? 'bg-destructive/10 text-destructive border-destructive/20' :
-          days >= 3 ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-          'bg-muted text-muted-foreground'
-        )}>
+        <Lozenge appearance={
+          days >= 7 ? 'removed' :
+          days >= 3 ? 'moved' :
+          'default'
+        }>
           {bucket}
-        </Badge>
+        </Lozenge>
       );
     }},
     { key: 'slaState', label: 'SLA', minWidth: 70, centered: true, render: (i) => (
-      <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap', 
-        i.sla?.response_breached || i.sla?.resolution_breached 
-          ? 'bg-destructive/10 text-destructive border-destructive/20' 
-          : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
-      )}>
+      <Lozenge appearance={i.sla?.response_breached || i.sla?.resolution_breached ? 'removed' : 'success'}>
         {i.sla?.response_breached || i.sla?.resolution_breached ? 'BREACH' : 'OK'}
-      </Badge>
+      </Lozenge>
     )},
   ];
 
@@ -299,13 +291,9 @@ function ConversionReport({ incidents, onRowClick }: { incidents: Incident[]; on
     )},
     { key: 'targetType', label: 'Target', minWidth: 90, centered: true, render: (i) => (
       i.converted_to_type ? (
-        <Badge variant="outline" className={cn('text-[10px] whitespace-nowrap',
-          i.converted_to_type === 'epic' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-          i.converted_to_type === 'feature' ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' :
-          'bg-green-500/10 text-green-600 border-green-500/20'
-        )}>
+        <Lozenge appearance="default">
           {i.converted_to_type.toUpperCase()}
-        </Badge>
+        </Lozenge>
       ) : <span className="text-muted-foreground">—</span>
     )},
     { key: 'linkedItem', label: 'Linked', minWidth: 100, render: (i) => <span className="font-mono text-muted-foreground truncate">{i.converted_to_id || '—'}</span> },
@@ -364,9 +352,9 @@ function DistributionReport({ incidents, onRowClick }: { incidents: Incident[]; 
       const priNum = parseInt(i.priority?.replace('P', '') || '4');
       const mismatch = Math.abs(sevNum - priNum) >= 2;
       return mismatch ? (
-        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20 whitespace-nowrap">
+        <Lozenge appearance="moved">
           REVIEW
-        </Badge>
+        </Lozenge>
       ) : <span className="text-muted-foreground">—</span>;
     }},
   ];

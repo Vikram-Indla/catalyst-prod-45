@@ -6,7 +6,7 @@ import {
   CheckCircle2, GitBranch, Users, Shield, FileText
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
@@ -235,9 +235,9 @@ export default function IncidentDashboardPage() {
       <div className="h-12 border-b border-border bg-card flex-shrink-0 px-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <CatalystPageHeader title="Incident Dashboard" />
-          <Badge variant="outline" className="text-[10px]">
+          <Lozenge appearance="default">
             {metrics.totalIncidents} total
-          </Badge>
+          </Lozenge>
         </div>
         <Link to="/release/incidents/reports">
           <Button variant="outline" size="sm" className="h-7 text-xs">

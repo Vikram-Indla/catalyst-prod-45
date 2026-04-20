@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Command,
   CommandEmpty,
@@ -743,7 +743,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
                               />
                               <span>{role}</span>
                             </div>
-                            <Badge variant="secondary" className="text-xs">In Use</Badge>
+                            <Lozenge appearance="default">In Use</Lozenge>
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -777,7 +777,7 @@ export const EditUserDrawer = memo(function EditUserDrawer({ isOpen, onClose, us
               </Popover>
               {selectedJobRole && (
                 <div className="flex items-center gap-2">
-                  <Badge variant="default">{selectedJobRole}</Badge>
+                  <Lozenge appearance="inprogress">{selectedJobRole}</Lozenge>
                   <Button
                     variant="ghost"
                     size="sm"

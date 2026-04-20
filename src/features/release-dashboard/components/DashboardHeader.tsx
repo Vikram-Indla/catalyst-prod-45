@@ -8,9 +8,25 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Home, ChevronRight, Edit2, CheckCircle2, Calendar, User, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import type { ReleaseDetail, HealthScore, QualityGate, ReleaseMetrics } from '../types';
 import { STATUS_LABELS, getHealthColor } from '../types';
+
+const STATUS_APPEARANCE: Record<ReleaseDetail['status'], LozengeAppearance> = {
+  planning: 'default',
+  in_progress: 'inprogress',
+  testing: 'inprogress',
+  staging: 'inprogress',
+  released: 'success',
+  cancelled: 'removed',
+};
+
+const HEALTH_APPEARANCE: Record<HealthScore['level'], LozengeAppearance> = {
+  healthy: 'success',
+  attention: 'inprogress',
+  at_risk: 'moved',
+  critical: 'removed',
+};
 import { EditReleaseDialog } from './EditReleaseDialog';
 import { ApproveReleaseDialog } from './ApproveReleaseDialog';
 import { ExportDropdown } from './ExportDropdown';
@@ -71,16 +87,10 @@ export function DashboardHeader({
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <h1 className="text-xl font-semibold text-slate-900">{release.version}</h1>
-                <Badge className="bg-[#2563eb]/10 text-[#2563eb] border-0">{STATUS_LABELS[release.status]}</Badge>
-                <Badge 
-                  className="border-0"
-                  style={{ 
-                    backgroundColor: `${healthColor}15`, 
-                    color: healthColor 
-                  }}
-                >
+                <Lozenge appearance={STATUS_APPEARANCE[release.status]}>{STATUS_LABELS[release.status]}</Lozenge>
+                <Lozenge appearance={HEALTH_APPEARANCE[healthScore.level]}>
                   {healthLabel}
-                </Badge>
+                </Lozenge>
               </div>
               <p className="text-sm text-slate-600">{release.name} — {release.organization}</p>
               <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">

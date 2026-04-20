@@ -21,7 +21,7 @@ import {
   Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -243,12 +243,9 @@ export function BulkEditCommandBar({
                       {field.icon}
                       <span>{field.label}</span>
                       {hasValue && (
-                        <Badge 
-                          variant="secondary" 
-                          className="ml-1 h-4 px-1 text-[10px] bg-primary-foreground/20 text-primary-foreground"
-                        >
-                          ✓
-                        </Badge>
+                        <span className="ml-1">
+                          <Lozenge appearance="inprogress">✓</Lozenge>
+                        </span>
                       )}
                       <ChevronDown className="h-3 w-3 opacity-50" />
                     </Button>

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { 
   Table, 
   TableBody, 
@@ -526,9 +526,9 @@ export default function UserAccessPage() {
             className="pl-9"
           />
         </div>
-        <Badge variant="outline" className="text-muted-foreground">
+        <Lozenge appearance="default">
           {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}
-        </Badge>
+        </Lozenge>
       </div>
 
       {/* Table */}
@@ -676,11 +676,11 @@ export default function UserAccessPage() {
                     </TableCell>
                     <TableCell>
                       {user.is_active ? (
-                        <Badge className="bg-emerald-100 text-emerald-700 dark:bg-[rgba(34,197,94,0.12)] dark:text-emerald-400">
+                        <Lozenge appearance="success">
                           Active
-                        </Badge>
+                        </Lozenge>
                       ) : (
-                        <Badge variant="secondary">Inactive</Badge>
+                        <Lozenge appearance="default">Inactive</Lozenge>
                       )}
                     </TableCell>
                     <TableCell className="text-right">
@@ -709,9 +709,9 @@ export default function UserAccessPage() {
                       ) : user.email && user.role_id ? (
                         /* Email + Role = Authorized, just needs account creation for password mgmt */
                         <div className="flex items-center justify-end gap-2">
-                          <Badge className="bg-blue-100 text-blue-700 dark:bg-[rgba(59,130,246,0.12)] dark:text-blue-400">
+                          <Lozenge appearance="inprogress">
                             Authorized
-                          </Badge>
+                          </Lozenge>
                           <Button
                             variant="outline"
                             size="sm"

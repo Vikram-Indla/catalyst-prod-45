@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import type { RoadmapFilters, TimelineZoom, GroupingField } from '../types/roadmap';
 import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 
@@ -70,7 +70,7 @@ export function RoadmapToolbar({
   viewMode, onViewModeChange, onPrint, highContrast, onToggleHighContrast,
 }: RoadmapToolbarProps) {
   const { isDark } = useTheme();
-  const { tokens, brand } = useRoadmapTheme();
+  const { tokens } = useRoadmapTheme();
   const [localTimelineFilter, setLocalTimelineFilter] = useState<TimelineFilterState>(DEFAULT_TIMELINE_FILTER);
   const effectiveTimelineFilter = timelineFilter ?? localTimelineFilter;
   const handleTimelineFilterChange = onTimelineFilterChange ?? setLocalTimelineFilter;
@@ -109,9 +109,9 @@ export function RoadmapToolbar({
               <Filter className="w-4 h-4" />
               Filters
               {activeFilterCount > 0 && (
-                <Badge variant="secondary" className="h-5 px-1.5 min-w-[20px]" style={{ backgroundColor: brand.primary, color: '#ffffff' }}>
+                <Lozenge appearance="inprogress">
                   {activeFilterCount}
-                </Badge>
+                </Lozenge>
               )}
             </Button>
           </TooltipTrigger>

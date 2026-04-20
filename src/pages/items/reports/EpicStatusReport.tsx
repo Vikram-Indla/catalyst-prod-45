@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Button } from '@/components/ui/button';
@@ -123,8 +123,8 @@ Generated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`;
             <div>
               <h2 className="text-2xl font-bold mb-2">{epic.name}</h2>
               <div className="flex items-center gap-3">
-                <Badge variant="outline">{epic.epic_key}</Badge>
-                <Badge>{epic.state?.replace(/_/g, ' ')}</Badge>
+                <Lozenge appearance="default">{epic.epic_key}</Lozenge>
+                <Lozenge appearance="inprogress">{epic.state?.replace(/_/g, ' ')}</Lozenge>
                 {epic.health && <HealthBadge health={epic.health as any} />}
               </div>
             </div>
@@ -203,9 +203,9 @@ Generated: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`;
                       {feature.estimate_points || 0} points
                     </div>
                   </div>
-                  <Badge variant={feature.status === 'done' ? 'default' : 'secondary'}>
+                  <Lozenge appearance={feature.status === 'done' ? 'success' : 'default'}>
                     {feature.status?.replace(/_/g, ' ')}
-                  </Badge>
+                  </Lozenge>
                 </div>
               ))}
             </div>

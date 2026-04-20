@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -249,7 +249,7 @@ function ReleaseHealthItem({ release, onClick }: { release: ReleaseHealthData; o
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-sm font-semibold text-foreground truncate">{release.name}</span>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">{release.version}</Badge>
+          <Lozenge appearance="default">{release.version}</Lozenge>
         </div>
         <div className="text-xs text-muted-foreground">{release.product} • {release.sprint}</div>
       </div>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useProjectKeyResolver } from '@/hooks/useKeyAliasResolver';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -45,6 +45,26 @@ import {
   ChevronRight,
   ChevronDown,
 } from 'lucide-react';
+
+// ============================================
+// STATUS → LOZENGE APPEARANCE
+// ============================================
+
+const getStatusAppearance = (status: string): LozengeAppearance => {
+  switch (status) {
+    case 'Done':
+    case 'DONE':
+      return 'success';
+    case 'In Progress':
+    case 'IN PROGRESS':
+      return 'inprogress';
+    case 'To Do':
+    case 'TO DO':
+      return 'default';
+    default:
+      return 'default';
+  }
+};
 
 // ============================================
 // HIERARCHICAL MOCK DATA
@@ -545,7 +565,7 @@ function ListView() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={feature.statusVariant}>{feature.status}</Badge>
+                      <Lozenge appearance={getStatusAppearance(feature.status)}>{feature.status}</Lozenge>
                     </TableCell>
                     <TableCell>
                       <Avatar className="h-6 w-6">
@@ -595,7 +615,7 @@ function ListView() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={story.statusVariant}>{story.status}</Badge>
+                            <Lozenge appearance={getStatusAppearance(story.status)}>{story.status}</Lozenge>
                           </TableCell>
                           <TableCell>
                             <Avatar className="h-6 w-6">
@@ -634,7 +654,7 @@ function ListView() {
                               <span className="pl-10">{subtask.summary}</span>
                             </TableCell>
                             <TableCell>
-                              <Badge variant={subtask.statusVariant}>{subtask.status}</Badge>
+                              <Lozenge appearance={getStatusAppearance(subtask.status)}>{subtask.status}</Lozenge>
                             </TableCell>
                             <TableCell>
                               <Avatar className="h-6 w-6">

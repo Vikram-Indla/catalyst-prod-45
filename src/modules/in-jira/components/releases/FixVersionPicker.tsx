@@ -6,7 +6,7 @@
 import React, { useState, useMemo } from 'react';
 import { Check, Package, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
@@ -70,19 +70,19 @@ export function FixVersionPicker({
           {selectedVersions.length > 0 ? (
             <div className="flex flex-wrap gap-1">
               {selectedVersions.map((version) => (
-                <Badge
-                  key={version.id}
-                  variant="secondary"
-                  className="text-xs pr-1"
-                >
-                  {version.name}
+                <span key={version.id} className="inline-flex items-center gap-1">
+                  <Lozenge appearance="default">
+                    {version.name}
+                  </Lozenge>
                   <button
-                    className="ml-1 hover:bg-muted rounded-full"
+                    type="button"
+                    className="hover:bg-muted rounded-full p-0.5"
                     onClick={(e) => handleRemove(version.id, e)}
+                    aria-label={`Remove ${version.name}`}
                   >
                     <X className="h-3 w-3" />
                   </button>
-                </Badge>
+                </span>
               ))}
             </div>
           ) : (

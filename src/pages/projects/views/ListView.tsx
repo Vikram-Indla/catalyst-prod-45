@@ -5,7 +5,7 @@ import { ProjectData } from '../../../types/project.types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -35,12 +35,12 @@ export default function ListView({ project }: ListViewProps) {
     });
   };
 
-  const getStatusVariant = (status: string): 'default' | 'secondary' | 'outline' => {
+  const getStatusAppearance = (status: string): LozengeAppearance => {
     switch (status) {
-      case 'DONE': return 'default';
-      case 'IN PROGRESS': return 'secondary';
-      case 'TO DO': return 'outline';
-      default: return 'outline';
+      case 'DONE': return 'success';
+      case 'IN PROGRESS': return 'inprogress';
+      case 'TO DO': return 'default';
+      default: return 'default';
     }
   };
 
@@ -107,7 +107,7 @@ export default function ListView({ project }: ListViewProps) {
                     )}
                     <span className="text-sm text-foreground">{feature.summary}</span>
                   </div>
-                  <div><Badge variant={getStatusVariant(feature.status)}>{feature.status}</Badge></div>
+                  <div><Lozenge appearance={getStatusAppearance(feature.status)}>{feature.status}</Lozenge></div>
                   <div>
                     <Avatar className="w-6 h-6">
                       <AvatarFallback className="text-[10px]">{feature.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -157,7 +157,7 @@ export default function ListView({ project }: ListViewProps) {
                           )}
                           <span className="text-sm text-foreground">{story.summary}</span>
                         </div>
-                        <div><Badge variant={getStatusVariant(story.status)}>{story.status}</Badge></div>
+                        <div><Lozenge appearance={getStatusAppearance(story.status)}>{story.status}</Lozenge></div>
                         <div>
                           <Avatar className="w-6 h-6">
                             <AvatarFallback className="text-[10px]">{story.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -194,7 +194,7 @@ export default function ListView({ project }: ListViewProps) {
                           <div className="pl-12">
                             <span className="text-sm text-foreground">{subtask.summary}</span>
                           </div>
-                          <div><Badge variant={getStatusVariant(subtask.status)}>{subtask.status}</Badge></div>
+                          <div><Lozenge appearance={getStatusAppearance(subtask.status)}>{subtask.status}</Lozenge></div>
                           <div>
                             <Avatar className="w-6 h-6">
                               <AvatarFallback className="text-[10px]">{subtask.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>

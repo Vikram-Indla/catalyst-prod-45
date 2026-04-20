@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -338,11 +338,11 @@ export function ScrumBoardPage() {
               <Card>
                 <CardHeader className="py-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    Backlog 
-                    <Badge variant="secondary">{backlogIssues.length}</Badge>
-                    <Badge variant="outline">
+                    Backlog
+                    <Lozenge appearance="inprogress">{backlogIssues.length}</Lozenge>
+                    <Lozenge appearance="default">
                       {backlogIssues.reduce((sum, i) => sum + (i.storyPoints || 0), 0)} SP
-                    </Badge>
+                    </Lozenge>
                   </CardTitle>
                 </CardHeader>
                 <Droppable droppableId="backlog">
@@ -413,9 +413,9 @@ export function ScrumBoardPage() {
                           <span className="text-sm font-medium text-text-primary">
                             {column.name}
                           </span>
-                          <Badge variant="secondary" className="text-xs h-5 px-1.5">
+                          <Lozenge appearance="inprogress">
                             {columnIssues.length}
-                          </Badge>
+                          </Lozenge>
                           <span className="text-xs text-text-tertiary">
                             {columnPoints} pts
                           </span>
@@ -478,9 +478,9 @@ export function ScrumBoardPage() {
                                         <div className="flex items-center gap-2">
                                           <Flag className={cn("h-3.5 w-3.5", PRIORITY_COLORS[issue.priority] || 'text-gray-400')} />
                                           {issue.storyPoints && (
-                                            <Badge variant="outline" className="text-xs h-5 px-1.5">
+                                            <Lozenge appearance="default">
                                               {issue.storyPoints}
-                                            </Badge>
+                                            </Lozenge>
                                           )}
                                         </div>
                                         {issue.assigneeId ? (
@@ -576,8 +576,8 @@ function SprintPanel({
           <CardTitle className="text-base flex items-center gap-2">
             {sprint.state === 'active' && <Play className="w-4 h-4 text-accent-primary" />}
             {sprint.name}
-            <Badge variant="secondary">{issues.length} issues</Badge>
-            <Badge variant="outline">{storyPoints} SP</Badge>
+            <Lozenge appearance="inprogress">{issues.length} issues</Lozenge>
+            <Lozenge appearance="default">{storyPoints} SP</Lozenge>
           </CardTitle>
           <div className="flex gap-2">
             {sprint.state === 'future' && onStart && (
@@ -665,9 +665,11 @@ function IssueRow({
       </span>
       <Flag className={cn("h-3.5 w-3.5 flex-shrink-0", PRIORITY_COLORS[issue.priority] || 'text-gray-400')} />
       {issue.storyPoints && (
-        <Badge variant="outline" className="text-xs h-5 px-1.5 flex-shrink-0">
-          {issue.storyPoints}
-        </Badge>
+        <span className="flex-shrink-0">
+          <Lozenge appearance="default">
+            {issue.storyPoints}
+          </Lozenge>
+        </span>
       )}
       {issue.assigneeId ? (
         <Avatar className="h-6 w-6 flex-shrink-0">

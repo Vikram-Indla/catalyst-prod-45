@@ -21,7 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
@@ -133,9 +133,11 @@ export function ActivityTabs({
             <MessageSquare className="h-3.5 w-3.5" />
             Comments
             {comments.length > 0 && (
-              <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px]">
-                {comments.length}
-              </Badge>
+              <span className="ml-1">
+                <Lozenge appearance="inprogress">
+                  {comments.length}
+                </Lozenge>
+              </span>
             )}
           </TabsTrigger>
           <TabsTrigger value="history" className="text-xs gap-1.5">
@@ -237,9 +239,9 @@ export function ActivityTabs({
                         {comment.authorName}
                       </span>
                       {comment.isInternal && (
-                        <Badge variant="outline" className="text-[10px] h-4 bg-yellow-100 text-yellow-800 border-yellow-300">
+                        <Lozenge appearance="moved">
                           Internal
-                        </Badge>
+                        </Lozenge>
                       )}
                       <span className="text-xs text-text-tertiary">
                         {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
@@ -395,7 +397,7 @@ export function ActivityTabs({
                     <span className="text-sm text-red-600">Breached {sla.breachedAt}</span>
                   )}
                   {sla.status === 'paused' && (
-                    <Badge variant="secondary" className="text-xs">Paused</Badge>
+                    <Lozenge appearance="moved">Paused</Lozenge>
                   )}
                 </div>
               </div>

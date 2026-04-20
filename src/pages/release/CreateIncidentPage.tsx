@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import {
   Select,
@@ -114,7 +114,7 @@ function WorkItemSearch({
               }}
               className="w-full flex items-center gap-2 px-3 py-2.5 hover:bg-muted/50 text-left text-sm border-b border-border/50 last:border-0"
             >
-              <Badge variant="outline" className="text-[10px] px-1.5 uppercase">{item.type}</Badge>
+              <Lozenge appearance="default">{item.type}</Lozenge>
               <span className="font-mono text-xs text-brand-primary font-medium">{item.key}</span>
               <span className="text-foreground truncate">{item.title}</span>
             </button>
@@ -126,7 +126,7 @@ function WorkItemSearch({
         <div className="flex flex-wrap gap-2 mt-2">
           {selected.map((item) => (
             <div key={item.id} className="flex items-center gap-1.5 px-2.5 py-1.5 bg-muted rounded-md text-xs border border-border">
-              <Badge variant="outline" className="text-[9px] px-1 uppercase">{item.type}</Badge>
+              <Lozenge appearance="default">{item.type}</Lozenge>
               <span className="font-mono text-brand-primary font-medium">{item.key}</span>
               <button type="button" onClick={() => onRemove(item.id)} className="ml-1 hover:text-destructive">
                 <X className="h-3.5 w-3.5" />
@@ -439,15 +439,13 @@ export default function CreateIncidentPage() {
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Priority</Label>
               <div className="h-10 px-3 flex items-center gap-2 bg-muted/50 rounded-md border border-border">
-                <Badge variant="outline" className={cn(
-                  "text-xs font-semibold px-2 border",
-                  calculatedPriority === 'P1' && 'bg-[var(--sem-danger-bg)] text-[var(--sem-danger)] border-[var(--sem-danger-border)]',
-                  calculatedPriority === 'P2' && 'bg-[var(--sem-warning-bg)] text-[var(--sem-warning)] border-[var(--sem-warning-border)]',
-                  calculatedPriority === 'P3' && 'bg-[var(--sem-high-bg)] text-[var(--sem-high)] border-[var(--sem-warning-border)]',
-                  calculatedPriority === 'P4' && 'bg-[var(--sem-info-bg)] text-[var(--sem-info)] border-[var(--sem-info-border)]',
-                )}>
+                <Lozenge appearance={
+                  calculatedPriority === 'P1' ? 'removed' :
+                  calculatedPriority === 'P2' ? 'moved' :
+                  'default'
+                }>
                   {calculatedPriority}
-                </Badge>
+                </Lozenge>
                 <span className="text-xs text-muted-foreground">Auto-calculated</span>
               </div>
             </div>
@@ -563,10 +561,9 @@ export default function CreateIncidentPage() {
             <div className="flex items-center justify-between">
               <Label className="text-sm font-semibold text-foreground">Attachments</Label>
               {attachments.length > 0 && (
-                <Badge variant="secondary" className="text-xs">
-                  <Paperclip className="h-3 w-3 mr-1" />
+                <Lozenge appearance="default">
                   {attachments.length} file{attachments.length > 1 ? 's' : ''}
-                </Badge>
+                </Lozenge>
               )}
             </div>
             <div 

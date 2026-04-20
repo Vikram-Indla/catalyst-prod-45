@@ -10,7 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
@@ -269,16 +269,15 @@ export default function DependencyMapsPage() {
 
                     {/* Metadata */}
                     <div className="flex items-center gap-2 ml-auto">
-                      <Badge variant="outline" className="text-xs">
-                        {dep.dependency_level_v2 === 'execution' ? 'Epic' : 
+                      <Lozenge appearance="default">
+                        {dep.dependency_level_v2 === 'execution' ? 'Epic' :
                          dep.dependency_level_v2 === 'delivery' ? 'Feature' : 'Cross-Level'}
-                      </Badge>
-                      <Badge 
-                        variant={dep.status === 'committed' || dep.status === 'delivered' ? 'default' : 'secondary'}
-                        className="text-xs"
+                      </Lozenge>
+                      <Lozenge
+                        appearance={dep.status === 'committed' || dep.status === 'delivered' ? 'inprogress' : 'default'}
                       >
                         {DEPENDENCY_STATUS_LABELS[dep.status as keyof typeof DEPENDENCY_STATUS_LABELS]?.replace(' (Legacy)', '') || dep.status}
-                      </Badge>
+                      </Lozenge>
                       {dep.needed_by_date && (
                         <span className="text-xs text-muted-foreground">
                           {dep.needed_by_date}

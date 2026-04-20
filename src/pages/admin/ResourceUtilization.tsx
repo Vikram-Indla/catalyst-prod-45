@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { 
   Search, 
@@ -527,9 +527,9 @@ export default function ResourceUtilization() {
                             </TableCell>
                             <TableCell className="sticky left-[270px] bg-background">
                               {resource.assignment_name ? (
-                                <Badge variant="outline" className="font-normal">
+                                <Lozenge appearance="default">
                                   {resource.assignment_name}
-                                </Badge>
+                                </Lozenge>
                               ) : (
                                 <span className="text-muted-foreground italic text-sm">Unassigned</span>
                               )}

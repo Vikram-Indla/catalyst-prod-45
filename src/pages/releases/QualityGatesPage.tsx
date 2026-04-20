@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -148,13 +148,13 @@ function GateCard({
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-foreground truncate">{gate.gate_name}</h3>
-              <Badge variant={gate.is_blocking ? 'destructive' : 'secondary'} className="text-xs">
+              <Lozenge appearance={gate.is_blocking ? 'removed' : 'default'}>
                 {gate.is_blocking ? 'Blocking' : 'Warning'}
-              </Badge>
+              </Lozenge>
               {status === 'waived' && (
-                <Badge variant="outline" className="bg-purple-500/10 text-purple-700 border-purple-500/20 text-xs">
+                <Lozenge appearance="new">
                   Waived
-                </Badge>
+                </Lozenge>
               )}
             </div>
             <div className="flex items-center gap-3 mt-0.5 text-xs text-muted-foreground">
@@ -507,7 +507,7 @@ function GateHistorySheet({
                         <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                           <span>{format(new Date(entry.created_at), 'MMM d, yyyy h:mm a')}</span>
                           {entry.evaluated_by_name && <span>by {entry.evaluated_by_name}</span>}
-                          <Badge variant="outline" className="text-xs">{entry.evaluation_type}</Badge>
+                          <Lozenge appearance="default">{entry.evaluation_type}</Lozenge>
                         </div>
                         {entry.previous_status && (
                           <div className="text-xs text-muted-foreground mt-1">

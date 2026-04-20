@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Lozenge, type LozengeAppearance } from "@/components/ads";
 import { Plus, Trash2, ExternalLink } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,19 +47,12 @@ export function ChildObjectivesTab({ objectiveId }: ChildObjectivesTabProps) {
     },
   });
 
-  const getScoreColor = (score: number | null) => {
-    if (score === null) return "gray";
-    if (score >= 0.7) return "green";
-    if (score >= 0.4) return "yellow";
-    return "red";
-  };
-
-  const getScoreVariant = (score: number | null): any => {
-    const color = getScoreColor(score);
-    if (color === "green") return "default";
-    if (color === "yellow") return "secondary";
-    if (color === "red") return "destructive";
-    return "outline";
+  // §L38 Atlaskit Lozenge appearance — maps score threshold to canonical colour.
+  const getScoreAppearance = (score: number | null): LozengeAppearance => {
+    if (score === null) return "default";   // grey (N/A)
+    if (score >= 0.7) return "success";      // green
+    if (score >= 0.4) return "moved";        // yellow
+    return "removed";                         // red
   };
 
   return (
@@ -94,13 +87,13 @@ export function ChildObjectivesTab({ objectiveId }: ChildObjectivesTabProps) {
                     <span className="text-sm">{child.summary}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">{child.tier}</Badge>
-                    <Badge variant={getScoreVariant(child.score)}>
+                    <Lozenge appearance="default">{child.tier}</Lozenge>
+                    <Lozenge appearance={getScoreAppearance(child.score)}>
                       {child.score !== null ? (child.score * 100).toFixed(0) + "%" : "N/A"}
-                    </Badge>
-                    <Badge variant="outline">
-                      {child.status?.replace("_", " ").toUpperCase() || "PENDING"}
-                    </Badge>
+                    </Lozenge>
+                    <Lozenge appearance="default">
+                      {child.status?.replace("_", " ") || "pending"}
+                    </Lozenge>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
