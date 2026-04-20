@@ -140,10 +140,13 @@ export function WorkCardAssigneePicker({
 
   // Position the popover via portal — trigger lives inside a clipped/scrollable
   // card list, so a fixed-position portal escapes the overflow:hidden ancestor.
+  // Anchor popover's RIGHT edge to the trigger's right edge so it opens
+  // leftward into the navigator panel — never bleeds into the middle pane.
   const rect = triggerRef.current?.getBoundingClientRect();
   const top = (rect?.bottom ?? 0) + 4;
-  const width = 280;
-  const left = Math.min(rect?.left ?? 0, window.innerWidth - width - 16);
+  const width = 260;
+  const right = Math.max(8, window.innerWidth - (rect?.right ?? 0));
+  const left = Math.max(8, (rect?.right ?? width + 8) - width);
 
   return (
     <>
