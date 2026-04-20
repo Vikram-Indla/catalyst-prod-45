@@ -9,30 +9,52 @@ import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import BookIcon from '@atlaskit/icon/glyph/book';
 import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
 
-export type Hub = {
+export type HubTileColor =
+  | 'purple'
+  | 'blue'
+  | 'teal'
+  | 'orange'
+  | 'green'
+  | 'red'
+  | 'yellow'
+  | 'magenta'
+  | 'lime';
+
+export interface Hub {
   id: string;
-  name: string;
-  route: string;
-  tileColor: string;
-  glyph: (label: string) => ReactNode;
-  matcher: (pathname: string) => boolean;
-};
+  label: string;
+  path: string;
+  tileColor: HubTileColor;
+  glyph: ReactNode;
+}
 
 const iconProps = (label: string) => ({ label, size: 'medium' as const, primaryColor: 'currentColor' });
 const renderIcon = (Icon: React.ComponentType<any>, label: string) => createElement(Icon, iconProps(label));
 
 export const HUBS: Hub[] = [
-  { id: 'enterprise', name: 'Enterprise Hub', route: '/enterprise', tileColor: 'color.background.accent.purple.bolder', glyph: (label) => renderIcon(OfficeBuildingIcon, label), matcher: (p) => p.startsWith('/enterprise') || p.startsWith('/strategyhub') },
-  { id: 'product', name: 'Product Room', route: '/product', tileColor: 'color.background.accent.blue.bolder', glyph: (label) => renderIcon(PortfolioIcon, label), matcher: (p) => p.startsWith('/product') || p.startsWith('/producthub') },
-  { id: 'project', name: 'Project', route: '/project', tileColor: 'color.background.accent.teal.bolder', glyph: (label) => renderIcon(FolderIcon, label), matcher: (p) => p.startsWith('/project') || p.startsWith('/project-hub') },
-  { id: 'release', name: 'Release', route: '/release', tileColor: 'color.background.accent.orange.bolder', glyph: (label) => renderIcon(ShipIcon, label), matcher: (p) => p.startsWith('/release') || p.startsWith('/release-hub') },
-  { id: 'test', name: 'Test', route: '/test', tileColor: 'color.background.accent.green.bolder', glyph: (label) => renderIcon(TaskIcon, label), matcher: (p) => p.startsWith('/test') || p.startsWith('/testhub') },
-  { id: 'incident', name: 'Incident', route: '/incident', tileColor: 'color.background.accent.red.bolder', glyph: (label) => renderIcon(WarningIcon, label), matcher: (p) => p.startsWith('/incident') || p.startsWith('/incident-hub') },
-  { id: 'task', name: 'Task', route: '/task', tileColor: 'color.background.accent.yellow.bolder', glyph: (label) => renderIcon(CheckCircleIcon, label), matcher: (p) => p.startsWith('/task') || p.startsWith('/taskhub') || p.startsWith('/priorities') },
-  { id: 'plan', name: 'Plan', route: '/plan', tileColor: 'color.background.accent.magenta.bolder', glyph: (label) => renderIcon(CalendarIcon, label), matcher: (p) => p.startsWith('/plan') || p.startsWith('/planhub') },
-  { id: 'wiki', name: 'Wiki', route: '/wiki', tileColor: 'color.background.accent.lime.bolder', glyph: (label) => renderIcon(BookIcon, label), matcher: (p) => p.startsWith('/wiki') },
+  { id: 'enterprise', label: 'Enterprise Hub', path: '/enterprise', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'Enterprise Hub') },
+  { id: 'product', label: 'Product Room', path: '/product', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'Product Room') },
+  { id: 'project', label: 'Project', path: '/project', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'Project') },
+  { id: 'release', label: 'Release', path: '/release', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'Release') },
+  { id: 'test', label: 'Test', path: '/test', tileColor: 'green', glyph: renderIcon(TaskIcon, 'Test') },
+  { id: 'incident', label: 'Incident', path: '/incident', tileColor: 'red', glyph: renderIcon(WarningIcon, 'Incident') },
+  { id: 'task', label: 'Task', path: '/task', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'Task') },
+  { id: 'plan', label: 'Plan', path: '/plan', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'Plan') },
+  { id: 'wiki', label: 'Wiki', path: '/wiki', tileColor: 'lime', glyph: renderIcon(BookIcon, 'Wiki') },
 ];
 
+const routeAliases: Record<string, string[]> = {
+  enterprise: ['/enterprise', '/strategyhub'],
+  product: ['/product', '/producthub'],
+  project: ['/project', '/project-hub'],
+  release: ['/release', '/release-hub'],
+  test: ['/test', '/testhub'],
+  incident: ['/incident', '/incident-hub'],
+  task: ['/task', '/taskhub', '/priorities'],
+  plan: ['/plan', '/planhub'],
+  wiki: ['/wiki'],
+};
+
 export function getActiveHub(pathname: string): Hub | null {
-  return HUBS.find((hub) => hub.matcher(pathname)) ?? null;
+  return HUBS.find((hub) => routeAliases[hub.id]?.some((route) => pathname.startsWith(route))) ?? null;
 }
