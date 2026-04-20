@@ -17,6 +17,7 @@ import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 import { WorkflowProvider } from "./lib/workflows";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { useCommandK } from "@/hooks/useCommandK";
 
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
@@ -54,7 +55,10 @@ const S = ({ children }: { children: React.ReactNode }) => (
 );
 
 
-const App = () => (
+function App() {
+  useCommandK();
+
+  return (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
@@ -131,6 +135,7 @@ const App = () => (
     </ThemeProvider>
   </QueryClientProvider>
   </ErrorBoundary>
-);
+  );
+}
 
 export default App;
