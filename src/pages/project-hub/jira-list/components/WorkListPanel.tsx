@@ -5,6 +5,7 @@
 import React, { useMemo, useState } from 'react';
 import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/types/workItem.types';
 
 interface Props {
@@ -139,14 +140,34 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
                   <WorkItemTypeIcon type={item.type} size={14} />
                   {item.jiraKey}
                 </span>
-                <div style={{
-                  width: 28, height: 28, borderRadius: '50%',
-                  background: item.assignee?.color || '#6554C0',
-                  color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontWeight: 800, fontSize: 11, flexShrink: 0,
-                }}>
-                  {item.assignee?.initials || 'NA'}
-                </div>
+                {(() => {
+                  // §19 chokepoint: resolve local avatar PNG from display name.
+                  // Returns null when no face is available → fall back to the
+                  // canonical initials tile (Jira-parity colored circle).
+                  const localUrl = resolveAvatarUrl(item.assignee?.name);
+                  if (localUrl) {
+                    return (
+                      <img
+                        src={localUrl}
+                        alt={item.assignee?.name ?? ''}
+                        style={{
+                          width: 28, height: 28, borderRadius: '50%',
+                          objectFit: 'cover', flexShrink: 0, display: 'block',
+                        }}
+                      />
+                    );
+                  }
+                  return (
+                    <div style={{
+                      width: 28, height: 28, borderRadius: '50%',
+                      background: item.assignee?.color || '#6554C0',
+                      color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontWeight: 800, fontSize: 11, flexShrink: 0,
+                    }}>
+                      {item.assignee?.initials || 'NA'}
+                    </div>
+                  );
+                })()}
               </div>
             </button>
           );
