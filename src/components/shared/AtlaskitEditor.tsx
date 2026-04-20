@@ -162,9 +162,7 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
             allowTables={{ advanced: false }}
             allowPanel
             allowTasksAndDecisions
-<<<<<<< Updated upstream
             media={mediaOptions}
-=======
             /* 2026-04-20 — See EpicDescriptionEditor for the rationale:
                the narrower allow-list silently dropped expand / layout /
                status / date nodes on load, causing view→edit content
@@ -176,7 +174,6 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
             allowStatus
             allowDate
             allowBreakout
->>>>>>> Stashed changes
             shouldFocus={false}
           />
         </Suspense>
