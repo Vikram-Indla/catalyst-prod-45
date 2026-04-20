@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Plus, GripVertical, Settings as SettingsIcon, Trash2 } from 'lucide-react';
 import {
   Dialog,
@@ -113,7 +113,7 @@ export function ColumnsSetupTab({ boardId, columns }: ColumnsSetupTabProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold text-foreground">Columns</h3>
-          <Badge variant="secondary">{columns.length} columns</Badge>
+          <Lozenge appearance="inprogress">{columns.length} columns</Lozenge>
         </div>
 
         {columns.length === 0 ? (
@@ -130,9 +130,9 @@ export function ColumnsSetupTab({ boardId, columns }: ColumnsSetupTabProps) {
                     <span className="font-medium text-foreground min-w-[160px]">
                       {column.name}
                     </span>
-                    <Badge variant="outline" className="text-xs">
+                    <Lozenge appearance="default">
                       {column.column_type}
-                    </Badge>
+                    </Lozenge>
                     <span className="text-sm text-muted-foreground">
                       WIP: {column.wip_limit || '—'}
                     </span>

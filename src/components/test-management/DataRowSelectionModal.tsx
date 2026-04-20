@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Loader2, Database, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { DataRowSelection } from '@/hooks/test-management/useCreateRunWithDataRows';
@@ -130,9 +130,9 @@ export function DataRowSelectionModal({
                 {allSelected ? 'Deselect all' : 'Select all'}
               </span>
             </div>
-            <Badge variant="secondary" className="text-xs">
+            <Lozenge appearance="inprogress">
               {selectedIds.size} of {rows.length} selected
-            </Badge>
+            </Lozenge>
           </div>
 
           {/* Row List */}
@@ -156,12 +156,11 @@ export function DataRowSelectionModal({
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="outline" 
-                        className="text-xs font-mono shrink-0"
-                      >
-                        Row {row.row_order + 1}
-                      </Badge>
+                      <span className="shrink-0">
+                        <Lozenge appearance="default">
+                          Row {row.row_order + 1}
+                        </Lozenge>
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 truncate">
                       {formatRowPreview(row) || 'No data'}

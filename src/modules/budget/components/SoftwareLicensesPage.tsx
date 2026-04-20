@@ -8,7 +8,7 @@ import { Plus, Search, Edit, Trash2, Package, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
@@ -103,9 +103,9 @@ export function SoftwareLicensesPage() {
 
   const getLicenseTypeBadge = (type: string) => {
     if (type === 'monthly') {
-      return <Badge variant="outline" className="text-purple-600 border-purple-300">Monthly</Badge>;
+      return <Lozenge appearance="default">Monthly</Lozenge>;
     }
-    return <Badge variant="outline" className="text-blue-600 border-blue-300">Annual</Badge>;
+    return <Lozenge appearance="default">Annual</Lozenge>;
   };
 
   return (
@@ -244,7 +244,7 @@ export function SoftwareLicensesPage() {
                       </TableCell>
                       <TableCell>
                         {departmentName ? (
-                          <Badge variant="outline">{departmentName}</Badge>
+                          <Lozenge appearance="default">{departmentName}</Lozenge>
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}

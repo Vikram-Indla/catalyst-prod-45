@@ -1,8 +1,7 @@
 import { Edit, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
 import type { Incident } from '@/types/release';
 
 interface IncidentHeaderProps {
@@ -16,30 +15,30 @@ interface IncidentHeaderProps {
 }
 
 /**
- * Severity colors using Catalyst V5 semantic tokens
+ * Severity → Lozenge appearance
  */
-const getSeverityColor = (severity: string) => {
+const getSeverityAppearance = (severity: string): LozengeAppearance => {
   switch (severity) {
-    case 'SEV1': return 'bg-[var(--sem-danger)] text-[var(--text-inverse)]';
-    case 'SEV2': return 'bg-[var(--sem-warning)] text-[var(--text-inverse)]';
-    case 'SEV3': return 'bg-[var(--sem-high)] text-[var(--text-inverse)]';
-    default: return 'bg-muted text-muted-foreground';
+    case 'SEV1': return 'removed';
+    case 'SEV2': return 'moved';
+    case 'SEV3': return 'default';
+    default: return 'default';
   }
 };
 
 /**
- * Status colors using Catalyst V5 semantic tokens
+ * Status → Lozenge appearance
  */
-const getStatusColor = (status: string) => {
+const getStatusAppearance = (status: string): LozengeAppearance => {
   switch (status) {
-    case 'open': return { bg: 'bg-[var(--sem-info-bg)]', text: 'text-[var(--sem-info)]' };
-    case 'in-progress': return { bg: 'bg-[var(--sem-warning-bg)]', text: 'text-[var(--sem-warning)]' };
-    case 'pending': return { bg: 'bg-[var(--sem-high-bg)]', text: 'text-[var(--sem-high)]' };
-    case 'resolved': return { bg: 'bg-[var(--sem-success-bg)]', text: 'text-[var(--sem-success)]' };
-    case 'closed': return { bg: 'bg-[var(--sem-medium-bg)]', text: 'text-[var(--sem-medium)]' };
-    case 'reopened': return { bg: 'bg-[var(--sem-danger-bg)]', text: 'text-[var(--sem-danger)]' };
-    case 'cancelled': return { bg: 'bg-[var(--sem-low-bg)]', text: 'text-[var(--sem-low)]' };
-    default: return { bg: 'bg-muted', text: 'text-muted-foreground' };
+    case 'open': return 'removed';
+    case 'in-progress': return 'inprogress';
+    case 'pending': return 'moved';
+    case 'resolved': return 'success';
+    case 'closed': return 'default';
+    case 'reopened': return 'removed';
+    case 'cancelled': return 'default';
+    default: return 'default';
   }
 };
 
@@ -52,8 +51,6 @@ export function IncidentHeader({
   onCancel,
   onSummaryChange,
 }: IncidentHeaderProps) {
-  const statusColors = getStatusColor(incident.status);
-
   return (
     <div className="border-b border-border bg-card">
       {/* Edit Mode Banner */}
@@ -79,19 +76,19 @@ export function IncidentHeader({
       {/* Incident Title - Fixed height for alignment */}
       <div className="h-[72px] px-6 flex flex-col justify-center">
         <div className="flex items-center gap-3 mb-1">
-          <Badge className="bg-primary/10 text-primary border-0 font-semibold text-xs">
+          <Lozenge appearance="inprogress">
             {incident.id}
-          </Badge>
-          <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'border-0 font-semibold text-xs')}>
+          </Lozenge>
+          <Lozenge appearance={getSeverityAppearance(incident.severity || 'SEV3')}>
             {incident.severity || 'SEV3'}
-          </Badge>
-          <Badge className={cn(statusColors.bg, statusColors.text, 'border-0 font-medium capitalize text-xs')}>
+          </Lozenge>
+          <Lozenge appearance={getStatusAppearance(incident.status)}>
             {incident.status.replace('-', ' ')}
-          </Badge>
+          </Lozenge>
           {incident.isMajorIncident && (
-            <Badge className="bg-[var(--sem-danger)] text-[var(--text-inverse)] border-0 font-semibold text-xs">
-              🚨 Major Incident
-            </Badge>
+            <Lozenge appearance="removed">
+              Major Incident
+            </Lozenge>
           )}
         </div>
         

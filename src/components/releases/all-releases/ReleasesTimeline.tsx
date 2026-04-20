@@ -6,7 +6,6 @@
 import { useMemo } from 'react';
 import { Release, STATUS_CONFIG, HEALTH_CONFIG } from '@/types/releases';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachMonthOfInterval, addMonths } from 'date-fns';
 

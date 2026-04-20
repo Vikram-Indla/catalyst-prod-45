@@ -6,7 +6,7 @@
 
 import { useMemo } from 'react';
 import { Database, Info } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Tooltip,
   TooltipContent,
@@ -79,9 +79,9 @@ export function TestDataPanel({
           </Tooltip>
         </div>
         {rowNumber && (
-          <Badge variant="outline" className="text-xs">
+          <Lozenge appearance="default">
             Data Row: {rowNumber}{totalRows ? ` of ${totalRows}` : ''}
-          </Badge>
+          </Lozenge>
         )}
       </div>
 
@@ -137,24 +137,19 @@ export function TestDataPanelCompact({
 
   return (
     <div className={cn("flex items-center gap-2 flex-wrap", className)}>
-      <Badge variant="outline" className="gap-1.5">
-        <Database className="h-3 w-3" />
+      <Lozenge appearance="default">
         {rowNumber ? `Row ${rowNumber}` : 'Test Data'}
-      </Badge>
+      </Lozenge>
       {entries.map(([key, value]) => (
-        <Badge 
-          key={key} 
-          variant="secondary" 
-          className="text-xs font-normal max-w-[180px]"
-        >
+        <Lozenge key={key} appearance="default">
           <span className="font-medium">{key}:</span>
-          <span className="ml-1 truncate">{value || '—'}</span>
-        </Badge>
+          <span className="ml-1">{value || '—'}</span>
+        </Lozenge>
       ))}
       {remaining > 0 && (
-        <Badge variant="secondary" className="text-xs">
+        <Lozenge appearance="default">
           +{remaining} more
-        </Badge>
+        </Lozenge>
       )}
     </div>
   );

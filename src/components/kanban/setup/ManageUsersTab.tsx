@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useBoardUsers, useAddBoardUser } from '@/hooks/useKanbanBoards';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Plus, Trash2 } from 'lucide-react';
 import {
@@ -100,9 +100,11 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
         <div className="space-y-3">
           {USER_ROLES.map((role) => (
             <div key={role.value} className="flex items-start gap-3 pb-3 border-b border-border last:border-0">
-              <Badge variant="outline" className="mt-0.5">
-                {role.label}
-              </Badge>
+              <span className="mt-0.5">
+                <Lozenge appearance="default">
+                  {role.label}
+                </Lozenge>
+              </span>
               <p className="text-sm text-muted-foreground flex-1">{role.description}</p>
             </div>
           ))}
@@ -113,7 +115,7 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold text-foreground">Current Users</h3>
-          <Badge variant="secondary">{boardUsers.length} users</Badge>
+          <Lozenge appearance="inprogress">{boardUsers.length} users</Lozenge>
         </div>
 
         {boardUsers.length === 0 ? (
@@ -141,7 +143,7 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Badge variant="outline">{user.role}</Badge>
+                    <Lozenge appearance="default">{user.role}</Lozenge>
                     <Button variant="ghost" size="sm">
                       <Trash2 className="w-4 h-4 text-destructive" />
                     </Button>

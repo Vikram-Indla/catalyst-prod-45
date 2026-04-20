@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, Edit3, Users, Circle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   Tooltip,
   TooltipContent,
@@ -139,9 +139,9 @@ export function CollaborationIndicator({
               ))}
             </div>
             {collaborators.length > 3 && (
-              <Badge variant="secondary" className="text-[10px] h-5">
+              <Lozenge appearance="default">
                 +{collaborators.length - 3}
-              </Badge>
+              </Lozenge>
             )}
             {activeEditors.length > 0 && (
               <motion.div
@@ -180,15 +180,9 @@ export function CollaborationIndicator({
                     </p>
                   </div>
                   {c.status === 'editing' ? (
-                    <Badge variant="default" className="text-[10px] h-5 gap-1">
-                      <Edit3 className="w-3 h-3" />
-                      Editing
-                    </Badge>
+                    <Lozenge appearance="inprogress">Editing</Lozenge>
                   ) : (
-                    <Badge variant="secondary" className="text-[10px] h-5 gap-1">
-                      <Eye className="w-3 h-3" />
-                      Viewing
-                    </Badge>
+                    <Lozenge appearance="default">Viewing</Lozenge>
                   )}
                 </div>
               ))}

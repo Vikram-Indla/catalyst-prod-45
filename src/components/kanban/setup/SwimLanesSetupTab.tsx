@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Plus, GripVertical, Trash2, ChevronDown, ChevronRight } from 'lucide-react';
 import type { SwimLane } from '@/types/kanban.types';
 
@@ -71,7 +71,7 @@ export function SwimLanesSetupTab({ boardId, swimLanes }: SwimLanesSetupTabProps
       <div className="space-y-2">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold text-foreground">Swim Lanes</h3>
-          <Badge variant="secondary">{swimLanes.length} lanes</Badge>
+          <Lozenge appearance="inprogress">{swimLanes.length} lanes</Lozenge>
         </div>
 
         {swimLanes.length === 0 ? (

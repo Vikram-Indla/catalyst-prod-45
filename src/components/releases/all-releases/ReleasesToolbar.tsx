@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Search, Filter, X, LayoutList, GanttChartSquare } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
@@ -69,9 +69,9 @@ export function ReleasesToolbar({
             <Filter className="w-4 h-4" />
             Filters
             {activeFilterCount > 0 && (
-              <Badge className="ml-1 px-1.5 py-0 text-[10px] bg-primary text-white">
-                {activeFilterCount}
-              </Badge>
+              <span className="ml-1">
+                <Lozenge appearance="inprogress">{activeFilterCount}</Lozenge>
+              </span>
             )}
           </Button>
         </PopoverTrigger>

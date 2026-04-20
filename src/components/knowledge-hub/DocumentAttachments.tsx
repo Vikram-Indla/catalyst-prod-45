@@ -9,7 +9,7 @@ import { useState, useCallback } from 'react';
 import { Paperclip, Upload, File, Trash2, Download, FileText, Image, FileArchive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -181,7 +181,7 @@ export function DocumentAttachments({ documentId }: DocumentAttachmentsProps) {
         <Paperclip className="h-5 w-5 text-brand-primary" />
         <h3 className="font-semibold">Attachments</h3>
         {attachments && attachments.length > 0 && (
-          <Badge variant="secondary">{attachments.length}</Badge>
+          <Lozenge appearance="inprogress">{attachments.length}</Lozenge>
         )}
       </div>
 

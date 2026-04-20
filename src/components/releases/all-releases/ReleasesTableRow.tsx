@@ -3,11 +3,12 @@
 // Individual row with hover actions
 // =====================================================
 
-import { Release, STATUS_CONFIG, HEALTH_CONFIG } from '@/types/releases';
+import { Release, STATUS_CONFIG, HEALTH_CONFIG, ReleaseStatus } from '@/types/releases';
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
+import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Pencil, Archive, Trash2, AlertTriangle } from 'lucide-react';
@@ -20,6 +21,14 @@ interface Props {
   isSelected: boolean;
   onToggleSelect: (id: string, index: number, shiftKey: boolean) => void;
 }
+
+const STATUS_APPEARANCE: Record<ReleaseStatus, LozengeAppearance> = {
+  planning: 'default',
+  active: 'inprogress',
+  uat: 'moved',
+  released: 'success',
+  archived: 'default',
+};
 
 export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }: Props) {
   const navigate = useNavigate();
