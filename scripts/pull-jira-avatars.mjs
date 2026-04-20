@@ -108,15 +108,9 @@ async function downloadAvatar(url) {
 
 async function main() {
   await mkdir(AVATARS_DIR, { recursive: true });
-  const env = await loadEnv();
-  const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL;
-  const anonKey = env.VITE_SUPABASE_PUBLISHABLE_KEY || env.SUPABASE_PUBLISHABLE_KEY;
-  if (!supabaseUrl || !anonKey) {
-    throw new Error('Missing VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY in .env');
-  }
 
-  console.log(`→ Reading active jira_identity_map rows from ${supabaseUrl}`);
-  const rows = await fetchIdentityMap(supabaseUrl, anonKey);
+  console.log(`→ Loading active jira_identity_map rows from local dump`);
+  const rows = await fetchIdentityMap();
   console.log(`  found ${rows.length} active users with avatar_url`);
 
   // Pass 1: download all bytes, hash, group by md5
