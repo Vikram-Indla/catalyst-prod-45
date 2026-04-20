@@ -85,76 +85,68 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
         </h1>
       </div>
 
-      {/* Split region — claims remaining vertical space. `minHeight: 0` is
-          the magic that makes the inner panels' overflow:auto actually
-          scroll instead of blowing out the page. ResizeObserver on this
-          element drives the responsive collapse. */}
+      {/* Split region — 3-panel responsive model (corrected 2026-04-20):
+          • Wide   (≥1120px): [Navigator 260px] [Middle flex] [Right sidebar inside detail]
+          • Narrow (<1120px): right sidebar hides (via @container in CatalystViewBase),
+                              middle detail panel hides here, navigator takes full width.
+          • The navigator (left list) is the LAST panel to collapse, matching
+            Jira Cloud's tablet behavior — users still need to browse work items
+            even when there's no room for the detail surface. */}
       <div ref={splitRef} style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden', gap: 8, padding: '6px 8px 8px' }}>
-          {/* Left: WorkListPanel — Jira parity container
-              (measured 2026-04-18): 260px wide / #F8F8F8 / 4px radius / no border.
-              Inner cards are white so they elevate against the gray backdrop.
-              In narrow mode the list collapses entirely so the detail panel
-              (with its breadcrumb + Prev/Next nav chevrons) reclaims the
-              full row — matches Jira Cloud's responsive behavior on tablets. */}
-          {!isNarrow && (
-            <div style={{
-              width: 260,
-              flexShrink: 0, background: '#F8F8F8',
-              border: 'none', borderRadius: 4,
-              overflow: 'hidden', display: 'flex', flexDirection: 'column',
-              padding: '0 2px',
-            }}>
-              <WorkListPanel
-                items={items}
-                selectedKey={activeItem?.id ?? null}
-                onSelect={id => setActiveItemId(id)}
-              />
-            </div>
-          )}
+          {/* Navigator (left) — always visible; expands to full width when narrow. */}
+          <div style={{
+            width: isNarrow ? '100%' : 260,
+            flexShrink: 0, background: '#F8F8F8',
+            border: 'none', borderRadius: 4,
+            overflow: 'hidden', display: 'flex', flexDirection: 'column',
+            padding: '0 2px',
+          }}>
+            <WorkListPanel
+              items={items}
+              selectedKey={activeItem?.id ?? null}
+              onSelect={id => setActiveItemId(id)}
+            />
+          </div>
 
-          {/* Center + Right: CatalystDetailRouter (canonical Atlaskit detail).
-              Always visible — it owns the breadcrumb + Prev/Next chevrons
-              that drive navigation when the list is collapsed. The inner
-              right sidebar auto-hides via @container query in CatalystViewBase
-              when this region itself is narrow. */}
-          {activeItem ? (
-            <div style={{
-              flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
-              background: token('elevation.surface', '#FFFFFF'),
-              borderRadius: '0 10px 10px 0', overflow: 'hidden',
-            }}>
-              <Suspense fallback={
-                <div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C'), fontSize: 14 }}>
-                  Loading…
-                </div>
-              }>
-                <CatalystDetailRouter
-                  isOpen={true}
-                  onClose={() => setActiveItemId(null)}
-                  // CatalystDetailRouter queries ph_issues by UUID PK —
-                  // WorkItem.id is the issue_key (e.g. "BAU-5500"), NOT a UUID.
-                  // Use dbId (ph_issues.id). CLAUDE.md §L39 warns that
-                  // passing the issue_key here yields a silent 400 and an
-                  // empty issue object → title falls back to "—".
-                  itemId={activeItem.dbId || activeItem.id}
-                  itemType={activeItem.type}
-                  projectId={projectId}
-                  projectKey={projectKey}
-                  onOpenItem={(id) => setActiveItemId(id)}
-                  panelMode={true}
-                  navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
-                  onNavigate={handleNavigate}
-                />
-              </Suspense>
-            </div>
-          ) : (
-            <div style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: token('color.text.subtlest', '#6B778C'), fontSize: 14,
-              fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-            }}>
-              Select an item to view details
-            </div>
+          {/* Middle + Right detail surface — hidden in narrow mode. Right
+              sidebar inside CatalystViewBase auto-hides via @container query
+              before this entire panel collapses. */}
+          {!isNarrow && (
+            activeItem ? (
+              <div style={{
+                flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
+                background: token('elevation.surface', '#FFFFFF'),
+                borderRadius: '0 10px 10px 0', overflow: 'hidden',
+              }}>
+                <Suspense fallback={
+                  <div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C'), fontSize: 14 }}>
+                    Loading…
+                  </div>
+                }>
+                  <CatalystDetailRouter
+                    isOpen={true}
+                    onClose={() => setActiveItemId(null)}
+                    // CLAUDE.md §L39 — must pass UUID dbId, not issue_key.
+                    itemId={activeItem.dbId || activeItem.id}
+                    itemType={activeItem.type}
+                    projectId={projectId}
+                    projectKey={projectKey}
+                    onOpenItem={(id) => setActiveItemId(id)}
+                    panelMode={true}
+                    navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+                    onNavigate={handleNavigate}
+                  />
+                </Suspense>
+              </div>
+            ) : (
+              <div style={{
+                flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: token('color.text.subtlest', '#6B778C'), fontSize: 14,
+                fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
+              }}>
+                Select an item to view details
+              </div>
+            )
           )}
       </div>
     </div>
