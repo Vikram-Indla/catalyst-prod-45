@@ -111,7 +111,9 @@ export function CatalystDefectKeyRows({
       )
     : [];
 
-  const resolution = issue?.resolution?.trim() || null;
+  const resolution = typeof (issue as { resolution?: unknown } | null | undefined)?.resolution === 'string'
+    ? ((issue as { resolution?: string }).resolution?.trim() || null)
+    : null;
 
   return (
     <>

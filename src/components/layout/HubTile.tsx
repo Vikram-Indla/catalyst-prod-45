@@ -36,7 +36,9 @@ export function HubTile({ label, color, glyph, href }: HubTileProps) {
     <Box xcss={[tileLayoutStyles, tileStyles[color]]}>
       <Stack alignInline="center" space="space.150">
         <Box xcss={glyphStyles}>{glyph}</Box>
-        <Text size="small" weight="semibold" color="color.text.inverse" xcss={labelStyles}>{label}</Text>
+        <Box xcss={labelStyles}>
+          <Text size="small" weight="semibold" color="color.text.inverse">{label}</Text>
+        </Box>
       </Stack>
     </Box>
   );
