@@ -48,8 +48,6 @@ const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
-<<<<<<< Updated upstream
-  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
   const [overlayItemId, setOverlayItemId] = useState<string | null>(null);
@@ -67,8 +65,6 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-=======
->>>>>>> Stashed changes
 
   /* A4 chokepoint: dual-shape lookup (id/dbId), URL param hydration
      (`?issue=BAU-5047`), URL param sync, and split-view auto-select-
