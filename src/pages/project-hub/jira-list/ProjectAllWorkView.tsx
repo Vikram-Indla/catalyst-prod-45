@@ -18,6 +18,9 @@ import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
+const StoryDetailModal = lazy(
+  () => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'),
+);
 
 interface Props {
   projectKey: string;
@@ -38,6 +41,9 @@ const SPLIT_BREAKPOINT_PX = 1120;
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
+  /** In narrow mode the middle panel is hidden — clicking a card opens
+   *  StoryDetailModal as a full overlay instead (Jira parity). */
+  const [overlayItemId, setOverlayItemId] = useState<string | null>(null);
 
   const splitRef = useRef<HTMLDivElement>(null);
   const [isNarrow, setIsNarrow] = useState(false);
@@ -104,7 +110,11 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             <WorkListPanel
               items={items}
               selectedKey={activeItem?.id ?? null}
-              onSelect={id => setActiveItemId(id)}
+              onSelect={id => {
+                setActiveItemId(id);
+                // Narrow mode → no middle panel visible; open overlay modal.
+                if (isNarrow) setOverlayItemId(id);
+              }}
               projectId={projectId}
             />
           </div>
@@ -150,6 +160,28 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             )
           )}
       </div>
+
+      {/* ── Narrow-mode overlay — opens StoryDetailModal (V15) for the
+            selected card. Stories use V15 directly; other types still get
+            the V15 shell, which routes via itemId/projectKey. */}
+      {overlayItemId && (() => {
+        const overlayItem = items.find(i => i.id === overlayItemId);
+        if (!overlayItem) return null;
+        return (
+          <Suspense fallback={null}>
+            <StoryDetailModal
+              isOpen={true}
+              onClose={() => setOverlayItemId(null)}
+              itemId={overlayItem.dbId || overlayItem.id}
+              projectId={projectId ?? ''}
+              projectKey={projectKey}
+              onOpenItem={(id) => setOverlayItemId(id)}
+              navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+              onNavigate={(id) => setOverlayItemId(id)}
+            />
+          </Suspense>
+        );
+      })()}
     </div>
   );
 }
