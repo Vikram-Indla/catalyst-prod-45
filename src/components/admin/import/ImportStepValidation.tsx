@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { CheckCircle, XCircle, AlertTriangle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { ImportModuleConfig } from '@/lib/import/importModuleConfig';
 import { RowValidationResult } from '@/lib/import/importValidator';
 import { cn } from '@/lib/utils';
@@ -87,7 +86,6 @@ export function ImportStepValidation({
   }, [fieldMappings, moduleConfig]);
   
   return (
-    <TooltipProvider>
       <div className="space-y-6">
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-1">Validation Preview</h2>
@@ -219,15 +217,10 @@ export function ImportStepValidation({
                                   className="px-3 py-1.5 text-xs max-w-[180px]"
                                 >
                                   {isTruncated ? (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span className="block truncate cursor-default">
-                                          {value}
-                                        </span>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="max-w-[300px] text-xs bg-popover text-popover-foreground border shadow-md z-50">
-                                        <p className="whitespace-pre-wrap">{value}</p>
-                                      </TooltipContent>
+                                    <Tooltip content={<p className="whitespace-pre-wrap">{value}</p>}>
+                                      <span className="block truncate cursor-default">
+                                        {value}
+                                      </span>
                                     </Tooltip>
                                   ) : (
                                     <span className="block truncate">{value}</span>
@@ -238,30 +231,26 @@ export function ImportStepValidation({
                             <td className="px-3 py-1.5 text-xs" style={{ minWidth: '300px' }}>
                               <div className="space-y-1">
                                 {result.errors.map((e, i) => (
-                                  <Tooltip key={i}>
-                                    <TooltipTrigger asChild>
-                                      <div 
-                                        className={cn(
-                                          "text-xs leading-tight cursor-help",
-                                          e.severity === 'error' ? 'text-destructive' : 'text-amber-600'
-                                        )}
-                                        style={{ 
-                                          display: '-webkit-box',
-                                          WebkitLineClamp: 2,
-                                          WebkitBoxOrient: 'vertical',
-                                          overflow: 'hidden'
-                                        }}
-                                      >
-                                        <span className="font-medium">[{e.field}]</span> {e.message}
-                                      </div>
-                                    </TooltipTrigger>
-                                    <TooltipContent 
-                                      side="left" 
-                                      className="max-w-[400px] text-xs bg-popover text-popover-foreground border shadow-md z-50 whitespace-pre-wrap"
-                                    >
+                                  <Tooltip key={i} position="left" content={
+                                    <>
                                       <p className="font-medium mb-1">{e.field}</p>
                                       <p>{e.message}</p>
-                                    </TooltipContent>
+                                    </>
+                                  }>
+                                    <div
+                                      className={cn(
+                                        "text-xs leading-tight cursor-help",
+                                        e.severity === 'error' ? 'text-destructive' : 'text-amber-600'
+                                      )}
+                                      style={{
+                                        display: '-webkit-box',
+                                        WebkitLineClamp: 2,
+                                        WebkitBoxOrient: 'vertical',
+                                        overflow: 'hidden'
+                                      }}
+                                    >
+                                      <span className="font-medium">[{e.field}]</span> {e.message}
+                                    </div>
                                   </Tooltip>
                                 ))}
                                 {result.errors.length === 0 && (
@@ -285,6 +274,5 @@ export function ImportStepValidation({
           )}
         </div>
       </div>
-    </TooltipProvider>
   );
 }

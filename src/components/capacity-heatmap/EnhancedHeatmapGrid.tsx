@@ -7,11 +7,7 @@ import { memo, useMemo, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ArrowDownAZ, SortAsc, Clock, TrendingUp, TrendingDown, AlertTriangle, Calendar, Sparkles, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import type { HeatmapResource, MonthlyUtilization } from '@/types/capacity-heatmap';
 import { CATALYST_COLORS } from '@/types/capacity-heatmap';
 import { formatMonth } from '@/lib/capacity-heatmap/utils';
@@ -413,9 +409,53 @@ const EnhancedHeatmapCell = memo(function EnhancedHeatmapCell({
     textColor = CATALYST_COLORS.teal;
   }
   
+  const cellTooltipContent = (
+    <div className="text-sm">
+      <div className="px-3 py-2 border-b border-border">
+        <div className="font-medium">{resourceName}</div>
+        <div className="text-xs text-muted-foreground">
+          {formatMonth(utilization.month, 'long')}
+        </div>
+      </div>
+      <div className="px-3 py-2 space-y-1.5">
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">Utilization</span>
+          <span className="font-semibold">{utilization.percentage}%</span>
+        </div>
+        {utilization.allocations.length > 0 && (
+          <div className="pt-1 border-t border-border space-y-1">
+            <div className="text-[10px] text-muted-foreground">Allocations:</div>
+            {utilization.allocations.slice(0, 3).map((alloc) => (
+              <div key={alloc.id} className="flex items-center gap-2 text-xs">
+                <div
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: alloc.projectColor }}
+                />
+                <span className="flex-1 truncate">{alloc.projectName}</span>
+                <span className="font-medium">{alloc.percentage}%</span>
+              </div>
+            ))}
+            {utilization.allocations.length > 3 && (
+              <div className="text-[10px] text-muted-foreground">
+                +{utilization.allocations.length - 3} more
+              </div>
+            )}
+          </div>
+        )}
+        {utilization.isConflict && (
+          <div
+            className="text-xs px-2 py-1 rounded mt-1"
+            style={{ backgroundColor: `${CATALYST_COLORS.danger}15`, color: CATALYST_COLORS.danger }}
+          >
+            Over-allocated by {utilization.percentage - 100}%
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
-    <Tooltip delayDuration={200}>
-      <TooltipTrigger asChild>
+    <Tooltip delay={200} content={cellTooltipContent}>
         <motion.div
           className={cn(
             "w-[70px] h-16 flex flex-col items-center justify-center cursor-pointer border-r border-border/30 last:border-r-0 relative transition-all",
@@ -446,52 +486,6 @@ const EnhancedHeatmapCell = memo(function EnhancedHeatmapCell({
             />
           )}
         </motion.div>
-      </TooltipTrigger>
-      
-      <TooltipContent side="top" className="w-56 p-0" sideOffset={8}>
-        <div className="text-sm">
-          <div className="px-3 py-2 border-b border-border">
-            <div className="font-medium">{resourceName}</div>
-            <div className="text-xs text-muted-foreground">
-              {formatMonth(utilization.month, 'long')}
-            </div>
-          </div>
-          <div className="px-3 py-2 space-y-1.5">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Utilization</span>
-              <span className="font-semibold">{utilization.percentage}%</span>
-            </div>
-            {utilization.allocations.length > 0 && (
-              <div className="pt-1 border-t border-border space-y-1">
-                <div className="text-[10px] text-muted-foreground">Allocations:</div>
-                {utilization.allocations.slice(0, 3).map((alloc) => (
-                  <div key={alloc.id} className="flex items-center gap-2 text-xs">
-                    <div 
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: alloc.projectColor }}
-                    />
-                    <span className="flex-1 truncate">{alloc.projectName}</span>
-                    <span className="font-medium">{alloc.percentage}%</span>
-                  </div>
-                ))}
-                {utilization.allocations.length > 3 && (
-                  <div className="text-[10px] text-muted-foreground">
-                    +{utilization.allocations.length - 3} more
-                  </div>
-                )}
-              </div>
-            )}
-            {utilization.isConflict && (
-              <div 
-                className="text-xs px-2 py-1 rounded mt-1"
-                style={{ backgroundColor: `${CATALYST_COLORS.danger}15`, color: CATALYST_COLORS.danger }}
-              >
-                ⚠ Over-allocated by {utilization.percentage - 100}%
-              </div>
-            )}
-          </div>
-        </div>
-      </TooltipContent>
     </Tooltip>
   );
 });

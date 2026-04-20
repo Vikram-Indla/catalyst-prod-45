@@ -6,7 +6,7 @@
  */
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
@@ -160,11 +160,10 @@ export function MentionInput({
                   insertMention(profile);
                 }}
               >
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
-                    {(profile.full_name || profile.email)[0].toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar
+                  name={profile.full_name || profile.email}
+                  size="xsmall"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium truncate">
                     {profile.full_name || profile.email.split('@')[0]}

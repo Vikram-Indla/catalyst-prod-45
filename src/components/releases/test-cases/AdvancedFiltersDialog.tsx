@@ -29,7 +29,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
@@ -47,11 +47,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -249,18 +244,15 @@ export function AdvancedFiltersDialog({
           <div className="w-56 shrink-0 border-r pr-4">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium">Saved Filters</h3>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0"
-                    onClick={() => setShowSaveInput(true)}
-                  >
-                    <Save className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Save current filter</TooltipContent>
+              <Tooltip content="Save current filter">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => setShowSaveInput(true)}
+                >
+                  <Save className="w-4 h-4" />
+                </Button>
               </Tooltip>
             </div>
 

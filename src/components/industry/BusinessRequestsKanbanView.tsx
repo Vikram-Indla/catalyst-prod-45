@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 // Native scroll used instead of ScrollArea for better horizontal/vertical scroll support
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
 import { useProcessStepOptions } from '@/contexts/ProcessStepsContext';
 
@@ -130,8 +129,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragEnd={handleDragEnd}>
         <div className="text-xs text-muted-foreground/60 mb-2 italic">Click any column to expand</div>
         <div className="flex-1 w-full overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 220px)' }}>
           <div className="flex gap-3 pb-4 pr-4" style={{ minWidth: 'max-content' }}>
@@ -236,44 +234,37 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                                     )}
 
                                     {getTimeInStatus(request.updated_at) !== null && (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help">
-                                            <Clock className="h-3 w-3" />
-                                            <span>{getTimeInStatus(request.updated_at)}d in status</span>
-                                          </div>
-                                        </TooltipTrigger>
-                                        <TooltipContent side="top" className="text-xs">
-                                          Time in current status: {getTimeInStatus(request.updated_at)} days
-                                        </TooltipContent>
+                                      <Tooltip
+                                        content={`Time in current status: ${getTimeInStatus(request.updated_at)} days`}
+                                        position="top"
+                                        delay={200}
+                                      >
+                                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help">
+                                          <Clock className="h-3 w-3" />
+                                          <span>{getTimeInStatus(request.updated_at)}d in status</span>
+                                        </div>
                                       </Tooltip>
                                     )}
 
                                     <div className="flex items-center justify-between pt-1 border-t border-border/30">
                                       {request.business_score !== null ? (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <span className="cursor-help">
-                                              {getBusinessScoreBadge(request.business_score)}
-                                            </span>
-                                          </TooltipTrigger>
-                                          <TooltipContent side="top" className="text-xs">
-                                            Business Score: {request.business_score}/100
-                                          </TooltipContent>
+                                        <Tooltip
+                                          content={`Business Score: ${request.business_score}/100`}
+                                          position="top"
+                                          delay={200}
+                                        >
+                                          <span className="cursor-help">
+                                            {getBusinessScoreBadge(request.business_score)}
+                                          </span>
                                         </Tooltip>
                                       ) : <span />}
-                                      
+
                                       {request.end_date && (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-help">
-                                              <Calendar className="h-3 w-3" />
-                                              <span>{formatTargetDate(request.end_date)}</span>
-                                            </div>
-                                          </TooltipTrigger>
-                                          <TooltipContent side="top" className="text-xs">
-                                            Target Completion Date
-                                          </TooltipContent>
+                                        <Tooltip content="Target Completion Date" position="top" delay={200}>
+                                          <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-help">
+                                            <Calendar className="h-3 w-3" />
+                                            <span>{formatTargetDate(request.end_date)}</span>
+                                          </div>
                                         </Tooltip>
                                       )}
                                     </div>
@@ -298,6 +289,5 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
           </div>
         </div>
       </DragDropContext>
-    </TooltipProvider>
   );
 }

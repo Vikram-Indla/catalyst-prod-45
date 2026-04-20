@@ -7,12 +7,7 @@
 import { cn } from '@/lib/utils';
 import { Pencil, Trash2 } from 'lucide-react';
 import type { TimelineBar } from '@/types/resource-allocation.types';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
@@ -37,67 +32,63 @@ export function AllocationBar({ bar, columnWidth, onClick, onDelete, stackIndex 
   
   return (
     <Popover>
-      <TooltipProvider delayDuration={200}>
-        <Tooltip>
-          <PopoverTrigger asChild>
-            <TooltipTrigger asChild>
-              <button
-                className={cn(
-                  "absolute h-7 rounded-md flex items-center justify-center",
-                  "text-[11px] font-bold",
-                  "transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
-                  "focus:outline-none focus:ring-2 focus:ring-offset-2",
-                  // Committed = solid with white text, Forecast = light fill with dotted border
-                  isCommitted 
-                    ? "shadow-[0_2px_6px_rgba(0,0,0,0.15)] text-white"
-                    : "text-foreground"
-                )}
-                style={{
-                  top: topOffset,
-                  left: left + 4,
-                  width: Math.max(40, width),
-                  backgroundColor: isCommitted 
-                    ? bar.assignmentColor 
-                    : `${bar.assignmentColor}15`,
-                  border: isCommitted 
-                    ? 'none' 
-                    : `2px dotted ${bar.assignmentColor}`,
-                }}
-                aria-label={`${bar.assignmentName}: ${bar.percentage}% ${bar.status}`}
-              >
-                <span className="px-2 truncate font-bold">
-                  {bar.percentage}%
-                </span>
-              </button>
-            </TooltipTrigger>
-          </PopoverTrigger>
-          <TooltipContent 
-            side="top" 
-            className="bg-foreground text-background p-3 rounded-lg shadow-xl max-w-[250px]"
-          >
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: bar.assignmentColor }}
-                />
-                <span className="font-bold text-[13px]">{bar.assignmentName}</span>
-              </div>
-              <div className="text-[11px] opacity-80 space-y-0.5">
-                <div>Allocation: <span className="font-semibold">{bar.percentage}%</span></div>
-                <div>Status: <span className="font-semibold capitalize">{bar.status}</span></div>
-                <div>Period: <span className="font-semibold">{bar.startDate} → {bar.endDate}</span></div>
-              </div>
-              <div className="text-[10px] opacity-60 pt-1 border-t border-white/20 mt-2">
-                Click for actions
-              </div>
+      <Tooltip
+        position="top"
+        delay={200}
+        content={
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: bar.assignmentColor }}
+              />
+              <span className="font-bold text-[13px]">{bar.assignmentName}</span>
             </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-      
+            <div className="text-[11px] opacity-80 space-y-0.5">
+              <div>Allocation: <span className="font-semibold">{bar.percentage}%</span></div>
+              <div>Status: <span className="font-semibold capitalize">{bar.status}</span></div>
+              <div>Period: <span className="font-semibold">{bar.startDate} → {bar.endDate}</span></div>
+            </div>
+            <div className="text-[10px] opacity-60 pt-1 border-t border-white/20 mt-2">
+              Click for actions
+            </div>
+          </div>
+        }
+      >
+        <PopoverTrigger asChild>
+          <button
+            className={cn(
+              "absolute h-7 rounded-md flex items-center justify-center",
+              "text-[11px] font-bold",
+              "transition-all hover:shadow-lg hover:-translate-y-0.5 cursor-pointer",
+              "focus:outline-none focus:ring-2 focus:ring-offset-2",
+              // Committed = solid with white text, Forecast = light fill with dotted border
+              isCommitted
+                ? "shadow-[0_2px_6px_rgba(0,0,0,0.15)] text-white"
+                : "text-foreground"
+            )}
+            style={{
+              top: topOffset,
+              left: left + 4,
+              width: Math.max(40, width),
+              backgroundColor: isCommitted
+                ? bar.assignmentColor
+                : `${bar.assignmentColor}15`,
+              border: isCommitted
+                ? 'none'
+                : `2px dotted ${bar.assignmentColor}`,
+            }}
+            aria-label={`${bar.assignmentName}: ${bar.percentage}% ${bar.status}`}
+          >
+            <span className="px-2 truncate font-bold">
+              {bar.percentage}%
+            </span>
+          </button>
+        </PopoverTrigger>
+      </Tooltip>
+
       {/* Popover with Edit/Delete actions */}
-      <PopoverContent 
+      <PopoverContent
         side="top" 
         align="center"
         className="w-auto p-1.5 bg-card border border-border shadow-xl"

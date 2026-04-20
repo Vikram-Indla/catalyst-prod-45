@@ -10,7 +10,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SeverityBadge } from '@/components/defects/g25/SeverityBadge';
@@ -54,8 +54,6 @@ export default function DefectDetailPage() {
     await deleteDefect.mutateAsync(defect.id);
     navigate('/testhub/defects');
   };
-
-  const initials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   if (isLoading) return <div className="p-6 space-y-4"><Skeleton className="h-32 w-full" /><Skeleton className="h-48 w-full" /><Skeleton className="h-64 w-full" /></div>;
   if (!defect) return (
@@ -150,7 +148,7 @@ export default function DefectDetailPage() {
               <p className="text-muted-foreground mb-1">Reported by</p>
               {defect.reporter && (
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6"><AvatarImage src={defect.reporter.avatar_url || undefined} /><AvatarFallback className="text-xs">{initials(defect.reporter.full_name)}</AvatarFallback></Avatar>
+                  <Avatar src={defect.reporter.avatar_url || undefined} name={defect.reporter.full_name} size="xsmall" />
                   <span>{defect.reporter.full_name}</span>
                 </div>
               )}
@@ -159,7 +157,7 @@ export default function DefectDetailPage() {
               <p className="text-muted-foreground mb-1">Assigned to</p>
               {defect.assignee ? (
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6"><AvatarImage src={defect.assignee.avatar_url || undefined} /><AvatarFallback className="text-xs">{initials(defect.assignee.full_name)}</AvatarFallback></Avatar>
+                  <Avatar src={defect.assignee.avatar_url || undefined} name={defect.assignee.full_name} size="xsmall" />
                   <span>{defect.assignee.full_name}</span>
                 </div>
               ) : <span className="text-muted-foreground">Unassigned</span>}

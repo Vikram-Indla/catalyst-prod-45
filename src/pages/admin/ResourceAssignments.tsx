@@ -15,10 +15,9 @@ import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { LicenseAllocationSection } from '@/modules/budget';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -204,19 +203,12 @@ function SortableRow({
       {/* Budget - Read-only for Insourced (auto-calculated), Editable for Outsourced/Cosourced */}
       <td className="px-4 py-3">
         {normalizeAssignmentType(assignment.assignment_type) === 'Insourced' ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-muted/50 min-w-[80px] cursor-help">
-                  <span className="text-xs text-muted-foreground">﷼</span>
-                  <span className="text-sm text-foreground">{totalBudget.toLocaleString()}</span>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Sum of {resourceCount} linked resources' CTC (auto-calculated)</p>}>
+            <div className="flex items-center gap-1 px-2 py-1 -mx-2 rounded bg-muted/50 min-w-[80px] cursor-help">
+              <span className="text-xs text-muted-foreground">﷼</span>
+              <span className="text-sm text-foreground">{totalBudget.toLocaleString()}</span>
+            </div>
+          </Tooltip>
         ) : (
           <Input
             type="number"

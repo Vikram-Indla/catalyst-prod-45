@@ -5,7 +5,6 @@ import {
   Clock, Pin, Settings, Kanban, List, AlertTriangle, Briefcase, Calendar, FileText
 } from 'lucide-react';
 import { WorkItemIcon } from './icons/WorkItemIcon';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { HomeScopeTabs, HomeScopeValue } from './home/HomeScopeTabs';

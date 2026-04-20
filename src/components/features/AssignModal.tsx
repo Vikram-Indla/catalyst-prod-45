@@ -13,8 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   User, Users, Search, X, Check, Circle, Plus, Loader2 
@@ -25,9 +24,6 @@ import { updateFeatureOwner, updateFeatureContributors } from '@/services/featur
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-// Avatar color rotation for contributors (approved palette)
-const AVATAR_COLORS = ['#2563eb', '#0d9488', '#6b7280', '#f59e0b'];
-
 interface AssignModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -37,10 +33,6 @@ interface AssignModalProps {
   currentOwner: TeamMember | null;
   currentContributors: Contributor[];
   projectId?: string;
-}
-
-function getInitials(name: string): string {
-  return name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || '?';
 }
 
 export function AssignModal({
@@ -189,12 +181,7 @@ export function AssignModal({
               {selectedOwnerData ? (
                 <div className="flex items-center justify-between p-3 rounded-lg border bg-[rgba(37,99,235,0.12)] border-[#2563eb]">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={selectedOwnerData.avatar_url || undefined} />
-                      <AvatarFallback className="bg-[#2563eb] text-white text-sm">
-                        {getInitials(selectedOwnerData.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar src={selectedOwnerData.avatar_url || undefined} name={selectedOwnerData.full_name} size="small" />
                     <div>
                       <div className="font-medium text-sm">{selectedOwnerData.full_name}</div>
                       {selectedOwnerData.role && (
@@ -259,15 +246,7 @@ export function AssignModal({
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={member.avatar_url || undefined} />
-                              <AvatarFallback className={cn(
-                                "text-white text-sm",
-                                isSelected ? "bg-[#2563eb]" : "bg-muted-foreground/20 text-foreground"
-                              )}>
-                                {getInitials(member.full_name)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <Avatar src={member.avatar_url || undefined} name={member.full_name} size="small" />
                             <div>
                               <div className="font-medium text-sm">{member.full_name}</div>
                               {member.role && (
@@ -305,15 +284,7 @@ export function AssignModal({
                         className="flex items-center justify-between p-2.5 rounded-lg border bg-muted/30"
                       >
                         <div className="flex items-center gap-3">
-                          <Avatar className="h-7 w-7">
-                            <AvatarImage src={member.avatar_url || undefined} />
-                            <AvatarFallback 
-                              className="text-white text-xs"
-                              style={{ backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length] }}
-                            >
-                              {getInitials(member.full_name)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <Avatar src={member.avatar_url || undefined} name={member.full_name} size="xsmall" />
                           <div>
                             <div className="font-medium text-sm">{member.full_name}</div>
                             {member.role && (
@@ -375,15 +346,7 @@ export function AssignModal({
                             <Check className="h-3 w-3 text-[#2563eb]" />
                           )}
                         </div>
-                        <Avatar className="h-7 w-7">
-                          <AvatarImage src={member.avatar_url || undefined} />
-                          <AvatarFallback 
-                            className="text-white text-xs"
-                            style={{ backgroundColor: AVATAR_COLORS[index % AVATAR_COLORS.length] }}
-                          >
-                            {getInitials(member.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar src={member.avatar_url || undefined} name={member.full_name} size="xsmall" />
                         <div>
                           <div className="font-medium text-sm">{member.full_name}</div>
                           {member.role && (

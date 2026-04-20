@@ -26,7 +26,7 @@ import {
   PopoverContent,
   PopoverAnchor,
 } from '@/components/ui/popover';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 // ============================================================
@@ -244,15 +244,6 @@ export const MentionInput = forwardRef<MentionInputRef, MentionInputProps>(
       textarea.style.height = `${newHeight}px`;
     }, [value, minRows, maxRows]);
 
-    const getInitials = (name: string) => {
-      return name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2);
-    };
-
     return (
       <div className="relative">
         <Popover open={showSuggestions} onOpenChange={setShowSuggestions}>
@@ -304,12 +295,11 @@ export const MentionInput = forwardRef<MentionInputRef, MentionInputProps>(
                       onSelect={() => handleSelectUser(user)}
                       className="flex items-center gap-2 px-2 py-1.5 cursor-pointer"
                     >
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={user.avatar_url || undefined} />
-                        <AvatarFallback className="text-xs">
-                          {getInitials(user.full_name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar
+                        src={user.avatar_url || undefined}
+                        name={user.full_name}
+                        size="xsmall"
+                      />
                       <div className="flex flex-col flex-1 min-w-0">
                         <span className="text-sm font-medium truncate">
                           {user.full_name}

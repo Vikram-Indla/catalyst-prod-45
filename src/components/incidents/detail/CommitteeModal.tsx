@@ -13,8 +13,7 @@
 import { useState } from 'react';
 import { Users, Plus, X, Check, XCircle, AlertTriangle, Search, Clock, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -268,11 +267,9 @@ export function CommitteeModal({
                           >
                             {/* Left: Avatar + Name + Role */}
                             <div className="flex items-center gap-3 min-w-0">
-                              <Avatar className="h-8 w-8 shrink-0">
-                                <AvatarFallback className="text-[11px] font-medium bg-primary/10 text-primary">
-                                  {member.avatar_initials || member.full_name?.slice(0, 2).toUpperCase()}
-                                </AvatarFallback>
-                              </Avatar>
+                              <span className="shrink-0">
+                                <Avatar name={member.full_name} size="small" />
+                              </span>
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
                                   <span className="text-sm font-medium text-foreground truncate">
@@ -343,11 +340,7 @@ export function CommitteeModal({
                             filteredApprovers.map(user => (
                               <SelectItem key={user.id} value={user.id} className="text-sm">
                                 <div className="flex items-center gap-2">
-                                  <Avatar className="h-5 w-5">
-                                    <AvatarFallback className="text-[9px] bg-primary/10 text-primary">
-                                      {user.avatar_initials || user.full_name?.slice(0, 2).toUpperCase()}
-                                    </AvatarFallback>
-                                  </Avatar>
+                                  <Avatar name={user.full_name} size="xxsmall" />
                                   <span>{user.full_name}</span>
                                 </div>
                               </SelectItem>

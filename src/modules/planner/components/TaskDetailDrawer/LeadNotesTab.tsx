@@ -7,7 +7,7 @@
 
 import { useState } from 'react';
 import { format, formatDistanceToNow } from 'date-fns';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -85,13 +85,6 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
     await deleteMutation.mutateAsync({ noteId, taskId });
   };
 
-  const getInitials = (name: string | null | undefined, email: string | null | undefined) => {
-    if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    return email?.slice(0, 2).toUpperCase() || '??';
-  };
-
   if (isLoading || accessLoading) {
     return (
       <div className="space-y-4">
@@ -107,12 +100,9 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
       {canManage && (
         <div className="rounded-xl border border-border-default bg-surface-1/50 p-4">
           <div className="flex items-start gap-3">
-            <Avatar className="h-8 w-8 shrink-0">
-              <AvatarImage src={undefined} />
-              <AvatarFallback className="bg-brand-primary/10 text-brand-primary text-xs font-medium">
-                {getInitials(user?.user_metadata?.full_name, user?.email)}
-              </AvatarFallback>
-            </Avatar>
+            <span className="shrink-0">
+              <Avatar name={user?.user_metadata?.full_name || user?.email || '??'} size="small" />
+            </span>
             <div className="flex-1 space-y-3">
               <MentionTextarea
                 value={newNote}
@@ -167,12 +157,7 @@ export function LeadNotesTab({ taskId, workstreamId }: LeadNotesTabProps) {
                 {/* Note header */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={note.author?.avatar_url || undefined} />
-                      <AvatarFallback className="bg-brand-primary/10 text-brand-primary text-xs font-medium">
-                        {getInitials(note.author?.full_name, note.author?.email)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar src={note.author?.avatar_url || undefined} name={note.author?.full_name || note.author?.email || '??'} size="small" />
                     <div>
                       <p className="text-sm font-medium text-text-primary">
                         {note.author?.full_name || note.author?.email || 'Unknown'}

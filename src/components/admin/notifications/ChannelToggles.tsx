@@ -8,12 +8,7 @@
 import { memo } from 'react';
 import { Bell, Mail, Zap, MessageSquare } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import type { ChannelsConfig } from '@/types/notification-triggers';
 
 // ── Channel metadata ────────────────────────────────────────────
@@ -67,24 +62,17 @@ export const InlineChannelToggles = memo(function InlineChannelToggles({
   return (
     <div className="flex items-center gap-3">
       {CHANNEL_DEFS.map(({ key, label, Icon }) => (
-        <TooltipProvider key={key} delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1">
-                <Icon className="h-3 w-3 text-[#94A3B8]" />
-                <Switch
-                  checked={channels[key]}
-                  onCheckedChange={(v) => onChange(key, v)}
-                  disabled={disabled}
-                  className="h-4 w-7 data-[state=checked]:bg-[#2563EB] disabled:opacity-30"
-                />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {label}: {channels[key] ? 'Enabled' : 'Disabled'}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip key={key} delay={200} content={`${label}: ${channels[key] ? 'Enabled' : 'Disabled'}`}>
+          <div className="flex items-center gap-1">
+            <Icon className="h-3 w-3 text-[#94A3B8]" />
+            <Switch
+              checked={channels[key]}
+              onCheckedChange={(v) => onChange(key, v)}
+              disabled={disabled}
+              className="h-4 w-7 data-[state=checked]:bg-[#2563EB] disabled:opacity-30"
+            />
+          </div>
+        </Tooltip>
       ))}
     </div>
   );

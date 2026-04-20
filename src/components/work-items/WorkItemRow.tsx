@@ -10,7 +10,7 @@ import { WorkItemWithRelations, PRIORITY_CONFIG } from '@/types/work-items';
 import { WorkItemTypeIcon } from './WorkItemTypeIcon';
 import { StatusLozenge } from '@/components/ui/StatusLozenge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -46,17 +46,6 @@ export function WorkItemRow({
     } catch {
       return null;
     }
-  };
-
-  // Get assignee initials
-  const getInitials = (name: string | null | undefined) => {
-    if (!name) return '?';
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
   };
 
   const dueDate = formatDueDate(item.due_date);
@@ -135,12 +124,11 @@ export function WorkItemRow({
       {/* Assignee Avatar */}
       <div className="flex-shrink-0 mr-4">
         {item.assignee ? (
-          <Avatar className="w-6 h-6">
-            <AvatarImage src={item.assignee.avatar_url || undefined} />
-            <AvatarFallback className="text-[10px] bg-brand-primary-light text-brand-primary font-medium">
-              {getInitials(item.assignee.full_name)}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar
+            src={item.assignee.avatar_url || undefined}
+            name={item.assignee.full_name || '?'}
+            size="xsmall"
+          />
         ) : (
           <div className="w-6 h-6 rounded-full bg-surface-3 border border-dashed border-border-default" />
         )}

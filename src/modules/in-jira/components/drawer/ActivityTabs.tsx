@@ -20,8 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
@@ -177,9 +176,7 @@ export function ActivityTabs({
         {/* Comment Input */}
         <div className="mb-4">
           <div className="flex items-start gap-3">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="text-xs bg-accent-primary text-white">ME</AvatarFallback>
-            </Avatar>
+            <Avatar name="Me" size="small" />
             <div className="flex-1">
               <Textarea
                 value={newComment}
@@ -226,12 +223,7 @@ export function ActivityTabs({
                   comment.isInternal && "bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800"
                 )}
               >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={comment.authorAvatar} />
-                  <AvatarFallback className="text-xs">
-                    {comment.authorName.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar name={comment.authorName} src={comment.authorAvatar} size="small" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -291,12 +283,7 @@ export function ActivityTabs({
           ) : (
             sortedHistory.map((item) => (
               <div key={item.id} className="flex gap-3 p-3 bg-surface-2 rounded-lg">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={item.actorAvatar} />
-                  <AvatarFallback className="text-[10px]">
-                    {item.actorName.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar name={item.actorName} src={item.actorAvatar} size="xsmall" />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-1 flex-wrap">
                     <span className="text-sm font-medium text-text-primary">

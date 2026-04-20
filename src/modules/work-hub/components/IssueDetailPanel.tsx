@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -78,13 +78,6 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
   // typeInfo now from canonical guardrail
   // Status label - neutral styling
   const statusLabel = formatStatusLabel(item.status);
-
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const getAvatarColor = (name: string) => {
-    // Catalyst V5 avatar colors (Blue, Teal, Gray only)
-    const colors = ['bg-[#2563eb]', 'bg-[#0d9488]', 'bg-[#6b7280]'];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
 
   // Use item data or empty defaults
   const attachments = item.attachments || [];
@@ -290,9 +283,9 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
 
               {/* Comment input */}
               <div className="flex items-start gap-3 mb-4">
-                <Avatar className="h-8 w-8 flex-shrink-0">
-                  <AvatarFallback className="text-[11px] text-white bg-green-600">VI</AvatarFallback>
-                </Avatar>
+                <span className="flex-shrink-0">
+                  <Avatar name="Vikram Indla" size="small" />
+                </span>
                 <div className="flex-1">
                   <Textarea
                     placeholder="Add a comment..."
@@ -400,11 +393,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                       <div className="flex items-center gap-2">
                         {item.assignee ? (
                           <>
-                            <Avatar className="h-6 w-6">
-                              <AvatarFallback className={cn("text-[9px] text-white", getAvatarColor(item.assignee.name))}>
-                                {getInitials(item.assignee.name)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <Avatar name={item.assignee.name} size="xsmall" />
                             <div>
                               <div className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{item.assignee.name}</div>
                               <button className="text-[11px] text-blue-600 hover:underline">Assign to me</button>
@@ -420,11 +409,7 @@ export function IssueDetailPanel({ item, onClose, onFieldChange }: IssueDetailPa
                     <div>
                       <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Reporter</div>
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className={cn("text-[9px] text-white", getAvatarColor(reporter.name))}>
-                            {getInitials(reporter.name)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar name={reporter.name} size="xsmall" />
                         <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#334155' }}>{reporter.name}</span>
                       </div>
                     </div>

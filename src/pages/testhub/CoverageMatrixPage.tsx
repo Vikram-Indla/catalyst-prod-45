@@ -16,14 +16,11 @@ import { supabase, typedQuery, typedRpc } from '@/integrations/supabase/client';
 import { catalystToast } from '@/components/ui/CatalystToast';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip, TooltipContent, TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -531,27 +528,30 @@ function HeatmapView({ requirements, onClickReq }: { requirements: Requirement[]
           </div>
           <div className="flex flex-wrap gap-2">
             {reqs.map(req => (
-              <Tooltip key={req.id}>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => onClickReq(req.id)}
-                    className={cn(
-                      'w-10 h-10 rounded-md transition-transform hover:scale-110 cursor-pointer flex items-center justify-center text-[10px] font-bold text-white',
-                      getHeatmapColor(req.coverage_percent),
-                    )}
-                  >
-                    {req.coverage_percent}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-[240px]">
-                  <p className="font-semibold text-sm">{req.req_key}: {req.title}</p>
-                  <p className="text-xs mt-1">
-                    Coverage: {req.coverage_percent}% · {req.total_linked_tests} test{req.total_linked_tests !== 1 ? 's' : ''}
-                  </p>
-                  <p className="text-xs">
-                    ✓ {req.passed_tests} · ✗ {req.failed_tests} · ○ {req.not_run_tests}
-                  </p>
-                </TooltipContent>
+              <Tooltip
+                key={req.id}
+                position="top"
+                content={
+                  <>
+                    <p className="font-semibold text-sm">{req.req_key}: {req.title}</p>
+                    <p className="text-xs mt-1">
+                      Coverage: {req.coverage_percent}% · {req.total_linked_tests} test{req.total_linked_tests !== 1 ? 's' : ''}
+                    </p>
+                    <p className="text-xs">
+                      ✓ {req.passed_tests} · ✗ {req.failed_tests} · ○ {req.not_run_tests}
+                    </p>
+                  </>
+                }
+              >
+                <button
+                  onClick={() => onClickReq(req.id)}
+                  className={cn(
+                    'w-10 h-10 rounded-md transition-transform hover:scale-110 cursor-pointer flex items-center justify-center text-[10px] font-bold text-white',
+                    getHeatmapColor(req.coverage_percent),
+                  )}
+                >
+                  {req.coverage_percent}
+                </button>
               </Tooltip>
             ))}
           </div>

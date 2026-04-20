@@ -4,7 +4,7 @@
  */
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 
@@ -26,17 +26,7 @@ interface UserSelectProps {
   saveAs?: 'name' | 'id';
 }
 
-function getInitials(name: string | null | undefined): string {
-  if (!name) return '?';
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
-
-export function UserSelect({ 
+export function UserSelect({
   value, 
   onChange, 
   placeholder = 'Select user',
@@ -97,11 +87,7 @@ export function UserSelect({
       <SelectTrigger className={cn("h-9", className)}>
         {value && displayName ? (
           <div className="flex items-center gap-2">
-            <Avatar className="w-5 h-5">
-              <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
-                {getInitials(displayName)}
-              </AvatarFallback>
-            </Avatar>
+            <Avatar name={displayName || ''} size="xxsmall" />
             <span className="text-sm truncate">{displayName}</span>
           </div>
         ) : (
@@ -117,11 +103,7 @@ export function UserSelect({
         {profiles.map((user) => (
           <SelectItem key={user.id} value={getItemValue(user)}>
             <div className="flex items-center gap-2">
-              <Avatar className="w-5 h-5">
-                <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
-                  {getInitials(user.full_name || user.email)}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={user.full_name || user.email || ''} size="xxsmall" />
               <span>{user.full_name || user.email}</span>
             </div>
           </SelectItem>

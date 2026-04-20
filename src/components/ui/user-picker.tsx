@@ -15,8 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Lozenge } from '@/components/ads';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 
 interface UserProfile {
@@ -76,13 +75,6 @@ export function UserPicker({
     }
     return [];
   }, [users, value, multiSelect]);
-
-  const getInitials = (name: string | null, email: string) => {
-    if (name) {
-      return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    return email.slice(0, 2).toUpperCase();
-  };
 
   const handleSelect = (userId: string) => {
     if (multiSelect) {
@@ -164,12 +156,11 @@ export function UserPicker({
       const user = selectedUsers[0];
       return (
         <span className="flex items-center gap-2">
-          <Avatar className="h-5 w-5">
-            <AvatarImage src={user.avatar_url || undefined} />
-            <AvatarFallback className="text-[10px] bg-brand-primary/20 text-brand-primary">
-              {getInitials(user.full_name, user.email)}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar
+            src={user.avatar_url || undefined}
+            name={user.full_name || user.email}
+            size="xxsmall"
+          />
           <span className="truncate">{user.full_name || user.email}</span>
         </span>
       );
@@ -260,14 +251,13 @@ export function UserPicker({
                             isSelected(user.id) ? 'opacity-100' : 'opacity-0'
                           )}
                         />
-                        <Avatar className="h-9 w-9 mr-3 flex-shrink-0">
-                          <AvatarImage src={user.avatar_url || undefined} />
-                          <AvatarFallback 
-                            className="text-xs font-semibold bg-primary/15 text-primary"
-                          >
-                            {getInitials(user.full_name, user.email)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <span className="mr-3 flex-shrink-0">
+                          <Avatar
+                            src={user.avatar_url || undefined}
+                            name={user.full_name || user.email}
+                            size="small"
+                          />
+                        </span>
                         <div className="flex flex-col flex-1 min-w-0">
                           <span 
                             className="text-sm font-medium truncate text-foreground"

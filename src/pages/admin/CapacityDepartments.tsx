@@ -9,7 +9,7 @@ import { Plus, Pencil, Trash2, GripVertical, AlertTriangle, Copy } from 'lucide-
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface LinkedResource {
   id: string;
@@ -122,8 +122,7 @@ export default function CapacityDepartmentsPage() {
       </div>
 
       {/* Departments List */}
-      <TooltipProvider>
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden">
           <table className="w-full">
             <thead className="bg-muted/30">
               <tr>
@@ -142,16 +141,13 @@ export default function CapacityDepartmentsPage() {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-mono font-medium text-primary">{dept.department_id}</span>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            onClick={() => copyToClipboard(dept.department_id)}
-                            className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                          >
-                            <Copy className="h-3 w-3" />
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent>Copy DID</TooltipContent>
+                      <Tooltip content="Copy DID">
+                        <button
+                          onClick={() => copyToClipboard(dept.department_id)}
+                          className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                        >
+                          <Copy className="h-3 w-3" />
+                        </button>
                       </Tooltip>
                     </div>
                   </td>
@@ -186,7 +182,6 @@ export default function CapacityDepartmentsPage() {
             </tbody>
           </table>
         </div>
-      </TooltipProvider>
 
       {/* Create Modal */}
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>

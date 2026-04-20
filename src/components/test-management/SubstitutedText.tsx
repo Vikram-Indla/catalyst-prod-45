@@ -5,12 +5,7 @@
 
 import { getSubstitutedSegments } from '@/utils/variableSubstitution';
 import { cn } from '@/lib/utils';
-import { 
-  Tooltip, 
-  TooltipContent, 
-  TooltipTrigger,
-  TooltipProvider
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface SubstitutedTextProps {
   template: string;
@@ -32,40 +27,38 @@ export function SubstitutedText({
   }
 
   return (
-    <TooltipProvider>
-      <span className={className}>
-        {segments.map((segment, index) => {
-          if (!segment.isSubstituted) {
-            return <span key={index}>{segment.text}</span>;
-          }
+    <span className={className}>
+      {segments.map((segment, index) => {
+        if (!segment.isSubstituted) {
+          return <span key={index}>{segment.text}</span>;
+        }
 
-          return (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                <span
-                  className={cn(
-                    'px-1 py-0.5 rounded',
-                    'bg-violet-100 dark:bg-violet-900/40',
-                    'text-violet-800 dark:text-violet-200',
-                    'border-b border-dashed border-violet-400',
-                    'cursor-help'
-                  )}
-                >
-                  {segment.text}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">
-                  Variable:{' '}
-                  <code className="bg-muted px-1 py-0.5 rounded font-mono">
-                    {`{${segment.variableName}}`}
-                  </code>
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
-      </span>
-    </TooltipProvider>
+        return (
+          <Tooltip
+            key={index}
+            content={
+              <p className="text-xs">
+                Variable:{' '}
+                <code className="bg-muted px-1 py-0.5 rounded font-mono">
+                  {`{${segment.variableName}}`}
+                </code>
+              </p>
+            }
+          >
+            <span
+              className={cn(
+                'px-1 py-0.5 rounded',
+                'bg-violet-100 dark:bg-violet-900/40',
+                'text-violet-800 dark:text-violet-200',
+                'border-b border-dashed border-violet-400',
+                'cursor-help'
+              )}
+            >
+              {segment.text}
+            </span>
+          </Tooltip>
+        );
+      })}
+    </span>
   );
 }

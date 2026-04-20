@@ -9,12 +9,11 @@ import {
   FileCode, Zap, Smartphone, Copy, Send
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { 
   detectedGaps, 
@@ -302,21 +301,16 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                     )}
 
                     {/* Fix Button */}
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
-                          onClick={() => copyFixInstruction(gap)}
-                        >
-                          <Send className="h-3.5 w-3.5" />
-                          <span className="text-xs">Fix</span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="left" className="max-w-xs">
-                        <p className="text-xs">Copy fix instruction to clipboard, then paste in chat to fix this issue</p>
-                      </TooltipContent>
+                    <Tooltip content="Copy fix instruction to clipboard, then paste in chat to fix this issue" position="left">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
+                        onClick={() => copyFixInstruction(gap)}
+                      >
+                        <Send className="h-3.5 w-3.5" />
+                        <span className="text-xs">Fix</span>
+                      </Button>
                     </Tooltip>
                   </div>
                 ))}
@@ -372,21 +366,16 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                       </td>
                       <td className="px-4 py-2 text-xs text-muted-foreground">{gap.topIssue}</td>
                       <td className="px-4 py-2 text-right">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-7 px-2 gap-1.5 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
-                              onClick={() => copyFixInstruction(gap)}
-                            >
-                              <Send className="h-3.5 w-3.5" />
-                              <span className="text-xs">Fix</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent side="left" className="max-w-xs">
-                            <p className="text-xs">Copy fix instruction to clipboard, then paste in chat</p>
-                          </TooltipContent>
+                        <Tooltip content="Copy fix instruction to clipboard, then paste in chat" position="left">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 px-2 gap-1.5 hover:bg-brand-primary/10 hover:border-brand-primary/30 hover:text-brand-primary"
+                            onClick={() => copyFixInstruction(gap)}
+                          >
+                            <Send className="h-3.5 w-3.5" />
+                            <span className="text-xs">Fix</span>
+                          </Button>
                         </Tooltip>
                       </td>
                     </tr>

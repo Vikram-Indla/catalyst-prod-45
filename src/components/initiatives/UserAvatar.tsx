@@ -1,7 +1,7 @@
 import { CircleUser } from 'lucide-react';
 import { getAvatarColor } from '@/types/initiative';
 import { formatShortName } from '@/lib/format-name';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface UserAvatarProps {
   name: string | null;
@@ -52,13 +52,8 @@ export function UserAvatar({ name, size = 24, showName = false, showTooltip = tr
   if (!showTooltip) return content;
 
   return (
-    <TooltipProvider delayDuration={500}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="inline-flex">{content}</div>
-        </TooltipTrigger>
-        <TooltipContent>{name}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={name} delay={500}>
+      <div className="inline-flex">{content}</div>
+    </Tooltip>
   );
 }

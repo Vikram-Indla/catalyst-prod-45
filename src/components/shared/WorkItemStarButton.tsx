@@ -7,7 +7,7 @@ import { Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useStarredItemIds, useToggleStar, StarredItemType } from '@/hooks/home/useStarredItems';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface WorkItemStarButtonProps {
   itemId: string;
@@ -96,13 +96,8 @@ export function WorkItemStarButton({
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        {button}
-      </TooltipTrigger>
-      <TooltipContent side="top" className="text-xs">
-        {isStarred ? 'Remove from starred' : 'Add to starred'}
-      </TooltipContent>
+    <Tooltip content={isStarred ? 'Remove from starred' : 'Add to starred'} position="top">
+      {button}
     </Tooltip>
   );
 }

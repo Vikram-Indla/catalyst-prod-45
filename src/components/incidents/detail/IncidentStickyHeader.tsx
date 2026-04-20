@@ -4,28 +4,21 @@ import {
   Check, X, Pencil, Eye, EyeOff, Plus, Users, ChevronDown 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { STATUS_CONFIG } from '@/components/incidents/badges/IncidentBadges';
 import { getAllowedTransitions } from '@/utils/incidentLifecycle';
@@ -143,7 +136,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
   };
 
   return (
-    <TooltipProvider delayDuration={300}>
+    <>
       <header className="sticky top-0 z-20 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="px-6 py-4">
           {/* Row 1: Breadcrumb */}
@@ -263,8 +256,8 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                 )}
               </Button>
 
-              <Tooltip>
-                <TooltipTrigger asChild>
+              {!canConvert && conversionReason ? (
+                <Tooltip content={conversionReason} position="bottom" delay={300}>
                   <div>
                     <Button
                       size="sm"
@@ -276,13 +269,20 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                       Convert
                     </Button>
                   </div>
-                </TooltipTrigger>
-                {!canConvert && conversionReason && (
-                  <TooltipContent side="bottom" className="text-xs max-w-xs">
-                    {conversionReason}
-                  </TooltipContent>
-                )}
-              </Tooltip>
+                </Tooltip>
+              ) : (
+                <div>
+                  <Button
+                    size="sm"
+                    className="h-8"
+                    onClick={onOpenConvertDialog}
+                    disabled={!canConvert || isSubmitting}
+                  >
+                    <Plus className="h-4 w-4 mr-1.5" />
+                    Convert
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -353,11 +353,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                   <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs px-2" disabled={isConverted}>
                     {assignee ? (
                       <>
-                        <Avatar className="h-4 w-4">
-                          <AvatarFallback className="text-[8px] bg-primary text-primary-foreground">
-                            {assignee.avatar_initials || assignee.full_name?.slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar name={assignee.full_name} size="xxsmall" />
                         <span className="max-w-[80px] truncate">{assignee.full_name}</span>
                       </>
                     ) : (
@@ -373,11 +369,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                       onClick={() => onAssigneeChange(user.id)}
                       className="flex items-center gap-2 text-xs"
                     >
-                      <Avatar className="h-5 w-5">
-                        <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
-                          {user.avatar_initials || user.full_name?.slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={user.full_name} size="xxsmall" />
                       {user.full_name}
                     </DropdownMenuItem>
                   ))}
@@ -393,11 +385,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                   <Button variant="outline" size="sm" className="h-7 gap-1.5 text-xs px-2" disabled={isConverted}>
                     {reporter ? (
                       <>
-                        <Avatar className="h-4 w-4">
-                          <AvatarFallback className="text-[8px] bg-muted-foreground/20 text-foreground">
-                            {reporter.avatar_initials || reporter.full_name?.slice(0, 2)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar name={reporter.full_name} size="xxsmall" />
                         <span className="max-w-[80px] truncate">{reporter.full_name}</span>
                       </>
                     ) : (
@@ -413,11 +401,7 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
                       onClick={() => onReporterChange(user.id)}
                       className="flex items-center gap-2 text-xs"
                     >
-                      <Avatar className="h-5 w-5">
-                        <AvatarFallback className="text-[9px] bg-muted-foreground/20 text-foreground">
-                          {user.avatar_initials || user.full_name?.slice(0, 2)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={user.full_name} size="xxsmall" />
                       {user.full_name}
                     </DropdownMenuItem>
                   ))}
@@ -429,6 +413,6 @@ export function IncidentStickyHeader(props: IncidentStickyHeaderProps) {
           </div>
         </div>
       </header>
-    </TooltipProvider>
+    </>
   );
 }

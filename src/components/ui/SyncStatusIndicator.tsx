@@ -8,12 +8,7 @@ import {
   WifiOff,
   RefreshCw 
 } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 export function SyncStatusIndicator() {
   const { status, lastSyncedAt, errorMessage, pendingChanges } = useSyncStatus();
@@ -72,32 +67,10 @@ export function SyncStatusIndicator() {
   const Icon = config.icon;
   
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={cn(
-            'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all',
-            config.bgColor,
-            config.color
-          )}>
-            <div className="relative flex items-center justify-center">
-              <div className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />
-              {status === 'synced' && (
-                <div className={cn('absolute w-1.5 h-1.5 rounded-full animate-ping', config.dotColor)} />
-              )}
-            </div>
-            <Icon className={cn(
-              'w-3 h-3',
-              config.animate && 'animate-spin'
-            )} />
-            <span>
-              {status === 'synced' ? 'Saved' : 
-               status === 'syncing' ? 'Saving...' :
-               status === 'error' ? 'Error' : 'Offline'}
-            </span>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="bottom" className="text-xs">
+    <Tooltip
+      position="bottom"
+      content={
+        <>
           <p className="font-medium">{config.label}</p>
           {status === 'synced' && lastSyncedAt && (
             <p className="text-muted-foreground mt-0.5">
@@ -113,8 +86,30 @@ export function SyncStatusIndicator() {
               Retry
             </button>
           )}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+        </>
+      }
+    >
+      <div className={cn(
+        'flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all',
+        config.bgColor,
+        config.color
+      )}>
+        <div className="relative flex items-center justify-center">
+          <div className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />
+          {status === 'synced' && (
+            <div className={cn('absolute w-1.5 h-1.5 rounded-full animate-ping', config.dotColor)} />
+          )}
+        </div>
+        <Icon className={cn(
+          'w-3 h-3',
+          config.animate && 'animate-spin'
+        )} />
+        <span>
+          {status === 'synced' ? 'Saved' :
+           status === 'syncing' ? 'Saving...' :
+           status === 'error' ? 'Error' : 'Offline'}
+        </span>
+      </div>
+    </Tooltip>
   );
 }

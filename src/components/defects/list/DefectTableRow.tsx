@@ -7,7 +7,7 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { MoreHorizontal, Ban, RotateCcw, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,10 +26,6 @@ interface DefectTableRowProps {
   onSelect: () => void;
   onClick: () => void;
   onStatusChange: (status: DefectStatus) => void;
-}
-
-function getInitials(name: string): string {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
 export function DefectTableRow({
@@ -124,12 +120,7 @@ export function DefectTableRow({
       <td className="w-32 px-3">
         {defect.assignee ? (
           <div className="flex items-center gap-2">
-            <Avatar className="h-6 w-6">
-              <AvatarImage src={defect.assignee.avatar_url || undefined} />
-              <AvatarFallback className="text-[9px] bg-blue-100 text-blue-700">
-                {getInitials(defect.assignee.full_name)}
-              </AvatarFallback>
-            </Avatar>
+            <Avatar src={defect.assignee.avatar_url || undefined} name={defect.assignee.full_name} size="xsmall" />
             <span className="text-xs text-slate-600 truncate">
               {defect.assignee.full_name.split(' ')[0]}
             </span>

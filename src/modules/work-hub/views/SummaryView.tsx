@@ -2,8 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Filter, CheckCircle, Edit, Plus, Calendar, Maximize2, ExternalLink, FileText, CheckSquare, Square } from 'lucide-react';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
@@ -166,11 +165,7 @@ function RecentActivity() {
           <div key={activity.id} className="space-y-1">
             <p className="text-xs text-muted-foreground">{activity.time}</p>
             <div className="flex items-start gap-2">
-              <Avatar className="h-6 w-6">
-                <AvatarFallback className="text-xs bg-amber-100 text-amber-700">
-                  {activity.userInitials}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={activity.userName} size="xsmall" />
               <div className="flex-1 text-sm">
                 <span className="text-primary">{activity.userName}</span>
                 <span className="text-muted-foreground"> {activity.action} </span>
@@ -314,15 +309,7 @@ function TeamWorkload() {
           {team.map((member) => (
             <div key={member.name} className="grid grid-cols-2 gap-4 items-center">
               <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  {member.avatar ? (
-                    <AvatarImage src={member.avatar} />
-                  ) : (
-                    <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
-                      {member.initials}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
+                <Avatar name={member.name} src={member.avatar} size="xsmall" />
                 <span className="text-sm">{member.name}</span>
               </div>
               <div className="flex items-center gap-2">

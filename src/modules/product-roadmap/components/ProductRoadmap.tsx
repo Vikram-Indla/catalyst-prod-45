@@ -5,7 +5,6 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { DragDropContext } from '@hello-pangea/dnd';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { RoadmapToolbar, ViewMode } from './RoadmapToolbar';
 import { RoadmapListPanel } from './RoadmapListPanel';
 import { RoadmapTimelinePanel } from './RoadmapTimelinePanel';
@@ -203,8 +202,7 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
   }
 
   return (
-    <TooltipProvider>
-      <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex flex-col h-full bg-background" data-roadmap-container>
           {/* Toolbar */}
           <RoadmapToolbar
@@ -296,8 +294,7 @@ export function ProductRoadmap({ isFullscreen = false, onToggleFullscreen }: Pro
             isOpen={isDetailPanelOpen}
             onClose={() => setIsDetailPanelOpen(false)}
           />
-        </div>
-      </DragDropContext>
-    </TooltipProvider>
+      </div>
+    </DragDropContext>
   );
 }

@@ -2,12 +2,7 @@
  * AutomationBadge — Automation status indicator
  */
 
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 
 export type AutomationStatus = 'automated' | 'manual' | 'in_progress' | 'candidate';
 
@@ -70,13 +65,8 @@ export function AutomationBadge({
   if (!showTooltip) return badge;
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        {badge}
-      </TooltipTrigger>
-      <TooltipContent side="top" className="text-xs">
-        {config.tooltip}
-      </TooltipContent>
+    <Tooltip position="top" content={<span className="text-xs">{config.tooltip}</span>}>
+      {badge}
     </Tooltip>
   );
 }

@@ -6,7 +6,7 @@
 import React, { useMemo, useState, useCallback } from 'react';
 import { Search } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { WorkItemStatusLozenge } from '@/components/workflow';
 import type { WorkItem } from '@/types/workItem.types';
 
 /* ── Priority SVG icons (Jira-native) ── */
@@ -298,9 +298,11 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                   </div>
                 </td>
 
-                {/* Status */}
+                {/* Status — Jira-parity 6-category colours via workflow engine.
+                    Falls back to legacy 3-category lozenge for items outside
+                    the bound workflows (e.g. Task/Subtask/Improvement). */}
                 <td style={tdStyle}>
-                  <StatusLozenge status={item.statusName || item.status} />
+                  <WorkItemStatusLozenge item={item} variant="bold" maxWidth={160} />
                 </td>
 
                 {/* Priority icon */}

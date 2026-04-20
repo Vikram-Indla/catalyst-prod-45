@@ -6,7 +6,7 @@ import { useCreateProject, useProjects } from '@/hooks/useProjectHub';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 interface Props {
@@ -17,13 +17,6 @@ interface Props {
 function deriveKeyFromName(name: string): string {
   const letters = name.replace(/[^a-zA-Z]/g, '').toUpperCase();
   return letters.slice(0, 3);
-}
-
-function getInitials(name: string | null | undefined): string {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  return name.substring(0, 2).toUpperCase();
 }
 
 const BADGE_COLORS = ['#0D9488', '#2563EB', '#6366F1', '#0891B2', '#475569', '#059669', '#4F46E5', '#0284C7'];
@@ -284,12 +277,9 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                 >
                   {selectedLead ? (
                     <span className="flex items-center gap-2 min-w-0">
-                      <Avatar className="w-5 h-5 flex-shrink-0">
-                        {selectedLead.avatar_url && <AvatarImage src={selectedLead.avatar_url} />}
-                        <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: '#475569' }}>
-                          {getInitials(selectedLead.display_name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <span className="flex-shrink-0">
+                        <Avatar src={selectedLead.avatar_url || undefined} name={selectedLead.display_name || '??'} size="xxsmall" />
+                      </span>
                       <span className="truncate text-[13px]">{selectedLead.display_name}</span>
                     </span>
                   ) : (
@@ -321,12 +311,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                       className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-slate-800 w-full text-left"
                       style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
                     >
-                      <Avatar className="w-6 h-6">
-                        {p.avatar_url && <AvatarImage src={p.avatar_url} />}
-                        <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: '#475569' }}>
-                          {getInitials(p.display_name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
                       <div className="min-w-0">
                         <div className="text-[13px] font-medium truncate" style={{ color: textPrimary }}>{p.display_name}</div>
                         <div className="text-[11px] truncate" style={{ color: textMuted }}>{p.role || 'Team Member'}</div>

@@ -19,6 +19,14 @@
  */
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 
+/* 2026-04-20 — Expanded whitelist. The prior list was too narrow and
+   caused view→edit content loss on any issue whose description used
+   Jira macros (`extension` / `bodiedExtension` / `inlineExtension`),
+   smart-card variants (`blockCard` / `embedCard`) or transient
+   placeholder nodes. The renderer happily showed them in view mode;
+   this normalizer then dropped them before the editor ever saw them.
+   The editor's own schema will still filter nodes it truly can't
+   mount, but we no longer pre-strip things Atlaskit would accept. */
 const SUPPORTED_BLOCK_NODES = new Set<string>([
   'paragraph',
   'heading',
@@ -43,6 +51,12 @@ const SUPPORTED_BLOCK_NODES = new Set<string>([
   'nestedExpand',
   'layoutSection',
   'layoutColumn',
+  // Jira / Confluence macros — preserved so the editor can round-trip
+  // them even when we don't ship a bespoke UI for authoring new ones.
+  'extension',
+  'bodiedExtension',
+  'caption',
+  'placeholder',
 ]);
 
 const SUPPORTED_INLINE_NODES = new Set<string>([
@@ -51,9 +65,12 @@ const SUPPORTED_INLINE_NODES = new Set<string>([
   'emoji',
   'mention',
   'inlineCard',
+  'blockCard',
+  'embedCard',
   'date',
   'status',
   'mediaInline',
+  'inlineExtension',
 ]);
 
 const SUPPORTED_NODES = new Set<string>([

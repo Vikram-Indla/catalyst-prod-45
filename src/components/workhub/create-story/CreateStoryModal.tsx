@@ -12,21 +12,23 @@ import { catalystToast } from '@/lib/catalystToast';
 import ReactDOM from 'react-dom';
 import {
   X, Maximize2, Minus, MoreHorizontal, ChevronDown, ChevronRight,
-  Bold, Italic, List, ListOrdered, Code2, Link2, Undo, Redo, ExternalLink, Check,
+  ExternalLink,
 } from 'lucide-react';
 import {
   useCreateStoryForm, useProjects, useTeamMembers,
   useProjectReleases, useCreateStoryMutation,
 } from './useCreateStory';
 import { useAuth } from '@/hooks/useAuth';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import TipTapLink from '@tiptap/extension-link';
-import Placeholder from '@tiptap/extension-placeholder';
+// 2026-04-20 — @tiptap/* + StoryRichTextEditor imports REMOVED to kill
+// the prosemirror-gapcursor / prosemirror-tables jsonID collision with
+// @atlaskit/editor-core (RangeError: "Duplicate use of selection JSON
+// ID gapcursor"). Any Tiptap StarterKit module evaluated in the same
+// runtime as @atlaskit/editor-core registers a second copy of the
+// `gapcursor` Selection and crashes the Atlaskit renderer. The Create
+// flow now uses a plain-textarea input — full rich-text is handled by
+// the canonical Atlaskit EpicDescriptionEditor on the detail view.
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 
-import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
 import './create-story.css';
 
 // ── Helpers ──
@@ -696,42 +698,31 @@ function UserPicker({ label, required, value, members, onChange, showAssignToMe,
   );
 }
 
-// ── Rich Text Editor (TipTap) ──
-function DescriptionEditor({ onChange }: { onChange: (html: string, json: any) => void }) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Underline,
-      TipTapLink.configure({ openOnClick: false }),
-      Placeholder.configure({ placeholder: '' }),
-    ],
-    onUpdate: ({ editor: ed }) => {
-      onChange(ed.getHTML(), ed.getJSON());
-    },
-  });
-
-  if (!editor) return null;
-
+// ── Description textarea (plain-text create-mode input) ──
+// 2026-04-20 — previously wrapped TipTap's StarterKit; that eagerly
+// evaluates prosemirror-gapcursor at module load and collides with
+// @atlaskit/editor-core's internal copy. Swapped to a plain textarea;
+// richer editing is available on the detail view via the canonical
+// Atlaskit EpicDescriptionEditor once the item is created.
+function DescriptionTextarea({
+  value, onChange,
+}: { value: string; onChange: (text: string) => void }) {
   return (
-    <div className="csEditorWrap">
-      <div className="csEditorToolbar">
-        <button type="button" className={`csEditorBtn ${editor.isActive('bold') ? 'active' : ''}`} onClick={() => editor.chain().focus().toggleBold().run()}><Bold size={16} /></button>
-        <button type="button" className={`csEditorBtn ${editor.isActive('italic') ? 'active' : ''}`} onClick={() => editor.chain().focus().toggleItalic().run()}><Italic size={16} /></button>
-        <span className="csEditorSep" />
-        <button type="button" className={`csEditorBtn ${editor.isActive('bulletList') ? 'active' : ''}`} onClick={() => editor.chain().focus().toggleBulletList().run()}><List size={16} /></button>
-        <button type="button" className={`csEditorBtn ${editor.isActive('orderedList') ? 'active' : ''}`} onClick={() => editor.chain().focus().toggleOrderedList().run()}><ListOrdered size={16} /></button>
-        <span className="csEditorSep" />
-        <button type="button" className={`csEditorBtn ${editor.isActive('codeBlock') ? 'active' : ''}`} onClick={() => editor.chain().focus().toggleCodeBlock().run()}><Code2 size={16} /></button>
-        <button type="button" className="csEditorBtn" onClick={() => {
-          const url = window.prompt('URL');
-          if (url) editor.chain().focus().setLink({ href: url }).run();
-        }}><Link2 size={16} /></button>
-        <span className="csEditorSep" />
-        <button type="button" className="csEditorBtn" onClick={() => editor.chain().focus().undo().run()}><Undo size={16} /></button>
-        <button type="button" className="csEditorBtn" onClick={() => editor.chain().focus().redo().run()}><Redo size={16} /></button>
-      </div>
-      <EditorContent editor={editor} className="csEditorContent" />
-    </div>
+    <textarea
+      className="csDescriptionTextarea"
+      value={value}
+      placeholder="Add a description…"
+      onChange={e => onChange(e.target.value)}
+      style={{
+        width: '100%', minHeight: 140, resize: 'vertical',
+        padding: '10px 12px', borderRadius: 3,
+        border: '1px solid #DFE1E6', background: '#FFFFFF',
+        color: '#172B4D', fontSize: 14, lineHeight: 1.5,
+        fontFamily: 'inherit', outline: 'none',
+      }}
+      onFocus={e => { e.currentTarget.style.borderColor = '#4C9AFF'; }}
+      onBlur={e => { e.currentTarget.style.borderColor = '#DFE1E6'; }}
+    />
   );
 }
 
@@ -1491,19 +1482,14 @@ export function CreateStoryModal({ open, onClose, projectId, projectKey, onSucce
             <CreatePriorityPicker value={form.priority} onChange={v => updateField('priority', v)} />
           </div>
 
-          {/* Description — autoSave mode in create context (no Save/Cancel buttons) */}
+          {/* Description — plain textarea (TipTap removed to kill gapcursor
+              collision; the detail view's Atlaskit EpicDescriptionEditor
+              handles rich editing after creation). */}
           <div className="csField">
             <label className="csLabel">Description</label>
-            <StoryRichTextEditor
-              content=""
-              workItemId="create-new"
-              autoSave
-              onSave={(html) => {
-                updateField('description', html);
-              }}
-              placeholder="Add a description..."
-              minHeight={150}
-              aiLabel="Improve description"
+            <DescriptionTextarea
+              value={form.description ?? ''}
+              onChange={v => updateField('description', v)}
             />
           </div>
 

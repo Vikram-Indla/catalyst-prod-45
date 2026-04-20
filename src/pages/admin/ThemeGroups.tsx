@@ -19,8 +19,7 @@ import { useThemeGroupsWithCounts, useUpdateThemeStatus, ThemeGroupWithCounts } 
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
 import { DeleteThemeDialog } from '@/components/admin/DeleteThemeDialog';
 import { Switch } from '@/components/ui/switch';
-import { Lozenge } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { AdminEmptyState } from '@/components/admin/AdminEmptyState';
 
 export default function ThemeGroups() {
@@ -196,22 +195,15 @@ export default function ThemeGroups() {
                             </span>
                           </td>
                           <td className="p-3 text-sm text-center">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div className="inline-flex">
-                                    <Switch
-                                      checked={theme.status === 'active'}
-                                      onCheckedChange={() => handleToggleStatus(theme)}
-                                      disabled={updateStatusMutation.isPending}
-                                    />
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>{theme.status === 'active' ? 'Set to inactive' : 'Set to active'}</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                            <Tooltip content={<p>{theme.status === 'active' ? 'Set to inactive' : 'Set to active'}</p>}>
+                              <div className="inline-flex">
+                                <Switch
+                                  checked={theme.status === 'active'}
+                                  onCheckedChange={() => handleToggleStatus(theme)}
+                                  disabled={updateStatusMutation.isPending}
+                                />
+                              </div>
+                            </Tooltip>
                           </td>
                           <td className="p-3 text-sm text-right">
                             <div className="flex justify-end gap-1">
@@ -222,26 +214,22 @@ export default function ThemeGroups() {
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm"
-                                      onClick={() => setDeleteTheme(theme)}
-                                      className="text-destructive hover:text-destructive"
-                                    >
-                                      <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    {hasLinkedItems 
-                                      ? 'Has linked items - will need reassignment'
-                                      : 'Delete theme'
-                                    }
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <Tooltip
+                                content={
+                                  hasLinkedItems
+                                    ? 'Has linked items - will need reassignment'
+                                    : 'Delete theme'
+                                }
+                              >
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setDeleteTheme(theme)}
+                                  className="text-destructive hover:text-destructive"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </Tooltip>
                             </div>
                           </td>
                         </tr>

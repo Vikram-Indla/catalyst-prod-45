@@ -9,7 +9,7 @@ import { PriorityIcon } from './PriorityIcon';
 import { StatusLozenge } from './StatusLozenge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Tooltip } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { toast } from '@/components/ui/sonner';
@@ -20,12 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { mapToStoryStatus, mapToFeatureStatus } from '../utils/statusMapping';
 
 interface WorkItemDetailsDrawerProps {
@@ -249,36 +243,26 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   )}
                 </Button>
               ) : (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Edit</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={handleArchive}
-                      disabled={archiveItem.isPending}
-                    >
-                      {archiveItem.isPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Archive className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Archive</TooltipContent>
+                <Tooltip content="Edit">
+                  <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
                 </Tooltip>
-              </TooltipProvider>
+              )}
+              <Tooltip content="Archive">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleArchive}
+                  disabled={archiveItem.isPending}
+                >
+                  {archiveItem.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Archive className="h-4 w-4" />
+                  )}
+                </Button>
+              </Tooltip>
             </>
           )}
           <Button variant="ghost" size="icon" onClick={onClose}>
@@ -339,11 +323,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               </label>
               {item.assigneeId ? (
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-xs">
-                      {(item.assigneeName?.[0] || 'A').toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={item.assigneeName || 'Assignee'} size="xsmall" />
                   <span className="text-sm text-foreground">
                     {item.assigneeName || 'Assignee'}
                   </span>
@@ -360,11 +340,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               </label>
               {item.reporterId ? (
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-xs">
-                      {(item.reporterName?.[0] || 'R').toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={item.reporterName || 'Reporter'} size="xsmall" />
                   <span className="text-sm text-foreground">
                     {item.reporterName || 'Reporter'}
                   </span>
@@ -404,14 +380,9 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <label className="text-[11px] font-semibold text-muted-foreground uppercase">
                     Subtasks ({item.subtaskCount || 0})
                   </label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="sm" disabled>+ Add</Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Coming soon</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip content="Coming soon">
+                    <Button variant="ghost" size="sm" disabled>+ Add</Button>
+                  </Tooltip>
                 </div>
                 {(item.subtaskCount || 0) === 0 && (
                   <p className="text-sm text-muted-foreground">No subtasks</p>
@@ -423,14 +394,9 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <label className="text-[11px] font-semibold text-muted-foreground uppercase">
                     Defects ({item.defectCount || 0})
                   </label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="sm" disabled>+ Log</Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Coming soon</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip content="Coming soon">
+                    <Button variant="ghost" size="sm" disabled>+ Log</Button>
+                  </Tooltip>
                 </div>
                 {(item.defectCount || 0) === 0 && (
                   <p className="text-sm text-muted-foreground">No defects</p>
@@ -442,14 +408,9 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
                   <label className="text-[11px] font-semibold text-muted-foreground uppercase">
                     Incidents ({item.incidentCount || 0})
                   </label>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button variant="ghost" size="sm" disabled>+ Log</Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Coming soon</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip content="Coming soon">
+                    <Button variant="ghost" size="sm" disabled>+ Log</Button>
+                  </Tooltip>
                 </div>
                 {(item.incidentCount || 0) === 0 && (
                   <p className="text-sm text-muted-foreground">No incidents</p>
@@ -534,16 +495,11 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
               className="min-h-[60px]"
             />
             <div className="mt-2 text-right">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span>
-                      <Button disabled>Comment</Button>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>Coming soon</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip content="Coming soon">
+                <span>
+                  <Button disabled>Comment</Button>
+                </span>
+              </Tooltip>
             </div>
           </div>
 
@@ -554,9 +510,7 @@ export const WorkItemDetailsDrawer: React.FC<WorkItemDetailsDrawerProps> = ({
             </label>
             <div className="flex flex-col gap-4">
               <div className="flex gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarFallback className="text-xs">SY</AvatarFallback>
-                </Avatar>
+                <Avatar name="System" size="xsmall" />
                 <div className="flex-1">
                   <p className="text-sm text-foreground">
                     <strong>System</strong> created this item

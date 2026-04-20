@@ -19,13 +19,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Lozenge } from '@/components/ads';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useDataRowResults, type DataRowLatestResult, type RowResultStatus } from '@/hooks/test-management/useDataRowResults';
@@ -181,8 +175,24 @@ export function DataRowResultsSummary({
     return null; // No data rows — don't render this component
   }
   
+  const rerunFailedButton = (
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={handleRerunFailed}
+      disabled={failedRows.length === 0 || createRuns.isPending || !canExecute}
+    >
+      <RotateCcw className="w-4 h-4 mr-1.5" />
+      Re-run Failed
+      {failedRows.length > 0 && (
+        <span className="ml-1.5 text-xs bg-destructive/20 text-destructive px-1.5 rounded-full">
+          {failedRows.length}
+        </span>
+      )}
+    </Button>
+  );
+
   return (
-    <TooltipProvider>
       <div className={cn('space-y-4', className)}>
         {/* Header */}
         <div className="flex items-center justify-between flex-wrap gap-2">
@@ -191,31 +201,15 @@ export function DataRowResultsSummary({
             <h3 className="font-semibold">Data Rows</h3>
             <Lozenge appearance="default">{summary.total}</Lozenge>
           </div>
-          
+
           <div className="flex items-center gap-2 flex-wrap">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleRerunFailed}
-                    disabled={failedRows.length === 0 || createRuns.isPending || !canExecute}
-                  >
-                    <RotateCcw className="w-4 h-4 mr-1.5" />
-                    Re-run Failed
-                    {failedRows.length > 0 && (
-                      <span className="ml-1.5 text-xs bg-destructive/20 text-destructive px-1.5 rounded-full">
-                        {failedRows.length}
-                      </span>
-                    )}
-                  </Button>
-                </span>
-              </TooltipTrigger>
-              {failedRows.length === 0 && (
-                <TooltipContent>No failed rows to rerun</TooltipContent>
-              )}
-            </Tooltip>
+            {failedRows.length === 0 ? (
+              <Tooltip content="No failed rows to rerun">
+                <span>{rerunFailedButton}</span>
+              </Tooltip>
+            ) : (
+              rerunFailedButton
+            )}
             
             <Button
               variant="outline"
@@ -339,7 +333,6 @@ export function DataRowResultsSummary({
           </div>
         </div>
       </div>
-    </TooltipProvider>
   );
 }
 

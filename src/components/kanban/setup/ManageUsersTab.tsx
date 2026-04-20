@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useBoardUsers, useAddBoardUser } from '@/hooks/useKanbanBoards';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Plus, Trash2 } from 'lucide-react';
 import {
   Select,
@@ -128,11 +127,7 @@ export function ManageUsersTab({ boardId }: ManageUsersTabProps) {
               <Card key={user.id} className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar className="w-8 h-8">
-                      <AvatarFallback className="bg-brand-primary text-white text-xs">
-                        {user.profiles?.full_name?.substring(0, 2).toUpperCase() || 'UN'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={user.profiles?.full_name || 'Unknown'} size="small" />
                     <div>
                       <div className="text-sm font-medium text-foreground">
                         {user.profiles?.full_name || 'Unknown User'}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { IncidentFilters, IncidentStatus, SupportLevel } from '@/types/incident';
@@ -260,34 +260,27 @@ export function IncidentsFiltersDialog({
         </div>
 
         {/* Smart Filters */}
-        <TooltipProvider>
-          <div className="px-4 sm:px-5 py-4 border-b border-border bg-muted/20">
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
-            <div className="flex flex-wrap gap-2">
-              {SMART_FILTER_CONFIG.map((sf) => (
-                <Tooltip key={sf.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      className={cn(
-                        "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
-                        activeSmartFilter === sf.id
-                          ? "bg-brand-primary border-brand-primary text-white"
-                          : "bg-white dark:bg-[#1A1A1A] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
-                      )}
-                      onClick={() => handleSmartFilterClick(sf.id)}
-                    >
-                      {sf.label}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-brand-dark text-white text-xs max-w-[280px] p-2 rounded-md">
-                    {sf.tooltip}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
+        <div className="px-4 sm:px-5 py-4 border-b border-border bg-muted/20">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
+          <div className="flex flex-wrap gap-2">
+            {SMART_FILTER_CONFIG.map((sf) => (
+              <Tooltip key={sf.id} content={sf.tooltip} position="bottom">
+                <button
+                  type="button"
+                  className={cn(
+                    "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
+                    activeSmartFilter === sf.id
+                      ? "bg-brand-primary border-brand-primary text-white"
+                      : "bg-white dark:bg-[#1A1A1A] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
+                  )}
+                  onClick={() => handleSmartFilterClick(sf.id)}
+                >
+                  {sf.label}
+                </button>
+              </Tooltip>
+            ))}
           </div>
-        </TooltipProvider>
+        </div>
 
         {/* Filter Body */}
         <div className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto scroll-smooth overscroll-contain">

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Filter, Download, Search, List, LayoutGrid, Table, Plus, Columns } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface BacklogHeaderProps {
   onOpenFilters: () => void;
@@ -209,29 +209,22 @@ export function BacklogHeader({
               )}
             </button>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleExport}
-                    className="h-8 px-3 gap-1.5"
-                    style={{ 
-                      backgroundColor: 'var(--surface-1)', 
-                      borderColor: 'var(--border-color)',
-                      color: 'var(--text-1)'
-                    }}
-                  >
-                    <Download className="h-4 w-4" />
-                    Export
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Export data</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content="Export data">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExport}
+                className="h-8 px-3 gap-1.5"
+                style={{
+                  backgroundColor: 'var(--surface-1)',
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-1)'
+                }}
+              >
+                <Download className="h-4 w-4" />
+                Export
+              </Button>
+            </Tooltip>
 
             <Button
               onClick={onCreateEpic}

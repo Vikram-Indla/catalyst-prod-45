@@ -1,6 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Tooltip, type AvatarSize as AdsAvatarSize } from '@/components/ads';
 import { Bot, CircleUser, Settings } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 export type OwnerType = 'human' | 'ai' | 'system' | 'placeholder';
@@ -28,6 +27,13 @@ const sizeMap: Record<AvatarSize, string> = {
   sm: 'w-5 h-5 text-[9px]',
   md: 'w-6 h-6 text-[10px]',
   lg: 'w-8 h-8 text-[12px]',
+};
+
+const adsSizeMap: Record<AvatarSize, AdsAvatarSize> = {
+  xs: 'xxsmall',
+  sm: 'xxsmall',
+  md: 'xsmall',
+  lg: 'small',
 };
 
 const iconSizeMap: Record<AvatarSize, string> = {
@@ -79,16 +85,24 @@ export function CatalystOwnerAvatar({
     return name || 'Unknown';
   };
 
-  const avatarContent = (
-    <Avatar className={cn(sizeMap[size], 'flex-shrink-0', className)}>
-      {avatarUrl && <AvatarImage src={avatarUrl} alt={name} />}
-      <AvatarFallback
+  const avatarContent =
+    type === 'human' ? (
+      <span className={cn('inline-flex flex-shrink-0', className)}>
+        <Avatar
+          src={avatarUrl}
+          name={name || displayInitials}
+          size={adsSizeMap[size]}
+        />
+      </span>
+    ) : (
+      <span
         className={cn(
-          'font-semibold',
-          type === 'human' && 'bg-brand-primary text-white',
+          'inline-flex items-center justify-center rounded-full font-semibold flex-shrink-0',
+          sizeMap[size],
           type === 'ai' && 'bg-brand-gold/15 text-brand-gold border border-brand-gold/30',
           type === 'system' && 'bg-muted text-muted-foreground',
           type === 'placeholder' && 'bg-muted text-muted-foreground border border-dashed border-muted-foreground/30',
+          className,
         )}
       >
         {type === 'ai' ? (
@@ -98,21 +112,15 @@ export function CatalystOwnerAvatar({
         ) : (
           <CircleUser className={iconSizeMap[size]} strokeWidth={1.5} />
         )}
-      </AvatarFallback>
-    </Avatar>
-  );
+      </span>
+    );
 
   if (!showTooltip) return avatarContent;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>{avatarContent}</TooltipTrigger>
-        <TooltipContent side="top" className="text-xs">
-          {getTooltipLabel()}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={getTooltipLabel()} position="top">
+      {avatarContent}
+    </Tooltip>
   );
 }
 
@@ -141,36 +149,35 @@ export function StackedAvatars({
   const remaining = owners.length - maxVisible;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={cn('flex -space-x-2', className)}>
-            {visible.map((owner, idx) => (
-              <CatalystOwnerAvatar
-                key={idx}
-                type={owner.type}
-                name={owner.name}
-                initials={owner.initials}
-                avatarUrl={owner.avatarUrl}
-                size={size}
-                showTooltip={false}
-                className="ring-2 ring-background"
-              />
-            ))}
-            {remaining > 0 && (
-              <Avatar className={cn(sizeMap[size], 'flex-shrink-0 ring-2 ring-background')}>
-                <AvatarFallback className="bg-muted text-muted-foreground font-semibold">
-                  +{remaining}
-                </AvatarFallback>
-              </Avatar>
+    <Tooltip
+      content={owners.map(o => o.name).filter(Boolean).join(', ') || 'Multiple owners'}
+      position="top"
+    >
+      <div className={cn('flex -space-x-2', className)}>
+        {visible.map((owner, idx) => (
+          <CatalystOwnerAvatar
+            key={idx}
+            type={owner.type}
+            name={owner.name}
+            initials={owner.initials}
+            avatarUrl={owner.avatarUrl}
+            size={size}
+            showTooltip={false}
+            className="ring-2 ring-background"
+          />
+        ))}
+        {remaining > 0 && (
+          <span
+            className={cn(
+              'inline-flex items-center justify-center rounded-full bg-muted text-muted-foreground font-semibold flex-shrink-0 ring-2 ring-background',
+              sizeMap[size],
             )}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="text-xs">
-          {owners.map(o => o.name).filter(Boolean).join(', ') || 'Multiple owners'}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          >
+            +{remaining}
+          </span>
+        )}
+      </div>
+    </Tooltip>
   );
 }
 

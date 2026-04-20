@@ -6,8 +6,7 @@
 
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Lozenge } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import type { FeatureBacklogItem } from '../../types';
 
 interface FeatureListPanelProps {
@@ -157,44 +156,23 @@ export function FeatureListPanel({
 
                     {/* Meta: Status, Epic, Assignee */}
                     <p className="text-xs mt-1 flex items-center flex-wrap gap-0" style={{ color: 'var(--text-3)' }}>
-                      <TooltipProvider delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help hover:underline decoration-dotted">{formatStatus(feature.status)}</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            <p>Status</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip position="top" delay={200} content="Status">
+                        <span className="cursor-help hover:underline decoration-dotted">{formatStatus(feature.status)}</span>
+                      </Tooltip>
                       {feature.epic_name && (
                         <>
                           <span className="mx-1">•</span>
-                          <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="cursor-help hover:underline decoration-dotted truncate max-w-[100px]">{feature.epic_name}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">
-                                <p>Epic: {feature.epic_name}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Tooltip position="top" delay={200} content={`Epic: ${feature.epic_name}`}>
+                            <span className="cursor-help hover:underline decoration-dotted truncate max-w-[100px]">{feature.epic_name}</span>
+                          </Tooltip>
                         </>
                       )}
                       {feature.assignee_name && (
                         <>
                           <span className="mx-1">•</span>
-                          <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="cursor-help hover:underline decoration-dotted truncate max-w-[80px]">{feature.assignee_name}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">
-                                <p>Assignee</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Tooltip position="top" delay={200} content="Assignee">
+                            <span className="cursor-help hover:underline decoration-dotted truncate max-w-[80px]">{feature.assignee_name}</span>
+                          </Tooltip>
                         </>
                       )}
                     </p>

@@ -12,6 +12,7 @@ import React, { useMemo, useState } from 'react';
 import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
+import { WorkItemStatusLozenge } from '@/components/workflow';
 import type { WorkItem } from '@/types/workItem.types';
 
 interface Props {
@@ -144,7 +145,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
               >
                 {item.summary || '(No title)'}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                 <span style={{
                   // Issue key in card: Atlassian Sans 12/400/#505258 (NOT monospace —
                   // Jira uses the same family as body, just smaller).
@@ -155,16 +156,22 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
                   <WorkItemTypeIcon type={item.type} size={14} />
                   {item.jiraKey}
                 </span>
-                {/* Interactive assignee picker (replaces previous static avatar).
-                    Uses dbId (UUID) — never issue_key (CLAUDE.md §L39). */}
-                <WorkCardAssigneePicker
-                  dbId={item.dbId || item.id}
-                  currentAssigneeId={item.assignee?.id ?? null}
-                  currentAssigneeName={item.assignee?.name ?? null}
-                  projectId={projectId}
-                  fallbackInitials={item.assignee?.initials || 'NA'}
-                  fallbackColor={item.assignee?.color || '#6554C0'}
-                />
+                {/* Jira-parity status pill — colour derives from the workflow
+                    engine (admin-editable at /admin/workflows) so all surfaces
+                    share a single source of truth. */}
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                  <WorkItemStatusLozenge item={item} variant="bold" maxWidth={120} />
+                  {/* Interactive assignee picker (replaces previous static avatar).
+                      Uses dbId (UUID) — never issue_key (CLAUDE.md §L39). */}
+                  <WorkCardAssigneePicker
+                    dbId={item.dbId || item.id}
+                    currentAssigneeId={item.assignee?.id ?? null}
+                    currentAssigneeName={item.assignee?.name ?? null}
+                    projectId={projectId}
+                    fallbackInitials={item.assignee?.initials || 'NA'}
+                    fallbackColor={item.assignee?.color || '#6554C0'}
+                  />
+                </div>
               </div>
             </div>
           );

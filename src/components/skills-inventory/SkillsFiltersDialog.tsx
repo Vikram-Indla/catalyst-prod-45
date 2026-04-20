@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Slider } from '@/components/ui/slider';
@@ -263,34 +263,27 @@ export function SkillsFiltersDialog({
         </div>
 
         {/* Quick Filters */}
-        <TooltipProvider>
-          <div className="px-4 sm:px-5 py-4 border-b border-border bg-muted/20">
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
-            <div className="flex flex-wrap gap-2">
-              {QUICK_FILTER_CONFIG.map((sf) => (
-                <Tooltip key={sf.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      className={cn(
-                        "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
-                        localFilters.activeQuickFilter === sf.id
-                          ? "bg-brand-primary border-brand-primary text-white"
-                          : "bg-white dark:bg-[#1A1A1A] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
-                      )}
-                      onClick={() => handleQuickFilterClick(sf.id)}
-                    >
-                      {sf.label}
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-brand-dark text-white text-xs max-w-[280px] p-2 rounded-md">
-                    {sf.tooltip}
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
+        <div className="px-4 sm:px-5 py-4 border-b border-border bg-muted/20">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
+          <div className="flex flex-wrap gap-2">
+            {QUICK_FILTER_CONFIG.map((sf) => (
+              <Tooltip key={sf.id} position="bottom" content={sf.tooltip}>
+                <button
+                  type="button"
+                  className={cn(
+                    "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
+                    localFilters.activeQuickFilter === sf.id
+                      ? "bg-brand-primary border-brand-primary text-white"
+                      : "bg-white dark:bg-[#1A1A1A] border-border text-foreground hover:border-brand-primary hover:bg-brand-primary/5"
+                  )}
+                  onClick={() => handleQuickFilterClick(sf.id)}
+                >
+                  {sf.label}
+                </button>
+              </Tooltip>
+            ))}
           </div>
-        </TooltipProvider>
+        </div>
 
         {/* Filter Body */}
         <div className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto scroll-smooth overscroll-contain [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30">

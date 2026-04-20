@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { PlanStatusBadge } from '@/components/test-plans/PlanStatusBadge';
 import { OverviewTab } from '@/components/test-plans/OverviewTab';
 import { ScopeTab } from '@/components/test-plans/ScopeTab';
@@ -297,25 +297,16 @@ export default function PlanDetailPage() {
 
           {/* DEF-S11-03: Mark Complete only when all linked cycles completed */}
           {(plan.status === 'active' || plan.status === 'executing') && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span>
-                    <Button
-                      onClick={() => handleStatusChange('completed')}
-                      disabled={!canMarkComplete}
-                    >
-                      Mark Complete
-                    </Button>
-                  </span>
-                </TooltipTrigger>
-                {!canMarkComplete && (
-                  <TooltipContent>
-                    <p>Link and complete at least one test cycle first</p>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content={!canMarkComplete ? <p>Link and complete at least one test cycle first</p> : null}>
+              <span>
+                <Button
+                  onClick={() => handleStatusChange('completed')}
+                  disabled={!canMarkComplete}
+                >
+                  Mark Complete
+                </Button>
+              </span>
+            </Tooltip>
           )}
 
           {/* More Actions */}
@@ -433,25 +424,20 @@ export default function PlanDetailPage() {
                               {lc.linked_at ? formatDistanceToNow(new Date(lc.linked_at), { addSuffix: true }) : '—'}
                             </td>
                             <td className="px-4 py-2 text-right">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                                      onClick={() => {
-                                        unlinkCycle.mutate({ linkId: lc.id, planId: plan.id }, {
-                                          onSuccess: () => toast.success('Cycle unlinked'),
-                                        });
-                                      }}
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>Unlink cycle</TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                              <Tooltip content="Unlink cycle">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                                  onClick={() => {
+                                    unlinkCycle.mutate({ linkId: lc.id, planId: plan.id }, {
+                                      onSuccess: () => toast.success('Cycle unlinked'),
+                                    });
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </Tooltip>
                             </td>
                           </tr>
                         );

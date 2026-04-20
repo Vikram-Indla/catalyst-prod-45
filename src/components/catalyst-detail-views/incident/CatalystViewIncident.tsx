@@ -7,8 +7,8 @@ import { AlertTriangle } from 'lucide-react';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails,
+  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
@@ -42,6 +42,7 @@ export default function CatalystViewIncident({
 
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       <CatalystQuickActions />
+      <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="incident" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Impact / Root Cause" />
 
@@ -66,9 +67,7 @@ export default function CatalystViewIncident({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="incident">
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="incident" projectKey={projectKey} onOpenItem={onOpenItem} />
-    </CatalystSidebarDetails>
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="incident" />
   );
 
   return (

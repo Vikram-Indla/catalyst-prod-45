@@ -4,16 +4,10 @@ import { useWorkItemsByAssignee, useUpdateWorkItemStatus } from '../../hooks/use
 import { DEFAULT_BOARD_COLUMNS, WorkItem, BoardGrouping, WorkItemType } from '../../types';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { PriorityIcon } from '../PriorityIcon';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Tooltip } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/sonner';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -84,17 +78,14 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
           {/* Assignee Avatars */}
           <div className="flex items-center ml-2">
             {assignees.map((assignee, idx) => (
-              <div 
+              <div
                 key={assignee.name}
                 className={idx > 0 ? '-ml-2' : ''}
                 style={{ zIndex: assignees.length - idx }}
               >
-                <Avatar className="w-6 h-6 border-2 border-card">
-                  <AvatarImage src={assignee.avatar} />
-                  <AvatarFallback className="text-[10px]">
-                    {assignee.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <span className="border-2 border-card rounded-full inline-block">
+                  <Avatar src={assignee.avatar} name={assignee.name} size="xsmall" />
+                </span>
               </div>
             ))}
             {swimlaneData && swimlaneData.length > 3 && (
@@ -105,19 +96,12 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
           </div>
 
           {/* Quick Filters - disabled with tooltip */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" className="gap-1" disabled>
-                  Quick filters
-                  <ChevronDown className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <Button variant="ghost" className="gap-1" disabled>
+              Quick filters
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </Tooltip>
         </div>
 
         {/* Right side */}
@@ -132,46 +116,25 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
           </Button>
 
           {/* Analytics - disabled with tooltip */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" disabled>
-                  <BarChart3 className="w-5 h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <Button variant="ghost" size="icon" disabled>
+              <BarChart3 className="w-5 h-5" />
+            </Button>
+          </Tooltip>
 
           {/* Settings - disabled with tooltip */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" disabled>
-                  <Settings2 className="w-5 h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <Button variant="ghost" size="icon" disabled>
+              <Settings2 className="w-5 h-5" />
+            </Button>
+          </Tooltip>
 
           {/* More - disabled with tooltip */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" disabled>
-                  <MoreHorizontal className="w-5 h-5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <Button variant="ghost" size="icon" disabled>
+              <MoreHorizontal className="w-5 h-5" />
+            </Button>
+          </Tooltip>
         </div>
       </div>
 
@@ -235,12 +198,7 @@ const SwimlaneRow: React.FC<{
         className="flex items-center gap-2 py-2 bg-transparent border-none cursor-pointer w-full text-left"
       >
         {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-        <Avatar className="w-6 h-6">
-          <AvatarImage src={swimlane.avatar} />
-          <AvatarFallback className="text-[10px]">
-            {swimlane.name.slice(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <Avatar src={swimlane.avatar} name={swimlane.name} size="xsmall" />
         <span className="text-sm font-medium text-foreground">
           {swimlane.name}
         </span>
@@ -330,21 +288,14 @@ const BoardColumn: React.FC<{
         ))}
 
         {/* Create Button - disabled with tooltip */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                disabled
-                className="flex items-center gap-1 p-2 bg-transparent border-none cursor-not-allowed text-muted-foreground/50 text-sm"
-              >
-                + Create
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Coming soon</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip content={<p>Coming soon</p>}>
+          <button
+            disabled
+            className="flex items-center gap-1 p-2 bg-transparent border-none cursor-not-allowed text-muted-foreground/50 text-sm"
+          >
+            + Create
+          </button>
+        </Tooltip>
       </div>
     </div>
   );
@@ -397,12 +348,7 @@ const StoryCard: React.FC<{
         </div>
 
         {item.assigneeAvatar && (
-          <Avatar className="w-5 h-5">
-            <AvatarImage src={item.assigneeAvatar} />
-            <AvatarFallback className="text-[8px]">
-              {item.assigneeName?.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar src={item.assigneeAvatar} name={item.assigneeName || ''} size="xxsmall" />
         )}
       </div>
 

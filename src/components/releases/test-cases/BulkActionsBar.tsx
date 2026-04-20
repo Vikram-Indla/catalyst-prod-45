@@ -16,11 +16,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 export interface BulkActionsBarProps {
@@ -86,164 +82,137 @@ export function BulkActionsBar({
         
         {/* Move to Folder (Primary Action) */}
         {onMoveToFolder && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                size="sm"
-                className="h-7 px-2.5 mx-1 text-xs font-medium bg-blue-600 hover:bg-blue-700 rounded-full border-0"
-                onClick={onMoveToFolder}
-              >
-                <Folder className="w-3.5 h-3.5 mr-1.5" />
-                Move
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to folder</TooltipContent>
+          <Tooltip content="Move to folder">
+            <Button
+              size="sm"
+              className="h-7 px-2.5 mx-1 text-xs font-medium bg-blue-600 hover:bg-blue-700 rounded-full border-0"
+              onClick={onMoveToFolder}
+            >
+              <Folder className="w-3.5 h-3.5 mr-1.5" />
+              Move
+            </Button>
           </Tooltip>
         )}
-        
+
         {/* Execute */}
         {onExecute && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
-                onClick={onExecute}
-              >
-                <Play className="w-3.5 h-3.5 mr-1.5" />
-                Execute
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Run selected test cases</TooltipContent>
-          </Tooltip>
-        )}
-        
-        {/* Assign */}
-        {onAssign && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
-                onClick={onAssign}
-              >
-                <UserPlus className="w-3.5 h-3.5 mr-1.5" />
-                Assign
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Assign to team member</TooltipContent>
-          </Tooltip>
-        )}
-        
-        {/* Move to Release */}
-        {onMove && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
-                onClick={onMove}
-              >
-                <Calendar className="w-3.5 h-3.5 mr-1.5" />
-                Release
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Move to another release</TooltipContent>
-          </Tooltip>
-        )}
-        
-        {/* Tags */}
-        {onAddTags && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
-                onClick={onAddTags}
-              >
-                <Tags className="w-3.5 h-3.5 mr-1.5" />
-                Tags
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Add or remove tags</TooltipContent>
-          </Tooltip>
-        )}
-        
-        {/* Clone/Duplicate */}
-        {onDuplicate && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
-                onClick={onDuplicate}
-              >
-                <Copy className="w-3.5 h-3.5 mr-1.5" />
-                Clone
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Duplicate selected</TooltipContent>
-          </Tooltip>
-        )}
-        
-        {/* Export */}
-        {onExport && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
-                onClick={onExport}
-              >
-                <Download className="w-3.5 h-3.5 mr-1.5" />
-                Export
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Export selected</TooltipContent>
-          </Tooltip>
-        )}
-        
-        <div className="w-px h-5 bg-slate-600" />
-        
-        {/* Delete (Danger) */}
-        {onDelete && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2.5 text-xs text-red-400 hover:bg-red-500/20 rounded-full"
-                onClick={onDelete}
-              >
-                <Trash2 className="w-3.5 h-3.5 mr-1.5" />
-                Delete
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Delete selected (Del)</TooltipContent>
-          </Tooltip>
-        )}
-        
-        <div className="w-px h-5 bg-slate-600" />
-        
-        {/* Close / Clear Selection */}
-        <Tooltip>
-          <TooltipTrigger asChild>
+          <Tooltip content="Run selected test cases">
             <Button
               variant="ghost"
-              size="icon"
-              className="h-7 w-7 mr-0.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full"
-              onClick={onClear}
+              size="sm"
+              className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+              onClick={onExecute}
             >
-              <X className="w-4 h-4" />
+              <Play className="w-3.5 h-3.5 mr-1.5" />
+              Execute
             </Button>
-          </TooltipTrigger>
-          <TooltipContent>Clear selection (Esc)</TooltipContent>
+          </Tooltip>
+        )}
+
+        {/* Assign */}
+        {onAssign && (
+          <Tooltip content="Assign to team member">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+              onClick={onAssign}
+            >
+              <UserPlus className="w-3.5 h-3.5 mr-1.5" />
+              Assign
+            </Button>
+          </Tooltip>
+        )}
+
+        {/* Move to Release */}
+        {onMove && (
+          <Tooltip content="Move to another release">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+              onClick={onMove}
+            >
+              <Calendar className="w-3.5 h-3.5 mr-1.5" />
+              Release
+            </Button>
+          </Tooltip>
+        )}
+
+        {/* Tags */}
+        {onAddTags && (
+          <Tooltip content="Add or remove tags">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+              onClick={onAddTags}
+            >
+              <Tags className="w-3.5 h-3.5 mr-1.5" />
+              Tags
+            </Button>
+          </Tooltip>
+        )}
+
+        {/* Clone/Duplicate */}
+        {onDuplicate && (
+          <Tooltip content="Duplicate selected">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+              onClick={onDuplicate}
+            >
+              <Copy className="w-3.5 h-3.5 mr-1.5" />
+              Clone
+            </Button>
+          </Tooltip>
+        )}
+
+        {/* Export */}
+        {onExport && (
+          <Tooltip content="Export selected">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2.5 text-xs text-white hover:bg-white/10 rounded-full"
+              onClick={onExport}
+            >
+              <Download className="w-3.5 h-3.5 mr-1.5" />
+              Export
+            </Button>
+          </Tooltip>
+        )}
+
+        <div className="w-px h-5 bg-slate-600" />
+
+        {/* Delete (Danger) */}
+        {onDelete && (
+          <Tooltip content="Delete selected (Del)">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2.5 text-xs text-red-400 hover:bg-red-500/20 rounded-full"
+              onClick={onDelete}
+            >
+              <Trash2 className="w-3.5 h-3.5 mr-1.5" />
+              Delete
+            </Button>
+          </Tooltip>
+        )}
+
+        <div className="w-px h-5 bg-slate-600" />
+
+        {/* Close / Clear Selection */}
+        <Tooltip content="Clear selection (Esc)">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 mr-0.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-full"
+            onClick={onClear}
+          >
+            <X className="w-4 h-4" />
+          </Button>
         </Tooltip>
         
       </div>

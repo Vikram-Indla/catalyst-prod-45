@@ -18,7 +18,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { toast } from 'sonner';
 import { useInJira } from '../context/InJiraContext';
 import { cn } from '@/lib/utils';
@@ -204,47 +204,32 @@ export function IssueDrawer() {
             
             <Separator orientation="vertical" className="h-6 mx-2" />
             
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Share</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <ExternalLink className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Open in new tab</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-8 w-8"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                  >
-                    {isExpanded ? (
-                      <Minimize2 className="h-4 w-4" />
-                    ) : (
-                      <Maximize2 className="h-4 w-4" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{isExpanded ? 'Collapse' : 'Expand'}</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content="Share">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Share2 className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip content="Open in new tab">
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <ExternalLink className="h-4 w-4" />
+              </Button>
+            </Tooltip>
+
+            <Tooltip content={isExpanded ? 'Collapse' : 'Expand'}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? (
+                  <Minimize2 className="h-4 w-4" />
+                ) : (
+                  <Maximize2 className="h-4 w-4" />
+                )}
+              </Button>
+            </Tooltip>
             
             <IssueActionsMenu 
               issueId={issue.id} 

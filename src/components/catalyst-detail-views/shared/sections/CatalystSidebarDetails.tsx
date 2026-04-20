@@ -21,6 +21,8 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition
 import Button from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Inline } from '@atlaskit/primitives';
+import { useWorkflow } from '@/lib/workflows';
+import { StatusTransitionDropdown } from '@/components/workflow';
 
 /**
  * FieldRow — sidebar field row atom (Phase E.3, 2026-04-18).
@@ -66,7 +68,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import type { PhIssue } from '../types';
 import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
-import { EditableAssignee, EditablePriority, EditableLabels, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+/* EditablePriority moved to CatalystKeyDetails (main content) per Jira
+   parity audit on 2026-04-20. Keeping the other three editable fields. */
+import { EditableAssignee, EditableLabels, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -106,6 +110,19 @@ export function CatalystSidebarDetails({
   const statusValue = localStatus || issue?.status || 'Backlog';
   const statusCategory = issue?.status_category || getStatusCategory(statusValue);
   const statusStyle = getStatusStyle(statusValue, statusCategory);
+
+  // ── Workflow-aware dropdown (Jira-parity) ──────────────────────────
+  // When the issue type is bound to one of our workflows (SDLC / Simple / Bug),
+  // use the new StatusTransitionDropdown which matches Jira's verb→pill pattern
+  // and renders categories beyond the legacy 3-colour guardrail (red / yellow /
+  // purple). Falls back to the original grouped picker below when no workflow
+  // is defined for the issue type (e.g. Task, Subtask).
+  const workflow = useWorkflow(issue?.issue_type);
+  const currentWorkflowState = workflow
+    ? workflow.states.find(s => s.name.toLowerCase() === statusValue.toLowerCase())
+      ?? workflow.states.find(s => s.id === statusValue.toLowerCase().replace(/[^a-z0-9]+/g, '_'))
+      ?? workflow.states.find(s => s.id === workflow.initialStateId)
+    : undefined;
   // Phase E.2 (2026-04-18): map Catalyst status category → Atlaskit Lozenge
   // appearance. Colours are locked to the 3-colour guardrail (CLAUDE.md §5):
   // grey / blue / green. Atlaskit's default / inprogress / success tokens
@@ -160,12 +177,25 @@ export function CatalystSidebarDetails({
   return (
     <>
       {/* ── Status dropdown ──────────────────────────────────────────────
-          Phase E.2 (2026-04-18): visual pill migrated to @atlaskit/lozenge.
-          Colours locked to CLAUDE.md §5 guardrail (grey / blue / green).
-          The button shell is kept minimal — padding 4px around the Lozenge
-          gives a comfortable click zone with a subtle token hover. Atlaskit
-          Lozenge renders sentence case natively, matching what Jira renders
-          on digital-transformation.atlassian.net. */}
+          Phase F (2026-04-20): Jira-parity workflow-aware dropdown. When the
+          issue type is bound to a workflow in /admin/workflows, render the
+          StatusTransitionDropdown (verb → target-pill rows matching image 4
+          of the BAU-5514 design critique). Falls back to the legacy grouped
+          picker for unmapped types (Task, Subtask, etc.). */}
+      {workflow && currentWorkflowState ? (
+        <div style={{ marginBottom: 14 }}>
+          <StatusTransitionDropdown
+            issueType={issue?.issue_type ?? 'Defect'}
+            currentStateId={currentWorkflowState.id}
+            onTransition={(_targetStateId, transition) => {
+              const target = workflow.states.find(s => s.id === transition.to);
+              if (!target) return;
+              setLocalStatus(target.name);
+              onStatusChange(target.name);
+            }}
+          />
+        </div>
+      ) : (
       <div style={{ marginBottom: 14, position: 'relative' }} ref={statusDropdownRef}>
         <button
           onClick={() => setShowStatusDropdown(!showStatusDropdown)}
@@ -236,6 +266,7 @@ export function CatalystSidebarDetails({
           </div>
         )}
       </div>
+      )}
 
       {/* ── Details section card ──────────────── */}
       <div style={{ marginBottom: 8 }}>
@@ -249,8 +280,27 @@ export function CatalystSidebarDetails({
           <Heading size="small">Details</Heading>
         </div>
 
-        {/* Section body — two-column field grid */}
+        {/* Section body — two-column field grid.
+            2026-04-20 Jira-parity reorder (Drawer Phase 5):
+              Measured on BAU-5538 / BAU-5364 — Jira's Details section
+              renders fields in this order:
+                Fix versions → Assignee → Reporter → Labels → {children}
+              Priority was MOVED out of the sidebar into the new
+              "Key details" block at the top of the main content
+              (CatalystKeyDetails.tsx). */}
         <div style={{ padding: '8px 12px 8px 19px' }}>
+
+          {/* ── Fix Versions ──── */}
+          <FieldRow label="Fix versions" labelTopPad>
+            {issue && (
+              <EditableFixVersions
+                issueId={issue.id}
+                currentFixVersions={issue.fix_versions}
+                projectKey={issue.project_key}
+                onUpdate={invalidateIssue}
+              />
+            )}
+          </FieldRow>
 
           {/* ── Assignee ──── */}
           <FieldRow label="Assignee">
@@ -280,20 +330,6 @@ export function CatalystSidebarDetails({
                 </button>
               )}
             </div>
-          </FieldRow>
-
-          {/* ── TYPE-SPECIFIC FIELDS (children slot) ── */}
-          {children}
-
-          {/* ── Priority ──── */}
-          <FieldRow label="Priority" alignBlock="center">
-            {issue && (
-              <EditablePriority
-                issueId={issue.id}
-                currentPriority={issue.priority}
-                onUpdate={invalidateIssue}
-              />
-            )}
           </FieldRow>
 
           {/* ── Reporter ──── */}
@@ -328,19 +364,14 @@ export function CatalystSidebarDetails({
             )}
           </FieldRow>
 
-          {/* ── Fix Versions ──── */}
-          <FieldRow label="Fix versions" labelTopPad>
-            {issue && (
-              <EditableFixVersions
-                issueId={issue.id}
-                currentFixVersions={issue.fix_versions}
-                projectKey={issue.project_key}
-                onUpdate={invalidateIssue}
-              />
-            )}
-          </FieldRow>
+          {/* ── TYPE-SPECIFIC FIELDS (children slot) ──
+              Jira parity: custom fields (MDT Ref, parent picker for legacy
+              code paths, etc.) render after Labels. Each CatalystView* owns
+              its own children tree. */}
+          {children}
 
-          {/* Story Points: BANNED platform-wide. Do NOT re-add. */}
+          {/* Priority MOVED to CatalystKeyDetails (main content).
+              Story Points: BANNED platform-wide. Do NOT re-add. */}
         </div>
       </div>
 

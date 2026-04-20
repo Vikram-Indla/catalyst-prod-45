@@ -4,7 +4,7 @@
  */
 import { ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface JiraSyncChipProps {
   jiraKey: string;
@@ -52,11 +52,8 @@ export function JiraSyncChip({ jiraKey, baseUrl, size = 'sm', className }: JiraS
   if (!jiraUrl) return chip;
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>{chip}</TooltipTrigger>
-      <TooltipContent side="top" className="text-xs">
-        Open in Jira: {jiraKey}
-      </TooltipContent>
+    <Tooltip content={`Open in Jira: ${jiraKey}`} position="top">
+      {chip}
     </Tooltip>
   );
 }

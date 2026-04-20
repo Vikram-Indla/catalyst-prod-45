@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
 import { User, Mail, Briefcase, Save, Shield, History } from 'lucide-react';
@@ -112,15 +111,6 @@ export default function UserProfile() {
     updateMutation.mutate();
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
     <div className="p-8 space-y-6 max-w-4xl mx-auto">
       <div>
@@ -134,12 +124,7 @@ export default function UserProfile() {
             <CardTitle>Profile Picture</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col items-center space-y-4">
-            <Avatar className="w-32 h-32">
-              <AvatarImage src={avatarUrl} />
-              <AvatarFallback className="text-2xl">
-                {fullName ? getInitials(fullName) : 'U'}
-              </AvatarFallback>
-            </Avatar>
+            <Avatar src={avatarUrl} name={fullName || 'U'} size="xxlarge" />
             <div className="text-center">
               <p className="font-medium">{fullName || 'No name set'}</p>
               <p className="text-sm text-muted-foreground">{role || 'No role set'}</p>

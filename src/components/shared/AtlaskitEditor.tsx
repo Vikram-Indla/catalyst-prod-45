@@ -162,7 +162,21 @@ const AtlaskitEditor = forwardRef<AtlaskitEditorRef, AtlaskitEditorProps>(
             allowTables={{ advanced: false }}
             allowPanel
             allowTasksAndDecisions
+<<<<<<< Updated upstream
             media={mediaOptions}
+=======
+            /* 2026-04-20 — See EpicDescriptionEditor for the rationale:
+               the narrower allow-list silently dropped expand / layout /
+               status / date nodes on load, causing view→edit content
+               loss. Enable the Jira-parity set here so the knowledge-
+               hub ConfluenceEditor (which wraps this component) also
+               round-trips rich documents without dropping sections. */
+            allowExpand
+            allowLayouts
+            allowStatus
+            allowDate
+            allowBreakout
+>>>>>>> Stashed changes
             shouldFocus={false}
           />
         </Suspense>

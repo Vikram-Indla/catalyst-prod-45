@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip as UITooltip } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
@@ -37,12 +37,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip as UITooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import { catalystToast } from '@/lib/catalystToast';
@@ -118,74 +112,67 @@ function KPICard({
   const trendTooltip = `${kpi.trend.percentage}% ${trendLabel} from last period`;
   
   return (
-    <TooltipProvider>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05 }}
-        className={cn(
-          "relative bg-card border rounded-xl p-5 overflow-hidden transition-all",
-          onClick && "cursor-pointer hover:shadow-md hover:border-primary/30"
-        )}
-        onClick={onClick}
-        role={onClick ? "button" : undefined}
-        tabIndex={onClick ? 0 : undefined}
-        onKeyDown={(e) => {
-          if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-            e.preventDefault();
-            onClick();
-          }
-        }}
-        aria-label={`${kpi.label}: ${kpi.formattedValue}. ${trendTooltip}`}
-      >
-        {/* Top color accent */}
-        <div 
-          className="absolute top-0 left-0 right-0 h-1"
-          style={{ backgroundColor: colors.border }}
-        />
-        
-        <div className="flex items-start justify-between">
-          <div 
-            className="w-11 h-11 rounded-[10px] flex items-center justify-center"
-            style={{ backgroundColor: colors.bg }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05 }}
+      className={cn(
+        "relative bg-card border rounded-xl p-5 overflow-hidden transition-all",
+        onClick && "cursor-pointer hover:shadow-md hover:border-primary/30"
+      )}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-label={`${kpi.label}: ${kpi.formattedValue}. ${trendTooltip}`}
+    >
+      {/* Top color accent */}
+      <div
+        className="absolute top-0 left-0 right-0 h-1"
+        style={{ backgroundColor: colors.border }}
+      />
+
+      <div className="flex items-start justify-between">
+        <div
+          className="w-11 h-11 rounded-[10px] flex items-center justify-center"
+          style={{ backgroundColor: colors.bg }}
+        >
+          <Icon className="w-5 h-5" style={{ color: colors.icon }} />
+        </div>
+
+        <UITooltip position="top" content={trendTooltip}>
+          <div
+            className={cn(
+              "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md cursor-help",
+              kpi.trend.isPositive
+                ? "bg-[#f0fdfa] text-[#0d9488]"
+                : "bg-[#fef2f2] text-[#ef4444]"
+            )}
           >
-            <Icon className="w-5 h-5" style={{ color: colors.icon }} />
+            <TrendIcon className="w-3 h-3" />
+            {kpi.trend.percentage}%
           </div>
-          
-          <UITooltip>
-            <TooltipTrigger asChild>
-              <div 
-                className={cn(
-                  "flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-md cursor-help",
-                  kpi.trend.isPositive 
-                    ? "bg-[#f0fdfa] text-[#0d9488]" 
-                    : "bg-[#fef2f2] text-[#ef4444]"
-                )}
-              >
-                <TrendIcon className="w-3 h-3" />
-                {kpi.trend.percentage}%
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {trendTooltip}
-            </TooltipContent>
-          </UITooltip>
+        </UITooltip>
+      </div>
+
+      <div className="mt-4">
+        <div className="text-[32px] font-bold text-foreground leading-none mb-1">
+          {kpi.formattedValue}
         </div>
-        
-        <div className="mt-4">
-          <div className="text-[32px] font-bold text-foreground leading-none mb-1">
-            {kpi.formattedValue}
-          </div>
-          <div className="text-[13px] text-muted-foreground">{kpi.label}</div>
+        <div className="text-[13px] text-muted-foreground">{kpi.label}</div>
+      </div>
+
+      {onClick && (
+        <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground/60">
+          Click to filter
         </div>
-        
-        {onClick && (
-          <div className="absolute bottom-2 right-2 text-[10px] text-muted-foreground/60">
-            Click to filter
-          </div>
-        )}
-      </motion.div>
-    </TooltipProvider>
+      )}
+    </motion.div>
   );
 }
 
@@ -282,39 +269,35 @@ function QualityGateItem({ gate, onClick }: { gate: QualityGate; onClick?: () =>
   const Icon = config.icon;
   
   return (
-    <TooltipProvider>
-      <UITooltip>
-        <TooltipTrigger asChild>
-          <div 
-            className={cn(
-              "flex items-center gap-3 p-3 bg-muted/50 rounded-lg transition-colors",
-              onClick && "cursor-pointer hover:bg-muted/80"
-            )}
-            onClick={onClick}
-            role={onClick ? "button" : undefined}
-            tabIndex={onClick ? 0 : undefined}
-            onKeyDown={(e) => {
-              if (onClick && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault();
-                onClick();
-              }
-            }}
-          >
-            <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', config.bg)}>
-              <Icon className={cn('w-4 h-4', config.text)} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-foreground">{gate.name}</div>
-              <div className="text-xs text-muted-foreground">{gate.threshold}</div>
-            </div>
-            <div className={cn('text-sm font-semibold', config.text)}>{gate.currentValue}</div>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="left" className="text-xs">
-          {gate.status === 'passed' ? 'Gate passing' : gate.status === 'warning' ? 'Gate at risk' : 'Gate failing'} — Click to view details
-        </TooltipContent>
-      </UITooltip>
-    </TooltipProvider>
+    <UITooltip
+      position="left"
+      content={`${gate.status === 'passed' ? 'Gate passing' : gate.status === 'warning' ? 'Gate at risk' : 'Gate failing'} — Click to view details`}
+    >
+      <div
+        className={cn(
+          "flex items-center gap-3 p-3 bg-muted/50 rounded-lg transition-colors",
+          onClick && "cursor-pointer hover:bg-muted/80"
+        )}
+        onClick={onClick}
+        role={onClick ? "button" : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        onKeyDown={(e) => {
+          if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+      >
+        <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center', config.bg)}>
+          <Icon className={cn('w-4 h-4', config.text)} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium text-foreground">{gate.name}</div>
+          <div className="text-xs text-muted-foreground">{gate.threshold}</div>
+        </div>
+        <div className={cn('text-sm font-semibold', config.text)}>{gate.currentValue}</div>
+      </div>
+    </UITooltip>
   );
 }
 
@@ -330,34 +313,27 @@ function ActivityItem({ activity, onSubjectClick }: { activity: ActivityItemType
   const Icon = config.icon;
   
   return (
-    <TooltipProvider>
-      <div className="flex gap-3 py-3.5 border-b border-border last:border-0">
-        <div className={cn('w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0', config.bg)}>
-          <Icon className={cn('w-4 h-4', config.text)} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="text-[13px] text-foreground leading-relaxed">
-            <span className="font-semibold">{activity.user}</span>
-            {' '}{activity.action}{' '}
-            <UITooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  className="text-primary font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-primary/20 rounded"
-                  onClick={() => onSubjectClick?.(activity)}
-                >
-                  {activity.subject}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs max-w-[250px]">
-                {activity.title}
-              </TooltipContent>
-            </UITooltip>
-          </div>
-          <div className="text-xs text-muted-foreground truncate" title={activity.title}>{activity.title}</div>
-          <div className="text-[11px] text-muted-foreground/70 mt-1">{activity.time}</div>
-        </div>
+    <div className="flex gap-3 py-3.5 border-b border-border last:border-0">
+      <div className={cn('w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0', config.bg)}>
+        <Icon className={cn('w-4 h-4', config.text)} />
       </div>
-    </TooltipProvider>
+      <div className="flex-1 min-w-0">
+        <div className="text-[13px] text-foreground leading-relaxed">
+          <span className="font-semibold">{activity.user}</span>
+          {' '}{activity.action}{' '}
+          <UITooltip position="top" content={activity.title}>
+            <button
+              className="text-primary font-medium hover:underline focus:outline-none focus:ring-2 focus:ring-primary/20 rounded"
+              onClick={() => onSubjectClick?.(activity)}
+            >
+              {activity.subject}
+            </button>
+          </UITooltip>
+        </div>
+        <div className="text-xs text-muted-foreground truncate" title={activity.title}>{activity.title}</div>
+        <div className="text-[11px] text-muted-foreground/70 mt-1">{activity.time}</div>
+      </div>
+    </div>
   );
 }
 

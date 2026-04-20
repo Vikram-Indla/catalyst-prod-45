@@ -6,7 +6,7 @@
 
 import { CircleUser } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface CapacityAvatarProps {
   initials: string;
@@ -103,14 +103,8 @@ export function CapacityAvatar({
 
   if (showTooltip && countryName) {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>{avatarContent}</TooltipTrigger>
-        <TooltipContent
-          side="top"
-          className="bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5"
-        >
-          {countryName}
-        </TooltipContent>
+      <Tooltip content={countryName}>
+        {avatarContent}
       </Tooltip>
     );
   }

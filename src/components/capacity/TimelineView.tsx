@@ -9,12 +9,7 @@ import { Resource, CapacityProject } from '@/types/capacity';
 import { getWeekDateRange } from '@/lib/capacityUtils';
 import { cn } from '@/lib/utils';
 import { format, startOfWeek, addWeeks, isWithinInterval, startOfDay, endOfDay, addDays } from 'date-fns';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { CATALYST_V5, ALLOCATION_SEGMENT_COLORS, getAllocationStatusTheme } from '@/lib/catalyst-colors';
 import type { ResourceAllocation, TimelinePeriod } from '@/modules/capacity-planner/types';
 
@@ -113,7 +108,6 @@ export function TimelineView({
   const hasTimeBoxedAllocations = allocations.length > 0;
 
   return (
-    <TooltipProvider>
       <div className="overflow-x-auto">
         <table className="w-full min-w-[900px] border-collapse">
           <thead>
@@ -179,26 +173,25 @@ export function TimelineView({
                             {periodAllocations.map((allocation, idx) => {
                               const barColor = BAR_COLORS[idx % BAR_COLORS.length];
                               return (
-                                <Tooltip key={allocation.id}>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      className="rounded px-2 py-1 text-xs font-medium cursor-default truncate"
-                                      style={{ 
-                                        backgroundColor: `${barColor}20`,
-                                        color: barColor,
-                                        borderLeft: `3px solid ${barColor}`,
-                                      }}
-                                    >
-                                      {allocation.assignment_name || 'Allocation'} – {allocation.allocation_percent}%
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="bg-foreground text-background text-xs max-w-xs">
+                                <Tooltip key={allocation.id} content={
+                                  <>
                                     <p className="font-medium">{allocation.assignment_name || 'Allocation'}</p>
                                     <p>{allocation.allocation_percent}%</p>
                                     <p className="text-muted-foreground">
                                       {format(new Date(allocation.start_date), 'MMM d')} – {format(new Date(allocation.end_date), 'MMM d, yyyy')}
                                     </p>
-                                  </TooltipContent>
+                                  </>
+                                }>
+                                  <div
+                                    className="rounded px-2 py-1 text-xs font-medium cursor-default truncate"
+                                    style={{
+                                      backgroundColor: `${barColor}20`,
+                                      color: barColor,
+                                      borderLeft: `3px solid ${barColor}`,
+                                    }}
+                                  >
+                                    {allocation.assignment_name || 'Allocation'} – {allocation.allocation_percent}%
+                                  </div>
                                 </Tooltip>
                               );
                             })}
@@ -236,22 +229,21 @@ export function TimelineView({
                               const projectColor = getProjectColor(allocation.projectId);
                               const projectName = getProjectName(allocation.projectId);
                               return (
-                                <Tooltip key={allocation.id}>
-                                  <TooltipTrigger asChild>
-                                    <div
-                                      className="rounded px-2 py-1 text-xs font-medium cursor-default"
-                                      style={{ 
-                                        backgroundColor: `${projectColor}20`,
-                                        color: projectColor,
-                                      }}
-                                    >
-                                      {allocation.percentage}%
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="top" className="bg-foreground text-background text-xs">
+                                <Tooltip key={allocation.id} content={
+                                  <>
                                     <p className="font-medium">{projectName}</p>
                                     <p>{allocation.percentage}% allocation</p>
-                                  </TooltipContent>
+                                  </>
+                                }>
+                                  <div
+                                    className="rounded px-2 py-1 text-xs font-medium cursor-default"
+                                    style={{
+                                      backgroundColor: `${projectColor}20`,
+                                      color: projectColor,
+                                    }}
+                                  >
+                                    {allocation.percentage}%
+                                  </div>
                                 </Tooltip>
                               );
                             })}
@@ -274,6 +266,5 @@ export function TimelineView({
           </div>
         )}
       </div>
-    </TooltipProvider>
   );
 }

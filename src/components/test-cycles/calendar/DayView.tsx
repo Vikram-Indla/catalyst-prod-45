@@ -3,7 +3,7 @@ import { format, isToday, isSameDay } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { TestEventCard } from './TestEventCard';
 import { MilestoneMarker } from './MilestoneMarker';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import type { CalendarEvent, DateRange, CalendarEventStatus } from '@/types/calendar.types';
 
 interface DayViewProps {
@@ -140,11 +140,7 @@ export function DayView({
             {Object.entries(eventsByAssignee).map(([id, { name, events: assigneeEvents }]) => (
               <div key={id} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="text-xs bg-[#e2e8f0] text-[#475569]">
-                      {name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={name} size="xsmall" />
                   <span className="text-sm text-[#334155]">{name}</span>
                 </div>
                 <span className="text-sm font-medium text-[#0f172a]">

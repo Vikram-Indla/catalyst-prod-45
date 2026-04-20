@@ -7,7 +7,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import type { MonthCell } from './types';
 
 interface AnalyticsMonthCellProps {
@@ -144,9 +144,8 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
 
   return (
     <td style={cellStyle} data-project={projectSlug}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div 
+      <Tooltip content={tooltipContent}>
+          <div
             className="allocation-cell"
             style={{
               position: 'relative',
@@ -223,10 +222,6 @@ export function AnalyticsMonthCell({ cell, contractEndDate }: AnalyticsMonthCell
               />
             </span>
           </div>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="max-w-xs">
-          {tooltipContent}
-        </TooltipContent>
       </Tooltip>
     </td>
   );

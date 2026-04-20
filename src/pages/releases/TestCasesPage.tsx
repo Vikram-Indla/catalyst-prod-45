@@ -44,7 +44,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -52,11 +52,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { TestCasesTable } from '@/components/releases/test-cases/TestCasesTable';
 import { TestCasesGrid } from '@/components/releases/test-cases/TestCasesGrid';
 import { TestCasesKanban } from '@/components/releases/test-cases/TestCasesKanban';
@@ -482,14 +477,11 @@ export default function TestCasesPage() {
         </div>
         
         <div className="flex items-center gap-3">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8" onClick={handleRefresh} disabled={isRefreshing}>
-                <RefreshCw className={cn("w-3.5 h-3.5 mr-1.5", isRefreshing && "animate-spin")} />
-                Refresh
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Refresh test cases</TooltipContent>
+          <Tooltip content="Refresh test cases">
+            <Button variant="outline" size="sm" className="h-8" onClick={handleRefresh} disabled={isRefreshing}>
+              <RefreshCw className={cn("w-3.5 h-3.5 mr-1.5", isRefreshing && "animate-spin")} />
+              Refresh
+            </Button>
           </Tooltip>
           <Button variant="outline" size="sm" className="h-8" onClick={() => setIsImportOpen(true)}>
             <Upload className="w-3.5 h-3.5 mr-1.5" />
@@ -499,24 +491,18 @@ export default function TestCasesPage() {
             <Download className="w-3.5 h-3.5 mr-1.5" />
             Export
           </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="sm" className="h-8" onClick={() => setIsAIGenerateOpen(true)}>
-                <Wand2 className="w-3.5 h-3.5 mr-1.5 text-primary" />
-                AI Generate
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Generate test cases with AI</TooltipContent>
+          <Tooltip content="Generate test cases with AI">
+            <Button variant="outline" size="sm" className="h-8" onClick={() => setIsAIGenerateOpen(true)}>
+              <Wand2 className="w-3.5 h-3.5 mr-1.5 text-primary" />
+              AI Generate
+            </Button>
           </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button size="sm" className="h-8" onClick={() => setIsCreateOpen(true)}>
-                <Plus className="w-3.5 h-3.5 mr-1.5" />
-                New Test Case
-                <kbd className="ml-2 text-[10px] bg-primary-foreground/20 px-1 py-0.5 rounded">⌘N</kbd>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Create new test case (⌘N)</TooltipContent>
+          <Tooltip content="Create new test case (⌘N)">
+            <Button size="sm" className="h-8" onClick={() => setIsCreateOpen(true)}>
+              <Plus className="w-3.5 h-3.5 mr-1.5" />
+              New Test Case
+              <kbd className="ml-2 text-[10px] bg-primary-foreground/20 px-1 py-0.5 rounded">⌘N</kbd>
+            </Button>
           </Tooltip>
         </div>
       </div>
@@ -619,16 +605,18 @@ export default function TestCasesPage() {
         
         {/* View Toggle & Keyboard Hint */}
         <div className="flex items-center gap-3">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 text-muted-foreground" onClick={() => setIsKeyboardShortcutsOpen(true)}>
-                <Keyboard className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p className="font-medium text-xs">Keyboard Shortcuts</p>
-              <p className="text-xs text-muted-foreground">Press ? to view all</p>
-            </TooltipContent>
+          <Tooltip
+            position="bottom"
+            content={
+              <>
+                <p className="font-medium text-xs">Keyboard Shortcuts</p>
+                <p className="text-xs text-muted-foreground">Press ? to view all</p>
+              </>
+            }
+          >
+            <Button variant="ghost" size="sm" className="h-8 text-muted-foreground" onClick={() => setIsKeyboardShortcutsOpen(true)}>
+              <Keyboard className="w-4 h-4" />
+            </Button>
           </Tooltip>
           
           <div className="flex items-center bg-muted rounded-lg p-1">

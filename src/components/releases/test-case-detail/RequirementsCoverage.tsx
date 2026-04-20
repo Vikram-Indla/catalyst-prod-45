@@ -12,14 +12,9 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface Requirement {
@@ -160,11 +155,8 @@ export function RequirementsCoverage({ requirements = defaultRequirements }: Req
                 status.bgClass
               )}
             >
-              <Tooltip>
-                <TooltipTrigger>
-                  <StatusIcon className={cn("w-5 h-5 flex-shrink-0", status.className)} />
-                </TooltipTrigger>
-                <TooltipContent>{status.label}</TooltipContent>
+              <Tooltip content={status.label}>
+                <StatusIcon className={cn("w-5 h-5 flex-shrink-0", status.className)} />
               </Tooltip>
 
               <div className="flex-1 min-w-0">

@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -94,8 +94,6 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
   };
 
   const selectedUser = mockUsers.find(u => u.id === driver);
-
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -218,12 +216,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                 <SelectValue placeholder="Select driver">
                   {selectedUser && (
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={selectedUser.avatar} />
-                        <AvatarFallback className="text-[10px] bg-blue-600 text-white">
-                          {getInitials(selectedUser.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={selectedUser.name} src={selectedUser.avatar} size="xsmall" />
                       <span>{selectedUser.name}</span>
                     </div>
                   )}
@@ -233,12 +226,7 @@ export function CreateVersionDialog({ open, onOpenChange, onSave }: CreateVersio
                 {mockUsers.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={user.avatar} />
-                        <AvatarFallback className="text-[10px] bg-blue-600 text-white">
-                          {getInitials(user.name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={user.name} src={user.avatar} size="xsmall" />
                       <span className="text-[14px]">{user.name}</span>
                     </div>
                   </SelectItem>

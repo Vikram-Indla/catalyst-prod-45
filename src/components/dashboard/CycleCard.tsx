@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 
 export interface CycleCardProps {
   id: string;
@@ -105,14 +105,9 @@ export function CycleCard({
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <span>{testsCompleted} of {testsTotal} tests</span>
           <div className="flex items-center gap-1.5">
-            <Avatar size="xs" className="flex-shrink-0">
-              <AvatarFallback 
-                style={{ backgroundColor: assignee.color }} 
-                className="text-white text-[8px] font-medium"
-              >
-                {assignee.initials}
-              </AvatarFallback>
-            </Avatar>
+            <span className="flex-shrink-0">
+              <Avatar name={assignee.name} size="xxsmall" />
+            </span>
             <span>{assignee.name}</span>
           </div>
         </div>

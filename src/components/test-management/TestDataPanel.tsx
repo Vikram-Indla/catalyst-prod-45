@@ -6,12 +6,7 @@
 
 import { useMemo } from 'react';
 import { Database, Info } from 'lucide-react';
-import { Lozenge } from '@/components/ads';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 interface TestDataPanelProps {
@@ -66,16 +61,15 @@ export function TestDataPanel({
         <div className="flex items-center gap-2">
           <Database className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">Current Test Data</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent>
+          <Tooltip
+            content={
               <p className="max-w-[200px] text-xs">
                 These values are from the data row snapshot taken when this execution started.
                 Use <code className="text-primary">{'{variable}'}</code> placeholders in your steps.
               </p>
-            </TooltipContent>
+            }
+          >
+            <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
           </Tooltip>
         </div>
         {rowNumber && (

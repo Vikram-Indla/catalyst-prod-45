@@ -8,7 +8,7 @@
 import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, Target, Diamond, Hexagon } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { format } from 'date-fns';
 import type { Theme, Objective, KeyResult, WorkItem, TreeItem } from '../../lib/okrTypes';
 import type { OKRSmartFilters } from '../OKRSmartFiltersDialog';
@@ -251,23 +251,16 @@ function TableRow({
                   compact
                 />
               ) : (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className={cn(
-                        "text-sm truncate max-w-[240px]",
-                        level === 0 && "font-semibold text-foreground",
-                        level === 1 && "text-foreground",
-                        level === 2 && "italic text-muted-foreground"
-                      )}>
-                        {item.name}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-md bg-popover border border-border z-[400]">
-                      <p>{item.name}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip position="top" content={item.name}>
+                  <span className={cn(
+                    "text-sm truncate max-w-[240px]",
+                    level === 0 && "font-semibold text-foreground",
+                    level === 1 && "text-foreground",
+                    level === 2 && "italic text-muted-foreground"
+                  )}>
+                    {item.name}
+                  </span>
+                </Tooltip>
               )}
             </div>
           </td>

@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
@@ -145,11 +145,7 @@ export function DocumentWatchers({ documentId }: DocumentWatchersProps) {
               <div className="space-y-2">
                 {watchers.map((watcher) => (
                   <div key={watcher.id} className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
-                        U
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name="User" size="xsmall" />
                     <span className="text-sm">
                       {watcher.user_id === currentUser?.id ? 'You' : 'User'}
                     </span>

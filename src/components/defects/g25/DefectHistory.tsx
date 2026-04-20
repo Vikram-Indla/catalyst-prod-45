@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { useDefectHistoryG25 } from '@/hooks/useDefectsG25';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,9 +20,7 @@ export function DefectHistory({ defectId }: { defectId: string }) {
     <div className="space-y-3">
       {history.map((h: any) => (
         <div key={h.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
-          <Avatar className="h-7 w-7">
-            <AvatarFallback className="text-xs">{h.performed_by?.slice(0, 2).toUpperCase() || 'SY'}</AvatarFallback>
-          </Avatar>
+          <Avatar name={h.performed_by || 'System'} size="xsmall" />
           <div className="flex-1">
             <p className="text-sm">
               <span className="font-medium">{h.performed_by || 'System'}</span>

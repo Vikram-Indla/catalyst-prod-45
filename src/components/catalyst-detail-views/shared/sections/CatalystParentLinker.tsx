@@ -169,53 +169,53 @@ function BusinessRequestParentPicker({
   const active = filtered.filter(c => !DONE_STEPS.includes(c.process_step?.toLowerCase()));
   const done = filtered.filter(c => DONE_STEPS.includes(c.process_step?.toLowerCase()));
 
+  /* Shell-free render: CatalystKeyDetails.FieldRow now owns the "Parent"
+     label + left column. This picker returns only the VALUE cell so the
+     label doesn't double up. */
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Parent</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Current parent display */}
-        {currentParent ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <IssueIcon type="Business Request" size={16} />
-            <span
-              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
-              onClick={() => onOpenItem?.(currentParent.id)}
-            >{currentParent.request_key}</span>
-            <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-              onClick={() => onOpenItem?.(currentParent.id)}
-            >{currentParent.title}</span>
-            <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
-              <X size={12} />
-            </button>
-          </div>
-        ) : (
-          <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
-        )}
+    <div style={{ position: 'relative' }} ref={pickerRef}>
+      {/* Current parent display */}
+      {currentParent ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <IssueIcon type="Business Request" size={16} />
+          <span
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+            onClick={() => onOpenItem?.(currentParent.id)}
+          >{currentParent.request_key}</span>
+          <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+            onClick={() => onOpenItem?.(currentParent.id)}
+          >{currentParent.title}</span>
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+            <X size={12} />
+          </button>
+        </div>
+      ) : (
+        <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
+      )}
 
-        {/* Picker dropdown */}
-        {showPicker && (
-          <div style={{
-            position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-            background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
-            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-          }}>
-            {/* Search */}
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-                <Search size={14} color="#5E6C84" />
-                <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
-                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
-              </div>
-            </div>
-            <div style={{ overflowY: 'auto', maxHeight: 340 }}>
-              {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
-              {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching business requests</div>}
+      {/* Picker dropdown */}
+      {showPicker && (
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
+          background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
+        }}>
+          {/* Search */}
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
+              <Search size={14} color="#5E6C84" />
+              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search business requests…"
+                style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
             </div>
           </div>
-        )}
-      </div>
+          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+            {renderBrGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
+            {renderBrGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching business requests</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -295,8 +295,16 @@ function SingleParentPicker({
     staleTime: 30000,
   });
 
-  // Resolve current parent
-  const { data: currentParent } = useQuery({
+  // Resolve current parent.
+  // `isLoading` + `isFetched` are needed so the render path can distinguish
+  // (a) query hasn't fired yet / still in flight — treat as loading,
+  // (b) query fired and returned null — parent exists by `parent_key` but
+  //     is not in ph_issues (e.g. Feature stored in another table, or the
+  //     row is soft-deleted). In both cases we must still render the
+  //     parent_key lozenge instead of falling through to "+ Add parent",
+  //     which misleads users (ICP-411 / BAU-5534: breadcrumb proves the
+  //     parent exists but the picker was rendering the "add" affordance).
+  const { data: currentParent, isFetched: parentFetched } = useQuery({
     queryKey: ['cv-parent-resolved', issue?.parent_key],
     enabled: !!issue?.parent_key,
     queryFn: async () => {
@@ -329,53 +337,81 @@ function SingleParentPicker({
   const active = filtered.filter(c => c.status_category !== 'done');
   const done = filtered.filter(c => c.status_category === 'done');
 
+  /* Shell-free render: CatalystKeyDetails.FieldRow now owns the "Parent"
+     label + left column. This picker returns only the VALUE cell so the
+     label doesn't double up.
+     Three value states (ordered by priority):
+       1. `currentParent` resolved     → full lozenge (issue icon + key + summary)
+       2. `issue.parent_key` set but   → minimal key-only lozenge so the row
+          resolve returned null/loading  never claims the parent is missing
+       3. no parent_key                → SidebarAddTrigger "+ Add parent"
+     State 2 covers BAU-5534-style cases where the breadcrumb proves a
+     parent exists but the parent row lives outside ph_issues (e.g. stored
+     in a separate Features table) — we still honour the link. */
+  const rawParentKey = issue?.parent_key ?? null;
+  const hasRawParent = !!rawParentKey;
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Parent</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Current parent display */}
-        {currentParent ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <IssueIcon type={currentParent.issue_type} size={16} />
-            <span
-              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
-              onClick={() => onOpenItem?.(currentParent.id)}
-            >{currentParent.issue_key}</span>
-            <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-              onClick={() => onOpenItem?.(currentParent.id)}
-            >{currentParent.summary}</span>
-            <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
-              <X size={12} />
-            </button>
-          </div>
-        ) : (
-          <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
-        )}
+    <div style={{ position: 'relative' }} ref={pickerRef}>
+      {/* Current parent display */}
+      {currentParent ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <IssueIcon type={currentParent.issue_type} size={16} />
+          <span
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+            onClick={() => onOpenItem?.(currentParent.id)}
+          >{currentParent.issue_key}</span>
+          <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
+            onClick={() => onOpenItem?.(currentParent.id)}
+          >{currentParent.summary}</span>
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
+            <X size={12} />
+          </button>
+        </div>
+      ) : hasRawParent ? (
+        /* Resolve returned null OR still loading — surface the raw key so
+           users never see "+ Add parent" when a parent actually exists. */
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <IssueIcon type="Feature" size={16} />
+          <span
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+            onClick={() => onOpenItem?.(rawParentKey!)}
+          >{rawParentKey}</span>
+          {parentFetched && (
+            <span style={{ fontSize: 12, color: '#6B778C', fontStyle: 'italic' }}>
+              (details unavailable)
+            </span>
+          )}
+          <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex', marginLeft: 'auto' }}>
+            <X size={12} />
+          </button>
+        </div>
+      ) : (
+        <SidebarAddTrigger label="Add parent" isOpen={showPicker} onClick={() => setShowPicker(!showPicker)} />
+      )}
 
-        {/* Picker dropdown */}
-        {showPicker && (
-          <div style={{
-            position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
-            background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
-            boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
-          }}>
-            {/* Search */}
-            <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
-                <Search size={14} color="#5E6C84" />
-                <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
-                  style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
-                {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
-              </div>
-            </div>
-            <div style={{ overflowY: 'auto', maxHeight: 340 }}>
-              {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
-              {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
-              {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching items</div>}
+      {/* Picker dropdown */}
+      {showPicker && (
+        <div style={{
+          position: 'absolute', left: 0, right: 0, top: '100%', marginTop: 4,
+          background: '#FFFFFF', border: '1px solid #DFE1E6', borderRadius: 6,
+          boxShadow: '0 8px 16px rgba(9,30,66,0.15)', zIndex: 100, maxHeight: 400, display: 'flex', flexDirection: 'column',
+        }}>
+          {/* Search */}
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid #F4F5F7' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, border: '2px solid #4C9AFF', borderRadius: 4, padding: '4px 8px' }}>
+              <Search size={14} color="#5E6C84" />
+              <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+                style={{ border: 'none', outline: 'none', fontSize: 13, color: '#292A2E', width: '100%', fontFamily: 'inherit' }} />
+              {search && <button onClick={() => setSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B778C', display: 'flex', padding: 0 }}><X size={14} /></button>}
             </div>
           </div>
-        )}
-      </div>
+          <div style={{ overflowY: 'auto', maxHeight: 340 }}>
+            {renderGroup('ACTIVE', active, issue?.parent_key, (key) => updateParent.mutate(key))}
+            {renderGroup('DONE', done, issue?.parent_key, (key) => updateParent.mutate(key))}
+            {filtered.length === 0 && <div style={{ padding: '16px', fontSize: 13, color: '#6B778C', textAlign: 'center' }}>No matching items</div>}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -487,9 +523,8 @@ function MultiLinkPicker({
   const done = filtered.filter(c => c.status_category === 'done');
 
   return (
-    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20, padding: '11px 0', position: 'relative' }} ref={pickerRef}>
-      <span style={{ fontSize: 14, fontWeight: 500, lineHeight: '18.67px', color: '#505258', minWidth: 96, flexShrink: 0 }}>Linked to</span>
-      <div style={{ flex: 1, minWidth: 0 }}>
+    <div style={{ position: 'relative' }} ref={pickerRef}>
+      <div>
         {/* Current links display */}
         {existingLinks.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { Check, X, Users, AlertTriangle, UserPlus, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
@@ -192,12 +191,7 @@ export function CommitteeCard({
                 )}
               >
                 <div className="flex items-center gap-2.5">
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-                      {member.user?.avatar_initials || 
-                       member.user?.full_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || '??'}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={member.user?.full_name || 'Unknown'} size="small" />
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{member.user?.full_name || 'Unknown'}</p>
                     {member.has_veto && (

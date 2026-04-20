@@ -6,8 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -398,9 +397,9 @@ export function IncidentWorkArea({
             {/* Comment composer */}
             <div className="border-b border-border p-4 bg-muted/20">
               <div className="flex gap-3">
-                <Avatar className="h-8 w-8 flex-shrink-0">
-                  <AvatarFallback className="text-xs bg-primary text-primary-foreground">U</AvatarFallback>
-                </Avatar>
+                <span className="flex-shrink-0">
+                  <Avatar name="User" size="small" />
+                </span>
                 <div className="flex-1 space-y-2">
                   <Textarea
                     placeholder="Add an update for the team..."
@@ -534,11 +533,7 @@ export function IncidentWorkArea({
                 {/* Approvers - compact rows */}
                 {committee.members?.map(member => (
                   <div key={member.id} className="flex items-center gap-2 px-3 py-1.5">
-                    <Avatar className="h-5 w-5">
-                      <AvatarFallback className="text-[9px] bg-primary text-primary-foreground">
-                        {member.user?.avatar_initials || member.user?.full_name?.slice(0, 2) || '??'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={member.user?.full_name || 'Unknown'} size="xxsmall" />
                     <span className="text-xs font-medium truncate flex-1">
                       {member.user?.full_name || 'Unknown'}
                       {member.has_veto && <span className="ml-1 text-[10px] text-amber-600">(V)</span>}
@@ -679,11 +674,9 @@ function CommentItem({ comment }: { comment: Comment }) {
 
   return (
     <div className="flex gap-3 p-4">
-      <Avatar className="h-8 w-8 flex-shrink-0">
-        <AvatarFallback className="text-xs bg-primary text-primary-foreground">
-          {comment.author?.avatar_initials || comment.author_name?.split(' ').map(n => n[0]).join('').slice(0, 2) || 'U'}
-        </AvatarFallback>
-      </Avatar>
+      <span className="flex-shrink-0">
+        <Avatar name={comment.author?.full_name || comment.author_name || 'User'} size="small" />
+      </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-sm font-medium">

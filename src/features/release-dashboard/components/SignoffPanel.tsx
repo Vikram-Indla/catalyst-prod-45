@@ -6,10 +6,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -100,20 +99,11 @@ function SignoffRow({
       : signoff.decision === 'abstain'
       ? 'moved'
       : 'default';
-  
-  const initials = signoff.stakeholderName
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
 
   return (
     <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
       <div className="flex items-center gap-3">
-        <Avatar className="h-9 w-9">
-          <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-        </Avatar>
+        <Avatar name={signoff.stakeholderName} size="small" />
         <div>
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">{signoff.stakeholderName}</span>

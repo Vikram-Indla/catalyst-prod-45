@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Tooltip } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,11 +31,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { TestCase } from '@/types/test-cases';
 import { TypeBadge, PriorityBadge, StatusBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
@@ -52,17 +47,6 @@ interface TestCasesTableProps {
   onMoveToFolder?: (testCase: TestCase) => void;
   projectId?: string;
 }
-
-// Avatar colors
-const avatarColors: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  green: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  purple: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-  red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  gray: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
-};
 
 type SortField = 'id' | 'title' | 'priority' | 'status' | 'updated';
 type SortDir = 'asc' | 'desc';
@@ -296,15 +280,10 @@ export function TestCasesTable({
                 </Link>
               </td>
               <td className="min-w-[220px] px-3 py-3">
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="text-sm text-foreground truncate block max-w-[300px]">
-                      {tc.title}
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-sm">
+                <Tooltip content={tc.title} position="top">
+                  <span className="text-sm text-foreground truncate block max-w-[300px]">
                     {tc.title}
-                  </TooltipContent>
+                  </span>
                 </Tooltip>
               </td>
               <td className="w-32 px-3 py-3">
@@ -317,15 +296,10 @@ export function TestCasesTable({
               </td>
               <td className="w-40 px-3 py-3">
                 {tc.folderPath ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="text-sm text-muted-foreground truncate block max-w-[150px]">
-                        {tc.folderPath}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-sm">
+                  <Tooltip content={tc.folderPath} position="top">
+                    <span className="text-sm text-muted-foreground truncate block max-w-[150px]">
                       {tc.folderPath}
-                    </TooltipContent>
+                    </span>
                   </Tooltip>
                 ) : (
                   <span className="text-sm text-muted-foreground">—</span>
@@ -351,11 +325,7 @@ export function TestCasesTable({
               </td>
               <td className="w-32 px-3 py-3">
                 <div className="flex items-center gap-2">
-                  <Avatar className="w-6 h-6">
-                    <AvatarFallback className={cn("text-xs font-medium", avatarColors[tc.assignee.color] || avatarColors.gray)}>
-                      {tc.assignee.avatar}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={tc.assignee.name} size="xsmall" />
                   <span className="text-sm text-muted-foreground truncate max-w-[80px]">{tc.assignee.name}</span>
                 </div>
               </td>
@@ -379,15 +349,10 @@ export function TestCasesTable({
                     <DropdownMenuItem onClick={() => handleRowAction('duplicate', tc)}>
                       <Copy className="w-4 h-4 mr-2" /> Duplicate
                     </DropdownMenuItem>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
-                          <Play className="w-4 h-4 mr-2" /> Execute
-                        </DropdownMenuItem>
-                      </TooltipTrigger>
-                      <TooltipContent side="left">
-                        <p className="text-xs">Execution module not enabled yet</p>
-                      </TooltipContent>
+                    <Tooltip content={<p className="text-xs">Execution module not enabled yet</p>} position="left">
+                      <DropdownMenuItem disabled className="opacity-50 cursor-not-allowed">
+                        <Play className="w-4 h-4 mr-2" /> Execute
+                      </DropdownMenuItem>
                     </Tooltip>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => handleRowAction('move', tc)}>

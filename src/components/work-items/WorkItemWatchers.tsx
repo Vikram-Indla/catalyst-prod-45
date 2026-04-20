@@ -1,17 +1,11 @@
 import { Eye, EyeOff, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Tooltip } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { useWorkItemWatchers } from '@/hooks/useWorkItemWatchers';
 
 interface WorkItemWatchersProps {
@@ -22,34 +16,23 @@ interface WorkItemWatchersProps {
 export function WorkItemWatchers({ workItemType, workItemId }: WorkItemWatchersProps) {
   const { watchers, isLoading, isWatching, toggleWatch, isPending, currentUser } = useWorkItemWatchers(workItemType, workItemId);
 
-  const getInitials = (userId: string) => {
-    return userId.substring(0, 2).toUpperCase();
-  };
-
   return (
     <div className="flex items-center gap-1">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={isWatching ? "default" : "ghost"}
-              size="sm"
-              onClick={toggleWatch}
-              disabled={isPending || !currentUser}
-              className={isWatching ? "bg-brand-primary hover:bg-brand-primary-hover h-8 px-2" : "h-8 px-2"}
-            >
-              {isWatching ? (
-                <Eye className="h-4 w-4" />
-              ) : (
-                <EyeOff className="h-4 w-4" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            {isWatching ? 'Stop watching' : 'Watch this item'}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip content={isWatching ? 'Stop watching' : 'Watch this item'}>
+        <Button
+          variant={isWatching ? "default" : "ghost"}
+          size="sm"
+          onClick={toggleWatch}
+          disabled={isPending || !currentUser}
+          className={isWatching ? "bg-brand-primary hover:bg-brand-primary-hover h-8 px-2" : "h-8 px-2"}
+        >
+          {isWatching ? (
+            <Eye className="h-4 w-4" />
+          ) : (
+            <EyeOff className="h-4 w-4" />
+          )}
+        </Button>
+      </Tooltip>
 
       <Popover>
         <PopoverTrigger asChild>
@@ -67,11 +50,7 @@ export function WorkItemWatchers({ workItemType, workItemId }: WorkItemWatchersP
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {watchers.map((watcher) => (
                   <div key={watcher.id} className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
-                        {getInitials(watcher.user_id)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={watcher.user_id} size="xsmall" />
                     <span className="text-sm">
                       {watcher.user_id === currentUser?.id ? 'You' : 'User'}
                     </span>

@@ -1,9 +1,13 @@
 /**
- * FeatureKanbanBoard - Full Kanban board for Feature Backlog
- * Dynamically fetches statuses from feature_statuses table with real-time sync
+ * FeatureKanbanBoard - Full Kanban board for Feature Backlog.
+ *
+ * Phase 9: DnD engine migrated from @hello-pangea/dnd → Atlaskit Pragmatic
+ * drag-and-drop. Dynamically fetches statuses from feature_statuses table
+ * with real-time sync. Column collapse + selection + per-column Add button
+ * all preserved from the legacy surface.
  */
-import { useMemo, useState, useEffect } from 'react';
-import { DragDropContext, DropResult } from '@hello-pangea/dnd';
+import { useEffect, useMemo, useState } from 'react';
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { FeatureBacklogItem } from '../types';
@@ -23,7 +27,7 @@ interface FeatureKanbanBoardProps {
 const COLOR_MAP: Record<string, string> = {
   // Status colors
   info: '#c8ccd0',      // Grey
-  warning: '#f59e0b',   // Amber  
+  warning: '#f59e0b',   // Amber
   success: '#0d9488',   // Teal
   danger: '#ef4444',    // Red
   forest: '#0d9488',    // Teal (done)
@@ -115,14 +119,14 @@ export function FeatureKanbanBoard({
     statuses.forEach(status => {
       grouped[status.id] = items.filter(item => item.status === status.id);
     });
-    
+
     // Handle items with statuses not in current config (place in first column)
     const knownStatuses = new Set(statuses.map(s => s.id));
     const orphanedItems = items.filter(item => item.status && !knownStatuses.has(item.status));
     if (orphanedItems.length > 0 && statuses.length > 0) {
       grouped[statuses[0].id] = [...(grouped[statuses[0].id] || []), ...orphanedItems];
     }
-    
+
     return grouped;
   }, [items, statuses]);
 
@@ -131,9 +135,9 @@ export function FeatureKanbanBoard({
     mutationFn: async ({ itemId, newStatus }: { itemId: string; newStatus: string }) => {
       const { error } = await supabase
         .from('features')
-        .update({ 
+        .update({
           status: newStatus as any,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', itemId);
 
@@ -148,18 +152,24 @@ export function FeatureKanbanBoard({
     },
   });
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
-    const sourceStatus = result.source.droppableId;
-    const destStatus = result.destination.droppableId;
-
-    // No change if dropped in same column
-    if (sourceStatus === destStatus) return;
-
-    const itemId = result.draggableId;
-    updateStatusMutation.mutate({ itemId, newStatus: destStatus });
-  };
+  /* ═════ Pragmatic DnD board-scope monitor — reconciles every drop. ═════ */
+  useEffect(() => {
+    return monitorForElements({
+      canMonitor: ({ source }) => source.data.type === 'card',
+      onDrop: ({ source, location }) => {
+        const destColumn = location.current.dropTargets.find(
+          (t) => t.data.type === 'column',
+        );
+        if (!destColumn) return;
+        const fromColumn = source.data.fromColumn as string | undefined;
+        const toColumn = destColumn.data.columnId as string;
+        const cardId = source.data.cardId as string;
+        // No-op if dropped back into the same column.
+        if (!toColumn || !cardId || fromColumn === toColumn) return;
+        updateStatusMutation.mutate({ itemId: cardId, newStatus: toColumn });
+      },
+    });
+  }, [updateStatusMutation]);
 
   const toggleColumnCollapse = (columnId: string) => {
     setCollapsedColumns(prev =>
@@ -178,30 +188,28 @@ export function FeatureKanbanBoard({
   }
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div
-        className="flex gap-3 flex-1 overflow-x-auto overflow-y-hidden px-4 pt-3"
-        style={{
-          minHeight: 0,
-          paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-        }}
-      >
-        {statuses.map((status, index) => (
-          <FeatureKanbanColumn
-            key={status.id}
-            columnId={status.id}
-            label={status.label}
-            color={status.color}
-            items={itemsByStatus[status.id] || []}
-            selectedItems={selectedItems}
-            onItemClick={onItemClick}
-            onItemSelect={onItemSelect}
-            collapsed={collapsedColumns.includes(status.id)}
-            onToggleCollapse={() => toggleColumnCollapse(status.id)}
-            onAddFeature={index === 0 ? onAddFeature : undefined}
-          />
-        ))}
-      </div>
-    </DragDropContext>
+    <div
+      className="flex gap-3 flex-1 overflow-x-auto overflow-y-hidden px-4 pt-3"
+      style={{
+        minHeight: 0,
+        paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+      }}
+    >
+      {statuses.map((status, index) => (
+        <FeatureKanbanColumn
+          key={status.id}
+          columnId={status.id}
+          label={status.label}
+          color={status.color}
+          items={itemsByStatus[status.id] || []}
+          selectedItems={selectedItems}
+          onItemClick={onItemClick}
+          onItemSelect={onItemSelect}
+          collapsed={collapsedColumns.includes(status.id)}
+          onToggleCollapse={() => toggleColumnCollapse(status.id)}
+          onAddFeature={index === 0 ? onAddFeature : undefined}
+        />
+      ))}
+    </div>
   );
 }

@@ -24,11 +24,10 @@ import {
   Check,
   Loader2,
 } from 'lucide-react';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -107,15 +106,6 @@ const typeConfig: Record<string, { appearance: LozengeAppearance }> = {
   'Security': { appearance: 'removed' },
   'Usability': { appearance: 'default' },
 };
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
 
 export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelProps) {
   const queryClient = useQueryClient();
@@ -610,12 +600,7 @@ export function TestCasePropertiesPanel({ testCase }: TestCasePropertiesPanelPro
           ) : (
             <div className="flex items-center gap-1 cursor-pointer" onClick={() => setEditingField('assignee')}>
               <div className="flex items-center gap-2">
-                <Avatar className="h-5 w-5">
-                  {assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}
-                  <AvatarFallback className="text-xs bg-primary/10 text-primary">
-                    {getInitials(assigneeName)}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar src={assigneeAvatar} name={assigneeName} size="xxsmall" />
                 <span className="text-sm">{assigneeName}</span>
               </div>
               <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />

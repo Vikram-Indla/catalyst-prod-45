@@ -4,7 +4,6 @@ import { ENABLE_FULL_APP } from './lib/featureFlags';
 
 
 // ─── Core infrastructure (always loaded) ────────────────────────────
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -15,6 +14,7 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProcessStepsProvider } from "./contexts/ProcessStepsContext";
 import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
+import { WorkflowProvider } from "./lib/workflows";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 
@@ -25,6 +25,7 @@ const ForYouPage = lazy(() => import("./pages/ForYouPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
+const WorkflowsAdminPage = lazy(() => import("./pages/admin/WorkflowsAdminPage").then(m => ({ default: m.default })));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
@@ -78,10 +79,10 @@ const App = () => (
       <AuthProvider>
         
         <FeatureFlagProvider>
+        <WorkflowProvider>
         <NavigationProvider>
           <ProcessStepsProvider>
           <CatalystToastProvider position="top-right" maxToasts={5}>
-            <TooltipProvider>
               <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Navigate to="/for-you" replace />} />
@@ -100,6 +101,7 @@ const App = () => (
                   {/* Admin routes — always available for incremental publishing control */}
                   <Route path="/admin" element={<S><AdminLayout /></S>}>
                     <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
+                    <Route path="workflows" element={<S><WorkflowsAdminPage /></S>} />
                   </Route>
 
                   {/* AI Cleanup route */}
@@ -118,10 +120,10 @@ const App = () => (
                 <Route path="*" element={<S><NotFound /></S>} />
               </Routes>
               </BrowserRouter>
-            </TooltipProvider>
           </CatalystToastProvider>
           </ProcessStepsProvider>
         </NavigationProvider>
+        </WorkflowProvider>
         </FeatureFlagProvider>
       </AuthProvider>
       </IntlProvider>

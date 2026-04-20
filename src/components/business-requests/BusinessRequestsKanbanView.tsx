@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight, MoreHorizontal, ExternalLink, Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
 import { useActiveDemandProcessSteps } from '@/hooks/useDemandProcessSteps';
 import {
@@ -200,7 +199,6 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* Board container - fills viewport */}
         <div 
@@ -370,19 +368,16 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                                   
                                   {/* Quick actions - show on hover */}
                                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <button 
-                                          className="p-1 rounded hover:bg-muted/50"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            onRequestSelect(request.id);
-                                          }}
-                                        >
-                                          <ExternalLink className="h-3.5 w-3.5" style={{ color: 'var(--icon-muted)' }} />
-                                        </button>
-                                      </TooltipTrigger>
-                                      <TooltipContent>Open</TooltipContent>
+                                    <Tooltip content="Open" delay={200}>
+                                      <button
+                                        className="p-1 rounded hover:bg-muted/50"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          onRequestSelect(request.id);
+                                        }}
+                                      >
+                                        <ExternalLink className="h-3.5 w-3.5" style={{ color: 'var(--icon-muted)' }} />
+                                      </button>
                                     </Tooltip>
                                     <DropdownMenu>
                                       <DropdownMenuTrigger asChild>
@@ -415,40 +410,32 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                                 <div className="flex items-center gap-2 flex-wrap mb-3">
                                   {/* Department */}
                                   {request.department && (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span 
-                                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs max-w-[140px] truncate"
-                                          style={{ 
-                                            background: 'var(--surface-2)',
-                                            color: 'var(--text-2)',
-                                          }}
-                                        >
-                                          <Building2 className="h-3 w-3 flex-shrink-0" />
-                                          <span className="truncate">{request.department}</span>
-                                        </span>
-                                      </TooltipTrigger>
-                                      <TooltipContent>{request.department}</TooltipContent>
+                                    <Tooltip content={request.department} delay={200}>
+                                      <span
+                                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs max-w-[140px] truncate"
+                                        style={{
+                                          background: 'var(--surface-2)',
+                                          color: 'var(--text-2)',
+                                        }}
+                                      >
+                                        <Building2 className="h-3 w-3 flex-shrink-0" />
+                                        <span className="truncate">{request.department}</span>
+                                      </span>
                                     </Tooltip>
                                   )}
 
                                   {/* Assignee */}
                                   {(request.requestor || request.business_owner) && (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span 
-                                          className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold"
-                                          style={{ 
-                                            background: 'var(--brand-primary)',
-                                            color: 'white',
-                                          }}
-                                        >
-                                          {getInitials(request.requestor || request.business_owner)}
-                                        </span>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        {request.requestor || request.business_owner}
-                                      </TooltipContent>
+                                    <Tooltip content={request.requestor || request.business_owner} delay={200}>
+                                      <span
+                                        className="inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold"
+                                        style={{
+                                          background: 'var(--brand-primary)',
+                                          color: 'white',
+                                        }}
+                                      >
+                                        {getInitials(request.requestor || request.business_owner)}
+                                      </span>
                                     </Tooltip>
                                   )}
                                 </div>
@@ -462,17 +449,14 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                                     {getPriorityBadge(request.business_score, request.rank)}
                                     
                                     {request.end_date && (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <span 
-                                            className="inline-flex items-center gap-1 text-xs"
-                                            style={{ color: 'var(--text-3)' }}
-                                          >
-                                            <Calendar className="h-3 w-3" />
-                                            {formatTargetDate(request.end_date)}
-                                          </span>
-                                        </TooltipTrigger>
-                                        <TooltipContent>Target: {request.end_date}</TooltipContent>
+                                      <Tooltip content={`Target: ${request.end_date}`} delay={200}>
+                                        <span
+                                          className="inline-flex items-center gap-1 text-xs"
+                                          style={{ color: 'var(--text-3)' }}
+                                        >
+                                          <Calendar className="h-3 w-3" />
+                                          {formatTargetDate(request.end_date)}
+                                        </span>
                                       </Tooltip>
                                     )}
                                   </div>
@@ -528,6 +512,5 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
           })}
         </div>
       </DragDropContext>
-    </TooltipProvider>
   );
 }

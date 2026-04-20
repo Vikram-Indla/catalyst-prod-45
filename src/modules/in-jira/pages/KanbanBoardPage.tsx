@@ -20,10 +20,8 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useInJira } from '../context/InJiraContext';
@@ -310,16 +308,9 @@ export function KanbanBoardPage() {
                         {column.maxLimit !== null && `/${column.maxLimit}`}
                       </Lozenge>
                       {isOverLimit && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <AlertTriangle className="h-4 w-4 text-red-500" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              WIP limit exceeded
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Tooltip content="WIP limit exceeded">
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                        </Tooltip>
                       )}
                     </div>
                     <Button 
@@ -393,11 +384,7 @@ export function KanbanBoardPage() {
                                       )}
                                     </div>
                                     {issue.assigneeId ? (
-                                      <Avatar className="h-6 w-6">
-                                        <AvatarFallback className="text-xs bg-accent-primary text-white">
-                                          {issue.assigneeId.slice(0, 2).toUpperCase()}
-                                        </AvatarFallback>
-                                      </Avatar>
+                                      <Avatar name={issue.assigneeId} size="xsmall" />
                                     ) : (
                                       <div className="h-6 w-6 rounded-full border-2 border-dashed border-border-default flex items-center justify-center">
                                         <User className="h-3 w-3 text-text-tertiary" />

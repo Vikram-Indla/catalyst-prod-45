@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
@@ -107,16 +107,6 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
     textareaRef.current?.focus();
   };
 
-  const getInitials = (name: string | null | undefined, email: string | null | undefined) => {
-    if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    if (email) {
-      return email.slice(0, 2).toUpperCase();
-    }
-    return 'U';
-  };
-
   // Format message to display mentions nicely
   const formatMessage = (message: string) => {
     return message.replace(/@\[([^\]]+)\]\([^)]+\)/g, (_, name) => {
@@ -162,8 +152,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
               const isSystemUser = discussion.user_id === '00000000-0000-0000-0000-000000000000';
               const profile = profilesMap[discussion.user_id];
               const displayName = isSystemUser ? 'System' : (profile?.full_name || profile?.email || 'Unknown User');
-              const initials = isSystemUser ? 'SY' : getInitials(profile?.full_name, profile?.email);
-              
+
                 return (
                 <div 
                   key={discussion.id} 
@@ -174,17 +163,7 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
                   }}
                 >
                   <div className="flex gap-3">
-                    <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback 
-                        className="text-xs"
-                        style={{ 
-                          background: isSystemUser ? 'var(--surface-3)' : 'var(--accent-muted)',
-                          color: isSystemUser ? 'var(--text-3)' : 'var(--accent-color)'
-                        }}
-                      >
-                        {initials}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={displayName} size="small" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span 
@@ -264,11 +243,9 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
                           onSelect={() => handleMentionSelect(profile)}
                           className="cursor-pointer"
                         >
-                          <Avatar className="h-6 w-6 mr-2">
-                            <AvatarFallback className="text-xs">
-                              {getInitials(profile.full_name, profile.email)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <span className="mr-2">
+                            <Avatar name={profile.full_name || profile.email} size="xsmall" />
+                          </span>
                           <div className="flex flex-col">
                             <span className="text-[13px] font-medium" style={{ color: 'var(--text-1)' }}>
                               {profile.full_name || 'No name'}

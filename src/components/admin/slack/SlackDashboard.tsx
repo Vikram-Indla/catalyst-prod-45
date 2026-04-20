@@ -13,8 +13,7 @@ import {
 } from '@/hooks/useSlackAdmin';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -137,15 +136,6 @@ function StatCard({
 // ============================================================
 // HELPER FUNCTIONS
 // ============================================================
-
-const getInitials = (name: string) => {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-};
 
 const getActionLabel = (action: string) => {
   const labels: Record<string, string> = {
@@ -491,12 +481,7 @@ export function SlackDashboard({ config, stats }: DashboardProps) {
                       <TableRow key={user.id}>
                         <TableCell>
                           <div className="flex items-center gap-3">
-                            <Avatar className="w-8 h-8">
-                              <AvatarImage src={user.avatar_url || undefined} />
-                              <AvatarFallback className="text-xs">
-                                {getInitials(user.full_name)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <Avatar src={user.avatar_url || undefined} name={user.full_name} size="small" />
                             <div>
                               <p className="font-medium text-sm">{user.full_name}</p>
                               <p className="text-xs text-slate-500">{user.email}</p>

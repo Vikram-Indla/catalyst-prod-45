@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Info } from 'lucide-react';
 import { TODAY_LINE_COLOR, PROGRESS_BAR_COLOR, KR_LEGEND_ITEMS } from '@/constants/krStatusStyles';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { useProcessSteps } from '@/modules/kanban/hooks/useProcessSteps';
 
 // Catalyst Brand Colors ONLY for status display
@@ -63,19 +63,14 @@ export function ProductRoadmapLegend({ isVisible, showMilestones }: ProductRoadm
         {/* Header with toggle */}
         <div className="px-4 py-3 border-b border-border bg-muted/50 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">Legend</h3>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                aria-expanded={isExpanded}
-                className="p-1 rounded hover:bg-muted transition-colors"
-              >
-                <Info className="h-4 w-4 text-muted-foreground" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              {isExpanded ? 'Hide legend' : 'Show legend'}
-            </TooltipContent>
+          <Tooltip content={isExpanded ? 'Hide legend' : 'Show legend'} position="left">
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              aria-expanded={isExpanded}
+              className="p-1 rounded hover:bg-muted transition-colors"
+            >
+              <Info className="h-4 w-4 text-muted-foreground" />
+            </button>
           </Tooltip>
         </div>
 

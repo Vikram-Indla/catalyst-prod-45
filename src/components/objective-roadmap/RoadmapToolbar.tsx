@@ -4,7 +4,7 @@ import { FilterState, ProgressRange, KRCondition } from '@/types/canonical-roadm
 import { Search, Layers, Filter, ChevronDown, Check, X, Info } from 'lucide-react';
 import { RoadmapDateFilterV2, RoadmapViewport } from '@/components/roadmaps/RoadmapDateFilterV2';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { 
   EnterpriseRoadmapFiltersDialog, 
   EnterpriseFilters, 
@@ -196,27 +196,20 @@ export const RoadmapToolbar: React.FC<RoadmapToolbarProps> = ({
           />
           
           {/* Legend Toggle */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  className={cn(
-                    "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
-                    showLegend 
-                      ? "bg-brand-primary text-white border-brand-primary" 
-                      : "bg-background text-muted-foreground hover:bg-muted"
-                  )}
-                  onClick={onToggleLegend}
-                  aria-pressed={showLegend}
-                >
-                  <Info size={16} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                {showLegend ? 'Hide legend' : 'Show legend'}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={showLegend ? 'Hide legend' : 'Show legend'} position="bottom">
+            <button
+              className={cn(
+                "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
+                showLegend
+                  ? "bg-brand-primary text-white border-brand-primary"
+                  : "bg-background text-muted-foreground hover:bg-muted"
+              )}
+              onClick={onToggleLegend}
+              aria-pressed={showLegend}
+            >
+              <Info size={16} />
+            </button>
+          </Tooltip>
         </div>
       </div>
       

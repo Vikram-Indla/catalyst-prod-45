@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -143,11 +142,7 @@ export default function SprintBoard() {
       </div>
       {story.assignee_id && (
         <div className="flex items-center gap-2">
-          <Avatar className="h-5 w-5">
-            <AvatarFallback className="text-xs">
-              {((story.profiles as any)?.full_name || 'U').slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar name={(story.profiles as any)?.full_name || 'U'} size="xxsmall" />
           <span className="text-xs text-muted-foreground">
             {(story.profiles as any)?.full_name || 'Unassigned'}
           </span>
@@ -260,11 +255,7 @@ export default function SprintBoard() {
               {getUniqueAssignees().map((assignee) => (
                 <div key={assignee.id} className="space-y-[var(--s2)]">
                   <h3 className="text-lg font-semibold flex items-center gap-[var(--s2)]">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className="text-xs">
-                        {assignee.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={assignee.name} size="xsmall" />
                     {assignee.name}
                   </h3>
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--s4)]">

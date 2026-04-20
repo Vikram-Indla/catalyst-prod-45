@@ -2,12 +2,7 @@ import React from 'react';
 import { Search, ChevronDown, MessageSquare, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface ReleasesTabProps {
   projectId: string;
@@ -23,39 +18,25 @@ export const ReleasesTab: React.FC<ReleasesTabProps> = ({ projectId, onCreateVer
         {/* Left */}
         <div className="flex items-center gap-3">
           {/* Search */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="relative w-[200px]">
-                  <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search"
-                    disabled
-                    className="pl-8 h-9"
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <div className="relative w-[200px]">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search"
+                disabled
+                className="pl-8 h-9"
+              />
+            </div>
+          </Tooltip>
 
           {/* Status Filter */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-1" disabled>
-                  All
-                  <ChevronDown className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <Button variant="outline" size="sm" className="gap-1" disabled>
+              All
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </Tooltip>
         </div>
 
         {/* Right */}
@@ -65,18 +46,11 @@ export const ReleasesTab: React.FC<ReleasesTabProps> = ({ projectId, onCreateVer
             Give feedback
           </Button>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button disabled>
-                  Create version
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Coming soon</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p>Coming soon</p>}>
+            <Button disabled>
+              Create version
+            </Button>
+          </Tooltip>
         </div>
       </div>
 

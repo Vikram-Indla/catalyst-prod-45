@@ -5,7 +5,7 @@
 
 import { useMemo } from 'react';
 import { Release, STATUS_CONFIG, HEALTH_CONFIG } from '@/types/releases';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachMonthOfInterval, addMonths } from 'date-fns';
 
@@ -108,12 +108,13 @@ export function ReleasesTimeline({ releases }: Props) {
                 <span className="text-xs font-medium text-white truncate">{release.name}</span>
                 <div className="ml-auto flex items-center gap-1 shrink-0">
                   {release.owner && (
-                    <Avatar className="w-5 h-5 border border-white/30">
-                      <AvatarImage src={release.owner.avatar_url || undefined} />
-                      <AvatarFallback className="bg-white/20 text-white text-[8px]">
-                        {release.owner.full_name?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
+                    <span className="inline-block rounded-full border border-white/30">
+                      <Avatar
+                        src={release.owner.avatar_url || undefined}
+                        name={release.owner.full_name || ''}
+                        size="xxsmall"
+                      />
+                    </span>
                   )}
                   <span className="text-[10px] text-white/80 font-medium">{release.progress}%</span>
                 </div>

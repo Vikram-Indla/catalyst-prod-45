@@ -16,7 +16,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { GlobalPageHeader } from '@/components/layout/GlobalPageHeader';
 import { IncidentCommandBar } from '@/components/incidents/IncidentCommandBar';
 import { CreateIncidentModal, IncidentFormData } from '@/components/incidents/CreateIncidentModal';
@@ -545,8 +544,7 @@ export default function IncidentKanbanPage() {
   }
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background">
         <GlobalPageHeader
           sectionLabel="RELEASE"
           pageTitle="Incident Kanban"
@@ -717,6 +715,5 @@ export default function IncidentKanbanPage() {
           onCancel={handleCommitteeCancel}
         />
       </div>
-    </TooltipProvider>
   );
 }

@@ -5,11 +5,7 @@
 
 import { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { useHeatmapStore } from '@/stores/capacity-heatmap-store';
 import type { MonthlyUtilization, ProjectAllocation } from '@/types/capacity-heatmap';
@@ -73,8 +69,16 @@ export const HeatmapCell = memo(function HeatmapCell({
       : colors;
   
   return (
-    <Tooltip delayDuration={200}>
-      <TooltipTrigger asChild>
+    <Tooltip
+      delay={200}
+      content={
+        <CellTooltipContent
+          resourceName={resourceName}
+          utilization={utilization}
+          ghostPercentage={ghostPercentage}
+        />
+      }
+    >
         <motion.div
           className={cn(
             "relative w-10 h-8 rounded-sm cursor-pointer",
@@ -196,19 +200,6 @@ export const HeatmapCell = memo(function HeatmapCell({
             </svg>
           )}
         </motion.div>
-      </TooltipTrigger>
-      
-      <TooltipContent 
-        side="top" 
-        className="w-64 p-0 overflow-hidden"
-        sideOffset={8}
-      >
-        <CellTooltipContent
-          resourceName={resourceName}
-          utilization={utilization}
-          ghostPercentage={ghostPercentage}
-        />
-      </TooltipContent>
     </Tooltip>
   );
 });

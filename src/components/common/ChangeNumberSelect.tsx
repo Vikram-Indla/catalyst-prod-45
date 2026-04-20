@@ -13,12 +13,7 @@ import {
 } from '@/components/ui/select';
 import { getOpenChangeNumbers, getChangeNumbersByRelease } from '@/services/changeNumberService';
 import { Info } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 interface ChangeNumberSelectProps {
@@ -53,16 +48,9 @@ export function ChangeNumberSelect({
       {showLabel && (
         <div className="flex items-center gap-1">
           <label className="block text-sm font-medium text-foreground">Change Number</label>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Info className="w-3 h-3 text-muted-foreground" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs">Select from open change numbers in Release Calendar</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={<p className="text-xs">Select from open change numbers in Release Calendar</p>}>
+            <Info className="w-3 h-3 text-muted-foreground" />
+          </Tooltip>
         </div>
       )}
       <Select

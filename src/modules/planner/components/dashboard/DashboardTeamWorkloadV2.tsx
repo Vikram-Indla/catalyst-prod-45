@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, UserMinus } from 'lucide-react';
 import type { TeamWorkload } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 
 interface DashboardTeamWorkloadV2Props {
   data: TeamWorkload[];
@@ -17,25 +17,6 @@ interface DashboardTeamWorkloadV2Props {
 
 export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeamWorkloadV2Props) {
   const navigate = useNavigate();
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  // Get random color for avatar based on name
-  const getAvatarColor = (name: string) => {
-    const colors = [
-      'bg-blue-500', 'bg-purple-500', 'bg-green-500', 'bg-amber-500', 
-      'bg-red-500', 'bg-indigo-500', 'bg-pink-500', 'bg-teal-500'
-    ];
-    const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[index % colors.length];
-  };
 
   const membersWithTasks = data.filter(m => m.assigned_tasks > 0);
 
@@ -108,12 +89,9 @@ export function DashboardTeamWorkloadV2({ data, unassignedCount }: DashboardTeam
               )}
             >
               {/* Avatar */}
-              <Avatar className={cn("w-10 h-10 flex-shrink-0", !member.avatar_url && getAvatarColor(member.full_name))}>
-                <AvatarImage src={member.avatar_url || undefined} />
-                <AvatarFallback className="text-white font-medium text-sm bg-transparent">
-                  {getInitials(member.full_name)}
-                </AvatarFallback>
-              </Avatar>
+              <span className="flex-shrink-0">
+                <Avatar src={member.avatar_url || undefined} name={member.full_name} size="medium" />
+              </span>
               
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm text-slate-900 dark:text-slate-100">

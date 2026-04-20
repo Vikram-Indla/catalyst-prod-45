@@ -5,9 +5,8 @@
 import React from 'react';
 import { Clock, Bot, User, Settings } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5 } from '@/lib/catalyst-colors';
 import type { TestCase } from '@/types/add-tests.types';
@@ -93,23 +92,16 @@ export function TestCaseRow({ testCase, isSelected, onToggle }: TestCaseRowProps
       </span>
 
       {/* Title */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span 
-              className="flex-1 text-sm truncate"
-              style={{ 
-                color: isDisabled ? CATALYST_V5.slate[400] : CATALYST_V5.slate[700] 
-              }}
-            >
-              {testCase.title}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="max-w-xs">{testCase.title}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip content={<p className="max-w-xs">{testCase.title}</p>}>
+        <span
+          className="flex-1 text-sm truncate"
+          style={{
+            color: isDisabled ? CATALYST_V5.slate[400] : CATALYST_V5.slate[700]
+          }}
+        >
+          {testCase.title}
+        </span>
+      </Tooltip>
 
       {/* Type Badge */}
       <span className="shrink-0">
@@ -135,18 +127,11 @@ export function TestCaseRow({ testCase, isSelected, onToggle }: TestCaseRowProps
       </div>
 
       {/* Automation Status Icon */}
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="shrink-0">
-              {getAutomationIcon()}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="capitalize">{testCase.automation_status}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip content={<p className="capitalize">{testCase.automation_status}</p>}>
+        <div className="shrink-0">
+          {getAutomationIcon()}
+        </div>
+      </Tooltip>
 
       {/* Already Added Badge */}
       {isDisabled && (

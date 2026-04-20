@@ -14,7 +14,7 @@ import React, { useMemo } from 'react';
 import { WorkItem, ItemStatus } from '../types';
 import { cn } from '@/lib/utils';
 import { format, startOfQuarter, endOfQuarter, differenceInDays, addQuarters, subQuarters, getQuarter, getYear } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface RoadmapViewProps {
   items: WorkItem[];
@@ -77,18 +77,15 @@ function FeatureStatusDots({ features }: { features: WorkItem[] }) {
   return (
     <div className="flex items-center gap-1 mt-1">
       {displayFeatures.map((feature, i) => (
-        <TooltipProvider key={i}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span>
-                <StatusDot status={feature.status} />
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-[10px]">
-              {feature.key}: {feature.title} ({feature.status})
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip
+          key={i}
+          position="bottom"
+          content={`${feature.key}: ${feature.title} (${feature.status})`}
+        >
+          <span>
+            <StatusDot status={feature.status} />
+          </span>
+        </Tooltip>
       ))}
       {remaining > 0 && (
         <span className="text-[9px] text-muted-foreground ml-0.5">+{remaining}</span>
@@ -179,77 +176,74 @@ function RoadmapRow({ item, onItemClick, timelineStart, totalDays }: RoadmapRowP
       {/* Timeline area */}
       <div className="flex-1 relative py-3 px-2">
         {hasValidDates ? (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div
-                  className={cn(
-                    "absolute top-1/2 -translate-y-1/2 h-9 rounded-md cursor-pointer transition-all border",
-                    getStatusBarBg(item.status),
-                    getStatusBorderColor(item.status)
-                  )}
-                  style={{
-                    left: `${barStart}%`,
-                    width: `${barWidth}%`,
-                    minWidth: '60px'
-                  }}
-                  onClick={() => onItemClick(item)}
-                >
-                  {/* Progress fill */}
-                  <div 
-                    className={cn(
-                      "absolute left-0 top-0 bottom-0 rounded-l-md",
-                      getStatusBarColor(item.status)
-                    )}
-                    style={{ width: `${item.progress}%` }}
-                  />
-                  
-                  {/* Bar content: progress % on left, date range on right */}
-                  <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold text-foreground">
-                    <span>{item.progress}%</span>
-                    <span className="text-[9px] text-muted-foreground">
-                      {format(startDate!, 'MMM d')} - {format(endDate!, 'MMM d')}
-                    </span>
-                  </div>
+          <Tooltip
+            content={
+              <div className="space-y-2">
+                <div>
+                  <p className="font-medium text-xs">{item.key}: {item.title}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {format(startDate!, 'MMM d, yyyy')} → {format(endDate!, 'MMM d, yyyy')}
+                  </p>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent className="max-w-[320px]">
-                <div className="space-y-2">
-                  <div>
-                    <p className="font-medium text-xs">{item.key}: {item.title}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {format(startDate!, 'MMM d, yyyy')} → {format(endDate!, 'MMM d, yyyy')}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 text-[10px]">
-                    <span className={cn(
-                      "px-1.5 py-0.5 rounded text-[9px]",
-                      item.status === 'Done' && "bg-secondary-green/20 text-secondary-green",
-                      item.status === 'In Progress' && "bg-brand-gold/20 text-brand-gold",
-                      item.status === 'Blocked' && "bg-destructive/20 text-destructive",
-                      item.status === 'Backlog' && "bg-muted text-muted-foreground"
-                    )}>{item.status}</span>
-                    <span>•</span>
-                    <span>{item.progress}% complete</span>
-                  </div>
-                  {ownerName && <p className="text-[10px]">Owner: {ownerName}</p>}
-                  {childFeatures.length > 0 && (
-                    <div className="pt-1 border-t border-border">
-                      <p className="text-[10px] font-medium mb-1">{childFeatures.length} Features:</p>
-                      <div className="flex gap-1">
-                        {childFeatures.slice(0, 8).map((f, i) => (
-                          <StatusDot key={i} status={f.status} />
-                        ))}
-                        {childFeatures.length > 8 && (
-                          <span className="text-[9px] text-muted-foreground">+{childFeatures.length - 8}</span>
-                        )}
-                      </div>
+                <div className="flex items-center gap-2 text-[10px]">
+                  <span className={cn(
+                    "px-1.5 py-0.5 rounded text-[9px]",
+                    item.status === 'Done' && "bg-secondary-green/20 text-secondary-green",
+                    item.status === 'In Progress' && "bg-brand-gold/20 text-brand-gold",
+                    item.status === 'Blocked' && "bg-destructive/20 text-destructive",
+                    item.status === 'Backlog' && "bg-muted text-muted-foreground"
+                  )}>{item.status}</span>
+                  <span>•</span>
+                  <span>{item.progress}% complete</span>
+                </div>
+                {ownerName && <p className="text-[10px]">Owner: {ownerName}</p>}
+                {childFeatures.length > 0 && (
+                  <div className="pt-1 border-t border-border">
+                    <p className="text-[10px] font-medium mb-1">{childFeatures.length} Features:</p>
+                    <div className="flex gap-1">
+                      {childFeatures.slice(0, 8).map((f, i) => (
+                        <StatusDot key={i} status={f.status} />
+                      ))}
+                      {childFeatures.length > 8 && (
+                        <span className="text-[9px] text-muted-foreground">+{childFeatures.length - 8}</span>
+                      )}
                     </div>
-                  )}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                  </div>
+                )}
+              </div>
+            }
+          >
+            <div
+              className={cn(
+                "absolute top-1/2 -translate-y-1/2 h-9 rounded-md cursor-pointer transition-all border",
+                getStatusBarBg(item.status),
+                getStatusBorderColor(item.status)
+              )}
+              style={{
+                left: `${barStart}%`,
+                width: `${barWidth}%`,
+                minWidth: '60px'
+              }}
+              onClick={() => onItemClick(item)}
+            >
+              {/* Progress fill */}
+              <div
+                className={cn(
+                  "absolute left-0 top-0 bottom-0 rounded-l-md",
+                  getStatusBarColor(item.status)
+                )}
+                style={{ width: `${item.progress}%` }}
+              />
+
+              {/* Bar content: progress % on left, date range on right */}
+              <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-semibold text-foreground">
+                <span>{item.progress}%</span>
+                <span className="text-[9px] text-muted-foreground">
+                  {format(startDate!, 'MMM d')} - {format(endDate!, 'MMM d')}
+                </span>
+              </div>
+            </div>
+          </Tooltip>
         ) : (
           <div 
             className="absolute top-1/2 -translate-y-1/2 left-3 text-[10px] text-muted-foreground/60 cursor-pointer"

@@ -1,11 +1,6 @@
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface OwnerCellProps {
   name: string | null;
@@ -34,33 +29,26 @@ export function OwnerCell({ name }: OwnerCellProps) {
   }
 
   const displayInitials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  
+
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center gap-2 min-w-0">
-            <div className={cn(
-              "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center",
-              "bg-[rgba(37,99,235,0.1)] text-[#2563eb]",
-              "dark:bg-[rgba(37,99,235,0.15)] dark:text-[#60a5fa]"
-            )}>
-              <span className="text-[10px] font-semibold">
-                {displayInitials}
-              </span>
-            </div>
-            <span className={cn(
-              "text-sm truncate max-w-[100px]",
-              "text-foreground"
-            )}>
-              {name}
+      <Tooltip content={<p className="font-medium">{name}</p>}>
+        <div className="flex items-center gap-2 min-w-0">
+          <div className={cn(
+            "flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center",
+            "bg-[rgba(37,99,235,0.1)] text-[#2563eb]",
+            "dark:bg-[rgba(37,99,235,0.15)] dark:text-[#60a5fa]"
+          )}>
+            <span className="text-[10px] font-semibold">
+              {displayInitials}
             </span>
           </div>
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <p className="font-medium">{name}</p>
-        </TooltipContent>
+          <span className={cn(
+            "text-sm truncate max-w-[100px]",
+            "text-foreground"
+          )}>
+            {name}
+          </span>
+        </div>
       </Tooltip>
-    </TooltipProvider>
   );
 }

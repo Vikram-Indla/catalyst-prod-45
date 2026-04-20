@@ -10,10 +10,13 @@ import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
-  CatalystTitleEditor, CatalystQuickActions, CatalystParentLinker, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails,
+  CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
 } from '../shared/sections';
-import { CatalystDefectFields } from './CatalystDefectFields';
+import {
+  CatalystDefectKeyRows,
+  CatalystDefectLongFields,
+} from './CatalystDefectFields';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import type { CatalystViewBaseProps } from '../shared/types';
@@ -35,20 +38,24 @@ export default function CatalystViewDefect({
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       <CatalystQuickActions />
 
-      {/* DEFECT-UNIQUE: Priority + Type badge row */}
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 20 }}>
-        <span style={{ fontSize: 13, color: priorityStyle.color, fontWeight: 600 }}>{priorityStyle.symbol} {issue?.priority ?? 'Medium'}</span>
-        <span style={{ fontSize: 12, color: '#5E6C84' }}>·</span>
-        <span style={{ fontSize: 12, color: '#FF5630', fontWeight: 600 }}>Bug / Defect</span>
-      </div>
+      {/* Jira-parity: Parent / Priority / Severity / Found-in / Fix-in /
+          Root cause / Resolution all render inside the collapsible "Key
+          details" block. The standalone "Bug / Defect" badge was removed
+          (BAU-5534 audit) — the issue-type icon in the title already
+          carries the defect signal and Jira's own detail view has no
+          equivalent inline badge. Long-form fields (Steps / Environment)
+          render below via CatalystDefectLongFields, matching Jira's
+          collapsed-block layout. */}
+      <CatalystKeyDetails
+        issue={issue ?? null}
+        itemId={itemId}
+        itemType="defect"
+        projectKey={projectKey}
+        onOpenItem={onOpenItem}
+        extraRows={<CatalystDefectKeyRows issue={issue ?? null} />}
+      />
 
-      {/* DEFECT-UNIQUE: Jira-parity canonical field rail.
-          Severity / Environment / Steps to Reproduce / Found-in build /
-          Root Cause are read-only empty-state placeholders today — they
-          light up once the schema follow-up (ph_issues columns OR a
-          `defects` table join) lands. Fix-in build + Resolution already
-          read live from ph_issues. */}
-      <CatalystDefectFields issue={issue ?? null} />
+      <CatalystDefectLongFields />
 
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} label="Expected Behavior" />
@@ -74,9 +81,7 @@ export default function CatalystViewDefect({
   );
 
   const rightContent = (
-    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect">
-      <CatalystParentLinker issue={issue ?? null} itemId={itemId} itemType="defect" projectKey={projectKey} onOpenItem={onOpenItem} />
-    </CatalystSidebarDetails>
+    <CatalystSidebarDetails issue={issue ?? null} itemId={itemId} projectId={projectId} onStatusChange={(st) => mutations.updateStatus.mutate(st)} onClose={onClose} onDelete={() => mutations.deleteIssue.mutate()} typeLabel="defect" />
   );
 
   return (

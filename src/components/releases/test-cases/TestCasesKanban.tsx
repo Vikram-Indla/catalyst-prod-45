@@ -14,8 +14,7 @@ import {
   ListChecks,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Lozenge, Avatar, Tooltip } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   DropdownMenu,
@@ -23,11 +22,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { TestCase } from '@/types/test-cases';
 import { PriorityBadge, TypeBadge, LastRunBadge } from './badges';
 import { cn } from '@/lib/utils';
@@ -46,15 +40,6 @@ const statusColumns: { key: KanbanStatus; label: string; color: string }[] = [
   { key: 'approved', label: 'Approved', color: 'bg-green-500' },
   { key: 'deprecated', label: 'Deprecated', color: 'bg-orange-500' },
 ];
-
-const avatarColors: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  green: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  purple: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-  red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-};
 
 interface KanbanCardProps {
   testCase: TestCase;
@@ -116,31 +101,17 @@ function KanbanCard({ testCase, onClick }: KanbanCardProps) {
       {/* Footer */}
       <div className="flex items-center justify-between pt-2 border-t">
         <div className="flex items-center gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <ListChecks className="w-3.5 h-3.5" />
-                <span>{testCase.steps}</span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              {testCase.steps} test steps
-            </TooltipContent>
+          <Tooltip content={`${testCase.steps} test steps`} position="bottom">
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <ListChecks className="w-3.5 h-3.5" />
+              <span>{testCase.steps}</span>
+            </div>
           </Tooltip>
           <LastRunBadge status={testCase.lastRun} size="sm" />
         </div>
-        
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Avatar className="w-6 h-6">
-              <AvatarFallback className={cn("text-[10px] font-medium", avatarColors[testCase.assignee.color])}>
-                {testCase.assignee.avatar}
-              </AvatarFallback>
-            </Avatar>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            {testCase.assignee.name}
-          </TooltipContent>
+
+        <Tooltip content={testCase.assignee.name} position="bottom">
+          <Avatar name={testCase.assignee.name} size="xsmall" />
         </Tooltip>
       </div>
     </motion.div>

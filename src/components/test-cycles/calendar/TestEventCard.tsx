@@ -1,7 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Avatar, Tooltip } from '@/components/ads';
 import { STATUS_CALENDAR_COLORS, PRIORITY_COLORS, type CalendarEvent } from '@/types/calendar.types';
 
 interface TestEventCardProps {
@@ -21,31 +20,31 @@ export function TestEventCard({
 
   if (variant === 'compact') {
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div
-            onClick={onClick}
-            className={cn(
-              'h-[22px] px-2 rounded text-xs font-medium truncate cursor-pointer',
-              'border-l-[3px] flex items-center gap-1',
-              statusColors.bg,
-              statusColors.border,
-              statusColors.text,
-              isDragging && 'opacity-50 ring-2 ring-[#2563eb]'
-            )}
-          >
-            <span className="truncate">{event.code}</span>
-            <span className="truncate text-[10px] opacity-75">{event.title}</span>
-          </div>
-        </TooltipTrigger>
-        <TooltipContent side="right" className="max-w-xs">
-          <div className="space-y-1">
+      <Tooltip
+        position="right"
+        content={
+          <div className="space-y-1 max-w-xs">
             <div className="font-medium">{event.code}: {event.title}</div>
             <div className="text-xs text-muted-foreground">
               {event.assigneeName} • {event.module}
             </div>
           </div>
-        </TooltipContent>
+        }
+      >
+        <div
+          onClick={onClick}
+          className={cn(
+            'h-[22px] px-2 rounded text-xs font-medium truncate cursor-pointer',
+            'border-l-[3px] flex items-center gap-1',
+            statusColors.bg,
+            statusColors.border,
+            statusColors.text,
+            isDragging && 'opacity-50 ring-2 ring-[#2563eb]'
+          )}
+        >
+          <span className="truncate">{event.code}</span>
+          <span className="truncate text-[10px] opacity-75">{event.title}</span>
+        </div>
       </Tooltip>
     );
   }
@@ -74,11 +73,7 @@ export function TestEventCard({
           </div>
         </div>
         {event.assigneeName && (
-          <Avatar className="h-5 w-5 shrink-0">
-            <AvatarFallback className="text-[10px] bg-[#e2e8f0] text-[#475569]">
-              {event.assigneeName.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar name={event.assigneeName} size="xxsmall" />
         )}
       </div>
       

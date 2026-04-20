@@ -8,7 +8,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
@@ -300,11 +300,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
           <FieldLabel>Reporter</FieldLabel>
           {reporterName ? (
             <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)' }}>
-              <Avatar className="w-5 h-5">
-                <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
-                  {reporterName?.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={reporterName} size="xxsmall" />
               <span className="text-sm truncate">{reporterName}</span>
             </div>
           ) : (
@@ -325,11 +321,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
           <FieldLabel>Business Owner</FieldLabel>
           {businessOwnerName ? (
             <div className="h-9 px-3 rounded-md border flex items-center gap-2" style={{ borderColor: 'var(--divider)', backgroundColor: 'color-mix(in srgb, var(--secondary-bronze) 8%, transparent)' }}>
-              <Avatar className="w-5 h-5">
-                <AvatarFallback className="bg-[var(--secondary-bronze)] text-white text-[10px] font-semibold">
-                  {businessOwnerName?.split(' ').map(n => n[0]).join('').slice(0, 2) || '?'}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={businessOwnerName} size="xxsmall" />
               <span className="text-sm truncate">{businessOwnerName}</span>
             </div>
           ) : (

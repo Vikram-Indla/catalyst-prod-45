@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { CircleUser } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface MemberStackProps {
   memberIds: string[] | null;
@@ -84,57 +84,50 @@ export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProp
   }
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className="flex items-center">
-        {shown.map((id, i) => {
-          const profile = profileCache.get(id);
-          const name = profile?.full_name || '';
-          const avatarUrl = profile?.avatar_url;
-          const initials = name ? getInitials(name) : '?';
-          const [from, to] = getMemberGradient(name || id);
-          return (
-            <Tooltip key={id}>
-              <TooltipTrigger asChild>
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={name || 'Unknown'}
-                    className="h-[26px] w-[26px] shrink-0 rounded-full border-[1.5px] border-background object-cover"
-                    style={{ marginLeft: i > 0 ? -8 : 0, zIndex: max - i }}
-                  />
-                ) : (
-                  <div
-                    className="flex h-[26px] w-[26px] shrink-0 cursor-default items-center justify-center rounded-full border-[1.5px] border-background"
-                    style={{
-                      background: `linear-gradient(135deg, ${from}, ${to})`,
-                      marginLeft: i > 0 ? -8 : 0,
-                      zIndex: max - i,
-                    }}
-                  >
-                    <CircleUser size={18} color="#FFFFFF" strokeWidth={1.5} />
-                  </div>
-                )}
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                {name || 'Unknown'}
-              </TooltipContent>
-            </Tooltip>
-          );
-        })}
-        {overflow > 0 && (
-          <div
-            className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-background text-[9px] font-semibold"
-            style={{
-              background: '#2E2E2E',
-              color: '#A1A1A1',
-              marginLeft: -8,
-              zIndex: 0,
-            }}
-          >
-            +{overflow}
-          </div>
-        )}
-      </div>
-    </TooltipProvider>
+    <div className="flex items-center">
+      {shown.map((id, i) => {
+        const profile = profileCache.get(id);
+        const name = profile?.full_name || '';
+        const avatarUrl = profile?.avatar_url;
+        const initials = name ? getInitials(name) : '?';
+        const [from, to] = getMemberGradient(name || id);
+        return (
+          <Tooltip key={id} content={name || 'Unknown'} position="top" delay={200}>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={name || 'Unknown'}
+                className="h-[26px] w-[26px] shrink-0 rounded-full border-[1.5px] border-background object-cover"
+                style={{ marginLeft: i > 0 ? -8 : 0, zIndex: max - i }}
+              />
+            ) : (
+              <div
+                className="flex h-[26px] w-[26px] shrink-0 cursor-default items-center justify-center rounded-full border-[1.5px] border-background"
+                style={{
+                  background: `linear-gradient(135deg, ${from}, ${to})`,
+                  marginLeft: i > 0 ? -8 : 0,
+                  zIndex: max - i,
+                }}
+              >
+                <CircleUser size={18} color="#FFFFFF" strokeWidth={1.5} />
+              </div>
+            )}
+          </Tooltip>
+        );
+      })}
+      {overflow > 0 && (
+        <div
+          className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-background text-[9px] font-semibold"
+          style={{
+            background: '#2E2E2E',
+            color: '#A1A1A1',
+            marginLeft: -8,
+            zIndex: 0,
+          }}
+        >
+          +{overflow}
+        </div>
+      )}
+    </div>
   );
 }

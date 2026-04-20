@@ -3,7 +3,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Search,
@@ -117,62 +117,46 @@ export function RoadmapToolbar({
       <div className="inline-flex items-center gap-1.5 relative z-[100]" style={{ direction: 'ltr' }}>
 
         {/* Milestones Toggle */}
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setShowMilestones(!showMilestones)}
-                className={cn(
-                  "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                  showMilestones ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                )}
-                style={{
-                  backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
-                  border: showMilestones ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                }}
-              >
-                <Clock className="w-[18px] h-[18px]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">Milestones</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip delay={200} position="bottom" content="Milestones">
+          <button
+            onClick={() => setShowMilestones(!showMilestones)}
+            className={cn(
+              "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
+              showMilestones ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+            )}
+            style={{
+              backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
+              border: showMilestones ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+            }}
+          >
+            <Clock className="w-[18px] h-[18px]" />
+          </button>
+        </Tooltip>
 
         <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
 
         {/* Filter */}
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setFiltersDialogOpen(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-              >
-                <Filter className="w-[18px] h-[18px]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">Filters</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip delay={200} position="bottom" content="Filters">
+          <button
+            onClick={() => setFiltersDialogOpen(true)}
+            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+          >
+            <Filter className="w-[18px] h-[18px]" />
+          </button>
+        </Tooltip>
 
         {/* Time Period Selector */}
         <Popover>
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <PopoverTrigger asChild>
-                  <button
-                    className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                    style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                  >
-                    <Calendar className="w-[18px] h-[18px]" />
-                  </button>
-                </PopoverTrigger>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Time Period</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <PopoverTrigger asChild>
+            <button
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+              style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+              title="Time Period"
+            >
+              <Calendar className="w-[18px] h-[18px]" />
+            </button>
+          </PopoverTrigger>
           <PopoverContent
             align="end"
             className="w-[360px] p-0 bg-white dark:bg-[#1A1A1A] shadow-xl rounded-xl z-[400]"
@@ -405,58 +389,43 @@ export function RoadmapToolbar({
         <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
 
         {/* Export */}
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={handleExport}
-                className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-              >
-                <Download className="w-[18px] h-[18px]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">Export</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip delay={200} position="bottom" content="Export">
+          <button
+            onClick={handleExport}
+            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+          >
+            <Download className="w-[18px] h-[18px]" />
+          </button>
+        </Tooltip>
 
         {/* Legend Toggle */}
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setShowLegend(!showLegend)}
-                className={cn(
-                  "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                  showLegend ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                )}
-                style={{
-                  backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
-                  border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                }}
-              >
-                <Info className="w-[18px] h-[18px]" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">Legend</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip delay={200} position="bottom" content="Legend">
+          <button
+            onClick={() => setShowLegend(!showLegend)}
+            className={cn(
+              "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
+              showLegend ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+            )}
+            style={{
+              backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
+              border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+            }}
+          >
+            <Info className="w-[18px] h-[18px]" />
+          </button>
+        </Tooltip>
 
         {/* Fullscreen Toggle */}
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                onClick={toggleFullscreen}
-                className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-              >
-                {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="text-xs">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip delay={200} position="bottom" content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
+          <button
+            onClick={toggleFullscreen}
+            className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+            style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+          >
+            {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

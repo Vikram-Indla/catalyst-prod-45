@@ -9,7 +9,7 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarGroup } from '@/components/ads';
 import {
   Popover,
   PopoverContent,
@@ -127,14 +127,8 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
   onAssigneeChange: (assignee: { name: string } | null) => void 
 }) {
   const [search, setSearch] = useState('');
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500', 'bg-sky-500', 'bg-emerald-500'];
-    const index = name.charCodeAt(0) % colors.length;
-    return colors[index];
-  };
 
-  const filteredAssignees = assigneeOptions.filter(a => 
+  const filteredAssignees = assigneeOptions.filter(a =>
     a.name.toLowerCase().includes(search.toLowerCase())
   );
 
@@ -144,11 +138,9 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
         <button className="inline-flex items-center gap-2 hover:bg-muted rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 min-w-0">
           {assignee ? (
             <>
-              <Avatar className="h-6 w-6 flex-shrink-0">
-                <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(assignee.name))}>
-                  {getInitials(assignee.name)}
-                </AvatarFallback>
-              </Avatar>
+              <span className="flex-shrink-0">
+                <Avatar name={assignee.name} size="xsmall" />
+              </span>
               <span className="text-sm text-foreground truncate">{assignee.name}</span>
             </>
           ) : (
@@ -176,9 +168,9 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
             className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-[#2563eb]/20 bg-[#2563eb]/10 transition-colors text-left text-[#2563eb] font-medium"
             onClick={() => onAssigneeChange({ name: 'Vikram India' })}
           >
-            <Avatar className="h-6 w-6 flex-shrink-0">
-              <AvatarFallback className="text-[10px] text-white bg-green-600">VI</AvatarFallback>
-            </Avatar>
+            <span className="flex-shrink-0">
+              <Avatar name="Vikram India" size="xsmall" />
+            </span>
             Vikram India (Assign to me)
           </button>
           <div className="h-px bg-border my-1" />
@@ -191,11 +183,9 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
               )}
               onClick={() => onAssigneeChange(opt)}
             >
-              <Avatar className="h-6 w-6 flex-shrink-0">
-                <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(opt.name))}>
-                  {getInitials(opt.name)}
-                </AvatarFallback>
-              </Avatar>
+              <span className="flex-shrink-0">
+                <Avatar name={opt.name} size="xsmall" />
+              </span>
               <span className="text-foreground">{opt.name}</span>
             </button>
           ))}
@@ -385,13 +375,6 @@ export function ListView() {
 
   const isFieldVisible = (field: string) => !hiddenFields.has(field);
 
-  const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-red-500', 'bg-sky-500', 'bg-emerald-500'];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
-
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
-
   // Table header cell component for consistency
   const TableHeader = ({ children, className, scope = "col" }: { children?: React.ReactNode; className?: string; scope?: "col" | "row" }) => (
     <th 
@@ -435,18 +418,11 @@ export function ListView() {
               />
             </div>
             {/* Avatar group */}
-            <div className="flex -space-x-1">
-              {assigneeOptions.slice(0, 3).map((a) => (
-                <Avatar key={a.name} className="h-7 w-7 border-2 border-white">
-                  <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(a.name))}>
-                    {getInitials(a.name)}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
-              <div className="h-7 w-7 rounded-full bg-slate-200 dark:bg-[#292929] flex items-center justify-center text-[11px] text-slate-600 dark:text-[#A1A1A1] border-2 border-white dark:border-[#1A1A1A] font-medium">
-                +{assigneeOptions.length - 3}
-              </div>
-            </div>
+            <AvatarGroup
+              size="small"
+              maxCount={3}
+              data={assigneeOptions.map((a) => ({ key: a.name, name: a.name }))}
+            />
             <Button variant="ghost" size="sm" className="h-8 gap-1 text-[14px] text-slate-600 dark:text-[#A1A1A1] hover:bg-slate-50 dark:hover:bg-[#1F1F1F] font-normal">
               Filter
               <ChevronDown className="h-4 w-4" />

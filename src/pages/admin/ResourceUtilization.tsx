@@ -12,7 +12,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { 
   Search, 
@@ -43,11 +43,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface NewAssignmentRow {
@@ -544,20 +539,15 @@ export default function ResourceUtilization() {
                               )}
                             </TableCell>
                             <TableCell className="text-center">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7"
-                                    onClick={() => handleAddRow(resource)}
-                                  >
-                                    <Plus className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Add another assignment for {resource.resource_name}</p>
-                                </TooltipContent>
+                              <Tooltip content={<p>Add another assignment for {resource.resource_name}</p>}>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleAddRow(resource)}
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
                               </Tooltip>
                             </TableCell>
                             {resource.monthly_allocations.map((monthData) => {
@@ -569,43 +559,37 @@ export default function ResourceUtilization() {
                               return (
                                 <TableCell key={monthData.month} className="p-1">
                                   {isEditable ? (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <Input
-                                          type="number"
-                                          min={0}
-                                          max={200}
-                                          value={displayValue}
-                                          onChange={(e) => handleAllocationChange(resource.id, resource.assignment_id, monthData.month, e.target.value)}
-                                          className={cn(
-                                            "w-16 h-8 text-center text-sm p-1",
-                                            getInputBorderColor(displayValue),
-                                            hasChange && "ring-2 ring-primary ring-offset-1"
-                                          )}
-                                        />
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>Utilization % for {MONTHS[monthData.month - 1].name} {selectedYear}</p>
-                                      </TooltipContent>
+                                    <Tooltip content={<p>Utilization % for {MONTHS[monthData.month - 1].name} {selectedYear}</p>}>
+                                      <Input
+                                        type="number"
+                                        min={0}
+                                        max={200}
+                                        value={displayValue}
+                                        onChange={(e) => handleAllocationChange(resource.id, resource.assignment_id, monthData.month, e.target.value)}
+                                        className={cn(
+                                          "w-16 h-8 text-center text-sm p-1",
+                                          getInputBorderColor(displayValue),
+                                          hasChange && "ring-2 ring-primary ring-offset-1"
+                                        )}
+                                      />
                                     </Tooltip>
                                   ) : (
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div className={cn(
-                                          "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
-                                          "text-muted-foreground"
-                                        )}>
-                                          <Lock className="h-4 w-4" />
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent>
+                                    <Tooltip
+                                      content={
                                         <p>
-                                          {!resource.assignment_id 
+                                          {!resource.assignment_id
                                             ? 'No assignment - cannot set allocation'
                                             : `Contract ends ${formatContractEnd(resource.contract_end_date)}`
                                           }
                                         </p>
-                                      </TooltipContent>
+                                      }
+                                    >
+                                      <div className={cn(
+                                        "w-16 h-8 flex items-center justify-center text-sm rounded border bg-muted/50 cursor-not-allowed",
+                                        "text-muted-foreground"
+                                      )}>
+                                        <Lock className="h-4 w-4" />
+                                      </div>
                                     </Tooltip>
                                   )}
                                 </TableCell>
@@ -664,20 +648,15 @@ export default function ResourceUtilization() {
                                   )}
                                 </TableCell>
                                 <TableCell className="text-center">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-7 w-7 text-destructive hover:text-destructive"
-                                        onClick={() => handleRemoveNewRow(newRow.tempId)}
-                                      >
-                                        <X className="h-4 w-4" />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Remove this row</p>
-                                    </TooltipContent>
+                                  <Tooltip content={<p>Remove this row</p>}>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 text-destructive hover:text-destructive"
+                                      onClick={() => handleRemoveNewRow(newRow.tempId)}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
                                   </Tooltip>
                                 </TableCell>
                                 {MONTHS.map((m) => {

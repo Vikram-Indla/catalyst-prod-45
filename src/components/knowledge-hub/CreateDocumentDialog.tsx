@@ -9,14 +9,109 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { FileText, ListChecks, Lightbulb, BookOpen, Target, Users } from 'lucide-react';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+
+// 2026-04-20 — Templates switched from HTML (TipTap consumer) to ADF
+// JSON (Atlaskit consumer). Each template is a minimal ADF `doc` made
+// of `heading` + `paragraph` + `bulletList` / `orderedList` nodes —
+// the same primitives @atlaskit/editor-core renders natively.
+interface Adf { version: 1; type: 'doc'; content: unknown[] }
+
+const H = (level: 1 | 2 | 3, text: string) => ({
+  type: 'heading',
+  attrs: { level },
+  content: [{ type: 'text', text }],
+});
+const P = (text = '') => ({
+  type: 'paragraph',
+  content: text ? [{ type: 'text', text }] : [],
+});
+const PStrongPrefix = (label: string, trail: string) => ({
+  type: 'paragraph',
+  content: [
+    { type: 'text', text: label, marks: [{ type: 'strong' }] },
+    { type: 'text', text: trail },
+  ],
+});
+const UL = (items: string[]) => ({
+  type: 'bulletList',
+  content: items.map((t) => ({
+    type: 'listItem',
+    content: [P(t)],
+  })),
+});
+const OL = (items: string[]) => ({
+  type: 'orderedList',
+  content: items.map((t) => ({
+    type: 'listItem',
+    content: [P(t)],
+  })),
+});
+const doc = (...blocks: unknown[]): Adf => ({ version: 1, type: 'doc', content: blocks });
 
 const templates = [
-  { id: 'blank', title: 'Blank', icon: FileText, content: '<p></p>' },
-  { id: 'meeting', title: 'Meeting Notes', icon: Users, content: '<h1>Meeting Notes</h1><p><strong>Date:</strong> [Date]</p><p><strong>Attendees:</strong></p><h2>Agenda</h2><ul><li>Item 1</li></ul><h2>Action Items</h2><ul><li>[ ] Action 1</li></ul>' },
-  { id: 'requirements', title: 'Requirements', icon: ListChecks, content: '<h1>Requirements</h1><h2>Overview</h2><p>[Description]</p><h2>User Stories</h2><p>As a [user], I want [goal]</p><h2>Acceptance Criteria</h2><ul><li>Criterion 1</li></ul>' },
-  { id: 'decision', title: 'Decision', icon: Target, content: '<h1>Decision Document</h1><p><strong>Status:</strong> Proposed</p><h2>Context</h2><p>[Background]</p><h2>Decision</h2><p>[Decision made]</p><h2>Consequences</h2><p>[Implications]</p>' },
-  { id: 'retro', title: 'Retrospective', icon: Lightbulb, content: '<h1>Retrospective</h1><h2>What Went Well 🎉</h2><ul><li></li></ul><h2>What Could Improve 🔧</h2><ul><li></li></ul><h2>Action Items 📋</h2><ul><li></li></ul>' },
-  { id: 'howto', title: 'How-To Guide', icon: BookOpen, content: '<h1>How-To: [Topic]</h1><h2>Prerequisites</h2><ul><li></li></ul><h2>Steps</h2><ol><li>Step 1</li><li>Step 2</li></ol><h2>Tips</h2><ul><li></li></ul>' },
+  { id: 'blank', title: 'Blank', icon: FileText, content: doc(P()) },
+  {
+    id: 'meeting', title: 'Meeting Notes', icon: Users,
+    content: doc(
+      H(1, 'Meeting Notes'),
+      PStrongPrefix('Date: ', '[Date]'),
+      PStrongPrefix('Attendees: ', ''),
+      H(2, 'Agenda'),
+      UL(['Item 1']),
+      H(2, 'Action Items'),
+      UL(['Action 1']),
+    ),
+  },
+  {
+    id: 'requirements', title: 'Requirements', icon: ListChecks,
+    content: doc(
+      H(1, 'Requirements'),
+      H(2, 'Overview'),
+      P('[Description]'),
+      H(2, 'User Stories'),
+      P('As a [user], I want [goal]'),
+      H(2, 'Acceptance Criteria'),
+      UL(['Criterion 1']),
+    ),
+  },
+  {
+    id: 'decision', title: 'Decision', icon: Target,
+    content: doc(
+      H(1, 'Decision Document'),
+      PStrongPrefix('Status: ', 'Proposed'),
+      H(2, 'Context'),
+      P('[Background]'),
+      H(2, 'Decision'),
+      P('[Decision made]'),
+      H(2, 'Consequences'),
+      P('[Implications]'),
+    ),
+  },
+  {
+    id: 'retro', title: 'Retrospective', icon: Lightbulb,
+    content: doc(
+      H(1, 'Retrospective'),
+      H(2, 'What Went Well'),
+      UL(['']),
+      H(2, 'What Could Improve'),
+      UL(['']),
+      H(2, 'Action Items'),
+      UL(['']),
+    ),
+  },
+  {
+    id: 'howto', title: 'How-To Guide', icon: BookOpen,
+    content: doc(
+      H(1, 'How-To: [Topic]'),
+      H(2, 'Prerequisites'),
+      UL(['']),
+      H(2, 'Steps'),
+      OL(['Step 1', 'Step 2']),
+      H(2, 'Tips'),
+      UL(['']),
+    ),
+  },
 ];
 
 interface CreateDocumentDialogProps {
@@ -61,13 +156,15 @@ export function CreateDocumentDialog({
       const userId = userData?.user?.id || '00000000-0000-0000-0000-000000000000';
       const template = templates.find(t => t.id === selectedTemplate);
       
+      const adf = template?.content ?? doc(P());
+      const serialized = JSON.stringify(adf);
       const { data, error } = await supabase
         .from('kb_documents')
         .insert({
           title: title.trim(),
           space_id: spaceId || null,
-          content: template?.content || '<p></p>',
-          content_text: template?.content?.replace(/<[^>]*>/g, '') || '',
+          content: serialized,
+          content_text: adfToPlainText(adf),
           created_by: userId,
           updated_by: userId,
         })

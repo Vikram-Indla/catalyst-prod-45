@@ -5,10 +5,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Plus, Search, LayoutGrid, List, Star, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreateProgramDialog } from '@/components/programs/CreateProgramDialog';
 import { cn } from '@/lib/utils';
 
@@ -245,93 +243,78 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <TooltipProvider>
-      <Card
-        onClick={onClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={cn(
-          "cursor-pointer transition-all duration-150 relative",
-          isHovered && "shadow-lg -translate-y-0.5"
-        )}
-      >
-        <CardContent className="p-6">
-          {/* STAR BUTTON */}
-          <div className={cn(
-            "absolute top-3 right-3 transition-opacity duration-150",
-            isHovered || program.isStarred ? "opacity-100" : "opacity-0"
-          )}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleStar();
-                  }}
-                >
-                  <Star 
-                    className={cn(
-                      "h-4 w-4",
-                      program.isStarred 
-                        ? "fill-amber-400 text-amber-400" 
-                        : "text-muted-foreground"
-                    )}
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {program.isStarred ? 'Unstar' : 'Star'}
-              </TooltipContent>
-            </Tooltip>
+    <Card
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={cn(
+        "cursor-pointer transition-all duration-150 relative",
+        isHovered && "shadow-lg -translate-y-0.5"
+      )}
+    >
+      <CardContent className="p-6">
+        {/* STAR BUTTON */}
+        <div className={cn(
+          "absolute top-3 right-3 transition-opacity duration-150",
+          isHovered || program.isStarred ? "opacity-100" : "opacity-0"
+        )}>
+          <Tooltip content={program.isStarred ? 'Unstar' : 'Star'}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggleStar();
+              }}
+            >
+              <Star
+                className={cn(
+                  "h-4 w-4",
+                  program.isStarred
+                    ? "fill-amber-400 text-amber-400"
+                    : "text-muted-foreground"
+                )}
+              />
+            </Button>
+          </Tooltip>
+        </div>
+
+        {/* PROGRAM INFO */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-base font-semibold text-foreground">
+              {program.name}
+            </h3>
+            {program.isDefault && (
+              <Lozenge appearance="default">Default</Lozenge>
+            )}
           </div>
 
-          {/* PROGRAM INFO */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-base font-semibold text-foreground">
-                {program.name}
-              </h3>
-              {program.isDefault && (
-                <Lozenge appearance="default">Default</Lozenge>
-              )}
-            </div>
-            
-            <p className="text-xs text-muted-foreground mb-1">
-              {program.key}
-            </p>
+          <p className="text-xs text-muted-foreground mb-1">
+            {program.key}
+          </p>
 
-            <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
-              {program.description}
-            </p>
+          <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+            {program.description}
+          </p>
+        </div>
+
+        {/* METADATA */}
+        <div className="flex justify-between items-center pt-4 border-t border-border">
+          <div className="flex gap-4 text-xs text-muted-foreground">
+            <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
+            <span>•</span>
+            <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
           </div>
 
-          {/* METADATA */}
-          <div className="flex justify-between items-center pt-4 border-t border-border">
-            <div className="flex gap-4 text-xs text-muted-foreground">
-              <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
-              <span>•</span>
-              <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
-            </div>
-
-            <Tooltip>
-              <TooltipTrigger>
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={program.lead.avatar} alt={program.lead.name} />
-                  <AvatarFallback className="text-xs">
-                    {program.lead.name.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </TooltipTrigger>
-              <TooltipContent>{program.lead.name}</TooltipContent>
-            </Tooltip>
-          </div>
-        </CardContent>
-      </Card>
-    </TooltipProvider>
+          <Tooltip content={program.lead.name}>
+            <Avatar src={program.lead.avatar} name={program.lead.name} size="xsmall" />
+          </Tooltip>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -378,73 +361,63 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <TooltipProvider>
-      <div
-        onClick={onClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={cn(
-          "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150",
-          isHovered && "bg-muted/50",
-          !isLast && "border-b border-border"
-        )}
-      >
-        {/* PROGRAM INFO */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-sm font-semibold text-foreground">
-              {program.name}
-            </h4>
-            {program.isDefault && (
-              <Lozenge appearance="default">Default</Lozenge>
-            )}
-          </div>
-          
-          <p className="text-xs text-muted-foreground truncate">
-            {program.key} • {program.description}
-          </p>
+    <div
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={cn(
+        "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150",
+        isHovered && "bg-muted/50",
+        !isLast && "border-b border-border"
+      )}
+    >
+      {/* PROGRAM INFO */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h4 className="text-sm font-semibold text-foreground">
+            {program.name}
+          </h4>
+          {program.isDefault && (
+            <Lozenge appearance="default">Default</Lozenge>
+          )}
         </div>
 
-        {/* METADATA */}
-        <div className="flex items-center gap-6 flex-shrink-0">
-          <div className="text-xs text-muted-foreground text-right">
-            <div>{program.projectCount} projects</div>
-            <div>{program.epicCount} epics</div>
-          </div>
-
-          <Tooltip>
-            <TooltipTrigger>
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={program.lead.avatar} alt={program.lead.name} />
-                <AvatarFallback className="text-xs">
-                  {program.lead.name.substring(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </TooltipTrigger>
-            <TooltipContent>{program.lead.name}</TooltipContent>
-          </Tooltip>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleStar();
-            }}
-          >
-            <Star 
-              className={cn(
-                "h-4 w-4",
-                program.isStarred 
-                  ? "fill-amber-400 text-amber-400" 
-                  : "text-muted-foreground"
-              )}
-            />
-          </Button>
-        </div>
+        <p className="text-xs text-muted-foreground truncate">
+          {program.key} • {program.description}
+        </p>
       </div>
-    </TooltipProvider>
+
+      {/* METADATA */}
+      <div className="flex items-center gap-6 flex-shrink-0">
+        <div className="text-xs text-muted-foreground text-right">
+          <div>{program.projectCount} projects</div>
+          <div>{program.epicCount} epics</div>
+        </div>
+
+        <Tooltip content={program.lead.name}>
+          <Avatar src={program.lead.avatar} name={program.lead.name} size="xsmall" />
+        </Tooltip>
+
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleStar();
+          }}
+        >
+          <Star
+            className={cn(
+              "h-4 w-4",
+              program.isStarred
+                ? "fill-amber-400 text-amber-400"
+                : "text-muted-foreground"
+            )}
+          />
+        </Button>
+      </div>
+    </div>
   );
 }

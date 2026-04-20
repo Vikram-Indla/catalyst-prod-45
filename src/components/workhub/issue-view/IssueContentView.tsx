@@ -33,8 +33,9 @@ import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
-import { CatalystRichTextEditor } from '@/components/shared/rich-text';
-import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
+// 2026-04-20 — TipTap CatalystRichTextEditor import removed. Atlaskit
+// <EpicDescriptionEditor> is the sole composer (USER DIRECTIVE).
+// AtlaskitBoundary removed along with it — no editor fallback path.
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 /* §19 chokepoint — ALL user-avatar lookups on this surface resolve
@@ -631,71 +632,39 @@ export function IssueContentView({
             {!collapsed.desc && (
               <div className="awSectionBody">
                 {descEditMode ? (
-                  /* ── Edit mode — canonical Atlaskit editor (matches
-                     CatalystDescriptionSection). The editor writes ADF
-                     JSON back to `description_adf` (JSONB, canonical).
-                     AtlaskitBoundary falls back to CatalystRichTextEditor
-                     on a chunk-load / runtime failure so users are never
-                     stranded without a composer. B2 — Atlaskit field-type
-                     sweep. */
+                  /* ── Edit mode — Atlaskit editor only (USER DIRECTIVE
+                     2026-04-20). No TipTap fallback. If the
+                     @atlaskit/editor-core chunk fails to load the
+                     Suspense fallback stays visible and the error is
+                     surfaced in the console for a fix, rather than
+                     silently downgrading to an editor whose ADF
+                     emission shape this app no longer accepts. */
                   <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
-                    <AtlaskitBoundary
-                      diagnosticTag={`issue-content-view:description-edit:${item?.issue_key ?? item?.id ?? 'n/a'}`}
+                    <Suspense
                       fallback={
-                        <CatalystRichTextEditor
-                          content={
-                            (item as any)?.description_adf
-                              ? (typeof (item as any).description_adf === 'string'
-                                  ? (item as any).description_adf
-                                  : JSON.stringify((item as any).description_adf))
-                              : (item?.description_text || '')
-                          }
-                          workItemId={item?.id ?? ''}
-                          onSave={(adfJson) => {
-                            if (!item?.id) { setDescEditMode(false); return; }
-                            const parsed = adfJson ? JSON.parse(adfJson) : null;
-                            supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
-                              queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
-                              queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                              queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-                              toast.success('Description saved');
-                            });
-                            setDescEditMode(false);
-                          }}
-                          onCancel={() => setDescEditMode(false)}
-                          placeholder="Add a description..."
-                          minHeight={150}
-                          mode="save"
-                          storagePath="description-images"
-                        />
+                        <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
+                          Loading editor…
+                        </div>
                       }
                     >
-                      <Suspense
-                        fallback={
-                          <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
-                            Loading editor…
-                          </div>
-                        }
-                      >
-                        <EpicDescriptionEditor
-                          initialContent={(item as any)?.description_adf ?? item?.description_text ?? null}
-                          workItemId={item?.id ?? ''}
-                          onSave={(adfJson) => {
-                            if (!item?.id) { setDescEditMode(false); return; }
-                            const parsed = adfJson ? JSON.parse(adfJson) : null;
-                            supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
-                              queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
-                              queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                              queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-                              toast.success('Description saved');
-                            });
-                            setDescEditMode(false);
-                          }}
-                          onCancel={() => setDescEditMode(false)}
-                          placeholder="Add a description..."
-                        />
-                      </Suspense>
-                    </AtlaskitBoundary>
+                      <EpicDescriptionEditor
+                        initialContent={(item as any)?.description_adf ?? item?.description_text ?? null}
+                        workItemId={item?.id ?? ''}
+                        onSave={(adfJson) => {
+                          if (!item?.id) { setDescEditMode(false); return; }
+                          const parsed = adfJson ? JSON.parse(adfJson) : null;
+                          supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
+                            queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                            queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                            queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                            toast.success('Description saved');
+                          });
+                          setDescEditMode(false);
+                        }}
+                        onCancel={() => setDescEditMode(false)}
+                        placeholder="Add a description..."
+                      />
+                    </Suspense>
                   </div>
                 ) : (
                   <div

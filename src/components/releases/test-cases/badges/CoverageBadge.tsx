@@ -3,11 +3,7 @@
  */
 
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface CoverageBadgeProps {
   percentage: number;
@@ -39,36 +35,10 @@ export function CoverageBadge({
   const clampedPercentage = Math.min(100, Math.max(0, percentage));
   
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div 
-          className={cn(
-            'inline-flex items-center gap-2',
-            size === 'sm' ? 'text-xs' : 'text-sm',
-            className
-          )}
-        >
-          {showLabel && (
-            <span className={cn('font-medium tabular-nums', getCoverageColor(clampedPercentage))}>
-              {clampedPercentage}%
-            </span>
-          )}
-          <div className={cn(
-            'overflow-hidden rounded-full bg-muted',
-            size === 'sm' ? 'h-1.5 w-12' : 'h-2 w-16'
-          )}>
-            <div 
-              className={cn(
-                'h-full transition-all duration-300',
-                getCoverageBarColor(clampedPercentage)
-              )}
-              style={{ width: `${clampedPercentage}%` }}
-            />
-          </div>
-        </div>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="text-xs">
-        <div className="space-y-1">
+    <Tooltip
+      position="top"
+      content={
+        <div className="space-y-1 text-xs">
           <p className="font-medium">Test Coverage: {clampedPercentage}%</p>
           <p className="text-muted-foreground">
             {clampedPercentage >= 80 ? 'Excellent coverage' :
@@ -77,7 +47,33 @@ export function CoverageBadge({
              'Low coverage - needs improvement'}
           </p>
         </div>
-      </TooltipContent>
+      }
+    >
+      <div
+        className={cn(
+          'inline-flex items-center gap-2',
+          size === 'sm' ? 'text-xs' : 'text-sm',
+          className
+        )}
+      >
+        {showLabel && (
+          <span className={cn('font-medium tabular-nums', getCoverageColor(clampedPercentage))}>
+            {clampedPercentage}%
+          </span>
+        )}
+        <div className={cn(
+          'overflow-hidden rounded-full bg-muted',
+          size === 'sm' ? 'h-1.5 w-12' : 'h-2 w-16'
+        )}>
+          <div
+            className={cn(
+              'h-full transition-all duration-300',
+              getCoverageBarColor(clampedPercentage)
+            )}
+            style={{ width: `${clampedPercentage}%` }}
+          />
+        </div>
+      </div>
     </Tooltip>
   );
 }

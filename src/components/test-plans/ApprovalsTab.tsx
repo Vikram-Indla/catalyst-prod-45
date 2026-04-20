@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { Check, X, Clock, UserPlus, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -65,7 +64,7 @@ export function ApprovalsTab({ planId, planStatus }: Props) {
               <CardContent className="py-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10"><AvatarImage src={a.approver?.avatar_url || undefined} /><AvatarFallback>{a.approver?.full_name?.slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
+                    <Avatar src={a.approver?.avatar_url || undefined} name={a.approver?.full_name || ''} size="medium" />
                     <div>
                       <p className="font-medium">{a.approver?.full_name}</p>
                       <p className="text-sm text-muted-foreground">Requested {format(new Date(a.requested_at), 'MMM d, yyyy')}</p>

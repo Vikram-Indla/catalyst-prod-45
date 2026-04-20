@@ -5,7 +5,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ListChecks, Check } from 'lucide-react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { TestCase } from '@/types/test-cases';
 import { TypeBadge, PriorityBadge, StatusBadge, LastRunBadge } from './badges';
@@ -17,16 +17,6 @@ interface TestCasesGridProps {
   onSelectRow?: (id: string, checked: boolean) => void;
   onCardClick?: (testCase: TestCase) => void;
 }
-
-// Avatar colors
-const avatarColors: Record<string, string> = {
-  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  green: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
-  purple: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  teal: 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400',
-  red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-};
 
 export function TestCasesGrid({ testCases, selectedIds, onSelectRow, onCardClick }: TestCasesGridProps) {
   const hasSelection = !!selectedIds && !!onSelectRow;
@@ -103,11 +93,7 @@ export function TestCasesGrid({ testCases, selectedIds, onSelectRow, onCardClick
             <div className="flex items-center justify-between pt-3 border-t">
               <span className="text-xs text-muted-foreground font-mono">{tc.release}</span>
               <div className="flex items-center gap-2">
-                <Avatar className="w-5 h-5">
-                  <AvatarFallback className={cn("text-[10px] font-medium", avatarColors[tc.assignee.color])}>
-                    {tc.assignee.avatar}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar name={tc.assignee.name} size="xxsmall" />
                 <span className="text-xs text-muted-foreground">{tc.updated}</span>
               </div>
             </div>

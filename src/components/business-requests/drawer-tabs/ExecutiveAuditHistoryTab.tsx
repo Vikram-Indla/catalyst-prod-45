@@ -11,7 +11,7 @@ import { History, ArrowRight, Loader2, Eye, EyeOff, ChevronDown, ChevronRight } 
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 interface ExecutiveAuditHistoryTabProps {
@@ -163,11 +163,6 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
     });
   };
 
-  const getInitials = (name: string | null | undefined) => {
-    if (!name || name === 'System') return 'SY';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   const getFieldLabel = (field: string | null) => {
     if (!field) return 'Record';
     return FIELD_LABELS[field] || field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
@@ -261,17 +256,7 @@ export function ExecutiveAuditHistoryTab({ requestId }: ExecutiveAuditHistoryTab
                     className="w-full flex items-center gap-3 p-3 text-left hover:bg-[var(--surface-3)] transition-colors"
                     onClick={() => toggleGroup(group.timestamp)}
                   >
-                    <Avatar className="h-7 w-7 shrink-0">
-                      <AvatarFallback 
-                        className="text-[10px]"
-                        style={{ 
-                          background: isCreate ? 'var(--accent-color)' : 'var(--surface-3)',
-                          color: isCreate ? 'white' : 'var(--text-2)'
-                        }}
-                      >
-                        {getInitials(group.actor)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={group.actor} size="xsmall" />
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">

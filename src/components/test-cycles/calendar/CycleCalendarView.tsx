@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarToolbar } from './CalendarToolbar';
 import { MonthView } from './MonthView';
@@ -86,78 +85,76 @@ export function CycleCalendarView({ cycleId }: CycleCalendarViewProps) {
   const currentDayEvents = eventsByDate.get(format(currentDate, 'yyyy-MM-dd')) || [];
 
   return (
-    <TooltipProvider>
-      <div className="flex flex-col h-full bg-white">
-        {/* Header */}
-        <CalendarHeader
+    <div className="flex flex-col h-full bg-white">
+      {/* Header */}
+      <CalendarHeader
+        currentDate={currentDate}
+        view={view}
+        cycleName={cycleInfo.name}
+        cycleRange={cycleRange}
+        onNavigate={navigate}
+        onViewChange={setView}
+      />
+
+      {/* Toolbar */}
+      <CalendarToolbar
+        filters={filters}
+        onFilterChange={setFilters}
+        filterOptions={filterOptions}
+        onOpenReschedule={() => setIsRescheduleOpen(true)}
+      />
+
+      {/* Calendar Views */}
+      {view === 'month' && (
+        <MonthView
           currentDate={currentDate}
-          view={view}
-          cycleName={cycleInfo.name}
+          eventsByDate={eventsByDate}
           cycleRange={cycleRange}
-          onNavigate={navigate}
-          onViewChange={setView}
+          onDayClick={handleDayClick}
+          onEventClick={handleEventClick}
         />
+      )}
 
-        {/* Toolbar */}
-        <CalendarToolbar
-          filters={filters}
-          onFilterChange={setFilters}
-          filterOptions={filterOptions}
-          onOpenReschedule={() => setIsRescheduleOpen(true)}
-        />
-
-        {/* Calendar Views */}
-        {view === 'month' && (
-          <MonthView
-            currentDate={currentDate}
-            eventsByDate={eventsByDate}
-            cycleRange={cycleRange}
-            onDayClick={handleDayClick}
-            onEventClick={handleEventClick}
-          />
-        )}
-
-        {view === 'week' && (
-          <WeekView
-            currentDate={currentDate}
-            eventsByDate={eventsByDate}
-            cycleRange={cycleRange}
-            onEventClick={handleEventClick}
-          />
-        )}
-
-        {view === 'day' && (
-          <DayView
-            currentDate={currentDate}
-            events={currentDayEvents}
-            cycleRange={cycleRange}
-            onEventClick={handleEventClick}
-          />
-        )}
-
-        {/* Day Detail Panel */}
-        {selectedDate && (
-          <DayDetailPanel
-            date={selectedDate}
-            events={selectedDateEvents}
-            cycleRange={cycleRange}
-            isOpen={!!selectedDate}
-            onClose={() => setSelectedDate(null)}
-            onReschedule={handleRescheduleEvent}
-            onViewDetails={handleViewEventDetails}
-          />
-        )}
-
-        {/* Reschedule Modal */}
-        <RescheduleModal
-          isOpen={isRescheduleOpen}
-          onClose={() => setIsRescheduleOpen(false)}
+      {view === 'week' && (
+        <WeekView
+          currentDate={currentDate}
+          eventsByDate={eventsByDate}
           cycleRange={cycleRange}
-          totalTests={events.length}
-          onReschedule={handleBulkReschedule}
+          onEventClick={handleEventClick}
         />
-      </div>
-    </TooltipProvider>
+      )}
+
+      {view === 'day' && (
+        <DayView
+          currentDate={currentDate}
+          events={currentDayEvents}
+          cycleRange={cycleRange}
+          onEventClick={handleEventClick}
+        />
+      )}
+
+      {/* Day Detail Panel */}
+      {selectedDate && (
+        <DayDetailPanel
+          date={selectedDate}
+          events={selectedDateEvents}
+          cycleRange={cycleRange}
+          isOpen={!!selectedDate}
+          onClose={() => setSelectedDate(null)}
+          onReschedule={handleRescheduleEvent}
+          onViewDetails={handleViewEventDetails}
+        />
+      )}
+
+      {/* Reschedule Modal */}
+      <RescheduleModal
+        isOpen={isRescheduleOpen}
+        onClose={() => setIsRescheduleOpen(false)}
+        cycleRange={cycleRange}
+        totalTests={events.length}
+        onReschedule={handleBulkReschedule}
+      />
+    </div>
   );
 }
 

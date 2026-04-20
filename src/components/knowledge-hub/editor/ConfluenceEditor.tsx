@@ -1,19 +1,32 @@
-import { useEditor, EditorContent, Editor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Link from '@tiptap/extension-link';
-import Image from '@tiptap/extension-image';
-import { Table } from '@tiptap/extension-table';
-import { TableRow } from '@tiptap/extension-table-row';
-import { TableCell } from '@tiptap/extension-table-cell';
-import { TableHeader } from '@tiptap/extension-table-header';
-import Placeholder from '@tiptap/extension-placeholder';
-import TaskList from '@tiptap/extension-task-list';
-import TaskItem from '@tiptap/extension-task-item';
-import Highlight from '@tiptap/extension-highlight';
-import TextAlign from '@tiptap/extension-text-align';
-import Underline from '@tiptap/extension-underline';
-import { EditorToolbar } from './EditorToolbar';
-import { InfoPanelExtension, WarningPanelExtension, NotePanelExtension, ExpandExtension } from './MacroExtensions';
+/**
+ * ConfluenceEditor — Atlaskit-powered knowledge-hub document editor.
+ *
+ * 2026-04-20 — Rewritten from TipTap (@tiptap/*) to @atlaskit/editor-core
+ * + @atlaskit/renderer. Per product directive: Atlaskit is the single
+ * canonical rich-text surface; every editor in the app must route
+ * through it. This also lets us delete the knowledge-hub TipTap macro
+ * extensions (Info / Warning / Note / Expand panels) — all of those
+ * map directly to Atlaskit's first-class `panel` + `expand` nodes.
+ *
+ * Content contract:
+ *   - `content` IN  — ADF JSON string, ADF object, legacy HTML/JSON
+ *     string, plain text, or null. Coerced via
+ *     `parseStoredDescriptionToAdf` (same helper the epic / story
+ *     description surface uses).
+ *   - `onChange` OUT — ADF JSON string, so downstream code writing to
+ *     `kb_documents.content` keeps the same text-column shape it had
+ *     when ConfluenceEditor emitted HTML.
+ *
+ * Read mode (`editable === false`) renders through AtlaskitRenderer for
+ * 1:1 Jira/Confluence visual parity (tables, panels, layout columns,
+ * inline nodes). The previous TipTap prose-class wrapper is gone.
+ */
+import { useCallback, useMemo } from 'react';
+import type { ADFEntity } from '@atlaskit/adf-utils/types';
+import AtlaskitEditor from '@/components/shared/AtlaskitEditor';
+import AtlaskitRenderer from '@/components/shared/AtlaskitRenderer';
+import { parseStoredDescriptionToAdf } from '@/components/shared/rich-text/atlaskit/adfNormalizer';
+import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 
 interface ConfluenceEditorProps {
   content: string;
@@ -22,202 +35,64 @@ interface ConfluenceEditorProps {
   placeholder?: string;
 }
 
-export function ConfluenceEditor({ 
-  content, 
-  onChange, 
+export function ConfluenceEditor({
+  content,
+  onChange,
   editable = true,
-  placeholder = 'Start writing...'
+  placeholder = 'Start writing...',
 }: ConfluenceEditorProps) {
-  // Parse content - can be JSON string, HTML string, or TipTap JSON object
-  const parseContent = (c: string) => {
-    if (!c) return '';
-    try {
-      // Try to parse as JSON first (TipTap format)
-      const parsed = JSON.parse(c);
-      if (parsed && typeof parsed === 'object' && parsed.type === 'doc') {
-        return parsed;
-      }
-    } catch {
-      // Not JSON, treat as HTML
-    }
-    return c;
-  };
+  const doc = useMemo(() => parseStoredDescriptionToAdf(content), [content]);
 
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4, 5, 6],
-        },
-      }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: {
-          class: 'text-brand-primary hover:underline cursor-pointer',
-        },
-      }),
-      Image.configure({
-        HTMLAttributes: {
-          class: 'max-w-full rounded-md',
-        },
-      }),
-      Table.configure({
-        resizable: true,
-        HTMLAttributes: {
-          class: 'border-collapse w-full',
-        },
-      }),
-      TableRow,
-      TableCell.configure({
-        HTMLAttributes: {
-          class: 'border border-border p-2',
-        },
-      }),
-      TableHeader.configure({
-        HTMLAttributes: {
-          class: 'border border-border p-2 bg-muted font-semibold',
-        },
-      }),
-      Placeholder.configure({
-        placeholder,
-      }),
-      TaskList,
-      TaskItem.configure({
-        nested: true,
-      }),
-      Highlight.configure({
-        multicolor: true,
-      }),
-      TextAlign.configure({
-        types: ['heading', 'paragraph'],
-      }),
-    Underline,
-      InfoPanelExtension,
-      WarningPanelExtension,
-      NotePanelExtension,
-      ExpandExtension,
-    ],
-    content: parseContent(content),
-    editable,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+  const handleChange = useCallback(
+    (adf: ADFEntity) => {
+      onChange(JSON.stringify(adf));
     },
-    editorProps: {
-      attributes: {
-        class: 'prose prose-sm sm:prose lg:prose-lg max-w-none focus:outline-none min-h-[300px] p-4',
-      },
-    },
-  });
+    [onChange]
+  );
+
+  if (!editable) {
+    if (isAdfEmpty(doc)) {
+      return (
+        <div
+          className="border rounded-lg bg-card"
+          style={{
+            minHeight: 300,
+            padding: '2rem',
+            color: 'hsl(var(--muted-foreground))',
+            fontSize: 14,
+            lineHeight: 1.6,
+          }}
+        >
+          {placeholder}
+        </div>
+      );
+    }
+    return (
+      <div
+        className="border rounded-lg bg-card"
+        style={{ padding: '1.5rem 2rem', minHeight: 300 }}
+      >
+        <AtlaskitRenderer document={doc} appearance="full-page" />
+      </div>
+    );
+  }
 
   return (
     <div className="border rounded-lg bg-card overflow-hidden">
-      {editable && editor && <EditorToolbar editor={editor} />}
-      <EditorContent editor={editor} className="confluence-editor" />
-      <style>{`
-        .confluence-editor .ProseMirror {
-          min-height: 300px;
-          padding: 1rem;
-        }
-        .confluence-editor .ProseMirror p.is-editor-empty:first-child::before {
-          content: attr(data-placeholder);
-          float: left;
-          color: hsl(var(--muted-foreground));
-          pointer-events: none;
-          height: 0;
-        }
-        .confluence-editor .ProseMirror h1 { font-size: 2em; font-weight: bold; margin: 0.67em 0; }
-        .confluence-editor .ProseMirror h2 { font-size: 1.5em; font-weight: bold; margin: 0.83em 0; }
-        .confluence-editor .ProseMirror h3 { font-size: 1.17em; font-weight: bold; margin: 1em 0; }
-        .confluence-editor .ProseMirror ul, .confluence-editor .ProseMirror ol { padding-left: 1.5em; }
-        .confluence-editor .ProseMirror blockquote { 
-          border-left: 3px solid hsl(var(--brand-primary)); 
-          padding-left: 1em; 
-          margin-left: 0;
-          color: hsl(var(--muted-foreground));
-        }
-        .confluence-editor .ProseMirror code {
-          background: hsl(var(--muted));
-          padding: 0.2em 0.4em;
-          border-radius: 3px;
-          font-size: 0.9em;
-        }
-        .confluence-editor .ProseMirror pre {
-          background: hsl(var(--muted));
-          padding: 1em;
-          border-radius: 6px;
-          overflow-x: auto;
-        }
-        .confluence-editor .ProseMirror pre code {
-          background: none;
-          padding: 0;
-        }
-        .confluence-editor .ProseMirror table {
-          border-collapse: collapse;
-          width: 100%;
-          margin: 1em 0;
-        }
-        .confluence-editor .ProseMirror td, .confluence-editor .ProseMirror th {
-          border: 1px solid hsl(var(--border));
-          padding: 0.5em;
-        }
-        .confluence-editor .ProseMirror th {
-          background: hsl(var(--muted));
-          font-weight: 600;
-        }
-        .confluence-editor .ProseMirror ul[data-type="taskList"] {
-          list-style: none;
-          padding-left: 0;
-        }
-        .confluence-editor .ProseMirror ul[data-type="taskList"] li {
-          display: flex;
-          align-items: flex-start;
-          gap: 0.5em;
-        }
-        .confluence-editor .ProseMirror ul[data-type="taskList"] li > label {
-          flex: 0 0 auto;
-        }
-        /* CLAUDE.md §L38 — hex only. Atlaskit panel palette (information / warning / discovery). */
-        .confluence-editor .info-panel {
-          background: #DEEBFF;          /* Atlaskit blue.subtlest */
-          border-left: 4px solid #0052CC; /* Atlaskit blue.bolder */
-          padding: 1em;
-          margin: 1em 0;
-          border-radius: 0 4px 4px 0;
-        }
-        .confluence-editor .warning-panel {
-          background: #FFFAE5;          /* Atlaskit yellow.subtlest */
-          border-left: 4px solid #FF991F; /* Atlaskit warning.bold */
-          padding: 1em;
-          margin: 1em 0;
-          border-radius: 0 4px 4px 0;
-        }
-        .confluence-editor .note-panel {
-          background: #F3F0FF;          /* Atlaskit purple.subtlest */
-          border-left: 4px solid #5243AA; /* Atlaskit purple.bolder */
-          padding: 1em;
-          margin: 1em 0;
-          border-radius: 0 4px 4px 0;
-        }
-        .confluence-editor .expand-panel {
-          border: 1px solid hsl(var(--border));
-          border-radius: 4px;
-          margin: 1em 0;
-        }
-        .confluence-editor .expand-panel summary {
-          padding: 0.75em 1em;
-          cursor: pointer;
-          background: hsl(var(--muted));
-          font-weight: 500;
-        }
-        .confluence-editor .expand-panel[open] summary {
-          border-bottom: 1px solid hsl(var(--border));
-        }
-        .confluence-editor .expand-panel .expand-content {
-          padding: 1em;
-        }
-      `}</style>
+      <AtlaskitEditor
+        appearance="full-page"
+        defaultValue={doc}
+        placeholder={placeholder}
+        onChange={handleChange}
+        minHeight={300}
+      />
     </div>
   );
 }
 
-export { Editor };
+// Legacy re-export kept for import-path compatibility. The old
+// TipTap-based `Editor` type no longer exists; consumers that imported
+// it never actually used its shape — the name was re-exported as a
+// convenience. Anyone still referring to it will get a TS error and
+// should migrate to @atlaskit/editor-core types directly.
+export type Editor = never;

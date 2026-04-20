@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { MessageSquare, Send, Loader2, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -83,15 +83,6 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
     textarea.focus();
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   const highlightMentions = (content: string) => {
     return content.replace(
       /@(\w+)/g,
@@ -145,11 +136,7 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
                       className="flex items-center gap-2 p-2 rounded cursor-pointer hover:bg-accent"
                       onClick={() => insertMention(user.full_name || user.email || '')}
                     >
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs bg-brand-primary/20 text-brand-primary">
-                          {getInitials(user.full_name || user.email || 'U')}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={user.full_name || user.email || 'U'} size="xsmall" />
                       <span className="text-sm truncate">{user.full_name || user.email}</span>
                     </div>
                   ))}
@@ -177,11 +164,9 @@ export function WorkItemCommentsSection({ entityType, entityId }: WorkItemCommen
           ) : (
             comments.map((comment) => (
               <div key={comment.id} className="flex gap-3 p-3 rounded-lg bg-accent/30">
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarFallback className="text-xs bg-brand-primary/20 text-brand-primary">
-                    {getInitials(comment.user_name || 'U')}
-                  </AvatarFallback>
-                </Avatar>
+                <span className="shrink-0">
+                  <Avatar name={comment.user_name || 'U'} size="small" />
+                </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2">

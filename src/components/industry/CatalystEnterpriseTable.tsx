@@ -2,7 +2,6 @@ import React, { memo, useState, useMemo, useCallback, useRef, useEffect } from '
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { GripVertical, ChevronDown, ChevronUp, Inbox } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { Checkbox } from '@/components/ui/checkbox';
 
 // ============================================================================
@@ -650,7 +649,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
   );
 
   const tableContent = (
-    <TooltipProvider>
+    <>
       {/* Table container - Executive Dark Mode: single subtle outer border only */}
       <div className={cn(
         "rounded-lg border overflow-hidden",
@@ -852,7 +851,7 @@ function CatalystEnterpriseTableInner<T extends { id: string }>({
           </div>
         )}
       </div>
-    </TooltipProvider>
+    </>
   );
 
   // Wrap with DragDropContext if drag-drop is enabled

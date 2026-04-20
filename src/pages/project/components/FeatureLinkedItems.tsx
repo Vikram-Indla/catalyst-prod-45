@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import { LinkTypeSelectorDialog } from './LinkTypeSelectorDialog';
 import { RiskLinkDialog } from './RiskLinkDialog';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import styles from '../FeatureViewPage.module.css';
 
 interface FeatureLinkedItemsProps {
@@ -215,17 +215,14 @@ export function FeatureLinkedItems({ featureId, programId }: FeatureLinkedItemsP
                     </span>
                     <span className={styles.linkedItemId}>RSK-{item.riskNumber}</span>
                     <span className={styles.linkedItemTitle}>{item.riskTitle}</span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button
-                          className={styles.linkedItemAction}
-                          style={{ marginLeft: 'auto', opacity: 0.5, cursor: 'not-allowed' }}
-                          disabled
-                        >
-                          <ExternalLink size={12} />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent>Coming soon</TooltipContent>
+                    <Tooltip content="Coming soon">
+                      <button
+                        className={styles.linkedItemAction}
+                        style={{ marginLeft: 'auto', opacity: 0.5, cursor: 'not-allowed' }}
+                        disabled
+                      >
+                        <ExternalLink size={12} />
+                      </button>
                     </Tooltip>
                   </div>
                 );

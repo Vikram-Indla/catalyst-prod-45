@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { UserPlus, X, Shield, User, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { usePlanTeam, useAddTeamMember, useRemoveTeamMember } from '@/hooks/useTestPlansG26';
@@ -46,7 +45,7 @@ export function TeamTab({ planId }: { planId: string }) {
                 <CardContent className="py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Avatar><AvatarImage src={member.user?.avatar_url || undefined} /><AvatarFallback>{member.user?.full_name?.slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
+                      <Avatar src={member.user?.avatar_url || undefined} name={member.user?.full_name || ''} />
                       <div>
                         <p className="font-medium">{member.user?.full_name}</p>
                         <Lozenge appearance={rc.appearance}>{rc.label}</Lozenge>

@@ -51,22 +51,29 @@ if (typeof document !== 'undefined' && !document.getElementById(CV_TITLE_STYLE_I
       overflow: hidden !important; clip: rect(0, 0, 0, 0) !important;
       white-space: nowrap !important; border: 0 !important;
     }
-    /* Jira-measured title typography — HANDOVER Drawer Phase 3 spec. */
+    /* Jira-measured title typography — re-measured from BAU-5538 on
+       2026-04-20 directly off Atlaskit's h1
+       (data-testid="issue.views.issue-base.foundation.summary.heading").
+       Live Jira emits 24px / 653 weight / 28px line-height / #292A2E /
+       Atlassian Sans. Previous spec (20/1.4) came from a smaller
+       surface in the earlier screenshot batch — superseded. */
     .cv-title-edit-hide-label h1 {
-      font-size: 20px !important;
+      font-size: 24px !important;
       font-weight: 653 !important;
-      line-height: 1.4 !important;
+      line-height: 28px !important;
       color: #292A2E !important;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
       margin: 0 !important;
+      letter-spacing: normal !important;
     }
     /* Match edit-view textfield to the display h1 so swap-in is seamless. */
     .cv-title-edit-hide-label input[type="text"] {
-      font-size: 20px !important;
+      font-size: 24px !important;
       font-weight: 653 !important;
-      line-height: 1.4 !important;
+      line-height: 28px !important;
       color: #292A2E !important;
       font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif !important;
+      letter-spacing: normal !important;
     }
   `;
   document.head.appendChild(s);
@@ -95,10 +102,11 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
           defaultValue={summary}
           label="Issue title"
           readView={() => (
-            // size="medium" → 20px natively (matches HANDOVER Phase 3 spec).
-            // Scoped CSS above locks the weight/color/family to the Jira-
-            // measured values (653 / #292A2E / Atlassian Sans).
-            <Heading size="medium" as="h1">
+            // size="large" → 24px/28px natively — matches BAU-5538 Jira
+            // measurement (2026-04-20). Scoped CSS above locks weight/
+            // color/family to the Jira-measured values (653/#292A2E/
+            // Atlassian Sans).
+            <Heading size="large" as="h1">
               {summary || '—'}
             </Heading>
           )}

@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import type { TrendCode } from '../lib/okrTypes';
 
 interface TrendIconProps {
@@ -41,15 +41,8 @@ export function TrendIcon({ trend, variance, size = 'sm' }: TrendIconProps) {
     : '';
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Icon className={`${iconSize} ${config.colorClass} flex-shrink-0`} />
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <p>{config.label}{varianceText && ` (${varianceText})`}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip position="top" content={`${config.label}${varianceText ? ` (${varianceText})` : ''}`}>
+      <Icon className={`${iconSize} ${config.colorClass} flex-shrink-0`} />
+    </Tooltip>
   );
 }

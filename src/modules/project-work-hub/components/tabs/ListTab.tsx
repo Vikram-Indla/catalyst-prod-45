@@ -3,7 +3,7 @@ import { Search, Filter, ChevronDown, ChevronRight, MessageSquare, Settings2 } f
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,8 +56,6 @@ export const ListTab: React.FC<ListTabProps> = ({ projectId, onItemClick, onFilt
   // Get unique assignees for avatar group
   const assignees = [...new Map(flatData?.filter(i => i.assigneeAvatar).map(i => [i.assigneeName, i]) || []).values()].slice(0, 4);
 
-  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
-
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Top Control Bar */}
@@ -79,10 +77,9 @@ export const ListTab: React.FC<ListTabProps> = ({ projectId, onItemClick, onFilt
           {/* Assignee Avatars */}
           <div className="flex items-center -space-x-2">
             {assignees.map((item) => (
-              <Avatar key={item.assigneeName} className="h-6 w-6 border-2 border-background">
-                <AvatarImage src={item.assigneeAvatar} alt={item.assigneeName} />
-                <AvatarFallback className="text-[10px]">{getInitials(item.assigneeName || '')}</AvatarFallback>
-              </Avatar>
+              <span key={item.assigneeName} className="border-2 border-background rounded-full">
+                <Avatar src={item.assigneeAvatar} name={item.assigneeName || ''} size="xsmall" />
+              </span>
             ))}
             {flatData && flatData.length > 4 && (
               <span className="ml-2 text-xs text-muted-foreground">+6</span>
@@ -185,8 +182,6 @@ const HierarchyRow: React.FC<{
 }> = ({ item, level, expandedRows, selectedRows, onToggle, onSelect, onClick }) => {
   const isExpanded = expandedRows.has(item.id);
   const isSelected = selectedRows.has(item.id);
-  
-  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
 
   return (
     <>
@@ -229,10 +224,7 @@ const HierarchyRow: React.FC<{
         <td className="p-2">
           {item.assigneeName && (
             <div className="flex items-center gap-2">
-              <Avatar className="h-5 w-5">
-                <AvatarImage src={item.assigneeAvatar} alt={item.assigneeName} />
-                <AvatarFallback className="text-[9px]">{getInitials(item.assigneeName)}</AvatarFallback>
-              </Avatar>
+              <Avatar src={item.assigneeAvatar} name={item.assigneeName} size="xxsmall" />
               <span className="text-sm text-foreground truncate">{item.assigneeName}</span>
             </div>
           )}
@@ -273,8 +265,6 @@ const FlatRow: React.FC<{
   onSelect: () => void;
   onClick: () => void;
 }> = ({ item, selected, onSelect, onClick }) => {
-  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
-  
   return (
     <tr 
       className="border-b border-border hover:bg-muted/50 cursor-pointer"
@@ -302,10 +292,7 @@ const FlatRow: React.FC<{
       <td className="p-2">
         {item.assigneeName && (
           <div className="flex items-center gap-2">
-            <Avatar className="h-5 w-5">
-              <AvatarImage src={item.assigneeAvatar} alt={item.assigneeName} />
-              <AvatarFallback className="text-[9px]">{getInitials(item.assigneeName)}</AvatarFallback>
-            </Avatar>
+            <Avatar src={item.assigneeAvatar} name={item.assigneeName} size="xxsmall" />
             <span className="text-sm">{item.assigneeName}</span>
           </div>
         )}

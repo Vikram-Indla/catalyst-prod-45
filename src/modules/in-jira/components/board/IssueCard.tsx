@@ -3,8 +3,7 @@
  */
 
 import React, { memo } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import type { BoardIssue } from '../../hooks/useBoardData';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -73,12 +72,7 @@ export const IssueCard = memo(function IssueCard({
         </div>
         
         {issue.assigneeId && (
-          <Avatar className="w-6 h-6">
-            <AvatarImage src="" />
-            <AvatarFallback className="text-xs">
-              {issue.assigneeId.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar name={issue.assigneeId} size="xsmall" />
         )}
       </div>
     </div>

@@ -8,10 +8,9 @@ import {
   UserPlus, Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Select,
   SelectContent,
@@ -525,11 +524,7 @@ export default function IncidentViewPage() {
           <div className="bg-card border border-border rounded-lg p-4">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide block mb-2">Assignee</label>
             <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-xs bg-brand-primary/10 text-brand-primary">
-                  {incident.assignee?.avatar_initials || incident.assignee?.full_name?.slice(0, 2).toUpperCase() || 'UN'}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={incident.assignee?.full_name || 'Unassigned'} size="small" />
               <span className="text-sm font-medium text-foreground">
                 {incident.assignee?.full_name || 'Unassigned'}
               </span>
@@ -572,11 +567,7 @@ export default function IncidentViewPage() {
                 <ul className="space-y-2">
                   {approvers.map((member) => (
                     <li key={member.id} className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="text-xs bg-muted">
-                          {member.user?.avatar_initials || member.user?.full_name?.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={member.user?.full_name || 'Unknown'} size="small" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="text-sm font-medium text-foreground truncate">{member.user?.full_name}</span>

@@ -12,8 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { getStatusLabel } from '@/types/approval';
 
@@ -118,12 +117,6 @@ export function AddApproverModal({
               </p>
             ) : (
               filteredUsers.map(user => {
-                const initials = user.full_name
-                  ?.split(' ')
-                  .map(n => n[0])
-                  .join('')
-                  .toUpperCase() || '??';
-                  
                 return (
                   <label
                     key={user.id}
@@ -139,18 +132,15 @@ export function AddApproverModal({
                       className="sr-only"
                     />
                     <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                      selectedUserId === user.id 
-                        ? 'border-primary bg-primary' 
+                      selectedUserId === user.id
+                        ? 'border-primary bg-primary'
                         : 'border-muted-foreground'
                     }`}>
                       {selectedUserId === user.id && (
                         <div className="w-1.5 h-1.5 rounded-full bg-white" />
                       )}
                     </div>
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar_url} />
-                      <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-                    </Avatar>
+                    <Avatar src={user.avatar_url || undefined} name={user.full_name || ''} size="small" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate">{user.full_name}</p>
                       {user.role && (

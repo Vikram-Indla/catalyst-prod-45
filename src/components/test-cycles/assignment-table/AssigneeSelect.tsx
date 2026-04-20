@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import { ChevronDown, Search, UserMinus, Check } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -38,14 +38,7 @@ export function AssigneeSelect({ value, assigneeName, teamMembers, onChange }: A
         <button className="flex items-center gap-2 group text-left">
           {value && assigneeName ? (
             <>
-              <Avatar className="h-6 w-6">
-                <AvatarFallback 
-                  className="text-[10px] text-white"
-                  style={{ backgroundColor: CATALYST_V5.primary }}
-                >
-                  {assigneeName.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={assigneeName} size="xsmall" />
               <span className="text-sm" style={{ color: CATALYST_V5.slate[700] }}>
                 {assigneeName}
               </span>
@@ -111,18 +104,7 @@ export function AssigneeSelect({ value, assigneeName, teamMembers, onChange }: A
                 value === member.id && "bg-slate-50"
               )}
             >
-              <Avatar className="h-5 w-5">
-                {member.avatar ? (
-                  <AvatarImage src={member.avatar} />
-                ) : (
-                  <AvatarFallback 
-                    className="text-[9px] text-white"
-                    style={{ backgroundColor: CATALYST_V5.primary }}
-                  >
-                    {member.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                )}
-              </Avatar>
+              <Avatar src={member.avatar} name={member.name} size="xxsmall" />
               <span className="flex-1 text-left" style={{ color: CATALYST_V5.slate[700] }}>
                 {member.name}
               </span>

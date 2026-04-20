@@ -21,7 +21,7 @@ import {
   STATUS_OPTIONS,
   Owner,
 } from './types';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 function getCurrentQuarterDates(): { start: Date; end: Date } {
   const now = new Date();
@@ -290,16 +290,9 @@ export function WorkbenchFiltersDialog({
               <label htmlFor="hasDependencies" className="text-sm cursor-pointer text-muted-foreground">
                 Has Dependencies
               </label>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-3.5 w-3.5 text-muted-foreground" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Coming soon - dependency model integration</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip content={<p>Coming soon - dependency model integration</p>}>
+                <Info className="h-3.5 w-3.5 text-muted-foreground" />
+              </Tooltip>
             </div>
           </div>
         </div>

@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { X, Save, FileText, Layers, User, FolderTree, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -55,15 +55,6 @@ const getInitialFormData = (defaultEpicId?: string, defaultProjectId?: string): 
   projectId: defaultProjectId || '',
   projectName: '',
 });
-
-// Generate initials from a full name
-function getInitials(name?: string | null): string {
-  if (!name) return '?';
-  const parts = name.trim().split(' ').filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-}
 
 // Section header component
 function SectionHeader({ 
@@ -500,14 +491,7 @@ export function CreateFeatureModal({
                   <SelectValue placeholder={usersLoading ? "Loading..." : "Select assignee"}>
                     {selectedAssignee && (
                       <div className="flex items-center gap-2">
-                        <Avatar className="w-5 h-5">
-                          {selectedAssignee.avatar_url && (
-                            <AvatarImage src={selectedAssignee.avatar_url} />
-                          )}
-                          <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-blue-600 to-blue-700 text-white">
-                            {getInitials(selectedAssignee.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar src={selectedAssignee.avatar_url || undefined} name={selectedAssignee.full_name || ''} size="xxsmall" />
                         <span>{selectedAssignee.full_name}</span>
                       </div>
                     )}
@@ -521,12 +505,7 @@ export function CreateFeatureModal({
                       className="cursor-pointer hover:bg-muted focus:bg-muted"
                     >
                       <div className="flex items-center gap-2">
-                        <Avatar className="w-5 h-5">
-                          {user.avatar_url && <AvatarImage src={user.avatar_url} />}
-                          <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-blue-600 to-blue-700 text-white">
-                            {getInitials(user.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar src={user.avatar_url || undefined} name={user.full_name || ''} size="xxsmall" />
                         <span>{user.full_name}</span>
                       </div>
                     </SelectItem>

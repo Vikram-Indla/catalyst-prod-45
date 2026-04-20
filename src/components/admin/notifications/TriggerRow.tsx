@@ -7,14 +7,8 @@
 
 import { memo } from 'react';
 import { Shield, Users, Eye } from 'lucide-react';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import type { TriggerRowData, ChannelsConfig } from '@/types/notification-triggers';
 
 // ── Hub labels ──────────────────────────────────────────────────
@@ -101,47 +95,39 @@ export const TriggerRow = memo(function TriggerRow({
 
       {/* ── Trigger Name + Indicators ────────────────────────────── */}
       <div className="min-w-0 flex items-center gap-1.5">
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                className="flex items-center gap-1.5 min-w-0 text-left"
-                onClick={onOpenRecipients}
-              >
-                <span className="text-xs font-medium text-[#0F172A] truncate leading-none">
-                  {displayName}
+        <Tooltip
+          delay={200}
+          position="top-start"
+          content={
+            <div className="space-y-1.5">
+              <p className="text-xs font-semibold text-foreground">{displayName}</p>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{description}</p>
+              <div className="flex items-center gap-2 pt-1 border-t">
+                <span className="text-[10px] font-mono text-muted-foreground">
+                  {triggerKey}
                 </span>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" align="start" className="max-w-xs">
-              <div className="space-y-1.5">
-                <p className="text-xs font-semibold text-foreground">{displayName}</p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">{description}</p>
-                <div className="flex items-center gap-2 pt-1 border-t">
-                  <span className="text-[10px] font-mono text-muted-foreground">
-                    {triggerKey}
-                  </span>
-                  <Lozenge appearance="default">
-                    {TAB_LABELS[tab] || tab}
-                  </Lozenge>
-                </div>
+                <Lozenge appearance="default">
+                  {TAB_LABELS[tab] || tab}
+                </Lozenge>
               </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </div>
+          }
+        >
+          <button
+            className="flex items-center gap-1.5 min-w-0 text-left"
+            onClick={onOpenRecipients}
+          >
+            <span className="text-xs font-medium text-[#0F172A] truncate leading-none">
+              {displayName}
+            </span>
+          </button>
+        </Tooltip>
 
         {/* Mandatory lock */}
         {isMandatory && (
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Mandatory — cannot be disabled by users
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip delay={200} content="Mandatory — cannot be disabled by users">
+            <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
+          </Tooltip>
         )}
 
         {/* Silent badge */}
@@ -153,16 +139,9 @@ export const TriggerRow = memo(function TriggerRow({
 
         {/* Override indicator dot */}
         {isOverridden && !isMandatory && !isSilent && (
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Overridden from defaults
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip delay={200} content="Overridden from defaults">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
+          </Tooltip>
         )}
 
         {/* Recipients button (visible on hover) */}

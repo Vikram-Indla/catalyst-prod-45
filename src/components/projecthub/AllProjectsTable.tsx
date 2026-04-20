@@ -15,9 +15,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Tooltip } from '@/components/ads';
 import { IssueBreakdownPopover } from './IssueBreakdownPopover';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -26,13 +25,6 @@ function getBadgeColor(id: string): string {
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = ((hash << 5) - hash) + id.charCodeAt(i);
   return BADGE_COLORS[Math.abs(hash) % BADGE_COLORS.length];
-}
-
-function getInitials(name: string | null | undefined): string {
-  if (!name) return '??';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  return name.substring(0, 2).toUpperCase();
 }
 
 function isActiveStatus(status: string): boolean {
@@ -193,12 +185,9 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
     <div className="flex items-center gap-2 group/lead overflow-hidden">
       {displayLead.name ? (
         <>
-          <Avatar className="w-6 h-6 flex-shrink-0">
-            {displayLead.avatar_url && <AvatarImage src={displayLead.avatar_url} alt={displayLead.name || ''} />}
-            <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(displayLead.id || '') }}>
-              {getInitials(displayLead.name)}
-            </AvatarFallback>
-          </Avatar>
+          <span className="flex-shrink-0">
+            <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="xsmall" />
+          </span>
           <span className="text-[13px] font-medium truncate text-slate-600 dark:text-[#A1A1A1]" title={displayLead.name || ''}>
             {(displayLead.name || '').split(' ').slice(0, 2).join(' ')}
           </span>
@@ -237,12 +226,7 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
                 onClick={() => handleLeadChange(p.id)}
                 className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-white/5 w-full text-left bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
               >
-                <Avatar className="w-6 h-6">
-                  {p.avatar_url && <AvatarImage src={p.avatar_url} alt={p.display_name} />}
-                  <AvatarFallback className="text-[10px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
-                    {getInitials(p.display_name)}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
                 <div className="min-w-0">
                   <div className="text-[13px] font-medium truncate text-slate-900 dark:text-white">{p.display_name}</div>
                   <div className="text-[11px] truncate text-slate-500 dark:text-[#A1A1A1]">{formatRole(p.role || 'Team Member')}</div>
@@ -342,12 +326,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
                   onClick={() => handleAdd(p.id)}
                   className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-white/5 w-full text-left bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
                 >
-                  <Avatar className="w-5 h-5">
-                    {p.avatar_url && <AvatarImage src={p.avatar_url} alt={p.display_name} />}
-                    <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(p.id) }}>
-                      {getInitials(p.display_name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xxsmall" />
                   <span className="text-[13px] truncate text-slate-900 dark:text-white">{p.display_name}</span>
                   <span className="ml-auto text-blue-600 text-xs font-bold">+</span>
                 </button>
@@ -365,12 +344,7 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
             <div className="max-h-40 overflow-y-auto space-y-0.5 mb-2">
               {members.map(m => (
                 <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-white/5">
-                  <Avatar className="w-5 h-5">
-                    {m.avatar_url && <AvatarImage src={m.avatar_url} alt={m.display_name} />}
-                    <AvatarFallback className="text-[9px] font-bold text-white" style={{ background: getBadgeColor(m.id) }}>
-                      {getInitials(m.display_name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar src={m.avatar_url || undefined} name={m.display_name || '??'} size="xxsmall" />
                   <span className="text-[13px] truncate flex-1 text-slate-900 dark:text-white">{m.display_name}</span>
                   {m.id === project.lead_id && (
                     <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-[rgba(37,99,235,0.12)] px-1.5 py-0.5 rounded">Lead</span>
@@ -576,7 +550,7 @@ export function AllProjectsTable({
       case 'sync': return (
         <td key={colKey}>
           <div className="flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-[#A1A1A1]">
-            <Tooltip><TooltipTrigger asChild><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></TooltipTrigger><TooltipContent side="top" className="text-xs whitespace-pre-line max-w-[220px]">{syncTooltipText}</TooltipContent></Tooltip>
+            <Tooltip content={syncTooltipText} position="top"><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></Tooltip>
             <span className="font-medium">{syncAge ? `${issueCount} issues, ${syncAge} ago` : 'Not synced'}</span>
           </div>
         </td>
@@ -584,10 +558,10 @@ export function AllProjectsTable({
       case 'backlogs': return (
         <td key={colKey}>
           <div className="flex items-center justify-center gap-2.5" style={{ pointerEvents: 'auto' }}>
-            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/story-backlog`); }}><JiraIssueTypeIcon type="story" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Story Backlog</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/epic-backlog`); }}><JiraIssueTypeIcon type="epic" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Epic Backlog</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/feature-backlog`); }}><JiraIssueTypeIcon type="feature" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Feature Backlog</TooltipContent></Tooltip>
-            <Tooltip><TooltipTrigger asChild><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/board`); }}><JiraIssueTypeIcon type="task" size={18} /></span></TooltipTrigger><TooltipContent side="top" className="text-xs font-medium">Go to Work Items Board</TooltipContent></Tooltip>
+            <Tooltip content="Go to Story Backlog" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/story-backlog`); }}><JiraIssueTypeIcon type="story" size={18} /></span></Tooltip>
+            <Tooltip content="Go to Epic Backlog" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/epic-backlog`); }}><JiraIssueTypeIcon type="epic" size={18} /></span></Tooltip>
+            <Tooltip content="Go to Feature Backlog" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/feature-backlog`); }}><JiraIssueTypeIcon type="feature" size={18} /></span></Tooltip>
+            <Tooltip content="Go to Work Items Board" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/board`); }}><JiraIssueTypeIcon type="task" size={18} /></span></Tooltip>
           </div>
         </td>
       );

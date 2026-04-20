@@ -16,11 +16,7 @@ import {
   MoreHorizontal,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -131,29 +127,32 @@ export function QuickActionsBar({
       )}
     >
       {actions.map((action) => (
-        <Tooltip key={action.label}>
-          <TooltipTrigger asChild>
-            <Button
-              variant={action.primary ? "default" : "ghost"}
-              size="sm"
-              onClick={action.onClick}
-              className={cn(
-                "h-9 gap-2 rounded-full",
-                action.primary && "bg-teal-600 hover:bg-teal-700 text-white"
+        <Tooltip
+          key={action.label}
+          position="top"
+          content={
+            <>
+              {action.label}
+              {action.shortcut && (
+                <kbd className="ml-2 bg-muted/50 px-1 rounded text-[10px]">
+                  {action.shortcut}
+                </kbd>
               )}
-            >
-              <action.icon className="w-4 h-4" />
-              {action.primary && <span className="hidden sm:inline">{action.label}</span>}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            {action.label}
-            {action.shortcut && (
-              <kbd className="ml-2 bg-muted/50 px-1 rounded text-[10px]">
-                {action.shortcut}
-              </kbd>
+            </>
+          }
+        >
+          <Button
+            variant={action.primary ? "default" : "ghost"}
+            size="sm"
+            onClick={action.onClick}
+            className={cn(
+              "h-9 gap-2 rounded-full",
+              action.primary && "bg-teal-600 hover:bg-teal-700 text-white"
             )}
-          </TooltipContent>
+          >
+            <action.icon className="w-4 h-4" />
+            {action.primary && <span className="hidden sm:inline">{action.label}</span>}
+          </Button>
         </Tooltip>
       ))}
 

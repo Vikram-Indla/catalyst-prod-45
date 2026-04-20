@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   Select,
   SelectContent,
@@ -57,12 +57,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
   useTestPlans,
   useDeleteTestPlan,
@@ -527,12 +521,7 @@ export default function TestPlansPage() {
                     <TableCell>
                       {plan.owner ? (
                         <div className="flex items-center gap-2">
-                          <Avatar className="h-6 w-6">
-                            <AvatarImage src={plan.owner.avatar_url} />
-                            <AvatarFallback className="text-xs">
-                              {(plan.owner.full_name || 'U').charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
+                          <Avatar src={plan.owner.avatar_url} name={plan.owner.full_name || 'U'} size="xsmall" />
                           <span className="text-sm truncate max-w-[80px]">
                             {plan.owner.full_name?.split(' ')[0]}
                           </span>
@@ -629,12 +618,7 @@ export default function TestPlansPage() {
                   <div className="flex items-center justify-between pt-2 border-t">
                     {plan.owner ? (
                       <div className="flex items-center gap-2">
-                        <Avatar className="h-6 w-6">
-                          <AvatarImage src={plan.owner.avatar_url} />
-                          <AvatarFallback className="text-xs">
-                            {(plan.owner.full_name || 'U').charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar src={plan.owner.avatar_url} name={plan.owner.full_name || 'U'} size="xsmall" />
                         <span className="text-sm text-muted-foreground">
                           {plan.owner.full_name}
                         </span>

@@ -2,7 +2,7 @@ import { ArrowRight, AlertTriangle, HelpCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { ImportModuleConfig, isLookupField } from '@/lib/import/importModuleConfig';
 import { cn } from '@/lib/utils';
 
@@ -44,7 +44,6 @@ export function ImportStepFieldMapping({
     .find(f => !Array.from(fieldMappings.values()).includes(f.key));
   
   return (
-    <TooltipProvider>
       <div className="space-y-6">
         <div>
           <h2 className="text-lg font-semibold text-foreground mb-1">Map fields</h2>
@@ -76,13 +75,8 @@ export function ImportStepFieldMapping({
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide text-center">
               <div className="flex items-center justify-center gap-1">
                 <span>Map Value</span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[240px] text-xs bg-popover text-popover-foreground border shadow-md z-50">
-                    <p>Only available for lookup fields (Status, Process Step, Delivery Platform, etc.)</p>
-                  </TooltipContent>
+                <Tooltip content="Only available for lookup fields (Status, Process Step, Delivery Platform, etc.)">
+                  <HelpCircle className="h-3 w-3 text-muted-foreground cursor-help" />
                 </Tooltip>
               </div>
             </div>
@@ -168,30 +162,25 @@ export function ImportStepFieldMapping({
                   
                   {/* Value Mapping Checkbox with Tooltip */}
                   <div className="flex justify-center">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="inline-flex items-center justify-center">
-                          <Checkbox
-                            id={`map-value-${header}`}
-                            checked={hasValueMapping}
-                            onCheckedChange={(checked) => {
-                              if (!checkboxDisabled) {
-                                onValueMappingToggle(header, checked === true);
-                              }
-                            }}
-                            disabled={checkboxDisabled}
-                            className={cn(
-                              "h-5 w-5 border-2 transition-all",
-                              checkboxDisabled 
-                                ? "opacity-40 cursor-not-allowed border-muted-foreground/30 bg-muted/50" 
-                                : "cursor-pointer border-brand-primary hover:border-brand-primary-hover data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
-                            )}
-                          />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="left" className="max-w-[280px] text-xs bg-popover text-popover-foreground border shadow-md z-50">
-                        <p>{tooltipMessage}</p>
-                      </TooltipContent>
+                    <Tooltip position="left" content={tooltipMessage}>
+                      <div className="inline-flex items-center justify-center">
+                        <Checkbox
+                          id={`map-value-${header}`}
+                          checked={hasValueMapping}
+                          onCheckedChange={(checked) => {
+                            if (!checkboxDisabled) {
+                              onValueMappingToggle(header, checked === true);
+                            }
+                          }}
+                          disabled={checkboxDisabled}
+                          className={cn(
+                            "h-5 w-5 border-2 transition-all",
+                            checkboxDisabled
+                              ? "opacity-40 cursor-not-allowed border-muted-foreground/30 bg-muted/50"
+                              : "cursor-pointer border-brand-primary hover:border-brand-primary-hover data-[state=checked]:bg-brand-primary data-[state=checked]:border-brand-primary"
+                          )}
+                        />
+                      </div>
                     </Tooltip>
                   </div>
                 </div>
@@ -211,6 +200,5 @@ export function ImportStepFieldMapping({
           </span>
         </div>
       </div>
-    </TooltipProvider>
   );
 }

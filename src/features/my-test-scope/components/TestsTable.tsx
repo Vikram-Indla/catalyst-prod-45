@@ -5,12 +5,11 @@
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { Play, RotateCcw, ExternalLink, ArrowUpDown, Check, X, Ban, Unlock, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PriorityScoreBadge } from './PriorityScoreBadge';
 import { formatDueDate } from '../utils/priorityScore';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Dialog,
   DialogContent,
@@ -214,63 +213,51 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                   <td className="py-3 px-4">
                     <div className="flex items-center justify-center gap-0.5">
                       {test.status === 'blocked' ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                              onClick={() => onUnblock?.(test.scopeId)}
-                            >
-                              <Unlock className="h-3.5 w-3.5" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Unblock</TooltipContent>
+                        <Tooltip content="Unblock">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                            onClick={() => onUnblock?.(test.scopeId)}
+                          >
+                            <Unlock className="h-3.5 w-3.5" />
+                          </Button>
                         </Tooltip>
                       ) : (
                         <>
                           {test.status !== 'passed' && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-success hover:text-success hover:bg-success/10"
-                                  onClick={() => onQuickPass?.(test.scopeId)}
-                                >
-                                  <Check className="h-3.5 w-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Quick Pass</TooltipContent>
-                            </Tooltip>
-                          )}
-                          {test.status !== 'failed' && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                  onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'fail' })}
-                                >
-                                  <X className="h-3.5 w-3.5" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Quick Fail</TooltipContent>
-                            </Tooltip>
-                          )}
-                          <Tooltip>
-                            <TooltipTrigger asChild>
+                            <Tooltip content="Quick Pass">
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-7 w-7 text-warning hover:text-warning hover:bg-warning/10"
-                                onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'block' })}
+                                className="h-7 w-7 text-success hover:text-success hover:bg-success/10"
+                                onClick={() => onQuickPass?.(test.scopeId)}
                               >
-                                <Ban className="h-3.5 w-3.5" />
+                                <Check className="h-3.5 w-3.5" />
                               </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Block</TooltipContent>
+                            </Tooltip>
+                          )}
+                          {test.status !== 'failed' && (
+                            <Tooltip content="Quick Fail">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'fail' })}
+                              >
+                                <X className="h-3.5 w-3.5" />
+                              </Button>
+                            </Tooltip>
+                          )}
+                          <Tooltip content="Block">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-warning hover:text-warning hover:bg-warning/10"
+                              onClick={() => setReasonModal({ scopeId: test.scopeId, type: 'block' })}
+                            >
+                              <Ban className="h-3.5 w-3.5" />
+                            </Button>
                           </Tooltip>
                         </>
                       )}

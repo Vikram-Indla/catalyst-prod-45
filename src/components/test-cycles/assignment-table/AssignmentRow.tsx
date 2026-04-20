@@ -9,7 +9,7 @@ import {
   Bot, User, Settings, ExternalLink
 } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,12 +18,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { CATALYST_V5, TEST_STATUS_COLORS, TEST_PRIORITY_COLORS } from '@/lib/catalyst-colors';
 import { StatusSelect } from './StatusSelect';
@@ -115,18 +109,11 @@ export function AssignmentRow({
       {/* Title */}
       {visibleColumns.includes('title') && (
         <td className={cn(cellClass, "max-w-[300px]")}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="block truncate text-foreground">
-                  {assignment.title}
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-md">
-                {assignment.title}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip position="top" content={<span className="max-w-md">{assignment.title}</span>}>
+            <span className="block truncate text-foreground">
+              {assignment.title}
+            </span>
+          </Tooltip>
         </td>
       )}
 
@@ -217,19 +204,12 @@ export function AssignmentRow({
       {/* Automation */}
       {visibleColumns.includes('automation') && (
         <td className={cellClass}>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <AutoIcon 
-                  className="h-4 w-4" 
-                  style={{ color: automationConfig.color }} 
-                />
-              </TooltipTrigger>
-              <TooltipContent>
-                {assignment.automationStatus.charAt(0).toUpperCase() + assignment.automationStatus.slice(1)}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={assignment.automationStatus.charAt(0).toUpperCase() + assignment.automationStatus.slice(1)}>
+            <AutoIcon
+              className="h-4 w-4"
+              style={{ color: automationConfig.color }}
+            />
+          </Tooltip>
         </td>
       )}
 

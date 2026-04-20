@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { TestCase } from '@/types/release-dashboard';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -158,11 +157,7 @@ export function TestExecutionTable({ tests, onTestClick }: TestExecutionTablePro
                 <td className="px-3.5 py-3">
                   {test.assigneeId ? (
                     <div className="flex items-center gap-2">
-                      <Avatar className="w-6 h-6">
-                        <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
-                          {test.assigneeId.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={test.assigneeId} size="xsmall" />
                       <span className="text-xs text-muted-foreground truncate max-w-[60px]">
                         {test.assigneeId}
                       </span>

@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { Users, Pencil, Trash2, Settings2, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import {
   CATALYST,
@@ -132,32 +132,27 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         return (
           <div className="flex items-center gap-3">
             {/* Avatar with flag overlay and country tooltip */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="relative flex-shrink-0 cursor-pointer">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ${avatarBgClass}`}
-                  >
-                    {initials}
-                  </div>
-                  {/* Flag overlay */}
-                  {flagUrl && (
-                    <span
-                      className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
-                      style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
-                    >
-                      <img
-                        src={flagUrl}
-                        alt={countryName || ''}
-                        className="w-3.5 h-3.5 object-cover rounded-sm"
-                      />
-                    </span>
-                  )}
+            <Tooltip position="top" content={countryName || 'Unknown Country'}>
+              <div className="relative flex-shrink-0 cursor-pointer">
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-[13px] font-bold text-white ${avatarBgClass}`}
+                >
+                  {initials}
                 </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="bg-slate-900 text-white text-xs font-medium px-2.5 py-1.5">
-                {countryName || 'Unknown Country'}
-              </TooltipContent>
+                {/* Flag overlay */}
+                {flagUrl && (
+                  <span
+                    className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm"
+                    style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.15)' }}
+                  >
+                    <img
+                      src={flagUrl}
+                      alt={countryName || ''}
+                      className="w-3.5 h-3.5 object-cover rounded-sm"
+                    />
+                  </span>
+                )}
+              </div>
             </Tooltip>
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
@@ -356,18 +351,13 @@ export function TableView({ resources, projects, groupBy, groupedByAssignment, g
         };
 
         return (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span
-                className="text-[13px] font-semibold cursor-help"
-                style={{ color: textColors[status] }}
-              >
-                {formatted}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="font-medium">
-              {tooltipText}
-            </TooltipContent>
+          <Tooltip position="top" content={tooltipText}>
+            <span
+              className="text-[13px] font-semibold cursor-help"
+              style={{ color: textColors[status] }}
+            >
+              {formatted}
+            </span>
           </Tooltip>
         );
       },

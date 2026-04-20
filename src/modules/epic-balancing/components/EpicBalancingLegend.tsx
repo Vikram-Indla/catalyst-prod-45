@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { 
+import { Tooltip } from '@/components/ads';
+import {
   PriorityToExecute,
   EpicBalancingEpic,
 } from '../types';
@@ -41,28 +41,21 @@ export function EpicBalancingLegend({
         <h3 className="text-sm font-semibold text-foreground mb-3">Top 5 Epics</h3>
         <div className="space-y-1">
           {top5Epics.length > 0 ? (
-            <TooltipProvider>
-              {top5Epics.map((epic, index) => (
-              <Tooltip key={epic.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      onClick={() => onEpicClick?.(epic)}
-                      className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
-                    >
-                      <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
-                      <span className="text-sm font-medium whitespace-nowrap">
-                        <span className="text-brand-primary">{epic.key}</span>
-                        <span className="text-muted-foreground"> - </span>
-                        <span className="text-secondary-green">{epic.plannedQuarter}</span>
-                      </span>
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="left" className="max-w-xs">
-                    <p>{epic.name}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
-            </TooltipProvider>
+            top5Epics.map((epic, index) => (
+              <Tooltip key={epic.id} position="left" content={epic.name}>
+                <button
+                  onClick={() => onEpicClick?.(epic)}
+                  className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
+                >
+                  <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
+                  <span className="text-sm font-medium whitespace-nowrap">
+                    <span className="text-brand-primary">{epic.key}</span>
+                    <span className="text-muted-foreground"> - </span>
+                    <span className="text-secondary-green">{epic.plannedQuarter}</span>
+                  </span>
+                </button>
+              </Tooltip>
+            ))
           ) : (
             <p className="text-xs text-muted-foreground px-2">No scored epics</p>
           )}

@@ -9,7 +9,7 @@ import { supabase, typedQuery } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast as showToast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ads";
 import { formatDistanceToNow } from "date-fns";
 
 interface QuickActionsPanelProps {
@@ -359,9 +359,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
               <div className="space-y-4">
                 {comments?.map((comment) => (
                   <div key={comment.id} className="flex gap-[var(--s3)] px-[var(--s3)] py-[var(--s3)] border rounded-lg">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>U</AvatarFallback>
-                    </Avatar>
+                    <Avatar name="User" size="small" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-[var(--s2)] mb-1">
                         <p className="text-sm font-medium">User</p>

@@ -3,8 +3,8 @@ import DOMPurify from 'dompurify';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Send, MessageSquare, Bot } from 'lucide-react';
+import { Avatar } from '@/components/ads';
+import { Send, MessageSquare } from 'lucide-react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 import { format } from 'date-fns';
@@ -103,16 +103,6 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
     }
   };
 
-  const getInitials = (name: string | null | undefined, email: string | null | undefined) => {
-    if (name) {
-      return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    }
-    if (email) {
-      return email.slice(0, 2).toUpperCase();
-    }
-    return 'U';
-  };
-
   // Format message to display mentions nicely and support markdown-like formatting
   const formatMessage = (message: string) => {
     // Handle bold text with **
@@ -143,10 +133,9 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
             discussions.map((discussion: any) => {
               const isSystemUser = discussion.user_id === SYSTEM_USER_ID;
               const profile = profilesMap[discussion.user_id];
-              const displayName = isSystemUser 
-                ? 'External Submission' 
+              const displayName = isSystemUser
+                ? 'External Submission'
                 : (profile?.full_name || profile?.email || 'Unknown User');
-              const initials = isSystemUser ? 'EX' : getInitials(profile?.full_name, profile?.email);
 
               return (
                 <div 
@@ -157,17 +146,7 @@ export function DiscussionsViewTab({ data }: DiscussionsViewTabProps) {
                       : 'bg-muted/30 border-border'
                   }`}
                 >
-                  <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarFallback 
-                      className={`text-xs ${
-                        isSystemUser 
-                          ? 'bg-amber-100 dark:bg-amber-800/30 text-amber-700 dark:text-amber-400' 
-                          : 'bg-[#2563eb]/20 text-[#2563eb]'
-                      }`}
-                    >
-                      {isSystemUser ? <Bot className="h-4 w-4" /> : initials}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={displayName} size="small" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`text-sm font-medium ${

@@ -23,7 +23,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 
 interface BulkReassignDialogProps {
@@ -69,11 +69,6 @@ export function BulkReassignDialog({
     }
   };
 
-  const getInitials = (name: string | null) => {
-    if (!name) return '?';
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -95,12 +90,11 @@ export function BulkReassignDialog({
                 {teamMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id}>
                     <div className="flex items-center gap-2">
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={member.avatar_url || undefined} />
-                        <AvatarFallback className="text-xs">
-                          {getInitials(member.full_name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar
+                        src={member.avatar_url || undefined}
+                        name={member.full_name || '?'}
+                        size="xsmall"
+                      />
                       <span>{member.full_name || 'Unknown'}</span>
                     </div>
                   </SelectItem>

@@ -8,42 +8,13 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useAddTeamMember, useTeamMembers } from '@/hooks/useTeamMembers';
 import { useActiveUsers } from '@/hooks/useActiveUsers';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Search, X, ArrowUp, ArrowDown, CornerDownLeft } from 'lucide-react';
-
-// Color palette for avatars
-const AVATAR_COLORS = [
-  '#3b82f6', // blue
-  '#8b5cf6', // purple  
-  '#ec4899', // pink
-  '#f97316', // orange
-  '#10b981', // emerald
-  '#06b6d4', // cyan
-  '#eab308', // yellow
-];
-
-function getColorForName(name: string): string {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
-}
-
-function getInitials(name: string | null): string {
-  if (!name) return 'U';
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 interface AddTeamMemberDialogProps {
   teamId: string;
@@ -190,8 +161,7 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
                 filteredUsers.map((user, index) => {
                   const capacity = getCapacity(user.id);
                   const isFocused = index === focusedIndex;
-                  const avatarColor = getColorForName(user.full_name || user.email || '');
-                  
+
                   return (
                     <div
                       key={user.id}
@@ -203,15 +173,13 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
                       onMouseEnter={() => setFocusedIndex(index)}
                     >
                       {/* Avatar */}
-                      <Avatar className="w-10 h-10 flex-shrink-0">
-                        <AvatarImage src={user.avatar_url || undefined} />
-                        <AvatarFallback
-                          className="text-xs font-medium text-white"
-                          style={{ backgroundColor: avatarColor }}
-                        >
-                          {getInitials(user.full_name)}
-                        </AvatarFallback>
-                      </Avatar>
+                      <span className="flex-shrink-0">
+                        <Avatar
+                          src={user.avatar_url || undefined}
+                          name={user.full_name || user.email || 'Unknown'}
+                          size="medium"
+                        />
+                      </span>
 
                       {/* Name & Role */}
                       <div className="flex-1 min-w-0">
@@ -251,7 +219,6 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
             </span>
             <div className="flex flex-wrap gap-2 mt-2">
               {recentCollaborators.map((user) => {
-                const avatarColor = getColorForName(user.full_name || user.email || '');
                 return (
                   <button
                     key={user.id}
@@ -263,15 +230,11 @@ export function AddTeamMemberDialog({ teamId, open, onOpenChange }: AddTeamMembe
                       'border border-border hover:border-primary/30'
                     )}
                   >
-                    <Avatar className="w-5 h-5">
-                      <AvatarImage src={user.avatar_url || undefined} />
-                      <AvatarFallback
-                        className="text-[8px] font-medium text-white"
-                        style={{ backgroundColor: avatarColor }}
-                      >
-                        {getInitials(user.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar
+                      src={user.avatar_url || undefined}
+                      name={user.full_name || user.email || 'Unknown'}
+                      size="xxsmall"
+                    />
                     <span className="truncate max-w-[100px]">
                       {user.full_name?.split(' ')[0] || user.email?.split('@')[0]}
                     </span>

@@ -13,13 +13,7 @@ import {
   GitCompare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Lozenge, Avatar, Tooltip } from '@/components/ads';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,16 +30,6 @@ import { useTestCaseVersions, useRestoreTestCaseVersion, type TestCaseVersion } 
 import { VersionDiffView } from '@/components/testhub/versioning/VersionDiffView';
 import { formatDistanceToNow, format } from 'date-fns';
 import { cn } from '@/lib/utils';
-
-function getInitials(name: string | null | undefined): string {
-  if (!name) return 'U';
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
 
 function formatTimestamp(dateStr: string): string {
   try {
@@ -161,14 +145,7 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
                 {/* Content */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <Avatar className="h-5 w-5">
-                      {version.changed_by_profile?.avatar_url && (
-                        <AvatarImage src={version.changed_by_profile.avatar_url} alt={authorName} />
-                      )}
-                      <AvatarFallback className="text-[10px] bg-blue-100 text-blue-700">
-                        {getInitials(authorName)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar src={version.changed_by_profile?.avatar_url} name={authorName} size="xxsmall" />
                     <span className="text-sm font-medium">{authorName}</span>
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -195,24 +172,21 @@ export function TestCaseVersionHistory({ testCaseId: propTestCaseId, currentVers
                 {!isCurrent && (
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <AlertDialog>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <AlertDialogTrigger asChild>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-7 w-7"
-                              disabled={restoreMutation.isPending}
-                            >
-                              {restoreMutation.isPending ? (
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              ) : (
-                                <RotateCcw className="w-3.5 h-3.5" />
-                              )}
-                            </Button>
-                          </AlertDialogTrigger>
-                        </TooltipTrigger>
-                        <TooltipContent>Restore this version</TooltipContent>
+                      <Tooltip content="Restore this version">
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            disabled={restoreMutation.isPending}
+                          >
+                            {restoreMutation.isPending ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <RotateCcw className="w-3.5 h-3.5" />
+                            )}
+                          </Button>
+                        </AlertDialogTrigger>
                       </Tooltip>
                       <AlertDialogContent>
                         <AlertDialogHeader>

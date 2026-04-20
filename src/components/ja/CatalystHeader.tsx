@@ -7,7 +7,6 @@ import { BADGE_DEBOUNCE_MS } from "@/constants/notificationConstants";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { resolveAvatarUrl } from "@/lib/avatars";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -30,12 +29,7 @@ const CreateEntityDialog = lazy(() => import("@/components/dialogs/CreateEntityD
 import { catalystToast } from "@/lib/catalystToast";
 import { useCatalystContext } from "@/contexts/CatalystContext";
 import { getActiveNavItem } from "@/lib/workspaceContext";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ads";
 import {
   Popover,
   PopoverContent,
@@ -281,37 +275,37 @@ export function CatalystHeader() {
         
         {/* ===== NAVIGATION ZONE ===== */}
         <nav className="hidden lg:flex items-center flex-1 overflow-hidden" style={{ gap: '0px', marginRight: '12px', maskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)', WebkitMaskImage: 'linear-gradient(to right, black calc(100% - 24px), transparent)' }}>
-          <TooltipProvider>
+          <>
             {navItems.map((item) => {
               if (!item.isEnabled) {
                 return (
-                  <Tooltip key={item.label}>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="flex items-center cursor-not-allowed opacity-40"
-                        style={{
-                          height: '100%',
-                          padding: '0 12px',
-                          fontSize: '14px',
-                          fontWeight: 500,
-                          color: '#6B778C',
-                          borderRadius: '0',
-                          gap: '4px',
-                          border: 'none',
-                          background: 'transparent',
-                        }}
-                        onClick={() => handleDisabledModuleClick(item.label)}
-                      >
-                        {item.label}
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
+                  <Tooltip
+                    key={item.label}
+                    content={
                       <p>
-                        {isAdmin 
+                        {isAdmin
                           ? `This module is disabled. Enable it in Administration → Modules & Packages.`
                           : `This module is disabled by your organization.`}
                       </p>
-                    </TooltipContent>
+                    }
+                  >
+                    <button
+                      className="flex items-center cursor-not-allowed opacity-40"
+                      style={{
+                        height: '100%',
+                        padding: '0 12px',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        color: '#6B778C',
+                        borderRadius: '0',
+                        gap: '4px',
+                        border: 'none',
+                        background: 'transparent',
+                      }}
+                      onClick={() => handleDisabledModuleClick(item.label)}
+                    >
+                      {item.label}
+                    </button>
                   </Tooltip>
                 );
               }
@@ -559,7 +553,7 @@ export function CatalystHeader() {
                 </div>
               );
             })}
-          </TooltipProvider>
+          </>
         </nav>
 
         {/* Mobile Menu */}
@@ -573,8 +567,8 @@ export function CatalystHeader() {
         <div className="flex items-center flex-shrink-0" style={{ gap: '8px' }}>
           {/* Create Button */}
           <CreateDropdown />
-          
-          <TooltipProvider>
+
+          <>
 
             {/* Settings and Theme Toggle moved into user avatar dropdown (G4) */}
 
@@ -743,7 +737,7 @@ export function CatalystHeader() {
                 </div>
               )}
             </div>
-          </TooltipProvider>
+          </>
         </div>
       </header>
 

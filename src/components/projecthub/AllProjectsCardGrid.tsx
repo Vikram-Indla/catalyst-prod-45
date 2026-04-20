@@ -4,8 +4,7 @@ import { formatDistanceToNowStrict, format } from 'date-fns';
 import type { ProjectListItem } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Avatar, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -14,12 +13,6 @@ function getBadgeColor(id: string): string {
   let hash = 0;
   for (let i = 0; i < id.length; i++) hash = ((hash << 5) - hash) + id.charCodeAt(i);
   return BADGE_COLORS[Math.abs(hash) % BADGE_COLORS.length];
-}
-
-function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-  return name.substring(0, 2).toUpperCase();
 }
 
 function getSyncStatus(lastSyncAt: string | null): { color: string; label: string; tooltip: string } {
@@ -112,15 +105,7 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               <ProjectStatusBadge status={p.status} />
               {p.lead_name ? (
                 <div className="flex items-center gap-1.5">
-                  <Avatar className="w-5 h-5">
-                    {p.lead_avatar_url && (
-                      <AvatarImage src={p.lead_avatar_url} alt={p.lead_name} className="object-cover" />
-                    )}
-                    <AvatarFallback className="text-[8px] font-bold text-white"
-                      style={{ background: getBadgeColor(p.lead_id || '') }}>
-                      {getInitials(p.lead_name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar src={p.lead_avatar_url || undefined} name={p.lead_name || '??'} size="xxsmall" />
                   <span className="text-xs text-slate-600 dark:text-[#878787]">
                     {p.lead_name.split(' ').slice(0, 2).join(' ')}
                   </span>
@@ -153,16 +138,11 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
 
             {/* Footer: sync + members + updated — pinned bottom */}
             <div className="flex items-center justify-between mt-auto pt-3 border-t border-slate-100 dark:border-[#2E2E2E] text-xs text-slate-500 dark:text-[#878787]">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#2E2E2E] text-[11px] font-medium cursor-default">
-                    <span className={cn("w-1.5 h-1.5 rounded-full", sync.color)} />
-                    {sync.label}
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs max-w-[200px] whitespace-pre-line">
-                  {sync.tooltip}
-                </TooltipContent>
+              <Tooltip content={sync.tooltip} position="bottom">
+                <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 dark:bg-[#2E2E2E] text-[11px] font-medium cursor-default">
+                  <span className={cn("w-1.5 h-1.5 rounded-full", sync.color)} />
+                  {sync.label}
+                </div>
               </Tooltip>
               <div className="flex items-center gap-2">
                 <MemberStack memberIds={p.member_ids} memberCount={p.member_count} max={3} />

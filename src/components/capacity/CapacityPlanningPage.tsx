@@ -23,8 +23,7 @@ import { ResourceDetailModal } from './ResourceDetailModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Lozenge } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -176,19 +175,16 @@ export function CapacityPlanningPage() {
           <h1 className="text-xl font-semibold text-foreground">Enterprise Capacity</h1>
           <p className="text-sm text-muted-foreground">Manage team capacity and allocations by week</p>
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              variant={showSummary ? "default" : "outline"} 
-              size="sm"
-              onClick={() => setShowSummary(!showSummary)}
-              className={showSummary ? "bg-brand-primary hover:bg-brand-primary-hover text-white" : ""}
-            >
-              <Info className="h-4 w-4 mr-2" />
-              Summary
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{showSummary ? 'Hide capacity summary' : 'Show capacity summary'}</TooltipContent>
+        <Tooltip content={showSummary ? 'Hide capacity summary' : 'Show capacity summary'}>
+          <Button
+            variant={showSummary ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowSummary(!showSummary)}
+            className={showSummary ? "bg-brand-primary hover:bg-brand-primary-hover text-white" : ""}
+          >
+            <Info className="h-4 w-4 mr-2" />
+            Summary
+          </Button>
         </Tooltip>
       </div>
 
@@ -345,70 +341,53 @@ export function CapacityPlanningPage() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)} disabled={isLocked}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Copy Week</TooltipContent>
+              <Tooltip content="Copy Week">
+                <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)} disabled={isLocked}>
+                  <Copy className="h-4 w-4" />
+                </Button>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant={isLocked ? "default" : "outline"} 
-                    size="icon" 
-                    onClick={() => {
-                      toggleLock('Current User');
-                      toast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
-                    }}
-                    className={isLocked ? "bg-muted-foreground hover:bg-muted-foreground/80 text-white" : ""}
-                  >
-                    {isLocked ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {isLocked ? `Locked by ${lockedBy}` : 'Lock Allocations'}
-                </TooltipContent>
+              <Tooltip content={isLocked ? `Locked by ${lockedBy}` : 'Lock Allocations'}>
+                <Button
+                  variant={isLocked ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => {
+                    toggleLock('Current User');
+                    toast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
+                  }}
+                  className={isLocked ? "bg-muted-foreground hover:bg-muted-foreground/80 text-white" : ""}
+                >
+                  {isLocked ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                </Button>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)} disabled={isLocked}>
-                    <UserPlus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Add Member</TooltipContent>
+              <Tooltip content="Add Member">
+                <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)} disabled={isLocked}>
+                  <UserPlus className="h-4 w-4" />
+                </Button>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    size="icon" 
-                    onClick={() => setNewAllocationOpen(true)} 
-                    className="bg-brand-primary hover:bg-brand-primary-hover text-white"
-                    disabled={isLocked}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>New Allocation</TooltipContent>
+              <Tooltip content="New Allocation">
+                <Button
+                  size="icon"
+                  onClick={() => setNewAllocationOpen(true)}
+                  className="bg-brand-primary hover:bg-brand-primary-hover text-white"
+                  disabled={isLocked}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
               </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="icon"
-                    onClick={() => setFilterOpen(true)}
-                    className="relative"
-                  >
-                    <Filter className="h-4 w-4" />
-                    {filterCount > 0 && (
-                      <span className="absolute -top-2 -right-2 inline-flex">
-                        <Lozenge appearance="inprogress">{filterCount}</Lozenge>
-                      </span>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Filter</TooltipContent>
+              <Tooltip content="Filter">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setFilterOpen(true)}
+                  className="relative"
+                >
+                  <Filter className="h-4 w-4" />
+                  {filterCount > 0 && (
+                    <span className="absolute -top-2 -right-2 inline-flex">
+                      <Lozenge appearance="inprogress">{filterCount}</Lozenge>
+                    </span>
+                  )}
+                </Button>
               </Tooltip>
             </div>
           </div>

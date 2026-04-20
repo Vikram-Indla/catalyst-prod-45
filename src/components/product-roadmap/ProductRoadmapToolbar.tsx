@@ -11,7 +11,7 @@ import {
 } from '@/types/product-roadmap';
 import { Search, Filter, Check, X, ChevronDown, Info, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -537,26 +537,19 @@ export const ProductRoadmapToolbar: React.FC<ProductRoadmapToolbarProps> = ({
         />
         
         {/* Info/Legend Button - matches Program */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button
-                className={cn(
-                  "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
-                  showLegend 
-                    ? "bg-brand-primary text-white border-brand-primary" 
-                    : "bg-background text-muted-foreground hover:bg-muted"
-                )}
-                onClick={onToggleLegend}
-              >
-                <Info size={16} />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p>{showLegend ? 'Hide legend' : 'Show legend'}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip content={<p>{showLegend ? 'Hide legend' : 'Show legend'}</p>} position="bottom">
+          <button
+            className={cn(
+              "h-9 w-9 flex items-center justify-center border border-border rounded-lg transition-colors",
+              showLegend
+                ? "bg-brand-primary text-white border-brand-primary"
+                : "bg-background text-muted-foreground hover:bg-muted"
+            )}
+            onClick={onToggleLegend}
+          >
+            <Info size={16} />
+          </button>
+        </Tooltip>
       </div>
     </div>
   );

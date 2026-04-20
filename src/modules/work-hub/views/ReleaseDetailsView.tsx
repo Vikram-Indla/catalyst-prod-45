@@ -3,9 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Plus, MoreHorizontal, Edit2, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lozenge } from '@/components/ads';
+import { Avatar, AvatarGroup, Lozenge } from '@/components/ads';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -192,11 +191,7 @@ export function ReleaseDetailsView() {
                     <span className="text-sm flex-1 truncate">{item.summary}</span>
                     <Lozenge appearance="default">{item.status}</Lozenge>
                     {item.assignee ? (
-                      <Avatar className="h-6 w-6">
-                        <AvatarFallback className="text-xs">
-                          {item.assignee.split(' ').map(n => n[0]).join('')}
-                        </AvatarFallback>
-                      </Avatar>
+                      <Avatar name={item.assignee} size="xsmall" />
                     ) : (
                       <span className="text-xs text-muted-foreground">Unassigned</span>
                     )}
@@ -247,14 +242,11 @@ export function ReleaseDetailsView() {
           {/* Contributors */}
           <div>
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Contributors</label>
-            <div className="flex -space-x-2 mt-2">
-              {release.contributors.map((contributor) => (
-                <Avatar key={contributor} className="h-8 w-8 border-2 border-card">
-                  <AvatarFallback className="text-xs">
-                    {contributor.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
-              ))}
+            <div className="flex items-center gap-2 mt-2">
+              <AvatarGroup
+                size="small"
+                data={release.contributors.map((contributor) => ({ key: contributor, name: contributor }))}
+              />
               <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
                 <Plus className="h-4 w-4" />
               </Button>

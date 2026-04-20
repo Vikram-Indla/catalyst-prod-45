@@ -47,12 +47,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-  TooltipProvider,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { UnifiedAuditHistoryTab } from '@/components/shared/UnifiedAuditHistoryTab';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { LinkObjectivePicker } from './pickers/LinkObjectivePicker';
@@ -383,16 +378,9 @@ function KPICard({
             {label}
           </span>
           {overflow && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <AlertTriangle size={12} style={{ color: '#F59E0B' }} />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs">Rollup exceeds 100%</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content={<p className="text-xs">Rollup exceeds 100%</p>}>
+              <AlertTriangle size={12} style={{ color: '#F59E0B' }} />
+            </Tooltip>
           )}
         </div>
         
@@ -592,35 +580,28 @@ function ProgressBar({ value, showOverflowWarning = false }: { value: number | n
   };
   
   return (
-    <TooltipProvider>
       <div className="flex items-center gap-2">
-        <div 
+        <div
           className="w-16 h-1.5 rounded-full overflow-hidden"
           style={{ backgroundColor: 'var(--bg-2)' }}
         >
-          <div 
+          <div
             className="h-full rounded-full transition-all"
             style={{ width: `${percent}%`, backgroundColor: 'var(--sem-success)' }}
           />
         </div>
-        <span 
+        <span
           className="text-[10px] font-mono tabular-nums"
           style={{ color: getTextColor() }}
         >
           {percent}%
         </span>
         {showOverflowWarning && overflow && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <AlertTriangle size={10} style={{ color: 'var(--sem-warning)' }} />
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">Rollup exceeds 100%</p>
-            </TooltipContent>
+          <Tooltip content={<p className="text-xs">Rollup exceeds 100%</p>}>
+            <AlertTriangle size={10} style={{ color: 'var(--sem-warning)' }} />
           </Tooltip>
         )}
       </div>
-    </TooltipProvider>
   );
 }
 

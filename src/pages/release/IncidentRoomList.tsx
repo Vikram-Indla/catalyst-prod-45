@@ -20,12 +20,7 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import type { IncidentFilters } from '@/types/incident';
 
@@ -186,8 +181,7 @@ export default function IncidentRoomList() {
       <IncidentCommandBar onCreateClick={() => setCreateDialogOpen(true)} />
 
       {/* ========== TOOLBAR ========== */}
-      <TooltipProvider delayDuration={300}>
-        <div className="px-4 py-3 border-b border-border bg-muted/20">
+      <div className="px-4 py-3 border-b border-border bg-muted/20">
           <div className="flex items-center justify-between gap-4">
             {/* Left: Search */}
             <div className="relative flex-1 max-w-md">
@@ -238,15 +232,12 @@ export default function IncidentRoomList() {
 
               {/* Sort */}
               <DropdownMenu>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <ArrowUpDown className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs">Sort</TooltipContent>
+                <Tooltip position="bottom" delay={300} content="Sort">
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <ArrowUpDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
                 </Tooltip>
                 <DropdownMenuContent align="end" className="w-44">
                   <DropdownMenuLabel className="text-xs text-muted-foreground">Sort by</DropdownMenuLabel>
@@ -276,15 +267,12 @@ export default function IncidentRoomList() {
 
               {/* Columns */}
               <DropdownMenu>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        <Columns3 className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs">Columns</TooltipContent>
+                <Tooltip position="bottom" delay={300} content="Columns">
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <Columns3 className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
                 </Tooltip>
                 <DropdownMenuContent align="end" className="w-44">
                   <DropdownMenuLabel className="text-xs text-muted-foreground">Show columns</DropdownMenuLabel>
@@ -308,15 +296,12 @@ export default function IncidentRoomList() {
 
               {/* Density */}
               <DropdownMenu>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                        {density === 'compact' ? <LayoutList className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="text-xs">Density</TooltipContent>
+                <Tooltip position="bottom" delay={300} content="Density">
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      {density === 'compact' ? <LayoutList className="h-4 w-4" /> : <LayoutGrid className="h-4 w-4" />}
+                    </Button>
+                  </DropdownMenuTrigger>
                 </Tooltip>
                 <DropdownMenuContent align="end" className="w-36">
                   <DropdownMenuItem 
@@ -339,23 +324,19 @@ export default function IncidentRoomList() {
               </DropdownMenu>
 
               {/* Refresh */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    onClick={() => refetch()}
-                  >
-                    <RefreshCw className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs">Refresh</TooltipContent>
+              <Tooltip position="bottom" delay={300} content="Refresh">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0"
+                  onClick={() => refetch()}
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
               </Tooltip>
             </div>
           </div>
         </div>
-      </TooltipProvider>
 
       {/* ========== TABLE CONTENT - clear gutter from sidebar for visual separation ========== */}
       <div className="flex-1 overflow-hidden px-6 py-4">

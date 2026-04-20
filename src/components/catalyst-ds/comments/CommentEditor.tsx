@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -73,10 +73,6 @@ function ToolbarButton({ icon, title, onClick, active }: ToolbarButtonProps) {
 
 function ToolbarSep() {
   return <div className="w-px h-4 bg-[#DFE1E6] dark:bg-[#454545] mx-0.5" />;
-}
-
-function getInitials(name: string): string {
-  return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
 }
 
 const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
@@ -179,12 +175,13 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
       <div ref={ref} className={cn('space-y-2', className)}>
         <div className="flex gap-3">
           {currentUser && (
-            <Avatar className="h-8 w-8 shrink-0 mt-1">
-              {currentUser.avatarUrl && <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />}
-              <AvatarFallback name={currentUser.name}>
-                {getInitials(currentUser.name)}
-              </AvatarFallback>
-            </Avatar>
+            <span className="shrink-0 mt-1">
+              <Avatar
+                src={currentUser.avatarUrl}
+                name={currentUser.name}
+                size="small"
+              />
+            </span>
           )}
 
           <div className="flex-1 min-w-0">
@@ -252,12 +249,13 @@ const CommentEditor = React.forwardRef<HTMLDivElement, CommentEditorProps>(
                                     onSelect={() => handleMentionSelect(user)}
                                     className="cursor-pointer"
                                   >
-                                    <Avatar className="h-6 w-6 mr-2">
-                                      {user.avatarUrl && <AvatarImage src={user.avatarUrl} alt={user.name} />}
-                                      <AvatarFallback className="text-[10px]" name={user.name}>
-                                        {getInitials(user.name)}
-                                      </AvatarFallback>
-                                    </Avatar>
+                                    <span className="mr-2">
+                                      <Avatar
+                                        src={user.avatarUrl}
+                                        name={user.name}
+                                        size="xsmall"
+                                      />
+                                    </span>
                                     <div className="flex flex-col">
                                       <span className="text-[13px] font-medium">{user.name}</span>
                                       {user.email && (

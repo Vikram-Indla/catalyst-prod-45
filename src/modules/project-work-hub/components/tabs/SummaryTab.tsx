@@ -4,12 +4,6 @@ import { useProjectMetrics, useStatusDistribution, usePriorityDistribution, useT
 import { WORK_ITEM_TYPE_CONFIG, PRIORITY_CONFIG } from '../../types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 interface SummaryTabProps {
   projectId: string;

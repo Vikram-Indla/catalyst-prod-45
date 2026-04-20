@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Star, Eye, FileText, MoreHorizontal, ExternalLink, Trash2, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Tooltip } from '@/components/ads';
 import { WorkItemIcon } from '@/components/ja/icons/WorkItemIcon';
 import type { WorkItemType } from '@/components/ja/icons/WorkItemTypeIcon';
 import { formatDistanceToNow } from 'date-fns';
@@ -20,12 +20,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 
@@ -137,11 +131,7 @@ function StarredItemRow({
       {/* Assignee - visible dash in dark mode */}
       <div className="flex justify-start">
         {item.assignee ? (
-          <Avatar className="w-6 h-6">
-            <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
-              {item.assignee.slice(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <Avatar name={item.assignee} size="xsmall" />
         ) : (
           <span className="text-sm text-gray-400 dark:text-gray-500">—</span>
         )}
@@ -149,35 +139,25 @@ function StarredItemRow({
 
       {/* Quick actions - View, Open in new tab, More */}
       <div className={cn("flex items-center justify-end gap-0.5 transition-opacity", isHovered ? "opacity-100" : "opacity-0")}>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={handleViewDetails}
-                title="View details"
-              >
-                <Eye className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>View details</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip content="View details">
+          <button
+            className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            onClick={handleViewDetails}
+            title="View details"
+          >
+            <Eye className="w-3 h-3" />
+          </button>
+        </Tooltip>
 
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-                onClick={handleOpenNewTab}
-                title="Open in new tab"
-              >
-                <FileText className="w-3 h-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>Open in new tab</TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip content="Open in new tab">
+          <button
+            className="w-5 h-5 rounded flex items-center justify-center hover:bg-[var(--nav-hover-bg)] text-[var(--icon-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+            onClick={handleOpenNewTab}
+            title="Open in new tab"
+          >
+            <FileText className="w-3 h-3" />
+          </button>
+        </Tooltip>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

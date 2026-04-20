@@ -1,8 +1,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Calendar, FileText, FlaskConical, RotateCcw } from 'lucide-react';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarGroup } from '@/components/ui/avatar';
+import { AvatarGroup, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { QualityGauge } from './QualityGauge';
 
 export interface ReleaseCardProps {
@@ -116,15 +115,14 @@ export function ReleaseCard({
       
       {/* Team - FIX 9: Remove "Team" label, just show avatars */}
       <div className="flex items-center justify-end">
-        <AvatarGroup max={4}>
-          {team.map((member, i) => (
-            <Avatar key={i} size="sm" className="border-2 border-card">
-              <AvatarFallback style={{ backgroundColor: member.color }} className="text-white text-[10px] font-medium">
-                {member.initials}
-              </AvatarFallback>
-            </Avatar>
-          ))}
-        </AvatarGroup>
+        <AvatarGroup
+          size="small"
+          maxCount={4}
+          data={team.map((member, i) => ({
+            key: String(i),
+            name: member.name,
+          }))}
+        />
       </div>
     </div>
   );

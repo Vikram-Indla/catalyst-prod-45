@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { useState, useMemo } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -235,7 +235,6 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
   };
 
   return (
-    <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
           'h-full border-r transition-all duration-200 flex-shrink-0 relative flex flex-col',
@@ -385,37 +384,32 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
 
               if (!expanded) {
                 return (
-                  <Tooltip key={pocket.id}>
-                    <TooltipTrigger asChild>
-                      <Link
-                        to={pocket.children?.[0]?.path || pocket.path}
-                        className={cn(
-                          'flex items-center justify-center rounded-md transition-colors relative mx-auto',
-                          active 
-                            ? 'bg-blue-500/12 text-blue-600' 
-                            : 'text-muted-foreground hover:bg-blue-500/6 hover:text-foreground'
-                        )}
-                        style={{ width: '36px', height: '50px', marginBottom: '1px' }}
-                      >
-                        {active && (
-                          <span 
-                            style={{
-                              position: 'absolute',
-                              left: 0,
-                              top: '6px',
-                              bottom: '6px',
-                              width: '3px',
-                              background: 'var(--nav-accent-bar, var(--cp-blue))',
-                              borderRadius: '0 2px 2px 0',
-                            }}
-                          />
-                        )}
-                        <Icon style={{ width: '17px', height: '17px', strokeWidth: 1.4 }} />
-                      </Link>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" sideOffset={8}>
-                      {pocket.label}
-                    </TooltipContent>
+                  <Tooltip key={pocket.id} content={pocket.label} position="right">
+                    <Link
+                      to={pocket.children?.[0]?.path || pocket.path}
+                      className={cn(
+                        'flex items-center justify-center rounded-md transition-colors relative mx-auto',
+                        active
+                          ? 'bg-blue-500/12 text-blue-600'
+                          : 'text-muted-foreground hover:bg-blue-500/6 hover:text-foreground'
+                      )}
+                      style={{ width: '36px', height: '50px', marginBottom: '1px' }}
+                    >
+                      {active && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: '6px',
+                            bottom: '6px',
+                            width: '3px',
+                            background: 'var(--nav-accent-bar, var(--cp-blue))',
+                            borderRadius: '0 2px 2px 0',
+                          }}
+                        />
+                      )}
+                      <Icon style={{ width: '17px', height: '17px', strokeWidth: 1.4 }} />
+                    </Link>
                   </Tooltip>
                 );
               }
@@ -549,6 +543,5 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
           </nav>
         </ScrollArea>
       </aside>
-    </TooltipProvider>
   );
 }

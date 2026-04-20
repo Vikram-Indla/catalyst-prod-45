@@ -27,6 +27,9 @@ import { Separator } from '@/components/ui/separator';
 import { useInJira } from '../context/InJiraContext';
 import { IssueType, IssuePriority } from '../types';
 import { cn } from '@/lib/utils';
+import { useWorkflow } from '@/lib/workflows';
+import { JiraStatusLozengeForState, workItemTypeToIssueType } from '@/components/workflow';
+import type { WorkItemType } from '@/types/workItem.types';
 
 // Issue type icons/labels
 const ISSUE_TYPES: { value: IssueType; label: string; color: string }[] = [
@@ -121,6 +124,21 @@ export function CreateIssueModal() {
   const selectedType = ISSUE_TYPES.find(t => t.value === issueType);
   const selectedPriority = PRIORITIES.find(p => p.value === priority);
 
+  // Map in-jira's IssueType → canonical WorkItemType → workflow IssueType so
+  // we can show the initial status the new issue will land in. Matches the
+  // workflow engine bound at /admin/workflows.
+  const workItemType: WorkItemType | undefined = (
+    issueType === 'defect'   ? 'bug' :
+    issueType === 'incident' ? 'bug' :
+    issueType === 'feature'  ? 'feature' :
+    issueType === 'story'    ? 'story' :
+    issueType === 'subtask'  ? 'subtask' :
+    undefined
+  );
+  const wfIssueType = workItemType ? workItemTypeToIssueType(workItemType) : undefined;
+  const workflow = useWorkflow(wfIssueType);
+  const initialState = workflow?.states.find(s => s.id === workflow.initialStateId);
+
   return (
     <Dialog open={isCreateModalOpen} onOpenChange={() => closeCreateModal()}>
       <DialogContent className="sm:max-w-2xl p-0 gap-0">
@@ -206,6 +224,22 @@ export function CreateIssueModal() {
               className="min-h-[120px] resize-none"
             />
           </div>
+
+          {/* Status preview — new issues always land on the workflow's initial
+              state. Read-only here (matches Jira's create dialog). */}
+          {initialState && (
+            <div className="space-y-1.5">
+              <Label className="text-sm font-medium text-text-secondary">
+                Status
+              </Label>
+              <div className="flex items-center gap-2 px-3 py-2 bg-surface-2 rounded-md border border-border-default">
+                <JiraStatusLozengeForState state={initialState} />
+                <span className="text-xs text-text-secondary">
+                  New {selectedType?.label.toLowerCase()}s start in this state (workflow: {workflow?.name})
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Priority */}
           <div className="space-y-1.5">

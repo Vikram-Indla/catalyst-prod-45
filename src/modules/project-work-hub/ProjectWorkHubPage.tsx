@@ -3,12 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Globe, Grid3X3, List, Package, Archive, Users, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { SummaryTab } from './components/tabs/SummaryTab';
 import { KanbanBoardTab } from './components/tabs/KanbanBoardTab';
 import { ListTab } from './components/tabs/ListTab';
@@ -78,31 +73,17 @@ export const ProjectWorkHubPage: React.FC = () => {
               {projectName}
             </h1>
             {/* Users icon - disabled with tooltip */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                    <Users className="h-5 w-5 text-muted-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Coming soon</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content={<p>Coming soon</p>}>
+              <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
+                <Users className="h-5 w-5 text-muted-foreground" />
+              </Button>
+            </Tooltip>
             {/* More icon - disabled with tooltip */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                    <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Coming soon</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content={<p>Coming soon</p>}>
+              <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
+                <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
+              </Button>
+            </Tooltip>
           </div>
 
           <CreateWorkItemDropdown onSelect={handleCreateItem} />

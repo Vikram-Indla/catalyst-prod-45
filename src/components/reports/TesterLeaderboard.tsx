@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { TesterPerformance } from '@/types/reports';
 
 const getPassRateAppearance = (rate: number): LozengeAppearance => {
@@ -17,7 +16,6 @@ export function TesterLeaderboard({ data, isLoading }: TesterLeaderboardProps) {
     <Card><CardHeader><Skeleton className="h-5 w-40" /></CardHeader><CardContent><div className="space-y-3">{[1,2,3,4,5].map(i => <Skeleton key={i} className="h-12 w-full" />)}</div></CardContent></Card>
   );
 
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const getRankBadge = (index: number) => index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`;
 
   return (
@@ -31,10 +29,7 @@ export function TesterLeaderboard({ data, isLoading }: TesterLeaderboardProps) {
             {data.slice(0, 5).map((tester, index) => (
               <div key={tester.user_id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50">
                 <span className="w-6 text-center font-medium">{getRankBadge(index)}</span>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={tester.avatar_url || undefined} />
-                  <AvatarFallback className="text-xs">{getInitials(tester.full_name)}</AvatarFallback>
-                </Avatar>
+                <Avatar src={tester.avatar_url || undefined} name={tester.full_name} size="small" />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{tester.full_name}</p>
                   <p className="text-xs text-muted-foreground">{tester.passed} passed, {tester.failed} failed</p>

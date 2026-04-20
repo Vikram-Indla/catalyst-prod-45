@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Lozenge } from "@/components/ads";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip } from "@/components/ads";
 import { Info } from "lucide-react";
 
 interface Story {
@@ -118,34 +118,20 @@ export function SpendDrilldownModal({
               <div className="col-span-2">Team</div>
               <div className="col-span-2">Release</div>
               <div className="col-span-1 text-right">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center justify-end gap-1 cursor-help">
-                        $/Point
-                        <Info className="h-3 w-3" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Team's spend per story point</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip content={<p>Team's spend per story point</p>}>
+                  <div className="flex items-center justify-end gap-1 cursor-help">
+                    $/Point
+                    <Info className="h-3 w-3" />
+                  </div>
+                </Tooltip>
               </div>
               <div className="col-span-1 text-right">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center justify-end gap-1 cursor-help">
-                        Estimate
-                        <Info className="h-3 w-3" />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Story point estimate</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Tooltip content={<p>Story point estimate</p>}>
+                  <div className="flex items-center justify-end gap-1 cursor-help">
+                    Estimate
+                    <Info className="h-3 w-3" />
+                  </div>
+                </Tooltip>
               </div>
               <div className="col-span-2 text-right">Total Spend</div>
             </div>
@@ -175,20 +161,17 @@ export function SpendDrilldownModal({
                   {story.storyEstimate}
                 </div>
                 <div className="col-span-2 text-right font-semibold">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help">
-                          ${story.spend.toLocaleString()}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">
-                          {story.storyEstimate} pts × ${story.teamSpendPerPoint}/pt = ${story.spend}
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Tooltip
+                    content={
+                      <p className="text-xs">
+                        {story.storyEstimate} pts × ${story.teamSpendPerPoint}/pt = ${story.spend}
+                      </p>
+                    }
+                  >
+                    <span className="cursor-help">
+                      ${story.spend.toLocaleString()}
+                    </span>
+                  </Tooltip>
                 </div>
               </div>
             ))}

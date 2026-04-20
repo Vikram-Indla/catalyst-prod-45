@@ -23,12 +23,7 @@ import React from 'react';
 import { RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface CommandCenterHeaderProps {
   /** Bold page title (Sora font) */
@@ -132,26 +127,19 @@ export function CommandCenterHeader({
         {actions}
 
         {onRefresh && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onRefresh}
-                  disabled={isRefreshing}
-                  aria-label="Refresh data"
-                >
-                  <RefreshCw
-                    className={cn('h-4 w-4', isRefreshing && 'animate-spin')}
-                  />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">
-                Refresh all data
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content="Refresh all data" position="bottom">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRefresh}
+              disabled={isRefreshing}
+              aria-label="Refresh data"
+            >
+              <RefreshCw
+                className={cn('h-4 w-4', isRefreshing && 'animate-spin')}
+              />
+            </Button>
+          </Tooltip>
         )}
       </div>
     </header>

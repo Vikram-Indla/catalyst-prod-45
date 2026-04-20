@@ -33,12 +33,7 @@ import {
   Star,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';
 
 type WorkspaceType = 'program' | 'project';
@@ -158,13 +153,12 @@ export function UnifiedSidebar({
   const settingsPath = workspaceType === 'program' ? '/admin/portfolios' : '/admin/programs';
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <aside 
-        className={cn(
-          'h-full flex-shrink-0 relative flex flex-col',
-          'transition-all duration-200 ease-in-out',
-          className
-        )}
+    <aside
+      className={cn(
+        'h-full flex-shrink-0 relative flex flex-col',
+        'transition-all duration-200 ease-in-out',
+        className
+      )}
         style={{
           // Unified with SidebarBase (240/56) on 2026-04-19 — collapsed was
           // previously 64px here, 56px in SidebarBase; layout jitter when
@@ -382,13 +376,8 @@ export function UnifiedSidebar({
 
             if (!expanded) {
               return (
-                <Tooltip key={item.id}>
-                  <TooltipTrigger asChild>
-                    {menuButton}
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={8}>
-                    {item.label}
-                  </TooltipContent>
+                <Tooltip key={item.id} content={item.label} position="right">
+                  {menuButton}
                 </Tooltip>
               );
             }
@@ -431,37 +420,31 @@ export function UnifiedSidebar({
               <span className="text-left">{entityLabel} Settings</span>
             </button>
           ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button 
-                  type="button"
-                  style={{
-                    width: '100%',
-                    height: '44px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '8px',
-                    border: 'none',
-                    background: 'transparent',
-                    color: 'hsl(var(--foreground))',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-                  onClick={() => navigate(settingsPath)}
-                >
-                  <Settings style={{ width: '18px', height: '18px', color: 'hsl(var(--foreground) / 0.7)', strokeWidth: 1.75 }} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="right" sideOffset={8}>
-                {entityLabel} Settings
-              </TooltipContent>
+            <Tooltip content={`${entityLabel} Settings`} position="right">
+              <button
+                type="button"
+                style={{
+                  width: '100%',
+                  height: '44px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'transparent',
+                  color: 'hsl(var(--foreground))',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--nav-hover-bg)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+                onClick={() => navigate(settingsPath)}
+              >
+                <Settings style={{ width: '18px', height: '18px', color: 'hsl(var(--foreground) / 0.7)', strokeWidth: 1.75 }} />
+              </button>
             </Tooltip>
           )}
         </div>
       </aside>
-    </TooltipProvider>
   );
 }

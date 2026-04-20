@@ -19,9 +19,8 @@ import {
   ArrowUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { Incident } from '@/types/incident';
 import { getSlaHealth, formatAge, SLA_HEALTH_CONFIG } from '../types';
 
@@ -205,23 +204,15 @@ export const KanbanCard = memo(function KanbanCard({
             <Lozenge appearance="default">CAB</Lozenge>
           )}
           {incident.attachments && incident.attachments.length > 0 && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Paperclip className="h-3 w-3 text-muted-foreground/60" />
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">{incident.attachments.length} attachments</TooltipContent>
+            <Tooltip position="top" content={`${incident.attachments.length} attachments`}>
+              <Paperclip className="h-3 w-3 text-muted-foreground/60" />
             </Tooltip>
           )}
           {incident.converted_to_id && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="flex items-center gap-0.5 text-muted-foreground">
-                  <ArrowRightLeft className="h-3 w-3" />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Converted to {incident.converted_to_type}
-              </TooltipContent>
+            <Tooltip position="top" content={`Converted to ${incident.converted_to_type}`}>
+              <span className="flex items-center gap-0.5 text-muted-foreground">
+                <ArrowRightLeft className="h-3 w-3" />
+              </span>
             </Tooltip>
           )}
         </div>
@@ -286,16 +277,13 @@ export const KanbanCard = memo(function KanbanCard({
           {onEditCommittee && (
             <>
               <span className="flex-1" />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={handleEditCommitteeClick}
-                    className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[#2563eb] dark:hover:text-[#60a5fa] transition-colors"
-                  >
-                    <Settings className="h-3 w-3" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="text-xs">Edit Committee</TooltipContent>
+              <Tooltip position="top" content="Edit Committee">
+                <button
+                  onClick={handleEditCommitteeClick}
+                  className="p-0.5 rounded hover:bg-muted text-muted-foreground hover:text-[#2563eb] dark:hover:text-[#60a5fa] transition-colors"
+                >
+                  <Settings className="h-3 w-3" />
+                </button>
               </Tooltip>
             </>
           )}

@@ -9,9 +9,7 @@ import { Input } from '@/components/ui/input';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Skeleton } from '@/components/ui/skeleton';
 
 /* ── StatusLozenge (immutable spec) ─────────────────────── */
@@ -105,11 +103,8 @@ function TruncatedCell({ text, max = 40 }: { text: string | null; max?: number }
   const truncated = text.length > max ? text.substring(0, max) + '…' : text;
   if (text.length <= max) return <span className={tdClass}>{text}</span>;
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span className={`${tdClass} cursor-help`}>{truncated}</span>
-      </TooltipTrigger>
-      <TooltipContent side="top" className="max-w-sm text-xs break-all">{text}</TooltipContent>
+    <Tooltip position="top" content={text}>
+      <span className={`${tdClass} cursor-help`}>{truncated}</span>
     </Tooltip>
   );
 }
@@ -141,7 +136,6 @@ export function SyncEventsTab() {
   }), [syncLogs, statusFilter, keyFilter]);
 
   return (
-    <TooltipProvider>
       <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A] rounded-md overflow-hidden">
         <div className="flex items-center gap-3 p-3 border-b border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A]">
           <Select value={statusFilter} onValueChange={setStatusFilter}>
@@ -192,7 +186,6 @@ export function SyncEventsTab() {
         </table>
         {syncLogs && <PaginationBar page={page} setPage={setPage} count={syncLogs.length} />}
       </div>
-    </TooltipProvider>
   );
 }
 
@@ -224,7 +217,6 @@ export function WriteBackQueueTab() {
   });
 
   return (
-    <TooltipProvider>
       <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A] rounded-md overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
@@ -268,7 +260,6 @@ export function WriteBackQueueTab() {
         </table>
         {queueItems && <PaginationBar page={page} setPage={setPage} count={queueItems.length} />}
       </div>
-    </TooltipProvider>
   );
 }
 
@@ -287,7 +278,6 @@ export function DeletedItemsTab() {
   });
 
   return (
-    <TooltipProvider>
       <div className="bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#1A1A1A] rounded-md overflow-hidden">
         {!isLoading && !isError && (!deletedItems || deletedItems.length === 0) ? (
           <div className="flex flex-col items-center justify-center py-10 gap-2">
@@ -316,13 +306,8 @@ export function DeletedItemsTab() {
                         <td className={tdClass} style={tdStyle}>{formatDistanceToNow(new Date(d.deleted_at), { addSuffix: true })}</td>
                         <td style={tdStyle}>
                           {snap ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className={`${tdClass} cursor-help`} style={{ fontSize: 11 }}>{preview}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="max-w-md text-xs break-all font-mono">
-                                {snap.substring(0, 300)}
-                              </TooltipContent>
+                            <Tooltip position="top" content={snap.substring(0, 300)}>
+                              <span className={`${tdClass} cursor-help`} style={{ fontSize: 11 }}>{preview}</span>
                             </Tooltip>
                           ) : '—'}
                         </td>
@@ -336,7 +321,6 @@ export function DeletedItemsTab() {
           </>
         )}
       </div>
-    </TooltipProvider>
   );
 }
 

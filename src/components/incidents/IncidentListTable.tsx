@@ -21,12 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { InlineEditCell } from './InlineEditCell';
 import { JiraSyncChip } from '@/components/shared/JiraSyncChip';
 import { InlineUserPicker } from './InlineUserPicker';
@@ -318,7 +313,7 @@ export function IncidentListTable({
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
+    <>
       <div className="flex flex-col h-full">
         {/* Table container - horizontal scroll when content exceeds viewport */}
         <div 
@@ -454,15 +449,16 @@ export function IncidentListTable({
                           <JiraSyncChip jiraKey={incident.jira_key} size="sm" />
                         )}
                         {(incident.is_major_incident || isCritical || isBreached) && (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[#f59e0b] shrink-0" />
-                            </TooltipTrigger>
-                            <TooltipContent side="right" className="text-xs">
+                          <Tooltip
+                            position="right"
+                            delay={200}
+                            content={
                               <p className="font-medium">
                                 {incident.is_major_incident ? 'Major Incident' : isBreached ? 'SLA Breached' : 'SEV1 Warning'}
                               </p>
-                            </TooltipContent>
+                            }
+                          >
+                            <AlertTriangle className="h-3.5 w-3.5 ml-1 text-[#f59e0b] shrink-0" />
                           </Tooltip>
                         )}
                       </div>
@@ -476,11 +472,8 @@ export function IncidentListTable({
                           type="text"
                           value={incident.title}
                           displayValue={
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block w-full")}>{incident.title}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs max-w-md break-words">{incident.title}</TooltipContent>
+                            <Tooltip content={incident.title} position="top" delay={200}>
+                              <span className={cn(CELL_TEXT, "truncate font-medium cursor-pointer block w-full")}>{incident.title}</span>
                             </Tooltip>
                           }
                           onSave={(val) => handleInlineUpdate(incident.id, 'title', val)}
@@ -720,6 +713,6 @@ export function IncidentListTable({
         incidentId={deleteDialog.id}
         incidentKey={deleteDialog.key}
       />
-    </TooltipProvider>
+    </>
   );
 }

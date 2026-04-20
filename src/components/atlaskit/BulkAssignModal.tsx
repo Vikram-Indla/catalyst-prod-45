@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -118,11 +118,7 @@ export function BulkAssignModal({ isOpen, onClose, onConfirm, selectedCount }: B
                     selectedUser?.id === user.id ? 'bg-accent' : ''
                   }`}
                 >
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-sm font-semibold">
-                      {(user.display_name?.[0] || user.email?.[0] || '?').toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={user.display_name || user.email || ''} size="small" />
                   <div>
                     <div className="text-sm font-medium text-foreground">
                       {user.display_name || 'Unnamed User'}

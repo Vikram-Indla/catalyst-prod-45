@@ -17,12 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { ResizableHeader } from '@/components/incidents/ResizableHeader';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -235,17 +230,19 @@ function ApproversAvatars({ approvers }: { approvers: CommitteeQueueItem['approv
       {visible.map((a) => {
         const styleClass = decisionStyles[a.decision];
         return (
-          <Tooltip key={a.id}>
-            <TooltipTrigger asChild>
-              <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2 border-white", styleClass)}>
-                {a.userInitials || a.userName.charAt(0)}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              <div className="font-medium">{a.userName}</div>
-              <div className="capitalize text-muted-foreground">{a.decision}</div>
-              {a.hasVeto && <div className="text-amber-600">Veto power</div>}
-            </TooltipContent>
+          <Tooltip
+            key={a.id}
+            content={
+              <>
+                <div className="font-medium">{a.userName}</div>
+                <div className="capitalize text-muted-foreground">{a.decision}</div>
+                {a.hasVeto && <div className="text-amber-600">Veto power</div>}
+              </>
+            }
+          >
+            <div className={cn("w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-semibold border-2 border-white", styleClass)}>
+              {a.userInitials || a.userName.charAt(0)}
+            </div>
           </Tooltip>
         );
       })}
@@ -402,7 +399,6 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
   if (isLoading) return <LoadingSkeleton gridTemplate={gridTemplate} />;
 
   return (
-    <TooltipProvider delayDuration={200}>
       <div className="flex flex-col h-full">
         <div ref={containerRef} className="rounded-lg border border-border overflow-hidden bg-card flex-1 min-h-0">
           <div className="overflow-x-auto w-full h-full">
@@ -462,13 +458,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     </div>
                     {/* SUMMARY */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center h-full")}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="text-[12px] text-foreground truncate">{item.incident.title}</span>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-sm text-xs">
-                          {item.incident.title}
-                        </TooltipContent>
+                      <Tooltip content={item.incident.title}>
+                        <span className="text-[12px] text-foreground truncate">{item.incident.title}</span>
                       </Tooltip>
                     </div>
                     {/* SEVERITY */}
@@ -478,11 +469,8 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     {/* MAJOR */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
                       {item.incident.severity === 'SEV1' ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <AlertTriangle className="h-4 w-4 text-amber-500" />
-                          </TooltipTrigger>
-                          <TooltipContent>Major Incident</TooltipContent>
+                        <Tooltip content="Major Incident">
+                          <AlertTriangle className="h-4 w-4 text-amber-500" />
                         </Tooltip>
                       ) : (
                         <span className="text-muted-foreground">—</span>
@@ -508,15 +496,10 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
                     </div>
                     {/* TIME */}
                     <div className={cn(GRID_CELL_BASE, "px-2 flex items-center justify-center h-full")}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">
-                            {item.committeeSentAt ? formatDistanceToNow(new Date(item.committeeSentAt), { addSuffix: false }) : '—'}
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {item.committeeSentAt ? format(new Date(item.committeeSentAt), 'PPpp') : 'N/A'}
-                        </TooltipContent>
+                      <Tooltip content={item.committeeSentAt ? format(new Date(item.committeeSentAt), 'PPpp') : 'N/A'}>
+                        <span className="text-[11px] text-muted-foreground tabular-nums whitespace-nowrap">
+                          {item.committeeSentAt ? formatDistanceToNow(new Date(item.committeeSentAt), { addSuffix: false }) : '—'}
+                        </span>
                       </Tooltip>
                     </div>
                     {/* AGING */}
@@ -580,6 +563,5 @@ export function CommitteeQueueTable({ items, isLoading, onRowClick, onLoadDemoDa
           </div>
         )}
       </div>
-    </TooltipProvider>
   );
 }

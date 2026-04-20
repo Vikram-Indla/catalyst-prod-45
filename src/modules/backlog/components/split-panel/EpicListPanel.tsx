@@ -7,8 +7,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Search, Circle } from 'lucide-react';
-import { Lozenge } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 
 export interface EpicListItem {
   id: string;
@@ -161,44 +160,23 @@ export function EpicListPanel({
 
                     {/* Meta: Status, Theme, Quarter */}
                     <p className="text-xs mt-1 flex items-center flex-wrap gap-0" style={{ color: 'var(--text-3)' }}>
-                      <TooltipProvider delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help hover:underline decoration-dotted">{formatStatus(epic.status)}</span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            <p>Status</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip position="top" delay={200} content="Status">
+                        <span className="cursor-help hover:underline decoration-dotted">{formatStatus(epic.status)}</span>
+                      </Tooltip>
                       {epic.themeName && (
                         <>
                           <span className="mx-1">•</span>
-                          <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="cursor-help hover:underline decoration-dotted truncate max-w-[100px]">{epic.themeName}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">
-                                <p>Theme: {epic.themeName}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Tooltip position="top" delay={200} content={`Theme: ${epic.themeName}`}>
+                            <span className="cursor-help hover:underline decoration-dotted truncate max-w-[100px]">{epic.themeName}</span>
+                          </Tooltip>
                         </>
                       )}
                       {epic.quarters && epic.quarters.length > 0 && (
                         <>
                           <span className="mx-1">•</span>
-                          <TooltipProvider delayDuration={200}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="cursor-help hover:underline decoration-dotted">{epic.quarters[0]}</span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">
-                                <p>Target Quarter</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Tooltip position="top" delay={200} content="Target Quarter">
+                            <span className="cursor-help hover:underline decoration-dotted">{epic.quarters[0]}</span>
+                          </Tooltip>
                         </>
                       )}
                     </p>

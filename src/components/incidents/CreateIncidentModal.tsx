@@ -5,9 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
 import { cn } from '@/lib/utils';
@@ -186,16 +185,9 @@ function FieldLabel({
         {required && <span className="text-destructive ml-0.5">*</span>}
       </Label>
       {tooltip && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Info className="h-3 w-3 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[200px] text-xs">
-              {tooltip}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Tooltip content={tooltip}>
+          <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+        </Tooltip>
       )}
     </div>
   );
@@ -648,30 +640,23 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
                 <FieldLabel required>Severity</FieldLabel>
                 <div className="grid grid-cols-4 gap-2">
                   {SEVERITY_OPTIONS.map((option) => (
-                    <TooltipProvider key={option.value}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setFormData(prev => ({ ...prev, severity: option.value as IncidentFormData['severity'] }));
-                              handleBlur('severity');
-                            }}
-                            className={cn(
-                              "p-2.5 rounded-md border text-center transition-all text-sm font-medium",
-                              formData.severity === option.value
-                                ? getSeverityColor(option.value) + " border-transparent"
-                                : "bg-background border-input hover:border-muted-foreground/50 text-foreground"
-                            )}
-                          >
-                            {option.label}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-[200px]">
-                          <p className="text-xs">{option.description}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip key={option.value} content={<p className="text-xs">{option.description}</p>}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData(prev => ({ ...prev, severity: option.value as IncidentFormData['severity'] }));
+                          handleBlur('severity');
+                        }}
+                        className={cn(
+                          "p-2.5 rounded-md border text-center transition-all text-sm font-medium",
+                          formData.severity === option.value
+                            ? getSeverityColor(option.value) + " border-transparent"
+                            : "bg-background border-input hover:border-muted-foreground/50 text-foreground"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    </Tooltip>
                   ))}
                 </div>
                 {touched.severity && errors.severity && (

@@ -5,14 +5,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, Edit3, Users, Circle } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Eye, Users, Circle } from 'lucide-react';
+import { Avatar, Lozenge, Tooltip } from '@/components/ads';
 import {
   HoverCard,
   HoverCardContent,
@@ -102,13 +96,6 @@ export function CollaborationIndicator({
     return null;
   }
 
-  const getInitials = (name: string) =>
-    name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase();
-
   const formatTimeAgo = (date: Date) => {
     const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
     if (seconds < 60) return 'just now';
@@ -123,19 +110,13 @@ export function CollaborationIndicator({
           <div className={cn("flex items-center gap-1 cursor-pointer", className)}>
             <div className="flex -space-x-2">
               {collaborators.slice(0, 3).map((c) => (
-                <Avatar
+                <span
                   key={c.id}
-                  className="w-6 h-6 border-2 border-background"
+                  className="inline-block rounded-full border-2 border-background"
                   style={{ borderColor: c.color }}
                 >
-                  <AvatarImage src={c.avatarUrl} alt={c.name} />
-                  <AvatarFallback
-                    className="text-[10px]"
-                    style={{ backgroundColor: c.color, color: 'white' }}
-                  >
-                    {getInitials(c.name)}
-                  </AvatarFallback>
-                </Avatar>
+                  <Avatar src={c.avatarUrl} name={c.name} size="xsmall" />
+                </span>
               ))}
             </div>
             {collaborators.length > 3 && (
@@ -164,15 +145,7 @@ export function CollaborationIndicator({
             <div className="space-y-2">
               {collaborators.map((c) => (
                 <div key={c.id} className="flex items-center gap-2">
-                  <Avatar className="w-6 h-6">
-                    <AvatarImage src={c.avatarUrl} alt={c.name} />
-                    <AvatarFallback
-                      className="text-[10px]"
-                      style={{ backgroundColor: c.color, color: 'white' }}
-                    >
-                      {getInitials(c.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar src={c.avatarUrl} name={c.name} size="xsmall" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{c.name}</p>
                     <p className="text-xs text-muted-foreground">
@@ -215,33 +188,9 @@ export function CollaborationIndicator({
                 exit={{ opacity: 0, scale: 0.8, x: 10 }}
                 transition={{ delay: i * 0.05 }}
               >
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="relative">
-                      <Avatar
-                        className="w-8 h-8 border-2 border-background cursor-pointer hover:z-10 transition-transform hover:scale-110"
-                        style={{ borderColor: c.color }}
-                      >
-                        <AvatarImage src={c.avatarUrl} alt={c.name} />
-                        <AvatarFallback
-                          className="text-xs"
-                          style={{ backgroundColor: c.color, color: 'white' }}
-                        >
-                          {getInitials(c.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      {c.status === 'editing' && (
-                        <motion.div
-                          animate={{ scale: [1, 1.3, 1] }}
-                          transition={{ repeat: Infinity, duration: 1.5 }}
-                          className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-background flex items-center justify-center"
-                        >
-                          <Edit3 className="w-1.5 h-1.5 text-white" />
-                        </motion.div>
-                      )}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom">
+                <Tooltip
+                  position="bottom"
+                  content={
                     <div className="text-center">
                       <p className="font-medium">{c.name}</p>
                       <p className="text-xs text-muted-foreground">
@@ -257,7 +206,21 @@ export function CollaborationIndicator({
                         )}
                       </p>
                     </div>
-                  </TooltipContent>
+                  }
+                >
+                  <div className="relative">
+                    <span
+                      className="inline-block rounded-full border-2 border-background cursor-pointer hover:z-10 transition-transform hover:scale-110"
+                      style={{ borderColor: c.color }}
+                    >
+                      <Avatar
+                        src={c.avatarUrl}
+                        name={c.name}
+                        size="small"
+                        presence={c.status === 'editing' ? 'online' : undefined}
+                      />
+                    </span>
+                  </div>
                 </Tooltip>
               </motion.div>
             ))}

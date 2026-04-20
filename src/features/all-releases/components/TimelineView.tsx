@@ -5,7 +5,7 @@
 
 import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { format, parseISO, differenceInDays, startOfMonth, endOfMonth, eachMonthOfInterval, addMonths, addWeeks, eachWeekOfInterval, startOfWeek, startOfQuarter, eachQuarterOfInterval, addQuarters, endOfQuarter } from 'date-fns';
 import type { Release } from '../types';
 import { getHealthLevel, HEALTH_THRESHOLDS } from '../utils/healthScore';
@@ -124,8 +124,7 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
   };
 
   return (
-    <TooltipProvider delayDuration={200}>
-      <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-slate-200 dark:border-[#2E2E2E] shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-[#1A1A1A] rounded-xl border border-slate-200 dark:border-[#2E2E2E] shadow-sm overflow-hidden">
         {/* Controls Row */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-slate-100 dark:border-[#2E2E2E] bg-slate-50/50 dark:bg-[#111111]">
           <div className="flex border border-slate-200 dark:border-[#2E2E2E] rounded-md overflow-hidden">
@@ -250,65 +249,65 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
                 )}
 
                 {/* Gantt Bar */}
-                <Tooltip>
-                  <TooltipTrigger asChild>
+                <Tooltip
+                  position="top"
+                  delay={200}
+                  content={
+                    <>
+                      <p className="font-semibold">{release.name} {release.version}</p>
+                      <p className="text-muted-foreground">
+                        {release.plannedDate ? format(new Date(release.plannedDate), 'MMM d, yyyy') : 'No date'}
+                      </p>
+                      <p>Progress: {progress}% | Health: {release.healthScore}</p>
+                    </>
+                  }
+                >
+                  <div
+                    className="absolute top-1/2 -translate-y-1/2 rounded flex items-center overflow-hidden transition-all hover:brightness-110"
+                    style={{
+                      left: barStyle.left,
+                      width: barStyle.width,
+                      height: '24px',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+                    }}
+                  >
+                    {/* Progress fill */}
                     <div
-                      className="absolute top-1/2 -translate-y-1/2 rounded flex items-center overflow-hidden transition-all hover:brightness-110"
-                      style={{
-                        left: barStyle.left,
-                        width: barStyle.width,
-                        height: '24px',
-                        boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
-                      }}
-                    >
-                      {/* Progress fill */}
-                      <div
-                        className="h-full absolute inset-y-0 left-0"
-                        style={{ width: `${progress}%`, background: fillColor, borderRadius: '4px 0 0 4px' }}
-                      />
-                      {/* Remaining */}
-                      <div
-                        className="h-full absolute inset-y-0 right-0"
-                        style={{ width: `${100 - progress}%`, background: bgColor, borderRadius: '0 4px 4px 0' }}
-                      />
-                      {/* Text overlay */}
-                      <div className="relative z-[2] flex items-center justify-between w-full px-2">
-                        {showName && (
-                          <span className="text-[10px] font-medium text-white truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-                            {release.name}
-                          </span>
-                        )}
-                        <span className="text-[10px] font-bold text-white ml-auto shrink-0" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
-                          {progress}%
+                      className="h-full absolute inset-y-0 left-0"
+                      style={{ width: `${progress}%`, background: fillColor, borderRadius: '4px 0 0 4px' }}
+                    />
+                    {/* Remaining */}
+                    <div
+                      className="h-full absolute inset-y-0 right-0"
+                      style={{ width: `${100 - progress}%`, background: bgColor, borderRadius: '0 4px 4px 0' }}
+                    />
+                    {/* Text overlay */}
+                    <div className="relative z-[2] flex items-center justify-between w-full px-2">
+                      {showName && (
+                        <span className="text-[10px] font-medium text-white truncate" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                          {release.name}
                         </span>
-                      </div>
+                      )}
+                      <span className="text-[10px] font-bold text-white ml-auto shrink-0" style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}>
+                        {progress}%
+                      </span>
                     </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs max-w-[200px]">
-                    <p className="font-semibold">{release.name} {release.version}</p>
-                    <p className="text-muted-foreground">
-                      {release.plannedDate ? format(new Date(release.plannedDate), 'MMM d, yyyy') : 'No date'}
-                    </p>
-                    <p>Progress: {progress}% | Health: {release.healthScore}</p>
-                  </TooltipContent>
+                  </div>
                 </Tooltip>
 
                 {/* Milestones */}
                 {milestones.map((m, i) => (
-                  <Tooltip key={i}>
-                    <TooltipTrigger asChild>
+                  <Tooltip key={i} position="top" delay={200} content={m.label}>
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2 z-[4] pointer-events-auto cursor-help"
+                      style={{ left: getMilestoneLeft(m.date) }}
+                      aria-label={m.label}
+                    >
                       <div
-                        className="absolute top-1/2 -translate-y-1/2 z-[4] pointer-events-auto cursor-help"
-                        style={{ left: getMilestoneLeft(m.date) }}
-                        aria-label={m.label}
-                      >
-                        <div
-                          className="w-[10px] h-[10px] rotate-45"
-                          style={{ background: m.type === 'code_freeze' ? '#f97316' : '#22c55e' }}
-                        />
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">{m.label}</TooltipContent>
+                        className="w-[10px] h-[10px] rotate-45"
+                        style={{ background: m.type === 'code_freeze' ? '#f97316' : '#22c55e' }}
+                      />
+                    </div>
                   </Tooltip>
                 ))}
               </div>
@@ -320,6 +319,5 @@ export function TimelineView({ releases, onReleaseClick }: TimelineViewProps) {
           <div className="py-16 text-center text-slate-400 dark:text-[#878787] text-sm">No releases to display in timeline</div>
         )}
       </div>
-    </TooltipProvider>
   );
 }

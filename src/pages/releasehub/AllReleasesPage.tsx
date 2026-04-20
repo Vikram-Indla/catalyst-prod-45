@@ -11,7 +11,7 @@ import { SkeletonRows } from '@/components/releasehub/SkeletonRows';
 import { EmptyState, ErrorState } from '@/components/releasehub/EmptyState';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 function mapStatus(status: string) {
   if (status === 'todo') return 'planning';
@@ -210,19 +210,15 @@ export default function AllReleasesPage() {
                     <StatusLozenge status={mapStatus(r.status)} />
                     <SourceBadge source={r.source || 'catalyst'} />
                     {(r.source === 'jira') && relativeTime(r.synced_at || r.updated_at) && (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
-                              <Clock size={12} />
-                              Synced {relativeTime(r.synced_at || r.updated_at)}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            Last synced: {new Date(r.synced_at || r.updated_at).toLocaleString()}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Tooltip
+                        position="top"
+                        content={`Last synced: ${new Date(r.synced_at || r.updated_at).toLocaleString()}`}
+                      >
+                        <span className="inline-flex items-center gap-1 text-[11px] text-[#94A3B8] cursor-default">
+                          <Clock size={12} />
+                          Synced {relativeTime(r.synced_at || r.updated_at)}
+                        </span>
+                      </Tooltip>
                     )}
                   </div>
 
@@ -275,18 +271,14 @@ export default function AllReleasesPage() {
                       <div className="flex items-center gap-2">
                         {r.name}
                         {r.source === 'jira' && relativeTime(r.synced_at || r.updated_at) && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
-                                  <Clock size={12} />
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="text-xs">
-                                Synced {relativeTime(r.synced_at || r.updated_at)}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <Tooltip
+                            position="top"
+                            content={`Synced ${relativeTime(r.synced_at || r.updated_at)}`}
+                          >
+                            <span className="inline-flex items-center gap-0.5 text-[11px] text-[#94A3B8] cursor-default">
+                              <Clock size={12} />
+                            </span>
+                          </Tooltip>
                         )}
                       </div>
                     </td>

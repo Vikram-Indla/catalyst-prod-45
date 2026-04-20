@@ -72,6 +72,23 @@ function buildExternalMediaSingle(url: string, filename: string, width?: number,
   };
 }
 
+/** Walk an ADF doc and return a { nodeType -> count } map. Diagnostic-
+ *  only: used to log the view→edit normalization delta so we can see,
+ *  without a debugger, when a node type is being dropped before the
+ *  editor mounts. */
+function countNodeTypes(input: unknown): Record<string, number> {
+  const out: Record<string, number> = {};
+  const walk = (n: any) => {
+    if (!n || typeof n !== 'object') return;
+    if (typeof n.type === 'string') {
+      out[n.type] = (out[n.type] ?? 0) + 1;
+    }
+    if (Array.isArray(n.content)) n.content.forEach(walk);
+  };
+  walk(input);
+  return out;
+}
+
 export default function EpicDescriptionEditor({
   initialContent,
   onSave,
@@ -81,6 +98,32 @@ export default function EpicDescriptionEditor({
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
+
+  /* 2026-04-20 — Diagnostic: log the node-type histogram before and
+     after normalization so content-loss issues (view shows more than
+     edit) are traceable from the console. A single `console.info` per
+     mount is cheap and drops out in production builds via tree-shaking
+     of `import.meta.env.DEV`-gated code. We keep it unconditionally
+     info-level because the user has explicitly reported a content-loss
+     class of bug. */
+  useEffect(() => {
+    const raw = typeof initialContent === 'string' && initialContent.trim().startsWith('{')
+      ? (() => { try { return JSON.parse(initialContent); } catch { return initialContent; } })()
+      : initialContent;
+    const before = countNodeTypes(raw);
+    const after = countNodeTypes(initialAdf);
+    const dropped: Record<string, number> = {};
+    for (const k of Object.keys(before)) {
+      if ((after[k] ?? 0) < before[k]) dropped[k] = before[k] - (after[k] ?? 0);
+    }
+    // eslint-disable-next-line no-console
+    console.info('[EpicDescriptionEditor] normalize', {
+      workItemId,
+      before,
+      after,
+      dropped: Object.keys(dropped).length ? dropped : null,
+    });
+  }, [initialAdf, initialContent, workItemId]);
 
   const actionsRef = useRef<EditorActions | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -179,6 +222,19 @@ export default function EpicDescriptionEditor({
             allowTables={{ advanced: false }}
             allowPanel
             allowTasksAndDecisions
+            /* 2026-04-20 — Broader schema opt-ins. The previous config
+               silently dropped expand / nestedExpand, layoutSection /
+               layoutColumn, status, date, and breakout-marked nodes on
+               load because the Atlaskit schema omits nodes that aren't
+               explicitly enabled. That was the cause of the reported
+               view→edit content loss (e.g. a description with
+               `**System:** …` + an `expand` + `**Figma:** …` round-
+               tripped to only the two bold labels). */
+            allowExpand
+            allowLayouts
+            allowStatus
+            allowDate
+            allowBreakout
             shouldFocus
             primaryToolbarComponents={[
               <button

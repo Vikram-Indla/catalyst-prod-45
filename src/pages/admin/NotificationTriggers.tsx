@@ -11,7 +11,7 @@ import { Bell, Search, Filter, Download, Upload, Info, Shield, ChevronDown, Chev
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   useFilteredTriggers,
   useCategoryGroups,
@@ -465,33 +464,34 @@ function TriggerRow({
 
       {/* Trigger name + description */}
       <div className="min-w-0">
-        <TooltipProvider delayDuration={300}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-medium text-[#0F172A] truncate">
-                  {trigger.displayName}
-                </span>
-                {trigger.isMandatory && (
-                  <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
-                )}
-                {trigger.isSilent && (
-                  <Lozenge appearance="default">
-                    Silent
-                  </Lozenge>
-                )}
-                {trigger.isOverridden && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs text-xs">
+        <Tooltip
+          position="top"
+          delay={300}
+          content={
+            <>
               <p className="font-medium">{trigger.displayName}</p>
               <p className="text-muted-foreground mt-0.5">{trigger.description}</p>
               <p className="text-muted-foreground mt-1 font-mono text-[10px]">Key: {trigger.triggerKey}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </>
+          }
+        >
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-medium text-[#0F172A] truncate">
+              {trigger.displayName}
+            </span>
+            {trigger.isMandatory && (
+              <Shield className="h-3 w-3 text-[#DC2626] flex-shrink-0" />
+            )}
+            {trigger.isSilent && (
+              <Lozenge appearance="default">
+                Silent
+              </Lozenge>
+            )}
+            {trigger.isOverridden && (
+              <span className="h-1.5 w-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
+            )}
+          </div>
+        </Tooltip>
       </div>
 
       {/* Hub badge */}

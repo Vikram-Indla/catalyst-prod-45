@@ -19,7 +19,12 @@ import {
   useDeleteBusinessRequest, useDuplicateBusinessRequest,
 } from '@/hooks/useBusinessRequests';
 import { BusinessRequest } from '@/types/business-request';
-import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
+// 2026-04-20 — StoryRichTextEditor import REMOVED (TipTap). Its StarterKit
+// eagerly evaluates prosemirror-gapcursor at module load, which collides
+// with @atlaskit/editor-core's internal copy and crashes the Atlaskit
+// renderer. Business-request description + acceptance-criteria editors
+// are now plain textareas; the canonical Atlaskit EpicDescriptionEditor
+// is the single rich-text surface across Catalyst.
 import { RichTextCommentEditor } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/RichTextCommentEditor';
 import { StatusLozenge } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
 import { UserSelect } from './UserSelect';
@@ -98,6 +103,69 @@ async function logFieldChanges(requestId: string, oldData: Record<string, any>, 
     }
     if (logs.length > 0) await typedQuery('business_request_audit_logs').insert(logs);
   } catch (e) { console.error('Audit log failed:', e); }
+}
+
+// ─── Description / Acceptance-criteria textarea editor ──
+// 2026-04-20 — Replaces StoryRichTextEditor (TipTap). TipTap's StarterKit
+// and @atlaskit/editor-core register conflicting prosemirror-gapcursor
+// Selection jsonIDs in the same runtime, crashing the Atlaskit renderer.
+// Plain textarea keeps the create flow simple; the canonical Atlaskit
+// EpicDescriptionEditor remains the rich surface on the story detail.
+interface BRTextareaEditorProps {
+  initialValue: string;
+  placeholder?: string;
+  minHeight?: number;
+  onSave: (text: string) => void;
+  onCancel: () => void;
+}
+function BRTextareaEditor({ initialValue, placeholder, minHeight = 120, onSave, onCancel }: BRTextareaEditorProps) {
+  const [value, setValue] = useState(initialValue ?? '');
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => { ref.current?.focus(); }, []);
+  return (
+    <div>
+      <textarea
+        ref={ref}
+        value={value}
+        placeholder={placeholder}
+        onChange={e => setValue(e.target.value)}
+        style={{
+          width: '100%',
+          minHeight,
+          padding: '10px 12px',
+          border: '1px solid #DFE1E6',
+          borderRadius: 3,
+          background: '#FFFFFF',
+          color: '#172B4D',
+          fontSize: 14,
+          lineHeight: 1.5,
+          fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
+          resize: 'vertical',
+          outline: 'none',
+        }}
+        onFocus={e => (e.currentTarget.style.borderColor = '#4C9AFF')}
+        onBlur={e => (e.currentTarget.style.borderColor = '#DFE1E6')}
+      />
+      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+        <button
+          type="button"
+          onClick={() => onSave(value)}
+          style={{
+            padding: '6px 16px', borderRadius: 3, border: 'none', cursor: 'pointer',
+            background: '#0052CC', color: '#FFFFFF', fontSize: 14, fontWeight: 600,
+          }}
+        >Save</button>
+        <button
+          type="button"
+          onClick={onCancel}
+          style={{
+            padding: '6px 16px', borderRadius: 3, border: 'none', cursor: 'pointer',
+            background: 'transparent', color: '#42526E', fontSize: 14, fontWeight: 500,
+          }}
+        >Cancel</button>
+      </div>
+    </div>
+  );
 }
 
 // ─── Props ──────────────────────────────────────
@@ -498,16 +566,15 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 24 }}>
                 <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Description</h2>
                 {descEditMode ? (
-                  <StoryRichTextEditor
-                    content={formData.description || ''}
-                    workItemId={requestId || ''}
-                    onSave={(html) => {
-                      handleFieldChange('description', html);
+                  <BRTextareaEditor
+                    initialValue={formData.description || ''}
+                    placeholder="Add a description…"
+                    minHeight={150}
+                    onSave={(text) => {
+                      handleFieldChange('description', text);
                       setDescEditMode(false);
                     }}
                     onCancel={() => setDescEditMode(false)}
-                    placeholder="Add a description…"
-                    minHeight={150}
                   />
                 ) : (
                   <div
@@ -541,16 +608,15 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
               <div style={{ marginBottom: 24 }}>
                 <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Acceptance Criteria</h2>
                 {acEditMode ? (
-                  <StoryRichTextEditor
-                    content={formData.acceptance_criteria || ''}
-                    workItemId={requestId || ''}
-                    onSave={(html) => {
-                      handleFieldChange('acceptance_criteria', html);
+                  <BRTextareaEditor
+                    initialValue={formData.acceptance_criteria || ''}
+                    placeholder="No acceptance criteria defined · Click to add"
+                    minHeight={80}
+                    onSave={(text) => {
+                      handleFieldChange('acceptance_criteria', text);
                       setAcEditMode(false);
                     }}
                     onCancel={() => setAcEditMode(false)}
-                    placeholder="No acceptance criteria defined · Click to add"
-                    minHeight={80}
                   />
                 ) : (
                   <div

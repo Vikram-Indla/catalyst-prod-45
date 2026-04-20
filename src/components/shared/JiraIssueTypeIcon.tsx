@@ -16,7 +16,7 @@ import {
   getJiraTypeColor,
   getJiraTypeLabel 
 } from '@/lib/jira-issue-type-icons';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 interface JiraIssueTypeIconProps {
@@ -29,21 +29,14 @@ export function JiraIssueTypeIcon({ issueType, size = 16, className }: JiraIssue
   const cfg = resolveJiraTypeConfig(issueType);
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={cn('inline-flex items-center justify-center flex-shrink-0', className)} style={{ width: size, height: size }}>
-            <CanonicalIcon 
-              type={issueType} 
-              size={size} 
-            />
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="top" sideOffset={4}>
-          <p className="font-medium text-xs">{cfg.label}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={<p className="font-medium text-xs">{cfg.label}</p>} position="top">
+      <span className={cn('inline-flex items-center justify-center flex-shrink-0', className)} style={{ width: size, height: size }}>
+        <CanonicalIcon
+          type={issueType}
+          size={size}
+        />
+      </span>
+    </Tooltip>
   );
 }
 

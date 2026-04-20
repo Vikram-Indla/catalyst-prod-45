@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useProjectKeyResolver } from '@/hooks/useKeyAliasResolver';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -503,10 +502,6 @@ function ListView() {
     );
   };
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
-
   return (
     <div className="mt-4">
       {/* Toolbar */}
@@ -568,10 +563,7 @@ function ListView() {
                       <Lozenge appearance={getStatusAppearance(feature.status)}>{feature.status}</Lozenge>
                     </TableCell>
                     <TableCell>
-                      <Avatar className="h-6 w-6">
-                        <AvatarImage src={nameAvatarMap.get(feature.assignee?.toLowerCase())} alt={feature.assignee} />
-                        <AvatarFallback className="text-xs">{getInitials(feature.assignee)}</AvatarFallback>
-                      </Avatar>
+                      <Avatar src={nameAvatarMap.get(feature.assignee?.toLowerCase())} name={feature.assignee} size="xsmall" />
                     </TableCell>
                     <TableCell className="text-sm">{feature.priority}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">{feature.created}</TableCell>
@@ -618,10 +610,7 @@ function ListView() {
                             <Lozenge appearance={getStatusAppearance(story.status)}>{story.status}</Lozenge>
                           </TableCell>
                           <TableCell>
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={nameAvatarMap.get(story.assignee?.toLowerCase())} alt={story.assignee} />
-                              <AvatarFallback className="text-xs">{getInitials(story.assignee)}</AvatarFallback>
-                            </Avatar>
+                            <Avatar src={nameAvatarMap.get(story.assignee?.toLowerCase())} name={story.assignee} size="xsmall" />
                           </TableCell>
                           <TableCell className="text-sm">{story.priority}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{story.created}</TableCell>
@@ -657,10 +646,7 @@ function ListView() {
                               <Lozenge appearance={getStatusAppearance(subtask.status)}>{subtask.status}</Lozenge>
                             </TableCell>
                             <TableCell>
-                              <Avatar className="h-6 w-6">
-                                <AvatarImage src={nameAvatarMap.get(subtask.assignee?.toLowerCase())} alt={subtask.assignee} />
-                                <AvatarFallback className="text-xs">{getInitials(subtask.assignee)}</AvatarFallback>
-                              </Avatar>
+                              <Avatar src={nameAvatarMap.get(subtask.assignee?.toLowerCase())} name={subtask.assignee} size="xsmall" />
                             </TableCell>
                             <TableCell className="text-sm">{subtask.priority}</TableCell>
                             <TableCell className="text-xs text-muted-foreground">{subtask.created}</TableCell>
@@ -704,10 +690,6 @@ function KanbanView() {
     { id: 'done', name: 'Done', items: [] },
   ];
 
-  const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase();
-  };
-
   return (
     <div className="mt-4 flex gap-4 overflow-x-auto pb-4">
       {columns.map((column) => (
@@ -731,10 +713,7 @@ function KanbanView() {
                     <Link to={`/browse/${item.key}`} className="text-xs text-primary hover:underline">
                       {item.key}
                     </Link>
-                    <Avatar className="h-5 w-5">
-                      <AvatarImage src={nameAvatarMap.get(item.assignee?.toLowerCase())} alt={item.assignee} />
-                      <AvatarFallback className="text-[10px]">{getInitials(item.assignee)}</AvatarFallback>
-                    </Avatar>
+                    <Avatar src={nameAvatarMap.get(item.assignee?.toLowerCase())} name={item.assignee} size="xxsmall" />
                   </div>
                 </CardContent>
               </Card>

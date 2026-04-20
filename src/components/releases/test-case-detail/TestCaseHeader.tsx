@@ -6,11 +6,10 @@
 
 import { useState, useEffect } from 'react';
 import { Pencil, CheckCircle, XCircle, Circle, AlertTriangle, ArrowUp, Minus, ArrowDown, Loader2, Check, X } from 'lucide-react';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -54,10 +53,6 @@ const typeConfig: Record<string, { appearance: LozengeAppearance }> = {
   'Performance': { appearance: 'default' },
   'Security': { appearance: 'removed' },
 };
-
-function getInitials(name: string): string {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-}
 
 export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
   const queryClient = useQueryClient();
@@ -158,7 +153,7 @@ export function TestCaseHeader({ testCase }: TestCaseHeaderProps) {
       <div className="flex items-center gap-6 text-sm flex-wrap">
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Type:</span><Lozenge appearance={type.appearance}>{typeName}</Lozenge></div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Priority:</span><span className={cn('flex items-center gap-1', priority.className)}><PriorityIcon className="w-4 h-4" />{priority.label}</span></div>
-        <div className="flex items-center gap-2"><span className="text-muted-foreground">Assignee:</span><div className="flex items-center gap-1.5"><Avatar className="h-5 w-5">{assigneeAvatar && <AvatarImage src={assigneeAvatar} alt={assigneeName} />}<AvatarFallback className="text-xs bg-primary/10 text-primary">{getInitials(assigneeName)}</AvatarFallback></Avatar><span>{assigneeName}</span></div></div>
+        <div className="flex items-center gap-2"><span className="text-muted-foreground">Assignee:</span><div className="flex items-center gap-1.5"><Avatar src={assigneeAvatar} name={assigneeName} size="xxsmall" /><span>{assigneeName}</span></div></div>
         <div className="flex items-center gap-2"><span className="text-muted-foreground">Est. Time:</span><span>{estimatedTime}</span></div>
       </div>
     </div>

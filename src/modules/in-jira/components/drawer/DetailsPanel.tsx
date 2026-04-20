@@ -18,9 +18,8 @@ import {
   Package
 } from 'lucide-react';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
@@ -140,12 +139,7 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
               <SelectValue>
                 {assignee ? (
                   <div className="flex items-center gap-2">
-                    <Avatar className="h-5 w-5">
-                      <AvatarImage src={assignee.avatarUrl} />
-                      <AvatarFallback className="text-[10px]">
-                        {assignee.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={assignee.name} src={assignee.avatarUrl} size="xxsmall" />
                     <span className="truncate">{assignee.name}</span>
                   </div>
                 ) : (
@@ -160,12 +154,7 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
               {users.map((user) => (
                 <SelectItem key={user.id} value={user.id}>
                   <div className="flex items-center gap-2">
-                    <Avatar className="h-5 w-5">
-                      <AvatarImage src={user.avatarUrl} />
-                      <AvatarFallback className="text-[10px]">
-                        {user.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={user.name} src={user.avatarUrl} size="xxsmall" />
                     {user.name}
                   </div>
                 </SelectItem>
@@ -179,12 +168,7 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
           <div className="flex items-center gap-2 py-1">
             {reporter ? (
               <>
-                <Avatar className="h-5 w-5">
-                  <AvatarImage src={reporter.avatarUrl} />
-                  <AvatarFallback className="text-[10px]">
-                    {reporter.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <Avatar name={reporter.name} src={reporter.avatarUrl} size="xxsmall" />
                 <span className="text-sm truncate">{reporter.name}</span>
               </>
             ) : (

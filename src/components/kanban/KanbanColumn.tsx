@@ -16,7 +16,19 @@ import type { VisibleFields } from '@/hooks/useKanbanViewSettings';
 /* ═══ COLUMN HEADER ═══ */
 
 function ColHeader({ name, count, category, tk }: { name: string; count: number; category: string; tk: KanbanThemeTokens }) {
-  const categoryDot = category === 'done' ? '#006644' : category === 'in_progress' ? '#0747A6' : '#5E6C84';
+  // Jira-parity column dot colour. Maps legacy 3-category + the 6-category
+  // Atlaskit categories (default/inprogress/success/removed/new/moved) onto
+  // the exact Atlaskit colour tokens. Single source of truth lives in
+  // /src/components/workflow — this header just mirrors the same palette
+  // so column dots match the lozenges rendered on cards/rows elsewhere.
+  const c = category?.toLowerCase?.();
+  const categoryDot =
+    c === 'done' || c === 'success'           ? '#006644' :  // Atlaskit "success"
+    c === 'in_progress' || c === 'inprogress' ? '#0747A6' :  // Atlaskit "inprogress"
+    c === 'removed'                           ? '#AE2A19' :  // Atlaskit "removed"
+    c === 'new'                               ? '#5E4DB2' :  // Atlaskit "new"
+    c === 'moved'                             ? '#A54800' :  // Atlaskit "moved"
+    '#5E6C84';                                                // Atlaskit "default" / todo
   return (
     <div className="flex items-center gap-2 sticky top-0 z-10" style={{
       height: 48,                                       /* Jira parity: 48px */

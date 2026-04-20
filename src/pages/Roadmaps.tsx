@@ -4,10 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { Separator } from '@/components/ui/separator';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { PIFilterSidebar } from '@/components/roadmaps/PIFilterSidebar';
 import { 
@@ -140,28 +139,26 @@ export default function Roadmaps() {
           top: '4px',
         }}
       >
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span className="truncate flex-1">
-                {feature.id.toString().slice(0, 4)} - {feature.name}
-              </span>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="bg-popover text-popover-foreground p-3 max-w-xs">
-              <div className="space-y-1">
-                <p className="font-semibold">{feature.name}</p>
-                <p className="text-xs">{feature.description}</p>
-                <div className="flex items-center gap-2 text-xs pt-2">
-                  <Calendar className="h-3 w-3" />
-                  <span>
-                    {format(parseISO(feature.planned_start_date), 'MM/dd/yyyy')} - 
-                    {format(parseISO(feature.planned_end_date), 'MM/dd/yyyy')}
-                  </span>
-                </div>
+        <Tooltip
+          position="top"
+          content={
+            <div className="space-y-1">
+              <p className="font-semibold">{feature.name}</p>
+              <p className="text-xs">{feature.description}</p>
+              <div className="flex items-center gap-2 text-xs pt-2">
+                <Calendar className="h-3 w-3" />
+                <span>
+                  {format(parseISO(feature.planned_start_date), 'MM/dd/yyyy')} -
+                  {format(parseISO(feature.planned_end_date), 'MM/dd/yyyy')}
+                </span>
               </div>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+            </div>
+          }
+        >
+          <span className="truncate flex-1">
+            {feature.id.toString().slice(0, 4)} - {feature.name}
+          </span>
+        </Tooltip>
 
         {/* Render milestones as star icons */}
         {showMilestonesObjectives && milestones.map((milestone: any) => {
@@ -169,30 +166,29 @@ export default function Roadmaps() {
           if (!milestonePos) return null;
 
           return (
-            <TooltipProvider key={milestone.id}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <StarIcon
-                    className={`absolute ${milestone.milestone_type === 'start_date' ? 'fill-info' : 'fill-warning'} stroke-background`}
-                    style={{
-                      left: `${milestonePos.left - position.left}%`,
-                      top: '-8px',
-                    }}
-                    size={20}
-                    strokeWidth={2}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="top" className="bg-popover text-popover-foreground p-3">
-                  <div className="space-y-1 text-xs">
-                    <p className="font-semibold">{milestone.title}</p>
-                    {milestone.start_date && (
-                      <p>Start date: {format(parseISO(milestone.start_date), 'MM/dd/yyyy')}</p>
-                    )}
-                    <p>Due date: {format(parseISO(milestone.due_date), 'MM/dd/yyyy')}</p>
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip
+              key={milestone.id}
+              position="top"
+              content={
+                <div className="space-y-1 text-xs">
+                  <p className="font-semibold">{milestone.title}</p>
+                  {milestone.start_date && (
+                    <p>Start date: {format(parseISO(milestone.start_date), 'MM/dd/yyyy')}</p>
+                  )}
+                  <p>Due date: {format(parseISO(milestone.due_date), 'MM/dd/yyyy')}</p>
+                </div>
+              }
+            >
+              <StarIcon
+                className={`absolute ${milestone.milestone_type === 'start_date' ? 'fill-info' : 'fill-warning'} stroke-background`}
+                style={{
+                  left: `${milestonePos.left - position.left}%`,
+                  top: '-8px',
+                }}
+                size={20}
+                strokeWidth={2}
+              />
+            </Tooltip>
           );
         })}
 
@@ -201,29 +197,28 @@ export default function Roadmaps() {
           if (!objective) return null;
           
           return (
-            <TooltipProvider key={objective.id}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Flag
-                    className="absolute fill-destructive stroke-background"
-                    style={{
-                      right: `${idx * 24}px`,
-                      top: '-8px',
-                    }}
-                    size={18}
-                    strokeWidth={2}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="top" className="bg-popover text-popover-foreground p-3 max-w-xs">
-                  <div className="space-y-1 text-xs">
-                    <p className="font-semibold">{objective.name}</p>
-                    {objective.end_date && (
-                      <p>{format(parseISO(objective.end_date), 'MM/dd/yyyy')}</p>
-                    )}
-                  </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip
+              key={objective.id}
+              position="top"
+              content={
+                <div className="space-y-1 text-xs">
+                  <p className="font-semibold">{objective.name}</p>
+                  {objective.end_date && (
+                    <p>{format(parseISO(objective.end_date), 'MM/dd/yyyy')}</p>
+                  )}
+                </div>
+              }
+            >
+              <Flag
+                className="absolute fill-destructive stroke-background"
+                style={{
+                  right: `${idx * 24}px`,
+                  top: '-8px',
+                }}
+                size={18}
+                strokeWidth={2}
+              />
+            </Tooltip>
           );
         })}
 

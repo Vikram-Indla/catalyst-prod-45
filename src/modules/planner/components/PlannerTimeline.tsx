@@ -43,12 +43,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 // Import enterprise CSS overrides
 import '../styles/timeline-enterprise.css';
@@ -466,7 +461,7 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
   const isLoading = tasksLoading || wsLoading;
 
   return (
-    <TooltipProvider delayDuration={200}>
+    <>
       {/* M4: Page background #f8fafc */}
       <div className="timeline-enterprise h-full flex flex-col bg-[#f8fafc] dark:bg-slate-950">
         {/* ============================================================
@@ -942,87 +937,12 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                   const top = SWIMLANE_PADDING + index * (TASK_BAR_HEIGHT + TASK_BAR_GAP);
 
                                   return (
-                                    <Tooltip key={task.id}>
-                                      <TooltipTrigger asChild>
-                                        <div
-                                          className={cn(
-                                            // H7: Bar height 28px, H8: border-radius 6px
-                                            "task-bar absolute flex items-center cursor-pointer transition-all",
-                                            // L1: Subtle shadow + lift on hover
-                                            isHovered && "shadow-md -translate-y-0.5",
-                                            // D1: Overdue class for red left border
-                                            task.is_overdue && "overdue"
-                                          )}
-                                          data-workstream={lane.name}
-                                          data-overdue={task.is_overdue}
-                                          data-status={task.status_slug}
-                                          style={{
-                                            left: Math.max(4, barStyle.left),
-                                            width: barStyle.width,
-                                            top,
-                                            // H7: Bar height 28-32px
-                                            height: TASK_BAR_HEIGHT,
-                                            // B1-B5: Workstream color at low opacity (15-20%)
-                                            backgroundColor: wsColors.light,
-                                            // B6-B10: Workstream border color
-                                            border: `1px solid ${wsColors.border}`,
-                                            // D1: OVERDUE — Red left border 3px solid #dc2626
-                                            borderLeft: task.is_overdue ? '3px solid #dc2626' : `1px solid ${wsColors.border}`,
-                                            // H8: Bar border radius 6px
-                                            borderRadius: '6px',
-                                            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                                          }}
-                                          onClick={() => onTaskClick?.(task)}
-                                          onMouseEnter={() => setHoveredTaskId(task.id)}
-                                          onMouseLeave={() => setHoveredTaskId(null)}
-                                          tabIndex={0}
-                                        >
-                                          {/* E1: Status dot — 8px, inside bar (REFINED) */}
-                                          <span
-                                            className="status-dot w-2 h-2 rounded-full ml-2 flex-shrink-0"
-                                            style={{ backgroundColor: statusDotColor }}
-                                            data-status={task.status_slug}
-                                          />
-
-                                          {/* H1-H2: Task ID — workstream-colored monospace */}
-                                          <span 
-                                            className="task-id ml-2 text-[12px] font-semibold font-mono flex-shrink-0"
-                                            style={{ color: wsColors.textPrimary || '#475569' }}
-                                          >
-                                            {task.key}
-                                          </span>
-
-                                          {/* H3-H4: Task Title — workstream-colored, truncated */}
-                                          {showTitle && (
-                                            <span
-                                              className={cn(
-                                                "task-title ml-1.5 text-[13px] font-medium truncate flex-1",
-                                                task.status_slug === 'done' && "line-through opacity-70"
-                                              )}
-                                              style={{ color: wsColors.textDark || '#334155' }}
-                                            >
-                                              {task.title}
-                                            </span>
-                                          )}
-
-                                          {/* H5-H6: Assignee avatar — 18-20px, right side */}
-                                          {task.assignee_id && (
-                                            <div
-                                              className="assignee-avatar w-[18px] h-[18px] rounded-full flex items-center justify-center text-[8px] font-bold text-white ml-auto mr-2 flex-shrink-0"
-                                              style={{ backgroundColor: wsColors.hex }}
-                                            >
-                                              {task.assignee_initials || '—'}
-                                            </div>
-                                          )}
-
-                                          {/* D2: Overdue indicator dot — 8px red dot top-right */}
-                                          {task.is_overdue && (
-                                            <span className="overdue-dot absolute -top-1 -right-1 w-2 h-2 bg-[#dc2626] rounded-full border-2 border-white" />
-                                          )}
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="max-w-xs p-3">
-                                        <div className="space-y-2">
+                                    <Tooltip
+                                      key={task.id}
+                                      position="top"
+                                      delay={200}
+                                      content={
+                                        <div className="space-y-2 max-w-xs p-3">
                                           <div className="font-semibold text-sm">
                                             {task.key}: {task.title}
                                           </div>
@@ -1058,7 +978,84 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
                                             )}
                                           </div>
                                         </div>
-                                      </TooltipContent>
+                                      }
+                                    >
+                                      <div
+                                        className={cn(
+                                          // H7: Bar height 28px, H8: border-radius 6px
+                                          "task-bar absolute flex items-center cursor-pointer transition-all",
+                                          // L1: Subtle shadow + lift on hover
+                                          isHovered && "shadow-md -translate-y-0.5",
+                                          // D1: Overdue class for red left border
+                                          task.is_overdue && "overdue"
+                                        )}
+                                        data-workstream={lane.name}
+                                        data-overdue={task.is_overdue}
+                                        data-status={task.status_slug}
+                                        style={{
+                                          left: Math.max(4, barStyle.left),
+                                          width: barStyle.width,
+                                          top,
+                                          // H7: Bar height 28-32px
+                                          height: TASK_BAR_HEIGHT,
+                                          // B1-B5: Workstream color at low opacity (15-20%)
+                                          backgroundColor: wsColors.light,
+                                          // B6-B10: Workstream border color
+                                          border: `1px solid ${wsColors.border}`,
+                                          // D1: OVERDUE — Red left border 3px solid #dc2626
+                                          borderLeft: task.is_overdue ? '3px solid #dc2626' : `1px solid ${wsColors.border}`,
+                                          // H8: Bar border radius 6px
+                                          borderRadius: '6px',
+                                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                                        }}
+                                        onClick={() => onTaskClick?.(task)}
+                                        onMouseEnter={() => setHoveredTaskId(task.id)}
+                                        onMouseLeave={() => setHoveredTaskId(null)}
+                                        tabIndex={0}
+                                      >
+                                        {/* E1: Status dot — 8px, inside bar (REFINED) */}
+                                        <span
+                                          className="status-dot w-2 h-2 rounded-full ml-2 flex-shrink-0"
+                                          style={{ backgroundColor: statusDotColor }}
+                                          data-status={task.status_slug}
+                                        />
+
+                                        {/* H1-H2: Task ID — workstream-colored monospace */}
+                                        <span
+                                          className="task-id ml-2 text-[12px] font-semibold font-mono flex-shrink-0"
+                                          style={{ color: wsColors.textPrimary || '#475569' }}
+                                        >
+                                          {task.key}
+                                        </span>
+
+                                        {/* H3-H4: Task Title — workstream-colored, truncated */}
+                                        {showTitle && (
+                                          <span
+                                            className={cn(
+                                              "task-title ml-1.5 text-[13px] font-medium truncate flex-1",
+                                              task.status_slug === 'done' && "line-through opacity-70"
+                                            )}
+                                            style={{ color: wsColors.textDark || '#334155' }}
+                                          >
+                                            {task.title}
+                                          </span>
+                                        )}
+
+                                        {/* H5-H6: Assignee avatar — 18-20px, right side */}
+                                        {task.assignee_id && (
+                                          <div
+                                            className="assignee-avatar w-[18px] h-[18px] rounded-full flex items-center justify-center text-[8px] font-bold text-white ml-auto mr-2 flex-shrink-0"
+                                            style={{ backgroundColor: wsColors.hex }}
+                                          >
+                                            {task.assignee_initials || '—'}
+                                          </div>
+                                        )}
+
+                                        {/* D2: Overdue indicator dot — 8px red dot top-right */}
+                                        {task.is_overdue && (
+                                          <span className="overdue-dot absolute -top-1 -right-1 w-2 h-2 bg-[#dc2626] rounded-full border-2 border-white" />
+                                        )}
+                                      </div>
                                     </Tooltip>
                                   );
                                 })}
@@ -1121,6 +1118,6 @@ export function PlannerTimeline({ onTaskClick }: PlannerTimelineProps) {
           onClose={closeWorkstreamDrawer}
         />
       </div>
-    </TooltipProvider>
+    </>
   );
 }

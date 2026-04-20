@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfluenceEditor } from '@/components/knowledge-hub/editor';
+import { adfToPlainText } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { DocumentVersionHistory } from '@/components/knowledge-hub';
 import { DocumentComments } from '@/components/knowledge-hub/DocumentComments';
 import { DocumentLabels } from '@/components/knowledge-hub/DocumentLabels';
@@ -78,12 +79,18 @@ export default function KnowledgeHubDocumentPage() {
   const updateMutation = useMutation({
     mutationFn: async ({ title, content }: { title: string; content: string }) => {
       if (!documentId) throw new Error('No document ID');
+      // 2026-04-20 — `content` is now an ADF JSON string emitted by the
+      // Atlaskit-based ConfluenceEditor (was: TipTap HTML). Strip through
+      // adfToPlainText so the search column stays plain-text; the helper
+      // falls back to the legacy HTML regex shape when the input isn't
+      // valid ADF, which keeps pre-migration rows searchable.
+      const plain = adfToPlainText(content) || content.replace(/<[^>]*>/g, '');
       const { error } = await supabase
         .from('kb_documents')
         .update({
           title,
           content: content,
-          content_text: content.replace(/<[^>]*>/g, ''), // Strip HTML for search
+          content_text: plain,
           updated_at: new Date().toISOString(),
         })
         .eq('id', documentId);

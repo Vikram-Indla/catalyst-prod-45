@@ -10,19 +10,14 @@ import {
   PanelRightClose, PanelRight, Cog, User, AlertCircle, Flag, Tag
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
+import { Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import type { 
   IncidentStatus, 
@@ -256,46 +251,37 @@ export function IncidentContextRail({
   // Collapsed state - show thin icon strip
   if (isCollapsed) {
     return (
-      <TooltipProvider delayDuration={300}>
-        <aside className="w-12 border-l border-border bg-muted/5 flex flex-col items-center py-3 gap-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 p-0"
-                onClick={onToggleCollapse}
-              >
-                <PanelRight className="h-4 w-4 text-muted-foreground" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">Expand panel</TooltipContent>
-          </Tooltip>
-        </aside>
-      </TooltipProvider>
+      <aside className="w-12 border-l border-border bg-muted/5 flex flex-col items-center py-3 gap-2">
+        <Tooltip content="Expand panel" position="left" delay={300}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0"
+            onClick={onToggleCollapse}
+          >
+            <PanelRight className="h-4 w-4 text-muted-foreground" />
+          </Button>
+        </Tooltip>
+      </aside>
     );
   }
 
   return (
-    <TooltipProvider delayDuration={300}>
-      <aside className="w-[280px] min-w-[260px] max-w-[300px] border-l border-border overflow-auto bg-muted/5 flex flex-col">
-        {/* Rail header */}
-        <div className="px-3 py-2.5 border-b border-border flex items-center justify-between bg-background/80 shrink-0">
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Details</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0"
-                onClick={onToggleCollapse}
-              >
-                <PanelRightClose className="h-3.5 w-3.5 text-muted-foreground" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">Collapse panel</TooltipContent>
-          </Tooltip>
-        </div>
+    <aside className="w-[280px] min-w-[260px] max-w-[300px] border-l border-border overflow-auto bg-muted/5 flex flex-col">
+      {/* Rail header */}
+      <div className="px-3 py-2.5 border-b border-border flex items-center justify-between bg-background/80 shrink-0">
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Details</span>
+        <Tooltip content="Collapse panel" position="left" delay={300}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 w-6 p-0"
+            onClick={onToggleCollapse}
+          >
+            <PanelRightClose className="h-3.5 w-3.5 text-muted-foreground" />
+          </Button>
+        </Tooltip>
+      </div>
 
         {/* Free-floating stacked fields */}
         <div className="p-4 space-y-4 flex-1 overflow-auto">
@@ -458,6 +444,5 @@ export function IncidentContextRail({
           </FieldRow>
         </div>
       </aside>
-    </TooltipProvider>
   );
 }

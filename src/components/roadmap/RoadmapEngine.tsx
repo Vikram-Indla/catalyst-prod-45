@@ -18,7 +18,7 @@ import {
   Search,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RoadmapFiltersDialog, RoadmapFilters } from '@/components/executive-roadmap/RoadmapFiltersDialog';
 import { RoadmapLegend } from '@/components/executive-roadmap/RoadmapLegend';
@@ -550,89 +550,69 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                 />
               </div>
             )}
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => {
-                      if (isSearchExpanded && searchQuery) setSearchQuery('');
-                      setIsSearchExpanded(!isSearchExpanded);
-                      if (!isSearchExpanded) setTimeout(() => searchInputRef.current?.focus(), 100);
-                    }}
-                    className={cn(
-                      "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md",
-                      isSearchExpanded ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                    )}
-                    style={{ 
-                      backgroundColor: isSearchExpanded ? 'hsl(var(--roadmap-status-new))' : undefined,
-                      border: isSearchExpanded ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                    }}
-                  >
-                    <Search className="w-[18px] h-[18px]" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs">Search</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content="Search" position="bottom" delay={200}>
+              <button
+                onClick={() => {
+                  if (isSearchExpanded && searchQuery) setSearchQuery('');
+                  setIsSearchExpanded(!isSearchExpanded);
+                  if (!isSearchExpanded) setTimeout(() => searchInputRef.current?.focus(), 100);
+                }}
+                className={cn(
+                  "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md",
+                  isSearchExpanded ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+                )}
+                style={{
+                  backgroundColor: isSearchExpanded ? 'hsl(var(--roadmap-status-new))' : undefined,
+                  border: isSearchExpanded ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+                }}
+              >
+                <Search className="w-[18px] h-[18px]" />
+              </button>
+            </Tooltip>
           </div>
 
           {/* Milestones Toggle */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setShowMilestones(!showMilestones)}
-                  className={cn(
-                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showMilestones ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                  )}
-                  style={{ 
-                    backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
-                    border: showMilestones ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                  }}
-                >
-                  <Clock className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Milestones</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content="Milestones" position="bottom" delay={200}>
+            <button
+              onClick={() => setShowMilestones(!showMilestones)}
+              className={cn(
+                "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
+                showMilestones ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+              )}
+              style={{
+                backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
+                border: showMilestones ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+              }}
+            >
+              <Clock className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
 
           <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
 
           {/* Filter */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setFiltersDialogOpen(true)}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                >
-                  <Filter className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Filters</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content="Filters" position="bottom" delay={200}>
+            <button
+              onClick={() => setFiltersDialogOpen(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+              style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+            >
+              <Filter className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
 
           {/* Time Period Selector */}
           <Popover>
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <PopoverTrigger asChild>
-                    <button
-                      className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                      style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                    >
-                      <Calendar className="w-[18px] h-[18px]" />
-                    </button>
-                  </PopoverTrigger>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="text-xs">Time Period</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip content="Time Period" position="bottom" delay={200}>
+              <PopoverTrigger asChild>
+                <button
+                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+                >
+                  <Calendar className="w-[18px] h-[18px]" />
+                </button>
+              </PopoverTrigger>
+            </Tooltip>
             <PopoverContent 
               align="end" 
               className="w-[360px] p-0 bg-white dark:bg-[#1A1A1A] shadow-xl rounded-xl z-[400]"
@@ -847,58 +827,43 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
           <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
 
           {/* Export */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={handleExport}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                >
-                  <Download className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Export</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content="Export" position="bottom" delay={200}>
+            <button
+              onClick={handleExport}
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+              style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+            >
+              <Download className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
 
           {/* Legend Toggle */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setShowLegend(!showLegend)}
-                  className={cn(
-                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showLegend ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
-                  )}
-                  style={{ 
-                    backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
-                    border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                  }}
-                >
-                  <Info className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Legend</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content="Legend" position="bottom" delay={200}>
+            <button
+              onClick={() => setShowLegend(!showLegend)}
+              className={cn(
+                "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
+                showLegend ? "text-white" : "bg-white dark:bg-[#1A1A1A] text-[hsl(var(--roadmap-charcoal))]"
+              )}
+              style={{
+                backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
+                border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+              }}
+            >
+              <Info className="w-[18px] h-[18px]" />
+            </button>
+          </Tooltip>
 
           {/* Fullscreen Toggle */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={toggleFullscreen}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
-                >
-                  {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <Tooltip content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'} position="bottom" delay={200}>
+            <button
+              onClick={toggleFullscreen}
+              className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white dark:bg-[#1A1A1A] shadow-sm hover:shadow-md"
+              style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-charcoal))' }}
+            >
+              {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -979,37 +944,28 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                       {item.key || item.id.slice(0, 8)}
                     </button>
                   </div>
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <button 
-                          onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
-                          className="text-sm font-medium truncate leading-tight mt-1 cursor-pointer hover:underline bg-transparent border-none p-0 text-left w-full"
-                          style={{ color: 'hsl(var(--roadmap-status-new))' }}
-                        >
-                          {isRTL ? item.titleAr : item.titleEn}
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent 
-                        side="top" 
-                        align="start"
-                        sideOffset={8}
-                        className="max-w-[400px] px-4 py-3 text-sm leading-relaxed rounded-xl shadow-2xl z-[9999]"
-                        style={{ 
-                          backgroundColor: 'hsl(var(--roadmap-charcoal))',
-                          color: 'white',
-                          border: '1px solid rgba(184,148,79,0.3)'
-                        }}
-                      >
+                  <Tooltip
+                    position="top-start"
+                    delay={300}
+                    content={
+                      <>
                         <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: '#C5A86E' }}>
                           {item.key || item.id.slice(0, 8)}
                         </div>
                         <div className="font-medium" style={{ color: 'white' }}>
                           {isRTL ? item.titleAr : item.titleEn}
                         </div>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                      </>
+                    }
+                  >
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
+                      className="text-sm font-medium truncate leading-tight mt-1 cursor-pointer hover:underline bg-transparent border-none p-0 text-left w-full"
+                      style={{ color: 'hsl(var(--roadmap-status-new))' }}
+                    >
+                      {isRTL ? item.titleAr : item.titleEn}
+                    </button>
+                  </Tooltip>
                   <div className="text-[11px] mt-1 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                     {isRTL ? item.ownerAr : item.ownerEn}
                     {getPlatformName(item.platform) && (
@@ -1094,15 +1050,76 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                     const isNarrowBar = barWidthPercent < 15;
                     const isVeryNarrowBar = barWidthPercent < 8;
 
+                    const tooltipContent = (
+                      <>
+                        <div className="text-xs font-medium mb-1.5" style={{ color: '#B5A48A' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
+                        <div className="font-medium text-sm mb-3 leading-snug" style={{ color: 'white' }}>{isRTL ? item.titleAr : item.titleEn}</div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: '#A89778' }}>STATUS:</span>
+                          <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: '#DED6CA' }}>{getStatusLabel(item.status)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}>
+                          <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />
+                          <span className="text-xs" style={{ color: '#D4CABC' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span style={{ color: '#A6905E' }}>→</span>
+                          <span className="text-xs" style={{ color: '#D4CABC' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        </div>
+                        {showMilestones && item.milestones.length > 0 && (
+                          <div>
+                            <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#A89778' }}>
+                              {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` :
+                               config.workItemType === 'epic' ? `CHILD FEATURES (${item.milestones.length})` :
+                               `MILESTONES (${item.milestones.length})`}
+                            </div>
+                            <div className="space-y-1.5">
+                              {item.milestones.slice(0, 5).map((ms, idx) => {
+                                const milestoneData = ms as any;
+                                const isEpicMarker = config.workItemType === 'theme' && milestoneData.epicKey;
+                                const isFeatureMarker = config.workItemType === 'epic' && milestoneData.featureId;
+
+                                return (
+                                  <div key={idx} className="flex items-center gap-2 text-xs">
+                                    <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : '#957F51', color: ms.state === 'complete' ? 'white' : '#BFB097' }}>
+                                      {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
+                                    </div>
+                                    {isEpicMarker ? (
+                                      <>
+                                        <span className="font-medium" style={{ color: '#DED6CA' }}>{milestoneData.epicKey}</span>
+                                        <span className="truncate max-w-[120px]" style={{ color: '#BFB097' }}>{milestoneData.epicName}</span>
+                                      </>
+                                    ) : isFeatureMarker ? (
+                                      <>
+                                        <span className="font-medium truncate max-w-[180px]" style={{ color: '#DED6CA' }}>{milestoneData.featureName}</span>
+                                      </>
+                                    ) : (
+                                      <span style={{ color: '#D4CABC' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
+                                    )}
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? '#6BC98F' : ms.state === 'current' ? '#CCB27A' : '#B5A48A' }}>
+                                      {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') :
+                                       isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') :
+                                       (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                              {item.milestones.length > 5 && (
+                                <div className="text-[10px] italic" style={{ color: '#A6905E' }}>
+                                  +{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : config.workItemType === 'epic' ? 'features' : 'milestones'}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    );
+
                     return (
-                      <TooltipProvider delayDuration={200}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div 
-                              className="absolute flex flex-col cursor-pointer"
-                              style={{ left: barPos.left, width: barPos.width, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}
-                              onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
-                            >
+                      <Tooltip position="top" delay={200} content={tooltipContent}>
+                        <div
+                          className="absolute flex flex-col cursor-pointer"
+                          style={{ left: barPos.left, width: barPos.width, top: '50%', transform: 'translateY(-50%)', zIndex: 10 }}
+                          onClick={(e) => { e.stopPropagation(); onItemClick?.(item.id); }}
+                        >
                               {/* Labels Row */}
                               <div className={cn("mb-1 px-1 relative", isVeryNarrowBar ? "flex justify-center" : "flex justify-between items-center")} style={{ zIndex: 20 }}>
                                 {isVeryNarrowBar ? (
@@ -1165,78 +1182,8 @@ export function RoadmapEngine({ config, items, isLoading, className, onItemClick
                                   );
                                 })}
                               </div>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent 
-                            side="top" 
-                            align="center"
-                            sideOffset={12}
-                            className="max-w-[380px] px-4 py-3.5 rounded-lg shadow-2xl z-[9999]"
-                            style={{ backgroundColor: '#373432', color: 'white', border: 'none' }}
-                          >
-                            <div className="text-xs font-medium mb-1.5" style={{ color: '#B5A48A' }}>{item.key || `TH-${item.id.slice(0, 4).toUpperCase()}`}</div>
-                            <div className="font-medium text-sm mb-3 leading-snug" style={{ color: 'white' }}>{isRTL ? item.titleAr : item.titleEn}</div>
-                            <div className="flex items-center gap-2 mb-3">
-                              <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: '#A89778' }}>STATUS:</span>
-                              <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: 'rgba(166,144,94,0.3)', color: '#DED6CA' }}>{getStatusLabel(item.status)}</span>
-                            </div>
-                            <div className="flex items-center gap-2 py-2 px-3 rounded-md mb-3" style={{ backgroundColor: 'rgba(166,144,94,0.15)' }}>
-                              <Calendar className="w-3.5 h-3.5" style={{ color: '#A89778' }} />
-                              <span className="text-xs" style={{ color: '#D4CABC' }}>{startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                              <span style={{ color: '#A6905E' }}>→</span>
-                              <span className="text-xs" style={{ color: '#D4CABC' }}>{endDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                            </div>
-                            {showMilestones && item.milestones.length > 0 && (
-                              <div>
-                                <div className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: '#A89778' }}>
-                                  {/* Show appropriate label based on roadmap type */}
-                                  {config.workItemType === 'theme' ? `CHILD EPICS (${item.milestones.length})` : 
-                                   config.workItemType === 'epic' ? `CHILD FEATURES (${item.milestones.length})` : 
-                                   `MILESTONES (${item.milestones.length})`}
-                                </div>
-                                <div className="space-y-1.5">
-                                  {item.milestones.slice(0, 5).map((ms, idx) => {
-                                    const milestoneData = ms as any;
-                                    const isEpicMarker = config.workItemType === 'theme' && milestoneData.epicKey;
-                                    const isFeatureMarker = config.workItemType === 'epic' && milestoneData.featureId;
-                                    
-                                    return (
-                                      <div key={idx} className="flex items-center gap-2 text-xs">
-                                        <div className="w-4 h-4 rounded-full border flex items-center justify-center text-[8px] font-bold shrink-0" style={{ backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'transparent', borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : '#957F51', color: ms.state === 'complete' ? 'white' : '#BFB097' }}>
-                                          {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (idx + 1)}
-                                        </div>
-                                        {/* Theme-specific: show Epic key and name */}
-                                        {isEpicMarker ? (
-                                          <>
-                                            <span className="font-medium" style={{ color: '#DED6CA' }}>{milestoneData.epicKey}</span>
-                                            <span className="truncate max-w-[120px]" style={{ color: '#BFB097' }}>{milestoneData.epicName}</span>
-                                          </>
-                                        ) : isFeatureMarker ? (
-                                          <>
-                                            <span className="font-medium truncate max-w-[180px]" style={{ color: '#DED6CA' }}>{milestoneData.featureName}</span>
-                                          </>
-                                        ) : (
-                                          <span style={{ color: '#D4CABC' }}>{new Date(ms.date).toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })}</span>
-                                        )}
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded capitalize" style={{ backgroundColor: ms.state === 'complete' ? 'rgba(59,163,98,0.25)' : ms.state === 'current' ? 'rgba(191,149,64,0.25)' : 'rgba(166,144,94,0.2)', color: ms.state === 'complete' ? '#6BC98F' : ms.state === 'current' ? '#CCB27A' : '#B5A48A' }}>
-                                          {isEpicMarker ? (milestoneData.epicStatus || 'proposed').replace('_', ' ') : 
-                                           isFeatureMarker ? (milestoneData.featureStatus || 'funnel').replace('_', ' ') : 
-                                           (ms.state === 'complete' ? 'Complete' : ms.state === 'current' ? 'Current' : 'Pending')}
-                                        </span>
-                                      </div>
-                                    );
-                                  })}
-                                  {item.milestones.length > 5 && (
-                                    <div className="text-[10px] italic" style={{ color: '#A6905E' }}>
-                                      +{item.milestones.length - 5} more {config.workItemType === 'theme' ? 'epics' : config.workItemType === 'epic' ? 'features' : 'milestones'}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                        </div>
+                      </Tooltip>
                     );
                   })()}
                 </div>

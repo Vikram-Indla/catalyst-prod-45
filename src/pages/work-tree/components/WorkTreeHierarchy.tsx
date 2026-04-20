@@ -6,7 +6,7 @@
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronRight, ChevronDown } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // Shared presentational components from OKR module
@@ -167,23 +167,16 @@ function WorkTreeRowComponent({ node, level, expandedIds, onToggleExpand, onItem
             )}
             
             {/* Title with tooltip */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className={cn(
-                    "text-sm truncate max-w-[260px]",
-                    level === 0 && "font-semibold text-foreground",
-                    level === 1 && "font-medium text-foreground",
-                    level >= 2 && "text-muted-foreground"
-                  )}>
-                    {node.title}
-                  </span>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-md bg-popover border border-border z-[400]">
-                  <p>{node.title}</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Tooltip position="top" content={<p>{node.title}</p>}>
+              <span className={cn(
+                "text-sm truncate max-w-[260px]",
+                level === 0 && "font-semibold text-foreground",
+                level === 1 && "font-medium text-foreground",
+                level >= 2 && "text-muted-foreground"
+              )}>
+                {node.title}
+              </span>
+            </Tooltip>
           </div>
         </td>
 

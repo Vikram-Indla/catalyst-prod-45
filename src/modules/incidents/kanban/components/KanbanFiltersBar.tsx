@@ -8,8 +8,7 @@ import { ChevronDown, X, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Lozenge } from '@/components/ads';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -264,11 +263,7 @@ export const KanbanFiltersBar = memo(function KanbanFiltersBar({
             {stats.assignees.map(assignee => (
               <DropdownMenuItem key={assignee.id} onClick={() => onAssigneeChange(assignee.id)}>
                 <div className="flex items-center gap-2 w-full">
-                  <Avatar className="h-5 w-5">
-                    <AvatarFallback className="text-[10px] bg-[#f3f3f3] dark:bg-[#404040] text-[#737373] dark:text-[#d4d4d4]">
-                      {assignee.initials}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar name={assignee.name} size="xxsmall" />
                   <span className="truncate flex-1">{assignee.name}</span>
                   <span className="ml-auto">
                     <Lozenge appearance="default">{assignee.count}</Lozenge>

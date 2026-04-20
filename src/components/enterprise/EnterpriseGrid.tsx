@@ -70,12 +70,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import {
   useEnterpriseGrid,
@@ -357,7 +351,6 @@ export function EnterpriseGrid<T extends Record<string, unknown>>({
   }, []);
 
   return (
-    <TooltipProvider>
       <div className={cn('flex flex-col h-full bg-surface-1', className)}>
         {/* Toolbar */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-border-default bg-surface-1 gap-3">
@@ -768,7 +761,6 @@ export function EnterpriseGrid<T extends Record<string, unknown>>({
           existingViews={grid.views}
         />
       </div>
-    </TooltipProvider>
   );
 }
 

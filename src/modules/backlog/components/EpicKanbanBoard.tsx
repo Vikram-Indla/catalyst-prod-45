@@ -1,10 +1,13 @@
 /**
- * EpicKanbanBoard - Full Kanban board for Epic Backlog
- * Fetches epic statuses from epic_statuses table (admin configured)
- * Styled like Industry Kanban with DnD and real-time updates
+ * EpicKanbanBoard - Full Kanban board for Epic Backlog.
+ *
+ * Phase 9: DnD engine migrated from @hello-pangea/dnd → Atlaskit Pragmatic
+ * drag-and-drop. Fetches epic statuses from epic_statuses table (admin
+ * configured) with real-time sync. Column collapse + selection + per-column
+ * Add button all preserved.
  */
-import { useMemo, useState, useEffect } from 'react';
-import { DragDropContext, DropResult } from '@hello-pangea/dnd';
+import { useEffect, useMemo, useState } from 'react';
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { BacklogItem, BacklogMeta } from '../types';
@@ -43,7 +46,7 @@ const FALLBACK_STATES = [
 
 export function EpicKanbanBoard({
   items,
-  meta,
+  meta: _meta,
   selectedItems,
   onItemClick,
   onItemSelect,
@@ -61,7 +64,7 @@ export function EpicKanbanBoard({
         .select('*')
         .eq('is_active', true)
         .order('sort_order');
-      
+
       if (error) {
         console.error('[EpicKanbanBoard] Failed to fetch statuses:', error);
         return null;
@@ -111,7 +114,7 @@ export function EpicKanbanBoard({
     states.forEach(state => {
       grouped[state.id] = [];
     });
-    
+
     items.forEach(item => {
       const itemState = item.state || 'proposed'; // Default to first state
       if (grouped[itemState]) {
@@ -123,7 +126,7 @@ export function EpicKanbanBoard({
         grouped[firstState].push(item);
       }
     });
-    
+
     return grouped;
   }, [items, states]);
 
@@ -132,9 +135,9 @@ export function EpicKanbanBoard({
     mutationFn: async ({ itemId, newState }: { itemId: string; newState: string }) => {
       const { error } = await supabase
         .from('epics')
-        .update({ 
+        .update({
           state: newState as any,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq('id', itemId);
 
@@ -149,18 +152,24 @@ export function EpicKanbanBoard({
     },
   });
 
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-
-    const sourceState = result.source.droppableId;
-    const destState = result.destination.droppableId;
-
-    // No change if dropped in same column
-    if (sourceState === destState) return;
-
-    const itemId = result.draggableId;
-    updateStateMutation.mutate({ itemId, newState: destState });
-  };
+  /* ═════ Pragmatic DnD board-scope monitor — reconciles every drop. ═════ */
+  useEffect(() => {
+    return monitorForElements({
+      canMonitor: ({ source }) => source.data.type === 'card',
+      onDrop: ({ source, location }) => {
+        const destColumn = location.current.dropTargets.find(
+          (t) => t.data.type === 'column',
+        );
+        if (!destColumn) return;
+        const fromColumn = source.data.fromColumn as string | undefined;
+        const toColumn = destColumn.data.columnId as string;
+        const cardId = source.data.cardId as string;
+        // No-op if dropped back into the same column.
+        if (!toColumn || !cardId || fromColumn === toColumn) return;
+        updateStateMutation.mutate({ itemId: cardId, newState: toColumn });
+      },
+    });
+  }, [updateStateMutation]);
 
   const toggleColumnCollapse = (columnId: string) => {
     setCollapsedColumns(prev =>
@@ -170,34 +179,29 @@ export function EpicKanbanBoard({
     );
   };
 
-  // Get first state for "Add Epic" button
-  const firstStateId = states[0]?.id || 'proposed';
-
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div
-        className="flex gap-3 flex-1 overflow-x-auto overflow-y-hidden px-4 pt-3"
-        style={{
-          minHeight: 0,
-          paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
-        }}
-      >
-        {states.map((state, index) => (
-          <EpicKanbanColumn
-            key={state.id}
-            columnId={state.id}
-            label={state.label}
-            color={state.color}
-            items={itemsByState[state.id] || []}
-            selectedItems={selectedItems}
-            onItemClick={onItemClick}
-            onItemSelect={onItemSelect}
-            collapsed={collapsedColumns.includes(state.id)}
-            onToggleCollapse={() => toggleColumnCollapse(state.id)}
-            onAddEpic={index === 0 ? onAddEpic : undefined}
-          />
-        ))}
-      </div>
-    </DragDropContext>
+    <div
+      className="flex gap-3 flex-1 overflow-x-auto overflow-y-hidden px-4 pt-3"
+      style={{
+        minHeight: 0,
+        paddingBottom: 'calc(12px + env(safe-area-inset-bottom, 0px))',
+      }}
+    >
+      {states.map((state, index) => (
+        <EpicKanbanColumn
+          key={state.id}
+          columnId={state.id}
+          label={state.label}
+          color={state.color}
+          items={itemsByState[state.id] || []}
+          selectedItems={selectedItems}
+          onItemClick={onItemClick}
+          onItemSelect={onItemSelect}
+          collapsed={collapsedColumns.includes(state.id)}
+          onToggleCollapse={() => toggleColumnCollapse(state.id)}
+          onAddEpic={index === 0 ? onAddEpic : undefined}
+        />
+      ))}
+    </div>
   );
 }

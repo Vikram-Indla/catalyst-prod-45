@@ -6,12 +6,7 @@
  */
 
 import { Progress } from '@/components/ui/progress';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { HelpCircle, TrendingUp, Layers, Target, FileText } from 'lucide-react';
 import { useProgressCalculation, ProgressEntityType, ProgressData } from '@/hooks/useProgressCalculation';
 import { cn } from '@/lib/utils';
@@ -75,134 +70,123 @@ export function ProgressWithTooltip({
   const sizes = sizeClasses[size];
 
   return (
-    <TooltipProvider>
-      <Tooltip delayDuration={200}>
-        <TooltipTrigger asChild>
-          <div className={cn('flex flex-col gap-1.5 cursor-help', className)}>
-            {showLabel && (
-              <div className="flex items-center justify-between">
-                <span 
-                  className={cn('font-medium uppercase tracking-wider', sizes.label)}
-                  style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                >
-                  Overall Progress
-                </span>
-                <div className="flex items-center gap-1">
-                  <span 
-                    className={cn('font-semibold tabular-nums', sizes.text)}
-                    style={{ color: progressColor }}
-                  >
-                    {isLoading ? '...' : `${progress}%`}
-                  </span>
-                  <HelpCircle 
-                    size={12} 
-                    style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-                  />
-                </div>
-              </div>
-            )}
-            <div 
-              className={cn('relative w-full rounded-full overflow-hidden', sizes.bar)}
-              style={{ 
-                backgroundColor: 'hsl(var(--muted))',
-                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15)'
-              }}
+    <Tooltip
+      position="bottom-start"
+      delay={200}
+      content={
+        <div className="p-3 space-y-2.5">
+          {/* Header */}
+          <div className="flex items-center gap-2">
+            <Icon
+              size={14}
+              style={{ color: progressColor }}
+            />
+            <span
+              className="text-[11px] font-semibold uppercase tracking-wider"
+              style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
             >
-              <div 
-                className={cn('h-full rounded-full transition-all duration-500', sizes.bar)}
-                style={{ 
-                  width: `${progress}%`, 
-                  backgroundColor: 'hsl(var(--success))',
-                  boxShadow: progress > 0 ? '0 0 6px hsl(var(--success) / 0.4)' : 'none'
-                }}
+              {ENTITY_LABELS[entityType]} Progress
+            </span>
+          </div>
+
+          {/* Progress Value */}
+          <div className="flex items-baseline gap-2">
+            <span
+              className="text-2xl font-bold tabular-nums"
+              style={{ color: progressColor }}
+            >
+              {progress}%
+            </span>
+            <span
+              className="text-[10px]"
+              style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+            >
+              complete
+            </span>
+          </div>
+
+          {/* Calculation Method */}
+          <div
+            className="pt-2 border-t"
+            style={{ borderColor: 'var(--border-subtle, hsl(var(--border)/0.5))' }}
+          >
+            <p
+              className="text-[10px] leading-relaxed"
+              style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}
+            >
+              {data?.calculationMethod || 'Calculating...'}
+            </p>
+          </div>
+
+          {/* Breakdown */}
+          {data?.breakdown && data.breakdown.length > 0 && (
+            <div className="space-y-1.5">
+              {data.breakdown.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between text-[10px]"
+                >
+                  <span style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
+                    {item.label}
+                    {item.count !== undefined && (
+                      <span className="ml-1 opacity-60">({item.count})</span>
+                    )}
+                  </span>
+                  <span
+                    className="font-medium tabular-nums"
+                    style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
+                  >
+                    {typeof item.value === 'number' && item.label.includes('%')
+                      ? `${item.value}%`
+                      : item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      }
+    >
+      <div className={cn('flex flex-col gap-1.5 cursor-help', className)}>
+        {showLabel && (
+          <div className="flex items-center justify-between">
+            <span
+              className={cn('font-medium uppercase tracking-wider', sizes.label)}
+              style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
+            >
+              Overall Progress
+            </span>
+            <div className="flex items-center gap-1">
+              <span
+                className={cn('font-semibold tabular-nums', sizes.text)}
+                style={{ color: progressColor }}
+              >
+                {isLoading ? '...' : `${progress}%`}
+              </span>
+              <HelpCircle
+                size={12}
+                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
               />
             </div>
           </div>
-        </TooltipTrigger>
-        <TooltipContent 
-          side="bottom" 
-          align="start"
-          sideOffset={8}
-          className="max-w-[280px] p-0 z-[9999] bg-popover border-border"
-          style={{ 
-            backgroundColor: 'hsl(var(--popover))',
-            border: '1px solid hsl(var(--border))',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
+        )}
+        <div
+          className={cn('relative w-full rounded-full overflow-hidden', sizes.bar)}
+          style={{
+            backgroundColor: 'hsl(var(--muted))',
+            boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.15)'
           }}
         >
-          <div className="p-3 space-y-2.5">
-            {/* Header */}
-            <div className="flex items-center gap-2">
-              <Icon 
-                size={14} 
-                style={{ color: progressColor }}
-              />
-              <span 
-                className="text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
-              >
-                {ENTITY_LABELS[entityType]} Progress
-              </span>
-            </div>
-
-            {/* Progress Value */}
-            <div className="flex items-baseline gap-2">
-              <span 
-                className="text-2xl font-bold tabular-nums"
-                style={{ color: progressColor }}
-              >
-                {progress}%
-              </span>
-              <span 
-                className="text-[10px]"
-                style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}
-              >
-                complete
-              </span>
-            </div>
-
-            {/* Calculation Method */}
-            <div 
-              className="pt-2 border-t"
-              style={{ borderColor: 'var(--border-subtle, hsl(var(--border)/0.5))' }}
-            >
-              <p 
-                className="text-[10px] leading-relaxed"
-                style={{ color: 'var(--text-secondary, hsl(var(--muted-foreground)))' }}
-              >
-                {data?.calculationMethod || 'Calculating...'}
-              </p>
-            </div>
-
-            {/* Breakdown */}
-            {data?.breakdown && data.breakdown.length > 0 && (
-              <div className="space-y-1.5">
-                {data.breakdown.map((item, idx) => (
-                  <div 
-                    key={idx}
-                    className="flex items-center justify-between text-[10px]"
-                  >
-                    <span style={{ color: 'var(--text-muted, hsl(var(--muted-foreground)))' }}>
-                      {item.label}
-                      {item.count !== undefined && (
-                        <span className="ml-1 opacity-60">({item.count})</span>
-                      )}
-                    </span>
-                    <span 
-                      className="font-medium tabular-nums"
-                      style={{ color: 'var(--text-primary, hsl(var(--foreground)))' }}
-                    >
-                      {typeof item.value === 'number' && item.label.includes('%') 
-                        ? `${item.value}%` 
-                        : item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          <div
+            className={cn('h-full rounded-full transition-all duration-500', sizes.bar)}
+            style={{
+              width: `${progress}%`,
+              backgroundColor: 'hsl(var(--success))',
+              boxShadow: progress > 0 ? '0 0 6px hsl(var(--success) / 0.4)' : 'none'
+            }}
+          />
+        </div>
+      </div>
+    </Tooltip>
   );
 }

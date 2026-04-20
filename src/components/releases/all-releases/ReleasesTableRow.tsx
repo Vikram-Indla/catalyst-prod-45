@@ -6,8 +6,7 @@
 import { Release, STATUS_CONFIG, HEALTH_CONFIG, ReleaseStatus } from '@/types/releases';
 import { useNavigate } from 'react-router-dom';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Avatar } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -172,12 +171,11 @@ export function ReleasesTableRow({ release, index, isSelected, onToggleSelect }:
       
       {/* Owner */}
       <div className="flex justify-center">
-        <Avatar className="w-9 h-9">
-          <AvatarImage src={release.owner?.avatar_url || undefined} />
-          <AvatarFallback className="bg-primary text-white text-xs font-semibold">
-            {release.owner?.full_name?.split(' ').map(n => n[0]).join('') || '?'}
-          </AvatarFallback>
-        </Avatar>
+        <Avatar
+          src={release.owner?.avatar_url || undefined}
+          name={release.owner?.full_name || '?'}
+          size="small"
+        />
       </div>
       
       {/* Hover Actions */}

@@ -5,8 +5,7 @@ import { ProjectData } from '../../../types/project.types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -109,9 +108,7 @@ export default function ListView({ project }: ListViewProps) {
                   </div>
                   <div><Lozenge appearance={getStatusAppearance(feature.status)}>{feature.status}</Lozenge></div>
                   <div>
-                    <Avatar className="w-6 h-6">
-                      <AvatarFallback className="text-[10px]">{feature.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
-                    </Avatar>
+                    <Avatar name={feature.assignee} size="xsmall" />
                   </div>
                   <div className="text-sm text-foreground">{feature.priority}</div>
                   <div className="text-sm text-muted-foreground">{feature.created}</div>
@@ -159,9 +156,7 @@ export default function ListView({ project }: ListViewProps) {
                         </div>
                         <div><Lozenge appearance={getStatusAppearance(story.status)}>{story.status}</Lozenge></div>
                         <div>
-                          <Avatar className="w-6 h-6">
-                            <AvatarFallback className="text-[10px]">{story.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
-                          </Avatar>
+                          <Avatar name={story.assignee} size="xsmall" />
                         </div>
                         <div className="text-sm text-foreground">{story.priority}</div>
                         <div className="text-sm text-muted-foreground">{story.created}</div>
@@ -196,9 +191,7 @@ export default function ListView({ project }: ListViewProps) {
                           </div>
                           <div><Lozenge appearance={getStatusAppearance(subtask.status)}>{subtask.status}</Lozenge></div>
                           <div>
-                            <Avatar className="w-6 h-6">
-                              <AvatarFallback className="text-[10px]">{subtask.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
-                            </Avatar>
+                            <Avatar name={subtask.assignee} size="xsmall" />
                           </div>
                           <div className="text-sm text-foreground">{subtask.priority}</div>
                           <div className="text-sm text-muted-foreground">{subtask.created}</div>

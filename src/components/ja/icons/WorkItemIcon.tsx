@@ -1,12 +1,7 @@
 import React from 'react';
 import { useWorkItemIconPreferences, IconStyle } from '@/hooks/useWorkItemIconPreferences';
 import type { WorkItemType } from '@/config/workItemConfig';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 // Icon colors that work in both light and dark modes (from Catalyst design system)
 const ICON_COLORS: Record<string, string> = {
@@ -104,20 +99,13 @@ export function WorkItemIcon({ type, size = 16, className = '', forceStyle, hide
   if (hideTooltip) {
     return <>{iconElement}</>;
   }
-  
+
   return (
-    <TooltipProvider delayDuration={300}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className="inline-flex items-center justify-center" style={{ lineHeight: 0 }}>
-            {iconElement}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="text-xs">
-          {label}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={label} position="top" delay={300}>
+      <span className="inline-flex items-center justify-center" style={{ lineHeight: 0 }}>
+        {iconElement}
+      </span>
+    </Tooltip>
   );
 }
 

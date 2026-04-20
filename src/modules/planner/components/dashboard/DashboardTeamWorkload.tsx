@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, UserX, AlertCircle } from 'lucide-react';
 import type { TeamWorkload } from '../../types/planner-dashboard';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 
 interface DashboardTeamWorkloadProps {
   data: TeamWorkload[];
@@ -40,15 +40,6 @@ const MAX_TASKS_FOR_BAR = 30;
 
 export function DashboardTeamWorkload({ data, unassignedCount }: DashboardTeamWorkloadProps) {
   const navigate = useNavigate();
-
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
 
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-5">
@@ -101,12 +92,7 @@ export function DashboardTeamWorkload({ data, unassignedCount }: DashboardTeamWo
                 {/* Top row: Avatar + Name + Status */}
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <Avatar className="w-7 h-7">
-                      <AvatarImage src={member.avatar_url || undefined} />
-                      <AvatarFallback className="text-xs bg-slate-100 dark:bg-slate-700">
-                        {getInitials(member.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar src={member.avatar_url || undefined} name={member.full_name} size="xsmall" />
                     <span className="font-medium text-sm text-slate-900 dark:text-slate-100">
                       {member.full_name}
                     </span>

@@ -3,7 +3,7 @@
 // Colored dot using Catalyst brand secondary colors
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface OkrThemeDotProps {
   color?: string;
@@ -56,15 +56,8 @@ export function OkrThemeDot({ color, themeName, themeIndex, size = 'md' }: OkrTh
   if (!themeName) return dot;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {dot}
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <p>{themeName}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip position="top" content={themeName}>
+      {dot}
+    </Tooltip>
   );
 }

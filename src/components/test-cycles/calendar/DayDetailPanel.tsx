@@ -3,8 +3,7 @@ import { format, isSameDay } from 'date-fns';
 import { X, Calendar, User, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { MilestoneMarker } from './MilestoneMarker';
 import { 
   STATUS_CALENDAR_COLORS, 
@@ -138,11 +137,7 @@ export function DayDetailPanel({
                       <div className="flex items-center gap-3 mt-2 text-xs text-[#64748b]">
                         {event.assigneeName && (
                           <div className="flex items-center gap-1">
-                            <Avatar className="h-4 w-4">
-                              <AvatarFallback className="text-[8px] bg-[#e2e8f0]">
-                                {event.assigneeName.split(' ').map(n => n[0]).join('')}
-                              </AvatarFallback>
-                            </Avatar>
+                            <Avatar name={event.assigneeName} size="xxsmall" />
                             <span>{event.assigneeName}</span>
                           </div>
                         )}

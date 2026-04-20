@@ -5,8 +5,6 @@
 
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Sparkles, ChevronDown, Zap } from 'lucide-react';
-import { TooltipProvider } from '@/components/ui/tooltip';
-
 const DepartmentIntelligenceOverlay = lazy(() => import('@/components/resource360/DepartmentIntelligenceOverlay'));
 
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
@@ -108,12 +106,10 @@ export function ForYouHeader() {
 
       {showDeptIntel && selectedDept && (
         <Suspense fallback={null}>
-          <TooltipProvider>
-            <DepartmentIntelligenceOverlay
-              departmentName={selectedDept}
-              onClose={() => setShowDeptIntel(false)}
-            />
-          </TooltipProvider>
+          <DepartmentIntelligenceOverlay
+            departmentName={selectedDept}
+            onClose={() => setShowDeptIntel(false)}
+          />
         </Suspense>
       )}
     </>

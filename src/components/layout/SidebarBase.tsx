@@ -14,12 +14,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -166,12 +161,11 @@ export function SidebarBase({
   const favoritedItems = allItems.filter(item => favorites.includes(item.path));
 
   return (
-    <TooltipProvider delayDuration={0}>
-      <aside
-        className={cn(
-          'h-full flex-shrink-0 relative flex flex-col overflow-visible',
-          className
-        )}
+    <aside
+      className={cn(
+        'h-full flex-shrink-0 relative flex flex-col overflow-visible',
+        className
+      )}
         style={{
           width: expanded ? '240px' : '56px',
           background: sidebarBg,
@@ -401,7 +395,6 @@ export function SidebarBase({
           </div>
         )}
       </aside>
-    </TooltipProvider>
   );
 }
 
@@ -582,27 +575,8 @@ function renderMenuItem(
 
   if (!expanded) {
     return (
-      <Tooltip key={item.id}>
-        <TooltipTrigger asChild>
-          {menuButton}
-        </TooltipTrigger>
-        <TooltipContent 
-          side="right" 
-          sideOffset={10}
-          className="z-[200]"
-          style={{
-            background: '#0F172A',
-            color: '#FFFFFF',
-            fontFamily: "'Inter', sans-serif",
-            fontSize: '12px',
-            fontWeight: 500,
-            padding: '5px 10px',
-            borderRadius: '6px',
-            boxShadow: '0 10px 15px -3px rgba(15, 23, 42, 0.06)',
-          }}
-        >
-          {item.title}
-        </TooltipContent>
+      <Tooltip key={item.id} content={item.title} position="right">
+        {menuButton}
       </Tooltip>
     );
   }

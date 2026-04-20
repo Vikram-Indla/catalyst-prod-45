@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { useBulkUpdateTasks } from '../../hooks/useBulkUpdateTasks';
 import { useBulkDeleteTasks } from '../../hooks/useBulkDeleteTasks';
 import { useKanbanStatuses } from '../../hooks/useKanbanStatuses';
@@ -172,19 +172,14 @@ export function BulkActionBar({ selectedIds, selectedCount, onClearSelection }: 
               Delete
             </button>
           ) : (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  disabled
-                  className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-xs font-medium opacity-50 cursor-not-allowed"
-                >
-                  <ShieldAlert className="w-4 h-4" />
-                  Delete
-                </button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Only workstream leads can delete tasks</p>
-              </TooltipContent>
+            <Tooltip content="Only workstream leads can delete tasks">
+              <button
+                disabled
+                className="flex items-center gap-2 px-3 py-2 bg-slate-800 rounded-lg text-xs font-medium opacity-50 cursor-not-allowed"
+              >
+                <ShieldAlert className="w-4 h-4" />
+                Delete
+              </button>
             </Tooltip>
           )}
         </div>

@@ -10,8 +10,7 @@
  * (Same formula as WSJF, rebranded for Catalyst)
  */
 
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Lozenge, Tooltip, type LozengeAppearance } from '@/components/ads';
 
 interface TechnicalScoreBadgeProps {
   score: number | null;
@@ -66,25 +65,24 @@ export function TechnicalScoreBadge({
     </div>
   );
   
+  const scoreSpan = (
+    <span
+      className="cursor-pointer hover:opacity-80 transition-opacity"
+      onClick={onClick}
+    >
+      <Lozenge appearance={appearance}>
+        {score.toFixed(2)}
+      </Lozenge>
+    </span>
+  );
+
+  if (!tooltipContent) {
+    return scoreSpan;
+  }
+
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span
-            className="cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={onClick}
-          >
-            <Lozenge appearance={appearance}>
-              {score.toFixed(2)}
-            </Lozenge>
-          </span>
-        </TooltipTrigger>
-        {tooltipContent && (
-          <TooltipContent>
-            {tooltipContent}
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={tooltipContent}>
+      {scoreSpan}
+    </Tooltip>
   );
 }

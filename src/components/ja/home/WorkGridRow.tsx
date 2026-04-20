@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { WorkItemIcon } from '../icons/WorkItemIcon';
 import type { WorkItemType } from '../icons/WorkItemTypeIcon';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { getValidatedWorkItemRoute } from '@/lib/workItemRoutes';
 import { WorkItemStarButton } from '@/components/shared/WorkItemStarButton';
@@ -23,12 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import type { HomeRoleMode } from './HomeRoleModeSelector';
 import type { WorkItemNavigation, WorkItemContext } from '@/hooks/home/useUnifiedHomeData';
 import { LevelTag } from './LevelTag';
@@ -210,11 +204,7 @@ export function OperationsGridRow({
         <div className="flex items-center gap-2 min-w-0">
           {item.assignee ? (
             <>
-              <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
-                  {item.assignee.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={item.assignee} size="xsmall" />
               <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
             </>
           ) : (
@@ -406,11 +396,7 @@ export function DeliveryGridRow({
         <div className="flex items-center gap-2 min-w-0">
           {item.assignee ? (
             <>
-              <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
-                  {item.assignee.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={item.assignee} size="xsmall" />
               <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
             </>
           ) : (
@@ -610,11 +596,7 @@ export function PlannerGridRow({
         <div className="flex items-center gap-2 min-w-0">
           {item.assignee ? (
             <>
-              <Avatar className="w-6 h-6 shrink-0">
-                <AvatarFallback className="text-[10px] font-bold bg-gradient-to-br from-[#0d9488] to-[#0f766e] text-white">
-                  {item.assignee.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <Avatar name={item.assignee} size="xsmall" />
               <span className="text-sm text-gray-600 dark:text-gray-300 truncate">{item.assignee}</span>
             </>
           ) : (

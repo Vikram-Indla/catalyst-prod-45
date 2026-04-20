@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { useIncidentListView, useIncidentStats } from '@/hooks/useIncidentHub';
 import { useTheme } from '@/hooks/useTheme';
 import { StatusLozenge } from './components/StatusLozenge';
@@ -62,8 +62,6 @@ export default function IncidentListPage() {
     if (!d) return '\u2014';
     return new Date(d).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
   };
-
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
   const statusChips = [
     { key: 'all', label: 'All' },
@@ -258,9 +256,9 @@ export default function IncidentListPage() {
               <div className="px-2 flex items-center gap-1.5 min-w-0">
                 {item.assignee_name ? (
                   <>
-                    <Avatar size="xs" className="shrink-0">
-                      <AvatarFallback name={item.assignee_name} className="text-[9px]">{getInitials(item.assignee_name)}</AvatarFallback>
-                    </Avatar>
+                    <span className="shrink-0">
+                      <Avatar name={item.assignee_name} size="xsmall" />
+                    </span>
                     <span className="truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textBody }}>
                       {item.assignee_name}
                     </span>
@@ -273,9 +271,9 @@ export default function IncidentListPage() {
               <div className="px-2 flex items-center gap-1.5 min-w-0">
                 {item.reporter_name ? (
                   <>
-                    <Avatar size="xs" className="shrink-0">
-                      <AvatarFallback name={item.reporter_name} className="text-[9px]">{getInitials(item.reporter_name)}</AvatarFallback>
-                    </Avatar>
+                    <span className="shrink-0">
+                      <Avatar name={item.reporter_name} size="xsmall" />
+                    </span>
                     <span className="truncate" style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textBody }}>
                       {item.reporter_name}
                     </span>

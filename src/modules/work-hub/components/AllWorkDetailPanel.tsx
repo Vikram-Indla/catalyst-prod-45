@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, ExternalLink, MoreHorizontal, Link2, ChevronRight, MessageSquare, Paperclip, History, Eye, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
@@ -46,12 +46,6 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
 
   // typeInfo no longer needed — using JiraIssueTypeIcon directly
   const statusStyle = statusStyles[item.status] || statusStyles['Backlog'];
-
-  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  const getAvatarColor = (name: string) => {
-    const colors = ['bg-blue-600', 'bg-green-600', 'bg-gray-600', 'bg-amber-500', 'bg-slate-600'];
-    return colors[name.charCodeAt(0) % colors.length];
-  };
 
   return (
     <div
@@ -199,11 +193,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                   <div className="flex items-center gap-2">
                     {item.assignee ? (
                       <>
-                        <Avatar className="h-6 w-6">
-                          <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(item.assignee))}>
-                            {getInitials(item.assignee)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <Avatar name={item.assignee} size="xsmall" />
                         <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.assignee}</span>
                       </>
                     ) : (
@@ -216,11 +206,7 @@ export function AllWorkDetailPanel({ item, onClose, onNavigateToParent }: AllWor
                 <div>
                   <div className="text-[11px] mb-1" style={{ color: isDark ? '#878787' : '#64748B' }}>Reporter</div>
                   <div className="flex items-center gap-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarFallback className={cn("text-[10px] text-white", getAvatarColor(item.reporter))}>
-                        {getInitials(item.reporter)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <Avatar name={item.reporter} size="xsmall" />
                     <span className="text-[13px]" style={{ color: isDark ? '#EDEDED' : '#172B4D' }}>{item.reporter}</span>
                   </div>
                 </div>

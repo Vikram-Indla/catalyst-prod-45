@@ -1,5 +1,5 @@
 import { format, differenceInMinutes, differenceInHours, differenceInDays, differenceInWeeks } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface RelativeDateProps {
   date: string | null;
@@ -48,11 +48,8 @@ export function RelativeDate({ date, isOverdue = false, showTooltip = true }: Re
   if (!showTooltip) return el;
 
   return (
-    <TooltipProvider delayDuration={500}>
-      <Tooltip>
-        <TooltipTrigger asChild><span>{el}</span></TooltipTrigger>
-        <TooltipContent>{absolute}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={absolute} delay={500}>
+      <span>{el}</span>
+    </Tooltip>
   );
 }

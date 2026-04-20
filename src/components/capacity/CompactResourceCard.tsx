@@ -19,12 +19,6 @@ import {
 import type { ResourceAllocation } from '@/modules/capacity-planner/types';
 import { MiniGanttCard } from './MiniGanttCard';
 import { useResourceProfiles, getContractStatus } from '@/hooks/useResourceProfiles';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { CapacityAvatar } from '@/components/capacity/CapacityAvatar';
 
 interface CompactResourceCardProps {
@@ -166,8 +160,7 @@ export function CompactResourceCard({
   const SignalIcon = dominantSignal.icon;
 
   return (
-    <TooltipProvider>
-      <div 
+      <div
         className={cn(
           "relative rounded-[var(--ct-radius-lg)] p-3 cursor-pointer group",
           // V8 surfaces and borders
@@ -263,6 +256,5 @@ export function CompactResourceCard({
           </span>
         </div>
       </div>
-    </TooltipProvider>
   );
 }

@@ -8,9 +8,8 @@
 import { useState } from 'react';
 import { MessageCircle, Send, Check, MoreVertical, Trash2, Reply } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -224,11 +223,7 @@ function CommentThread({
   return (
     <Card className={`p-4 ${comment.resolved ? 'opacity-60' : ''}`}>
       <div className="flex gap-3">
-        <Avatar className="h-8 w-8">
-          <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
-            U
-          </AvatarFallback>
-        </Avatar>
+        <Avatar name="User" size="small" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -281,9 +276,7 @@ function CommentThread({
             <div className="mt-3 pl-4 border-l-2 border-muted space-y-3">
               {replies.map((reply) => (
                 <div key={reply.id} className="flex gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-muted text-xs">U</AvatarFallback>
-                  </Avatar>
+                  <Avatar name="User" size="xsmall" />
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-xs">User</span>

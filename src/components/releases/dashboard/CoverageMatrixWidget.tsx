@@ -1,6 +1,6 @@
 import { CoverageItem } from '@/types/release-dashboard';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface CoverageMatrixWidgetProps {
   coverage: CoverageItem[];
@@ -27,37 +27,30 @@ export function CoverageMatrixWidget({ coverage }: CoverageMatrixWidgetProps) {
         <h3 className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Coverage Matrix</h3>
       </div>
       <div className="divide-y divide-border/50 max-h-[200px] overflow-y-auto">
-        <TooltipProvider>
-          {coverage.map((item) => (
-            <div key={item.requirementId} className="flex items-center gap-2 px-3.5 py-2">
-              <span className="w-16 text-[11px] font-semibold text-blue-600 shrink-0">
-                {item.requirementId}
-              </span>
-              <span className="flex-1 text-xs text-foreground truncate">
-                {item.requirementName}
-              </span>
-              <div className="flex gap-1">
-                {item.testStatuses.map((status, idx) => (
-                  <Tooltip key={idx}>
-                    <TooltipTrigger>
-                      <div
-                        className={cn(
-                          "w-[18px] h-[18px] rounded flex items-center justify-center text-[9px] font-semibold text-white cursor-pointer transition-transform hover:scale-110",
-                          dotStyles[status]
-                        )}
-                      >
-                        {dotIcons[status]}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="text-xs capitalize">{status.replace('-', ' ')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
+        {coverage.map((item) => (
+          <div key={item.requirementId} className="flex items-center gap-2 px-3.5 py-2">
+            <span className="w-16 text-[11px] font-semibold text-blue-600 shrink-0">
+              {item.requirementId}
+            </span>
+            <span className="flex-1 text-xs text-foreground truncate">
+              {item.requirementName}
+            </span>
+            <div className="flex gap-1">
+              {item.testStatuses.map((status, idx) => (
+                <Tooltip key={idx} content={<p className="text-xs capitalize">{status.replace('-', ' ')}</p>}>
+                  <div
+                    className={cn(
+                      "w-[18px] h-[18px] rounded flex items-center justify-center text-[9px] font-semibold text-white cursor-pointer transition-transform hover:scale-110",
+                      dotStyles[status]
+                    )}
+                  >
+                    {dotIcons[status]}
+                  </div>
+                </Tooltip>
+              ))}
             </div>
-          ))}
-        </TooltipProvider>
+          </div>
+        ))}
       </div>
     </div>
   );

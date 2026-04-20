@@ -7,12 +7,7 @@ import { CheckCircle2, Flag, Calendar } from 'lucide-react';
 import { format, differenceInDays, isAfter, isBefore, isToday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { CycleDetail, CycleMilestone } from '../types/cycle-config';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 
 interface CycleTimelineProps {
   cycle: CycleDetail;
@@ -105,58 +100,57 @@ export const CycleTimeline = memo(function CycleTimeline({
         )}
 
         {/* Milestones */}
-        <TooltipProvider>
-          {milestonePositions.map((milestone) => (
-            <Tooltip key={milestone.id}>
-              <TooltipTrigger asChild>
-                <div
-                  className="absolute top-1/2 -translate-y-1/2 z-10 cursor-pointer"
-                  style={{ left: `${milestone.position}%` }}
-                >
-                  <div
+        {milestonePositions.map((milestone) => (
+          <Tooltip
+            key={milestone.id}
+            position="top"
+            content={
+              <div className="space-y-1">
+                <p className="font-medium">{milestone.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {format(new Date(milestone.target_date), 'MMM d, yyyy')}
+                </p>
+                {milestone.description && (
+                  <p className="text-xs">{milestone.description}</p>
+                )}
+                {milestone.isOverdue && (
+                  <p className="text-xs text-destructive font-medium">Overdue!</p>
+                )}
+              </div>
+            }
+          >
+            <div
+              className="absolute top-1/2 -translate-y-1/2 z-10 cursor-pointer"
+              style={{ left: `${milestone.position}%` }}
+            >
+              <div
+                className={cn(
+                  'w-7 h-7 rounded-full border-2 flex items-center justify-center -ml-3.5 transition-transform hover:scale-110',
+                  milestone.is_completed
+                    ? 'bg-emerald-500 border-emerald-500'
+                    : milestone.isOverdue
+                    ? 'bg-destructive border-destructive animate-pulse'
+                    : milestone.isUpcoming
+                    ? 'bg-amber-500 border-amber-500'
+                    : 'bg-card border-amber-500'
+                )}
+              >
+                {milestone.is_completed ? (
+                  <CheckCircle2 className="w-4 h-4 text-white" />
+                ) : (
+                  <Flag
                     className={cn(
-                      'w-7 h-7 rounded-full border-2 flex items-center justify-center -ml-3.5 transition-transform hover:scale-110',
-                      milestone.is_completed
-                        ? 'bg-emerald-500 border-emerald-500'
-                        : milestone.isOverdue
-                        ? 'bg-destructive border-destructive animate-pulse'
-                        : milestone.isUpcoming
-                        ? 'bg-amber-500 border-amber-500'
-                        : 'bg-card border-amber-500'
+                      'w-3.5 h-3.5',
+                      milestone.isOverdue || milestone.isUpcoming
+                        ? 'text-white'
+                        : 'text-amber-500'
                     )}
-                  >
-                    {milestone.is_completed ? (
-                      <CheckCircle2 className="w-4 h-4 text-white" />
-                    ) : (
-                      <Flag
-                        className={cn(
-                          'w-3.5 h-3.5',
-                          milestone.isOverdue || milestone.isUpcoming
-                            ? 'text-white'
-                            : 'text-amber-500'
-                        )}
-                      />
-                    )}
-                  </div>
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs">
-                <div className="space-y-1">
-                  <p className="font-medium">{milestone.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {format(new Date(milestone.target_date), 'MMM d, yyyy')}
-                  </p>
-                  {milestone.description && (
-                    <p className="text-xs">{milestone.description}</p>
-                  )}
-                  {milestone.isOverdue && (
-                    <p className="text-xs text-destructive font-medium">Overdue!</p>
-                  )}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          ))}
-        </TooltipProvider>
+                  />
+                )}
+              </div>
+            </div>
+          </Tooltip>
+        ))}
       </div>
 
       {/* Duration info */}

@@ -1,8 +1,7 @@
 import { Activity, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { useWorkItemActivityFeed } from '@/hooks/useWorkItemActivityFeed';
 import { cn } from '@/lib/utils';
 
@@ -62,11 +61,9 @@ export function WorkItemActivityFeed({ entityType, entityId, className }: WorkIt
             className="border border-neutral-200 rounded-lg bg-white p-3"
           >
             <div className="flex items-start gap-3">
-              <Avatar className="h-7 w-7 flex-shrink-0">
-                <AvatarFallback className="bg-brand-primary/20 text-brand-primary text-xs">
-                  {activity.actorId?.substring(0, 2).toUpperCase() || 'SY'}
-                </AvatarFallback>
-              </Avatar>
+              <span className="flex-shrink-0">
+                <Avatar name={activity.actorId || 'System'} size="xsmall" />
+              </span>
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">

@@ -73,13 +73,14 @@ import { EditableAssignee, EditablePriority, EditableLabels, AvatarCircle } from
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
-import { CatalystRichTextEditor } from '@/components/shared/rich-text/CatalystRichTextEditor';
-import { tryAdfStringToHtml } from '../../utils/adfToHtml';
+// 2026-04-20 — TipTap CatalystRichTextEditor import + AtlaskitBoundary
+// removed (USER DIRECTIVE). Atlaskit <EpicDescriptionEditor> is the sole
+// composer; `tryAdfStringToHtml` is only used by the TipTap HTML path,
+// also removed.
 import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
-import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
 import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-// B2b — lazy Atlaskit editor (wrapped in AtlaskitBoundary + Suspense below).
-// Keeps Rollup chunks separated from Tiptap. See IssueContentView for the template.
+// Lazy-load Atlaskit editor so Rollup keeps it in its own chunk and
+// doesn't bloat the first-load bundle.
 const EpicDescriptionEditor = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
 );
@@ -1219,92 +1220,42 @@ export default function StoryDetailModal({
                           {descUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
                         </div>
                         {descEditMode ? (
-                          /* ── B2b: canonical Atlaskit editor (mirrors IssueContentView).
-                             Writes ADF JSON → description_adf (JSONB). AtlaskitBoundary
-                             falls back to CatalystRichTextEditor (HTML → description_text)
-                             on chunk-load / runtime failure so the composer never goes
-                             dark. The ai-improve-story flow is preserved only on the
-                             fallback path — the Atlaskit editor's built-in +insert UI
-                             supersedes the Tiptap AI button for the primary surface. */
+                          /* ── Atlaskit editor — sole composer.
+                             2026-04-20: TipTap CatalystRichTextEditor fallback
+                             removed per USER DIRECTIVE. If the
+                             @atlaskit/editor-core chunk fails to load the
+                             Suspense fallback stays visible. No alternate
+                             editor — only Atlaskit ADF is accepted.
+                             AI-improve was only wired on the old TipTap
+                             fallback; Atlaskit's +insert menu replaces it. */
                           <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
-                            <AtlaskitBoundary
-                              diagnosticTag={`story-detail-modal:description-edit:${issue?.issue_key ?? itemId ?? 'n/a'}`}
+                            <Suspense
                               fallback={
-                                <CatalystRichTextEditor
-                                  content={
-                                    issue?.description_adf
-                                      ? (typeof issue.description_adf === 'string'
-                                          ? issue.description_adf
-                                          : JSON.stringify(issue.description_adf))
-                                      : (issue?.description_text || '')
-                                  }
-                                  workItemId={itemId}
-                                  onSave={(adfJson) => {
-                                    if (!itemId) { setDescEditMode(false); return; }
-                                    const parsed = adfJson ? JSON.parse(adfJson) : null;
-                                    supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
-                                      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-                                      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
-                                      queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                                      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-                                      toast.success('Description saved');
-                                    });
-                                    setDescEditMode(false);
-                                    setDescUnsaved(false);
-                                  }}
-                                  onCancel={() => { setDescEditMode(false); }}
-                                  placeholder="Add a description..."
-                                  minHeight={150}
-                                  mode="save"
-                                  storagePath="description-images"
-                                  aiLabel="Improve description"
-                                  onAiImprove={async () => {
-                                    const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                                      body: {
-                                        issue_id: itemId,
-                                        improve_type: 'improve_clarify',
-                                        current_description: issue?.description_text || '(empty)',
-                                        current_ac: acceptanceCriteria || '(none)',
-                                        issue_summary: issue?.summary ?? '',
-                                      },
-                                    });
-                                    if (fnError || !data?.description) {
-                                      toast.error('AI improve failed. Try again.');
-                                      return null;
-                                    }
-                                    return data.description;
-                                  }}
-                                />
+                                <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
+                                  Loading editor…
+                                </div>
                               }
                             >
-                              <Suspense
-                                fallback={
-                                  <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
-                                    Loading editor…
-                                  </div>
-                                }
-                              >
-                                <EpicDescriptionEditor
-                                  initialContent={issue?.description_adf ?? issue?.description_text ?? null}
-                                  workItemId={itemId}
-                                  onSave={(adfJson) => {
-                                    if (!itemId) { setDescEditMode(false); return; }
-                                    const parsed = adfJson ? JSON.parse(adfJson) : null;
-                                    supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
-                                      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-                                      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
-                                      queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
-                                      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-                                      toast.success('Description saved');
-                                    });
-                                    setDescEditMode(false);
-                                    setDescUnsaved(false);
-                                  }}
-                                  onCancel={() => { setDescEditMode(false); }}
-                                  placeholder="Add a description..."
-                                />
-                              </Suspense>
-                            </AtlaskitBoundary>
+                              <EpicDescriptionEditor
+                                initialContent={issue?.description_adf ?? issue?.description_text ?? null}
+                                workItemId={itemId}
+                                onSave={(adfJson) => {
+                                  if (!itemId) { setDescEditMode(false); return; }
+                                  const parsed = adfJson ? JSON.parse(adfJson) : null;
+                                  supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
+                                    queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+                                    queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                                    queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                                    queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                                    toast.success('Description saved');
+                                  });
+                                  setDescEditMode(false);
+                                  setDescUnsaved(false);
+                                }}
+                                onCancel={() => { setDescEditMode(false); }}
+                                placeholder="Add a description..."
+                              />
+                            </Suspense>
                           </div>
                         ) : (
                           <div
@@ -1344,73 +1295,34 @@ export default function StoryDetailModal({
                             {acUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
                           </div>
                           {acEditMode ? (
-                            /* ── B2c: canonical Atlaskit editor for Acceptance
-                               Criteria. Same template as the description editor
-                               (B2b) above. Writes parsed ADF object → JSONB column
-                               `ph_issues.acceptance_criteria` (not a JSON string —
-                               fixes latent bug where the prior code wrote the raw
-                               serialized string). */
+                            /* ── Atlaskit editor — sole composer for
+                               Acceptance Criteria. Same template as the
+                               description editor above. Writes parsed ADF
+                               object → JSONB column `ph_issues.acceptance_criteria`.
+                               2026-04-20: TipTap fallback removed per USER
+                               DIRECTIVE — Atlaskit only. */
                             <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
-                              <AtlaskitBoundary
-                                diagnosticTag={`story-detail-modal:ac-edit:${issue?.issue_key ?? itemId ?? 'n/a'}`}
+                              <Suspense
                                 fallback={
-                                  <CatalystRichTextEditor
-                                    content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
-                                    workItemId={itemId}
-                                    onSave={(adfJson) => {
-                                      const parsed = adfJson ? JSON.parse(adfJson) : null;
-                                      setAcceptanceCriteria(adfJson);
-                                      supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
-                                      setAcEditMode(false);
-                                      setAcUnsaved(false);
-                                    }}
-                                    onCancel={() => { setAcEditMode(false); }}
-                                    placeholder="No acceptance criteria defined · Add manually or use AI →"
-                                    minHeight={80}
-                                    mode="save"
-                                    storagePath="description-images"
-                                    aiLabel="Improve criteria"
-                                    onAiImprove={async () => {
-                                      const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                                        body: {
-                                          issue_id: itemId,
-                                          improve_type: 'add_acceptance_criteria',
-                                          current_description: issue?.description_text || '(empty)',
-                                          current_ac: acceptanceCriteria || '(none)',
-                                          issue_summary: issue?.summary ?? '',
-                                        },
-                                      });
-                                      if (fnError || !data?.acceptance_criteria) {
-                                        toast.error('AI improve failed. Try again.');
-                                        return null;
-                                      }
-                                      return data.acceptance_criteria;
-                                    }}
-                                  />
+                                  <div style={{ minHeight: 80, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
+                                    Loading editor…
+                                  </div>
                                 }
                               >
-                                <Suspense
-                                  fallback={
-                                    <div style={{ minHeight: 80, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
-                                      Loading editor…
-                                    </div>
-                                  }
-                                >
-                                  <EpicDescriptionEditor
-                                    initialContent={acceptanceCriteria ?? null}
-                                    workItemId={itemId}
-                                    onSave={(adfJson) => {
-                                      const parsed = adfJson ? JSON.parse(adfJson) : null;
-                                      setAcceptanceCriteria(adfJson);
-                                      supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
-                                      setAcEditMode(false);
-                                      setAcUnsaved(false);
-                                    }}
-                                    onCancel={() => { setAcEditMode(false); }}
-                                    placeholder="No acceptance criteria defined · Add manually or use AI →"
-                                  />
-                                </Suspense>
-                              </AtlaskitBoundary>
+                                <EpicDescriptionEditor
+                                  initialContent={acceptanceCriteria ?? null}
+                                  workItemId={itemId}
+                                  onSave={(adfJson) => {
+                                    const parsed = adfJson ? JSON.parse(adfJson) : null;
+                                    setAcceptanceCriteria(adfJson);
+                                    supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                    setAcEditMode(false);
+                                    setAcUnsaved(false);
+                                  }}
+                                  onCancel={() => { setAcEditMode(false); }}
+                                  placeholder="No acceptance criteria defined · Add manually or use AI →"
+                                />
+                              </Suspense>
                             </div>
                           ) : (
                             <div

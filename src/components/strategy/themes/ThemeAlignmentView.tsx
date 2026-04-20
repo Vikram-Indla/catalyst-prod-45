@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { useAlignmentMapData, type AlignmentNode, type AlignmentRow } from '@/hooks/useAlignmentMapData';
 import { catalystToast } from '@/lib/catalystToast';
 import { useChainIntelligence, useEpicStories, useChainDefects, useOwnerRoles } from '@/hooks/useChainIntelligence';
@@ -761,33 +761,27 @@ export function ThemeAlignmentView({ onBack }: { onBack?: () => void }) {
           </Select>
 
           <div className="flex items-center gap-1 rounded-md px-1.5 py-1 border border-border bg-muted">
-            <TooltipProvider>
-              <Tooltip><TooltipTrigger asChild>
-                <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
-                  className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground">
-                  <Minus size={12} />
-                </button>
-              </TooltipTrigger><TooltipContent>Zoom out</TooltipContent></Tooltip>
-            </TooltipProvider>
+            <Tooltip content="Zoom out">
+              <button onClick={() => setZoom(z => Math.max(0.3, z - 0.1))}
+                className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground">
+                <Minus size={12} />
+              </button>
+            </Tooltip>
             <span className="font-mono text-center text-muted-foreground" style={{ fontSize: 10, width: 28 }}>
               {Math.round(zoom * 100)}%
             </span>
-            <TooltipProvider>
-              <Tooltip><TooltipTrigger asChild>
-                <button onClick={() => setZoom(z => Math.min(2, z + 0.1))}
-                  className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground">
-                  <Plus size={12} />
-                </button>
-              </TooltipTrigger><TooltipContent>Zoom in</TooltipContent></Tooltip>
-            </TooltipProvider>
-            <TooltipProvider>
-              <Tooltip><TooltipTrigger asChild>
-                <button onClick={resetView}
-                  className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground ml-0.5">
-                  <RotateCcw size={12} />
-                </button>
-              </TooltipTrigger><TooltipContent>Reset view</TooltipContent></Tooltip>
-            </TooltipProvider>
+            <Tooltip content="Zoom in">
+              <button onClick={() => setZoom(z => Math.min(2, z + 0.1))}
+                className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground">
+                <Plus size={12} />
+              </button>
+            </Tooltip>
+            <Tooltip content="Reset view">
+              <button onClick={resetView}
+                className="flex items-center justify-center rounded w-6 h-6 text-muted-foreground hover:text-foreground ml-0.5">
+                <RotateCcw size={12} />
+              </button>
+            </Tooltip>
           </div>
 
           <Separator orientation="vertical" className="h-6" />

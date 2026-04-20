@@ -10,7 +10,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Input } from '@/components/ui/input';
 import { formatDistanceToNowStrict, format } from 'date-fns';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 /* ── Types ──────────────────────────────────────────────── */
@@ -339,8 +339,7 @@ export default function JiraActivitySyncPage() {
             </span>
           </div>
         ) : (
-          <TooltipProvider delayDuration={200}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--cp-bd, #E2E8F0)' }}>
                   {columns.map(col => (
@@ -413,13 +412,11 @@ export default function JiraActivitySyncPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                         <ChangeTypeBadge type={item.change_type} />
                         {item.conflict_detected && (
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <AlertTriangle size={14} style={{ color: '#DC2626' }} />
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs max-w-[200px]">
-                              Conflict detected{item.conflict_resolution ? `: ${item.conflict_resolution}` : ''}
-                            </TooltipContent>
+                          <Tooltip
+                            position="top"
+                            content={`Conflict detected${item.conflict_resolution ? `: ${item.conflict_resolution}` : ''}`}
+                          >
+                            <AlertTriangle size={14} style={{ color: '#DC2626' }} />
                           </Tooltip>
                         )}
                       </div>
@@ -428,15 +425,13 @@ export default function JiraActivitySyncPage() {
                     {/* Changed in Catalyst */}
                     <td style={{ padding: '6px 12px' }}>
                       {item.catalyst_changed_at ? (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <span style={{ fontSize: 12, color: 'var(--cp-t2, #475569)' }}>
-                              {formatDistanceToNowStrict(new Date(item.catalyst_changed_at), { addSuffix: true })}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            {format(new Date(item.catalyst_changed_at), 'dd MMM yyyy, HH:mm:ss')}
-                          </TooltipContent>
+                        <Tooltip
+                          position="top"
+                          content={format(new Date(item.catalyst_changed_at), 'dd MMM yyyy, HH:mm:ss')}
+                        >
+                          <span style={{ fontSize: 12, color: 'var(--cp-t2, #475569)' }}>
+                            {formatDistanceToNowStrict(new Date(item.catalyst_changed_at), { addSuffix: true })}
+                          </span>
                         </Tooltip>
                       ) : (
                         <span style={{ color: 'var(--cp-t4, #CBD5E1)', fontSize: 12 }}>—</span>
@@ -446,15 +441,13 @@ export default function JiraActivitySyncPage() {
                     {/* Synced to Jira */}
                     <td style={{ padding: '6px 12px' }}>
                       {item.sync_completed_at ? (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <span style={{ fontSize: 12, color: 'var(--cp-t2, #475569)' }}>
-                              {formatDistanceToNowStrict(new Date(item.sync_completed_at), { addSuffix: true })}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            {format(new Date(item.sync_completed_at), 'dd MMM yyyy, HH:mm:ss')}
-                          </TooltipContent>
+                        <Tooltip
+                          position="top"
+                          content={format(new Date(item.sync_completed_at), 'dd MMM yyyy, HH:mm:ss')}
+                        >
+                          <span style={{ fontSize: 12, color: 'var(--cp-t2, #475569)' }}>
+                            {formatDistanceToNowStrict(new Date(item.sync_completed_at), { addSuffix: true })}
+                          </span>
                         </Tooltip>
                       ) : (
                         <span style={{ color: 'var(--cp-t4, #CBD5E1)', fontSize: 12 }}>—</span>
@@ -476,15 +469,10 @@ export default function JiraActivitySyncPage() {
                     {/* Details */}
                     <td style={{ padding: '6px 12px' }}>
                       {item.error_message ? (
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <span style={{ fontSize: 11, color: '#DC2626', fontWeight: 500, cursor: 'help' }}>
-                              Error: {item.error_message.substring(0, 30)}…
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs max-w-[300px]">
-                            {item.error_message}
-                          </TooltipContent>
+                        <Tooltip position="top" content={item.error_message}>
+                          <span style={{ fontSize: 11, color: '#DC2626', fontWeight: 500, cursor: 'help' }}>
+                            Error: {item.error_message.substring(0, 30)}…
+                          </span>
                         </Tooltip>
                       ) : (
                         <ChangedFieldsDetail fields={item.changed_fields as any} />
@@ -494,7 +482,6 @@ export default function JiraActivitySyncPage() {
                 ))}
               </tbody>
             </table>
-          </TooltipProvider>
         )}
       </div>
 

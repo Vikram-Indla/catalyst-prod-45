@@ -17,7 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 
 interface TeamMember {
@@ -112,12 +112,7 @@ export function BulkAssignDialog({
                     selectedMember === member.id && "bg-primary/10 ring-2 ring-primary"
                   )}
                 >
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src={member.avatar} />
-                    <AvatarFallback className="text-xs">
-                      {member.name.split(' ').map(n => n[0]).join('')}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Avatar src={member.avatar} name={member.name} size="small" />
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm">{member.name}</div>
                     <div className="text-xs text-muted-foreground truncate">{member.role}</div>

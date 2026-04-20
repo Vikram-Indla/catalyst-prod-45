@@ -6,9 +6,13 @@
  * (headings, bold, numbered lists, tables with borders, media with lightbox).
  * Includes expand/collapse toggle matching Jira's collapsible sections.
  * Click-to-edit: clicking the description or pencil icon enters edit mode
- * with the canonical Atlaskit editor (@atlaskit/editor-core). On a chunk
- * load or runtime failure the AtlaskitBoundary falls back to the existing
- * TipTap editor / HTML renderer so users are never stranded.
+ * with the canonical Atlaskit editor (@atlaskit/editor-core).
+ *
+ * 2026-04-20 — TipTap fallback removed (USER DIRECTIVE). There is no
+ * fallback editor; if the Atlaskit chunk fails to load we surface an
+ * explicit error so the failure is visible and fixable rather than
+ * silently dropping users onto a different editor whose output shape
+ * we do not accept.
  */
 import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
@@ -16,7 +20,6 @@ import Heading from '@atlaskit/heading';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
-import { CatalystRichTextEditor } from '@/components/shared/rich-text';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 import type { PhIssue } from '../types';
 
@@ -52,7 +55,6 @@ const EpicDescriptionEditor = lazy(
 const EpicDescriptionRenderer = lazy(
   () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer'),
 );
-import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
 
 function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
   return (
@@ -140,6 +142,34 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body a:hover, .adf-description-content a:hover { text-decoration: underline; }
     .cv-desc-body hr, .adf-description-content hr { border: none; border-top: 1px solid #DFE1E6; margin: 16px 0; }
     .cv-desc-body img, .adf-description-content img { max-width: 100%; border-radius: 4px; cursor: pointer; }
+
+    /* Bidi — Jira parity. Applying \`unicode-bidi: plaintext\` to every text
+       block (paragraph, heading, list item, blockquote, table cell) lets
+       the browser detect the first strong-directional character and flow
+       RTL scripts (Arabic / Hebrew / Persian) right-to-left — without
+       forcing a global \`direction: rtl\` that would mis-align our Latin
+       UI. Fixes ICP-411 where Arabic description lines rendered LTR with
+       the leading Arabic numerals drifting to the wrong edge.
+       The same rule is applied to the Atlaskit renderer wrapper class
+       (\`.atlaskit-renderer-wrapper\`) used by EpicDescriptionRenderer so
+       read-mode behaves identically. */
+    .cv-desc-body p, .cv-desc-body h1, .cv-desc-body h2, .cv-desc-body h3,
+    .cv-desc-body h4, .cv-desc-body h5, .cv-desc-body h6,
+    .cv-desc-body li, .cv-desc-body blockquote, .cv-desc-body td, .cv-desc-body th,
+    .adf-description-content p, .adf-description-content h1, .adf-description-content h2,
+    .adf-description-content h3, .adf-description-content h4, .adf-description-content h5,
+    .adf-description-content h6, .adf-description-content li, .adf-description-content blockquote,
+    .adf-description-content td, .adf-description-content th,
+    .atlaskit-renderer-wrapper p, .atlaskit-renderer-wrapper h1, .atlaskit-renderer-wrapper h2,
+    .atlaskit-renderer-wrapper h3, .atlaskit-renderer-wrapper h4, .atlaskit-renderer-wrapper h5,
+    .atlaskit-renderer-wrapper h6, .atlaskit-renderer-wrapper li, .atlaskit-renderer-wrapper blockquote,
+    .atlaskit-renderer-wrapper td, .atlaskit-renderer-wrapper th,
+    .atlaskit-renderer-fallback,
+    .catalyst-rte-content p, .catalyst-rte-content h1, .catalyst-rte-content h2,
+    .catalyst-rte-content h3, .catalyst-rte-content h4, .catalyst-rte-content h5,
+    .catalyst-rte-content h6, .catalyst-rte-content li, .catalyst-rte-content blockquote,
+    .catalyst-rte-content td, .catalyst-rte-content th
+    { unicode-bidi: plaintext; }
   `;
   document.head.appendChild(s);
 }
@@ -168,11 +198,6 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
       `[CatalystDescriptionSection] build=${DESC_BUILD_ID} issue_key=${issue.issue_key ?? 'n/a'} issue_type=${JSON.stringify(issue.issue_type)} → ATLASKIT`,
     );
   }, [issue]);
-
-  // Raw ADF content string for the editor (prefer description_adf_raw → description_adf → text)
-  const rawAdfContent = issue?.description_adf
-    ? (typeof issue.description_adf === 'string' ? issue.description_adf : JSON.stringify(issue.description_adf))
-    : (issue?.description_text || '');
 
   // Empty-check goes through the canonical ADF-aware helper. Previously
   // `!adfToHtml(adf).trim()` — the (ab)use of a rendering function for an
@@ -273,39 +298,22 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
       {/* Collapsible body */}
       {!collapsed && (
         editing && issue ? (
-          /* ── Edit mode — canonical Atlaskit editor for every issue type.
-             AtlaskitBoundary is kept strictly as a runtime safety net: if
-             the @atlaskit/editor-core chunk fails to load (network / CDN
-             outage) or throws, the boundary renders the existing TipTap
-             editor so the user is never stranded without a working
-             composer. This is NOT an issue-type gate — it is a
-             chunk-failure gate. */
+          /* ── Edit mode — canonical Atlaskit editor.
+             No fallback editor (USER DIRECTIVE 2026-04-20). If the
+             @atlaskit/editor-core chunk fails to load we do NOT render
+             a TipTap replacement — only Atlaskit's ADF shape is
+             accepted by this app. Suspense fallback shows "Loading…"
+             until the chunk resolves. */
           <div style={{ paddingLeft: 20 }}>
-            <AtlaskitBoundary
-              diagnosticTag={`description-edit:${issue.issue_key ?? issue.id}`}
-              fallback={
-                <CatalystRichTextEditor
-                  content={rawAdfContent}
-                  onSave={handleSave}
-                  onCancel={handleCancel}
-                  placeholder="Add a description..."
-                  minHeight={200}
-                  mode="save"
-                  workItemId={issue.id}
-                  storagePath="description-images"
-                />
-              }
-            >
-              <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
-                <EpicDescriptionEditor
-                  initialContent={issue.description_adf ?? issue.description_text ?? null}
-                  onSave={handleSave}
-                  onCancel={handleCancel}
-                  workItemId={issue.id}
-                  placeholder="Add a description..."
-                />
-              </Suspense>
-            </AtlaskitBoundary>
+            <Suspense fallback={<AtlaskitFallback minHeight={240} />}>
+              <EpicDescriptionEditor
+                initialContent={issue.description_adf ?? issue.description_text ?? null}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                workItemId={issue.id}
+                placeholder="Add a description..."
+              />
+            </Suspense>
           </div>
         ) : isEmpty ? (
           /* ── Empty placeholder — click to edit ── */
@@ -323,10 +331,13 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             Add a description...
           </div>
         ) : (
-          /* ── Read-only ADF render — canonical Atlaskit renderer for every
-             issue type. Click anywhere to enter edit mode (Jira parity).
-             AtlaskitBoundary falls back to the synchronous HTML renderer
-             only on a chunk-load / runtime failure — NOT on issue type. */
+          /* ── Read-only ADF render — canonical Atlaskit renderer only.
+             No error-boundary fallback (USER DIRECTIVE 2026-04-20). The
+             Suspense fallback below is only for chunk-loading, not for
+             error recovery — if the Atlaskit renderer throws at runtime
+             the error propagates and is surfaced as a console error,
+             rather than silently downgrading to a plaintext projection
+             that obscures real renderer bugs. */
           <div
             role="button"
             tabIndex={0}
@@ -346,14 +357,9 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
             title="Click to edit"
           >
-            <AtlaskitBoundary
-              diagnosticTag={`description-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
-              fallback={<AtlaskitRendererPlaceholder plain={plainText} />}
-            >
-              <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
-                <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
-              </Suspense>
-            </AtlaskitBoundary>
+            <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
+              <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
+            </Suspense>
           </div>
         )
       )}

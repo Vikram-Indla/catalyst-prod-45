@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Lozenge } from '@/components/ads';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useIncidents } from '@/hooks/useIncidents';
 import type { IncidentFilters } from '@/types/incident';
@@ -445,8 +444,7 @@ export default function IncidentsList() {
           </div>
         ) : (
           /* Kanban View */
-          <TooltipProvider delayDuration={200}>
-            <div className="flex-1 p-4 sm:p-6 min-h-0 overflow-auto">
+          <div className="flex-1 p-4 sm:p-6 min-h-0 overflow-auto">
               <p className="text-xs text-muted-foreground/60 mb-3 italic">Click any column header to expand/collapse</p>
               <div className="flex gap-3 min-w-max pb-4">
                 {KANBAN_COLUMNS.map((column) => {
@@ -554,7 +552,6 @@ export default function IncidentsList() {
                 })}
               </div>
             </div>
-          </TooltipProvider>
         )}
       </div>
 

@@ -6,7 +6,7 @@ import { useState, useMemo, useCallback, memo } from 'react';
 import { ChevronDown, ChevronRight, ArrowUp, ArrowDown, GripVertical, ExternalLink, Plus, MoreHorizontal } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
-import { StatusLozenge } from '@/components/ui/StatusLozenge';
+import { StatusLozengeByType } from '@/components/workflow';
 import type { AllWorkItem } from '@/types/allwork.types';
 import { AllWorkContextMenu } from './AllWorkContextMenu';
 import { formatDistanceToNow } from 'date-fns';
@@ -311,9 +311,15 @@ const TableRow = memo(function TableRow({
         </div>
       </div>
 
-      {/* Status */}
+      {/* Status — Jira-parity 6-category colours via workflow engine. */}
       <div className="px-2">
-        <StatusLozenge status={item.status} />
+        <StatusLozengeByType
+          issueType={item.issue_type}
+          statusName={item.status}
+          statusCategory={item.status_category}
+          variant="bold"
+          maxWidth={160}
+        />
       </div>
 
       {/* Project */}

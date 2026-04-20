@@ -12,12 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Tooltip } from '@/components/ads';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
@@ -102,19 +97,12 @@ export function AssigneeCell({ name, requestId, onSave, disabled = false }: Assi
     }
     
     return (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="flex items-center gap-2 min-w-0">
-              <CatalystOwnerAvatar name={name} size="sm" showTooltip={false} />
-              <span className="text-sm text-foreground truncate max-w-[100px]">{name}</span>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p className="font-medium">{name}</p>
-          </TooltipContent>
+        <Tooltip content={<p className="font-medium">{name}</p>}>
+          <div className="flex items-center gap-2 min-w-0">
+            <CatalystOwnerAvatar name={name} size="sm" showTooltip={false} />
+            <span className="text-sm text-foreground truncate max-w-[100px]">{name}</span>
+          </div>
         </Tooltip>
-      </TooltipProvider>
     );
   }
 

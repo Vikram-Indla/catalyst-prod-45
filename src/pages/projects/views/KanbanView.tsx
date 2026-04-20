@@ -1,7 +1,7 @@
 import React from 'react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { ProjectData } from '../../../types/project.types';
 
@@ -58,8 +58,6 @@ export default function KanbanView({ project }: KanbanViewProps) {
     return items;
   };
 
-  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
-
   return (
     <div className="p-6 bg-muted/50 min-h-[calc(100vh-180px)] overflow-x-auto">
       <div className="grid grid-cols-4 gap-4 min-w-fit" style={{ gridTemplateColumns: 'repeat(4, 280px)' }}>
@@ -108,9 +106,7 @@ export default function KanbanView({ project }: KanbanViewProps) {
                               {item.key}
                             </a>
                           </div>
-                          <Avatar className="h-6 w-6">
-                            <AvatarFallback className="text-[9px]">{getInitials(item.assignee)}</AvatarFallback>
-                          </Avatar>
+                          <Avatar name={item.assignee} size="xsmall" />
                         </div>
                       </CardContent>
                     </Card>

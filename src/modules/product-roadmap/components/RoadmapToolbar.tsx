@@ -16,8 +16,7 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Lozenge } from '@/components/ads';
+import { Lozenge, Tooltip } from '@/components/ads';
 import type { RoadmapFilters, TimelineZoom, GroupingField } from '../types/roadmap';
 import { useRoadmapTheme } from '../lib/useRoadmapTheme';
 
@@ -103,33 +102,27 @@ export function RoadmapToolbar({
         </div>
 
         {/* Filter button */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" onClick={onOpenFilterDialog} className="gap-2" style={{ borderColor, color: tokens.text.primary }}>
-              <Filter className="w-4 h-4" />
-              Filters
-              {activeFilterCount > 0 && (
-                <Lozenge appearance="inprogress">
-                  {activeFilterCount}
-                </Lozenge>
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Open filter panel</TooltipContent>
+        <Tooltip content="Open filter panel">
+          <Button variant="outline" size="sm" onClick={onOpenFilterDialog} className="gap-2" style={{ borderColor, color: tokens.text.primary }}>
+            <Filter className="w-4 h-4" />
+            Filters
+            {activeFilterCount > 0 && (
+              <Lozenge appearance="inprogress">
+                {activeFilterCount}
+              </Lozenge>
+            )}
+          </Button>
         </Tooltip>
 
         {/* Grouping */}
         <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2" style={{ borderColor, color: tokens.text.primary }}>
-                  <Group className="w-4 h-4" />
-                  {grouping ? GROUPING_OPTIONS.find(o => o.value === grouping)?.label : 'Group'}
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent>Group demands</TooltipContent>
+          <Tooltip content="Group demands">
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2" style={{ borderColor, color: tokens.text.primary }}>
+                <Group className="w-4 h-4" />
+                {grouping ? GROUPING_OPTIONS.find(o => o.value === grouping)?.label : 'Group'}
+              </Button>
+            </DropdownMenuTrigger>
           </Tooltip>
           <DropdownMenuContent align="start">
             <DropdownMenuLabel>Group by</DropdownMenuLabel>
@@ -171,38 +164,29 @@ export function RoadmapToolbar({
       <div className="flex items-center gap-2 flex-wrap justify-end">
         {/* Timeline nav */}
         <div className="flex items-center rounded-md" style={{ border: `1px solid ${borderColor}` }}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none rounded-l-md" onClick={() => onNavigate('prev')}>
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Previous period</TooltipContent>
+          <Tooltip content="Previous period">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none rounded-l-md" onClick={() => onNavigate('prev')}>
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
           </Tooltip>
           <Button variant="ghost" size="sm" className="h-8 px-2 rounded-none" onClick={() => onNavigate('today')} style={{ borderLeft: `1px solid ${borderColor}`, borderRight: `1px solid ${borderColor}` }}>
             Today
           </Button>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none rounded-r-md" onClick={() => onNavigate('next')}>
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Next period</TooltipContent>
+          <Tooltip content="Next period">
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none rounded-r-md" onClick={() => onNavigate('next')}>
+              <ChevronRight className="w-4 h-4" />
+            </Button>
           </Tooltip>
         </div>
 
         {/* Zoom */}
         <DropdownMenu>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 min-w-[100px]" style={{ borderColor }}>
-                  {ZOOM_OPTIONS.find(o => o.value === zoom)?.label}
-                </Button>
-              </DropdownMenuTrigger>
-            </TooltipTrigger>
-            <TooltipContent>Timeline scale</TooltipContent>
+          <Tooltip content="Timeline scale">
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2 min-w-[100px]" style={{ borderColor }}>
+                {ZOOM_OPTIONS.find(o => o.value === zoom)?.label}
+              </Button>
+            </DropdownMenuTrigger>
           </Tooltip>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Timeline Scale</DropdownMenuLabel>
@@ -219,60 +203,48 @@ export function RoadmapToolbar({
         <TimelineFilterPopover value={effectiveTimelineFilter} onChange={handleTimelineFilterChange} />
 
         {/* High Contrast toggle */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onToggleHighContrast}
-              className="h-9 gap-1.5"
-              style={{
-                border: `${hc ? 2 : 1}px solid ${hc ? '#09090B' : borderColor}`,
-                background: hc ? '#09090B' : '#fff',
-                color: hc ? '#fff' : '#3F3F46',
-                fontWeight: 600,
-                fontSize: 11,
-              }}
-            >
-              <Contrast className="w-3.5 h-3.5" />
-              {hc ? 'HC ●' : 'HC'}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{hc ? 'Disable high contrast' : 'Enable high contrast (WCAG AAA)'}</TooltipContent>
+        <Tooltip content={hc ? 'Disable high contrast' : 'Enable high contrast (WCAG AAA)'}>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onToggleHighContrast}
+            className="h-9 gap-1.5"
+            style={{
+              border: `${hc ? 2 : 1}px solid ${hc ? '#09090B' : borderColor}`,
+              background: hc ? '#09090B' : '#fff',
+              color: hc ? '#fff' : '#3F3F46',
+              fontWeight: 600,
+              fontSize: 11,
+            }}
+          >
+            <Contrast className="w-3.5 h-3.5" />
+            {hc ? 'HC ●' : 'HC'}
+          </Button>
         </Tooltip>
 
         {/* Print */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" className="h-9 w-9" onClick={onPrint} style={{ borderColor }}>
-              <Printer className="w-4 h-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Print / PDF (⌘P)</TooltipContent>
+        <Tooltip content="Print / PDF (⌘P)">
+          <Button variant="outline" size="icon" className="h-9 w-9" onClick={onPrint} style={{ borderColor }}>
+            <Printer className="w-4 h-4" />
+          </Button>
         </Tooltip>
 
         {/* Fullscreen */}
         {onToggleFullscreen && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="outline" size="icon" className="h-9 w-9" onClick={onToggleFullscreen} style={{ borderColor }}>
-                {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen view'}</TooltipContent>
+          <Tooltip content={isFullscreen ? 'Exit fullscreen (Esc)' : 'Fullscreen view'}>
+            <Button variant="outline" size="icon" className="h-9 w-9" onClick={onToggleFullscreen} style={{ borderColor }}>
+              {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            </Button>
           </Tooltip>
         )}
 
         <div className="w-px h-6 mx-1" style={{ backgroundColor: borderColor }} />
 
         {/* Export */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" className="h-9 w-9" onClick={onOpenExportDialog} style={{ borderColor }}>
-              <Download className="w-4 h-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Export roadmap</TooltipContent>
+        <Tooltip content="Export roadmap">
+          <Button variant="outline" size="icon" className="h-9 w-9" onClick={onOpenExportDialog} style={{ borderColor }}>
+            <Download className="w-4 h-4" />
+          </Button>
         </Tooltip>
 
         {/* Create */}

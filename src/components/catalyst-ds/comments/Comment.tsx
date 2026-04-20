@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import type { CdsComment } from '../types';
 import { CommentAction } from './CommentAction';
 
@@ -74,12 +74,13 @@ const Comment = React.forwardRef<HTMLDivElement, CommentProps>(
           className
         )}
       >
-        <Avatar className="h-8 w-8 shrink-0">
-          {author.avatarUrl && <AvatarImage src={author.avatarUrl} alt={author.name} />}
-          <AvatarFallback name={author.name}>
-            {isSystem ? 'SY' : getInitials(author.name)}
-          </AvatarFallback>
-        </Avatar>
+        <span className="shrink-0">
+          <Avatar
+            src={author.avatarUrl}
+            name={isSystem ? 'System' : author.name}
+            size="small"
+          />
+        </span>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">

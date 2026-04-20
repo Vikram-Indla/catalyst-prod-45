@@ -20,12 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Lozenge } from '@/components/ads';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { Lozenge, Tooltip } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -214,34 +209,25 @@ function StepItem({
 
         {!readOnly && (
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onEdit}>
-                  <Edit2 className="w-3.5 h-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Edit step</TooltipContent>
+            <Tooltip content="Edit step">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onEdit}>
+                <Edit2 className="w-3.5 h-3.5" />
+              </Button>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onDuplicate}>
-                  <Copy className="w-3.5 h-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Duplicate step</TooltipContent>
+            <Tooltip content="Duplicate step">
+              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onDuplicate}>
+                <Copy className="w-3.5 h-3.5" />
+              </Button>
             </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-destructive hover:text-destructive"
-                  onClick={onDelete}
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Delete step</TooltipContent>
+            <Tooltip content="Delete step">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-destructive hover:text-destructive"
+                onClick={onDelete}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </Button>
             </Tooltip>
           </div>
         )}

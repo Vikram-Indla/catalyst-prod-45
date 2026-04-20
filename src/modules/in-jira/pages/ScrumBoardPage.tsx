@@ -24,9 +24,8 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lozenge } from '@/components/ads';
+import { Avatar, Lozenge } from '@/components/ads';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -484,11 +483,7 @@ export function ScrumBoardPage() {
                                           )}
                                         </div>
                                         {issue.assigneeId ? (
-                                          <Avatar className="h-6 w-6">
-                                            <AvatarFallback className="text-xs bg-accent-primary text-white">
-                                              {issue.assigneeId.slice(0, 2).toUpperCase()}
-                                            </AvatarFallback>
-                                          </Avatar>
+                                          <Avatar name={issue.assigneeId} size="xsmall" />
                                         ) : (
                                           <div className="h-6 w-6 rounded-full border-2 border-dashed border-border-default flex items-center justify-center">
                                             <User className="h-3 w-3 text-text-tertiary" />
@@ -672,11 +667,9 @@ function IssueRow({
         </span>
       )}
       {issue.assigneeId ? (
-        <Avatar className="h-6 w-6 flex-shrink-0">
-          <AvatarFallback className="text-xs bg-accent-primary text-white">
-            {issue.assigneeId.slice(0, 2).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <span className="flex-shrink-0">
+          <Avatar name={issue.assigneeId} size="xsmall" />
+        </span>
       ) : (
         <div className="h-6 w-6 rounded-full border-2 border-dashed border-border-default flex items-center justify-center flex-shrink-0">
           <User className="h-3 w-3 text-text-tertiary" />

@@ -22,10 +22,9 @@ import {
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lozenge, type LozengeAppearance } from '@/components/ads';
+import { Avatar, Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -182,9 +181,7 @@ export function ListPage() {
       case 'assignee':
         return issue.assigneeId ? (
           <div className="flex items-center gap-2">
-            <Avatar className="h-5 w-5">
-              <AvatarFallback className="text-xs">U</AvatarFallback>
-            </Avatar>
+            <Avatar name="User" size="xxsmall" />
             <span className="text-xs">Assigned</span>
           </div>
         ) : (

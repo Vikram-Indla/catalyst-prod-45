@@ -6,7 +6,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { TeamMemberOption } from '../CreateEditTestPlanDialog.types';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar } from '@/components/ads';
 import { Check, Minus } from 'lucide-react';
 
 interface TeamMemberCardProps {
@@ -36,13 +36,6 @@ export function TeamMemberCard({
     return 'bg-success/20';
   };
 
-  const initials = member.name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-
   return (
     <button
       type="button"
@@ -61,21 +54,14 @@ export function TeamMemberCard({
     >
       <div className="flex items-start gap-3">
         {/* Avatar with availability indicator */}
-        <div className="relative">
-          <Avatar className="h-10 w-10 border-2 border-background shadow-sm">
-            <AvatarImage src={member.avatar_url} alt={member.name} />
-            <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          {/* Availability dot */}
-          <span 
-            className={cn(
-              'absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-background',
-              member.is_available ? 'bg-success' : 'bg-muted-foreground'
-            )}
+        <span className="inline-block rounded-full border-2 border-background shadow-sm">
+          <Avatar
+            src={member.avatar_url}
+            name={member.name}
+            size="medium"
+            presence={member.is_available ? 'online' : 'offline'}
           />
-        </div>
+        </span>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
