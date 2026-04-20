@@ -52,12 +52,12 @@ export function SelectionSummary({
     : selectedTests.slice(0, 8);
   const remainingCount = selectedTests.length - 8;
 
-  const priorityStats: Array<{ label: string; count: number; appearance: LozengeAppearance }> = [
-    { label: 'Critical', count: byPriority.critical, appearance: 'removed' },
-    { label: 'High', count: byPriority.high, appearance: 'moved' },
-    { label: 'Medium', count: byPriority.medium, appearance: 'moved' },
-    { label: 'Low', count: byPriority.low, appearance: 'success' },
-  ].filter(s => s.count > 0);
+  const priorityStats: Array<{ label: string; count: number; appearance: LozengeAppearance }> = ([
+    { label: 'Critical', count: byPriority.critical, appearance: 'removed' as LozengeAppearance },
+    { label: 'High', count: byPriority.high, appearance: 'moved' as LozengeAppearance },
+    { label: 'Medium', count: byPriority.medium, appearance: 'moved' as LozengeAppearance },
+    { label: 'Low', count: byPriority.low, appearance: 'success' as LozengeAppearance },
+  ]).filter(s => s.count > 0);
 
   const typeStats = [
     { label: 'Functional', count: byType.functional },
