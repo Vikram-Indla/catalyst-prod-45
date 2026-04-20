@@ -1,20 +1,28 @@
 /**
  * WorkListPanel — Jira-parity left panel: search + filter + scrollable card list
  * Matches Jira's actual split view left column styling exactly.
+ *
+ * 2026-04-20: navigator avatars are interactive — clicking the avatar opens
+ * an Atlassian-style assignee picker (WorkCardAssigneePicker) that writes to
+ * ph_issues and invalidates the list query so the card refreshes in real time.
+ * Card body click still selects the row; the picker stopPropagation()s its
+ * own click so the two interactions never collide.
  */
 import React, { useMemo, useState } from 'react';
 import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
-import { resolveAvatarUrl } from '@/lib/avatars';
+import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
 import type { WorkItem } from '@/types/workItem.types';
 
 interface Props {
   items: WorkItem[];
   selectedKey: string | null;
   onSelect: (id: string) => void;
+  /** Project UUID — required for the assignee picker (project_members lookup). */
+  projectId?: string;
 }
 
-export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
+export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props) {
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
