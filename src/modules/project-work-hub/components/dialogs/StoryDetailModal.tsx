@@ -169,7 +169,7 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
        ~48px. Hiding the sidebar outright at narrow widths lets the left
        (title + body) take the full panel width — matches Jira Cloud's
        actual narrow-view behaviour. */
-    @container (max-width: 899px) {
+    @container (max-width: 1023px) {
       .sdm-drawer-splitter { display: none !important; }
       .sdm-drawer-sidebar { display: none !important; }
       .sdm-drawer-left {
@@ -177,6 +177,11 @@ if (typeof document !== 'undefined' && !document.getElementById(ANIM_STYLE_ID)) 
         min-width: 0 !important;
         width: 100% !important;
       }
+    }
+    /* Modal shell: let Atlaskit modal shrink with the viewport so the
+       inner container query (above) actually fires on narrow screens. */
+    @media (max-width: 1180px) {
+      [data-sdm-scope] { width: 100%; }
     }
   `;
   document.head.appendChild(s);
