@@ -4,8 +4,7 @@
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { Lozenge, toStatusCategory, type LozengeAppearance } from '@/components/ads';
 import { Bug, ExternalLink } from 'lucide-react';
 import type { LinkedDefect } from '../types';
 
@@ -13,11 +12,19 @@ interface DefectsPanelProps {
   defects: LinkedDefect[];
 }
 
-const SEVERITY_CONFIG = {
-  critical: { label: 'Critical', className: 'bg-danger/20 text-danger-foreground' },
-  major: { label: 'Major', className: 'bg-warning/20 text-warning-foreground' },
-  minor: { label: 'Minor', className: 'bg-muted text-muted-foreground' },
-  trivial: { label: 'Trivial', className: 'bg-muted text-muted-foreground' },
+// §L38 Atlaskit Lozenge appearances replace bespoke className overrides.
+const SEVERITY_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  critical: { label: 'Critical', appearance: 'removed' },  // red
+  major:    { label: 'Major',    appearance: 'moved' },    // yellow
+  minor:    { label: 'Minor',    appearance: 'default' },  // grey
+  trivial:  { label: 'Trivial',  appearance: 'default' },  // grey
+};
+
+// Map defect.status → StatusLozenge 3-colour guardrail (CLAUDE.md §5).
+const CATEGORY_TO_APPEARANCE: Record<string, LozengeAppearance> = {
+  todo: 'default',
+  inProgress: 'inprogress',
+  done: 'success',
 };
 
 export function DefectsPanel({ defects }: DefectsPanelProps) {
@@ -45,12 +52,12 @@ export function DefectsPanel({ defects }: DefectsPanelProps) {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="font-medium text-foreground">{defect.key}</span>
-                  <Badge variant="secondary" className={cn('text-xs', severityConfig.className)}>
+                  <Lozenge appearance={severityConfig.appearance}>
                     {severityConfig.label}
-                  </Badge>
-                  <Badge variant="outline" className="text-xs">
+                  </Lozenge>
+                  <Lozenge appearance={CATEGORY_TO_APPEARANCE[toStatusCategory(defect.status)]}>
                     {defect.status}
-                  </Badge>
+                  </Lozenge>
                 </div>
                 <p className="text-sm text-muted-foreground line-clamp-1">{defect.title}</p>
                 <p className="text-xs text-muted-foreground mt-1">

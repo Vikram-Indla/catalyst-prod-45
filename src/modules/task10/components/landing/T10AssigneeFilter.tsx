@@ -9,15 +9,20 @@ import { T10FilterDropdown } from './T10FilterDropdown';
 import { useT10Users } from '../../hooks';
 import { getT10Initials } from '../../utils';
 
-// Generate consistent avatar color from name
+// Generate consistent avatar color from name.
+// CLAUDE.md §L38 — hex literals only (no HSL).
+// Fixed 10-colour Catalyst avatar palette (shared across T10 / Mention / Sidebar).
+const AVATAR_PALETTE = [
+  '#2A6DF4', '#7C3BED', '#25A777', '#E92063', '#F97015',
+  '#21C45D', '#0DA2E7', '#FAC814', '#BB36D3', '#1DAFA1',
+];
 function getAvatarColor(name: string | null): string {
-  if (!name) return 'hsl(220, 70%, 55%)';
+  if (!name) return AVATAR_PALETTE[0];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const hue = Math.abs(hash % 360);
-  return `hsl(${hue}, 65%, 50%)`;
+  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
 }
 
 interface T10AssigneeFilterProps {

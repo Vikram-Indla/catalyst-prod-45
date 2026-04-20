@@ -176,23 +176,24 @@ export function ConfluenceEditor({
         .confluence-editor .ProseMirror ul[data-type="taskList"] li > label {
           flex: 0 0 auto;
         }
+        /* CLAUDE.md §L38 — hex only. Atlaskit panel palette (information / warning / discovery). */
         .confluence-editor .info-panel {
-          background: hsl(210 100% 95%);
-          border-left: 4px solid hsl(210 100% 50%);
+          background: #DEEBFF;          /* Atlaskit blue.subtlest */
+          border-left: 4px solid #0052CC; /* Atlaskit blue.bolder */
           padding: 1em;
           margin: 1em 0;
           border-radius: 0 4px 4px 0;
         }
         .confluence-editor .warning-panel {
-          background: hsl(45 100% 95%);
-          border-left: 4px solid hsl(45 100% 50%);
+          background: #FFFAE5;          /* Atlaskit yellow.subtlest */
+          border-left: 4px solid #FF991F; /* Atlaskit warning.bold */
           padding: 1em;
           margin: 1em 0;
           border-radius: 0 4px 4px 0;
         }
         .confluence-editor .note-panel {
-          background: hsl(280 100% 95%);
-          border-left: 4px solid hsl(280 100% 50%);
+          background: #F3F0FF;          /* Atlaskit purple.subtlest */
+          border-left: 4px solid #5243AA; /* Atlaskit purple.bolder */
           padding: 1em;
           margin: 1em 0;
           border-radius: 0 4px 4px 0;

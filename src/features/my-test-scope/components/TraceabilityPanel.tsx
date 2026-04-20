@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -111,11 +111,12 @@ function groupTestsByRequirement(tests: TestAssignment[]): RequirementGroup[] {
   }));
 }
 
-const PRIORITY_CONFIG = {
-  critical: { label: 'Critical', className: 'bg-danger/20 text-danger-foreground' },
-  high: { label: 'High', className: 'bg-warning/20 text-warning-foreground' },
-  medium: { label: 'Medium', className: 'bg-muted text-foreground' },
-  low: { label: 'Low', className: 'bg-muted text-muted-foreground' },
+// §L38 Atlaskit Lozenge appearances replace bespoke className overrides.
+const PRIORITY_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  critical: { label: 'Critical', appearance: 'removed' },  // red
+  high:     { label: 'High',     appearance: 'moved' },    // yellow
+  medium:   { label: 'Medium',   appearance: 'default' },  // grey
+  low:      { label: 'Low',      appearance: 'default' },  // grey
 };
 
 const STATUS_CONFIG = {
@@ -237,9 +238,9 @@ export function TraceabilityPanel({ tests }: TraceabilityPanelProps) {
                   <div className="text-left">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-foreground">{req.key}</span>
-                      <Badge variant="secondary" className={cn('text-xs', priorityConfig.className)}>
+                      <Lozenge appearance={priorityConfig.appearance}>
                         {priorityConfig.label}
-                      </Badge>
+                      </Lozenge>
                     </div>
                     <p className="text-sm text-muted-foreground">{req.title}</p>
                   </div>

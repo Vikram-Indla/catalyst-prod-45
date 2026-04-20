@@ -213,8 +213,9 @@ export function AddApproverModal({
                 <Badge 
                   className="text-[10px] px-1.5 py-0 h-5 font-semibold border-0"
                   style={{
-                    background: 'linear-gradient(135deg, hsl(45, 93%, 58%) 0%, hsl(38, 92%, 50%) 100%)',
-                    color: 'hsl(28, 73%, 26%)',
+                    // §L38 hex-only. Atlaskit yellow.bold → warning.bold gradient; yellow.bolder text.
+                    background: 'linear-gradient(135deg, #FFC400 0%, #FF991F 100%)',
+                    color: '#7F5F01',
                   }}
                 >
                   <Zap className="h-3 w-3 mr-0.5" />

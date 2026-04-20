@@ -89,12 +89,14 @@ function PremiumProgressBar({ progress, health }: { progress: number; health: st
       text: 'hsl(var(--muted-foreground))'
     };
     if (progress === 100) return {
-      fill: 'linear-gradient(90deg, hsl(var(--success)) 0%, hsl(173 58% 45%) 100%)',
+      // §L38 hex only — hsl(173 58% 45%) → Atlaskit teal equivalent
+      fill: 'linear-gradient(90deg, hsl(var(--success)) 0%, #2FB5A3 100%)',
       glow: '0 0 20px hsl(var(--success) / 0.4), 0 0 40px hsl(var(--success) / 0.2)',
       text: 'hsl(var(--success))'
     };
     return {
-      fill: 'linear-gradient(90deg, hsl(var(--primary)) 0%, hsl(217 91% 65%) 100%)',
+      // §L38 hex only — hsl(217 91% 65%) → Atlaskit blue.bolder.hovered
+      fill: 'linear-gradient(90deg, hsl(var(--primary)) 0%, #4C9AFF 100%)',
       glow: '0 0 16px hsl(var(--primary) / 0.3)',
       text: 'hsl(var(--primary))'
     };
@@ -568,11 +570,12 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
   const getStatusConfig = (status?: string) => {
     const configs: Record<string, { label: string; bg: string; text: string }> = {
       pending: { label: 'Pending', bg: 'hsl(var(--muted))', text: 'hsl(var(--muted-foreground))' },
-      in_progress: { label: 'In Progress', bg: 'hsl(217 91% 60% / 0.12)', text: 'hsl(var(--primary))' },
-      on_track: { label: 'On Track', bg: 'hsl(173 58% 39% / 0.12)', text: 'hsl(var(--success))' },
-      at_risk: { label: 'At Risk', bg: 'hsl(38 92% 50% / 0.12)', text: 'hsl(38 92% 45%)' },
-      off_track: { label: 'Off Track', bg: 'hsl(0 84% 60% / 0.12)', text: 'hsl(var(--destructive))' },
-      completed: { label: 'Completed', bg: 'hsl(173 58% 39% / 0.12)', text: 'hsl(var(--success))' },
+      // §L38 hex-only. Raw-HSL → Atlaskit semantic fallbacks at 12% alpha.
+      in_progress: { label: 'In Progress', bg: 'rgba(38, 132, 255, 0.12)', text: 'hsl(var(--primary))' },
+      on_track: { label: 'On Track', bg: 'rgba(0, 135, 90, 0.12)', text: 'hsl(var(--success))' },
+      at_risk: { label: 'At Risk', bg: 'rgba(255, 153, 31, 0.12)', text: '#974F0C' },
+      off_track: { label: 'Off Track', bg: 'rgba(222, 53, 11, 0.12)', text: 'hsl(var(--destructive))' },
+      completed: { label: 'Completed', bg: 'rgba(0, 135, 90, 0.12)', text: 'hsl(var(--success))' },
     };
     return configs[status || ''] || configs.pending;
   };

@@ -7,32 +7,32 @@ const STATUS_CONFIG: Record<string, { label: string; className: string; style?: 
   "in-progress": { 
     label: "In Progress", 
     className: "border",
-    style: { background: 'hsl(217 91% 60% / 0.12)', color: 'hsl(var(--brand-primary))', borderColor: 'hsl(217 91% 60% / 0.3)' }
+    style: { background: 'rgba(38, 132, 255, 0.12)', color: 'hsl(var(--brand-primary))', borderColor: 'rgba(38, 132, 255, 0.3)' }
   },
   in_progress: { 
     label: "In Progress", 
     className: "border",
-    style: { background: 'hsl(217 91% 60% / 0.12)', color: 'hsl(var(--brand-primary))', borderColor: 'hsl(217 91% 60% / 0.3)' }
+    style: { background: 'rgba(38, 132, 255, 0.12)', color: 'hsl(var(--brand-primary))', borderColor: 'rgba(38, 132, 255, 0.3)' }
   },
   "on-track": { 
     label: "On Track", 
     className: "border",
-    style: { background: 'hsl(173 58% 39% / 0.12)', color: 'hsl(var(--success))', borderColor: 'hsl(173 58% 39% / 0.3)' }
+    style: { background: 'rgba(0, 135, 90, 0.12)', color: 'hsl(var(--success))', borderColor: 'rgba(0, 135, 90, 0.3)' }
   },
   on_track: { 
     label: "On Track", 
     className: "border",
-    style: { background: 'hsl(173 58% 39% / 0.12)', color: 'hsl(var(--success))', borderColor: 'hsl(173 58% 39% / 0.3)' }
+    style: { background: 'rgba(0, 135, 90, 0.12)', color: 'hsl(var(--success))', borderColor: 'rgba(0, 135, 90, 0.3)' }
   },
   "at-risk": { 
     label: "At Risk", 
     className: "border",
-    style: { background: 'hsl(38 92% 50% / 0.12)', color: 'hsl(var(--warning))', borderColor: 'hsl(38 92% 50% / 0.3)' }
+    style: { background: 'rgba(255, 153, 31, 0.12)', color: 'hsl(var(--warning))', borderColor: 'rgba(255, 153, 31, 0.3)' }
   },
   at_risk: { 
     label: "At Risk", 
     className: "border",
-    style: { background: 'hsl(38 92% 50% / 0.12)', color: 'hsl(var(--warning))', borderColor: 'hsl(38 92% 50% / 0.3)' }
+    style: { background: 'rgba(255, 153, 31, 0.12)', color: 'hsl(var(--warning))', borderColor: 'rgba(255, 153, 31, 0.3)' }
   },
   "off-track": { 
     label: "Off Track", 
@@ -48,7 +48,7 @@ const STATUS_CONFIG: Record<string, { label: string; className: string; style?: 
   completed: { 
     label: "Completed", 
     className: "border",
-    style: { background: 'hsl(173 58% 39% / 0.12)', color: 'hsl(var(--success))', borderColor: 'hsl(173 58% 39% / 0.3)' }
+    style: { background: 'rgba(0, 135, 90, 0.12)', color: 'hsl(var(--success))', borderColor: 'rgba(0, 135, 90, 0.3)' }
   },
   canceled: { label: "Canceled", className: "bg-muted text-muted-foreground line-through" },
   missed: { 

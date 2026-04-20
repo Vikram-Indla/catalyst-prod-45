@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Zap, ExternalLink, AlertTriangle, CheckCircle } from 'lucide-react';
@@ -14,11 +14,12 @@ interface IncidentsPanelProps {
   incidents: RelatedIncident[];
 }
 
-const SEVERITY_CONFIG = {
-  P1: { label: 'P1 - Critical', className: 'bg-danger/20 text-danger-foreground', icon: AlertTriangle },
-  P2: { label: 'P2 - High', className: 'bg-warning/20 text-warning-foreground', icon: AlertTriangle },
-  P3: { label: 'P3 - Medium', className: 'bg-muted text-muted-foreground', icon: AlertTriangle },
-  P4: { label: 'P4 - Low', className: 'bg-muted text-muted-foreground', icon: AlertTriangle },
+// §L38 Atlaskit Lozenge appearances replace bespoke className overrides.
+const SEVERITY_CONFIG: Record<string, { label: string; appearance: LozengeAppearance; icon: typeof AlertTriangle }> = {
+  P1: { label: 'P1 - Critical', appearance: 'removed', icon: AlertTriangle },  // red
+  P2: { label: 'P2 - High',     appearance: 'moved',   icon: AlertTriangle },  // yellow
+  P3: { label: 'P3 - Medium',   appearance: 'default', icon: AlertTriangle },  // grey
+  P4: { label: 'P4 - Low',      appearance: 'default', icon: AlertTriangle },  // grey
 };
 
 const STATUS_ICONS = {
@@ -82,9 +83,9 @@ export function IncidentsPanel({ incidents }: IncidentsPanelProps) {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-semibold text-foreground">{incident.key}</span>
-                      <Badge variant="secondary" className={cn('text-xs', severityConfig.className)}>
+                      <Lozenge appearance={severityConfig.appearance}>
                         {severityConfig.label}
-                      </Badge>
+                      </Lozenge>
                     </div>
                     <p className="text-sm text-foreground font-medium">{incident.title}</p>
                   </div>

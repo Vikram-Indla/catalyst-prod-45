@@ -5241,12 +5241,13 @@ input[type="range"]::-moz-range-thumb {
   border-color: #2E2E2E !important;
 }
 
-/* Force card/background CSS var to neutral dark */
+/* Force card/background CSS var to neutral dark.
+   §L38 hex only. NOCTURNE page background (CLAUDE.md §18). */
 .dark [class*="bg-card"],
 .dark [class*="bg-background"],
 [data-theme="dark"] [class*="bg-card"],
 [data-theme="dark"] [class*="bg-background"] {
-  background: hsl(0 0% 4%) !important;
+  background: #0A0A0A !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

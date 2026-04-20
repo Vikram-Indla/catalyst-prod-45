@@ -223,15 +223,15 @@
 }
 
 .statusImplementing {
-  background: hsl(217 91% 60% / 0.12);
-  color: hsl(217 91% 60%);
-  border-color: hsl(217 91% 60% / 0.24);
+  background: rgba(38, 132, 255, 0.12);
+  color: #2684FF;
+  border-color: rgba(38, 132, 255, 0.24);
 }
 
 .statusDone {
-  background: hsl(142 76% 36% / 0.12);
-  color: hsl(142 76% 36%);
-  border-color: hsl(142 76% 36% / 0.24);
+  background: rgba(22, 163, 74, 0.12);
+  color: #16A34A;
+  border-color: rgba(22, 163, 74, 0.24);
 }
 
 /* ============================================================
@@ -301,7 +301,7 @@
 .epicIcon {
   width: 14px;
   height: 14px;
-  background: hsl(38 80% 55%);
+  background: #E6A62A;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -339,7 +339,7 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--secondary-green, hsl(92 30% 45%)) 0%, hsl(92 30% 35%) 100%);
+  background: linear-gradient(135deg, var(--secondary-green, #709550) 0%, #57743E 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,19 +371,19 @@
 }
 
 .healthGreen {
-  background: hsl(142 76% 36% / 0.12);
-  color: hsl(142 76% 36%);
+  background: rgba(22, 163, 74, 0.12);
+  color: #16A34A;
 }
 
 .healthAmber,
 .healthYellow {
-  background: hsl(25 95% 53% / 0.12);
-  color: hsl(25 95% 53%);
+  background: rgba(246, 97, 12, 0.12);
+  color: #F6610C;
 }
 
 .healthRed {
-  background: hsl(0 84% 60% / 0.12);
-  color: hsl(0 84% 60%);
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
 }
 
 /* Planned Dates display */
@@ -668,11 +668,11 @@
 }
 
 .priorityMedium .priorityIcon {
-  color: hsl(25 95% 53%);
+  color: #F6610C;
 }
 
 .priorityLow .priorityIcon {
-  color: hsl(217 91% 60%);
+  color: #2684FF;
 }
 
 /* Assignee Cell */
@@ -711,13 +711,13 @@
 }
 
 .statusPillInProgress {
-  background: hsl(217 91% 60% / 0.12);
-  color: hsl(217 91% 60%);
+  background: rgba(38, 132, 255, 0.12);
+  color: #2684FF;
 }
 
 .statusPillDone {
-  background: hsl(142 76% 36% / 0.12);
-  color: hsl(142 76% 36%);
+  background: rgba(22, 163, 74, 0.12);
+  color: #16A34A;
 }
 
 /* Linked Items (matches TSX .linked-items) */
@@ -1269,13 +1269,13 @@
 }
 
 .storyStatusDone {
-  background: hsl(142 76% 36% / 0.15);
-  color: hsl(142 76% 36%);
+  background: rgba(22, 163, 74, 0.15);
+  color: #16A34A;
 }
 
 .storyStatusInProgress {
-  background: hsl(217 91% 60% / 0.15);
-  color: hsl(217 91% 60%);
+  background: rgba(38, 132, 255, 0.15);
+  color: #2684FF;
 }
 
 .storyStatusTodo {
@@ -1291,9 +1291,9 @@
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  background: hsl(0 84% 60% / 0.1);
-  color: hsl(0 84% 60%);
-  border: 1px solid hsl(0 84% 60% / 0.2);
+  background: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 .priorityMedium {
@@ -1303,9 +1303,9 @@
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
-  background: hsl(38 80% 55% / 0.1);
-  color: hsl(38 80% 55%);
-  border: 1px solid hsl(38 80% 55% / 0.2);
+  background: rgba(230, 166, 42, 0.1);
+  color: #E6A62A;
+  border: 1px solid rgba(230, 166, 42, 0.2);
   text-transform: capitalize;
 }
 

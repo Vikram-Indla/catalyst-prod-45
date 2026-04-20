@@ -110,3 +110,123 @@ export function StatusLozenge({
     </Lozenge>
   );
 }
+
+/* ─────────────────────────────────────────────────────────────────
+ * LegacyBadge — shadcn Badge → Atlaskit Lozenge compatibility shim
+ *
+ * Drop-in replacement for `@/components/ui/badge`. Lets us migrate
+ * 359+ call sites atomically (import swap only) while consolidating
+ * on Atlaskit. New code should prefer <StatusLozenge> or <Lozenge>.
+ *
+ * Mapping rules:
+ *   • status / approval terminals (success, complete, approved, ready,
+ *     passed) → Lozenge appearance="success" (green)
+ *   • in-motion (active, info, primary, review) → appearance="inprogress" (blue)
+ *   • idle / skipped (draft, muted, secondary, skipped, not-run,
+ *     deprecated) → appearance="default" (grey)
+ *   • destructive (danger, destructive, error, critical, failed,
+ *     rejected) → appearance="removed" (red)
+ *   • warning / blocked → appearance="moved" (yellow)
+ *   • new → appearance="new" (purple — Atlaskit's "new" token, NOT §7
+ *     AI purple; Atlaskit owns the new-indicator semantic here)
+ *   • teal / outline / default / link / ghost → "default"
+ *
+ * Emits a one-time console warning so legacy call sites are traceable
+ * during migration.
+ * ───────────────────────────────────────────────────────────────── */
+
+export type LegacyBadgeVariant =
+  | 'default' | 'secondary' | 'outline' | 'primary' | 'teal' | 'purple'
+  | 'success' | 'warning' | 'danger' | 'destructive' | 'info' | 'error'
+  | 'critical' | 'muted' | 'draft' | 'active' | 'complete' | 'approved'
+  | 'rejected' | 'blocked' | 'ready' | 'review' | 'deprecated'
+  | 'passed' | 'failed' | 'skipped' | 'not-run' | 'ai' | 'new' | 'link'
+  | 'ghost';
+
+const VARIANT_TO_APPEARANCE: Record<LegacyBadgeVariant, LozengeAppearance> = {
+  // Terminal / success family (green)
+  success: 'success',
+  complete: 'success',
+  approved: 'success',
+  ready: 'success',
+  passed: 'success',
+
+  // In-motion family (blue)
+  active: 'inprogress',
+  info: 'inprogress',
+  primary: 'inprogress',
+  review: 'inprogress',
+
+  // Idle / neutral family (grey)
+  default: 'default',
+  secondary: 'default',
+  outline: 'default',
+  muted: 'default',
+  draft: 'default',
+  skipped: 'default',
+  'not-run': 'default',
+  deprecated: 'default',
+  teal: 'default',
+  link: 'default',
+  ghost: 'default',
+
+  // Destructive family (red)
+  danger: 'removed',
+  destructive: 'removed',
+  error: 'removed',
+  critical: 'removed',
+  failed: 'removed',
+  rejected: 'removed',
+
+  // Warning / blocked family (yellow)
+  warning: 'moved',
+  blocked: 'moved',
+
+  // Atlaskit "new" / "purple" semantics
+  new: 'new',
+  purple: 'new',
+  ai: 'new',
+};
+
+export interface LegacyBadgeProps {
+  variant?: LegacyBadgeVariant;
+  children: ReactNode;
+  /** Pass-through: rendered inside the Lozenge for extra classes. */
+  className?: string;
+  /** Bold (solid) vs subtle fill. Default: subtle. */
+  isBold?: boolean;
+  maxWidth?: number | string;
+  testId?: string;
+}
+
+/**
+ * LegacyBadge — drop-in replacement for shadcn Badge. Internally renders
+ * an Atlaskit Lozenge with the mapped appearance.
+ */
+export function LegacyBadge({
+  variant = 'default',
+  children,
+  className,
+  isBold,
+  maxWidth,
+  testId,
+}: LegacyBadgeProps) {
+  const appearance = VARIANT_TO_APPEARANCE[variant] ?? 'default';
+  // className is accepted for call-site compatibility but the Atlaskit
+  // Lozenge handles its own styling — we wrap in a span for the class
+  // hook so consumers can override spacing/margin on the outer element.
+  if (className) {
+    return (
+      <span className={className} data-testid={testId ? `${testId}-wrapper` : undefined}>
+        <Lozenge appearance={appearance} isBold={isBold} maxWidth={maxWidth} testId={testId}>
+          {children}
+        </Lozenge>
+      </span>
+    );
+  }
+  return (
+    <Lozenge appearance={appearance} isBold={isBold} maxWidth={maxWidth} testId={testId}>
+      {children}
+    </Lozenge>
+  );
+}

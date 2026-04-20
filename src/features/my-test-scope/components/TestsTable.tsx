@@ -5,7 +5,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge, type LozengeAppearance } from '@/components/ads';
 import { cn } from '@/lib/utils';
 import { Play, RotateCcw, ExternalLink, ArrowUpDown, Check, X, Ban, Unlock, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PriorityScoreBadge } from './PriorityScoreBadge';
@@ -35,11 +35,12 @@ interface TestsTableProps {
   onUnblock?: (scopeId: string) => void;
 }
 
-const STATUS_CONFIG = {
-  not_run: { label: 'Not Run', className: 'bg-muted text-muted-foreground' },
-  passed: { label: 'Passed', className: 'bg-success/20 text-success-foreground' },
-  failed: { label: 'Failed', className: 'bg-danger/20 text-danger-foreground' },
-  blocked: { label: 'Blocked', className: 'bg-warning/20 text-warning-foreground' },
+// §L38 Atlaskit Lozenge appearances replace bespoke className overrides.
+const STATUS_CONFIG: Record<string, { label: string; appearance: LozengeAppearance }> = {
+  not_run: { label: 'Not Run', appearance: 'default' },  // grey
+  passed:  { label: 'Passed',  appearance: 'success' },  // green
+  failed:  { label: 'Failed',  appearance: 'removed' },  // red
+  blocked: { label: 'Blocked', appearance: 'moved' },    // yellow
 };
 
 const URGENCY_CONFIG = {
@@ -186,9 +187,9 @@ export function TestsTable({ tests, filters, onFiltersChange, onExecute, onViewD
                     <PriorityScoreBadge score={test.priorityScore} />
                   </td>
                   <td className="py-3 px-4">
-                    <Badge variant="secondary" className={cn('text-xs', statusConfig.className)}>
+                    <Lozenge appearance={statusConfig.appearance}>
                       {statusConfig.label}
-                    </Badge>
+                    </Lozenge>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex flex-col">

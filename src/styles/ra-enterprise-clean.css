@@ -283,10 +283,11 @@
 .dark .ra-enterprise-clean {
   --ra-white: hsl(var(--card));
   --ra-slate-50: hsl(var(--muted));
-  --ra-slate-100: hsl(222.2 47.4% 15%);
-  --ra-slate-200: hsl(217.2 32.6% 20%);
-  --ra-slate-700: hsl(210 40% 85%);
-  --ra-slate-800: hsl(210 40% 98%);
+  /* §L38 hex only. NOCTURNE dark-mode palette (CLAUDE.md §18). */
+  --ra-slate-100: #1A1A1A;  /* card surface */
+  --ra-slate-200: #292929;  /* active / pressed */
+  --ra-slate-700: #A1A1A1;  /* text secondary */
+  --ra-slate-800: #EDEDED;  /* text primary */
 }
 
 .dark .ra-enterprise-clean td {

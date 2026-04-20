@@ -11,9 +11,10 @@ interface ActivityFeedProps {
 
 // Token-based type config - using CSS variables for theme compatibility
 const typeConfig: Record<ActivityType, { icon: React.ElementType; bgStyle: React.CSSProperties; iconStyle: React.CSSProperties }> = {
-  epic: { icon: Briefcase, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'hsl(248 48% 61%)' } },
+  // CLAUDE.md §11 — canonical work-item colours (§L38 hex-only).
+  epic: { icon: Briefcase, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: '#904EE2' } },
   feature: { icon: GitBranch, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--accent-color)' } },
-  story: { icon: BookOpen, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'hsl(158 68% 47%)' } },
+  story: { icon: BookOpen, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: '#63BA3C' } },
   demand: { icon: FileText, bgStyle: { backgroundColor: 'var(--surface-3)' }, iconStyle: { color: 'var(--text-2)' } },
 };
 

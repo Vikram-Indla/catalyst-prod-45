@@ -14,12 +14,14 @@
 export { Button, IconButton } from './Button';
 export type { ButtonProps, IconButtonProps, ButtonAppearance, ButtonSpacing } from './Button';
 
-export { Lozenge, StatusLozenge } from './Lozenge';
+export { Lozenge, StatusLozenge, LegacyBadge } from './Lozenge';
 export type {
   LozengeProps,
   LozengeAppearance,
   StatusLozengeProps,
   StatusCategory,
+  LegacyBadgeProps,
+  LegacyBadgeVariant,
 } from './Lozenge';
 export { toStatusCategory } from './internal/status';
 
