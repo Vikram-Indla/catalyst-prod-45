@@ -166,7 +166,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
                   fallbackColor={item.assignee?.color || '#6554C0'}
                 />
               </div>
-            </button>
+            </div>
           );
         })}
 
