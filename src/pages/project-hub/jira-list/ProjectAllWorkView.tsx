@@ -18,6 +18,9 @@ import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
+const StoryDetailModal = lazy(
+  () => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'),
+);
 
 interface Props {
   projectKey: string;
