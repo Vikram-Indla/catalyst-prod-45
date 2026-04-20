@@ -1,4 +1,4 @@
-import { Box, Flex, Text, xcss } from '@atlaskit/primitives';
+import { Box, Flex, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { AppSwitcher } from '@/components/layout/AppSwitcher';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
@@ -6,9 +6,9 @@ import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
-import catalystLogoMark2 from '@/assets/catalyst-logo-mark-2.svg';
+import catalystBlueWordmark from '@/assets/catalyst-logo-blue-wordmark.png';
 
-// Jira parity dimensions: header 48px, controls 32px, product mark 32px, inner glyph 24px.
+// Jira parity dimensions: header 48px, controls 32px, uploaded Catalyst wordmark 136x64 source rendered at 102x48.
 const headerStyles = xcss({
   minHeight: '48px',
   height: '48px',
@@ -18,12 +18,11 @@ const headerStyles = xcss({
   borderColor: 'color.border',
 });
 
-const productMarkStyles = xcss({
-  width: '32px',
-  height: '32px',
+const productLogoStyles = xcss({
+  width: '102px',
+  height: '48px',
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'center',
   flexShrink: 0,
 });
 
@@ -40,12 +39,9 @@ export function CatalystHeader() {
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
             <AppSwitcher />
             <a href="/for-you" aria-label="Catalyst home" style={{ textDecoration: 'none' }}>
-              <Box xcss={productMarkStyles}>
-                <img src={catalystLogoMark2} alt="" width="24" height="24" />
+              <Box xcss={productLogoStyles}>
+                <img src={catalystBlueWordmark} alt="Catalyst" width="102" height="48" />
               </Box>
-            </a>
-            <a href="/for-you" style={{ textDecoration: 'none' }}>
-              <Text size="medium" weight="semibold" color="color.text">Catalyst</Text>
             </a>
           </Box>
 
