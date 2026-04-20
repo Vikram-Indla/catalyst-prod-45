@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from 'lucide-react';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useNavigate } from 'react-router-dom';
 import '@/styles/product-backlog.css';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
