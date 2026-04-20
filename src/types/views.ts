@@ -30,6 +30,19 @@ export const WORKFLOW_STATUSES: WorkflowStatus[] = [
   'on_hold'
 ];
 
+/**
+ * STATUS_CONFIG — 10-stage Catalyst workflow status map. Values are
+ * Atlaskit semantic-token fallback hexes (legacy-light). The triple
+ * `color` / `bgColor` / `textColor` mirrors Atlaskit's role triad
+ * (bold accent / subtle surface / bolder text on surface) and is
+ * upgrade-ready: a React consumer can lift any value to
+ * `token('color.*', <hex>)` without changing the config shape.
+ *
+ * Apr 20 2026: converted from raw HSL (§L38). Four values previously
+ * decoded to banned Golden Hour palette (§7): design #896F58,
+ * in_development #C79C6B, uat_testing #D4B996, in_beta #5B7B5B —
+ * all replaced with Atlaskit canonical palette.
+ */
 export const STATUS_CONFIG: Record<WorkflowStatus, {
   label: string;
   color: string;
@@ -38,69 +51,79 @@ export const STATUS_CONFIG: Record<WorkflowStatus, {
   wipLimit?: number;
 }> = {
   backlog: {
+    // neutral — StatusLozenge grey (§5)
     label: 'Backlog',
-    color: 'hsl(210, 6%, 80%)',
-    bgColor: 'hsl(210, 6%, 80%, 0.15)',
-    textColor: 'hsl(0, 0%, 45%)'
+    color: '#42526E',
+    bgColor: '#DFE1E6',
+    textColor: '#42526E'
   },
   design: {
+    // purple (was Golden Hour #896F58)
     label: 'Design',
-    color: 'hsl(28, 22%, 44%)',
-    bgColor: 'hsl(28, 22%, 44%, 0.15)',
-    textColor: 'hsl(28, 22%, 44%)',
+    color: '#5243AA',
+    bgColor: '#EAE6FF',
+    textColor: '#403294',
     wipLimit: 3
   },
   ready_for_dev: {
+    // information / StatusLozenge blue (§5)
     label: 'Ready for Dev',
-    color: 'hsl(217, 91%, 60%)',
-    bgColor: 'hsl(217, 91%, 60%, 0.1)',
-    textColor: 'hsl(217, 91%, 60%)',
+    color: '#0052CC',
+    bgColor: '#DEEBFF',
+    textColor: '#0747A6',
     wipLimit: 5
   },
   in_development: {
+    // warning / yellow (was Golden Hour #C79C6B)
     label: 'In Development',
-    color: 'hsl(32, 45%, 60%)',
-    bgColor: 'hsl(32, 45%, 60%, 0.15)',
-    textColor: 'hsl(32, 45%, 60%)',
+    color: '#FF991F',
+    bgColor: '#FFF0B3',
+    textColor: '#974F0C',
     wipLimit: 4
   },
   qa_testing: {
+    // warning
     label: 'QA Testing',
-    color: 'hsl(38, 92%, 50%)',
-    bgColor: 'hsl(38, 92%, 50%, 0.1)',
-    textColor: 'hsl(28, 80%, 36%)',
+    color: '#FFAB00',
+    bgColor: '#FFF0B3',
+    textColor: '#974F0C',
     wipLimit: 3
   },
   uat_testing: {
+    // warning (was Golden Hour #D4B996)
     label: 'UAT Testing',
-    color: 'hsl(34, 42%, 71%)',
-    bgColor: 'hsl(34, 42%, 71%, 0.2)',
-    textColor: 'hsl(26, 90%, 27%)',
+    color: '#FF991F',
+    bgColor: '#FFF0B3',
+    textColor: '#974F0C',
     wipLimit: 2
   },
   in_beta: {
+    // success (was Golden Hour #5B7B5B)
     label: 'In Beta',
-    color: 'hsl(120, 15%, 42%)',
-    bgColor: 'hsl(120, 15%, 42%, 0.15)',
-    textColor: 'hsl(120, 15%, 42%)'
+    color: '#36B37E',
+    bgColor: '#E3FCEF',
+    textColor: '#006644'
   },
   ready_for_prod: {
+    // success / StatusLozenge green (§5)
     label: 'Ready for Prod',
-    color: 'hsl(142, 71%, 45%)',
-    bgColor: 'hsl(142, 71%, 45%, 0.1)',
-    textColor: 'hsl(142, 76%, 28%)'
+    color: '#00875A',
+    bgColor: '#E3FCEF',
+    textColor: '#006644'
   },
   in_production: {
+    // success bolder
     label: 'In Production',
-    color: 'hsl(142, 72%, 29%)',
-    bgColor: 'hsl(142, 72%, 29%, 0.1)',
-    textColor: 'hsl(142, 72%, 29%)'
+    color: '#006644',
+    bgColor: '#E3FCEF',
+    textColor: '#006644'
   },
   on_hold: {
+    // neutral
     label: 'On Hold',
-    color: 'hsl(0, 0%, 45%)',
-    bgColor: 'hsl(0, 0%, 45%, 0.1)',
-    textColor: 'hsl(0, 0%, 45%)'
+    color: '#42526E',
+    bgColor: '#DFE1E6',
+    textColor: '#42526E'
   }
 };
 
@@ -115,24 +138,28 @@ export const PRIORITY_CONFIG: Record<Priority, {
   bgColor: string;
 }> = {
   critical: {
+    // danger
     label: 'Critical',
-    color: 'hsl(0, 84%, 60%)',
-    bgColor: 'hsl(0, 84%, 60%, 0.1)'
+    color: '#BF2600',
+    bgColor: '#FFBDAD'
   },
   high: {
+    // warning
     label: 'High',
-    color: 'hsl(38, 92%, 50%)',
-    bgColor: 'hsl(38, 92%, 50%, 0.1)'
+    color: '#974F0C',
+    bgColor: '#FFF0B3'
   },
   medium: {
+    // information
     label: 'Medium',
-    color: 'hsl(217, 91%, 60%)',
-    bgColor: 'hsl(217, 91%, 60%, 0.1)'
+    color: '#0747A6',
+    bgColor: '#DEEBFF'
   },
   low: {
+    // neutral
     label: 'Low',
-    color: 'hsl(210, 6%, 80%)',
-    bgColor: 'hsl(210, 6%, 80%, 0.15)'
+    color: '#42526E',
+    bgColor: '#DFE1E6'
   }
 };
 
@@ -141,6 +168,11 @@ export const PRIORITY_CONFIG: Record<Priority, {
 // -----------------------------------------------------
 export type WorkItemType = 'epic' | 'feature' | 'story';
 
+/**
+ * WORK_ITEM_CONFIG — colours match the canonical work-item-type SVG palette
+ * (§11). Epic = purple (was Golden Hour #5B7B5B), Feature = blue,
+ * Story = green (was Golden Hour #896F58).
+ */
 export const WORK_ITEM_CONFIG: Record<WorkItemType, {
   label: string;
   color: string;
@@ -148,21 +180,24 @@ export const WORK_ITEM_CONFIG: Record<WorkItemType, {
   icon: string;
 }> = {
   epic: {
+    // §11 Epic purple #904EE2
     label: 'Epic',
-    color: 'hsl(120, 15%, 42%)',
-    bgColor: 'hsl(120, 15%, 42%, 0.15)',
+    color: '#904EE2',
+    bgColor: '#EAE6FF',
     icon: 'Zap'
   },
   feature: {
+    // information
     label: 'Feature',
-    color: 'hsl(217, 91%, 60%)',
-    bgColor: 'hsl(217, 91%, 60%, 0.1)',
+    color: '#0052CC',
+    bgColor: '#DEEBFF',
     icon: 'Package'
   },
   story: {
+    // §11 Story green #63BA3C (canonical story type colour)
     label: 'Story',
-    color: 'hsl(28, 22%, 44%)',
-    bgColor: 'hsl(28, 22%, 44%, 0.15)',
+    color: '#63BA3C',
+    bgColor: '#E3FCEF',
     icon: 'FileText'
   }
 };
@@ -187,50 +222,56 @@ export const LINK_TYPE_CONFIG: Record<LinkType, {
   inverse: LinkType;
 }> = {
   blocks: {
+    // danger
     label: 'Blocks',
     description: 'This item blocks another',
-    color: 'hsl(0, 84%, 60%)',
-    bgColor: 'hsl(0, 84%, 60%, 0.1)',
+    color: '#BF2600',
+    bgColor: '#FFBDAD',
     icon: 'Ban',
     inverse: 'blocked_by'
   },
   blocked_by: {
+    // warning
     label: 'Blocked By',
     description: 'This item is blocked by another',
-    color: 'hsl(38, 92%, 50%)',
-    bgColor: 'hsl(38, 92%, 50%, 0.1)',
+    color: '#974F0C',
+    bgColor: '#FFF0B3',
     icon: 'AlertTriangle',
     inverse: 'blocks'
   },
   relates_to: {
+    // information
     label: 'Relates To',
     description: 'Related work item',
-    color: 'hsl(217, 91%, 60%)',
-    bgColor: 'hsl(217, 91%, 60%, 0.1)',
+    color: '#0052CC',
+    bgColor: '#DEEBFF',
     icon: 'Link2',
     inverse: 'relates_to'
   },
   parent_of: {
+    // success (was Golden Hour #5B7B5B)
     label: 'Parent Of',
     description: 'This is the parent',
-    color: 'hsl(120, 15%, 42%)',
-    bgColor: 'hsl(120, 15%, 42%, 0.15)',
+    color: '#006644',
+    bgColor: '#E3FCEF',
     icon: 'ChevronUp',
     inverse: 'child_of'
   },
   child_of: {
+    // purple (was Golden Hour #896F58)
     label: 'Child Of',
     description: 'This is a child item',
-    color: 'hsl(28, 22%, 44%)',
-    bgColor: 'hsl(28, 22%, 44%, 0.15)',
+    color: '#5243AA',
+    bgColor: '#EAE6FF',
     icon: 'ChevronDown',
     inverse: 'parent_of'
   },
   duplicates: {
+    // neutral
     label: 'Duplicates',
     description: 'Duplicate of another',
-    color: 'hsl(0, 0%, 45%)',
-    bgColor: 'hsl(0, 0%, 45%, 0.1)',
+    color: '#42526E',
+    bgColor: '#DFE1E6',
     icon: 'Copy',
     inverse: 'duplicates'
   }
@@ -386,15 +427,16 @@ export interface StoryWithDetails {
 // Utility functions
 // -----------------------------------------------------
 export function getStatusColor(status: WorkflowStatus): string {
-  return STATUS_CONFIG[status]?.color || 'hsl(210, 6%, 80%)';
+  // Neutral fallback (Atlaskit neutral.bold)
+  return STATUS_CONFIG[status]?.color || '#42526E';
 }
 
 export function getPriorityColor(priority: Priority): string {
-  return PRIORITY_CONFIG[priority]?.color || 'hsl(210, 6%, 80%)';
+  return PRIORITY_CONFIG[priority]?.color || '#42526E';
 }
 
 export function getLinkTypeColor(linkType: LinkType): string {
-  return LINK_TYPE_CONFIG[linkType]?.color || 'hsl(0, 0%, 45%)';
+  return LINK_TYPE_CONFIG[linkType]?.color || '#42526E';
 }
 
 export function calculateProgress(completed: number, total: number): number {

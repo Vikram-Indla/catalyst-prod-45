@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { ChevronRight, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -59,9 +59,26 @@ const BreadcrumbPage = React.forwardRef<HTMLSpanElement, React.ComponentPropsWit
 );
 BreadcrumbPage.displayName = "BreadcrumbPage";
 
+/**
+ * BreadcrumbSeparator — default is a "/" character (Atlaskit + Jira
+ * convention, matches Catalyst's other breadcrumb surfaces like
+ * FeatureViewPage).
+ *
+ * Callers can still pass custom `children` to override — e.g. a
+ * chevron SVG or a dot — and the `[&>svg]:size-3.5` class keeps SVG
+ * children at the right size.
+ */
 const BreadcrumbSeparator = ({ children, className, ...props }: React.ComponentProps<"li">) => (
-  <li role="presentation" aria-hidden="true" className={cn("[&>svg]:size-3.5", className)} {...props}>
-    {children ?? <ChevronRight />}
+  <li
+    role="presentation"
+    aria-hidden="true"
+    className={cn(
+      "select-none text-muted-foreground/70 [&>svg]:size-3.5",
+      className,
+    )}
+    {...props}
+  >
+    {children ?? <span aria-hidden="true">/</span>}
   </li>
 );
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator";

@@ -28,12 +28,24 @@ interface AtlaskitRendererProps {
   appearance?: 'full-page' | 'comment';
   /** Max height before scroll (0 = no limit) */
   maxHeight?: number;
+  /**
+   * Optional map of ADF node type → React component override, passed
+   * through to `@atlaskit/renderer` as `nodeComponents`. Catalyst uses
+   * this to replace the default MediaCard (Atlassian-hosted media +
+   * auth) with its own attachment pipeline. See
+   * `components/shared/rich-text/atlaskit/atlaskitMediaOverrides.tsx`.
+   */
+  nodeComponents?: Record<string, React.ComponentType<any>>;
+  /** Optional synchronous fallback while the chunk loads. */
+  fallback?: React.ReactNode;
 }
 
 export default function AtlaskitRenderer({
   document,
   appearance = 'full-page',
   maxHeight = 0,
+  nodeComponents,
+  fallback,
 }: AtlaskitRendererProps) {
   if (!document || !document.type) {
     return null;
@@ -44,11 +56,12 @@ export default function AtlaskitRenderer({
       className="atlaskit-renderer-wrapper"
       style={maxHeight ? { maxHeight, overflowY: 'auto' } : undefined}
     >
-      <Suspense fallback={<div style={{ minHeight: 24 }} aria-hidden />}>
+      <Suspense fallback={fallback ?? <div style={{ minHeight: 24 }} aria-hidden />}>
         <LazyReactRenderer
           document={{ ...document, version: document.version ?? 1 } as any}
           appearance={appearance}
           adfStage="stage0"
+          nodeComponents={nodeComponents}
         />
       </Suspense>
     </div>

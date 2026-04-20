@@ -188,24 +188,19 @@ export function parseAdfContent(raw: string | null | undefined): any | null {
   return null;
 }
 
-// ─── ADF → HTML (for read-only rendering) ───────────────────
-// Delegates to the canonical hardened converter in utils/adfToHtml.ts
-import { adfToHtml as _adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
-export const adfToHtml = _adfToHtml;
-
 // ─── Resolve content for TipTap editor ──────────────────────
-// Returns either ADF JSON (for setContent) or HTML string, depending on stored format
+// Returns either ADF JSON (for setContent) or HTML string, depending on stored format.
+// Consumers: StoryRichTextEditor, CatalystRichTextEditor (edit-path TipTap content).
+//
+// Note: `adfToHtml` and `resolveDisplayHtml` formerly lived here as read-path
+// helpers. They were retired in the B1 @atlaskit/renderer rollout — read paths
+// now go through `EpicDescriptionRenderer` / `adfHelpers`. `adfToHtml` itself
+// is still imported directly from `@/modules/project-work-hub/utils/adfToHtml`
+// by the 3 legacy TipTap edit-initial-content sites; that call site will be
+// removed when those editors migrate to Atlaskit (B2 scope).
 export function resolveEditorContent(raw: string | null | undefined): string | object {
   if (!raw || raw.trim() === '') return '';
   const adf = parseAdfContent(raw);
   if (adf) return adfToTiptapJson(adf);
   return raw; // HTML — TipTap handles HTML content natively
-}
-
-// ─── Resolve content for read-only display ──────────────────
-export function resolveDisplayHtml(raw: string | null | undefined): string {
-  if (!raw || raw.trim() === '') return '';
-  const adf = parseAdfContent(raw);
-  if (adf) return adfToHtml(adf);
-  return raw; // Already HTML
 }

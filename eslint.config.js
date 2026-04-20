@@ -55,6 +55,37 @@ const makeAdsForbidAtlaskit = (severity) => ({
           "Import from the ADS barrel: `import { … } from '@/components/ads'`. " +
           "Deep imports couple callers to the wrapper file structure.",
       },
+      // CLAUDE.md §20.2 — Apr 20 2026 direction lock: Atlaskit-only.
+      // shadcn/ui primitives are banned in new code. Existing 4,740
+      // import sites are on the Rung 3 retirement ladder (§20.3).
+      {
+        group: ["@/components/ui/*"],
+        message:
+          "shadcn/ui is BANNED in new code (CLAUDE.md §20.2). Use the " +
+          "Catalyst ADS wrapper layer at '@/components/ads' (which delegates " +
+          "to @atlaskit/*). If the ADS wrapper for this primitive does not " +
+          "exist yet, add it to src/components/ads first, then import from " +
+          "'@/components/ads'. Do not add a bespoke clone.",
+      },
+      // TipTap final retirement — CLAUDE.md §20.2 + Rung 4. Two known
+      // holdouts remain (CreateStoryModal autoSave, BusinessRequestDetail
+      // schema); every other site must use EpicDescriptionEditor.
+      {
+        group: ["@tiptap/*"],
+        message:
+          "TipTap is BANNED in new code (CLAUDE.md §20.2). Use the Atlaskit " +
+          "editor via EpicDescriptionEditor / EpicDescriptionRenderer from " +
+          "'@/components/shared/rich-text/atlaskit'.",
+      },
+      // Radix direct imports — @atlaskit internally wraps Radix; product
+      // code must not reach past the ADS wrapper layer.
+      {
+        group: ["@radix-ui/*"],
+        message:
+          "Direct @radix-ui/* imports are BANNED (CLAUDE.md §20.2). Use the " +
+          "Catalyst ADS wrapper at '@/components/ads' — Atlaskit wraps Radix " +
+          "internally and the ADS wrapper isolates both version-bump surfaces.",
+      },
     ],
   }],
 });

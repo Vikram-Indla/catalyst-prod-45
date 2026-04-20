@@ -22,15 +22,17 @@ interface MentionTextareaProps {
 
 // Generate consistent vibrant avatar color from name
 function getAvatarColor(name: string): string {
+  // CLAUDE.md §L38 — hex literals only (no HSL).
+  // Atlaskit avatar palette (bold, visually distinct).
   const colors = [
-    'hsl(220, 90%, 56%)',  // Blue
-    'hsl(262, 83%, 58%)',  // Purple
-    'hsl(330, 81%, 60%)',  // Pink
-    'hsl(10, 78%, 54%)',   // Red-Orange
-    'hsl(36, 90%, 50%)',   // Orange
-    'hsl(158, 64%, 40%)',  // Teal
-    'hsl(199, 89%, 48%)',  // Sky Blue
-    'hsl(142, 71%, 45%)',  // Green
+    '#2A6DF4',  // Blue
+    '#7C3BED',  // Purple
+    '#EC4699',  // Pink
+    '#E54D2E',  // Red-Orange
+    '#F2960D',  // Orange
+    '#25A777',  // Teal
+    '#0DA2E7',  // Sky Blue
+    '#21C45D',  // Green
   ];
   
   let hash = 0;
@@ -258,7 +260,7 @@ export function MentionTextarea({
                     isSelected && "bg-primary text-primary-foreground"
                   )}
                   style={{
-                    backgroundColor: isSelected ? 'hsl(220, 90%, 56%)' : undefined,
+                    backgroundColor: isSelected ? '#2A6DF4' : undefined,
                     color: isSelected ? 'white' : undefined,
                   }}
                 >
@@ -317,12 +319,12 @@ export function MentionText({ text, className }: MentionTextProps) {
       {parts.map((part, i) => {
         if (part.startsWith('@')) {
           return (
-            <span 
-              key={i} 
+            <span
+              key={i}
               className="font-medium rounded px-1"
               style={{
-                color: 'hsl(220, 90%, 56%)',
-                backgroundColor: 'hsl(220, 90%, 56%, 0.1)',
+                color: '#2A6DF4',
+                backgroundColor: 'rgba(42, 109, 244, 0.1)',
               }}
             >
               {part}

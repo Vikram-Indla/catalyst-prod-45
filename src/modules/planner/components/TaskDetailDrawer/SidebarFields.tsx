@@ -118,17 +118,19 @@ function useWorkstreams() {
 }
 
 function getAvatarColor(name: string): string {
+  // CLAUDE.md §L38 — hex literals only (no HSL).
+  // Catalyst avatar palette — bold, visually distinct.
   const colors = [
-    'hsl(220, 90%, 56%)',
-    'hsl(262, 83%, 58%)',
-    'hsl(158, 64%, 40%)',
-    'hsl(340, 82%, 52%)',
-    'hsl(24, 95%, 53%)',
-    'hsl(142, 71%, 45%)',
-    'hsl(199, 89%, 48%)',
-    'hsl(47, 96%, 53%)',
-    'hsl(291, 64%, 52%)',
-    'hsl(174, 72%, 40%)',
+    '#2A6DF4',  // Blue
+    '#7C3BED',  // Purple
+    '#25A777',  // Teal
+    '#E92063',  // Magenta
+    '#F97015',  // Orange
+    '#21C45D',  // Green
+    '#0DA2E7',  // Sky Blue
+    '#FAC814',  // Yellow
+    '#BB36D3',  // Violet
+    '#1DAFA1',  // Cyan
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {

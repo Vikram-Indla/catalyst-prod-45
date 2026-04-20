@@ -6,17 +6,20 @@ export interface WorkflowStatus {
   description?: string;
 }
 
+// Atlaskit semantic-token fallback hexes. Previously HSL, with four values
+// collapsing to banned Golden Hour palette (§7). See types/views.ts for
+// the canonical STATUS_CONFIG mapping rationale.
 export const WORKFLOW_STATUSES: WorkflowStatus[] = [
-  { id: 'backlog', name: 'Backlog', color: 'hsl(210, 5%, 80%)', bgColor: 'hsl(210, 5%, 80%, 0.15)', description: 'Awaiting prioritization' },
-  { id: 'design', name: 'Design', color: 'hsl(30, 22%, 44%)', bgColor: 'hsl(30, 22%, 44%, 0.15)', description: 'In design phase' },
-  { id: 'ready_dev', name: 'Ready for Development', color: 'hsl(217, 91%, 60%)', bgColor: 'hsl(217, 91%, 60%, 0.1)', description: 'Ready to be picked up' },
-  { id: 'in_dev', name: 'In Development', color: 'hsl(32, 45%, 60%)', bgColor: 'hsl(32, 45%, 60%, 0.15)', description: 'Actively being developed' },
-  { id: 'qa', name: 'QA Testing', color: 'hsl(38, 92%, 50%)', bgColor: 'hsl(38, 92%, 50%, 0.1)', description: 'Ready for quality assurance' },
-  { id: 'uat', name: 'UAT Testing', color: 'hsl(32, 41%, 71%)', bgColor: 'hsl(32, 41%, 71%, 0.2)', description: 'User acceptance testing' },
-  { id: 'beta', name: 'In Beta', color: 'hsl(120, 14%, 43%)', bgColor: 'hsl(120, 14%, 43%, 0.15)', description: 'Beta release' },
-  { id: 'ready_prod', name: 'Ready for Production', color: 'hsl(142, 71%, 45%)', bgColor: 'hsl(142, 71%, 45%, 0.1)', description: 'Approved for production' },
-  { id: 'in_prod', name: 'In Production', color: 'hsl(142, 76%, 29%)', bgColor: 'hsl(142, 76%, 29%, 0.15)', description: 'Deployed to production' },
-  { id: 'on_hold', name: 'On Hold', color: 'hsl(0, 0%, 45%)', bgColor: 'hsl(0, 0%, 45%, 0.1)', description: 'Paused or blocked' },
+  { id: 'backlog', name: 'Backlog', color: '#42526E', bgColor: '#DFE1E6', description: 'Awaiting prioritization' },
+  { id: 'design', name: 'Design', color: '#5243AA', bgColor: '#EAE6FF', description: 'In design phase' },
+  { id: 'ready_dev', name: 'Ready for Development', color: '#0052CC', bgColor: '#DEEBFF', description: 'Ready to be picked up' },
+  { id: 'in_dev', name: 'In Development', color: '#FF991F', bgColor: '#FFF0B3', description: 'Actively being developed' },
+  { id: 'qa', name: 'QA Testing', color: '#FFAB00', bgColor: '#FFF0B3', description: 'Ready for quality assurance' },
+  { id: 'uat', name: 'UAT Testing', color: '#FF991F', bgColor: '#FFF0B3', description: 'User acceptance testing' },
+  { id: 'beta', name: 'In Beta', color: '#36B37E', bgColor: '#E3FCEF', description: 'Beta release' },
+  { id: 'ready_prod', name: 'Ready for Production', color: '#00875A', bgColor: '#E3FCEF', description: 'Approved for production' },
+  { id: 'in_prod', name: 'In Production', color: '#006644', bgColor: '#E3FCEF', description: 'Deployed to production' },
+  { id: 'on_hold', name: 'On Hold', color: '#42526E', bgColor: '#DFE1E6', description: 'Paused or blocked' },
 ];
 
 // Define valid transitions from each status

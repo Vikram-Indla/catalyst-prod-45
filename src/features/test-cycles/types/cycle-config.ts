@@ -272,43 +272,50 @@ export interface AssignTesterInput {
 // Status UI Configuration
 // ============================================================================
 
+// Atlaskit semantic-token fallback hexes (see types/views.ts).
 export const CYCLE_STATUS_CONFIG: Record<CycleStatus, { label: string; color: string; bgColor: string }> = {
-  draft: { 
-    label: 'draft', 
-    color: 'hsl(var(--muted-foreground))', 
-    bgColor: 'hsl(var(--muted))' 
+  draft: {
+    // neutral muted
+    label: 'draft',
+    color: '#626F86',
+    bgColor: '#F4F5F7'
   },
-  planned: { 
-    label: 'planned', 
-    color: 'hsl(220 70% 50%)', 
-    bgColor: 'hsl(220 70% 50% / 0.1)' 
+  planned: {
+    // information
+    label: 'planned',
+    color: '#0747A6',
+    bgColor: '#DEEBFF'
   },
-  active: { 
-    label: 'active', 
-    color: 'hsl(142 71% 45%)', 
-    bgColor: 'hsl(142 71% 45% / 0.1)' 
+  active: {
+    // success
+    label: 'active',
+    color: '#006644',
+    bgColor: '#E3FCEF'
   },
-  paused: { 
-    label: 'paused', 
-    color: 'hsl(38 92% 50%)', 
-    bgColor: 'hsl(38 92% 50% / 0.1)' 
+  paused: {
+    // warning
+    label: 'paused',
+    color: '#974F0C',
+    bgColor: '#FFF0B3'
   },
-  completed: { 
-    label: 'completed', 
-    color: 'hsl(142 71% 45%)', 
-    bgColor: 'hsl(142 71% 45% / 0.1)' 
+  completed: {
+    // success
+    label: 'completed',
+    color: '#006644',
+    bgColor: '#E3FCEF'
   },
-  archived: { 
-    label: 'archived', 
-    color: 'hsl(0 0% 45%)', 
-    bgColor: 'hsl(0 0% 45% / 0.1)' 
+  archived: {
+    // neutral
+    label: 'archived',
+    color: '#42526E',
+    bgColor: '#DFE1E6'
   },
 };
 
 // All statuses for filter dropdowns
 export const ALL_CYCLE_STATUSES: CycleStatus[] = [
   'draft',
-  'planned', 
+  'planned',
   'active',
   'paused',
   'completed',
@@ -324,7 +331,7 @@ export const ACTIVE_CYCLE_STATUSES: CycleStatus[] = [
 ];
 
 export const CYCLE_ROLE_CONFIG: Record<CycleRole, { label: string; color: string }> = {
-  lead: { label: 'Lead', color: 'hsl(217 91% 60%)' },
-  tester: { label: 'Tester', color: 'hsl(142 71% 45%)' },
-  reviewer: { label: 'Reviewer', color: 'hsl(38 92% 50%)' },
+  lead: { label: 'Lead', color: '#0052CC' },       // information
+  tester: { label: 'Tester', color: '#006644' },   // success
+  reviewer: { label: 'Reviewer', color: '#974F0C' }, // warning
 };

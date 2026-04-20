@@ -4,7 +4,7 @@
  * Right side: collapsible Details sidebar (Assignee, Priority, Reporter, Labels, Fix versions, MDT Ref)
  * Implements recommendations #11-16, #17, #19-26, #28-30
  */
-import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback, Suspense, lazy } from 'react';
 import { toast } from 'sonner';
 import { ChevronDown, ChevronRight, ChevronLeft, Link2, ArrowRightLeft, MoreHorizontal, Pencil, Plus, MessageSquare, History as HistoryIcon, FileText, Send, Eye, Share2, Bold, Italic, List, Code2, Link as LinkIcon, Smile, Paperclip, Undo2, Redo2, ArrowUpDown, ArrowRight, CheckSquare, Globe, Palette, Search, X, Flag, Zap, SquarePen } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -33,9 +33,20 @@ import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
 import { useFixVersions } from '@/modules/project-work-hub/hooks/useFixVersions';
 import { ConvertToSubtaskWizard } from './ConvertToSubtaskWizard';
 import { FlagPopover, isFlagged as checkFlagged, CloneWizard, MoveWizard, ArchiveDialog, DeleteDialog } from './IssueActionDialogs';
-import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
-import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
-import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
+import { CatalystRichTextEditor } from '@/components/shared/rich-text';
+import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
+import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
+import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+/* §19 chokepoint — ALL user-avatar lookups on this surface resolve
+   through `resolveAvatarUrl`. Never read `profiles.avatar_url`
+   (Gravatar CDN, banned) and never display an external URL. */
+import { resolveAvatarUrl } from '@/lib/avatars';
+/* Canonical Atlaskit editor — lazy-loaded, direct file import (NOT the
+   barrel) so Rollup keeps the ~2MB @atlaskit/editor-core chunk isolated
+   from the renderer graph. Matches CatalystDescriptionSection. */
+const EpicDescriptionEditor = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+);
 import '@/modules/project-work-hub/components/dialogs/story-detail-extensions.css';
 import { ActivityPanelPilot } from './activity/ActivityPanelPilot';
 /* Catalyst Defect anatomy — unifies the All Work view with the
@@ -315,9 +326,10 @@ export function IssueContentView({
         .eq('work_item_id', item.id).order('created_at', { ascending: true });
       if (!data?.length) return [];
       const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', authorIds);
+      // §19 chokepoint: resolve through local PNGs. Never read profiles.avatar_url (Gravatar CDN, banned).
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', authorIds);
       const pm = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(c => ({ ...c, _author_name: pm.get(c.author_id)?.full_name ?? 'Unknown', _author_avatar: pm.get(c.author_id)?.avatar_url ?? null }));
+      return data.map(c => ({ ...c, _author_name: pm.get(c.author_id)?.full_name ?? 'Unknown', _author_avatar: resolveAvatarUrl(pm.get(c.author_id)?.full_name ?? null) }));
     },
     enabled: !!item?.id,
   });
@@ -331,9 +343,10 @@ export function IssueContentView({
         .eq('work_item_id', item.id).order('created_at', { ascending: false });
       if (!data?.length) return [];
       const uids = [...new Set(data.map(h => h.user_id).filter(Boolean))];
-      const { data: profiles } = await supabase.from('profiles').select('id, full_name, avatar_url').in('id', uids);
+      // §19 chokepoint: resolve through local PNGs. Never read profiles.avatar_url (Gravatar CDN, banned).
+      const { data: profiles } = await supabase.from('profiles').select('id, full_name').in('id', uids);
       const pm = new Map((profiles ?? []).map(p => [p.id, p]));
-      return data.map(h => ({ ...h, _author_name: pm.get(h.user_id)?.full_name ?? 'System', _author_avatar: pm.get(h.user_id)?.avatar_url ?? null }));
+      return data.map(h => ({ ...h, _author_name: pm.get(h.user_id)?.full_name ?? 'System', _author_avatar: resolveAvatarUrl(pm.get(h.user_id)?.full_name ?? null) }));
     },
     enabled: !!item?.id,
   });
@@ -618,22 +631,71 @@ export function IssueContentView({
             {!collapsed.desc && (
               <div className="awSectionBody">
                 {descEditMode ? (
+                  /* ── Edit mode — canonical Atlaskit editor (matches
+                     CatalystDescriptionSection). The editor writes ADF
+                     JSON back to `description_adf` (JSONB, canonical).
+                     AtlaskitBoundary falls back to CatalystRichTextEditor
+                     on a chunk-load / runtime failure so users are never
+                     stranded without a composer. B2 — Atlaskit field-type
+                     sweep. */
                   <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
-                    <StoryRichTextEditor
-                      content={adfToHtml((item as any)?.description_adf) || item?.description_text || ''}
-                      workItemId={item?.id ?? ''}
-                      onSave={(html) => {
-                        if (item?.id) {
-                          supabase.from('ph_issues').update({ description_text: html }).eq('id', item.id).then(() => {
-                            toast.success('Description saved');
-                          });
+                    <AtlaskitBoundary
+                      diagnosticTag={`issue-content-view:description-edit:${item?.issue_key ?? item?.id ?? 'n/a'}`}
+                      fallback={
+                        <CatalystRichTextEditor
+                          content={
+                            (item as any)?.description_adf
+                              ? (typeof (item as any).description_adf === 'string'
+                                  ? (item as any).description_adf
+                                  : JSON.stringify((item as any).description_adf))
+                              : (item?.description_text || '')
+                          }
+                          workItemId={item?.id ?? ''}
+                          onSave={(adfJson) => {
+                            if (!item?.id) { setDescEditMode(false); return; }
+                            const parsed = adfJson ? JSON.parse(adfJson) : null;
+                            supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
+                              queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                              queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                              queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                              toast.success('Description saved');
+                            });
+                            setDescEditMode(false);
+                          }}
+                          onCancel={() => setDescEditMode(false)}
+                          placeholder="Add a description..."
+                          minHeight={150}
+                          mode="save"
+                          storagePath="description-images"
+                        />
+                      }
+                    >
+                      <Suspense
+                        fallback={
+                          <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
+                            Loading editor…
+                          </div>
                         }
-                        setDescEditMode(false);
-                      }}
-                      onCancel={() => setDescEditMode(false)}
-                      placeholder="Add a description..."
-                      minHeight={150}
-                    />
+                      >
+                        <EpicDescriptionEditor
+                          initialContent={(item as any)?.description_adf ?? item?.description_text ?? null}
+                          workItemId={item?.id ?? ''}
+                          onSave={(adfJson) => {
+                            if (!item?.id) { setDescEditMode(false); return; }
+                            const parsed = adfJson ? JSON.parse(adfJson) : null;
+                            supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
+                              queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                              queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                              queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                              toast.success('Description saved');
+                            });
+                            setDescEditMode(false);
+                          }}
+                          onCancel={() => setDescEditMode(false)}
+                          placeholder="Add a description..."
+                        />
+                      </Suspense>
+                    </AtlaskitBoundary>
                   </div>
                 ) : (
                   <div
@@ -647,11 +709,11 @@ export function IssueContentView({
                     onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                   >
                     {(() => {
-                      const descHtml = adfToHtml((item as any)?.description_adf) || item?.description_text || '';
-                      if (!descHtml || descHtml === '<p></p>' || descHtml.trim() === '') {
+                      const descSource = (item as any)?.description_adf ?? item?.description_text ?? null;
+                      if (isAdfEmpty(descSource)) {
                         return <span style={{ fontSize: 14, color: '#8C8F97', padding: '4px 0' }}>Add a description...</span>;
                       }
-                      return <AdfDescriptionRenderer html={descHtml} issueKey={item?.issue_key} />;
+                      return <EpicDescriptionRenderer content={descSource} issueKey={item?.issue_key} />;
                     })()}
                   </div>
                 )}
@@ -981,7 +1043,7 @@ export function IssueContentView({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                   {item?.reporter_name ? (
                     <>
-                      <Avatar name={item.reporter_name} url={(item as any).reporter_avatar} size={28} />
+                      <Avatar name={item.reporter_name} url={resolveAvatarUrl(item.reporter_name)} size={28} />
                       <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{item.reporter_name}</span>
                     </>
                   ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}

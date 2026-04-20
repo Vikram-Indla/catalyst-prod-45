@@ -15,8 +15,7 @@ import { ChevronRight, Pencil } from 'lucide-react';
 import Heading from '@atlaskit/heading';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { adfToHtml } from '@/modules/project-work-hub/utils/adfToHtml';
-import { AdfDescriptionRenderer } from '@/modules/project-work-hub/components/AdfDescriptionRenderer';
+import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
 import { CatalystRichTextEditor } from '@/components/shared/rich-text';
 import { prefetchEpicEditor } from '@/lib/atlaskitPrefetch';
 import type { PhIssue } from '../types';
@@ -64,18 +63,17 @@ function AtlaskitFallback({ minHeight = 80 }: { minHeight?: number }) {
 }
 
 /* LAYER 2 (mini) — pre-hydration placeholder parity.
-   Renders the description via the synchronous HTML path that is already
-   in the main bundle, so the text is on screen in <5ms. When the real
-   @atlaskit/renderer chunk arrives, React swaps it in with matching
-   typography and lineHeight — no layout shift, no flash of empty state.
-   This is the same DOM the Atlaskit-failure fallback produces, so the
-   placeholder is guaranteed to match the chunk-failure path as well. */
+   Renders the description as plain text (via `adfToPlainText`) so prose
+   is on screen in <5ms while the @atlaskit/renderer chunk loads. When
+   the real renderer arrives, React swaps in the fully-styled markup —
+   images, tables, panels, lists. No layout shift for plain prose; the
+   first frame of richer content is a brief text-only flash (accepted
+   trade for eliminating the bespoke ADF→HTML translator). Same DOM as
+   the chunk-failure fallback path. */
 function AtlaskitRendererPlaceholder({
-  html,
-  issueKey,
+  plain,
 }: {
-  html: string;
-  issueKey?: string;
+  plain: string;
 }) {
   return (
     <div
@@ -84,9 +82,10 @@ function AtlaskitRendererPlaceholder({
       style={{
         fontSize: 14, fontWeight: 400, color: '#292A2E', lineHeight: 1.5,
         fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", sans-serif',
+        whiteSpace: 'pre-wrap',
       }}
     >
-      <AdfDescriptionRenderer html={html} issueKey={issueKey} />
+      {plain}
     </div>
   );
 }
@@ -102,14 +101,17 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
   const s = document.createElement('style');
   s.id = STYLE_ID;
   s.textContent = `
-    /* Scoped ADF content styles — target BOTH wrappers so list/typography
-       render correctly in the Atlaskit-success path (.adf-description-content
-       from AdfDescriptionRenderer) AND the sync fallback path (.cv-desc-body
-       from AtlaskitRendererPlaceholder). Without the .adf-description-content
-       selector, bullets/numbers disappear when the real Atlaskit renderer
-       chunk loads because list-style defaults to none in reset stylesheets.
-       Jira-parity bullet style: filled disc top-level, hollow circle nested,
-       square third-level (matching Atlassian's canonical ADF renderer). */
+    /* Scoped ADF content styles — target BOTH the Atlaskit renderer path
+       (.atlaskit-renderer-wrapper, set by our AtlaskitRenderer wrapper)
+       and the plain-text fallback paths (.cv-desc-body on the placeholder,
+       .atlaskit-renderer-fallback on the ErrorBoundary fallback). Without
+       explicit list-style on these wrappers, bullets/numbers disappear in
+       some Jira ADFs because list-style defaults to `none` in the
+       Atlaskit reset. Jira-parity bullet style: filled disc top-level,
+       hollow circle nested, square third-level (matching Atlassian's
+       canonical ADF renderer). The legacy `.adf-description-content`
+       selector is retained defensively in case any stale prerender DOM
+       sneaks in; safe to drop in a future pass. */
     .cv-desc-body h1, .adf-description-content h1 { font-size: 24px; font-weight: 700; margin: 20px 0 8px; color: #292A2E; line-height: 1.3; }
     .cv-desc-body h2, .adf-description-content h2 { font-size: 20px; font-weight: 600; margin: 16px 0 8px; color: #292A2E; line-height: 1.3; }
     .cv-desc-body h3, .adf-description-content h3 { font-size: 16px; font-weight: 600; margin: 12px 0 4px; color: #292A2E; line-height: 1.4; }
@@ -172,8 +174,15 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
     ? (typeof issue.description_adf === 'string' ? issue.description_adf : JSON.stringify(issue.description_adf))
     : (issue?.description_text || '');
 
-  const descHtml = adfToHtml(issue?.description_adf) || issue?.description_text || '';
-  const isEmpty = !descHtml.trim();
+  // Empty-check goes through the canonical ADF-aware helper. Previously
+  // `!adfToHtml(adf).trim()` — the (ab)use of a rendering function for an
+  // emptiness predicate is retired in the B1 @atlaskit/renderer rollout.
+  const descSource = issue?.description_adf ?? issue?.description_text ?? null;
+  const isEmpty = isAdfEmpty(descSource);
+  // Plain-text projection — used by Suspense placeholder and chunk-failure
+  // fallback so the page renders prose instantly while the renderer chunk
+  // arrives (or if it fails).
+  const plainText = adfToPlainText(descSource);
 
   // Mutation to save description
   const saveDescriptionMutation = useMutation({
@@ -339,16 +348,10 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
           >
             <AtlaskitBoundary
               diagnosticTag={`description-view:${issue?.issue_key ?? issue?.id ?? 'n/a'}`}
-              fallback={
-                <AtlaskitRendererPlaceholder html={descHtml} issueKey={issue?.issue_key} />
-              }
+              fallback={<AtlaskitRendererPlaceholder plain={plainText} />}
             >
-              <Suspense
-                fallback={
-                  <AtlaskitRendererPlaceholder html={descHtml} issueKey={issue?.issue_key} />
-                }
-              >
-                <EpicDescriptionRenderer content={issue?.description_adf ?? issue?.description_text ?? null} issueKey={issue?.issue_key} />
+              <Suspense fallback={<AtlaskitRendererPlaceholder plain={plainText} />}>
+                <EpicDescriptionRenderer content={descSource} issueKey={issue?.issue_key} />
               </Suspense>
             </AtlaskitBoundary>
           </div>

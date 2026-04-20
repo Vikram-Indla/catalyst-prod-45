@@ -17,9 +17,10 @@
  *   - column reorder
  *   - virtualization
  *
- * Now renders a plain `<table>` so these are tractable. See JiraTable.legacy.tsx
- * for the previous implementation (kept for emergency rollback). The public
- * API (JiraTableProps) and all integration contracts are unchanged.
+ * Now renders a plain `<table>` so these are tractable. The previous
+ * `@atlaskit/dynamic-table`-based implementation (`JiraTable.legacy.tsx`) was
+ * retired in April 2026 — recover from git history if needed. The public API
+ * (JiraTableProps) and all integration contracts are unchanged.
  *
  * Round H delivers: column resize (drag handle at header right edge, widths
  * persist in component state — parent can serialize if needed), sticky
@@ -411,7 +412,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td {
         background: #F4F5F7 !important;
       }
-      /* ── Critique fixes (2026-04) — ported from JiraTable.legacy.tsx ──
+      /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
          AkCheckbox renders a hidden <input> inside a <label> that normally
          takes left-side layout, pushing the visible SVG 6px right of centre.

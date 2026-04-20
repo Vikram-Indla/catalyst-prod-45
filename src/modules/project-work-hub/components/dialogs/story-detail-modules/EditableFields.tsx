@@ -57,8 +57,11 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
   ),
 };
 
-/* ── Avatar helper — prioritises real image, falls back to face icon (GUARDRAIL) ── */
-function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
+/* ── Avatar helper — prioritises real image, falls back to face icon (GUARDRAIL) ──
+   Exported so peer fields (Reporter etc.) can reuse the canonical fallback and
+   we stop fragmenting into hand-rolled initials tiles vs CircleUser SVG tiles
+   for the same user. See CLAUDE.md §19 + 2026-04-20 critique §P0-2. */
+export function AvatarCircle({ userId, name, avatarUrl, size = 28 }: { userId: string; name: string; avatarUrl?: string | null; size?: number }) {
   if (avatarUrl) {
     return <img src={avatarUrl} alt={name} style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />;
   }

@@ -4,12 +4,11 @@
  */
 
 import React from 'react';
-import { 
-  User, 
-  Flag, 
-  Layers, 
-  Calendar, 
-  GitBranch, 
+import {
+  User,
+  Layers,
+  Calendar,
+  GitBranch,
   Tag,
   Component,
   Target,
@@ -18,6 +17,7 @@ import {
   Link2,
   Package
 } from 'lucide-react';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -53,13 +53,14 @@ interface DetailsPanelProps {
   onFieldChange: (field: string, value: unknown) => void;
 }
 
-// Priority options with colors
-const PRIORITIES: { value: IssuePriority; label: string; color: string }[] = [
-  { value: 'highest', label: 'Highest', color: 'text-red-600' },
-  { value: 'high', label: 'High', color: 'text-orange-500' },
-  { value: 'medium', label: 'Medium', color: 'text-yellow-500' },
-  { value: 'low', label: 'Low', color: 'text-green-500' },
-  { value: 'lowest', label: 'Lowest', color: 'text-blue-400' },
+// Priority options. Visual rendering goes through the canonical
+// `PriorityIndicator` / `PriorityBars` — no per-row colour classes here.
+const PRIORITIES: { value: IssuePriority; label: string }[] = [
+  { value: 'highest', label: 'Highest' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+  { value: 'lowest', label: 'Lowest' },
 ];
 
 // Issue type options
@@ -74,7 +75,6 @@ const ISSUE_TYPES: { value: IssueType; label: string; color: string }[] = [
 export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps) {
   const assignee = users.find(u => u.id === issue.assigneeId);
   const reporter = users.find(u => u.id === issue.reporterId);
-  const currentPriority = PRIORITIES.find(p => p.value === issue.priority);
   const currentType = ISSUE_TYPES.find(t => t.value === issue.type);
 
   return (
@@ -105,12 +105,12 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
         </FieldRow>
 
         {/* Priority */}
-        <FieldRow label="Priority" icon={<Flag className={cn("h-4 w-4", currentPriority?.color)} />}>
+        <FieldRow label="Priority" icon={<PriorityBars priority={normalisePriority(issue.priority)} barHeight={12} />}>
           <Select value={issue.priority} onValueChange={(val) => onFieldChange('priority', val)}>
             <SelectTrigger className="h-8 w-full">
               <SelectValue>
                 <div className="flex items-center gap-2">
-                  <Flag className={cn("h-3.5 w-3.5", currentPriority?.color)} />
+                  <PriorityBars priority={normalisePriority(issue.priority)} barHeight={12} />
                   <span className="capitalize">{issue.priority}</span>
                 </div>
               </SelectValue>
@@ -119,7 +119,7 @@ export function DetailsPanel({ issue, users, onFieldChange }: DetailsPanelProps)
               {PRIORITIES.map((priority) => (
                 <SelectItem key={priority.value} value={priority.value}>
                   <div className="flex items-center gap-2">
-                    <Flag className={cn("h-3.5 w-3.5", priority.color)} />
+                    <PriorityBars priority={normalisePriority(priority.value)} barHeight={12} />
                     {priority.label}
                   </div>
                 </SelectItem>

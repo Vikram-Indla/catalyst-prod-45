@@ -31,40 +31,40 @@ export const WORK_ITEM_STATUS_CONFIG: Record<WorkItemStatus, {
   bgColor: string;
   textColor: string;
 }> = {
-  backlog: { 
-    label: 'BACKLOG', 
-    bgColor: 'hsl(0 0% 96%)',     // #f5f5f5
-    textColor: 'hsl(0 0% 32%)'    // #525252
+  backlog: {
+    label: 'BACKLOG',
+    bgColor: '#F5F5F5',
+    textColor: '#525252'
   },
-  ready: { 
-    label: 'READY', 
-    bgColor: 'hsl(214 100% 93%)', // #dbeafe
-    textColor: 'hsl(217 91% 45%)' // #1d4ed8
+  ready: {
+    label: 'READY',
+    bgColor: '#DBEAFE',
+    textColor: '#1D4ED8'
   },
-  in_progress: { 
-    label: 'IN PROGRESS', 
-    bgColor: 'hsl(166 76% 89%)',  // #ccfbf1
-    textColor: 'hsl(173 58% 33%)' // #0f766e
+  in_progress: {
+    label: 'IN PROGRESS',
+    bgColor: '#CCFBF1',
+    textColor: '#0F766E'
   },
-  in_review: { 
-    label: 'IN REVIEW', 
-    bgColor: 'hsl(48 96% 89%)',   // #fef3c7
-    textColor: 'hsl(32 95% 44%)'  // #b45309
+  in_review: {
+    label: 'IN REVIEW',
+    bgColor: '#FEF3C7',
+    textColor: '#B45309'
   },
-  blocked: { 
-    label: 'BLOCKED', 
-    bgColor: 'hsl(0 94% 94%)',    // #fee2e2
-    textColor: 'hsl(0 72% 51%)'   // #dc2626
+  blocked: {
+    label: 'BLOCKED',
+    bgColor: '#FEE2E2',
+    textColor: '#DC2626'
   },
-  done: { 
-    label: 'DONE', 
-    bgColor: 'hsl(149 80% 90%)',  // #d1fae5
-    textColor: 'hsl(160 84% 26%)' // #047857
+  done: {
+    label: 'DONE',
+    bgColor: '#D1FAE5',
+    textColor: '#047857'
   },
   closed: {
     label: 'CLOSED',
-    bgColor: 'hsl(0 0% 96%)',
-    textColor: 'hsl(0 0% 45%)'
+    bgColor: '#F5F5F5',
+    textColor: '#737373'
   },
 };
 
@@ -78,17 +78,17 @@ export const PRIORITY_CONFIG: Record<PriorityLevel, {
   borderColor: string;
   showBorder: boolean;
 }> = {
-  P1: { 
-    label: 'Critical', 
+  P1: {
+    label: 'Critical',
     shortLabel: 'P1',
-    borderColor: 'hsl(0 72% 51%)', // #dc2626
-    showBorder: true 
+    borderColor: '#DC2626',
+    showBorder: true
   },
-  P2: { 
-    label: 'High', 
+  P2: {
+    label: 'High',
     shortLabel: 'P2',
-    borderColor: 'hsl(25 95% 53%)', // #f97316
-    showBorder: true 
+    borderColor: '#F97316',
+    showBorder: true
   },
   P3: { 
     label: 'Medium', 
@@ -113,10 +113,10 @@ export const SEVERITY_CONFIG: Record<SeverityLevel, {
   shortLabel: string;
   color: string;
 }> = {
-  SEV1: { label: 'Blocker', shortLabel: 'SEV1', color: 'hsl(0 72% 51%)' },
-  SEV2: { label: 'Critical', shortLabel: 'SEV2', color: 'hsl(0 72% 51%)' },
-  SEV3: { label: 'Major', shortLabel: 'SEV3', color: 'hsl(25 95% 53%)' },
-  SEV4: { label: 'Minor', shortLabel: 'SEV4', color: 'hsl(38 92% 50%)' },
+  SEV1: { label: 'Blocker', shortLabel: 'SEV1', color: '#DC2626' },
+  SEV2: { label: 'Critical', shortLabel: 'SEV2', color: '#DC2626' },
+  SEV3: { label: 'Major', shortLabel: 'SEV3', color: '#F97316' },
+  SEV4: { label: 'Minor', shortLabel: 'SEV4', color: '#F59E0B' },
 };
 
 // ═══════════════════════════════════════════════════════════════

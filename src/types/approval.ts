@@ -35,45 +35,65 @@ export interface TransitionApprovalGroup {
   veto_approved: boolean;
 }
 
+/**
+ * Values below are Atlaskit semantic-token fallback hexes (legacy-light).
+ * They match the `token('color.*', fallback)` pattern used by migrated
+ * surfaces (see BAU Dashboard conversion). When a caller becomes a React
+ * component it can upgrade `APPROVAL_STATUS_CONFIG[s].color` into
+ * `token('color.text.warning.bolder', APPROVAL_STATUS_CONFIG[s].color)`
+ * without changing the string value. Previously: raw HSL, including four
+ * Golden Hour collisions (§7) — now replaced with Atlaskit canonical palette.
+ */
 export const APPROVAL_STATUS_CONFIG = {
   pending: {
+    // token('color.text.warning.bolder') / bg: token('color.background.warning.hovered')
     label: 'Pending',
-    color: 'hsl(38, 92%, 50%)',
-    bgColor: 'hsl(38, 92%, 50%, 0.1)',
+    color: '#974F0C',
+    bgColor: '#FFF0B3',
   },
   approved: {
+    // token('color.text.success.bolder') / bg: token('color.background.success.hovered')
     label: 'Approved',
-    color: 'hsl(142, 71%, 45%)',
-    bgColor: 'hsl(142, 71%, 45%, 0.1)',
+    color: '#006644',
+    bgColor: '#ABF5D1',
   },
   rejected: {
+    // token('color.text.danger.bolder') / bg: token('color.background.danger.subtler')
     label: 'Rejected',
-    color: 'hsl(0, 84%, 60%)',
-    bgColor: 'hsl(0, 84%, 60%, 0.1)',
+    color: '#BF2600',
+    bgColor: '#FFBDAD',
   },
   waiting: {
+    // Canonical StatusLozenge grey (CLAUDE.md §5) — neutral.bold text on lozenge grey
     label: 'Waiting',
-    color: 'hsl(210, 5%, 80%)',
-    bgColor: 'hsl(210, 5%, 80%, 0.15)',
+    color: '#42526E',
+    bgColor: '#DFE1E6',
   },
   skipped: {
+    // Canonical StatusLozenge grey, subtler bg
     label: 'Skipped',
-    color: 'hsl(0, 0%, 45%)',
-    bgColor: 'hsl(0, 0%, 45%, 0.1)',
+    color: '#42526E',
+    bgColor: '#F4F5F7',
   },
 } as const;
 
+/**
+ * WORKFLOW_STATUSES — 10-stage Catalyst workflow. Each color is an Atlaskit
+ * semantic-token fallback hex. Eliminates the four Golden Hour palette
+ * collisions previously baked into the HSL form (design=#896F58,
+ * in_dev=#C79C6B, uat=#D4B996, beta=#5B7B5B — all banned per §7).
+ */
 export const WORKFLOW_STATUSES = [
-  { id: 'backlog', name: 'Backlog', color: 'hsl(210, 5%, 80%)' },
-  { id: 'design', name: 'Design', color: 'hsl(30, 22%, 44%)' },
-  { id: 'ready_dev', name: 'Ready for Development', color: 'hsl(217, 91%, 60%)' },
-  { id: 'in_dev', name: 'In Development', color: 'hsl(32, 45%, 60%)' },
-  { id: 'qa', name: 'QA Testing', color: 'hsl(38, 92%, 50%)' },
-  { id: 'uat', name: 'UAT Testing', color: 'hsl(32, 41%, 71%)' },
-  { id: 'beta', name: 'In Beta', color: 'hsl(120, 14%, 43%)' },
-  { id: 'ready_prod', name: 'Ready for Production', color: 'hsl(142, 71%, 45%)' },
-  { id: 'in_prod', name: 'In Production', color: 'hsl(142, 76%, 36%)' },
-  { id: 'on_hold', name: 'On Hold', color: 'hsl(0, 0%, 45%)' },
+  { id: 'backlog', name: 'Backlog', color: '#42526E' },           // neutral.bold
+  { id: 'design', name: 'Design', color: '#5243AA' },              // purple.bolder
+  { id: 'ready_dev', name: 'Ready for Development', color: '#0052CC' }, // brand.bold (info)
+  { id: 'in_dev', name: 'In Development', color: '#FF991F' },      // warning.bold (yellow)
+  { id: 'qa', name: 'QA Testing', color: '#FFAB00' },              // warning.bold.hovered
+  { id: 'uat', name: 'UAT Testing', color: '#FF991F' },            // warning.bold
+  { id: 'beta', name: 'In Beta', color: '#36B37E' },               // success.bold.hovered
+  { id: 'ready_prod', name: 'Ready for Production', color: '#00875A' }, // success.bold
+  { id: 'in_prod', name: 'In Production', color: '#006644' },      // text.success.bolder
+  { id: 'on_hold', name: 'On Hold', color: '#42526E' },            // neutral.bold
 ] as const;
 
 export function getStatusLabel(statusId: string): string {
@@ -81,5 +101,5 @@ export function getStatusLabel(statusId: string): string {
 }
 
 export function getStatusColor(statusId: string): string {
-  return WORKFLOW_STATUSES.find(s => s.id === statusId)?.color || 'hsl(0, 0%, 45%)';
+  return WORKFLOW_STATUSES.find(s => s.id === statusId)?.color || '#42526E';
 }

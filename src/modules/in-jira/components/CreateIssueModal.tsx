@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, ChevronDown, Flag } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
+import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import {
   Dialog,
   DialogContent,
@@ -36,13 +37,14 @@ const ISSUE_TYPES: { value: IssueType; label: string; color: string }[] = [
   { value: 'incident', label: 'Incident', color: 'bg-orange-500' },
 ];
 
-// Priority options
-const PRIORITIES: { value: IssuePriority; label: string; color: string }[] = [
-  { value: 'highest', label: 'Highest', color: 'text-red-600' },
-  { value: 'high', label: 'High', color: 'text-orange-500' },
-  { value: 'medium', label: 'Medium', color: 'text-yellow-500' },
-  { value: 'low', label: 'Low', color: 'text-green-500' },
-  { value: 'lowest', label: 'Lowest', color: 'text-blue-400' },
+// Priority options. Visual rendering goes through the canonical
+// `PriorityIndicator` / `PriorityBars` — no per-row colour classes here.
+const PRIORITIES: { value: IssuePriority; label: string }[] = [
+  { value: 'highest', label: 'Highest' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+  { value: 'lowest', label: 'Lowest' },
 ];
 
 export function CreateIssueModal() {
@@ -214,7 +216,7 @@ export function CreateIssueModal() {
               <SelectTrigger className="w-full">
                 <SelectValue>
                   <div className="flex items-center gap-2">
-                    <Flag className={cn("h-4 w-4", selectedPriority?.color)} />
+                    <PriorityBars priority={normalisePriority(priority)} />
                     <span>{selectedPriority?.label}</span>
                   </div>
                 </SelectValue>
@@ -223,7 +225,7 @@ export function CreateIssueModal() {
                 {PRIORITIES.map(p => (
                   <SelectItem key={p.value} value={p.value}>
                     <div className="flex items-center gap-2">
-                      <Flag className={cn("h-4 w-4", p.color)} />
+                      <PriorityBars priority={normalisePriority(p.value)} />
                       <span>{p.label}</span>
                     </div>
                   </SelectItem>

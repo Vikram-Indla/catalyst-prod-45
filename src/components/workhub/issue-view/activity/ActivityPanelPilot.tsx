@@ -9,6 +9,10 @@ import { ArrowRight, ChevronDown, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { parseADF, adfToPlainText, isADFEmpty } from '@/utils/adf';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
+/* §19 chokepoint — every user-avatar lookup in this panel resolves through
+   `resolveAvatarUrl`. Never read profiles.avatar_url (Gravatar CDN, banned)
+   and never display an external URL. */
+import { resolveAvatarUrl } from '@/lib/avatars';
 import '@/styles/activity-pilot.css';
 
 const AtlaskitEditor = lazy(() => import('@/components/shared/AtlaskitEditor'));
@@ -62,7 +66,19 @@ const TABS: { key: ActivityTab; label: string }[] = [
 // Sub-components
 // ════════════════════════════════════════
 
-function AvatarCircle({ name, size = 32 }: { name: string; size?: number }) {
+function AvatarCircle({ name, avatarUrl, size = 32 }: { name: string; avatarUrl?: string | null; size?: number }) {
+  // §19: if we have a resolved local PNG, render the face. Otherwise fall back to
+  // the hash-coloured initials tile. Never use an external URL here.
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        className="ap-avatar"
+        style={{ width: size, height: size, objectFit: 'cover', borderRadius: '50%', flexShrink: 0 }}
+      />
+    );
+  }
   return (
     <div
       className="ap-avatar"
@@ -79,7 +95,7 @@ function CommentRow({ comment }: { comment: any }) {
 
   return (
     <div className="ap-timeline-item">
-      <AvatarCircle name={name} />
+      <AvatarCircle name={name} avatarUrl={comment._author_avatar} />
       <div className="ap-timeline-content">
         <div className="ap-timeline-name">{name}</div>
         <div className="ap-timeline-time">{fmtRel(comment.created_at)}</div>
@@ -108,7 +124,7 @@ function HistoryRow({ entry }: { entry: any }) {
 
   return (
     <div className="ap-timeline-item">
-      <AvatarCircle name={name} />
+      <AvatarCircle name={name} avatarUrl={entry._author_avatar} />
       <div className="ap-timeline-content">
         <div className="ap-timeline-name">
           {name}{' '}

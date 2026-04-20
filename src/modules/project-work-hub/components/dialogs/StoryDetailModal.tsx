@@ -3,7 +3,7 @@
  * All types, constants, helpers, shared components, and section components
  * are imported from ./story-detail-modules/
  */
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, Suspense, lazy } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
@@ -69,13 +69,20 @@ import { IncidentsSection } from './story-detail-modules';
 import { TestHubSection } from './story-detail-modules';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { AttachmentsSection } from './story-detail-modules';
-import { EditableAssignee, EditablePriority, EditableLabels } from './story-detail-modules';
+import { EditableAssignee, EditablePriority, EditableLabels, AvatarCircle } from './story-detail-modules';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueKeyLink } from '@/components/shared/IssueKeyLink';
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
-import { StoryRichTextEditor } from '@/components/shared/rich-text/StoryRichTextEditor';
-import { adfToHtml, tryAdfStringToHtml } from '../../utils/adfToHtml';
-import { AdfDescriptionRenderer } from '../AdfDescriptionRenderer';
+import { CatalystRichTextEditor } from '@/components/shared/rich-text/CatalystRichTextEditor';
+import { tryAdfStringToHtml } from '../../utils/adfToHtml';
+import EpicDescriptionRenderer from '@/components/shared/rich-text/atlaskit/EpicDescriptionRenderer';
+import { AtlaskitBoundary } from '@/components/shared/rich-text/atlaskit/AtlaskitBoundary';
+import { isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';
+// B2b — lazy Atlaskit editor (wrapped in AtlaskitBoundary + Suspense below).
+// Keeps Rollup chunks separated from Tiptap. See IssueContentView for the template.
+const EpicDescriptionEditor = lazy(
+  () => import('@/components/shared/rich-text/atlaskit/EpicDescriptionEditor'),
+);
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import Lozenge from '@atlaskit/lozenge';
@@ -93,40 +100,8 @@ function localizeAvatar<T extends { avatar_url?: string | null; full_name?: stri
   return { ...row, avatar_url: row.full_name ? resolveAvatarUrl(row.full_name) : null };
 }
 
-/* ─── Resolve media slot placeholders to <img> tags for TipTap editor ─── */
-function resolveMediaSlotsForEditor(
-  html: string,
-  attachments: Array<{ jira_attachment_id: string; filename: string; mime_type: string | null; content_url: string; thumbnail_url: string | null; local_public_url: string | null }>,
-): string {
-  if (!html || !html.includes('data-adf-media-id')) return html;
-  const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || '';
-  const urlMap = new Map<string, string>();
-  for (const att of attachments) {
-    if (!att.mime_type?.startsWith('image/')) continue;
-    let url = '';
-    if (att.local_public_url) {
-      url = att.local_public_url;
-    } else if (att.jira_attachment_id && supabaseUrl) {
-      url = `${supabaseUrl}/functions/v1/jira-attachment-proxy?id=${att.jira_attachment_id}`;
-    } else {
-      url = att.content_url || att.thumbnail_url || '';
-    }
-    if (url) {
-      urlMap.set(att.jira_attachment_id, url);
-      urlMap.set(att.filename, url);
-    }
-  }
-  return html.replace(
-    /<div\s+data-adf-media-id="([^"]*)"\s*data-adf-media-filename="([^"]*)"\s*class="adf-media-slot"\s*><\/div>/g,
-    (_, mediaId, filename) => {
-      const url = urlMap.get(mediaId) || urlMap.get(filename);
-      if (url) {
-        return `<img src="${url}" alt="${filename || 'attachment'}" style="max-width:100%;border-radius:4px;margin:8px 0;display:block" />`;
-      }
-      return '';
-    },
-  );
-}
+/* `resolveMediaSlotsForEditor` removed in B2b — the Atlaskit editor no longer
+   consumes HTML, so there's no need to rewrite TipTap media placeholders. */
 
 /* ═══════════════════════════════════════════════
    ANIMATIONS
@@ -351,20 +326,11 @@ export default function StoryDetailModal({
     },
   });
 
-  // Jira-synced attachments (ph_issue_attachments) — needed to resolve media slots in description editor
-  const { data: issueAttachments = [] } = useQuery({
-    queryKey: ['ph-issue-attachments', issue?.issue_key],
-    enabled: !!issue?.issue_key && isOpen,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_issue_attachments')
-        .select('id, issue_key, jira_attachment_id, filename, mime_type, content_url, thumbnail_url, local_public_url, local_storage_path')
-        .eq('issue_key', issue!.issue_key)
-        .order('jira_created_at', { ascending: true });
-      return (data ?? []) as Array<{ id: string; issue_key: string; jira_attachment_id: string; filename: string; mime_type: string | null; content_url: string; thumbnail_url: string | null; local_public_url: string | null; local_storage_path: string | null }>;
-    },
-    staleTime: 60000,
-  });
+  /* `issueAttachments` query removed in B2b — its only consumer was
+     `resolveMediaSlotsForEditor`, which is no longer needed now the
+     description editor speaks ADF directly. If a future surface needs
+     the Jira attachment list, re-add the query locally to that surface
+     rather than loading it eagerly on every open. */
 
   // Team members for @mention — §19 chokepoint: no avatar_url SELECT, resolve locally.
   const { data: mentionMembers = [] } = useQuery({
@@ -927,8 +893,20 @@ export default function StoryDetailModal({
                       Phase C (2026-04-18): migrated to @atlaskit/inline-edit
                       wrapping @atlaskit/heading (read) + @atlaskit/textfield
                       (edit). Keyboard semantics + a11y from Atlaskit. The
-                      local titleFocused state is no longer referenced. */}
-                  <div style={{ marginBottom: 12 }}>
+                      local titleFocused state is no longer referenced.
+
+                      Package 4 fix (2026-04-20): the `label="Issue title"`
+                      prop is required by InlineEdit for a11y (screen readers
+                      announce "Edit Issue title"). In the default Atlaskit
+                      render that label appears as a visible micro-caption
+                      above the H1, which reads as a field-label and demotes
+                      the H1 to a field-value — flipping the page hierarchy.
+                      The `.sdm-title-edit` wrapper lets us keep the label
+                      in the DOM for a11y but clip it off-screen via the
+                      standard visually-hidden pattern in
+                      story-detail-extensions.css. Mirrors the fix already
+                      applied in CatalystTitleEditor.tsx. */}
+                  <div className="sdm-title-edit" style={{ marginBottom: 12 }}>
                     <InlineEdit<string>
                       key={issue?.id ?? 'empty'}
                       defaultValue={issue?.summary ?? ''}
@@ -1236,39 +1214,92 @@ export default function StoryDetailModal({
                           {descUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
                         </div>
                         {descEditMode ? (
-                          <div style={{
-                            position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF',
-                          }}
-                          >
-                            <StoryRichTextEditor
-                              content={resolveMediaSlotsForEditor(adfToHtml(issue?.description_adf) || issue?.description_text || '', issueAttachments)}
-                              workItemId={itemId}
-                              onSave={(html) => {
-                                updateFieldMutation.mutate({ field: 'description_text', value: html, oldValue: issue?.description_text ?? '' });
-                                setDescEditMode(false);
-                                setDescUnsaved(false);
-                              }}
-                              onCancel={() => { setDescEditMode(false); }}
-                              placeholder="Add a description..."
-                              minHeight={150}
-                              aiLabel="Improve description"
-                              onAiImprove={async () => {
-                                const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                                  body: {
-                                    issue_id: itemId,
-                                    improve_type: 'improve_clarify',
-                                    current_description: issue?.description_text || '(empty)',
-                                    current_ac: acceptanceCriteria || '(none)',
-                                    issue_summary: issue?.summary ?? '',
-                                  },
-                                });
-                                if (fnError || !data?.description) {
-                                  toast.error('AI improve failed. Try again.');
-                                  return null;
+                          /* ── B2b: canonical Atlaskit editor (mirrors IssueContentView).
+                             Writes ADF JSON → description_adf (JSONB). AtlaskitBoundary
+                             falls back to CatalystRichTextEditor (HTML → description_text)
+                             on chunk-load / runtime failure so the composer never goes
+                             dark. The ai-improve-story flow is preserved only on the
+                             fallback path — the Atlaskit editor's built-in +insert UI
+                             supersedes the Tiptap AI button for the primary surface. */
+                          <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
+                            <AtlaskitBoundary
+                              diagnosticTag={`story-detail-modal:description-edit:${issue?.issue_key ?? itemId ?? 'n/a'}`}
+                              fallback={
+                                <CatalystRichTextEditor
+                                  content={
+                                    issue?.description_adf
+                                      ? (typeof issue.description_adf === 'string'
+                                          ? issue.description_adf
+                                          : JSON.stringify(issue.description_adf))
+                                      : (issue?.description_text || '')
+                                  }
+                                  workItemId={itemId}
+                                  onSave={(adfJson) => {
+                                    if (!itemId) { setDescEditMode(false); return; }
+                                    const parsed = adfJson ? JSON.parse(adfJson) : null;
+                                    supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
+                                      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+                                      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                                      queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                                      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                                      toast.success('Description saved');
+                                    });
+                                    setDescEditMode(false);
+                                    setDescUnsaved(false);
+                                  }}
+                                  onCancel={() => { setDescEditMode(false); }}
+                                  placeholder="Add a description..."
+                                  minHeight={150}
+                                  mode="save"
+                                  storagePath="description-images"
+                                  aiLabel="Improve description"
+                                  onAiImprove={async () => {
+                                    const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                                      body: {
+                                        issue_id: itemId,
+                                        improve_type: 'improve_clarify',
+                                        current_description: issue?.description_text || '(empty)',
+                                        current_ac: acceptanceCriteria || '(none)',
+                                        issue_summary: issue?.summary ?? '',
+                                      },
+                                    });
+                                    if (fnError || !data?.description) {
+                                      toast.error('AI improve failed. Try again.');
+                                      return null;
+                                    }
+                                    return data.description;
+                                  }}
+                                />
+                              }
+                            >
+                              <Suspense
+                                fallback={
+                                  <div style={{ minHeight: 150, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
+                                    Loading editor…
+                                  </div>
                                 }
-                                return data.description;
-                              }}
-                            />
+                              >
+                                <EpicDescriptionEditor
+                                  initialContent={issue?.description_adf ?? issue?.description_text ?? null}
+                                  workItemId={itemId}
+                                  onSave={(adfJson) => {
+                                    if (!itemId) { setDescEditMode(false); return; }
+                                    const parsed = adfJson ? JSON.parse(adfJson) : null;
+                                    supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
+                                      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+                                      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                                      queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
+                                      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+                                      toast.success('Description saved');
+                                    });
+                                    setDescEditMode(false);
+                                    setDescUnsaved(false);
+                                  }}
+                                  onCancel={() => { setDescEditMode(false); }}
+                                  placeholder="Add a description..."
+                                />
+                              </Suspense>
+                            </AtlaskitBoundary>
                           </div>
                         ) : (
                           <div
@@ -1287,13 +1318,13 @@ export default function StoryDetailModal({
                             onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                           >
                             {(() => {
-                              const descHtml = adfToHtml(issue?.description_adf) || issue?.description_text || '';
-                              if (!descHtml || descHtml === '<p></p>' || descHtml.trim() === '') {
+                              const descSource = issue?.description_adf ?? issue?.description_text ?? null;
+                              if (isAdfEmpty(descSource)) {
                                 return <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif', padding: '4px 0' }}>Add a description…</span>;
                               }
                               return (
-                                <AdfDescriptionRenderer
-                                  html={descHtml}
+                                <EpicDescriptionRenderer
+                                  content={descSource}
                                   issueKey={issue?.issue_key}
                                 />
                               );
@@ -1308,40 +1339,73 @@ export default function StoryDetailModal({
                             {acUnsaved && <span style={{ fontSize: 12, fontWeight: 653, color: 'rgb(41, 42, 46)' }}>• Unsaved changes</span>}
                           </div>
                           {acEditMode ? (
-                            <div style={{
-                              position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF',
-                            }}
-                            >
-                              <StoryRichTextEditor
-                                content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
-                                workItemId={itemId}
-                                onSave={(adfJson) => {
-                                  setAcceptanceCriteria(adfJson);
-                                  supabase.from('ph_issues').update({ acceptance_criteria: adfJson }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
-                                  setAcEditMode(false);
-                                  setAcUnsaved(false);
-                                }}
-                                onCancel={() => { setAcEditMode(false); }}
-                                placeholder="No acceptance criteria defined · Add manually or use AI →"
-                                minHeight={80}
-                                aiLabel="Improve criteria"
-                                onAiImprove={async () => {
-                                  const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-                                    body: {
-                                      issue_id: itemId,
-                                      improve_type: 'add_acceptance_criteria',
-                                      current_description: issue?.description_text || '(empty)',
-                                      current_ac: acceptanceCriteria || '(none)',
-                                      issue_summary: issue?.summary ?? '',
-                                    },
-                                  });
-                                  if (fnError || !data?.acceptance_criteria) {
-                                    toast.error('AI improve failed. Try again.');
-                                    return null;
+                            /* ── B2c: canonical Atlaskit editor for Acceptance
+                               Criteria. Same template as the description editor
+                               (B2b) above. Writes parsed ADF object → JSONB column
+                               `ph_issues.acceptance_criteria` (not a JSON string —
+                               fixes latent bug where the prior code wrote the raw
+                               serialized string). */
+                            <div style={{ position: 'relative', borderRadius: 3, backgroundColor: '#FFFFFF' }}>
+                              <AtlaskitBoundary
+                                diagnosticTag={`story-detail-modal:ac-edit:${issue?.issue_key ?? itemId ?? 'n/a'}`}
+                                fallback={
+                                  <CatalystRichTextEditor
+                                    content={tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? ''}
+                                    workItemId={itemId}
+                                    onSave={(adfJson) => {
+                                      const parsed = adfJson ? JSON.parse(adfJson) : null;
+                                      setAcceptanceCriteria(adfJson);
+                                      supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                      setAcEditMode(false);
+                                      setAcUnsaved(false);
+                                    }}
+                                    onCancel={() => { setAcEditMode(false); }}
+                                    placeholder="No acceptance criteria defined · Add manually or use AI →"
+                                    minHeight={80}
+                                    mode="save"
+                                    storagePath="description-images"
+                                    aiLabel="Improve criteria"
+                                    onAiImprove={async () => {
+                                      const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
+                                        body: {
+                                          issue_id: itemId,
+                                          improve_type: 'add_acceptance_criteria',
+                                          current_description: issue?.description_text || '(empty)',
+                                          current_ac: acceptanceCriteria || '(none)',
+                                          issue_summary: issue?.summary ?? '',
+                                        },
+                                      });
+                                      if (fnError || !data?.acceptance_criteria) {
+                                        toast.error('AI improve failed. Try again.');
+                                        return null;
+                                      }
+                                      return data.acceptance_criteria;
+                                    }}
+                                  />
+                                }
+                              >
+                                <Suspense
+                                  fallback={
+                                    <div style={{ minHeight: 80, padding: '8px 0', color: '#97A0AF', fontSize: 13 }}>
+                                      Loading editor…
+                                    </div>
                                   }
-                                  return data.acceptance_criteria;
-                                }}
-                              />
+                                >
+                                  <EpicDescriptionEditor
+                                    initialContent={acceptanceCriteria ?? null}
+                                    workItemId={itemId}
+                                    onSave={(adfJson) => {
+                                      const parsed = adfJson ? JSON.parse(adfJson) : null;
+                                      setAcceptanceCriteria(adfJson);
+                                      supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                      setAcEditMode(false);
+                                      setAcUnsaved(false);
+                                    }}
+                                    onCancel={() => { setAcEditMode(false); }}
+                                    placeholder="No acceptance criteria defined · Add manually or use AI →"
+                                  />
+                                </Suspense>
+                              </AtlaskitBoundary>
                             </div>
                           ) : (
                             <div
@@ -1359,20 +1423,23 @@ export default function StoryDetailModal({
                               onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                             >
                               {(() => {
-                                const acHtml = tryAdfStringToHtml(acceptanceCriteria) ?? acceptanceCriteria ?? '';
-                                if (!acHtml || acHtml === '<p></p>' || acHtml.trim() === '') {
+                                if (isAdfEmpty(acceptanceCriteria)) {
                                   return <span style={{ fontSize: 14, color: 'rgb(140, 143, 151)', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif', padding: '4px 0' }}>No acceptance criteria defined · Click to add</span>;
                                 }
                                 return (
                                   <div
-                                    dangerouslySetInnerHTML={{ __html: acHtml }}
                                     style={{
                                       fontSize: 14, fontWeight: 400, lineHeight: '24px', color: 'rgb(41, 42, 46)',
                                       fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif',
                                       padding: 0, margin: 0, background: 'transparent',
                                     }}
                                     className="jira-desc-view"
-                                  />
+                                  >
+                                    <EpicDescriptionRenderer
+                                      content={acceptanceCriteria}
+                                      issueKey={issue?.issue_key}
+                                    />
+                                  </div>
                                 );
                               })()}
                             </div>
@@ -1709,8 +1776,20 @@ export default function StoryDetailModal({
               background: '#FFFFFF', overflowY: 'auto', overflowX: 'hidden',
               display: 'flex', flexDirection: 'column', padding: '16px 16px 32px 16px',
             }}>
-              {/* Status */}
-              <div style={{ marginBottom: 14, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+              {/* Status
+                  P0-1 (2026-04-20 critique): previously rendered as a bare pill
+                  with no "Status" caption, while every peer field (Parent /
+                  Priority / Assignee / Reporter / Labels / Fix versions) ships
+                  a 12px/600 microlabel. Added the matching label row so the
+                  sidebar hierarchy stays consistent.
+                  P0-3 (same critique): dropped `isBold` from the Lozenge.
+                  Atlaskit Lozenge with `isBold` renders the saturated solid
+                  fill (olive #5B7F24 for "success"), which is an explicit §7
+                  ban ("saturated status pills"). The non-bold variant renders
+                  the canonical pastel bg/dark text pair from §5 (#E3FCEF /
+                  #006644 for Done). */}
+              <div style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Status</div>
                 <div ref={statusDropdownRef} style={{ position: 'relative' }}>
                   {/*
                     §20 / L41 — Atlaskit Lozenge is the ONLY admissible status pill
@@ -1729,7 +1808,7 @@ export default function StoryDetailModal({
                     onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                     onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                   >
-                    <Lozenge appearance={statusToLozenge(localStatus || 'Backlog')} isBold>
+                    <Lozenge appearance={statusToLozenge(localStatus || 'Backlog')}>
                       {localStatus || 'Backlog'}
                     </Lozenge>
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -1749,8 +1828,9 @@ export default function StoryDetailModal({
                                 onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
                                 onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
                               >
-                                {/* §20 / L41 — Atlaskit Lozenge only; no inline colours per-item. */}
-                                <Lozenge appearance={statusToLozenge(st)} isBold>{st}</Lozenge>
+                                {/* §20 / L41 — Atlaskit Lozenge only; no inline colours per-item.
+                                    P0-3 (2026-04-20): dropped `isBold` — pastel variant matches §5 spec. */}
+                                <Lozenge appearance={statusToLozenge(st)}>{st}</Lozenge>
                                 {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
                               </div>
                             );
@@ -1915,17 +1995,26 @@ export default function StoryDetailModal({
                   )}
                 </div>
 
-                {/* Reporter — Jira parity: 28px avatar with real image, 14px name */}
+                {/* Reporter — Jira parity: 28px avatar with real image, 14px name
+                    §19 chokepoint (2026-04-20, critique P0-2): Reporter previously
+                    hand-rolled a `<span>initials</span>` fallback tile while Assignee
+                    (via EditableAssignee → AvatarCircle) rendered a CircleUser SVG
+                    tile. Same user ("Nada alfassam"), same hash-colour, two
+                    different components — violating the single-chokepoint rule.
+                    Now both fields share AvatarCircle → identical fallback shape.
+                    The "NANada alfassam" concat bug disappears as a side-effect
+                    because AvatarCircle has no visible text inside the tile. */}
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#172B4D', marginBottom: 4 }}>Reporter</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 6px', borderRadius: 4 }}>
                     {issue?.reporter_display_name ? (
                       <>
-                        {reporterProfile?.avatar_url ? (
-                          <img src={reporterProfile.avatar_url} alt={issue.reporter_display_name} style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                        ) : (
-                          <span style={{ width: 28, height: 28, borderRadius: '50%', background: getAvatarColor(issue.reporter_account_id ?? issue.reporter_display_name), color: '#FFF', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, flexShrink: 0 }}>{getInitials(issue.reporter_display_name)}</span>
-                        )}
+                        <AvatarCircle
+                          userId={issue.reporter_account_id ?? issue.reporter_display_name}
+                          name={issue.reporter_display_name}
+                          avatarUrl={reporterProfile?.avatar_url}
+                          size={28}
+                        />
                         <span style={{ fontSize: 14, color: '#172B4D', fontWeight: 400 }}>{issue.reporter_display_name}</span>
                       </>
                     ) : <span style={{ color: '#42526E', fontSize: 14 }}>—</span>}

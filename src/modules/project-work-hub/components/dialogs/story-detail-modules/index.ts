@@ -42,5 +42,5 @@ export { LinkedIssuesSection } from './LinkedIssuesSection';
 export { AttachmentsSection } from './AttachmentsSection';
 
 // Editable fields
-export { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker } from './EditableFields';
+export { EditableAssignee, EditablePriority, EditableLabels, ParentFieldPicker, AvatarCircle } from './EditableFields';
 export { ConfirmDialog } from './ConfirmDialog';

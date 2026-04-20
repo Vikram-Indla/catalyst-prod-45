@@ -44,10 +44,12 @@ export const surface = {
   hovered: 'hsl(var(--accent))',
   pressed: 'hsl(var(--accent))',
   selected: 'hsl(var(--brand-primary-pale))',
-  selectedHovered: 'hsl(35 46% 60% / 0.12)',
-  
+  // Atlaskit blue.subtlest @ 12% alpha — replaces Golden Hour hsl(35 46% 60%)
+  selectedHovered: 'rgba(76, 154, 255, 0.12)',
+
   // Brand surfaces
-  brandSubtle: 'hsl(35 46% 60% / 0.08)',
+  // Atlaskit blue.subtlest @ 8% alpha — replaces Golden Hour hsl(35 46% 60%)
+  brandSubtle: 'rgba(76, 154, 255, 0.08)',
   brandBold: 'hsl(var(--brand-primary))',
   
   // Status surfaces
@@ -77,7 +79,8 @@ export const text = {
   // Link text
   link: 'hsl(var(--brand-primary))',
   linkHover: 'hsl(var(--brand-primary-hover))',
-  linkPressed: 'hsl(35 46% 50%)',
+  // Atlaskit blue.bolder — replaces Golden Hour hsl(35 46% 50%)
+  linkPressed: '#0747A6',
   
   // Status text
   success: 'hsl(var(--success))',
@@ -92,7 +95,8 @@ export const text = {
 export const border = {
   // Structural borders
   default: 'hsl(var(--border))',
-  subtle: 'hsl(218 14% 91% / 0.5)',
+  // Atlaskit color.border (N40 #DFE1E6) @ 50% alpha — replaces hsl(218 14% 91% / 0.5)
+  subtle: 'rgba(223, 225, 230, 0.5)',
   strong: 'hsl(var(--neutral-400))',
   
   // Focus borders

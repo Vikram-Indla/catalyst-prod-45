@@ -302,19 +302,20 @@ function WorkstreamSelector({
   );
 }
 
-// Enterprise avatar color generator - consistent vibrant colors based on name
+// Enterprise avatar color generator - consistent vibrant colors based on name.
+// CLAUDE.md §L38 — hex literals only (no HSL).
 function getAvatarColor(name: string): string {
   const colors = [
-    'hsl(220, 90%, 56%)',  // Blue
-    'hsl(262, 83%, 58%)',  // Purple
-    'hsl(158, 64%, 40%)',  // Teal
-    'hsl(340, 82%, 52%)',  // Pink
-    'hsl(24, 95%, 53%)',   // Orange
-    'hsl(142, 71%, 45%)',  // Green
-    'hsl(199, 89%, 48%)',  // Sky
-    'hsl(47, 96%, 53%)',   // Amber
-    'hsl(291, 64%, 52%)',  // Fuchsia
-    'hsl(174, 72%, 40%)',  // Cyan
+    '#2A6DF4',  // Blue
+    '#7C3BED',  // Purple
+    '#25A777',  // Teal
+    '#E92063',  // Pink
+    '#F97015',  // Orange
+    '#21C45D',  // Green
+    '#0DA2E7',  // Sky
+    '#FAC814',  // Amber
+    '#BB36D3',  // Fuchsia
+    '#1DAFA1',  // Cyan
   ];
   let hash = 0;
   for (let i = 0; i < name.length; i++) {

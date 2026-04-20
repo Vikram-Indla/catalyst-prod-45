@@ -1400,3 +1400,35 @@
   display: list-item;
   margin: 0.15em 0;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   TITLE INLINE-EDIT — Package 4 label leak fix (2026-04-20)
+   ════════════════════════════════════════════════════════════════
+   Atlaskit's InlineEdit requires a `label` prop for screen-reader
+   announcement ("Edit Issue title" on hover + focus). Out of the box
+   it renders that label as a visible micro-caption above the H1,
+   which reads as a field-label and flips the page hierarchy — no
+   peer issue tracker does this.
+
+   Fix: keep the label in the DOM for a11y but clip it off-screen via
+   the standard visually-hidden pattern. ONLY typography is touched —
+   we don't override the H1 itself because Heading size="large" already
+   gives us the correct 24px rendering in this view (unlike
+   CatalystTitleEditor which uses size="medium" + Jira-measured 20px).
+
+   Scope: [data-sdm-scope] .sdm-title-edit — the wrapper added around
+   the InlineEdit in StoryDetailModal.tsx. Other InlineEdit instances
+   in the modal (inline fields, etc.) keep their default label rendering.
+   ════════════════════════════════════════════════════════════════ */
+
+[data-sdm-scope] .sdm-title-edit label {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

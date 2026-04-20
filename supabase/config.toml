@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.ai-improve-story]
 verify_jwt = true
+
+[functions.jira-avatar-sync]
+verify_jwt = true
+
+[functions.jira-title-case-pass]
+verify_jwt = true
