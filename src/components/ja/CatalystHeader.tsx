@@ -1,10 +1,9 @@
 import { AtlassianNavigation, CustomProductHome } from '@atlaskit/atlassian-navigation';
 import { AppSwitcher } from '@/components/layout/AppSwitcher';
-import { ActiveHubLabel } from '@/components/layout/ActiveHubLabel';
 import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
-import { GlobalSearch } from '@/components/global-search';
+import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import catalystLogoMark2 from '@/assets/catalyst-logo-mark-2.svg';
@@ -34,7 +33,7 @@ export function CatalystHeader() {
       renderNotifications={NotificationsPanel}
       renderSettings={SettingsMenu}
       renderProfile={ProfileMenu}
-      primaryItems={[<ActiveHubLabel key="active-hub" />, <AskCatalystPill key="ask-catalyst" />]}
+      primaryItems={[<AskCatalystPill key="ask-catalyst" />]}
     />
   );
 }
