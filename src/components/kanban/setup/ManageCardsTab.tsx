@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -61,9 +61,9 @@ export function ManageCardsTab({ boardId, board }: ManageCardsTabProps) {
                   {cardType}
                 </Label>
               </div>
-              <Badge variant="secondary" className="text-xs">
+              <Lozenge appearance="default">
                 Visible
-              </Badge>
+              </Lozenge>
             </div>
           ))}
         </div>

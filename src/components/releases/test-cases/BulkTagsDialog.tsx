@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
@@ -101,14 +101,14 @@ export function BulkTagsDialog({
               <Plus className="w-3.5 h-3.5" />
               Add Tags
               {tagsToAdd.length > 0 && (
-                <Badge variant="secondary" className="ml-1 text-xs">{tagsToAdd.length}</Badge>
+                <Lozenge appearance="default">{tagsToAdd.length}</Lozenge>
               )}
             </TabsTrigger>
             <TabsTrigger value="remove" className="gap-2">
               <X className="w-3.5 h-3.5" />
               Remove Tags
               {tagsToRemove.length > 0 && (
-                <Badge variant="secondary" className="ml-1 text-xs">{tagsToRemove.length}</Badge>
+                <Lozenge appearance="default">{tagsToRemove.length}</Lozenge>
               )}
             </TabsTrigger>
           </TabsList>
@@ -134,15 +134,14 @@ export function BulkTagsDialog({
                 <Label className="text-xs text-muted-foreground">Tags to add</Label>
                 <div className="flex flex-wrap gap-1.5">
                   {tagsToAdd.map((tag) => (
-                    <Badge
+                    <button
                       key={tag}
-                      variant="default"
-                      className="gap-1 cursor-pointer"
+                      type="button"
                       onClick={() => handleToggleAddTag(tag)}
+                      className="inline-flex items-center gap-1"
                     >
-                      {tag}
-                      <X className="w-3 h-3" />
-                    </Badge>
+                      <Lozenge appearance="inprogress">{tag}</Lozenge>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -153,18 +152,14 @@ export function BulkTagsDialog({
               <Label className="text-xs text-muted-foreground">Suggested tags</Label>
               <div className="flex flex-wrap gap-1.5">
                 {SUGGESTED_TAGS.filter(t => !tagsToAdd.includes(t)).map((tag) => (
-                  <Badge
+                  <button
                     key={tag}
-                    variant="outline"
-                    className={cn(
-                      "cursor-pointer transition-colors",
-                      "hover:bg-primary/10 hover:border-primary"
-                    )}
+                    type="button"
                     onClick={() => handleToggleAddTag(tag)}
+                    className="inline-flex items-center gap-1"
                   >
-                    <Plus className="w-3 h-3 mr-1" />
-                    {tag}
-                  </Badge>
+                    <Lozenge appearance="default">{tag}</Lozenge>
+                  </button>
                 ))}
               </div>
             </div>

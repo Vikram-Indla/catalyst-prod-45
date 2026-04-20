@@ -9,7 +9,7 @@ import { ChevronDown, ChevronRight, DollarSign, History } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -107,9 +107,9 @@ export function ResourceCostSection({ resourceId, onCostChange }: ResourceCostSe
             <div className="text-left">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Cost & Budget</span>
-                <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                <Lozenge appearance="default">
                   Finance
-                </Badge>
+                </Lozenge>
               </div>
               {currentCost && (
                 <p className="text-sm text-muted-foreground">
@@ -147,7 +147,7 @@ export function ResourceCostSection({ resourceId, onCostChange }: ResourceCostSe
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="fixed" id="fixed" />
                     <span className="font-medium">Fixed</span>
-                    <Badge className="bg-blue-100 text-blue-700 text-xs">Project</Badge>
+                    <Lozenge appearance="default">Project</Lozenge>
                   </div>
                   <p className="text-xs text-muted-foreground pl-6">
                     Dedicated to specific project, locked budget
@@ -166,7 +166,7 @@ export function ResourceCostSection({ resourceId, onCostChange }: ResourceCostSe
                   <div className="flex items-center gap-2">
                     <RadioGroupItem value="variable" id="variable" />
                     <span className="font-medium">Variable</span>
-                    <Badge className="bg-amber-100 text-amber-700 text-xs">Pool</Badge>
+                    <Lozenge appearance="default">Pool</Lozenge>
                   </div>
                   <p className="text-xs text-muted-foreground pl-6">
                     Shared across projects, contract-based
@@ -249,7 +249,7 @@ export function ResourceCostSection({ resourceId, onCostChange }: ResourceCostSe
                 <div className="flex items-center gap-2">
                   <History className="h-4 w-4" />
                   <span>Cost History</span>
-                  <Badge variant="secondary" className="text-xs">{costHistory.length}</Badge>
+                  <Lozenge appearance="inprogress">{costHistory.length}</Lozenge>
                 </div>
                 {showHistory ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </Button>
@@ -279,7 +279,7 @@ export function ResourceCostSection({ resourceId, onCostChange }: ResourceCostSe
                     <div className="flex items-center gap-2">
                       <span className="font-medium">{formatSAR(record.monthly_cost)}/mo</span>
                       {index === 0 && (
-                        <Badge className="bg-green-100 text-green-700 text-xs">Active</Badge>
+                        <Lozenge appearance="inprogress">Active</Lozenge>
                       )}
                     </div>
                   </div>

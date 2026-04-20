@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Lozenge } from '@/components/ads';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -92,9 +92,11 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
           <Filter className="h-4 w-4 mr-2" />
           Filters
           {activeCount > 0 && (
-            <Badge className="ml-2 h-5 px-1.5 bg-brand-primary text-white">
-              {activeCount}
-            </Badge>
+            <span className="ml-2">
+              <Lozenge appearance="inprogress">
+                {activeCount}
+              </Lozenge>
+            </span>
           )}
         </Button>
       </DialogTrigger>
@@ -116,19 +118,16 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
             <Label className="text-sm font-medium mb-3 block">Status</Label>
             <div className="flex flex-wrap gap-2">
               {STATUS_OPTIONS.map(opt => (
-                <Badge
+                <button
                   key={opt.value}
-                  variant="outline"
-                  className={cn(
-                    'cursor-pointer transition-colors',
-                    draftFilters.status?.includes(opt.value)
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'hover:bg-muted'
-                  )}
+                  type="button"
+                  className="cursor-pointer transition-colors"
                   onClick={() => toggleArrayValue('status', opt.value)}
                 >
-                  {opt.label}
-                </Badge>
+                  <Lozenge appearance={draftFilters.status?.includes(opt.value) ? 'inprogress' : 'default'}>
+                    {opt.label}
+                  </Lozenge>
+                </button>
               ))}
             </div>
           </div>
@@ -138,19 +137,16 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
             <Label className="text-sm font-medium mb-3 block">Severity</Label>
             <div className="flex flex-wrap gap-2">
               {SEVERITY_OPTIONS.map(opt => (
-                <Badge
+                <button
                   key={opt.value}
-                  variant="outline"
-                  className={cn(
-                    'cursor-pointer transition-colors',
-                    draftFilters.severity?.includes(opt.value)
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'hover:bg-muted'
-                  )}
+                  type="button"
+                  className="cursor-pointer transition-colors"
                   onClick={() => toggleArrayValue('severity', opt.value)}
                 >
-                  {opt.label}
-                </Badge>
+                  <Lozenge appearance={draftFilters.severity?.includes(opt.value) ? 'inprogress' : 'default'}>
+                    {opt.label}
+                  </Lozenge>
+                </button>
               ))}
             </div>
           </div>
@@ -160,19 +156,16 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
             <Label className="text-sm font-medium mb-3 block">Support Level</Label>
             <div className="flex flex-wrap gap-2">
               {SUPPORT_LEVEL_OPTIONS.map(opt => (
-                <Badge
+                <button
                   key={opt.value}
-                  variant="outline"
-                  className={cn(
-                    'cursor-pointer transition-colors',
-                    draftFilters.support_level?.includes(opt.value)
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'hover:bg-muted'
-                  )}
+                  type="button"
+                  className="cursor-pointer transition-colors"
                   onClick={() => toggleArrayValue('support_level', opt.value)}
                 >
-                  {opt.label}
-                </Badge>
+                  <Lozenge appearance={draftFilters.support_level?.includes(opt.value) ? 'inprogress' : 'default'}>
+                    {opt.label}
+                  </Lozenge>
+                </button>
               ))}
             </div>
           </div>
@@ -182,19 +175,16 @@ export function IncidentFiltersDialog({ filters, onFiltersChange }: IncidentFilt
             <Label className="text-sm font-medium mb-3 block">Delivery Stage</Label>
             <div className="flex flex-wrap gap-2">
               {DELIVERY_STAGE_OPTIONS.map(opt => (
-                <Badge
+                <button
                   key={opt.value}
-                  variant="outline"
-                  className={cn(
-                    'cursor-pointer transition-colors',
-                    draftFilters.delivery_stage?.includes(opt.value)
-                      ? 'bg-brand-primary text-white border-brand-primary'
-                      : 'hover:bg-muted'
-                  )}
+                  type="button"
+                  className="cursor-pointer transition-colors"
                   onClick={() => toggleArrayValue('delivery_stage', opt.value)}
                 >
-                  {opt.label}
-                </Badge>
+                  <Lozenge appearance={draftFilters.delivery_stage?.includes(opt.value) ? 'inprogress' : 'default'}>
+                    {opt.label}
+                  </Lozenge>
+                </button>
               ))}
             </div>
           </div>
