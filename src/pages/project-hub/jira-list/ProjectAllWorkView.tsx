@@ -17,11 +17,7 @@
  *    reach for the hook rather than re-implementing the pattern.
  *    Behaviour unchanged — the hook encodes the exact prior semantics.
  */
-<<<<<<< Updated upstream
-import React, { lazy, Suspense, useState, useMemo, useCallback, useRef, useEffect } from 'react';
-=======
-import React, { lazy, Suspense, useCallback } from 'react';
->>>>>>> Stashed changes
+import React, { lazy, Suspense, useState, useCallback, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
@@ -52,8 +48,6 @@ const SPLIT_BREAKPOINT_PX = 1120;
 
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
-<<<<<<< Updated upstream
-  const [activeItemId, setActiveItemId] = useState<string | null>(null);
   /** In narrow mode the middle panel is hidden — clicking a card opens
    *  StoryDetailModal as a full overlay instead (Jira parity). */
   const [overlayItemId, setOverlayItemId] = useState<string | null>(null);
@@ -71,8 +65,6 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
-=======
->>>>>>> Stashed changes
 
   /* A4 chokepoint: dual-shape lookup (id/dbId), URL param hydration
      (`?issue=BAU-5047`), URL param sync, and split-view auto-select-
@@ -129,9 +121,8 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             <WorkListPanel
               items={items}
               selectedKey={activeItem?.id ?? null}
-<<<<<<< Updated upstream
               onSelect={id => {
-                setActiveItemId(id);
+                selectItem(id);
                 // Narrow mode → no middle panel visible; open overlay modal.
                 if (isNarrow) setOverlayItemId(id);
               }}
@@ -139,9 +130,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             />
           </div>
 
-          {/* Middle + Right detail surface — hidden in narrow mode. Right
-              sidebar inside CatalystViewBase auto-hides via @container query
-              before this entire panel collapses. */}
+          {/* Middle + Right detail surface — hidden in narrow mode. */}
           {!isNarrow && (
             activeItem ? (
               <div style={{
@@ -156,13 +145,12 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 }>
                   <CatalystDetailRouter
                     isOpen={true}
-                    onClose={() => setActiveItemId(null)}
-                    // CLAUDE.md §L39 — must pass UUID dbId, not issue_key.
+                    onClose={() => selectItem(null)}
                     itemId={activeItem.dbId || activeItem.id}
                     itemType={activeItem.type}
                     projectId={projectId}
                     projectKey={projectKey}
-                    onOpenItem={(id) => setActiveItemId(id)}
+                    onOpenItem={(id) => selectItem(id)}
                     panelMode={true}
                     navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
                     onNavigate={handleNavigate}
@@ -178,55 +166,6 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                 Select an item to view details
               </div>
             )
-=======
-              onSelect={id => selectItem(id)}
-            />
-          </div>
-
-          {/* Center + Right: CatalystDetailRouter (canonical Atlaskit detail) */}
-          {activeItem ? (
-            <div style={{
-              flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
-              background: token('elevation.surface', '#FFFFFF'),
-              borderRadius: '0 10px 10px 0', overflow: 'hidden',
-            }}>
-              <Suspense fallback={
-                <div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C'), fontSize: 14 }}>
-                  Loading…
-                </div>
-              }>
-                <CatalystDetailRouter
-                  isOpen={true}
-                  onClose={() => selectItem(null)}
-                  // CatalystDetailRouter queries ph_issues by UUID PK —
-                  // WorkItem.id is the issue_key (e.g. "BAU-5500"), NOT a UUID.
-                  // Use dbId (ph_issues.id). CLAUDE.md §L39 warns that
-                  // passing the issue_key here yields a silent 400 and an
-                  // empty issue object → title falls back to "—".
-                  itemId={activeItem.dbId || activeItem.id}
-                  itemType={activeItem.type}
-                  projectId={projectId}
-                  projectKey={projectKey}
-                  // Subtask clicks come in with the child row's UUID.
-                  // selectItem normalises that back to issue_key so the
-                  // URL-sync effect writes `?issue=BAU-XXXX` instead of a
-                  // UUID (P1-5 + P1-8 fix from 2026-04-20 critique).
-                  onOpenItem={(id) => selectItem(id)}
-                  panelMode={true}
-                  navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
-                  onNavigate={handleNavigate}
-                />
-              </Suspense>
-            </div>
-          ) : (
-            <div style={{
-              flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: token('color.text.subtlest', '#6B778C'), fontSize: 14,
-              fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
-            }}>
-              Select an item to view details
-            </div>
->>>>>>> Stashed changes
           )}
       </div>
 
