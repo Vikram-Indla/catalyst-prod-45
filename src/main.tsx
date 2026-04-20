@@ -1,6 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
+import "./styles/catalyst-typography.css";
 import "./styles/catalyst-theme.css";
 
 // Auto-reload on stale chunk errors (happens after new Vercel deployments)
