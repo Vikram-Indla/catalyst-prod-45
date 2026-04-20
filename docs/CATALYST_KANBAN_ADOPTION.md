@@ -245,8 +245,9 @@ If the adapter introduces a new `@atlaskit/*` dependency:
 | Hub | Route | Status | Adapter |
 |---|---|---|---|
 | ProductHub | `/producthub/kanban` | ✅ migrated | `initiativeAdapter.ts` |
+| IncidentHub (Hub) | `/incident-hub/kanban` | ✅ migrated (read-only — see adapter header) | `incidentAdapter.ts` |
 | ProjectHub BAU | `/project-hub/:key/boards` | 🟡 runs on legacy `PragmaticBoard` — migration tracked | TBD `phIssueAdapter.ts` |
-| IncidentHub | `/incidenthub/kanban` | 🔴 legacy inline impl | TBD `incidentAdapter.ts` |
+| IncidentHub (Release) | `/release/incidents/kanban` | 🔴 richer legacy impl (`modules/incidents/kanban`) | TBD |
 | Team Boards | `/team/kanban-boards/:boardId` | 🔴 legacy | TBD `teamBoardAdapter.ts` |
 | Program Board | `/program/…` | 🔴 legacy | TBD `programAdapter.ts` |
 | StrategyHub / ReleaseHub / TestHub / TaskHub / PlanHub / WikiHub | — | no kanban today | opt-in via adapter |

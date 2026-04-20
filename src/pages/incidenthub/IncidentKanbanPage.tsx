@@ -1,146 +1,96 @@
 /**
- * IncidentKanbanPage — V12 Kanban board grouped by status
- * Dot + label column headers (NOT lozenges)
- * NOCTURNE dark mode support via useTheme
+ * IncidentKanbanPage — migrated onto the canonical CatalystKanban primitive.
+ *
+ * Before: bespoke 148-LOC inline board with hand-rolled columns, custom
+ * card markup, hardcoded colour tokens and no filter surface.
+ *
+ * After: thin adapter — useIncidentListView → incidentToKanbanCard →
+ * <CatalystKanban/>. Filter by severity / project / priority / SLA,
+ * swimlane by severity or project, sort by recency / severity /
+ * breached-first. Read-only today (status mutations are deliberately
+ * disabled — see adapter header comment).
  */
-
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LayoutGrid, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { AlertOctagon } from 'lucide-react';
 import { useIncidentListView } from '@/hooks/useIncidentHub';
-import { useTheme } from '@/hooks/useTheme';
-import { SeverityChip } from './components/SeverityChip';
+import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
+import { CatalystKanban } from '@/components/kanban/CatalystKanban';
+import {
+  incidentToKanbanCard,
+  INCIDENTHUB_COLUMNS,
+  incidentStatusToColumnId,
+  incidentColumnIdToStatus,
+  INCIDENTHUB_FILTER_FIELDS,
+  INCIDENTHUB_GROUP_BY,
+  INCIDENTHUB_SORT,
+  type IncidentRow,
+} from '@/components/kanban/adapters/incidentAdapter';
 import { NewIncidentModal } from './components/NewIncidentModal';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const COLUMNS = [
-  { key: 'triage', label: 'TRIAGE', dotColor: '#DFE1E6' },
-  { key: 'open', label: 'OPEN', dotColor: '#DFE1E6' },
-  { key: 'in_progress', label: 'IN PROGRESS', dotColor: '#0C66E4' },
-  { key: 'to_committee', label: 'COMMITTEE', dotColor: '#0C66E4' },
-  { key: 'resolved', label: 'RESOLVED', dotColor: '#1B7F37' },
-];
+import type { KanbanCardData } from '@/components/kanban/catalyst-types';
 
 export default function IncidentKanbanPage() {
   const navigate = useNavigate();
-  const { isDark } = useTheme();
   const { data: incidents, isLoading } = useIncidentListView();
   const [showCreate, setShowCreate] = useState(false);
 
-  const grouped = useMemo(() => {
-    const map: Record<string, any[]> = {};
-    COLUMNS.forEach(c => { map[c.key] = []; });
-    incidents?.forEach(i => {
-      const status = i.status || 'open';
-      if (map[status]) map[status].push(i);
-      else if (map.open) map.open.push(i);
-    });
-    return map;
-  }, [incidents]);
+  const cards = useMemo(
+    () => (incidents ?? []).map(incidentToKanbanCard),
+    [incidents],
+  );
 
-  // NOCTURNE tokens
-  const pageBg = isDark ? '#0A0A0A' : '#FFFFFF';
-  const surfaceBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const laneBg = isDark ? '#1A1A1A' : '#F1F5F9';
-  const cardBg = isDark ? '#1A1A1A' : '#FFFFFF';
-  const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
-  const textPrimary = isDark ? '#EDEDED' : '#0F172A';
-  const textSecondary = isDark ? '#A1A1A1' : '#64748B';
-  const textMuted = isDark ? '#878787' : '#94A3B8';
-  const countBg = isDark ? '#1A1A1A' : '#F1F5F9';
-  const avatarBg = isDark ? '#2E2E2E' : '#E2E8F0';
-  const avatarText = isDark ? '#A1A1A1' : '#475569';
+  const onCardClick = useCallback((card: KanbanCardData) => {
+    navigate(`/incident-hub/view/${card.id}`);
+  }, [navigate]);
+
+  /* ═════ Breached-indicator footer slot — hub-specific chrome. ═════ */
+  const renderCardFooter = useCallback((card: KanbanCardData) => {
+    const row = card.raw as IncidentRow;
+    if (!row.resolution_breached) return null;
+    return (
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+        fontSize: 11, fontWeight: 600, color: '#B91C1C',
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        <AlertOctagon size={12} />
+        <span>SLA breached</span>
+      </div>
+    );
+  }, []);
 
   if (isLoading) {
-    return <div className="flex-1 p-6" style={{ backgroundColor: pageBg }}><Skeleton className="h-8 w-48 mb-6" /><Skeleton className="h-96 w-full" /></div>;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <CatalystPageHeader title="Incident Kanban" subtitle="Production incidents · live status" />
+        <div style={{ flex: 1, padding: 24 }}>
+          <Skeleton className="h-8 w-48 mb-6" />
+          <Skeleton className="h-96 w-full" />
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: pageBg }}>
-      {/* Header */}
-      <div className="px-6 pt-6 pb-4 shrink-0">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF' }}>
-              <LayoutGrid size={18} style={{ color: '#2563EB' }} />
-            </div>
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: textPrimary }}>Kanban Board</h1>
-          </div>
-          <Button size="sm" className="gap-1.5" style={{ backgroundColor: '#2563EB', borderRadius: 6 }} onClick={() => setShowCreate(true)}>
-            <Plus size={14} /> New Incident
-          </Button>
-        </div>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', minHeight: 0 }}>
+      <CatalystPageHeader title="Incident Kanban" subtitle="Production incidents · live status" />
 
-      {/* Kanban Columns */}
-      <div className="flex-1 overflow-x-auto px-6 pb-6">
-        <div className="flex gap-3" style={{ minHeight: '100%' }}>
-          {COLUMNS.map(col => (
-            <div key={col.key} className="flex flex-col shrink-0" style={{ width: 260 }}>
-              {/* Column Header */}
-              <div className="flex items-center gap-2 px-3 py-2 mb-2">
-                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: col.dotColor, display: 'inline-block', border: col.dotColor === '#DFE1E6' ? `1px solid ${isDark ? '#878787' : '#94A3B8'}` : 'none' }} />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: textSecondary }}>
-                  {col.label}
-                </span>
-                <span className="ml-auto px-1.5" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700, color: textSecondary, backgroundColor: countBg, borderRadius: 3 }}>
-                  {grouped[col.key]?.length || 0}
-                </span>
-              </div>
-
-              {/* Cards */}
-              <div className="flex-1 space-y-2 overflow-y-auto" style={{ backgroundColor: laneBg, borderRadius: 6, padding: 8, minHeight: 200 }}>
-                {grouped[col.key]?.length === 0 && (
-                  <p className="text-center py-8" style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textMuted }}>No incidents</p>
-                )}
-                {grouped[col.key]?.map((item: any) => {
-                  const isBreached = item.resolution_breached;
-                  return (
-                    <div
-                      key={item.id}
-                      className="cursor-pointer transition-all"
-                      style={{
-                        backgroundColor: cardBg,
-                        border: `1px solid ${isBreached ? (isDark ? 'rgba(248,113,113,0.4)' : '#FECACA') : borderColor}`,
-                        borderRadius: 6,
-                        padding: 10,
-                        boxShadow: isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)',
-                      }}
-                      onClick={() => navigate(`/incident-hub/view/${item.id}`)}
-                      onMouseEnter={e => { e.currentTarget.style.boxShadow = isDark ? '0 2px 8px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.boxShadow = isDark ? 'none' : '0 1px 2px rgba(0,0,0,0.04)'; e.currentTarget.style.transform = 'translateY(0)'; }}
-                    >
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        {item.type_icon_url ? (
-                          <img src={item.type_icon_url} alt="Incident" style={{ width: 14, height: 14, flexShrink: 0 }} />
-                        ) : (
-                          <svg width="14" height="14" viewBox="0 0 16 16" className="shrink-0">
-                            <path fill="#FF5630" fillRule="evenodd" d="M4.78545267,10 L11.2145473,10 L10.5007848,8 L5.49921516,8 L4.78545267,10 Z M4,11 C3.44771525,11 3,11.4477153 3,12 L3,13 L13,13 L13,12 C13,11.4477153 12.5522847,11 12,11 L4,11 Z M5.8560964,7 L10.1439036,7 L8.94181993,3.63169838 C8.8409899,3.34916733 8.61864892,3.12682636 8.33611787,3.02599632 C7.81596508,2.84036355 7.24381284,3.1115456 7.05818007,3.63169838 L5.8560964,7 Z M2,0 L14,0 C15.1045695,-2.02906125e-16 16,0.8954305 16,2 L16,14 C16,15.1045695 15.1045695,16 14,16 L2,16 C0.8954305,16 1.3527075e-16,15.1045695 0,14 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 Z"/>
-                          </svg>
-                        )}
-                        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#93C5FD' : '#2563EB' }}>
-                          {item.incident_key}
-                        </span>
-                        <SeverityChip severity={item.severity || 'SEV4'} />
-                      </div>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: textPrimary, lineHeight: 1.4, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {item.title}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="rounded-full flex items-center justify-center shrink-0" style={{ width: 20, height: 20, backgroundColor: avatarBg, fontSize: 9, fontWeight: 650, color: avatarText }}>
-                          {(item.assignee_name || 'U').charAt(0).toUpperCase()}
-                        </div>
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: textSecondary }}>{item.assignee_name || 'Unassigned'}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <CatalystKanban
+        cards={cards}
+        columns={INCIDENTHUB_COLUMNS}
+        statusToColumnId={incidentStatusToColumnId}
+        columnIdToStatus={incidentColumnIdToStatus}
+        filterFields={INCIDENTHUB_FILTER_FIELDS}
+        groupByOptions={INCIDENTHUB_GROUP_BY}
+        sortOptions={INCIDENTHUB_SORT}
+        onCardClick={onCardClick}
+        /* onStatusChange deliberately omitted — see incidentAdapter.ts header. */
+        onCreate={() => setShowCreate(true)}
+        createLabel="New incident"
+        storageKey="incidenthub"
+        renderCardFooter={renderCardFooter}
+      />
 
       <NewIncidentModal open={showCreate} onClose={() => setShowCreate(false)} />
     </div>
