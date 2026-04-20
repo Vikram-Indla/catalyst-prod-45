@@ -105,6 +105,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
               items={items}
               selectedKey={activeItem?.id ?? null}
               onSelect={id => setActiveItemId(id)}
+              projectId={projectId}
             />
           </div>
 

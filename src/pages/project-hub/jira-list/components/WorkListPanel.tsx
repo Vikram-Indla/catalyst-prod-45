@@ -1,20 +1,28 @@
 /**
  * WorkListPanel — Jira-parity left panel: search + filter + scrollable card list
  * Matches Jira's actual split view left column styling exactly.
+ *
+ * 2026-04-20: navigator avatars are interactive — clicking the avatar opens
+ * an Atlassian-style assignee picker (WorkCardAssigneePicker) that writes to
+ * ph_issues and invalidates the list query so the card refreshes in real time.
+ * Card body click still selects the row; the picker stopPropagation()s its
+ * own click so the two interactions never collide.
  */
 import React, { useMemo, useState } from 'react';
 import { Search, Filter, ArrowUpDown, RotateCw } from 'lucide-react';
 import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
-import { resolveAvatarUrl } from '@/lib/avatars';
+import { WorkCardAssigneePicker } from './WorkCardAssigneePicker';
 import type { WorkItem } from '@/types/workItem.types';
 
 interface Props {
   items: WorkItem[];
   selectedKey: string | null;
   onSelect: (id: string) => void;
+  /** Project UUID — required for the assignee picker (project_members lookup). */
+  projectId?: string;
 }
 
-export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
+export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props) {
   const [query, setQuery] = useState('');
 
   const filtered = useMemo(() => {
@@ -140,34 +148,16 @@ export function WorkListPanel({ items, selectedKey, onSelect }: Props) {
                   <WorkItemTypeIcon type={item.type} size={14} />
                   {item.jiraKey}
                 </span>
-                {(() => {
-                  // §19 chokepoint: resolve local avatar PNG from display name.
-                  // Returns null when no face is available → fall back to the
-                  // canonical initials tile (Jira-parity colored circle).
-                  const localUrl = resolveAvatarUrl(item.assignee?.name);
-                  if (localUrl) {
-                    return (
-                      <img
-                        src={localUrl}
-                        alt={item.assignee?.name ?? ''}
-                        style={{
-                          width: 28, height: 28, borderRadius: '50%',
-                          objectFit: 'cover', flexShrink: 0, display: 'block',
-                        }}
-                      />
-                    );
-                  }
-                  return (
-                    <div style={{
-                      width: 28, height: 28, borderRadius: '50%',
-                      background: item.assignee?.color || '#6554C0',
-                      color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontWeight: 800, fontSize: 11, flexShrink: 0,
-                    }}>
-                      {item.assignee?.initials || 'NA'}
-                    </div>
-                  );
-                })()}
+                {/* Interactive assignee picker (replaces previous static avatar).
+                    Uses dbId (UUID) — never issue_key (CLAUDE.md §L39). */}
+                <WorkCardAssigneePicker
+                  dbId={item.dbId || item.id}
+                  currentAssigneeId={item.assignee?.id ?? null}
+                  currentAssigneeName={item.assignee?.name ?? null}
+                  projectId={projectId}
+                  fallbackInitials={item.assignee?.initials || 'NA'}
+                  fallbackColor={item.assignee?.color || '#6554C0'}
+                />
               </div>
             </button>
           );
