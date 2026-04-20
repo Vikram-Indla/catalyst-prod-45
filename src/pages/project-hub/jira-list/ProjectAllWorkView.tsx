@@ -160,6 +160,28 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             )
           )}
       </div>
+
+      {/* ── Narrow-mode overlay — opens StoryDetailModal (V15) for the
+            selected card. Stories use V15 directly; other types still get
+            the V15 shell, which routes via itemId/projectKey. */}
+      {overlayItemId && (() => {
+        const overlayItem = items.find(i => i.id === overlayItemId);
+        if (!overlayItem) return null;
+        return (
+          <Suspense fallback={null}>
+            <StoryDetailModal
+              isOpen={true}
+              onClose={() => setOverlayItemId(null)}
+              itemId={overlayItem.dbId || overlayItem.id}
+              projectId={projectId ?? ''}
+              projectKey={projectKey}
+              onOpenItem={(id) => setOverlayItemId(id)}
+              navigationItems={items.map(i => ({ id: i.id, summary: i.summary, issue_key: i.jiraKey }))}
+              onNavigate={(id) => setOverlayItemId(id)}
+            />
+          </Suspense>
+        );
+      })()}
     </div>
   );
 }
