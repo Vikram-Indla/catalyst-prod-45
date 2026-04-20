@@ -98,11 +98,18 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
           const selected = item.id === selectedKey;
           const rtl = /[\u0600-\u06FF]/.test(item.summary);
           return (
-            <button
+            <div
               key={item.id}
+              role="button"
+              tabIndex={0}
               onClick={() => onSelect(item.id)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelect(item.id); } }}
               style={{
                 // Jira parity (measured 2026-04-18, BAU-5500):
+                // NOTE: rendered as <div role="button"> (not <button>) — the
+                // card contains a nested interactive avatar picker, and
+                // <button> inside <button> is invalid HTML that breaks the
+                // inner click handler in some browsers.
                 //   - NO hard border (was 1px/#DFE1E6)
                 //   - Double shadow: 0 1px 1px rgba(30,31,33,0.25), 0 0 1px rgba(30,31,33,0.31)
                 //   - 4px radius (was 8px)
