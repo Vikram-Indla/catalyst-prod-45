@@ -10,7 +10,7 @@
  *    toolbar (not used on this surface).
  *  - dbId wiring added to avoid CLAUDE.md §L39 UUID/issue_key silent 400.
  */
-import React, { lazy, Suspense, useState, useMemo, useCallback } from 'react';
+import React, { lazy, Suspense, useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { token } from '@atlaskit/tokens';
 import { WorkListPanel } from './components/WorkListPanel';
 import { useProjectAllWorkItems } from '@/hooks/useProjectListItems';
@@ -25,9 +25,33 @@ interface Props {
   projectId?: string;
 }
 
+/**
+ * Below this width the split region cannot host both the 260px list and a
+ * legible Jira-parity detail body (~640px of comfortable reading width
+ * + gutters). At narrower widths the detail panel hides and the list
+ * panel reclaims the full row — no overlap, no horizontal scroll. The
+ * breakpoint is the panel's own width (ResizeObserver), NOT window width,
+ * so the rule still works when the user has the platform sidebar open.
+ */
+const SPLIT_BREAKPOINT_PX = 900;
+
 export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
   const { data: items = [] } = useProjectAllWorkItems(projectKey);
   const [activeItemId, setActiveItemId] = useState<string | null>(null);
+
+  const splitRef = useRef<HTMLDivElement>(null);
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const el = splitRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver((entries) => {
+      const w = entries[0]?.contentRect.width ?? 0;
+      setIsNarrow(w > 0 && w < SPLIT_BREAKPOINT_PX);
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const activeItem = useMemo(() =>
     activeItemId ? items.find(i => i.id === activeItemId) ?? null : (items[0] ?? null),
