@@ -4,8 +4,12 @@ import Badge from '@atlaskit/badge';
 import { IconButton } from '@atlaskit/atlassian-navigation';
 import NotificationIcon from '@atlaskit/icon/glyph/notification';
 import Popup from '@atlaskit/popup';
+import { Box, xcss } from '@atlaskit/primitives';
 import { NotificationList, type Notification as LayoutNotification } from '@/components/layout/NotificationList';
 import { useNotifications, type Notification } from '@/hooks/useNotifications';
+
+const triggerWrapStyles = xcss({ position: 'relative', display: 'inline-block' });
+const badgeStyles = xcss({ position: 'absolute', insetBlockStart: 'space.0', insetInlineEnd: 'space.0' });
 
 function toLayoutNotification(notification: Notification): LayoutNotification {
   return {
@@ -46,15 +50,21 @@ export function NotificationsPanel() {
         />
       )}
       trigger={(triggerProps) => (
-        <IconButton
-          {...triggerProps}
-          icon={<NotificationIcon label="" />}
-          label="Notifications"
-          tooltip="Notifications"
-          isSelected={open}
-          onClick={() => setOpen((current) => !current)}
-          badge={unreadCount > 0 ? () => <Badge appearance="important">{unreadCount > 9 ? '9+' : unreadCount}</Badge> : undefined}
-        />
+        <Box xcss={triggerWrapStyles}>
+          <IconButton
+            {...triggerProps}
+            icon={<NotificationIcon label="" />}
+            label="Notifications"
+            tooltip="Notifications"
+            isSelected={open}
+            onClick={() => setOpen((current) => !current)}
+          />
+          {unreadCount > 0 ? (
+            <Box xcss={badgeStyles} aria-label={`${unreadCount} unread notifications`}>
+              <Badge appearance="important">{unreadCount > 9 ? '9+' : unreadCount}</Badge>
+            </Box>
+          ) : null}
+        </Box>
       )}
     />
   );
