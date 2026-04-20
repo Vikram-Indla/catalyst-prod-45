@@ -38,11 +38,11 @@ export function CatalystHeader() {
       label="Catalyst"
       renderProductHome={ProductHome}
       renderAppSwitcher={AppSwitcher}
+      renderSearch={() => <GlobalSearch />}
       renderCreate={CreateAndAskActions}
       renderNotifications={NotificationsPanel}
       renderSettings={SettingsMenu}
       renderProfile={ProfileMenu}
-      primaryItems={[<GlobalSearch key="global-search" />]}
     />
   );
 }
