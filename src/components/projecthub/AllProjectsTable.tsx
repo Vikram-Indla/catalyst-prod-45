@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from 'lucide-react';
-import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useNavigate } from 'react-router-dom';
 import '@/styles/product-backlog.css';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
@@ -435,7 +434,6 @@ const PROJECT_COLUMNS: TColDef[] = [
   { key: 'lead', label: 'LEAD', defaultWidth: 200, minWidth: 120 },
   { key: 'members', label: 'MEMBERS', defaultWidth: 150, minWidth: 80 },
   { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 100 },
-  { key: 'backlogs', label: 'NAVIGATE', defaultWidth: 140, minWidth: 120 },
   { key: 'actions', label: '', defaultWidth: 48, minWidth: 48, locked: true },
 ];
 
@@ -552,16 +550,6 @@ export function AllProjectsTable({
           <div className="flex items-center gap-1.5 text-[13px] text-slate-500 dark:text-[#A1A1A1]">
             <Tooltip content={syncTooltipText} position="top"><span className={cn("w-2 h-2 rounded-full flex-shrink-0 cursor-help", syncDotColor)} /></Tooltip>
             <span className="font-medium">{syncAge ? `${issueCount} issues, ${syncAge} ago` : 'Not synced'}</span>
-          </div>
-        </td>
-      );
-      case 'backlogs': return (
-        <td key={colKey}>
-          <div className="flex items-center justify-center gap-2.5" style={{ pointerEvents: 'auto' }}>
-            <Tooltip content="Go to Story Backlog" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/story-backlog`); }}><JiraIssueTypeIcon type="story" size={18} /></span></Tooltip>
-            <Tooltip content="Go to Epic Backlog" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/epic-backlog`); }}><JiraIssueTypeIcon type="epic" size={18} /></span></Tooltip>
-            <Tooltip content="Go to Feature Backlog" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/feature-backlog`); }}><JiraIssueTypeIcon type="feature" size={18} /></span></Tooltip>
-            <Tooltip content="Go to Work Items Board" position="top"><span className="cursor-pointer rounded p-0.5 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors" onClick={e => { e.stopPropagation(); navigate(`/project-hub/${p.project_key}/board`); }}><JiraIssueTypeIcon type="task" size={18} /></span></Tooltip>
           </div>
         </td>
       );
