@@ -93,26 +93,31 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           {/* Left: WorkListPanel — Jira parity container
               (measured 2026-04-18): 260px wide / #F8F8F8 / 4px radius / no border.
               Inner cards are white so they elevate against the gray backdrop.
-              On narrow viewports the list flexes to fill the row (detail
-              panel hidden). */}
-          <div style={{
-            width: isNarrow ? '100%' : 260,
-            flexShrink: 0, background: '#F8F8F8',
-            border: 'none', borderRadius: 4,
-            overflow: 'hidden', display: 'flex', flexDirection: 'column',
-            padding: '0 2px',
-          }}>
-            <WorkListPanel
-              items={items}
-              selectedKey={activeItem?.id ?? null}
-              onSelect={id => setActiveItemId(id)}
-            />
-          </div>
+              In narrow mode the list collapses entirely so the detail panel
+              (with its breadcrumb + Prev/Next nav chevrons) reclaims the
+              full row — matches Jira Cloud's responsive behavior on tablets. */}
+          {!isNarrow && (
+            <div style={{
+              width: 260,
+              flexShrink: 0, background: '#F8F8F8',
+              border: 'none', borderRadius: 4,
+              overflow: 'hidden', display: 'flex', flexDirection: 'column',
+              padding: '0 2px',
+            }}>
+              <WorkListPanel
+                items={items}
+                selectedKey={activeItem?.id ?? null}
+                onSelect={id => setActiveItemId(id)}
+              />
+            </div>
+          )}
 
           {/* Center + Right: CatalystDetailRouter (canonical Atlaskit detail).
-              Hidden when the split region is narrower than SPLIT_BREAKPOINT_PX
-              so the list isn't visually overlapped by the detail panel. */}
-          {!isNarrow && (activeItem ? (
+              Always visible — it owns the breadcrumb + Prev/Next chevrons
+              that drive navigation when the list is collapsed. The inner
+              right sidebar auto-hides via @container query in CatalystViewBase
+              when this region itself is narrow. */}
+          {activeItem ? (
             <div style={{
               flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0,
               background: token('elevation.surface', '#FFFFFF'),
@@ -150,7 +155,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             }}>
               Select an item to view details
             </div>
-          ))}
+          )}
       </div>
     </div>
   );
