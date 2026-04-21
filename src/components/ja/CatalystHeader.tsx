@@ -4,7 +4,7 @@ import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import SidebarExpandIcon from '@atlaskit/icon/core/sidebar-expand';
 import SidebarCollapseIcon from '@atlaskit/icon/core/sidebar-collapse';
-import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
+
 import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
