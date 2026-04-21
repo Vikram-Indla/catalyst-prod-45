@@ -1,6 +1,5 @@
 import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
 import { PanelLeftOpen } from 'lucide-react';
-import { NavigationSkeleton } from '@atlaskit/atlassian-navigation/skeleton';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -125,13 +124,6 @@ function CatalystShellContent() {
   useEffect(() => {
     if (sidebarPinned) return; // no hover behavior when pinned
     let closeTimer: number | null = null;
-    // rAF throttle — mousemove fires at the mouse's sampling rate (often
-    // >1000 Hz on high-refresh trackpads). Without throttling, the hit-test
-    // runs on every sample and walks the DOM via `closest()` each time.
-    // Coalescing to one hit-test per animation frame caps work at the
-    // display's refresh rate (~60–120 Hz) and still feels instant.
-    let rafId: number | null = null;
-    let latestTarget: EventTarget | null = null;
     const insideHoverZone = (target: EventTarget | null): boolean => {
       if (!(target instanceof Element)) return false;
       // Chevron IconButton in the header — match by aria-label since the
@@ -143,9 +135,8 @@ function CatalystShellContent() {
       if (target.closest('[data-catalyst-sidebar]')) return true;
       return false;
     };
-    const applyHitTest = () => {
-      rafId = null;
-      if (insideHoverZone(latestTarget)) {
+    const handleMove = (e: MouseEvent) => {
+      if (insideHoverZone(e.target)) {
         if (closeTimer) { window.clearTimeout(closeTimer); closeTimer = null; }
         setSidebarHoverOpen(true);
       } else {
@@ -153,16 +144,10 @@ function CatalystShellContent() {
         closeTimer = window.setTimeout(() => setSidebarHoverOpen(false), 300);
       }
     };
-    const handleMove = (e: MouseEvent) => {
-      latestTarget = e.target;
-      if (rafId !== null) return; // already scheduled for this frame
-      rafId = window.requestAnimationFrame(applyHitTest);
-    };
     document.addEventListener('mousemove', handleMove);
     return () => {
       document.removeEventListener('mousemove', handleMove);
       if (closeTimer) window.clearTimeout(closeTimer);
-      if (rafId !== null) window.cancelAnimationFrame(rafId);
     };
   }, [sidebarPinned, setSidebarHoverOpen]);
 
@@ -555,14 +540,9 @@ function CatalystShellContent() {
 
   return (
     <div className="h-screen flex flex-col text-[var(--cp-t1)]" style={{ background: 'var(--cp-bg-canvas)' }} onClickCapture={handleInternalLinkClickCapture}>
-      {/* Global Header - Catalyst Native.
-          Suspense fallback uses Atlaskit's NavigationSkeleton so the cold-load
-          silhouette matches the real chrome (height, primary/secondary slots,
-          search placeholder). Counts mirror Catalyst's real slot inventory:
-          primary = sidebar toggle, hub switcher, product home = 3; secondary
-          = Create, Ask, Notifications, Settings, Profile = 5. */}
+      {/* Global Header - Catalyst Native */}
       <div data-catalyst-header>
-        <Suspense fallback={<NavigationSkeleton primaryItemsCount={3} secondaryItemsCount={5} />}>
+        <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
       </div>

@@ -30,7 +30,6 @@
     "@atlaskit/button": "^20.5.3",
     "@atlaskit/checkbox": "^17.3.12",
     "@atlaskit/css": "^0.9.0",
-    "@atlaskit/drawer": "^12.0.5",
     "@atlaskit/dropdown-menu": "^13.1.0",
     "@atlaskit/dynamic-table": "^15.2.0",
     "@atlaskit/editor-common": "^112.19.0",

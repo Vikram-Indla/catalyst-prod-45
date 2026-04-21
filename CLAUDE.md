@@ -80,20 +80,6 @@ Home | StrategyHub | ProductHub | ProjectHub | ReleaseHub | TestHub | IncidentHu
 
 **Active Pipeline:** ECLIPSE v2.0 — NOCTURNE Dark Mode conversion
 
-### Top-nav deviations from canonical Atlaskit (documented Apr 2026)
-
-Catalyst's top nav uses `@atlaskit/atlassian-navigation` primitives (icon
-buttons, tokens, NavigationSkeleton, HORIZONTAL_GLOBAL_NAV_HEIGHT = 56)
-but assembles them in a bespoke `CatalystHeader` rather than the full
-`AtlassianNavigation` wrapper. Known intentional deviations:
-
-| ID | Deviation | Reason |
-|----|-----------|--------|
-| BE-2 | **HubSwitcher drawer (not popover).** Atlaskit's `renderAppSwitcher` slot is a bottom-anchored popover. Catalyst renders a full-height 320px left-anchored drawer (`src/components/layout/HubSwitcher.tsx`) so every hub row can show its icon + description at a readable density. | 10 hubs × icon + label + description > popover comfort. Jira's own app switcher is also a drawer-sized surface in newer builds. |
-| BE-2 | **AskCatalystPill uses @atlaskit/drawer inline.** Rather than navigating to `/wiki`, the pill opens an inline drawer for search — mirrors Jira's "Ask Rovo" side panel. | Inline assistant mental model: the assistant lives next to the user, not on a separate page. |
-| BE-2 | **Hub chip beside wordmark.** Jira shows `<logo> · <site name>`. Catalyst has one workspace but 10 hubs, so the slot shows the active hub's label + tone dot via `resolveCurrentHub()` (`src/lib/current-hub.ts`). Suppressed on /for-you, /admin, /auth. | Always-visible "where am I" indicator without consuming sidebar real estate. |
-| BE-2 | **Hub tone colours live in `src/lib/hub-colors.ts`.** Structural, not semantic — do not treat as StatusLozenge colours (§5). Tile fill = `${tone}1A` (10% wash), glyph = full tone, text = `color.text`. | Single chokepoint so future surfaces (breadcrumbs, recent-hub chips) share one palette. |
-
 ---
 
 ## 3. ECLIPSE DARK MODE PIPELINE

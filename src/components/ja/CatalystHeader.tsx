@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom';
 import { Box, Flex, Stack, Text, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { IconButton } from '@atlaskit/button/new';
@@ -15,8 +14,6 @@ import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
-import { resolveCurrentHub } from '@/lib/current-hub';
-import { hubTone } from '@/lib/hub-colors';
 import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 
 // Jira parity dimensions:
@@ -126,29 +123,6 @@ const shortcutChipStyles = xcss({
   fontWeight: 'font.weight.medium',
 });
 
-// Hub name indicator — Jira pattern: logo · <site name>. Catalyst substitutes
-// the active hub label (e.g. "ProjectHub") so users always know which hub
-// they're in without reading the URL. Suppressed on /for-you, /admin, /auth
-// (resolveCurrentHub returns null) to avoid redundancy next to the wordmark.
-// The tone dot uses the hub's structural color from hub-colors.ts — purely
-// identifying, not semantic.
-const hubChipStyles = xcss({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 'space.075',
-  paddingInline: 'space.100',
-  paddingBlock: 'space.050',
-  borderRadius: 'border.radius.100',
-  color: 'color.text.subtle',
-});
-
-const hubDividerStyles = xcss({
-  width: '1px',
-  height: '20px',
-  backgroundColor: 'color.border',
-  marginInline: 'space.100',
-});
-
 // macOS → ⌘ modifier; everything else → Ctrl. Matches the inline pattern
 // already used in IndustryHeaderToolbarV2 / EnterpriseToolbar.
 const isMacPlatform = () =>
@@ -161,11 +135,6 @@ export function CatalystHeader() {
   const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Hide sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
-  // Hub indicator — hide on /for-you, /admin, /auth, and at narrow widths to
-  // keep the left cluster under ~280px when the mobile breakpoints take over.
-  const location = useLocation();
-  const currentHub = resolveCurrentHub(location.pathname);
-  const showHubChip = !!currentHub && !isNarrow;
 
   return (
     <Box
@@ -202,25 +171,6 @@ export function CatalystHeader() {
                 />
               </Box>
             </a>
-            {showHubChip && currentHub ? (
-              <>
-                <Box xcss={hubDividerStyles} aria-hidden="true" />
-                <Box xcss={hubChipStyles} data-hub-chip={currentHub.key}>
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '999px',
-                      background: hubTone(currentHub.key),
-                      display: 'inline-block',
-                      flexShrink: 0,
-                    }}
-                  />
-                  <Text size="medium" weight="medium">{currentHub.label}</Text>
-                </Box>
-              </>
-            ) : null}
           </Box>
 
           {/* Search — full bar at ≥1024, icon-toggle at <1024. Spacer after
