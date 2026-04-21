@@ -247,11 +247,15 @@ export default defineConfig(({ mode, command }) => {
       // mid-flight dep re-optimization (which 404s in-flight chunk requests).
       // When adopting a new Atlaskit component in a surface, ADD IT HERE so
       // first render is warm instead of stalling on cold optimize.
+      '@atlaskit/atlassian-navigation',
+      '@atlaskit/atlassian-navigation/skeleton',
       '@atlaskit/avatar',
       '@atlaskit/avatar-group',
+      '@atlaskit/badge',
       '@atlaskit/breadcrumbs',
       '@atlaskit/button',
       '@atlaskit/checkbox',
+      '@atlaskit/drawer',
       '@atlaskit/dropdown-menu',
       '@atlaskit/dynamic-table',
       '@atlaskit/empty-state',
