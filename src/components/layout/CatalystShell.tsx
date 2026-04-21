@@ -1,6 +1,5 @@
 import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
 import { PanelLeftOpen } from 'lucide-react';
-import { GlobalSearch } from '@/components/global-search';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -638,7 +637,7 @@ export function CatalystShell() {
   return (
     <CatalystContextProvider>
       <CatalystShellContent />
-      <GlobalSearch />
+      {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
       {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}
       {pendingItem && (
         <Suspense fallback={null}>
