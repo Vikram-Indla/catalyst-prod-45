@@ -146,30 +146,58 @@ export function ProfileMenu() {
           </MenuGroup>
         </Box>
       )}
-      trigger={(triggerProps) => (
-        <button
-          {...triggerProps}
-          type="button"
-          aria-label="Profile menu"
-          onClick={() => setOpen((v) => !v)}
-          style={{
-            all: 'unset',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 32,
-            height: 32,
-            borderRadius: '50%',
-            cursor: 'pointer',
-            outline: open ? '2px solid #0052CC' : 'none',
-            outlineOffset: 2,
-          }}
-        >
-          <span style={{ pointerEvents: 'none', display: 'inline-flex' }}>
-            <Avatar size="small" src={avatarUrl} name={name} presence={undefined} />
-          </span>
-        </button>
-      )}
+      trigger={(triggerProps) => {
+        const initials = name
+          .split(' ')
+          .map((n) => n[0])
+          .filter(Boolean)
+          .slice(0, 2)
+          .join('')
+          .toUpperCase();
+        return (
+          <button
+            {...triggerProps}
+            type="button"
+            aria-label="Profile menu"
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            style={{
+              all: 'unset',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 32,
+              height: 32,
+              borderRadius: '50%',
+              cursor: 'pointer',
+              boxShadow: open ? '0 0 0 2px #0052CC' : 'none',
+              transition: 'box-shadow 150ms ease',
+              backgroundColor: '#5243AA',
+              color: '#FFFFFF',
+              fontSize: 12,
+              fontWeight: 600,
+              overflow: 'hidden',
+              fontFamily: 'inherit',
+            }}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt=""
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  pointerEvents: 'none',
+                }}
+              />
+            ) : (
+              <span style={{ pointerEvents: 'none' }}>{initials}</span>
+            )}
+          </button>
+        );
+      }}
     />
   );
 }
