@@ -78,7 +78,9 @@ const productLogoStyles = xcss({
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
-  flex: '0 1 680px',
+  flexGrow: 0,
+  flexShrink: 1,
+  flexBasis: '680px',
   minWidth: 0,
   maxWidth: '680px',
   marginInlineStart: 'space.800',
