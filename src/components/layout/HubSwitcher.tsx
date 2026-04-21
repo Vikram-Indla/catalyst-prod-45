@@ -15,7 +15,6 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
-import { IconButton } from '@atlaskit/button/new';
 import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
 import HomeIcon from '@atlaskit/icon/glyph/home';
 import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
@@ -135,21 +134,55 @@ export function HubSwitcher() {
       )}
       trigger={(triggerProps) => (
         // data-hub-switcher: matched by CatalystShell's hover-zone detection so
-        // hovering this trigger ALSO opens the sidebar peek. Keeping the
-        // attribute on the wrapper ensures the entire 32x32 hit area counts,
-        // not just the inner SVG.
-        <span data-hub-switcher="true" style={{ display: 'inline-flex' }}>
-          <Tooltip content="Switch hub" position="bottom">
-            <IconButton
+        // hovering this trigger ALSO opens the sidebar peek. The ref from
+        // triggerProps MUST land on the actual DOM node Popup anchors to —
+        // wrapping IconButton in extra elements without forwarding the ref
+        // breaks both anchoring and click handling, which is why the previous
+        // version appeared "dead". We render a native button so triggerProps
+        // (including ref) attach directly to a real DOM element.
+        <Tooltip content="Switch hub" position="bottom">
+          {(tooltipProps) => (
+            <button
               {...triggerProps}
-              label="Switch hub"
-              appearance="subtle"
-              isSelected={open}
+              {...tooltipProps}
+              ref={(node) => {
+                // Forward ref to BOTH Popup and Tooltip
+                const tRef = (triggerProps as any).ref;
+                const tipRef = (tooltipProps as any).ref;
+                if (typeof tRef === 'function') tRef(node);
+                else if (tRef) (tRef as any).current = node;
+                if (typeof tipRef === 'function') tipRef(node);
+                else if (tipRef) (tipRef as any).current = node;
+              }}
+              type="button"
+              data-hub-switcher="true"
+              aria-label="Switch hub"
+              aria-expanded={open}
               onClick={() => setOpen((v) => !v)}
-              icon={AppSwitcherIcon}
-            />
-          </Tooltip>
-        </span>
+              style={{
+                width: 32,
+                height: 32,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: 'none',
+                borderRadius: 3,
+                background: open ? 'rgba(9,30,66,0.14)' : 'transparent',
+                cursor: 'pointer',
+                color: 'var(--cp-text-secondary, #44546F)',
+                transition: 'background 120ms ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!open) e.currentTarget.style.background = 'rgba(9,30,66,0.06)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = open ? 'rgba(9,30,66,0.14)' : 'transparent';
+              }}
+            >
+              <AppSwitcherIcon label="" size="small" primaryColor="currentColor" />
+            </button>
+          )}
+        </Tooltip>
       )}
     />
   );
