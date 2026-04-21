@@ -39,9 +39,12 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 //                      over the search region). Help icon hides — it lives
 //                      inside the SettingsMenu already.
 //  - <768  (mobile):   MobileNavigationMenu / MobileBottomNav take over.
+// Atlaskit parity: HORIZONTAL_GLOBAL_NAV_HEIGHT = 56 (from
+// @atlaskit/atlassian-navigation). The Suspense fallback in CatalystShell
+// already assumes 56 — keeping them aligned kills the cold-load jump.
 const headerStyles = xcss({
-  minHeight: '48px',
-  height: '48px',
+  minHeight: '56px',
+  height: '56px',
   paddingInline: 'space.200',
   display: 'flex',
   alignItems: 'center',
@@ -137,7 +140,6 @@ export function CatalystHeader() {
     <Box
       as="header"
       xcss={headerStyles}
-      style={{ boxShadow: token('elevation.shadow.raised', 'none') }}
       data-catalyst-top-nav="jira-parity"
       data-nav-breakpoint={isNarrow ? 'narrow' : isCompact ? 'compact' : 'default'}
     >
@@ -163,7 +165,7 @@ export function CatalystHeader() {
               <Box xcss={productLogoStyles}>
                 <img
                   src={catalystWordmark}
-                  alt="Catalyst"
+                  alt=""
                   height={28}
                   style={{ height: '28px', width: 'auto', display: 'block' }}
                 />

@@ -2,10 +2,19 @@ import { useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
 import { Bell } from 'lucide-react';
 import { Box, xcss } from '@atlaskit/primitives';
+import Badge from '@atlaskit/badge';
 import NotificationPanel from '@/components/notifications/NotificationPanel';
 import { useUnreadCount } from '@/hooks/useUnreadCount';
 
+// Anchor sits above the icon button so the Atlaskit Badge reads as an
+// overlay pip, matching Jira's unread count pattern.
 const triggerWrapStyles = xcss({ position: 'relative', display: 'inline-block' });
+const badgeAnchorStyles = xcss({
+  position: 'absolute',
+  top: 'space.negative.050',
+  insetInlineEnd: 'space.negative.050',
+  pointerEvents: 'none',
+});
 
 // Outline bell to match Jira's transparent/stroked notification icon.
 // Atlaskit's `notification` and `notification-all` glyphs are solid-filled,
@@ -29,29 +38,13 @@ export function NotificationsPanel() {
           onClick={() => setOpen((current) => !current)}
         />
         {unreadCount > 0 ? (
-          <span
+          <Box
+            xcss={badgeAnchorStyles}
+            role="status"
             aria-label={`${unreadCount} unread notifications`}
-            style={{
-              position: 'absolute',
-              top: -4,
-              right: -4,
-              minWidth: 22,
-              height: 16,
-              padding: '0 5px',
-              borderRadius: 4,
-              background: '#F5A6A1',
-              color: '#1F1F1F',
-              fontSize: 11,
-              fontWeight: 700,
-              lineHeight: '16px',
-              textAlign: 'center',
-              pointerEvents: 'none',
-              fontFamily: 'Inter, system-ui, sans-serif',
-              display: 'inline-block',
-            }}
           >
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
+            <Badge appearance="important" max={9}>{unreadCount}</Badge>
+          </Box>
         ) : null}
       </Box>
       <NotificationPanel isOpen={open} onClose={() => setOpen(false)} />
