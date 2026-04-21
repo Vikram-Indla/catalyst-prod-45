@@ -29,44 +29,26 @@ import { createPortal } from 'react-dom';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
-import HomeIcon from '@atlaskit/icon/core/home';
-import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
-import RoadmapIcon from '@atlaskit/icon/core/roadmap';
-import FolderClosedIcon from '@atlaskit/icon/core/folder-closed';
-import ReleaseIcon from '@atlaskit/icon/core/release';
-import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
-import WarningIcon from '@atlaskit/icon/core/warning';
-import TaskIcon from '@atlaskit/icon/core/task';
-import CalendarIcon from '@atlaskit/icon/core/calendar';
-import BookIcon from '@atlaskit/icon/core/book-with-bookmark';
-import { HubKey, hubTone, hubTileFill } from '@/lib/hub-colors';
-
-type CoreIconProps = {
-  label: string;
-  color?: string;
-  spacing?: 'none' | 'spacious';
-};
-type CoreIcon = React.ComponentType<CoreIconProps>;
+import { HubIcon, HubName } from '@/components/navigation/HubIcon';
 
 interface HubEntry {
-  key: HubKey;
+  key: HubName;
   label: string;
   href: string;
   description: string;
-  Icon: CoreIcon;
 }
 
 const HUBS: HubEntry[] = [
-  { key: 'home',     label: 'Home',         href: '/for-you',                    description: 'Your work across all hubs',    Icon: HomeIcon },
-  { key: 'strategy', label: 'StrategyHub',  href: '/strategyhub',                description: 'Vision, themes, OKRs',         Icon: OfficeBuildingIcon },
-  { key: 'product',  label: 'ProductHub',   href: '/producthub',                 description: 'Products, ideas, roadmaps',    Icon: RoadmapIcon },
-  { key: 'project',  label: 'ProjectHub',   href: '/project-hub',                description: 'Delivery projects & backlogs', Icon: FolderClosedIcon },
-  { key: 'release',  label: 'ReleaseHub',   href: '/release-hub/command-center', description: 'Release planning & cutover',   Icon: ReleaseIcon },
-  { key: 'test',     label: 'TestHub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects',  Icon: CheckCircleIcon },
-  { key: 'incident', label: 'IncidentHub',  href: '/incident-hub',               description: 'Incidents & post-mortems',     Icon: WarningIcon },
-  { key: 'task',     label: 'TaskHub',      href: '/taskhub/boards',             description: 'Personal & team tasks',        Icon: TaskIcon },
-  { key: 'plan',     label: 'PlanHub',      href: '/planhub',                    description: 'Capacity & timeline planning', Icon: CalendarIcon },
-  { key: 'wiki',     label: 'WikiHub',      href: '/wiki',                       description: 'Knowledge base & docs',        Icon: BookIcon },
+  { key: 'home',     label: 'Home',         href: '/for-you',                    description: 'Your work across all hubs' },
+  { key: 'strategy', label: 'StrategyHub',  href: '/strategyhub',                description: 'Vision, themes, OKRs' },
+  { key: 'product',  label: 'ProductHub',   href: '/producthub',                 description: 'Products, ideas, roadmaps' },
+  { key: 'project',  label: 'ProjectHub',   href: '/project-hub',                description: 'Delivery projects & backlogs' },
+  { key: 'release',  label: 'ReleaseHub',   href: '/release-hub/command-center', description: 'Release planning & cutover' },
+  { key: 'test',     label: 'TestHub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects' },
+  { key: 'incident', label: 'IncidentHub',  href: '/incident-hub',               description: 'Incidents & post-mortems' },
+  { key: 'task',     label: 'TaskHub',      href: '/taskhub/boards',             description: 'Personal & team tasks' },
+  { key: 'plan',     label: 'PlanHub',      href: '/planhub',                    description: 'Capacity & timeline planning' },
+  { key: 'wiki',     label: 'WikiHub',      href: '/wiki',                       description: 'Knowledge base & docs' },
 ];
 
 // Matches DOM nodes focusable via Tab inside the drawer. Atlaskit Drawer
