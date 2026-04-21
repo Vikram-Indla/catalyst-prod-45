@@ -130,6 +130,9 @@ function CatalystShellContent() {
       // Chevron IconButton in the header — match by aria-label since the
       // header surface is owned by a separate brief and we can't add hooks.
       if (target.closest('button[aria-label="Expand sidebar"], button[aria-label="Hide sidebar"]')) return true;
+      // HubSwitcher trigger (beside chevron) — shares the hover-peek zone
+      // so hovering EITHER control keeps the sidebar open.
+      if (target.closest('[data-hub-switcher]')) return true;
       if (target.closest('[data-catalyst-sidebar]')) return true;
       return false;
     };
@@ -139,7 +142,7 @@ function CatalystShellContent() {
         setSidebarHoverOpen(true);
       } else {
         if (closeTimer) window.clearTimeout(closeTimer);
-        closeTimer = window.setTimeout(() => setSidebarHoverOpen(false), 150);
+        closeTimer = window.setTimeout(() => setSidebarHoverOpen(false), 300);
       }
     };
     document.addEventListener('mousemove', handleMove);
