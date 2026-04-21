@@ -26,6 +26,11 @@ interface CatalystContextState {
   sidebarHidden: boolean;
   setSidebarHidden: (hidden: boolean | ((prev: boolean) => boolean)) => void;
   cycleSidebarState: () => void;
+  // Hover-peek (Jira parity 2026-04-21): when sidebar is hidden, hovering
+  // the top-nav chevron temporarily floats the sidebar OVER the page content
+  // (overlay; doesn't shift main). Click toggles the persistent hide/show.
+  sidebarPeek: boolean;
+  setSidebarPeek: (peek: boolean) => void;
   
   // Entity IDs
   portfolioId: string | null;
@@ -170,6 +175,9 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [sidebarState, setSidebarState] = useState(loadSidebarState);
   const sidebarExpanded = sidebarState.expanded;
   const sidebarHidden = sidebarState.hidden;
+  // Peek state is intentionally ephemeral — never persisted. It mirrors the
+  // hover affordance and is reset whenever the user moves their mouse away.
+  const [sidebarPeek, setSidebarPeek] = useState(false);
   const setSidebarExpanded = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
     setSidebarState(prev => ({
       ...prev,
@@ -267,6 +275,8 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     sidebarHidden,
     setSidebarHidden,
     cycleSidebarState,
+    sidebarPeek,
+    setSidebarPeek,
     portfolioId,
     setPortfolioId,
     programId,
@@ -291,7 +301,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setProjectName,
   }), [
     tier, workspaceType, sidebarExpanded, sidebarHidden, cycleSidebarState,
-    setSidebarExpanded, setSidebarHidden,
+    setSidebarExpanded, setSidebarHidden, sidebarPeek,
     portfolioId, programId, projectId, productId, teamIds, piIds,
     selectedQuarter, snapshotId, industryFilters, programName, projectName,
   ]);
