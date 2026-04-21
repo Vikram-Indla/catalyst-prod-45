@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
