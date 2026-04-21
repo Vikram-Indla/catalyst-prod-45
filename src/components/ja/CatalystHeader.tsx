@@ -3,9 +3,7 @@ import { token } from '@atlaskit/tokens';
 import { IconButton } from '@atlaskit/button/new';
 import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import MenuExpandIcon from '@atlaskit/icon/glyph/menu-expand';
-import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
 import { AppSwitcher } from '@/components/layout/AppSwitcher';
-import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
@@ -102,16 +100,9 @@ export function CatalystHeader() {
           {/* Flex spacer pushes the right cluster to the far edge */}
           <Box xcss={flexSpacerStyles} />
 
-          {/* Right cluster: Ask | Bell | Help | Settings | Avatar */}
+          {/* Right cluster: Bell | Settings | Avatar */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), flex: '0 0 auto' }}>
-            <AskCatalystPill />
             <NotificationsPanel />
-            <IconButton
-              label="Help"
-              appearance="subtle"
-              icon={QuestionCircleIcon}
-              onClick={() => window.open('/wiki', '_self')}
-            />
             <SettingsMenu />
             <ProfileMenu />
           </Box>
