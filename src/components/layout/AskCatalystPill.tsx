@@ -1,20 +1,22 @@
-import { useState, useCallback, KeyboardEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
+import { useLocation } from 'react-router-dom';
 import { IconButton } from '@atlaskit/button/new';
-import Button from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
-import Drawer from '@atlaskit/drawer';
-import Textfield from '@atlaskit/textfield';
-import { Box, Stack, Text, xcss } from '@atlaskit/primitives';
+import { xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 
-// Ask Catalyst — mirrors Jira's "Ask Rovo" pill styling exactly.
-// White surface, subtle border, tokenized multi-stop sparkle, medium label.
+const DepartmentIntelligenceOverlay = lazy(
+  () => import('@/components/resource360/DepartmentIntelligenceOverlay')
+);
+
+// Ask Caty — top-nav AI entry point.
 //
-// Previously the pill was navigate('/wiki') — a full-page transition that
-// broke the "inline assistant" mental model (Vikram, Apr 2026 critique).
-// Now opens an Atlaskit Drawer inline. Submitting the query still routes
-// to /wiki?q=… so the full wiki search remains the single source of truth.
+// Apr 2026 rewire: the "Intelligence" button on /for-you was retired and its
+// functionality (department picker → DepartmentIntelligenceOverlay) is now
+// hosted exclusively by this pill. Behavior is route-scoped:
+//
+//   /for-you      → opens the department picker dropdown
+//   anywhere else → button is rendered disabled (placeholder, no-op)
 function AskCatalystIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -26,8 +28,6 @@ function AskCatalystIcon() {
   );
 }
 
-// Full-width pill — pill radius is 9999px (no token; Atlaskit doesn't expose
-// a pill semantic radius). Everything else resolves through tokens.
 const pillStyles = xcss({
   display: 'inline-flex',
   alignItems: 'center',
@@ -42,98 +42,187 @@ const pillStyles = xcss({
   color: 'color.text',
   font: 'font.body',
   cursor: 'pointer',
-  ':hover': {
-    backgroundColor: 'color.background.neutral.subtle.hovered',
-  },
 });
 
-const drawerBodyStyles = xcss({
-  paddingBlock: 'space.200',
-  paddingInline: 'space.300',
-});
+const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
+
+const DEPT_COLORS: Record<string, string> = {
+  Delivery: '#2563EB',
+  Product: '#7C3AED',
+  Governance: '#0D9488',
+  Operations: '#D97706',
+  'Technical Support': '#DC2626',
+  'Strategy & Planning': '#0891B2',
+};
 
 interface AskCatalystPillProps {
   iconOnly?: boolean;
 }
 
 export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
-  const navigate = useNavigate();
-  const [isOpen, setOpen] = useState(false);
-  const [query, setQuery] = useState('');
+  const location = useLocation();
+  const isForYou = location.pathname === '/for-you' || location.pathname.startsWith('/for-you/');
 
-  const open = useCallback(() => setOpen(true), []);
-  const close = useCallback(() => setOpen(false), []);
+  const [showPicker, setShowPicker] = useState(false);
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [selectedDept, setSelectedDept] = useState('');
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const submit = useCallback(() => {
-    const q = query.trim();
-    if (!q) {
-      navigate('/wiki');
-    } else {
-      navigate(`/wiki?q=${encodeURIComponent(q)}`);
+  // Outside-click closes the picker
+  useEffect(() => {
+    if (!showPicker) return;
+    const onDown = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, [showPicker]);
+
+  // Close picker when navigating off /for-you
+  useEffect(() => {
+    if (!isForYou) {
+      setShowPicker(false);
+      setShowOverlay(false);
     }
-    setOpen(false);
-    setQuery('');
-  }, [navigate, query]);
+  }, [isForYou]);
 
-  const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      submit();
-    }
-  };
+  const handleClick = useCallback(() => {
+    if (!isForYou) return; // dead on other pages
+    setShowPicker((v) => !v);
+  }, [isForYou]);
+
+  const tooltipLabel = isForYou ? 'Ask Caty' : 'Ask Caty (available on Home)';
 
   return (
-    <>
+    <div ref={wrapperRef} style={{ position: 'relative', display: 'inline-flex' }}>
       {iconOnly ? (
-        <Tooltip content="Ask Catalyst" position="bottom">
+        <Tooltip content={tooltipLabel} position="bottom">
           <IconButton
-            label="Ask Catalyst"
+            label={tooltipLabel}
             appearance="subtle"
             icon={AskCatalystIcon}
-            onClick={open}
+            onClick={handleClick}
+            isDisabled={!isForYou}
           />
         </Tooltip>
       ) : (
-        <button
-          type="button"
-          onClick={open}
+        <Tooltip content={tooltipLabel} position="bottom">
+          <button
+            type="button"
+            onClick={handleClick}
+            disabled={!isForYou}
+            aria-disabled={!isForYou}
+            style={{
+              all: 'unset',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              cursor: isForYou ? 'pointer' : 'not-allowed',
+              height: 32,
+              paddingInline: 12,
+              border: '1px solid #DFE1E6',
+              borderRadius: 6,
+              background: '#FFFFFF',
+              opacity: isForYou ? 1 : 0.6,
+              boxSizing: 'border-box',
+            }}
+            onMouseEnter={(e) => {
+              if (isForYou) e.currentTarget.style.background = '#F4F5F7';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#FFFFFF';
+            }}
+          >
+            <AskCatalystIcon />
+            <span style={{ fontSize: 14, fontWeight: 500 }}>Ask Caty</span>
+          </button>
+        </Tooltip>
+      )}
+
+      {showPicker && isForYou && (
+        <div
           style={{
-            all: 'unset',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            cursor: 'pointer',
-            padding: '4px 8px',
-            borderRadius: 6,
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            marginTop: 6,
+            background: 'var(--cp-float, #FFFFFF)',
+            border: '1px solid var(--cp-bd, #DFE1E6)',
+            borderRadius: 12,
+            boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+            minWidth: 220,
+            padding: 6,
+            zIndex: 1000,
           }}
         >
-          <AskCatalystIcon />
-          <span style={{ fontSize: 14, fontWeight: 500 }}>Ask Catalyst</span>
-        </button>
+          <div
+            style={{
+              padding: '8px 12px 6px',
+              fontSize: 11,
+              fontWeight: 600,
+              color: 'var(--cp-t3, #6B778C)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}
+          >
+            Select Department
+          </div>
+          {DEPT_OPTIONS.map((dept) => (
+            <button
+              key={dept}
+              onClick={() => {
+                setSelectedDept(dept);
+                setShowPicker(false);
+                setShowOverlay(true);
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                width: '100%',
+                padding: '9px 12px',
+                border: 'none',
+                background: 'transparent',
+                borderRadius: 8,
+                cursor: 'pointer',
+                fontSize: 13,
+                fontWeight: 500,
+                color: 'var(--cp-t1, #172B4D)',
+                transition: 'background 100ms',
+                textAlign: 'left',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--cp-hover, rgba(9,30,66,0.06))';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: '50%',
+                  background: DEPT_COLORS[dept] || 'var(--cp-t3, #6B778C)',
+                  flexShrink: 0,
+                }}
+              />
+              {dept}
+            </button>
+          ))}
+        </div>
       )}
-      <Drawer onClose={close} isOpen={isOpen} width="medium" label="Ask Catalyst">
-        <Box xcss={drawerBodyStyles}>
-          <Stack space="space.200">
-            <Text as="strong" size="large" weight="bold">Ask Catalyst</Text>
-            <Text size="medium" color="color.text.subtle">
-              Ask a question about projects, releases, incidents, or policies. Enter opens the full wiki.
-            </Text>
-            <Textfield
-              autoFocus
-              isCompact
-              placeholder="What can I help you find?"
-              value={query}
-              onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
-              onKeyDown={onKeyDown}
-              elemBeforeInput={<AskCatalystIcon />}
-            />
-            <Box>
-              <Button appearance="primary" onClick={submit}>Search Catalyst</Button>
-            </Box>
-          </Stack>
-        </Box>
-      </Drawer>
-    </>
+
+      {showOverlay && selectedDept && (
+        <Suspense fallback={null}>
+          <DepartmentIntelligenceOverlay
+            departmentName={selectedDept}
+            onClose={() => setShowOverlay(false)}
+          />
+        </Suspense>
+      )}
+    </div>
   );
 }
-
