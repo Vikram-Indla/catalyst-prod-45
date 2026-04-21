@@ -8,17 +8,9 @@ import { token } from '@atlaskit/tokens';
 function AskCatalystIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="ac-grad" x1="0" y1="0" x2="16" y2="16" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#FFB020" />
-          <stop offset="35%" stopColor="#E5499D" />
-          <stop offset="70%" stopColor="#7C3AED" />
-          <stop offset="100%" stopColor="#2563EB" />
-        </linearGradient>
-      </defs>
       <path
         d="M8 1.5l1.2 3.3 3.3 1.2-3.3 1.2L8 10.5 6.8 7.2 3.5 6l3.3-1.2L8 1.5zM12 9l.7 1.8 1.8.7-1.8.7L12 14l-.7-1.8-1.8-.7 1.8-.7L12 9z"
-        fill="url(#ac-grad)"
+        fill="#2563EB"
       />
     </svg>
   );
