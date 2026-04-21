@@ -836,8 +836,8 @@ export function CreateStoryModal({
                     </Inline>
                     <Box xcss={xcss({ marginTop: 'space.075' })}>
                       <Button
-                        appearance="subtle-link"
-                        spacing="none"
+                        appearance="subtle"
+                        spacing="compact"
                         onClick={() => {
                           if (user?.id) updateField('assigneeId', user.id);
                         }}
@@ -946,10 +946,11 @@ export function CreateStoryModal({
                     <Box xcss={fieldGroupStyles}>
                       {/* Parent (lazy server-search) */}
                       <Field name="parent" label="Parent">
-                        {({ fieldProps }) => (
+                        {({ fieldProps: { id, isDisabled } }) => (
                           <>
                             <AsyncSelect<IconOption>
-                              {...fieldProps}
+                              id={id}
+                              isDisabled={isDisabled}
                               inputId="cs-parent"
                               cacheOptions
                               defaultOptions
@@ -1113,13 +1114,13 @@ export function CreateStoryModal({
               <Button appearance="subtle" onClick={handleClose}>
                 Cancel
               </Button>
-              <LoadingButton
+              <Button
                 appearance="primary"
                 isLoading={createMutation.isPending}
                 onClick={handleSubmit}
               >
                 Create
-              </LoadingButton>
+              </Button>
             </Box>
           </ModalFooter>
         </ModalDialog>
@@ -1144,7 +1145,7 @@ function ProjectKey({ k }: { k: string }) {
         minWidth: 22,
         height: 18,
         padding: `0 ${token('space.075')}`,
-        borderRadius: token('border.radius', '3px'),
+        borderRadius: '3px',
         background: token('color.background.brand.bold'),
         color: token('color.text.inverse'),
         font: token('font.body.small'),
