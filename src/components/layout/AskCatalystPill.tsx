@@ -6,6 +6,7 @@ import Tooltip from '@atlaskit/tooltip';
 import Drawer from '@atlaskit/drawer';
 import Textfield from '@atlaskit/textfield';
 import { Box, Stack, Text, xcss } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 import { token } from '@atlaskit/tokens';
 
 // Ask Catalyst — mirrors Jira's "Ask Rovo" pill styling exactly.
@@ -102,7 +103,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
       <Drawer onClose={close} isOpen={isOpen} width="medium" label="Ask Catalyst">
         <Box xcss={drawerBodyStyles}>
           <Stack space="space.200">
-            <Text as="h2" size="large" weight="bold">Ask Catalyst</Text>
+            <Heading size="medium">Ask Catalyst</Heading>
             <Text size="medium" color="color.text.subtle">
               Ask a question about projects, releases, incidents, or policies. Enter opens the full wiki.
             </Text>
