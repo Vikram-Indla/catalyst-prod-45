@@ -15,7 +15,6 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
-import { IconButton } from '@atlaskit/button/new';
 import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
 import HomeIcon from '@atlaskit/icon/glyph/home';
 import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
