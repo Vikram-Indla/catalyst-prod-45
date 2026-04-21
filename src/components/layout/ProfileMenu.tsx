@@ -143,24 +143,12 @@ export function ProfileMenu() {
         </Box>
       )}
       trigger={(triggerProps) => (
-        <button
+        <AvatarTriggerButton
           {...triggerProps}
-          type="button"
-          aria-label="Profile"
-          onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            padding: 4,
-            borderRadius: 999,
-            cursor: 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Avatar size="small" src={avatarUrl} name={name} />
-        </button>
+          avatarUrl={avatarUrl}
+          name={name}
+          onClick={() => setOpen((v) => !v)}
+        />
       )}
     />
   );
