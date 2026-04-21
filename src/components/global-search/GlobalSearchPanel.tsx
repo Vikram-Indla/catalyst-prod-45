@@ -9,7 +9,7 @@ import PersonIcon from '@atlaskit/icon/glyph/person';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 import { useRecentItems, useSearchResults } from '@/hooks/useGlobalSearch';
-import { WorkItemTypeIcon } from '@/components/workhub/jira-issue-type-icons';
+import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
 import type { SearchResult, WorkItemType } from '@/types/global-search';
 
