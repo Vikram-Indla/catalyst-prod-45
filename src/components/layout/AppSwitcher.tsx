@@ -4,19 +4,59 @@ import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
 import { IconButton } from '@atlaskit/atlassian-navigation';
 import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
-import { Box, xcss } from '@atlaskit/primitives';
-import Heading from '@atlaskit/heading';
-import { HUBS } from '@/lib/hubs';
-import { HubTile } from './HubTile';
+import HomeIcon from '@atlaskit/icon/glyph/home';
+import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
+import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
+import FolderIcon from '@atlaskit/icon/glyph/folder';
+import ShipIcon from '@atlaskit/icon/glyph/ship';
+import TaskIcon from '@atlaskit/icon/glyph/task';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
+import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import BookIcon from '@atlaskit/icon/glyph/book';
+import { LinkItem, MenuGroup, Section } from '@atlaskit/menu';
+import { Box, Flex, xcss } from '@atlaskit/primitives';
 
-const popupStyles = xcss({ width: '360px' });
+const popupStyles = xcss({ width: '360px', paddingBlock: 'space.100' });
 
-const gridStyles = xcss({
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)',
-  gap: 'space.150',
-  marginBlockStart: 'space.200',
+const iconFrameStyles = xcss({
+  width: '32px',
+  height: '32px',
+  borderRadius: 'border.radius.100',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'color.text.inverse',
 });
+
+const iconStyles = {
+  neutral: xcss({ backgroundColor: 'color.background.neutral.bold' }),
+  purple: xcss({ backgroundColor: 'color.background.accent.purple.bolder' }),
+  blue: xcss({ backgroundColor: 'color.background.accent.blue.bolder' }),
+  teal: xcss({ backgroundColor: 'color.background.accent.teal.bolder' }),
+  orange: xcss({ backgroundColor: 'color.background.accent.orange.bolder' }),
+  green: xcss({ backgroundColor: 'color.background.accent.green.bolder' }),
+  red: xcss({ backgroundColor: 'color.background.accent.red.bolder' }),
+  yellow: xcss({ backgroundColor: 'color.background.accent.yellow.bolder' }),
+  magenta: xcss({ backgroundColor: 'color.background.accent.magenta.bolder' }),
+  lime: xcss({ backgroundColor: 'color.background.accent.lime.bolder' }),
+} as const;
+
+const hubItems = [
+  { label: 'Home', href: '/for-you', icon: <HomeIcon label="" />, tone: 'neutral' },
+  { label: 'StrategyHub', href: '/strategyhub', icon: <OfficeBuildingIcon label="" />, tone: 'purple' },
+  { label: 'ProductHub', href: '/producthub', icon: <PortfolioIcon label="" />, tone: 'blue' },
+  { label: 'ProjectHub', href: '/project-hub', icon: <FolderIcon label="" />, tone: 'teal' },
+  { label: 'ReleaseHub', href: '/release-hub/command-center', icon: <ShipIcon label="" />, tone: 'orange' },
+  { label: 'TestHub', href: '/testhub/dashboard', icon: <TaskIcon label="" />, tone: 'green' },
+  { label: 'IncidentHub', href: '/incident-hub', icon: <WarningIcon label="" />, tone: 'red' },
+  { label: 'TaskHub', href: '/taskhub/boards', icon: <CheckCircleIcon label="" />, tone: 'yellow' },
+  { label: 'PlanHub', href: '/planhub', icon: <CalendarIcon label="" />, tone: 'magenta' },
+  { label: 'WikiHub', href: '/wiki', icon: <BookIcon label="" />, tone: 'lime' },
+] as const;
+
+function HubIcon({ tone, icon }: { tone: (typeof hubItems)[number]['tone']; icon: React.ReactNode }) {
+  return <Flex xcss={[iconFrameStyles, iconStyles[tone]]}>{icon}</Flex>;
+}
 
 export function AppSwitcher() {
   const [open, setOpen] = useState(false);
@@ -29,19 +69,25 @@ export function AppSwitcher() {
       placement="bottom-start"
       label="Switch hubs"
       content={() => (
-        <Box xcss={[popupStyles, xcss({ padding: 'space.200' })]}>
-          <Heading size="medium">Catalyst</Heading>
-          <Box xcss={gridStyles}>
-            {HUBS.map((hub) => (
-              <a
-                key={hub.id}
-                href={hub.path}
-                onClick={(event) => { event.preventDefault(); navigate(hub.path); setOpen(false); }}
-              >
-                <HubTile color={hub.tileColor} glyph={hub.glyph} label={hub.label} />
-              </a>
-            ))}
-          </Box>
+        <Box xcss={popupStyles}>
+          <MenuGroup minWidth="360px" maxHeight="640px" spacing="cozy" menuLabel="Catalyst hubs">
+            <Section>
+              {hubItems.map((hub) => (
+                <LinkItem
+                  key={hub.href}
+                  href={hub.href}
+                  iconBefore={<HubIcon tone={hub.tone} icon={hub.icon} />}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    navigate(hub.href);
+                    setOpen(false);
+                  }}
+                >
+                  {hub.label}
+                </LinkItem>
+              ))}
+            </Section>
+          </MenuGroup>
         </Box>
       )}
       trigger={(triggerProps) => (
