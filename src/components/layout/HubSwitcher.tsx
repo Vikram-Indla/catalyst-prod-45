@@ -100,8 +100,8 @@ export function HubSwitcher() {
       <DropdownMenuContent
         align="start"
         side="bottom"
-        sideOffset={6}
-        alignOffset={-4}
+        sideOffset={8}
+        alignOffset={-8}
         avoidCollisions={false}
         className="z-[1000] p-0 border border-[#DFE1E6] shadow-[0_8px_24px_rgba(9,30,66,0.16)]"
         style={{
