@@ -123,7 +123,7 @@ export function ProfileMenu() {
           {...triggerProps}
           type="button"
           aria-label="Profile"
-          onClick={() => setOpen((v) => !v)}
+          onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
           style={{
             background: 'transparent',
             border: 'none',
