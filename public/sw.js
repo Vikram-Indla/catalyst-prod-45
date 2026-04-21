@@ -41,8 +41,10 @@ const CACHEABLE_CHUNK_PREFIXES = [
   '/assets/vendor-atlaskit-adf',
   '/assets/vendor-atlaskit-media',
   '/assets/vendor-atlaskit-ui',
+  '/assets/vendor-atlaskit-dnd',
+  '/assets/vendor-atlaskit-rich',
+  '/assets/vendor-atlaskit-forms',
   '/assets/vendor-prosemirror',
-  '/assets/vendor-tiptap',
 ];
 
 function isCacheableChunk(url) {
