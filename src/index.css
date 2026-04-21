@@ -204,6 +204,27 @@
   --cp-lozenge-green-bg: #1B7F37;
   --cp-lozenge-green-text: #FFFFFF;
 
+  /* ══════════════════════════════════════════════════════════════ */
+  /*  HUB NAVIGATION TOKENS — ring-fenced to sidebar hub nav only   */
+  /*  Source of truth: Atlaskit Blue 50 / 500 / 700 + Navy N200/800 */
+  /*  DO NOT override from component-level styles.                  */
+  /* ══════════════════════════════════════════════════════════════ */
+  --hub-tile-rest:      #DEEBFF;           /* Atlaskit Blue 50  */
+  --hub-tile-selected:  #0052CC;           /* Atlaskit Blue 500 */
+  --hub-tile-pressed:   #0747A6;           /* Atlaskit Blue 700 */
+
+  --hub-ink-rest:       #0052CC;
+  --hub-ink-inverse:    #FFFFFF;
+
+  --hub-row-rest:       transparent;
+  --hub-row-hover:      rgba(9, 30, 66, 0.04);
+  --hub-row-selected:   #DEEBFF;
+  --hub-row-pressed:    #B3D4FF;           /* Atlaskit Blue 100 */
+
+  --hub-bar-selected:   #0052CC;
+  --hub-label-rest:     #091E42;
+  --hub-label-sub:      #6B778C;
+
   /* ═══ ProjectHub Work Views — Ringfenced tokens ═══ */
   --cp-primary: #2563EB;
   --cp-primary-hover: #1D4ED8;
