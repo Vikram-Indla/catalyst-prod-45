@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
-import { IconButton } from '@atlaskit/atlassian-navigation';
+import { IconButton } from '@atlaskit/button/new';
 import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
 import HomeIcon from '@atlaskit/icon/glyph/home';
 import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
@@ -92,7 +92,7 @@ export function AppSwitcher() {
       )}
       trigger={(triggerProps) => (
         <Tooltip content="Switch hubs" position="bottom">
-          <IconButton {...triggerProps} label="Switch hubs" tooltip="Switch hubs" isSelected={open} onClick={() => setOpen((value) => !value)} icon={<AppSwitcherIcon label="" />} />
+          <IconButton {...triggerProps} label="Switch hubs" appearance="subtle" isSelected={open} onClick={() => setOpen((value) => !value)} icon={AppSwitcherIcon} />
         </Tooltip>
       )}
     />

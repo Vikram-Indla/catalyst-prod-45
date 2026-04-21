@@ -1,27 +1,30 @@
 /* Catalyst typography override — keeps Inter while using @atlaskit/* primitives.
    Atlaskit applies `font: var(--ds-font-*)` which resets font-family;
    we must override the full shorthand, not just font-family.
+   `!important` is required — Atlaskit's own stylesheets are loaded AFTER this
+   file at runtime and redeclare the same tokens with Atlassian Sans. Without
+   !important, our Inter declarations lose the cascade and Atlaskit wins.
    Weight 653 (Atlassian Sans variable-font axis) remapped to 700 (Inter's native Bold). */
 :root,
 html[data-theme~="typography:typography"] {
-  --ds-font-body-large: normal 400 1rem/1.5rem "Inter", ui-sans-serif, system-ui, sans-serif;
-  --ds-font-body: normal 400 0.875rem/1.25rem "Inter", ui-sans-serif, system-ui, sans-serif;
-  --ds-font-body-small: normal 400 0.75rem/1rem "Inter", ui-sans-serif, system-ui, sans-serif;
+  --ds-font-body-large: normal 400 1rem/1.5rem "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  --ds-font-body: normal 400 0.875rem/1.25rem "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  --ds-font-body-small: normal 400 0.75rem/1rem "Inter", ui-sans-serif, system-ui, sans-serif !important;
 
-  --ds-font-heading-xxlarge: normal 700 2rem/2.25rem "Inter", sans-serif;
-  --ds-font-heading-xlarge: normal 700 1.75rem/2rem "Inter", sans-serif;
-  --ds-font-heading-large: normal 700 1.5rem/1.75rem "Inter", sans-serif;
-  --ds-font-heading-medium: normal 700 1.25rem/1.5rem "Inter", sans-serif;
-  --ds-font-heading-small: normal 700 1rem/1.25rem "Inter", sans-serif;
-  --ds-font-heading-xsmall: normal 700 0.875rem/1.25rem "Inter", sans-serif;
-  --ds-font-heading-xxsmall: normal 700 0.75rem/1rem "Inter", sans-serif;
+  --ds-font-heading-xxlarge: normal 700 2rem/2.25rem "Inter", sans-serif !important;
+  --ds-font-heading-xlarge: normal 700 1.75rem/2rem "Inter", sans-serif !important;
+  --ds-font-heading-large: normal 700 1.5rem/1.75rem "Inter", sans-serif !important;
+  --ds-font-heading-medium: normal 700 1.25rem/1.5rem "Inter", sans-serif !important;
+  --ds-font-heading-small: normal 700 1rem/1.25rem "Inter", sans-serif !important;
+  --ds-font-heading-xsmall: normal 700 0.875rem/1.25rem "Inter", sans-serif !important;
+  --ds-font-heading-xxsmall: normal 700 0.75rem/1rem "Inter", sans-serif !important;
 
-  --ds-font-metric-large: normal 700 1.75rem/2rem "Inter", sans-serif;
-  --ds-font-metric-medium: normal 700 1.5rem/1.75rem "Inter", sans-serif;
-  --ds-font-metric-small: normal 700 1rem/1.25rem "Inter", sans-serif;
+  --ds-font-metric-large: normal 700 1.75rem/2rem "Inter", sans-serif !important;
+  --ds-font-metric-medium: normal 700 1.5rem/1.75rem "Inter", sans-serif !important;
+  --ds-font-metric-small: normal 700 1rem/1.25rem "Inter", sans-serif !important;
 
-  --ds-font-family-body: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --ds-font-family-heading: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --ds-font-family-body: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  --ds-font-family-heading: "Inter", ui-sans-serif, system-ui, sans-serif !important;
 
-  --ds-font-weight-bold: 700;
+  --ds-font-weight-bold: 700 !important;
 }

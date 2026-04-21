@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
 import Tooltip from '@atlaskit/tooltip';
-import { IconButton } from '@atlaskit/atlassian-navigation';
+import { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
@@ -45,7 +45,7 @@ export function ProfileMenu({ name, email, avatarUrl }: ProfileMenuProps) {
       </Box>
     )} trigger={(props) => (
       <Tooltip content="Profile" position="bottom">
-        <IconButton {...props} label="Profile" tooltip="Profile" isSelected={open} onClick={() => setOpen((v) => !v)} icon={<Avatar size="small" src={avatarUrl ?? undefined} name={displayName} />} />
+        <IconButton {...props} label="Profile" appearance="subtle" isSelected={open} onClick={() => setOpen((v) => !v)} icon={() => <Avatar size="small" src={avatarUrl ?? undefined} name={displayName} />} />
       </Tooltip>
     )} />
   );

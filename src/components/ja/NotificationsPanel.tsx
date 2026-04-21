@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Badge from '@atlaskit/badge';
-import { IconButton } from '@atlaskit/atlassian-navigation';
+import { IconButton } from '@atlaskit/button/new';
 import NotificationIcon from '@atlaskit/icon/glyph/notification';
 import Popup from '@atlaskit/popup';
 import { Box, xcss } from '@atlaskit/primitives';
@@ -53,9 +53,9 @@ export function NotificationsPanel() {
         <Box xcss={triggerWrapStyles}>
           <IconButton
             {...triggerProps}
-            icon={<NotificationIcon label="" />}
+            icon={NotificationIcon}
             label="Notifications"
-            tooltip="Notifications"
+            appearance="subtle"
             isSelected={open}
             onClick={() => setOpen((current) => !current)}
           />

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
-import { IconButton } from '@atlaskit/atlassian-navigation';
+import { IconButton } from '@atlaskit/button/new';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import PersonIcon from '@atlaskit/icon/glyph/person';
@@ -35,6 +35,6 @@ export function SettingsMenu() {
           {sections.map((section) => <Section key={section} title={section}>{visible.filter((item) => item.section === section).map((item) => <LinkItem key={item.href} href={item.href} iconBefore={item.icon} description={item.description} onClick={(event) => { event.preventDefault(); navigate(item.href); setOpen(false); }}>{item.label}</LinkItem>)}</Section>)}
         </MenuGroup>
       </Box>
-    )} trigger={(props) => <IconButton {...props} label="Settings" tooltip="Settings" isSelected={open} onClick={() => setOpen((v) => !v)} icon={<SettingsIcon label="" />} />} />
+    )} trigger={(props) => <IconButton {...props} label="Settings" appearance="subtle" isSelected={open} onClick={() => setOpen((v) => !v)} icon={SettingsIcon} />} />
   );
 }
