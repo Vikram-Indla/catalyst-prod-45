@@ -89,6 +89,14 @@ import("./App")
     import("./lib/registerServiceWorker")
       .then(({ registerServiceWorker }) => registerServiceWorker())
       .catch(() => { /* best-effort; SW is an optimisation, never required */ });
+
+    // Dev-only: enumerate every page module and report dynamic-import / runtime
+    // failures. No-op in production. Manual: window.__catalystRouteCheck().
+    if (import.meta.env.DEV) {
+      import("./lib/routeSmokeCheck")
+        .then(({ installRouteSmokeCheck }) => installRouteSmokeCheck())
+        .catch(() => { /* best-effort; smoke check is dev-only */ });
+    }
   })
   .catch((err) => {
     console.error("Fatal boot error:", err);
