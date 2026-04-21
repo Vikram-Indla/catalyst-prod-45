@@ -12,6 +12,7 @@ import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 
 // Jira parity dimensions:
@@ -27,6 +28,15 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 //  - Sidebar now uses a 2-state toggle (expanded ↔ hidden); `isCollapsed`
 //    covers both "hidden" and the legacy 56px rail so the icon still flips
 //    correctly.
+//
+// Responsive collapse tiers (Jira parity — via useNavBreakpoint):
+//  - ≥1280 (default):  all full-width pills + labels.
+//  - <1280 (compact):  AskCatalystPill collapses to icon-only.
+//  - <1024 (narrow):   CreateDropdown collapses to "+" icon, GlobalSearch
+//                      collapses to a magnifying-glass toggle (click expands
+//                      over the search region). Help icon hides — it lives
+//                      inside the SettingsMenu already.
+//  - <768  (mobile):   MobileNavigationMenu / MobileBottomNav take over.
 const headerStyles = xcss({
   minHeight: '48px',
   height: '48px',
@@ -55,11 +65,9 @@ const productLogoStyles = xcss({
   flexShrink: 0,
 });
 
-// Jira parity: search sits left-of-center with a fixed max-width.
-// The remaining space becomes a flexible spacer that pushes the right-hand
-// action cluster (Create, Ask, Bell, Help, Settings, Avatar) to the far edge —
-// this is what gives Jira's top-nav its characteristic "search left, controls
-// far right" feel that Catalyst was missing.
+// Jira parity: search sits left-of-center with a fixed max-width at desktop,
+// and drops to a zero-width icon slot at narrow widths (the search component
+// itself renders as an icon in that mode).
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
@@ -70,9 +78,25 @@ const searchRegionStyles = xcss({
   marginInlineEnd: 'space.200',
 });
 
+const searchRegionNarrowStyles = xcss({
+  display: 'flex',
+  alignItems: 'center',
+  flex: '0 0 auto',
+  marginInlineStart: 'space.200',
+  marginInlineEnd: 'space.100',
+});
+
+// Spacer — at narrow widths we still need to push the right cluster to the
+// far edge since the search region no longer eats the remaining space.
+const spacerStyles = xcss({
+  flex: '1 1 auto',
+  minWidth: 0,
+});
+
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
   const isCollapsed = sidebarHidden || !sidebarExpanded;
+  const { isCompact, isNarrow } = useNavBreakpoint();
 
   return (
     <Box
@@ -80,6 +104,7 @@ export function CatalystHeader() {
       xcss={headerStyles}
       style={{ boxShadow: token('elevation.shadow.raised', 'none') }}
       data-catalyst-top-nav="jira-parity"
+      data-nav-breakpoint={isNarrow ? 'narrow' : isCompact ? 'compact' : 'default'}
     >
       <Box as="nav" xcss={navStyles} aria-label="Global navigation">
         <Flex alignItems="center" gap="space.100" xcss={flexRowStyles}>
@@ -108,22 +133,33 @@ export function CatalystHeader() {
             </a>
           </Box>
 
-          {/* Search — fixed max-width, left-of-center */}
-          <Box xcss={searchRegionStyles}>
-            <GlobalSearch />
-          </Box>
+          {/* Search — full bar at ≥1024, icon-toggle + spacer at <1024 */}
+          {isNarrow ? (
+            <>
+              <Box xcss={searchRegionNarrowStyles}>
+                <GlobalSearch collapsed />
+              </Box>
+              <Box xcss={spacerStyles} />
+            </>
+          ) : (
+            <Box xcss={searchRegionStyles}>
+              <GlobalSearch />
+            </Box>
+          )}
 
           {/* Right cluster: Create | Ask Catalyst | Bell | Help | Settings | Avatar */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), flex: '0 0 auto' }}>
-            <CreateDropdown />
-            <AskCatalystPill />
+            <CreateDropdown iconOnly={isNarrow} />
+            <AskCatalystPill iconOnly={isCompact} />
             <NotificationsPanel />
-            <IconButton
-              label="Help"
-              appearance="subtle"
-              icon={QuestionCircleIcon}
-              onClick={() => window.open('/wiki', '_self')}
-            />
+            {!isNarrow && (
+              <IconButton
+                label="Help"
+                appearance="subtle"
+                icon={QuestionCircleIcon}
+                onClick={() => window.open('/wiki', '_self')}
+              />
+            )}
             <SettingsMenu />
             <ProfileMenu />
           </Box>

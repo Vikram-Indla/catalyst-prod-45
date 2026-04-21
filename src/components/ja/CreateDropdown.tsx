@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "@atlaskit/button/new";
+import Button, { IconButton } from "@atlaskit/button/new";
+import Tooltip from "@atlaskit/tooltip";
 import AddIcon from "@atlaskit/icon/glyph/add";
 import { ButtonItem, MenuGroup, Section } from "@atlaskit/menu";
 import Popup from "@atlaskit/popup";
@@ -41,7 +42,11 @@ const otherItems: CreateItem[] = [
   { label: "Incidents", route: "/release/incidents" },
 ];
 
-export function CreateDropdown() {
+interface CreateDropdownProps {
+  iconOnly?: boolean;
+}
+
+export function CreateDropdown({ iconOnly = false }: CreateDropdownProps = {}) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [createStoryOpen, setCreateStoryOpen] = useState(false);
@@ -81,16 +86,29 @@ export function CreateDropdown() {
             </Section>
           </MenuGroup>
         )}
-        trigger={(triggerProps) => (
-          <Button
-            {...triggerProps}
-            appearance="primary"
-            iconBefore={() => <AddIcon label="" size="small" />}
-            onClick={() => setOpen((current) => !current)}
-          >
-            Create
-          </Button>
-        )}
+        trigger={(triggerProps) =>
+          iconOnly ? (
+            <Tooltip content="Create" position="bottom">
+              <IconButton
+                {...triggerProps}
+                label="Create"
+                appearance="primary"
+                icon={AddIcon}
+                onClick={() => setOpen((current) => !current)}
+                isSelected={open}
+              />
+            </Tooltip>
+          ) : (
+            <Button
+              {...triggerProps}
+              appearance="primary"
+              iconBefore={() => <AddIcon label="" size="small" />}
+              onClick={() => setOpen((current) => !current)}
+            >
+              Create
+            </Button>
+          )
+        }
       />
 
       <CreateStoryModal

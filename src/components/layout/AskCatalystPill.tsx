@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import Button from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
 import { token } from '@atlaskit/tokens';
 
 // Ask Catalyst — mirrors Jira's "Ask Rovo" pill. Active CTA; navigates to the
 // WikiHub RAG assistant. Icon is a branded sparkle in accent blue so it reads
 // as a live AI entry point (Jira parity — the Rovo mark is never greyed out).
+//
+// Responsive behavior (Jira parity):
+//  - ≥1280 (default):  full pill with "Ask Catalyst" label
+//  - <1280 (compact):  icon-only IconButton, label becomes tooltip
+// The secondary CTA gives way to the search + Create before they do.
 function AskCatalystIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
@@ -16,13 +22,32 @@ function AskCatalystIcon() {
   );
 }
 
-export function AskCatalystPill() {
+interface AskCatalystPillProps {
+  iconOnly?: boolean;
+}
+
+export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
   const navigate = useNavigate();
+  const handleClick = () => navigate('/wiki');
+
+  if (iconOnly) {
+    return (
+      <Tooltip content="Ask Catalyst" position="bottom">
+        <IconButton
+          label="Ask Catalyst"
+          appearance="subtle"
+          icon={AskCatalystIcon}
+          onClick={handleClick}
+        />
+      </Tooltip>
+    );
+  }
+
   return (
     <Button
       appearance="subtle"
       iconBefore={AskCatalystIcon}
-      onClick={() => navigate('/wiki')}
+      onClick={handleClick}
     >
       Ask Catalyst
     </Button>
