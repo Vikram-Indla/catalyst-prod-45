@@ -110,7 +110,7 @@ function CatalystShellContent() {
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
-  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, cycleSidebarState } = useCatalystContext();
+  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, cycleSidebarState, sidebarPeek, setSidebarPeek } = useCatalystContext();
 
   // `[` cycles sidebar: expanded → collapsed → hidden → expanded. Added
   // 2026-04-19 to match Jira/Linear/Notion convention and let users reclaim
@@ -507,33 +507,55 @@ function CatalystShellContent() {
       </div>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - GPU layer for stability.
-            When sidebarHidden is true the actual sidebar is unmounted (0 DOM
-            cost) and replaced with a thin edge-reveal handle that restores
-            the sidebar on click. Keyboard: `[` cycles between states. */}
-        <div
-          data-catalyst-sidebar
-          className="relative flex-shrink-0"
-          style={{
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-            // 2026-04-19 Tier 2: CSS containment on the sidebar wrapper so its
-            // subtree's layout/paint work doesn't cascade into main during the
-            // 180ms width animation. Belt-and-suspenders with the SidebarBase
-            // `contain: layout style` — this one isolates the wrapper div,
-            // that one isolates the aside within.
-            contain: 'layout style',
-          }}
-        >
-            {sidebarHidden ? (
-              <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); }} />
-            ) : (
-              <Suspense fallback={null}>
-                {renderSidebar()}
-              </Suspense>
-            )}
+      <div className="flex flex-1 overflow-hidden relative">
+        {/* Sidebar — two-state architecture (2026-04-21 Vikram):
+              expanded: full 240px sidebar in normal flow.
+              hidden:   sidebar fully unmounted; main content owns the full
+                        viewport. NO edge-rail, NO icon strip — the only way
+                        to bring it back is the top-nav chevron, which also
+                        supports HOVER-PEEK (see below).
+            Hover-peek: when hidden && sidebarPeek (set by chevron hover in
+              CatalystHeader), the sidebar is rendered as an absolutely
+              positioned OVERLAY — it floats above main without shifting any
+              layout. Mouse leave → setSidebarPeek(false) → overlay
+              disappears. Click chevron → persistent expand. */}
+        {!sidebarHidden && (
+          <div
+            data-catalyst-sidebar
+            className="relative flex-shrink-0"
+            style={{
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              contain: 'layout style',
+            }}
+          >
+            <Suspense fallback={null}>
+              {renderSidebar()}
+            </Suspense>
           </div>
+        )}
+        {sidebarHidden && sidebarPeek && (
+          <div
+            data-catalyst-sidebar-peek
+            onMouseEnter={() => setSidebarPeek(true)}
+            onMouseLeave={() => setSidebarPeek(false)}
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              bottom: 0,
+              zIndex: 50,
+              boxShadow: '0 8px 24px rgba(9, 30, 66, 0.18)',
+              transform: 'translateZ(0)',
+              backfaceVisibility: 'hidden',
+              contain: 'layout style',
+            }}
+          >
+            <Suspense fallback={null}>
+              {renderSidebar()}
+            </Suspense>
+          </div>
+        )}
 
         {/* Route content scroll container (single scroll parent) - workspace frame */}
         {/* 2026-04-19 Tier 2: Paint isolation on <main>. As the sidebar's width
