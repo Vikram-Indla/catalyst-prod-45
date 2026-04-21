@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Tooltip from '@atlaskit/tooltip';
 import { IconButton } from '@atlaskit/button/new';
-import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
+import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
 import HomeIcon from '@atlaskit/icon/glyph/home';
 import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
 import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
