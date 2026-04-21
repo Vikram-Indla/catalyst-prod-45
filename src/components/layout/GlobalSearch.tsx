@@ -75,7 +75,34 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
     <Box xcss={searchContainerStyles}>
       <Textfield
         ref={inputRef}
-        elemBeforeInput={<SearchIcon label="" size="small" />}
+        elemBeforeInput={
+          <span style={{ display: 'inline-flex', paddingLeft: 6, color: '#626F86' }}>
+            <SearchIcon label="" />
+          </span>
+        }
+        elemAfterInput={
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: 22,
+              height: 20,
+              padding: '0 6px',
+              marginRight: 6,
+              borderRadius: 3,
+              border: '1px solid #DFE1E6',
+              background: '#F4F5F7',
+              color: '#626F86',
+              fontSize: 11,
+              fontWeight: 600,
+              fontFamily: 'Inter, system-ui, sans-serif',
+            }}
+            aria-hidden
+          >
+            ⌘K
+          </span>
+        }
         placeholder="Search"
         value={query}
         onChange={(event) => setQuery((event.target as HTMLInputElement).value)}
@@ -83,7 +110,6 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
         onBlur={() => {
           if (collapsed) setExpanded(false);
         }}
-        isCompact
         aria-label="Search"
       />
     </Box>
