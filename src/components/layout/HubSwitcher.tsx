@@ -5,53 +5,74 @@
  * chevron. Atlaskit does not ship a public AppSwitcher component, so this is
  * a custom control built on @atlaskit/popup conventions but rendered as a
  * full-height left-anchored DRAWER (not a tiny popover) so it can list every
- * hub with icon + description, matching Jira's app switcher drawer.
+ * hub with icon + description, matching Jira's app switcher drawer. See
+ * CLAUDE.md §2 for the documented deviation from AtlassianNavigation's
+ * built-in `renderAppSwitcher` popover slot.
  *
  * Behavior:
  *   - Click trigger → drawer slides in from the left (320px wide).
  *   - Click a hub tile → navigate + close drawer.
  *   - Click outside / press Esc → close drawer.
+ *   - Focus is trapped inside the drawer while open (BE-9, Apr 2026). On
+ *     open the first tile receives focus; Tab / Shift+Tab cycle within the
+ *     drawer; Esc restores focus to the trigger.
  *   - Drawer is INDEPENDENT of the contextual hub sidebar; it always shows
  *     the same hub list regardless of which hub the user is currently in.
  *     Works on /for-you (where there is no contextual sidebar).
+ *
+ * Icons: standardized on @atlaskit/icon/core/* (modern set) per DS-5. The
+ * legacy @atlaskit/icon/glyph/* imports were retired Apr 2026.
  */
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import Tooltip from '@atlaskit/tooltip';
-import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
-import HomeIcon from '@atlaskit/icon/glyph/home';
-import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
-import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
-import FolderIcon from '@atlaskit/icon/glyph/folder';
-import ShipIcon from '@atlaskit/icon/glyph/ship';
-import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
-import WarningIcon from '@atlaskit/icon/glyph/warning';
-import TaskIcon from '@atlaskit/icon/glyph/task';
-import CalendarIcon from '@atlaskit/icon/glyph/calendar';
-import BookIcon from '@atlaskit/icon/glyph/book';
+import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
+import HomeIcon from '@atlaskit/icon/core/home';
+import OfficeBuildingIcon from '@atlaskit/icon/core/office-building';
+import RoadmapIcon from '@atlaskit/icon/core/roadmap';
+import FolderClosedIcon from '@atlaskit/icon/core/folder-closed';
+import ReleaseIcon from '@atlaskit/icon/core/release';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import WarningIcon from '@atlaskit/icon/core/warning';
+import TaskIcon from '@atlaskit/icon/core/task';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import BookIcon from '@atlaskit/icon/core/book-with-bookmark';
+import { HubKey, hubTone, hubTileFill } from '@/lib/hub-colors';
+
+type CoreIconProps = {
+  label: string;
+  color?: string;
+  spacing?: 'none' | 'spacious';
+};
+type CoreIcon = React.ComponentType<CoreIconProps>;
 
 interface HubEntry {
+  key: HubKey;
   label: string;
   href: string;
   description: string;
-  Icon: React.ComponentType<{ label: string; primaryColor?: string; size?: 'small' | 'medium' | 'large' | 'xlarge' }>;
-  tone: string;
+  Icon: CoreIcon;
 }
 
 const HUBS: HubEntry[] = [
-  { label: 'Home',         href: '/for-you',                   description: 'Your work across all hubs',         Icon: HomeIcon,             tone: '#42526E' },
-  { label: 'StrategyHub',  href: '/strategyhub',               description: 'Vision, themes, OKRs',              Icon: OfficeBuildingIcon,   tone: '#8270DB' },
-  { label: 'ProductHub',   href: '/producthub',                description: 'Products, ideas, roadmaps',         Icon: PortfolioIcon,        tone: '#0052CC' },
-  { label: 'ProjectHub',   href: '/project-hub',               description: 'Delivery projects & backlogs',      Icon: FolderIcon,           tone: '#00A3BF' },
-  { label: 'ReleaseHub',   href: '/release-hub/command-center',description: 'Release planning & cutover',        Icon: ShipIcon,             tone: '#FF8B00' },
-  { label: 'TestHub',      href: '/testhub/dashboard',         description: 'Test cases, cycles, defects',       Icon: CheckCircleIcon,      tone: '#36B37E' },
-  { label: 'IncidentHub',  href: '/incident-hub',              description: 'Incidents & post-mortems',          Icon: WarningIcon,          tone: '#DE350B' },
-  { label: 'TaskHub',      href: '/taskhub/boards',            description: 'Personal & team tasks',             Icon: TaskIcon,             tone: '#FFAB00' },
-  { label: 'PlanHub',      href: '/planhub',                   description: 'Capacity & timeline planning',      Icon: CalendarIcon,         tone: '#E774BB' },
-  { label: 'WikiHub',      href: '/wiki',                      description: 'Knowledge base & docs',             Icon: BookIcon,             tone: '#65BA43' },
+  { key: 'home',     label: 'Home',         href: '/for-you',                    description: 'Your work across all hubs',    Icon: HomeIcon },
+  { key: 'strategy', label: 'StrategyHub',  href: '/strategyhub',                description: 'Vision, themes, OKRs',         Icon: OfficeBuildingIcon },
+  { key: 'product',  label: 'ProductHub',   href: '/producthub',                 description: 'Products, ideas, roadmaps',    Icon: RoadmapIcon },
+  { key: 'project',  label: 'ProjectHub',   href: '/project-hub',                description: 'Delivery projects & backlogs', Icon: FolderClosedIcon },
+  { key: 'release',  label: 'ReleaseHub',   href: '/release-hub/command-center', description: 'Release planning & cutover',   Icon: ReleaseIcon },
+  { key: 'test',     label: 'TestHub',      href: '/testhub/dashboard',          description: 'Test cases, cycles, defects',  Icon: CheckCircleIcon },
+  { key: 'incident', label: 'IncidentHub',  href: '/incident-hub',               description: 'Incidents & post-mortems',     Icon: WarningIcon },
+  { key: 'task',     label: 'TaskHub',      href: '/taskhub/boards',             description: 'Personal & team tasks',        Icon: TaskIcon },
+  { key: 'plan',     label: 'PlanHub',      href: '/planhub',                    description: 'Capacity & timeline planning', Icon: CalendarIcon },
+  { key: 'wiki',     label: 'WikiHub',      href: '/wiki',                       description: 'Knowledge base & docs',        Icon: BookIcon },
 ];
+
+// Matches DOM nodes focusable via Tab inside the drawer. Atlaskit Drawer
+// bakes this in natively — our bespoke drawer has to replicate it.
+const FOCUSABLE_SELECTOR =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export function HubSwitcher() {
   const [open, setOpen] = useState(false);
@@ -60,11 +81,18 @@ export function HubSwitcher() {
   const { setSidebarHidden, setSidebarExpanded, setSidebarPinned } = useCatalystContext();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
+  const firstTileRef = useRef<HTMLButtonElement | null>(null);
 
-  // Close on Escape + outside click
+  // Close on Escape + outside click. Esc also returns focus to the trigger
+  // (WCAG 2.4.3 Focus Order).
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
     const onDown = (e: MouseEvent) => {
       const t = e.target as Node | null;
       if (!t) return;
@@ -77,6 +105,45 @@ export function HubSwitcher() {
     return () => {
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('mousedown', onDown);
+    };
+  }, [open]);
+
+  // Focus-trap: on open move focus to the first tile; constrain Tab/Shift+Tab
+  // inside the drawer so keyboard users cannot escape into the page chrome.
+  useEffect(() => {
+    if (!open) return;
+    const drawerEl = drawerRef.current;
+    if (!drawerEl) return;
+    // Move initial focus off the trigger into the drawer (next frame so the
+    // drawer has painted before focus lands — avoids the "focus a hidden
+    // element" warning in some browsers).
+    const raf = requestAnimationFrame(() => {
+      firstTileRef.current?.focus();
+    });
+    const onTrap = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const focusables = Array.from(drawerEl.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+        .filter((el) => !el.hasAttribute('aria-hidden'));
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!drawerEl.contains(active)) {
+        // Focus wandered outside (rare — e.g. focus()'d programmatically)
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onTrap);
+    return () => {
+      cancelAnimationFrame(raf);
+      document.removeEventListener('keydown', onTrap);
     };
   }, [open]);
 
@@ -131,7 +198,7 @@ export function HubSwitcher() {
             onMouseEnter={(e) => { if (!open) e.currentTarget.style.background = 'rgba(9,30,66,0.06)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = open ? 'rgba(9,30,66,0.14)' : 'transparent'; }}
           >
-            <AppSwitcherIcon label="" size="small" primaryColor="currentColor" />
+            <AppSwitcherIcon label="" color="currentColor" />
           </button>
         )}
       </Tooltip>
@@ -156,6 +223,7 @@ export function HubSwitcher() {
           <div
             ref={drawerRef}
             role="dialog"
+            aria-modal="true"
             aria-label="Switch hub"
             aria-hidden={!open}
             style={{
@@ -187,7 +255,7 @@ export function HubSwitcher() {
               }}
             >
               <span style={{ color: '#44546F', display: 'inline-flex' }}>
-                <AppSwitcherIcon label="" size="small" primaryColor="currentColor" />
+                <AppSwitcherIcon label="" color="currentColor" />
               </span>
               <span style={{ fontSize: 13, fontWeight: 700, color: '#172B4D', letterSpacing: '0.02em' }}>
                 Switch hub
@@ -195,11 +263,13 @@ export function HubSwitcher() {
             </div>
 
             <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px 16px' }}>
-              {HUBS.map((hub) => {
+              {HUBS.map((hub, index) => {
                 const active = isActive(hub.href);
+                const tone = hubTone(hub.key);
                 return (
                   <button
                     key={hub.href}
+                    ref={index === 0 ? firstTileRef : undefined}
                     type="button"
                     onClick={() => go(hub.href)}
                     style={{
@@ -228,14 +298,14 @@ export function HubSwitcher() {
                         height: 32,
                         flexShrink: 0,
                         borderRadius: 6,
-                        background: `${hub.tone}1A`,
-                        color: hub.tone,
+                        background: hubTileFill(hub.key),
+                        color: tone,
                         display: 'inline-flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <hub.Icon label="" size="small" primaryColor={hub.tone} />
+                      <hub.Icon label="" color={tone} />
                     </span>
                     <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                       <span

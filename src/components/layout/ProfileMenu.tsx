@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
 
-import PersonIcon from '@atlaskit/icon/glyph/person';
-import SettingsIcon from '@atlaskit/icon/glyph/settings';
-import SignOutIcon from '@atlaskit/icon/glyph/sign-out';
-import VidPlayIcon from '@atlaskit/icon/glyph/vid-play';
+import PersonIcon from '@atlaskit/icon/core/person';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import SignOutIcon from '@atlaskit/icon/core/log-out';
+import ThemeIcon from '@atlaskit/icon/core/theme';
 import { ButtonItem, LinkItem, MenuGroup, Section } from '@atlaskit/menu';
 import { Box, Flex, Stack, Text, xcss } from '@atlaskit/primitives';
 import Heading from '@atlaskit/heading';
@@ -88,7 +88,7 @@ export function ProfileMenu() {
 
               {/* Theme submenu — inline expandable */}
               <ButtonItem
-                iconBefore={<VidPlayIcon label="" />}
+                iconBefore={<ThemeIcon label="" />}
                 onClick={() => setThemeOpen((v) => !v)}
               >
                 Theme
