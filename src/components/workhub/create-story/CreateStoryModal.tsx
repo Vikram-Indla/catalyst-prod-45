@@ -36,7 +36,6 @@ import {
   type ReactNode,
 } from 'react';
 import ModalDialog, {
-  Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -47,7 +46,7 @@ import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox } from '@atlaskit/checkbox';
-import Button, { IconButton, LoadingButton } from '@atlaskit/button/new';
+import Button, { IconButton } from '@atlaskit/button/new';
 import Lozenge from '@atlaskit/lozenge';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
@@ -658,10 +657,12 @@ export function CreateStoryModal({
                 isRequired
                 defaultValue={form.projectId}
               >
-                {({ fieldProps }) => (
+                {({ fieldProps: { id, isRequired, isDisabled } }) => (
                   <>
                     <Select<IconOption>
-                      {...fieldProps}
+                      id={id}
+                      isRequired={isRequired}
+                      isDisabled={isDisabled}
                       inputId="cs-space"
                       options={projectOptions}
                       value={
@@ -685,10 +686,12 @@ export function CreateStoryModal({
 
               {/* ── Work type — required ───────────────────────────── */}
               <Field name="workType" label="Work type" isRequired>
-                {({ fieldProps }) => (
+                {({ fieldProps: { id, isRequired, isDisabled } }) => (
                   <>
                     <Select<IconOption>
-                      {...fieldProps}
+                      id={id}
+                      isRequired={isRequired}
+                      isDisabled={isDisabled}
                       inputId="cs-worktype"
                       options={workTypeOptions}
                       value={
