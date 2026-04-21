@@ -158,6 +158,8 @@ export function HubSwitcher() {
               boxShadow: '4px 0 16px rgba(9,30,66,0.12)',
               transform: open ? 'translateX(0)' : 'translateX(-100%)',
               transition: 'transform 200ms cubic-bezier(0.2, 0, 0, 1)',
+              pointerEvents: open ? 'auto' : 'none',
+              visibility: open ? 'visible' : 'hidden',
               zIndex: 1201,
               display: 'flex',
               flexDirection: 'column',
