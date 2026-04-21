@@ -1,2 +1,3 @@
-export { GlobalSearch, GlobalSearchTrigger } from './GlobalSearch';
-export { GlobalSearchPanel } from '@/components/global-search/GlobalSearchPanel';
+export { GlobalSearch } from '@/components/layout/GlobalSearch';
+export { GlobalSearchPanel } from './GlobalSearchPanel';
+export { FilterDropdown } from './FilterDropdown';
