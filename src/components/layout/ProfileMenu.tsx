@@ -22,26 +22,70 @@ type AvatarTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const AvatarTriggerButton = forwardRef<HTMLButtonElement, AvatarTriggerProps>(
-  ({ avatarUrl, name, ...rest }, ref) => (
-    <button
-      ref={ref}
-      type="button"
-      aria-label="Profile"
-      {...rest}
-      style={{
-        background: 'transparent',
-        border: 'none',
-        padding: 4,
-        borderRadius: 999,
-        cursor: 'pointer',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Avatar size="small" src={avatarUrl} name={name} />
-    </button>
-  )
+  ({ avatarUrl, name, ...rest }, ref) => {
+    const initials = name
+      .split(' ')
+      .map((p) => p[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+    return (
+      <button
+        ref={ref}
+        type="button"
+        aria-label="Profile"
+        {...rest}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          width: 32,
+          height: 32,
+          borderRadius: 999,
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+        }}
+      >
+        {avatarUrl ? (
+          <img
+            src={avatarUrl}
+            alt=""
+            draggable={false}
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 999,
+              objectFit: 'cover',
+              pointerEvents: 'none',
+              display: 'block',
+            }}
+          />
+        ) : (
+          <span
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 999,
+              background: '#DFE1E6',
+              color: '#42526E',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 12,
+              fontWeight: 600,
+              pointerEvents: 'none',
+            }}
+          >
+            {initials || 'U'}
+          </span>
+        )}
+      </button>
+    );
+  }
 );
 AvatarTriggerButton.displayName = 'AvatarTriggerButton';
 
