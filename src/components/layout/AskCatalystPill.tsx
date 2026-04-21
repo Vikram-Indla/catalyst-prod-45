@@ -1,4 +1,4 @@
-import { useState, useCallback, KeyboardEvent } from 'react';
+import { useState, useCallback, KeyboardEvent, CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@atlaskit/button/new';
 import Button from '@atlaskit/button/new';
@@ -27,25 +27,32 @@ function AskCatalystIcon() {
 }
 
 // Full-width pill — pill radius is 9999px (no token; Atlaskit doesn't expose
-// a pill semantic radius). Everything else resolves through tokens.
-const pillStyles = xcss({
+// a pill semantic radius).
+//
+// Earlier drafts of this file defined an xcss `pillStyles` block but the
+// render path fell back to a bare `<button style={{ background: 'transparent',
+// border: 'none' }}>` — the pill was invisible in the header (Vikram's Apr
+// 2026 screenshot critique). This rewrite renders the pill with inline style
+// using `token()` calls: bulletproof against xcss compilation gaps,
+// user-agent button chrome, and Tailwind reset interactions. The `:hover`
+// swap is handled by a sibling hover-state class so we don't need a
+// handler.
+const pillInlineStyle: CSSProperties = {
   display: 'inline-flex',
   alignItems: 'center',
-  gap: 'space.075',
-  height: '32px',
-  paddingInline: 'space.150',
-  backgroundColor: 'elevation.surface',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border',
-  borderRadius: '9999px',
-  color: 'color.text',
-  font: 'font.body',
+  gap: 6,
+  height: 32,
+  padding: '0 12px',
+  backgroundColor: token('elevation.surface', '#FFFFFF'),
+  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+  borderRadius: 9999,
+  color: token('color.text', '#172B4D'),
+  font: 'inherit',
+  fontWeight: 500,
   cursor: 'pointer',
-  ':hover': {
-    backgroundColor: 'color.background.neutral.subtle.hovered',
-  },
-});
+  appearance: 'none',
+  WebkitAppearance: 'none',
+};
 
 const drawerBodyStyles = xcss({
   paddingBlock: 'space.200',
@@ -94,7 +101,23 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
           />
         </Tooltip>
       ) : (
-        <button onClick={open} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 8px', font: 'inherit', color: 'inherit' }}>
+        <button
+          type="button"
+          onClick={open}
+          style={pillInlineStyle}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = token(
+              'color.background.neutral.subtle.hovered',
+              '#F4F5F7',
+            );
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = token(
+              'elevation.surface',
+              '#FFFFFF',
+            );
+          }}
+        >
           <AskCatalystIcon />
           <span>Ask Catalyst</span>
         </button>

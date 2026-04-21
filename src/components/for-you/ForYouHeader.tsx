@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Sparkles, ChevronDown, Zap } from 'lucide-react';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 const DepartmentIntelligenceOverlay = lazy(() => import('@/components/resource360/DepartmentIntelligenceOverlay'));
 
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
@@ -23,6 +24,7 @@ export function ForYouHeader() {
   const [showDeptIntel, setShowDeptIntel] = useState(false);
   const [selectedDept, setSelectedDept] = useState('');
   const deptPickerRef = useRef<HTMLDivElement>(null);
+  const { isMobile } = useNavBreakpoint();
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -37,40 +39,57 @@ export function ForYouHeader() {
   return (
     <>
       <header className="fy-header" style={{
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 20,
+        display: 'flex',
+        alignItems: isMobile ? 'center' : 'flex-start',
+        justifyContent: 'space-between',
+        marginBottom: isMobile ? 14 : 20,
+        gap: 12,
       }}>
-        <div>
+        <div style={{ minWidth: 0, flex: 1 }}>
           <h1 style={{
-            fontFamily: "'Sora', system-ui", fontSize: 22, fontWeight: 700,
-            color: 'var(--cp-t1)', letterSpacing: '-0.025em', margin: 0,
+            fontFamily: "'Sora', system-ui",
+            fontSize: isMobile ? 18 : 22,
+            fontWeight: 700,
+            color: 'var(--cp-t1)',
+            letterSpacing: '-0.025em',
+            margin: 0,
           }}>
             For You
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--cp-t3)', marginTop: 2 }}>
-            Your work across all projects and hubs
-          </p>
+          {/* Subtitle hidden at mobile to preserve vertical space for the table;
+              the H1 alone is enough context on the home surface. */}
+          {!isMobile && (
+            <p style={{ fontSize: 13, color: 'var(--cp-t3)', marginTop: 2 }}>
+              Your work across all projects and hubs
+            </p>
+          )}
         </div>
 
-        {/* Intelligence Button */}
-        <div ref={deptPickerRef} style={{ position: 'relative' }}>
+        {/* Intelligence Button — collapses to icon-only at mobile widths,
+            matching CatalystHeader's AskCatalystPill compact tier. */}
+        <div ref={deptPickerRef} style={{ position: 'relative', flexShrink: 0 }}>
           <button
             onClick={() => setShowDeptPicker(v => !v)}
             className="fy-intelligence-btn"
+            aria-label={isMobile ? 'Intelligence' : undefined}
             style={{
               background: 'var(--cp-blue)',
               color: '#FFFFFF', border: 'none',
-              borderRadius: 20, padding: '0 16px', height: 32,
+              borderRadius: isMobile ? '50%' : 20,
+              padding: isMobile ? 0 : '0 16px',
+              height: 32,
+              width: isMobile ? 32 : undefined,
               fontSize: 12, fontWeight: 600, letterSpacing: '0.3px',
               cursor: 'pointer',
-              display: 'inline-flex', alignItems: 'center', gap: 6,
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               fontFamily: "'Inter', system-ui, sans-serif",
               transition: 'all 200ms ease',
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px var(--cp-blue-wash)'; }}
             onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}
           >
-            <Zap size={13} strokeWidth={2.2} />
-            Intelligence
+            <Zap size={isMobile ? 15 : 13} strokeWidth={2.2} />
+            {!isMobile && 'Intelligence'}
           </button>
 
           {showDeptPicker && (

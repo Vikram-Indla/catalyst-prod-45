@@ -8,12 +8,20 @@ import { useUnreadCount } from '@/hooks/useUnreadCount';
 
 // Anchor sits above the icon button so the Atlaskit Badge reads as an
 // overlay pip, matching Jira's unread count pattern.
+//
+// IconButton is 32×32 with a 20 px glyph centered → 6 px padding ring.
+// Negative offsets (top/right: -4 px) pushed the badge OUTSIDE the button
+// bounds, ~10 px away from the visible bell glyph — it looked detached
+// (Vikram screenshot critique, Apr 2026). Positive small inset (top/right:
+// 2 px) pulls the badge onto the glyph's top-right corner so it reads as
+// a pip clipping the icon, exactly like Jira's unread indicator.
 const triggerWrapStyles = xcss({ position: 'relative', display: 'inline-block' });
 const badgeAnchorStyles = xcss({
   position: 'absolute',
-  top: 'space.negative.050',
-  insetInlineEnd: 'space.negative.050',
+  top: 'space.025',
+  insetInlineEnd: 'space.025',
   pointerEvents: 'none',
+  zIndex: 'card',
 });
 
 // Outline bell to match Jira's transparent/stroked notification icon.

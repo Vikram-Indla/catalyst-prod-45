@@ -13,6 +13,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import '@/styles/product-backlog.css';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
@@ -103,6 +104,12 @@ export function CatalystTable({
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const tableRef = useRef<HTMLDivElement>(null);
   const nameAvatarMap = useProfileAvatarsByName();
+  // Responsive fork (Apr 2026 pilot, Option C):
+  //   - isMobile (<768px) → render as card list. Row-height lock (§4 table
+  //     density) is relaxed for the card variant only, per approved exception.
+  //   - isNarrow (<1024)  → keep table, let existing overflowX handle scroll.
+  //   - ≥1024            → full table, default Catalyst density.
+  const { isMobile } = useNavBreakpoint();
 
   const toggleGroup = useCallback((label: string) => {
     setCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
@@ -187,6 +194,160 @@ export function CatalystTable({
         <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
         <p style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No work items found</p>
         <p style={{ fontSize: 11, color: '#94A3B8' }}>Try adjusting your filters or search</p>
+      </div>
+    );
+  }
+
+  // ─── Mobile card view ──────────────────────────────────────────────────
+  // At <768px we collapse the table to a card stack. Each card shows the
+  // essential work-item spine: type icon + key, summary, status lozenge,
+  // hub chip, priority, reporter avatar. Column resize / drag / sort
+  // controls are suppressed on mobile (no hover, no drag affordance).
+  if (isMobile) {
+    if (resolvedGroups.length === 0) {
+      return (
+        <div className="fy-empty" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0', border: '0.555556px solid #E2E8F0', borderRadius: 8, background: '#FFFFFF' }}>
+          <span style={{ fontSize: 24, marginBottom: 12 }}>📋</span>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 4 }}>No work items found</p>
+          <p style={{ fontSize: 11, color: '#94A3B8' }}>Try adjusting your filters or search</p>
+        </div>
+      );
+    }
+
+    let mobileRowIndex = -1;
+    return (
+      <div ref={tableRef} className="fy-table fy-table-mobile" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {resolvedGroups.map(group => {
+          const isCollapsed = !!collapsed[group.key];
+          return (
+            <section key={group.key} aria-label={group.label}>
+              {/* Group header — keeps parity with desktop grouping */}
+              <button
+                type="button"
+                onClick={() => toggleGroup(group.key)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 6,
+                  width: '100%', padding: '10px 12px',
+                  background: '#F7F8F9',
+                  borderRadius: 8,
+                  border: '1px solid #E2E8F0',
+                  fontSize: 11, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                  cursor: 'pointer', marginBottom: 8,
+                }}
+              >
+                {isCollapsed
+                  ? <ChevronRight size={14} style={{ color: '#475569', flexShrink: 0 }} />
+                  : <ChevronDown size={14} style={{ color: '#475569', flexShrink: 0 }} />
+                }
+                <span style={{ flex: 1, textAlign: 'left' }}>{group.label}</span>
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
+                  background: '#DFE1E6', color: '#253858',
+                  fontSize: 10, fontWeight: 700,
+                }}>
+                  {group.items.length}
+                </span>
+              </button>
+
+              {!isCollapsed && group.items.map(item => {
+                mobileRowIndex++;
+                const isSelected = selectedIds.has(item.id);
+                const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
+                const priorityLabel = PRIORITY_LABELS[item.priorityLevel] || `Priority ${item.priorityLevel}`;
+                const reporterName = item.reporter || item.assignee.name;
+                const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
+                const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
+
+                return (
+                  <article
+                    key={item.id}
+                    onClick={() => onRowClick(item.id)}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                      padding: 12,
+                      marginBottom: 8,
+                      background: isSelected ? 'rgba(37,99,235,0.08)' : '#FFFFFF',
+                      border: isSelected ? '1px solid #2563EB' : '1px solid #E2E8F0',
+                      borderRadius: 8,
+                      cursor: 'pointer',
+                      transition: 'background 120ms ease, border-color 120ms ease',
+                    }}
+                  >
+                    {/* Row 1: checkbox + type + key + star */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div onClick={e => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
+                      </div>
+                      <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                        {item.key}
+                      </span>
+                      {(item.attachmentCount ?? 0) > 0 && (
+                        <Paperclip size={12} style={{ color: '#94A3B8', transform: 'rotate(-45deg)' }} />
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onStarToggle?.(item.id); }}
+                        style={{ marginLeft: 'auto', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
+                        title={item.starred ? 'Unstar' : 'Star'}
+                        aria-label={item.starred ? 'Unstar' : 'Star'}
+                      >
+                        <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+                      </button>
+                    </div>
+
+                    {/* Row 2: summary (up to 2 lines) */}
+                    <div style={{
+                      fontSize: 14, fontWeight: 500, color: '#0F172A',
+                      lineHeight: '1.4',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      wordBreak: 'break-word',
+                    }}>
+                      {item.summary}
+                    </div>
+
+                    {/* Row 3: status + hub + priority chips */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <StatusBadge status={item.status} />
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center',
+                        height: 22, padding: '0 8px',
+                        borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em',
+                        background: hubCfg.bg, color: hubCfg.color,
+                        borderLeft: `3px solid ${hubCfg.border}`,
+                      }}>
+                        {item.hubLabel}
+                      </span>
+                      <span title={priorityLabel} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                        <PriorityBars priority={normalisePriority(priorityLabel)} />
+                      </span>
+                    </div>
+
+                    {/* Row 4: project · reporter · updated */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#64748B' }}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
+                      ) : (
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                      )}
+                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0, flex: 1, color: '#475569', fontWeight: 500 }}>
+                        {item.project}
+                      </span>
+                      <span style={{ flexShrink: 0, fontWeight: 500 }}>{item.updatedAt}</span>
+                    </div>
+                  </article>
+                );
+              })}
+            </section>
+          );
+        })}
       </div>
     );
   }
@@ -303,6 +464,27 @@ export function CatalystTable({
 
   return (
     <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '0.555556px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+      {/* Sticky-first-column CSS — only applied at md-and-below where horizontal
+          scroll is engaged. The "SUMMARY" column stays pinned as users scroll
+          the status/project/hub columns into view. At lg+ the full table fits
+          and no stickiness is needed. */}
+      <style>{`
+        @media (max-width: 1023.98px) {
+          .fy-table .pb-table thead th:nth-child(5),
+          .fy-table .pb-table tbody td:nth-child(5) {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background: inherit;
+          }
+          .fy-table .pb-table thead th:nth-child(5) {
+            background: #F7F8F9;
+          }
+          .fy-table .pb-table tbody tr:not(.pb-row-selected) td:nth-child(5) {
+            background: #FFFFFF;
+          }
+        }
+      `}</style>
       <div style={{ overflowX: 'auto' }}>
         <table className="pb-table" style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 1100 }}>
           <colgroup>

@@ -27,6 +27,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
 import HomeIcon from '@atlaskit/icon/core/home';
@@ -79,6 +80,7 @@ export function HubSwitcher() {
   const navigate = useNavigate();
   const location = useLocation();
   const { setSidebarHidden, setSidebarExpanded, setSidebarPinned } = useCatalystContext();
+  const { isMobile } = useNavBreakpoint();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const firstTileRef = useRef<HTMLButtonElement | null>(null);
@@ -219,7 +221,8 @@ export function HubSwitcher() {
               zIndex: 1200,
             }}
           />
-          {/* Drawer */}
+          {/* Drawer — full-width at mobile (<768px) so every hub tile is
+              readable on a 360px viewport; 320px at tablet+ per BE-2. */}
           <div
             ref={drawerRef}
             role="dialog"
@@ -231,7 +234,8 @@ export function HubSwitcher() {
               top: 0,
               left: 0,
               bottom: 0,
-              width: 320,
+              width: isMobile ? '100vw' : 320,
+              maxWidth: isMobile ? '100vw' : 320,
               background: '#FFFFFF',
               borderRight: '1px solid #DFE1E6',
               boxShadow: '4px 0 16px rgba(9,30,66,0.12)',

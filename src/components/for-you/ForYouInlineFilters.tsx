@@ -102,14 +102,19 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
         )}
       </button>
 
-      {/* Dropdown panel — float surface */}
+      {/* Dropdown panel — float surface. On narrow viewports the min-width
+          is clamped so the panel never overflows the page (prevents a
+          260px popup from spawning horizontal scroll on 320px phones). */}
       {open && (
         <div
+          className="fy-filter-dropdown"
           style={{
             position: 'absolute',
             top: 'calc(100% + 8px)',
             ...(alignRight ? { right: 0, left: 'auto' } : { left: 0 }),
-            minWidth: 260, maxHeight: 340, overflowY: 'auto',
+            minWidth: 'min(260px, calc(100vw - 24px))',
+            maxWidth: 'calc(100vw - 24px)',
+            maxHeight: 340, overflowY: 'auto',
             background: 'var(--cp-float)', border: '1px solid var(--cp-bd)',
             borderRadius: 12,
             boxShadow: '0 12px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)',

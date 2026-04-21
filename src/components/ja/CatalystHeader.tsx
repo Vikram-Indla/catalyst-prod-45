@@ -45,7 +45,12 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 const headerStyles = xcss({
   minHeight: '56px',
   height: '56px',
-  paddingInline: 'space.200',
+  // Asymmetric padding: 16px left keeps the sidebar toggle aligned with the
+  // sidebar rail; 24px right gives the avatar breathing room from the
+  // viewport edge (Vikram screenshot critique, Apr 2026 — avatar was flush
+  // against the right edge at wide widths, looked cropped).
+  paddingInlineStart: 'space.200',
+  paddingInlineEnd: 'space.300',
   display: 'flex',
   alignItems: 'center',
   backgroundColor: 'elevation.surface',
@@ -70,16 +75,26 @@ const productLogoStyles = xcss({
   flexShrink: 0,
 });
 
-// Jira parity: search sits left-of-center with a fixed max-width at desktop,
-// and drops to a zero-width icon slot at narrow widths (the search component
-// itself renders as an icon in that mode).
+// Jira parity: search sits CENTERED in the header with a fixed max-width at
+// desktop, and drops to a zero-width icon slot at narrow widths (the search
+// component itself renders as an icon in that mode).
 //
 // IMPORTANT: the search region is a FIXED-WIDTH slot — it never grows past
-// 680px and never owns the leftover row width. A dedicated spacer AFTER the
-// search consumes the rest of the row, pinning the right cluster to the
-// trailing edge at every viewport. Previously the right cluster floated
-// mid-nav with dead space to its right at widths > ~1300px (Vikram flagged:
-// "crystal clear that top nav is wrong in terms of icons spacing").
+// 680px and never owns the leftover row width. Two balanced spacers (one
+// BEFORE and one AFTER the search) split surplus row width evenly so the
+// search stays centered horizontally while the left and right clusters pin
+// to their respective edges.
+//
+// Regression history:
+//   1. Originally the right cluster floated mid-nav with dead space to its
+//      right at widths > ~1300px.
+//   2. Fix attempt 1: added a single spacer AFTER search + `space.800` fixed
+//      left margin on search. That pinned the right cluster correctly but
+//      dumped ALL surplus on the left-of-search region, leaving the search
+//      bar pushed hard-left (Vikram screenshot critique, Apr 2026).
+//   3. Fix attempt 2 (current): two balanced spacers, no fixed search-side
+//      margins. Surplus splits evenly → search stays centered, right cluster
+//      still hugs the trailing edge.
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
@@ -88,8 +103,7 @@ const searchRegionStyles = xcss({
   flexBasis: '680px',
   minWidth: '0',
   maxWidth: '680px',
-  marginInlineStart: 'space.800',
-  marginInlineEnd: 'space.200',
+  marginInline: 'space.200',
 });
 
 const searchRegionNarrowStyles = xcss({
@@ -98,12 +112,12 @@ const searchRegionNarrowStyles = xcss({
   flexGrow: 0,
   flexShrink: 0,
   flexBasis: 'auto',
-  marginInlineStart: 'space.200',
-  marginInlineEnd: 'space.100',
+  marginInline: 'space.200',
 });
 
-// Spacer — rendered in every mode. Eats remaining row space so the right
-// cluster always hugs the trailing edge.
+// Spacer — rendered BEFORE and AFTER the search region in every mode. Each
+// spacer grows equally, so surplus row width splits 50/50 between the
+// left-of-search and right-of-search gaps.
 const spacerStyles = xcss({
   flexGrow: 1,
   flexShrink: 1,
@@ -131,7 +145,7 @@ const isMacPlatform = () =>
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
   const isCollapsed = sidebarHidden || !sidebarExpanded;
-  const { isCompact, isNarrow } = useNavBreakpoint();
+  const { isCompact, isNarrow, isMobile } = useNavBreakpoint();
   const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Hide sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
@@ -145,8 +159,11 @@ export function CatalystHeader() {
     >
       <Box as="nav" xcss={navStyles} aria-label="Global navigation">
         <Flex alignItems="center" gap="space.100" xcss={flexRowStyles}>
-          {/* Left cluster: sidebar toggle + wordmark */}
-          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
+          {/* Left cluster: sidebar toggle + wordmark.
+              At isMobile (<768) the wordmark shrinks to 22px and the left
+              cluster gap tightens to 4px so the right cluster (Create,
+              Ask, bell, settings, avatar) fits on a 360px viewport. */}
+          <Box style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : token('space.100', '8px'), flex: '0 0 auto' }}>
             <Tooltip content={sidebarTooltip} position="bottom">
               <IconButton
                 label={sidebarLabel}
@@ -166,15 +183,19 @@ export function CatalystHeader() {
                 <img
                   src={catalystWordmark}
                   alt=""
-                  height={28}
-                  style={{ height: '28px', width: 'auto', display: 'block' }}
+                  height={isMobile ? 22 : 28}
+                  style={{ height: isMobile ? '22px' : '28px', width: 'auto', display: 'block' }}
                 />
               </Box>
             </a>
           </Box>
 
-          {/* Search — full bar at ≥1024, icon-toggle at <1024. Spacer after
-              either variant pushes the right cluster to the trailing edge. */}
+          {/* Leading spacer — matches the trailing spacer below so surplus
+              row width splits 50/50. Together they horizontally center the
+              search region between the left and right clusters. */}
+          <Box xcss={spacerStyles} />
+
+          {/* Search — full bar at ≥1024, icon-toggle at <1024. */}
           {isNarrow ? (
             <Box xcss={searchRegionNarrowStyles}>
               <GlobalSearch collapsed />
@@ -184,10 +205,15 @@ export function CatalystHeader() {
               <GlobalSearch />
             </Box>
           )}
+
+          {/* Trailing spacer — see leading spacer above. */}
           <Box xcss={spacerStyles} />
 
-          {/* Right cluster: Create | Ask Catalyst | Bell | Help | Settings | Avatar */}
-          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), flex: '0 0 auto' }}>
+          {/* Right cluster: Create | Ask Catalyst | Bell | Settings | Avatar
+              gap bumped from space.050 (4px) → space.100 (8px) so icons
+              aren't visually touching at wide widths (Vikram screenshot
+              critique, Apr 2026). */}
+          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
             <CreateDropdown iconOnly={isNarrow} />
             <AskCatalystPill iconOnly={isCompact} />
             <NotificationsPanel />
