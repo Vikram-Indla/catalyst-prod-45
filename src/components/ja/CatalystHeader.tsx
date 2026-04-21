@@ -1,6 +1,7 @@
-import { Box, Flex, xcss } from '@atlaskit/primitives';
+import { Box, Flex, Stack, Text, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { IconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
 import SidebarExpandIcon from '@atlaskit/icon/core/sidebar-expand';
 import SidebarCollapseIcon from '@atlaskit/icon/core/sidebar-collapse';
 import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
@@ -106,10 +107,35 @@ const spacerStyles = xcss({
   minWidth: '0',
 });
 
+// Keyboard-shortcut chip rendered inside the sidebar-toggle tooltip, matching
+// Jira's "label + chip" tooltip structure. Token-only; no new dependency.
+const shortcutChipStyles = xcss({
+  paddingInline: 'space.075',
+  paddingBlock: 'space.025',
+  borderRadius: 'border.radius.100',
+  backgroundColor: 'color.background.neutral',
+  color: 'color.text.subtle',
+  font: 'font.body.small',
+  fontWeight: 'font.weight.medium',
+});
+
+// macOS → ⌘ modifier; everything else → Ctrl. Matches the inline pattern
+// already used in IndustryHeaderToolbarV2 / EnterpriseToolbar.
+const isMacPlatform = () =>
+  typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
   const isCollapsed = sidebarHidden || !sidebarExpanded;
   const { isCompact, isNarrow } = useNavBreakpoint();
+  const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Hide sidebar';
+  const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
+  const sidebarTooltip = (
+    <Stack space="space.050" alignInline="center">
+      <Text>{sidebarLabel}</Text>
+      <Box as="span" xcss={shortcutChipStyles}>{shortcutLabel}</Box>
+    </Stack>
+  );
 
   return (
     <Box
@@ -121,14 +147,16 @@ export function CatalystHeader() {
     >
       <Box as="nav" xcss={navStyles} aria-label="Global navigation">
         <Flex alignItems="center" gap="space.100" xcss={flexRowStyles}>
-          {/* Left cluster: sidebar toggle + app switcher + wordmark */}
+          {/* Left cluster: sidebar toggle + wordmark */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
-            <IconButton
-              label={isCollapsed ? 'Expand sidebar' : 'Hide sidebar'}
-              appearance="subtle"
-              onClick={cycleSidebarState}
-              icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
-            />
+            <Tooltip content={sidebarTooltip} position="bottom">
+              <IconButton
+                label={sidebarLabel}
+                appearance="subtle"
+                onClick={cycleSidebarState}
+                icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
+              />
+            </Tooltip>
             <a
               href="/for-you"
               aria-label="Catalyst home"

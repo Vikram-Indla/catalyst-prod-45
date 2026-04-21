@@ -66,11 +66,13 @@ function useIsDarkTheme(): boolean {
  * Click → set expanded=true, hidden=false (full return, not icon-rail).
  */
 function SidebarEdgeReveal({ onReveal }: { onReveal: () => void }) {
+  const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+  const shortcutHint = isMac ? '⌘ [' : 'Ctrl [';
   return (
     <button
       onClick={onReveal}
-      aria-label="Show sidebar (shortcut: [ )"
-      title="Show sidebar  [  "
+      aria-label={`Show sidebar (shortcut: ${shortcutHint})`}
+      title={`Show sidebar  ${shortcutHint}`}
       className="group flex items-center justify-center h-full"
       style={{
         width: '8px',
@@ -152,22 +154,19 @@ function CatalystShellContent() {
   const sidebarVisuallyOpen = !sidebarHidden && (sidebarPinned || sidebarHoverOpen);
   const sidebarOverlayMode = !sidebarHidden && !sidebarPinned && sidebarHoverOpen;
 
-  // `[` cycles sidebar: expanded → collapsed → hidden → expanded. Added
-  // 2026-04-19 to match Jira/Linear/Notion convention and let users reclaim
-  // viewport on content-dense views without mousing to the toggle.
-  // Guarded against firing while typing (inputs, textareas, contentEditable,
-  // role="textbox") and against intercepting browser shortcuts (⌘[, ⌃[).
+  // ⌘/Ctrl + [ toggles the sidebar (Jira parity, P2-1). Requires the platform
+  // modifier so we don't swallow a literal `[` keystroke in any focusable
+  // element — the previous bare-`[` binding collided with typing into
+  // non-guarded roles (code editors, rich-text surfaces, etc.).
+  // macOS → ⌘+[ ; other platforms → Ctrl+[. The preventDefault stops the
+  // browser-back navigation the combo normally triggers on Chrome/Safari.
   useEffect(() => {
+    const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
     const handler = (e: KeyboardEvent) => {
       if (e.key !== '[') return;
-      if (e.metaKey || e.ctrlKey || e.altKey) return;
-      const t = e.target as HTMLElement | null;
-      if (t && (
-        t.tagName === 'INPUT' ||
-        t.tagName === 'TEXTAREA' ||
-        t.isContentEditable ||
-        t.closest('[role="textbox"]')
-      )) return;
+      const modifier = isMac ? e.metaKey : e.ctrlKey;
+      if (!modifier) return;
+      if (e.altKey || e.shiftKey) return;
       e.preventDefault();
       cycleSidebarState();
     };
