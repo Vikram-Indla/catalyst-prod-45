@@ -158,6 +158,8 @@ export function CatalystHeader() {
                 icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
               />
             </Tooltip>
+            {/* Hub Switcher — adjacent to chevron, shares hover-peek zone */}
+            <HubSwitcher />
             <a
               href="/for-you"
               aria-label="Catalyst home"
