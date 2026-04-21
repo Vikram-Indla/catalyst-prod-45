@@ -13,10 +13,37 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from 'lucide-react';
+import HomeIcon from '@atlaskit/icon/glyph/home';
+import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
+import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
+import FolderIcon from '@atlaskit/icon/glyph/folder';
+import ShipIcon from '@atlaskit/icon/glyph/ship';
+import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
+import TaskIcon from '@atlaskit/icon/glyph/task';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import BookIcon from '@atlaskit/icon/glyph/book';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTheme } from '@/hooks/useTheme';
+
+// Hub registry — mirrors AppSwitcher.tsx (which is being retired). Tone
+// colors come from Atlassian Design System accent palette; we render the
+// icon inside a 16px tinted square so the section reads as "app launcher"
+// rather than nav links.
+const HUB_ITEMS = [
+  { label: 'Home',        href: '/for-you',                 Icon: HomeIcon,            tone: '#42526E' },
+  { label: 'StrategyHub', href: '/strategyhub',             Icon: OfficeBuildingIcon,  tone: '#8270DB' },
+  { label: 'ProductHub',  href: '/producthub',              Icon: PortfolioIcon,       tone: '#0052CC' },
+  { label: 'ProjectHub',  href: '/project-hub',             Icon: FolderIcon,          tone: '#00A3BF' },
+  { label: 'ReleaseHub',  href: '/release-hub/command-center', Icon: ShipIcon,         tone: '#FF8B00' },
+  { label: 'TestHub',     href: '/testhub/dashboard',       Icon: CheckCircleIcon,     tone: '#36B37E' },
+  { label: 'IncidentHub', href: '/incident-hub',            Icon: WarningIcon,         tone: '#DE350B' },
+  { label: 'TaskHub',     href: '/taskhub/boards',          Icon: TaskIcon,            tone: '#FFAB00' },
+  { label: 'PlanHub',     href: '/planhub',                 Icon: CalendarIcon,        tone: '#E774BB' },
+  { label: 'WikiHub',     href: '/wiki',                    Icon: BookIcon,            tone: '#65BA43' },
+] as const;
 
 /**
  * Route-to-chunk prefetch map — preload lazy page chunks on sidebar hover
@@ -284,6 +311,89 @@ export function SidebarBase({
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 6px' }}>
+          {/* Hubs Section — top-of-sidebar app launcher (Apr 2026). Replaces
+              the retired 2x2 AppSwitcher in the top nav. Only renders when
+              expanded; collapsed mode keeps the rail visually clean. */}
+          {expanded && (
+            <div className="mb-2">
+              <div style={{ padding: '12px 12px 4px', lineHeight: 1 }}>
+                <span
+                  style={{
+                    fontFamily: "'Sora', sans-serif",
+                    color: sectionLabel,
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    letterSpacing: '0.07em',
+                    textTransform: 'uppercase' as const,
+                  }}
+                >
+                  Hubs
+                </span>
+              </div>
+              <div>
+                {HUB_ITEMS.map((hub) => {
+                  const active = location.pathname === hub.href || location.pathname.startsWith(hub.href + '/') ||
+                    // Special case: /for-you matches the Home tile
+                    (hub.href === '/for-you' && location.pathname === '/for-you');
+                  return (
+                    <button
+                      key={hub.href}
+                      onClick={() => navigate(hub.href)}
+                      className="group w-full flex items-center border-none cursor-pointer transition-all relative"
+                      style={{
+                        height: '32px',
+                        padding: '0 12px',
+                        gap: '10px',
+                        fontSize: '14px',
+                        fontWeight: active ? 600 : 500,
+                        color: active ? tokens.activeText : tokens.itemText,
+                        fontFamily: "'Inter', sans-serif",
+                        outline: 'none',
+                        background: active ? tokens.activeBg : 'transparent',
+                        lineHeight: 1,
+                        borderRadius: '6px',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!active) {
+                          e.currentTarget.style.background = tokens.hoverBg;
+                          e.currentTarget.style.color = tokens.hoverText;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = active ? tokens.activeBg : 'transparent';
+                        e.currentTarget.style.color = active ? tokens.activeText : tokens.itemText;
+                      }}
+                    >
+                      {active && (
+                        <span
+                          style={{
+                            position: 'absolute',
+                            left: 0,
+                            top: '4px',
+                            bottom: '4px',
+                            width: '3px',
+                            background: 'var(--cp-blue)',
+                            borderRadius: '0 3px 3px 0',
+                          }}
+                        />
+                      )}
+                      <span
+                        className="flex items-center justify-center flex-shrink-0"
+                        style={{ width: '16px', height: '16px', color: hub.tone }}
+                      >
+                        <hub.Icon label="" size="small" primaryColor={hub.tone} />
+                      </span>
+                      <span className="flex-1 text-left" style={{ lineHeight: '20px', whiteSpace: 'nowrap' }}>
+                        {hub.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px 0' }} />
+            </div>
+          )}
+
           {/* Favorites Section */}
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
           {config.showFavorites !== false && favoritedItems.length > 0 && expanded && (

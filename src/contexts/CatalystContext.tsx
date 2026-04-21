@@ -19,12 +19,18 @@ interface CatalystContextState {
   workspaceType: WorkspaceType;
   
   // Sidebar chrome state (shared between shell + header).
-  // Three-state model: expanded (240px) → collapsed (56px) → hidden (0px).
-  // Press `[` (bound in CatalystShell) to cycle through them.
+  // Two-state architecture (Apr 2026): expanded (240px) ↔ hidden (0px) +
+  // an orthogonal "pinned" flag. Pinned=true → click-toggled, persists. Pinned=false
+  // → only the transient `sidebarHoverOpen` flag (set by hover on chevron/sidebar)
+  // controls visibility, and the sidebar floats as overlay above content.
   sidebarExpanded: boolean;
   setSidebarExpanded: (expanded: boolean | ((prev: boolean) => boolean)) => void;
   sidebarHidden: boolean;
   setSidebarHidden: (hidden: boolean | ((prev: boolean) => boolean)) => void;
+  sidebarPinned: boolean;
+  setSidebarPinned: (pinned: boolean | ((prev: boolean) => boolean)) => void;
+  sidebarHoverOpen: boolean;
+  setSidebarHoverOpen: (open: boolean) => void;
   cycleSidebarState: () => void;
   
   // Entity IDs
@@ -170,6 +176,16 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [sidebarState, setSidebarState] = useState(loadSidebarState);
   const sidebarExpanded = sidebarState.expanded;
   const sidebarHidden = sidebarState.hidden;
+  // Pinned defaults to true so existing click-driven users keep current
+  // behavior; a sidebar opened via cycleSidebarState pins itself, a sidebar
+  // opened by hover does not.
+  const [sidebarPinned, setSidebarPinnedState] = useState<boolean>(() => {
+    try {
+      const v = localStorage.getItem('catalyst.sidebarPinned');
+      return v === null ? true : v === 'true';
+    } catch { return true; }
+  });
+  const [sidebarHoverOpen, setSidebarHoverOpenState] = useState(false);
   const setSidebarExpanded = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
     setSidebarState(prev => ({
       ...prev,
@@ -182,15 +198,30 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       hidden: typeof next === 'function' ? next(prev.hidden) : next,
     }));
   }, []);
-  // Two-state toggle (architectural decision 2026-04-21, Vikram):
-  //   expanded (full sidebar) ↔ hidden (invisible, edge-reveal handle only).
-  // The previous 56px icon-rail "collapsed" intermediate state has been
-  // removed — it created visual clutter and a confusing third state with
-  // no product value. Whenever the sidebar is not expanded, it is hidden.
+  const setSidebarPinned = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
+    setSidebarPinnedState(prev => {
+      const value = typeof next === 'function' ? next(prev) : next;
+      try { localStorage.setItem('catalyst.sidebarPinned', String(value)); } catch { /* noop */ }
+      return value;
+    });
+  }, []);
+  const setSidebarHoverOpen = useCallback((open: boolean) => {
+    setSidebarHoverOpenState(open);
+  }, []);
+  // Click-driven toggle. Click = pin intent: opening pins, closing unpins so
+  // the next hover starts in transient mode again. Matches Jira parity.
   const cycleSidebarState = useCallback(() => {
     setSidebarState(prev => {
-      if (prev.hidden || !prev.expanded) return { hidden: false, expanded: true };
-      return { hidden: true, expanded: true };
+      const isVisible = !prev.hidden && prev.expanded;
+      if (isVisible) {
+        setSidebarPinnedState(false);
+        try { localStorage.setItem('catalyst.sidebarPinned', 'false'); } catch { /* noop */ }
+        setSidebarHoverOpenState(false);
+        return { hidden: true, expanded: true };
+      }
+      setSidebarPinnedState(true);
+      try { localStorage.setItem('catalyst.sidebarPinned', 'true'); } catch { /* noop */ }
+      return { hidden: false, expanded: true };
     });
   }, []);
   // Persist sidebar state on every change — fire-and-forget, swallow quota
@@ -266,6 +297,10 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setSidebarExpanded,
     sidebarHidden,
     setSidebarHidden,
+    sidebarPinned,
+    setSidebarPinned,
+    sidebarHoverOpen,
+    setSidebarHoverOpen,
     cycleSidebarState,
     portfolioId,
     setPortfolioId,
@@ -290,8 +325,8 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     projectName,
     setProjectName,
   }), [
-    tier, workspaceType, sidebarExpanded, sidebarHidden, cycleSidebarState,
-    setSidebarExpanded, setSidebarHidden,
+    tier, workspaceType, sidebarExpanded, sidebarHidden, sidebarPinned, sidebarHoverOpen,
+    cycleSidebarState, setSidebarExpanded, setSidebarHidden, setSidebarPinned, setSidebarHoverOpen,
     portfolioId, programId, projectId, productId, teamIds, piIds,
     selectedQuarter, snapshotId, industryFilters, programName, projectName,
   ]);

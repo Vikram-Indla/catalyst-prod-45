@@ -110,7 +110,47 @@ function CatalystShellContent() {
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
-  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, cycleSidebarState } = useCatalystContext();
+  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, sidebarHoverOpen, setSidebarHoverOpen, cycleSidebarState } = useCatalystContext();
+
+  // ─── Jira-parity hover-reveal on the chevron ─────────────────────────
+  // The chevron lives in CatalystHeader (out of scope for edits this brief).
+  // We detect hover via DOM event delegation on the document, matching the
+  // chevron IconButton by aria-label ("Expand sidebar" / "Hide sidebar") and
+  // the sidebar root by [data-catalyst-sidebar]. When the cursor enters
+  // either region we open transiently; when it leaves both we close after a
+  // 150ms grace so flick-through micro-gaps don't trigger a collapse.
+  // Pinned mode (set via click → cycleSidebarState) bypasses this entirely.
+  useEffect(() => {
+    if (sidebarPinned) return; // no hover behavior when pinned
+    let closeTimer: number | null = null;
+    const insideHoverZone = (target: EventTarget | null): boolean => {
+      if (!(target instanceof Element)) return false;
+      // Chevron IconButton in the header — match by aria-label since the
+      // header surface is owned by a separate brief and we can't add hooks.
+      if (target.closest('[data-catalyst-header] button[aria-label="Expand sidebar"], [data-catalyst-header] button[aria-label="Hide sidebar"]')) return true;
+      if (target.closest('[data-catalyst-sidebar]')) return true;
+      return false;
+    };
+    const handleMove = (e: MouseEvent) => {
+      if (insideHoverZone(e.target)) {
+        if (closeTimer) { window.clearTimeout(closeTimer); closeTimer = null; }
+        setSidebarHoverOpen(true);
+      } else {
+        if (closeTimer) window.clearTimeout(closeTimer);
+        closeTimer = window.setTimeout(() => setSidebarHoverOpen(false), 150);
+      }
+    };
+    document.addEventListener('mousemove', handleMove);
+    return () => {
+      document.removeEventListener('mousemove', handleMove);
+      if (closeTimer) window.clearTimeout(closeTimer);
+    };
+  }, [sidebarPinned, setSidebarHoverOpen]);
+
+  // Effective visibility: pinned-open OR hover-open (and never when hidden by
+  // explicit user action via the edge-reveal handle).
+  const sidebarVisuallyOpen = !sidebarHidden && (sidebarPinned || sidebarHoverOpen);
+  const sidebarOverlayMode = !sidebarHidden && !sidebarPinned && sidebarHoverOpen;
 
   // `[` cycles sidebar: expanded → collapsed → hidden → expanded. Added
   // 2026-04-19 to match Jira/Linear/Notion convention and let users reclaim
@@ -520,18 +560,34 @@ function CatalystShellContent() {
             backfaceVisibility: 'hidden',
             // 2026-04-19 Tier 2: CSS containment on the sidebar wrapper so its
             // subtree's layout/paint work doesn't cascade into main during the
-            // 180ms width animation. Belt-and-suspenders with the SidebarBase
-            // `contain: layout style` — this one isolates the wrapper div,
-            // that one isolates the aside within.
+            // 180ms width animation.
             contain: 'layout style',
+            // Overlay mode (hover-only, not pinned): float over content with
+            // shadow + zero layout width so main canvas stays full-width.
+            // Pinned mode: behaves as before, pushing content.
+            ...(sidebarOverlayMode
+              ? {
+                  position: 'absolute' as const,
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  zIndex: 40,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                }
+              : {}),
           }}
-        >
+          >
             {sidebarHidden ? (
               <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); }} />
-            ) : (
+            ) : sidebarVisuallyOpen ? (
               <Suspense fallback={null}>
                 {renderSidebar()}
               </Suspense>
+            ) : (
+              // Collapsed/closed but not user-hidden: render a minimal hover
+              // sensor so the chevron-only hover region still works (sidebar
+              // mounts on hover via the document-level mousemove listener).
+              <div style={{ width: 0, height: '100%' }} aria-hidden />
             )}
           </div>
 
