@@ -30,6 +30,7 @@ import { useCatalystContext } from '@/contexts/CatalystContext';
 import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/core/app-switcher';
 import { HubIcon, HubName } from '@/components/navigation/HubIcon';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 
 interface HubEntry {
   key: HubName;
@@ -64,6 +65,7 @@ export function HubSwitcher() {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const firstTileRef = useRef<HTMLButtonElement | null>(null);
+  const { isMobile } = useNavBreakpoint();
 
   // Close on Escape + outside click. Esc also returns focus to the trigger
   // (WCAG 2.4.3 Focus Order).
@@ -201,7 +203,8 @@ export function HubSwitcher() {
               zIndex: 1200,
             }}
           />
-          {/* Drawer */}
+          {/* Drawer — 320px on desktop, full-bleed 100vw on mobile (<768)
+              so the 10 hub tiles + labels are readable on phone widths. */}
           <div
             ref={drawerRef}
             role="dialog"
@@ -213,7 +216,8 @@ export function HubSwitcher() {
               top: 0,
               left: 0,
               bottom: 0,
-              width: 320,
+              width: isMobile ? '100vw' : 320,
+              maxWidth: isMobile ? '100vw' : 320,
               background: '#FFFFFF',
               borderRight: '1px solid #DFE1E6',
               boxShadow: '4px 0 16px rgba(9,30,66,0.12)',

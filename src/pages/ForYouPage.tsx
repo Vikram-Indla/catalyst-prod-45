@@ -24,6 +24,7 @@ import { ForYouLightBulkBar } from '@/components/for-you/ForYouLightBulkBar';
 import { FilterTriggerButton, JiraBasicFilter } from '@/components/shared/JiraBasicFilter';
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import { toast } from 'sonner';
 import type { AIPriorityItem, AINextItemData, AIStats, AISuggestionData } from '@/components/catalyst-ai/CatalystAIPanel';
 
@@ -99,6 +100,15 @@ export default function ForYouPage() {
   const [advancedFilters, setAdvancedFilters] = useState<Record<string, string[]>>({});
   const avatarsByName = useProfileAvatarsByName();
   const [fyGroupBy, setFyGroupBy] = useState<ForYouGroupByKey>('none');
+  const { isMobile, isNarrow } = useNavBreakpoint();
+  // Responsive page padding — Atlaskit page-layout scale.
+  // Mobile (<768) → tight 12/12/32, Narrow (<1024) → 14/16/40,
+  // Default (≥1024) → original 16/24/48.
+  const mainPadding = isMobile
+    ? '12px 12px 32px'
+    : isNarrow
+      ? '14px 16px 40px'
+      : '16px 24px 48px';
 
   useEffect(() => {
     if (!isLoading) {
@@ -312,16 +322,16 @@ export default function ForYouPage() {
 
   return (
     <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: 0, flex: 1, background: 'var(--cp-bg)', color: 'var(--cp-t1)' }}>
-      <main style={{ width: '100%', maxWidth: '100%', padding: '16px 24px 48px', boxSizing: 'border-box' }}>
+      <main style={{ width: '100%', maxWidth: '100%', padding: mainPadding, boxSizing: 'border-box' }}>
         <ForYouHeader />
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+        {/* Tabs — wraps at narrow widths so overflow becomes second row, not horizontal scroll */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
           <ForYouSubTabs activeTab={activeTab} counts={tabCounts} onTabChange={setActiveTab} />
         </div>
 
-        {/* Status Summary + Filter — single row */}
-        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)', gap: 16 }}>
+        {/* Status Summary + Filter — single row, wraps below 768 */}
+        <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0', marginBottom: 12, borderBottom: '1px solid var(--cp-bd)', gap: 16, flexWrap: 'wrap' }}>
           <StatusSummaryBar
             items={[
               ...filteredGroupedItems.YESTERDAY,

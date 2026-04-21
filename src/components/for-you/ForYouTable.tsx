@@ -13,6 +13,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
+import { useNavBreakpoint } from '@/hooks/useNavBreakpoint';
 import '@/styles/product-backlog.css';
 import type { WorkItem, WorkGroup } from '@/hooks/useForYouData';
 
@@ -103,6 +104,7 @@ export function CatalystTable({
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
   const tableRef = useRef<HTMLDivElement>(null);
   const nameAvatarMap = useProfileAvatarsByName();
+  const { isMobile } = useNavBreakpoint();
 
   const toggleGroup = useCallback((label: string) => {
     setCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
@@ -192,6 +194,132 @@ export function CatalystTable({
   }
 
   let rowIndex = -1;
+
+  // ─── Mobile card view (<768px) ──────────────────────────────────────
+  // At phone widths the 11-column table is unusable. Render a stacked
+  // card list instead — 4 rows per item: (select + type + key + paperclip
+  // + star), (summary, 2-line clamp), (status + hub + priority), and
+  // (avatar + project + updated). Groups still render their collapsible
+  // header row so behaviour matches desktop.
+  if (isMobile) {
+    return (
+      <div ref={tableRef} tabIndex={0} className="fy-table fy-table-mobile" style={{ outline: 'none' }}>
+        {resolvedGroups.map(group => {
+          const isCollapsed = !!collapsed[group.key];
+          return (
+            <React.Fragment key={group.key}>
+              <div
+                onClick={() => toggleGroup(group.key)}
+                style={{
+                  height: 36, padding: '0 12px', cursor: 'pointer', userSelect: 'none',
+                  background: '#F7F8F9',
+                  borderTop: '0.75px solid #E2E8F0',
+                  borderBottom: '0.75px solid #E2E8F0',
+                  fontSize: 11, fontWeight: 700, color: '#475569',
+                  textTransform: 'uppercase', letterSpacing: '0.08em',
+                  display: 'flex', alignItems: 'center', gap: 6,
+                }}
+              >
+                {isCollapsed
+                  ? <ChevronRight size={14} style={{ color: '#475569', flexShrink: 0 }} />
+                  : <ChevronDown size={14} style={{ color: '#475569', flexShrink: 0 }} />}
+                {group.label}
+                <span style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  minWidth: 20, height: 18, padding: '0 6px', borderRadius: 9,
+                  background: '#DFE1E6', color: '#253858',
+                  fontSize: 10, fontWeight: 700, marginLeft: 4,
+                }}>
+                  {group.items.length}
+                </span>
+              </div>
+
+              {!isCollapsed && group.items.map((item) => {
+                rowIndex++;
+                const currentRowIndex = rowIndex;
+                const isSelected = selectedIds.has(item.id);
+                const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
+                const priorityLabel = PRIORITY_LABELS[item.priorityLevel] || `Priority ${item.priorityLevel}`;
+                const reporterName = item.reporter || item.assignee.name;
+                const avatarUrl = nameAvatarMap.get(reporterName.toLowerCase());
+                const ini = reporterName.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+                const clr = AVATAR_COLOURS[ini.charCodeAt(0) % AVATAR_COLOURS.length];
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => { setFocusedIndex(currentRowIndex); onRowClick(item.id); }}
+                    style={{
+                      padding: '12px',
+                      borderBottom: '0.75px solid #E2E8F0',
+                      cursor: 'pointer',
+                      background: isSelected ? 'rgba(37,99,235,0.08)' : '#FFFFFF',
+                      display: 'flex', flexDirection: 'column', gap: 8,
+                    }}
+                  >
+                    {/* Row 1: checkbox + type + key + paperclip + star */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div onClick={e => e.stopPropagation()} style={{ display: 'inline-flex' }}>
+                        <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
+                      </div>
+                      <JiraIssueTypeIcon issueType={item.issueType} size={16} />
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+                      {(item.attachmentCount ?? 0) > 0 && (
+                        <Paperclip size={12} style={{ color: '#94A3B8', transform: 'rotate(-45deg)' }} />
+                      )}
+                      <div style={{ flex: 1 }} />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onStarToggle?.(item.id); }}
+                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer', borderRadius: 4, padding: 0 }}
+                        title={item.starred ? 'Unstar' : 'Star'}
+                      >
+                        <Star size={16} fill={item.starred ? '#FACC15' : 'none'} stroke={item.starred ? '#FACC15' : '#CBD5E1'} strokeWidth={2} />
+                      </button>
+                    </div>
+
+                    {/* Row 2: summary (2-line clamp) */}
+                    <div
+                      style={{
+                        fontSize: 14, fontWeight: 600, color: '#0F172A', lineHeight: 1.3,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {item.summary}
+                    </div>
+
+                    {/* Row 3: status + hub + priority */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <StatusBadge status={item.status} />
+                      <span style={{ display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px', borderRadius: 4, fontSize: 11, fontWeight: 600, letterSpacing: '0.02em', background: hubCfg.bg, color: hubCfg.color, borderLeft: `3px solid ${hubCfg.border}` }}>
+                        {item.hubLabel}
+                      </span>
+                      <span title={priorityLabel} style={{ display: 'inline-flex' }}>
+                        <PriorityBars priority={normalisePriority(priorityLabel)} />
+                      </span>
+                    </div>
+
+                    {/* Row 4: avatar + project + updated */}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#64748B' }}>
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={reporterName} style={{ width: 20, height: 20, borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '1px solid #E2E8F0' }} />
+                      ) : (
+                        <div style={{ width: 20, height: 20, borderRadius: '50%', background: clr, color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, flexShrink: 0 }}>{ini}</div>
+                      )}
+                      <span style={{ fontWeight: 500, color: '#475569', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.project}</span>
+                      <div style={{ flex: 1 }} />
+                      <span style={{ flexShrink: 0 }}>{item.updatedAt}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    );
+  }
 
   const renderCell = (colKey: string, item: WorkItem, isSelected: boolean, isFocused: boolean) => {
     const hubCfg = HUB_CFG[item.hubLabel] || HUB_CFG.Task;
@@ -303,6 +431,27 @@ export function CatalystTable({
 
   return (
     <div ref={tableRef} tabIndex={0} className="fy-table" style={{ outline: 'none', border: '0.555556px solid #E2E8F0', borderRadius: 8, overflow: 'hidden' }}>
+      {/* Scoped sticky — at tablet widths (768–1023px) the SUMMARY column
+          (5th th/td after checkbox/star/type/key) pins to the left edge so
+          the item summary stays readable while the right-hand columns
+          horizontally scroll. Scoped to .fy-table .pb-table so no
+          cascade into other tables on the page. */}
+      <style>{`
+        @media (max-width: 1023.98px) and (min-width: 768px) {
+          .fy-table .pb-table thead th:nth-child(5),
+          .fy-table .pb-table tbody td:nth-child(5) {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            background: inherit;
+          }
+          .fy-table .pb-table thead th:nth-child(5) {
+            background: #F7F8F9;
+          }
+          .fy-table .pb-table tbody tr { background: #FFFFFF; }
+          .fy-table .pb-table tbody tr.pb-row-selected { background: rgba(37,99,235,0.08); }
+        }
+      `}</style>
       <div style={{ overflowX: 'auto' }}>
         <table className="pb-table" style={{ width: '100%', borderCollapse: 'collapse', tableLayout: 'fixed', minWidth: 1100 }}>
           <colgroup>

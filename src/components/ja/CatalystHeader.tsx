@@ -131,7 +131,7 @@ const isMacPlatform = () =>
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
   const isCollapsed = sidebarHidden || !sidebarExpanded;
-  const { isCompact, isNarrow } = useNavBreakpoint();
+  const { isCompact, isNarrow, isMobile } = useNavBreakpoint();
   const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Hide sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
@@ -145,8 +145,9 @@ export function CatalystHeader() {
     >
       <Box as="nav" xcss={navStyles} aria-label="Global navigation">
         <Flex alignItems="center" gap="space.100" xcss={flexRowStyles}>
-          {/* Left cluster: sidebar toggle + wordmark */}
-          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
+          {/* Left cluster: sidebar toggle + wordmark.
+              Mobile tightens the gap (8 → 4) to reclaim chrome width. */}
+          <Box style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '4px' : token('space.100', '8px'), flex: '0 0 auto' }}>
             <Tooltip content={sidebarTooltip} position="bottom">
               <IconButton
                 label={sidebarLabel}
@@ -166,8 +167,8 @@ export function CatalystHeader() {
                 <img
                   src={catalystWordmark}
                   alt=""
-                  height={28}
-                  style={{ height: '28px', width: 'auto', display: 'block' }}
+                  height={isMobile ? 22 : 28}
+                  style={{ height: isMobile ? '22px' : '28px', width: 'auto', display: 'block' }}
                 />
               </Box>
             </a>
