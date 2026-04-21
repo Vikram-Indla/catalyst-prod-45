@@ -194,14 +194,6 @@ export function CatalystHeader() {
             <CreateDropdown iconOnly={isNarrow} />
             <AskCatalystPill iconOnly={isCompact} />
             <NotificationsPanel />
-            {!isNarrow && (
-              <IconButton
-                label="Help"
-                appearance="subtle"
-                icon={QuestionCircleIcon}
-                onClick={() => window.open('/wiki', '_self')}
-              />
-            )}
             <SettingsMenu />
             <ProfileMenu />
           </Box>
