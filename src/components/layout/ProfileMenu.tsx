@@ -17,6 +17,30 @@ import { resolveAvatarUrl } from '@/lib/avatars';
 
 const popupStyles = xcss({ width: 'size.4000' });
 
+const AvatarTriggerButton = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement> & { avatarUrl?: string; name: string }>(
+  ({ avatarUrl, name, ...rest }, ref) => (
+    <button
+      ref={ref}
+      type="button"
+      aria-label="Profile"
+      {...rest}
+      style={{
+        background: 'transparent',
+        border: 'none',
+        padding: 4,
+        borderRadius: 999,
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Avatar size="small" src={avatarUrl} name={name} />
+    </button>
+  )
+);
+AvatarTriggerButton.displayName = 'AvatarTriggerButton';
+
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
