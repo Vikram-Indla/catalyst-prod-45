@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import { IconButton } from '@atlaskit/button/new';
@@ -16,19 +16,61 @@ import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 /**
- * ProfileMenu — RCA Apr 2026 (final)
+ * ProfileMenu — RCA Apr 2026 (final-final)
  *
- * Mirrors the working SettingsMenu pattern EXACTLY:
- *  - <Popup> with placement="bottom-end"
- *  - <IconButton> trigger with `icon={StableComponent}` (component reference)
- *  - <Box padding="space.150"> content shell
- *  - <MenuGroup minWidth="320px"> owns width
+ * Root cause of prior failures: passing a `useCallback`-created icon component
+ * to <IconButton icon={...}>. The component identity changed every render when
+ * `open` state toggled, causing IconButton to remount and Atlaskit Popup to
+ * lose its anchor ref → popup rendered with zero size / off-screen.
  *
- * The avatar is rendered via a STABLE module-scope component (not an inline
- * arrow) so Atlaskit IconButton's ref forwarding works. Inline arrow icons
- * cause IconButton to remount on every parent render, breaking Popup's
- * anchor measurement.
+ * Fix: use a MODULE-SCOPE component reference for the icon, exactly like
+ * SettingsMenu does with `icon={SettingsIcon}`. Avatar data flows in via a
+ * module-level mutable ref (set per render) so the icon component stays stable.
+ *
+ * Mirrors SettingsMenu's structure 1:1:
+ *  - <Popup placement="bottom-end" label=...>
+ *  - <IconButton {...props} appearance="subtle" isSelected={open} icon={Stable} />
+ *  - <Box padding="space.150"> shell
+ *  - <MenuGroup minWidth="..."> owns width
  */
+
+// Module-level holder for current avatar render data. Set on each render of
+// ProfileMenu, read by the stable AvatarGlyph icon component.
+const avatarState: { url?: string; initials: string } = { initials: 'U' };
+
+// STABLE module-scope icon component — identity never changes, so IconButton
+// never remounts, so Popup's anchor ref stays attached.
+function AvatarGlyph() {
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 24,
+        height: 24,
+        borderRadius: '50%',
+        overflow: 'hidden',
+        backgroundColor: '#5243AA',
+        color: '#FFFFFF',
+        fontSize: 11,
+        fontWeight: 600,
+        fontFamily: 'inherit',
+        pointerEvents: 'none',
+      }}
+    >
+      {avatarState.url ? (
+        <img
+          src={avatarState.url}
+          alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      ) : (
+        <span>{avatarState.initials}</span>
+      )}
+    </span>
+  );
+}
 
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
@@ -48,49 +90,22 @@ export function ProfileMenu() {
     resolveAvatarUrl(name) ||
     undefined;
 
-  const initials =
-    name
-      .split(' ')
-      .map((n) => n[0])
-      .filter(Boolean)
-      .slice(0, 2)
-      .join('')
-      .toUpperCase() || 'U';
-
-  // Stable icon component — does NOT close over `open` state, so the IconButton
-  // ref stays stable across renders. (RCA: inline arrow icons cause anchor loss.)
-  const AvatarGlyph = useCallback(
-    () => (
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 24,
-          height: 24,
-          borderRadius: '50%',
-          overflow: 'hidden',
-          backgroundColor: '#5243AA',
-          color: '#FFFFFF',
-          fontSize: 11,
-          fontWeight: 600,
-          fontFamily: 'inherit',
-          pointerEvents: 'none',
-        }}
-      >
-        {avatarUrl ? (
-          <img
-            src={avatarUrl}
-            alt=""
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <span>{initials}</span>
-        )}
-      </span>
-    ),
-    [avatarUrl, initials],
+  const initials = useMemo(
+    () =>
+      name
+        .split(' ')
+        .map((n) => n[0])
+        .filter(Boolean)
+        .slice(0, 2)
+        .join('')
+        .toUpperCase() || 'U',
+    [name],
   );
+
+  // Update module-level state so the stable icon component reads fresh data
+  // without changing its own identity.
+  avatarState.url = avatarUrl;
+  avatarState.initials = initials;
 
   const go = (path: string) => {
     setOpen(false);
@@ -193,9 +208,9 @@ export function ProfileMenu() {
           </MenuGroup>
         </Box>
       )}
-      trigger={(triggerProps) => (
+      trigger={(props) => (
         <IconButton
-          {...triggerProps}
+          {...props}
           label="Profile"
           appearance="subtle"
           isSelected={open}
