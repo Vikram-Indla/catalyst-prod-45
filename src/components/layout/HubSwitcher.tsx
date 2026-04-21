@@ -18,6 +18,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createPortal } from 'react-dom';
+import { useCatalystContext } from '@/contexts/CatalystContext';
 import Tooltip from '@atlaskit/tooltip';
 import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
 import HomeIcon from '@atlaskit/icon/glyph/home';
@@ -56,6 +57,7 @@ export function HubSwitcher() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { setSidebarHidden, setSidebarExpanded } = useCatalystContext();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
 
@@ -83,6 +85,14 @@ export function HubSwitcher() {
 
   const go = (href: string) => {
     setOpen(false);
+    // Auto-reveal the contextual hub sidebar so users land on the new hub with
+    // its left-rail navigation already visible (e.g., ReleaseHubSidebar for
+    // /release-hub, ProjectHubSidebar for /project-hub). Home (/for-you) has
+    // no sidebar — skip the reveal there.
+    if (href !== '/for-you') {
+      setSidebarHidden(false);
+      setSidebarExpanded(true);
+    }
     navigate(href);
   };
 
