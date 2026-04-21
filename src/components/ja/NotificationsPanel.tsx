@@ -15,7 +15,7 @@ export function NotificationsPanel() {
     <>
       <Box xcss={triggerWrapStyles}>
         <IconButton
-          icon={NotificationAllIcon}
+          icon={NotificationIcon}
           label="Notifications"
           appearance="subtle"
           isSelected={open}
