@@ -404,9 +404,22 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/framer-motion')) {
             return 'vendor-motion';
           }
-          if (id.includes('node_modules/exceljs') || id.includes('node_modules/xlsx') || id.includes('node_modules/jspdf') || id.includes('node_modules/pptxgenjs') || id.includes('node_modules/jszip') || id.includes('node_modules/html2canvas') || id.includes('node_modules/file-saver') || id.includes('node_modules/papaparse')) {
-            return 'vendor-export';
-          }
+          // ─── Export libraries: split per-tool ────────────────────────────
+          // Previously fused into one ~2.4MB `vendor-export` chunk that any
+          // single export action (CSV download, PDF render, PPTX export)
+          // would pay in full. They are all dynamic-imported on demand
+          // (see src/lib/exportLoaders.ts and friends) — splitting per
+          // package means a CSV export pulls ~30KB of papaparse instead
+          // of 2.4MB of unrelated tooling.
+          if (id.includes('node_modules/exceljs')) return 'vendor-export-exceljs';
+          if (id.includes('node_modules/xlsx')) return 'vendor-export-xlsx';
+          if (id.includes('node_modules/jspdf-autotable')) return 'vendor-export-jspdf';
+          if (id.includes('node_modules/jspdf')) return 'vendor-export-jspdf';
+          if (id.includes('node_modules/pptxgenjs')) return 'vendor-export-pptx';
+          if (id.includes('node_modules/jszip')) return 'vendor-export-jszip';
+          if (id.includes('node_modules/html2canvas')) return 'vendor-export-html2canvas';
+          if (id.includes('node_modules/papaparse')) return 'vendor-export-papaparse';
+          if (id.includes('node_modules/file-saver')) return 'vendor-export-filesaver';
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-icons';
           }
