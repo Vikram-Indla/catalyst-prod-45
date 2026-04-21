@@ -19,12 +19,18 @@ interface CatalystContextState {
   workspaceType: WorkspaceType;
   
   // Sidebar chrome state (shared between shell + header).
-  // Three-state model: expanded (240px) → collapsed (56px) → hidden (0px).
-  // Press `[` (bound in CatalystShell) to cycle through them.
+  // Two-state architecture (Apr 2026): expanded (240px) ↔ hidden (0px) +
+  // an orthogonal "pinned" flag. Pinned=true → click-toggled, persists. Pinned=false
+  // → only the transient `sidebarHoverOpen` flag (set by hover on chevron/sidebar)
+  // controls visibility, and the sidebar floats as overlay above content.
   sidebarExpanded: boolean;
   setSidebarExpanded: (expanded: boolean | ((prev: boolean) => boolean)) => void;
   sidebarHidden: boolean;
   setSidebarHidden: (hidden: boolean | ((prev: boolean) => boolean)) => void;
+  sidebarPinned: boolean;
+  setSidebarPinned: (pinned: boolean | ((prev: boolean) => boolean)) => void;
+  sidebarHoverOpen: boolean;
+  setSidebarHoverOpen: (open: boolean) => void;
   cycleSidebarState: () => void;
   
   // Entity IDs
