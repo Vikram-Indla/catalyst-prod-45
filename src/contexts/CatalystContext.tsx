@@ -297,6 +297,10 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setSidebarExpanded,
     sidebarHidden,
     setSidebarHidden,
+    sidebarPinned,
+    setSidebarPinned,
+    sidebarHoverOpen,
+    setSidebarHoverOpen,
     cycleSidebarState,
     portfolioId,
     setPortfolioId,
@@ -321,8 +325,8 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     projectName,
     setProjectName,
   }), [
-    tier, workspaceType, sidebarExpanded, sidebarHidden, cycleSidebarState,
-    setSidebarExpanded, setSidebarHidden,
+    tier, workspaceType, sidebarExpanded, sidebarHidden, sidebarPinned, sidebarHoverOpen,
+    cycleSidebarState, setSidebarExpanded, setSidebarHidden, setSidebarPinned, setSidebarHoverOpen,
     portfolioId, programId, projectId, productId, teamIds, piIds,
     selectedQuarter, snapshotId, industryFilters, programName, projectName,
   ]);
