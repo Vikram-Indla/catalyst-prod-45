@@ -57,7 +57,7 @@ export function HubSwitcher() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { setSidebarHidden, setSidebarExpanded } = useCatalystContext();
+  const { setSidebarHidden, setSidebarExpanded, setSidebarPinned } = useCatalystContext();
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const drawerRef = useRef<HTMLDivElement | null>(null);
 
@@ -92,6 +92,7 @@ export function HubSwitcher() {
     if (href !== '/for-you') {
       setSidebarHidden(false);
       setSidebarExpanded(true);
+      setSidebarPinned(true);
     }
     navigate(href);
   };
