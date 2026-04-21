@@ -868,9 +868,15 @@ export function CreateStoryModal({
                         </Box>
                       ) : (
                         <Select<IconOption>
-                          {...fieldProps}
                           inputId="cs-reporter"
+                          name={fieldProps.name}
+                          isRequired={fieldProps.isRequired}
+                          isDisabled={fieldProps.isDisabled}
+                          isInvalid={fieldProps.isInvalid}
+                          onBlur={fieldProps.onBlur}
+                          onFocus={fieldProps.onFocus}
                           options={memberOptions}
+                          value={memberOptions.find((o) => o.value === form.reporterId) ?? null}
                           onChange={(opt) =>
                             updateField(
                               'reporterId',
