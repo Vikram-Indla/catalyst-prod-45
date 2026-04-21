@@ -83,7 +83,7 @@ export function CatalystHeader() {
       <Box as="nav" aria-label="Global navigation">
         <Flex alignItems="center" gap="space.100">
           {/* Left cluster: sidebar toggle + wordmark (AppSwitcher removed) */}
-          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
+          <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px'), flex: '0 0 auto', paddingInlineEnd: token('space.100', '8px') }}>
             <span
               data-catalyst-sidebar-trigger
               onMouseEnter={handleChevronEnter}
