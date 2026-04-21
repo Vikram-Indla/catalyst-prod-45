@@ -144,12 +144,18 @@ export function ProfileMenu() {
         </Box>
       )}
       trigger={(triggerProps) => (
-        <AvatarTriggerButton
-          {...triggerProps}
-          avatarUrl={avatarUrl}
-          name={name}
-          onClick={() => setOpen((v) => !v)}
-        />
+        <Tooltip
+          content={email ? `${name} • ${email}` : name}
+          position="bottom"
+          hideTooltipOnClick
+        >
+          <AvatarTriggerButton
+            {...triggerProps}
+            avatarUrl={avatarUrl}
+            name={name}
+            onClick={() => setOpen((v) => !v)}
+          />
+        </Tooltip>
       )}
     />
   );
