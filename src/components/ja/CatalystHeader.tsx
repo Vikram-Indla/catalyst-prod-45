@@ -8,6 +8,7 @@ import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
 import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
+import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
@@ -157,6 +158,8 @@ export function CatalystHeader() {
                 icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
               />
             </Tooltip>
+            {/* Hub Switcher — adjacent to chevron, shares hover-peek zone */}
+            <HubSwitcher />
             <a
               href="/for-you"
               aria-label="Catalyst home"
