@@ -163,15 +163,21 @@ export function ProfileMenu() {
           position="bottom"
           hideTooltipOnClick
         >
-          {(tooltipProps) => (
-            <AvatarTriggerButton
-              {...triggerProps}
-              {...tooltipProps}
-              avatarUrl={avatarUrl}
-              name={name}
-              onClick={() => setOpen((v) => !v)}
-            />
-          )}
+          {(tooltipProps) => {
+            const { ref: tooltipRef, ...restTooltip } = tooltipProps as {
+              ref?: React.Ref<HTMLButtonElement>;
+            } & React.HTMLAttributes<HTMLButtonElement>;
+            return (
+              <AvatarTriggerButton
+                {...triggerProps}
+                {...restTooltip}
+                tooltipRef={tooltipRef}
+                avatarUrl={avatarUrl}
+                name={name}
+                onClick={() => setOpen((v) => !v)}
+              />
+            );
+          }}
         </Tooltip>
       )}
     />
