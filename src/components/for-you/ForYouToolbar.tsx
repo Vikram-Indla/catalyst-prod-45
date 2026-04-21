@@ -15,12 +15,14 @@ export function ForYouToolbar({
   searchQuery,
   onSearchChange,
 }: ForYouToolbarProps) {
-  const { open } = useGlobalSearchStore();
+  const handleOpen = () => {
+    window.dispatchEvent(new Event('open-global-search'));
+  };
 
   return (
     <div className="flex items-center gap-4 flex-1">
       <div
-        onClick={open}
+        onClick={handleOpen}
         className="flex items-center gap-1.5 px-3 h-8 rounded-[7px] flex-1 min-w-[240px] max-w-[520px] transition-all duration-150 cursor-pointer"
         style={{
           background: 'var(--cp-bg)',

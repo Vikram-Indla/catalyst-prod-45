@@ -94,15 +94,15 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
           />
         </Tooltip>
       ) : (
-        <Box as="button" onClick={open} xcss={pillStyles}>
+        <button onClick={open} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 8px', font: 'inherit', color: 'inherit' }}>
           <AskCatalystIcon />
           <span>Ask Catalyst</span>
-        </Box>
+        </button>
       )}
       <Drawer onClose={close} isOpen={isOpen} width="medium" label="Ask Catalyst">
         <Box xcss={drawerBodyStyles}>
           <Stack space="space.200">
-            <Text as="h2" size="large" weight="bold">Ask Catalyst</Text>
+            <Text as="strong" size="large" weight="bold">Ask Catalyst</Text>
             <Text size="medium" color="color.text.subtle">
               Ask a question about projects, releases, incidents, or policies. Enter opens the full wiki.
             </Text>
