@@ -89,7 +89,10 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
         />
       )}
       trigger={(triggerProps) => (
-        <Box ref={triggerProps.ref as any} xcss={searchContainerStyles}>
+        <div
+          {...triggerProps}
+          style={{ width: '100%', maxWidth: '100%', flexShrink: 1 }}
+        >
           <Textfield
             ref={inputRef}
             elemBeforeInput={
@@ -132,7 +135,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
             aria-haspopup="dialog"
             aria-expanded={isOpen}
           />
-        </Box>
+        </div>
       )}
     />
   );
