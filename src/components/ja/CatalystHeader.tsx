@@ -24,6 +24,9 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 //  - First two icons use @atlaskit/icon/core (Jira's modern glyph set):
 //    * sidebar-expand / sidebar-collapse (panel icon, not hamburger)
 //    * AppSwitcher internally uses core/app-switcher (2x2 grid, not 3x3 dots)
+//  - Sidebar now uses a 2-state toggle (expanded ↔ hidden); `isCollapsed`
+//    covers both "hidden" and the legacy 56px rail so the icon still flips
+//    correctly.
 const headerStyles = xcss({
   minHeight: '48px',
   height: '48px',
@@ -42,12 +45,21 @@ const navStyles = xcss({
   height: '100%',
 });
 
+const flexRowStyles = xcss({
+  width: '100%',
+});
+
 const productLogoStyles = xcss({
   display: 'flex',
   alignItems: 'center',
   flexShrink: 0,
 });
 
+// Jira parity: search sits left-of-center with a fixed max-width.
+// The remaining space becomes a flexible spacer that pushes the right-hand
+// action cluster (Create, Ask, Bell, Help, Settings, Avatar) to the far edge —
+// this is what gives Jira's top-nav its characteristic "search left, controls
+// far right" feel that Catalyst was missing.
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
@@ -70,10 +82,11 @@ export function CatalystHeader() {
       data-catalyst-top-nav="jira-parity"
     >
       <Box as="nav" xcss={navStyles} aria-label="Global navigation">
-        <Flex alignItems="center" gap="space.100" xcss={xcss({ width: '100%' })}>
+        <Flex alignItems="center" gap="space.100" xcss={flexRowStyles}>
+          {/* Left cluster: sidebar toggle + app switcher + wordmark */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
             <IconButton
-              label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              label={isCollapsed ? 'Expand sidebar' : 'Hide sidebar'}
               appearance="subtle"
               onClick={cycleSidebarState}
               icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
@@ -95,10 +108,12 @@ export function CatalystHeader() {
             </a>
           </Box>
 
+          {/* Search — fixed max-width, left-of-center */}
           <Box xcss={searchRegionStyles}>
             <GlobalSearch />
           </Box>
 
+          {/* Right cluster: Create | Ask Catalyst | Bell | Help | Settings | Avatar */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), flex: '0 0 auto' }}>
             <CreateDropdown />
             <AskCatalystPill />

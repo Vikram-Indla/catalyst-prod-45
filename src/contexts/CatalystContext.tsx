@@ -182,16 +182,15 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       hidden: typeof next === 'function' ? next(prev.hidden) : next,
     }));
   }, []);
-  // Three-state cycle bound to `[`:
-  //   expanded (240px) → collapsed (56px) → hidden (0px) → back to expanded.
-  // Restoring from hidden returns to expanded rather than collapsed — the
-  // user explicitly hid it, so pulling it fully back is the more helpful
-  // default.
+  // Two-state toggle (architectural decision 2026-04-21, Vikram):
+  //   expanded (full sidebar) ↔ hidden (invisible, edge-reveal handle only).
+  // The previous 56px icon-rail "collapsed" intermediate state has been
+  // removed — it created visual clutter and a confusing third state with
+  // no product value. Whenever the sidebar is not expanded, it is hidden.
   const cycleSidebarState = useCallback(() => {
     setSidebarState(prev => {
-      if (prev.hidden) return { hidden: false, expanded: true };
-      if (prev.expanded) return { hidden: false, expanded: false };
-      return { hidden: true, expanded: prev.expanded };
+      if (prev.hidden || !prev.expanded) return { hidden: false, expanded: true };
+      return { hidden: true, expanded: true };
     });
   }, []);
   // Persist sidebar state on every change — fire-and-forget, swallow quota
