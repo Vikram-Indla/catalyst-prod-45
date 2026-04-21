@@ -4,7 +4,6 @@ import { IconButton } from '@atlaskit/button/new';
 import SidebarExpandIcon from '@atlaskit/icon/core/sidebar-expand';
 import SidebarCollapseIcon from '@atlaskit/icon/core/sidebar-collapse';
 import QuestionCircleIcon from '@atlaskit/icon/glyph/question-circle';
-import { AppSwitcher } from '@/components/layout/AppSwitcher';
 import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
@@ -22,9 +21,10 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 //    Previously a downsampled PNG (246x84 → 70x24, ~3.5x downscale) which
 //    Vikram flagged as "dying with dilute" — PNG text legibility collapses
 //    below 1x density. SVG renders crisp at any size.
-//  - First two icons use @atlaskit/icon/core (Jira's modern glyph set):
+//  - First icon uses @atlaskit/icon/core (Jira's modern glyph set):
 //    * sidebar-expand / sidebar-collapse (panel icon, not hamburger)
-//    * AppSwitcher internally uses core/app-switcher (2x2 grid, not 3x3 dots)
+//    The 2x2 AppSwitcher was retired 2026-04-21; Hub switching now lives
+//    inside the sidebar (SidebarBase "Hubs" section) per jira-compare audit.
 //  - Sidebar now uses a 2-state toggle (expanded ↔ hidden); `isCollapsed`
 //    covers both "hidden" and the legacy 56px rail so the icon still flips
 //    correctly.
@@ -129,7 +129,6 @@ export function CatalystHeader() {
               onClick={cycleSidebarState}
               icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
             />
-            <AppSwitcher />
             <a
               href="/for-you"
               aria-label="Catalyst home"
