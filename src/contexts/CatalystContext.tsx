@@ -176,6 +176,16 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [sidebarState, setSidebarState] = useState(loadSidebarState);
   const sidebarExpanded = sidebarState.expanded;
   const sidebarHidden = sidebarState.hidden;
+  // Pinned defaults to true so existing click-driven users keep current
+  // behavior; a sidebar opened via cycleSidebarState pins itself, a sidebar
+  // opened by hover does not.
+  const [sidebarPinned, setSidebarPinnedState] = useState<boolean>(() => {
+    try {
+      const v = localStorage.getItem('catalyst.sidebarPinned');
+      return v === null ? true : v === 'true';
+    } catch { return true; }
+  });
+  const [sidebarHoverOpen, setSidebarHoverOpenState] = useState(false);
   const setSidebarExpanded = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
     setSidebarState(prev => ({
       ...prev,
@@ -188,15 +198,30 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       hidden: typeof next === 'function' ? next(prev.hidden) : next,
     }));
   }, []);
-  // Two-state toggle (architectural decision 2026-04-21, Vikram):
-  //   expanded (full sidebar) ↔ hidden (invisible, edge-reveal handle only).
-  // The previous 56px icon-rail "collapsed" intermediate state has been
-  // removed — it created visual clutter and a confusing third state with
-  // no product value. Whenever the sidebar is not expanded, it is hidden.
+  const setSidebarPinned = useCallback((next: boolean | ((prev: boolean) => boolean)) => {
+    setSidebarPinnedState(prev => {
+      const value = typeof next === 'function' ? next(prev) : next;
+      try { localStorage.setItem('catalyst.sidebarPinned', String(value)); } catch { /* noop */ }
+      return value;
+    });
+  }, []);
+  const setSidebarHoverOpen = useCallback((open: boolean) => {
+    setSidebarHoverOpenState(open);
+  }, []);
+  // Click-driven toggle. Click = pin intent: opening pins, closing unpins so
+  // the next hover starts in transient mode again. Matches Jira parity.
   const cycleSidebarState = useCallback(() => {
     setSidebarState(prev => {
-      if (prev.hidden || !prev.expanded) return { hidden: false, expanded: true };
-      return { hidden: true, expanded: true };
+      const isVisible = !prev.hidden && prev.expanded;
+      if (isVisible) {
+        setSidebarPinnedState(false);
+        try { localStorage.setItem('catalyst.sidebarPinned', 'false'); } catch { /* noop */ }
+        setSidebarHoverOpenState(false);
+        return { hidden: true, expanded: true };
+      }
+      setSidebarPinnedState(true);
+      try { localStorage.setItem('catalyst.sidebarPinned', 'true'); } catch { /* noop */ }
+      return { hidden: false, expanded: true };
     });
   }, []);
   // Persist sidebar state on every change — fire-and-forget, swallow quota
