@@ -3,7 +3,9 @@ import { token } from '@atlaskit/tokens';
 import { IconButton } from '@atlaskit/button/new';
 import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import MenuExpandIcon from '@atlaskit/icon/glyph/menu-expand';
-import { AppSwitcher } from '@/components/layout/AppSwitcher';
+// AppSwitcher (8-square hub picker) removed 2026-04-21 (Vikram). Architectural
+// decision: only the Catalyst wordmark sits to the right of the chevron — the
+// hub switcher pattern is not used in our IA.
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
@@ -55,7 +57,21 @@ const flexSpacerStyles = xcss({
 });
 
 export function CatalystHeader() {
-  const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
+  const { sidebarExpanded, sidebarHidden, cycleSidebarState, setSidebarPeek } = useCatalystContext();
+
+  // Hover-peek wiring (Jira parity 2026-04-21):
+  //   • Hover the chevron while sidebar is hidden → peek=true → CatalystShell
+  //     floats the sidebar as an overlay on top of main content (no layout shift).
+  //   • Mouse leaves the chevron → peek=false (CatalystShell auto-closes the
+  //     overlay UNLESS the cursor moved into the overlay itself, which keeps
+  //     it open via its own onMouseEnter).
+  //   • Click → cycleSidebarState() persistently toggles hidden ↔ expanded.
+  const handleChevronEnter = () => {
+    if (sidebarHidden) setSidebarPeek(true);
+  };
+  const handleChevronLeave = () => {
+    if (sidebarHidden) setSidebarPeek(false);
+  };
 
   return (
     <Box
@@ -66,15 +82,21 @@ export function CatalystHeader() {
     >
       <Box as="nav" aria-label="Global navigation">
         <Flex alignItems="center" gap="space.100">
-          {/* Left cluster: sidebar toggle + app switcher + wordmark */}
+          {/* Left cluster: sidebar toggle + wordmark (AppSwitcher removed) */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flex: '0 0 auto' }}>
-            <IconButton
-              label={sidebarHidden || !sidebarExpanded ? 'Expand sidebar' : 'Hide sidebar'}
-              appearance="subtle"
-              onClick={cycleSidebarState}
-              icon={sidebarHidden || !sidebarExpanded ? MenuExpandIcon : ChevronLeftIcon}
-            />
-            <AppSwitcher />
+            <span
+              data-catalyst-sidebar-trigger
+              onMouseEnter={handleChevronEnter}
+              onMouseLeave={handleChevronLeave}
+              style={{ display: 'inline-flex' }}
+            >
+              <IconButton
+                label={sidebarHidden || !sidebarExpanded ? 'Expand sidebar' : 'Hide sidebar'}
+                appearance="subtle"
+                onClick={cycleSidebarState}
+                icon={sidebarHidden || !sidebarExpanded ? MenuExpandIcon : ChevronLeftIcon}
+              />
+            </span>
             <a href="/for-you" aria-label="Catalyst home" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}>
               <Box xcss={productLogoStyles}>
                 <img
