@@ -149,12 +149,15 @@ export function ProfileMenu() {
           position="bottom"
           hideTooltipOnClick
         >
-          <AvatarTriggerButton
-            {...triggerProps}
-            avatarUrl={avatarUrl}
-            name={name}
-            onClick={() => setOpen((v) => !v)}
-          />
+          {(tooltipProps) => (
+            <AvatarTriggerButton
+              {...triggerProps}
+              {...tooltipProps}
+              avatarUrl={avatarUrl}
+              name={name}
+              onClick={() => setOpen((v) => !v)}
+            />
+          )}
         </Tooltip>
       )}
     />
