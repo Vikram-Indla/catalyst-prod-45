@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
-import NotificationIcon from '@atlaskit/icon/glyph/notification';
+import NotificationAllIcon from '@atlaskit/icon/glyph/notification-all';
 import { Box, xcss } from '@atlaskit/primitives';
 import NotificationPanel from '@/components/notifications/NotificationPanel';
 import { useUnreadCount } from '@/hooks/useUnreadCount';
@@ -15,7 +15,7 @@ export function NotificationsPanel() {
     <>
       <Box xcss={triggerWrapStyles}>
         <IconButton
-          icon={NotificationIcon}
+          icon={NotificationAllIcon}
           label="Notifications"
           appearance="subtle"
           isSelected={open}
