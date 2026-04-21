@@ -1,74 +1,44 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Popup from '@atlaskit/popup';
-import { IconButton } from '@atlaskit/button/new';
+import { LogOut, Settings as SettingsIcon, User as UserIcon, Sun, Moon, Monitor, Palette } from 'lucide-react';
 
-import PersonIcon from '@atlaskit/icon/core/person';
-import SettingsIcon from '@atlaskit/icon/core/settings';
-import SignOutIcon from '@atlaskit/icon/core/log-out';
-import ThemeIcon from '@atlaskit/icon/core/theme';
-import { ButtonItem, LinkItem, MenuGroup, Section } from '@atlaskit/menu';
-import { Box } from '@atlaskit/primitives';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 /**
- * ProfileMenu — surgical rebuild Apr 2026
+ * ProfileMenu — Radix rebuild Apr 2026
  *
- * Strict 1:1 mirror of SettingsMenu (which is known-working). Differences
- * from SettingsMenu kept to the absolute minimum:
- *   - Custom avatar icon component (module-scope, stable identity)
- *   - 4 menu items instead of N
- *   - Sign-out + theme handlers
+ * Why not Atlaskit Popup: after multiple deep-dive RCAs, Atlaskit's Popup
+ * portal renders content (confirmed via console logs firing 6× per click)
+ * but the floating layer is invisible / unmeasurable in our shell context.
+ * Likely missing @atlaskit/layering provider. Investigation cost > benefit.
  *
- * Removed (caused prior popup-open failures): Avatar inside content, Heading,
- * Stack, Flex, Text, nested Box. These are the suspects that broke render.
- * They can be added back once the bare popup is confirmed opening.
+ * Switched to Radix DropdownMenu (already used across the codebase via
+ * src/components/ui/dropdown-menu.tsx) which:
+ *  - Portals to document.body cleanly (no shell ancestor clipping)
+ *  - Anchors reliably under the trigger
+ *  - No ref-stability footguns
+ *  - Works with any trigger element
  */
 
-// Module-level mutable state read by the stable AvatarGlyph component.
-// Updated each render of ProfileMenu without changing icon component identity.
-const avatarState: { url?: string; initials: string } = { initials: 'U' };
-
-function AvatarGlyph() {
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 24,
-        height: 24,
-        borderRadius: '50%',
-        overflow: 'hidden',
-        backgroundColor: '#5243AA',
-        color: '#FFFFFF',
-        fontSize: 11,
-        fontWeight: 600,
-        fontFamily: 'inherit',
-        pointerEvents: 'none',
-      }}
-    >
-      {avatarState.url ? (
-        <img
-          src={avatarState.url}
-          alt=""
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-        />
-      ) : (
-        <span>{avatarState.initials}</span>
-      )}
-    </span>
-  );
-}
-
 export function ProfileMenu() {
-  const [open, setOpen] = useState(false);
-  const [themeOpen, setThemeOpen] = useState(false);
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
 
   const email = user?.email ?? '';
   const name =
@@ -90,16 +60,7 @@ export function ProfileMenu() {
       .join('')
       .toUpperCase() || 'U';
 
-  // Update module state for the stable icon component.
-  avatarState.url = avatarUrl;
-  avatarState.initials = initials;
-
-  const go = (href: string) => {
-    setOpen(false);
-    navigate(href);
-  };
-
-  const onSignOut = async () => {
+  const handleSignOut = async () => {
     setOpen(false);
     try {
       await signOut();
@@ -108,117 +69,219 @@ export function ProfileMenu() {
     }
   };
 
+  const go = (path: string) => {
+    setOpen(false);
+    navigate(path);
+  };
+
   return (
-    <Popup
-      isOpen={open}
-      onClose={() => {
-        setOpen(false);
-        setThemeOpen(false);
-      }}
-      placement="bottom-end"
-      label="Profile"
-      content={() => {
-        // Diagnostic: confirm popup content is being rendered. If you see the
-        // trigger flash selected but never see this log, Atlaskit is bailing
-        // before render — most likely the trigger ref is stale.
-        // eslint-disable-next-line no-console
-        console.log('[ProfileMenu] popup content rendered', {
-          name,
-          email,
-          themeOpen,
-        });
-        return (
-          <Box padding="space.150">
-            <Box padding="space.150">
-              <div
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: '#172B4D',
-                  marginBottom: 2,
-                }}
-              >
-                {name}
-              </div>
-              <div style={{ fontSize: 12, color: '#6B778C' }}>{email}</div>
-            </Box>
-            <MenuGroup
-              minWidth="280px"
-              spacing="cozy"
-              menuLabel="Profile menu"
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Profile menu"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 32,
+            padding: 0,
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            borderRadius: '50%',
+            outline: 'none',
+            transition: 'box-shadow 120ms ease',
+            boxShadow: open
+              ? '0 0 0 2px #0052CC'
+              : '0 0 0 0 transparent',
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 28,
+              height: 28,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              backgroundColor: '#5243AA',
+              color: '#FFFFFF',
+              fontSize: 11,
+              fontWeight: 600,
+              pointerEvents: 'none',
+            }}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <span>{initials}</span>
+            )}
+          </span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="end"
+        sideOffset={8}
+        className="w-72 p-0 z-[1000]"
+      >
+        {/* Identity header */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '12px 14px',
+            borderBottom: '1px solid #DFE1E6',
+            background: '#F4F5F7',
+          }}
+        >
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              overflow: 'hidden',
+              backgroundColor: '#5243AA',
+              color: '#FFFFFF',
+              fontSize: 14,
+              fontWeight: 600,
+              flexShrink: 0,
+            }}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            ) : (
+              <span>{initials}</span>
+            )}
+          </span>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div
+              style={{
+                fontSize: 14,
+                fontWeight: 600,
+                color: '#172B4D',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
             >
-              <Section>
-                <LinkItem
-                  href="/profile"
-                  iconBefore={<PersonIcon label="" />}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    go('/profile');
-                  }}
-                >
-                  Profile
-                </LinkItem>
-                <LinkItem
-                  href="/settings"
-                  iconBefore={<SettingsIcon label="" />}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    go('/settings');
-                  }}
-                >
-                  Account settings
-                </LinkItem>
-                <ButtonItem
-                  iconBefore={<ThemeIcon label="" />}
-                  onClick={() => setThemeOpen((v) => !v)}
-                >
-                  Theme
-                </ButtonItem>
-                {themeOpen && (
-                  <Box paddingInlineStart="space.400">
-                    <ButtonItem
-                      isSelected={theme === 'light'}
-                      onClick={() => setTheme('light')}
-                    >
-                      Light
-                    </ButtonItem>
-                    <ButtonItem
-                      isSelected={theme === 'dark'}
-                      onClick={() => setTheme('dark')}
-                    >
-                      Dark
-                    </ButtonItem>
-                    <ButtonItem
-                      isSelected={theme === 'system'}
-                      onClick={() => setTheme('system')}
-                    >
-                      Match system
-                    </ButtonItem>
-                  </Box>
+              {name}
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                color: '#6B778C',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {email}
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding: 4 }}>
+          <DropdownMenuLabel className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#6B778C]">
+            Account
+          </DropdownMenuLabel>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              go('/profile');
+            }}
+            className="cursor-pointer"
+          >
+            <UserIcon className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              go('/settings');
+            }}
+            className="cursor-pointer"
+          >
+            <SettingsIcon className="mr-2 h-4 w-4" />
+            <span>Account settings</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="cursor-pointer">
+              <Palette className="mr-2 h-4 w-4" />
+              <span>Theme</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="z-[1001]">
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setTheme('light');
+                }}
+                className="cursor-pointer"
+              >
+                <Sun className="mr-2 h-4 w-4" />
+                Light
+                {theme === 'light' && (
+                  <span className="ml-auto text-[#0052CC]">✓</span>
                 )}
-              </Section>
-              <Section hasSeparator>
-                <ButtonItem
-                  iconBefore={<SignOutIcon label="" />}
-                  onClick={() => void onSignOut()}
-                >
-                  Log out
-                </ButtonItem>
-              </Section>
-            </MenuGroup>
-          </Box>
-        );
-      }}
-      trigger={(triggerProps) => (
-        <IconButton
-          {...triggerProps}
-          label="Profile"
-          appearance="subtle"
-          isSelected={open}
-          onClick={() => setOpen((v) => !v)}
-          icon={AvatarGlyph}
-        />
-      )}
-    />
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setTheme('dark');
+                }}
+                className="cursor-pointer"
+              >
+                <Moon className="mr-2 h-4 w-4" />
+                Dark
+                {theme === 'dark' && (
+                  <span className="ml-auto text-[#0052CC]">✓</span>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setTheme('system');
+                }}
+                className="cursor-pointer"
+              >
+                <Monitor className="mr-2 h-4 w-4" />
+                Match system
+                {theme === 'system' && (
+                  <span className="ml-auto text-[#0052CC]">✓</span>
+                )}
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              void handleSignOut();
+            }}
+            className="cursor-pointer"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
