@@ -120,9 +120,19 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               alignItems: 'center',
               gap: 6,
               cursor: isForYou ? 'pointer' : 'not-allowed',
-              padding: '4px 8px',
+              height: 32,
+              paddingInline: 12,
+              border: '1px solid #DFE1E6',
               borderRadius: 6,
-              opacity: isForYou ? 1 : 0.45,
+              background: '#FFFFFF',
+              opacity: isForYou ? 1 : 0.6,
+              boxSizing: 'border-box',
+            }}
+            onMouseEnter={(e) => {
+              if (isForYou) e.currentTarget.style.background = '#F4F5F7';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#FFFFFF';
             }}
           >
             <AskCatalystIcon />
