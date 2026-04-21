@@ -118,17 +118,15 @@ export function ProfileMenu() {
           </MenuGroup>
         </Box>
       )}
-      trigger={(props) => (
-        <Tooltip content="Profile" position="bottom">
-          <IconButton
-            {...props}
-            label="Profile"
-            appearance="subtle"
-            isSelected={open}
-            onClick={() => setOpen((v) => !v)}
-            icon={() => <Avatar size="small" src={avatarUrl} name={name} />}
-          />
-        </Tooltip>
+      trigger={(triggerProps) => (
+        <IconButton
+          {...triggerProps}
+          label="Profile"
+          appearance="subtle"
+          isSelected={open}
+          onClick={() => setOpen((v) => !v)}
+          icon={() => <Avatar size="small" src={avatarUrl} name={name} />}
+        />
       )}
     />
   );
