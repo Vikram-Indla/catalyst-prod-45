@@ -63,7 +63,7 @@ export function ProfileMenu() {
     resolveAvatarUrl(name) ||
     undefined;
 
-  const tooltipText = email ? `${name} • ${email}` : name;
+  const tooltipText = email || name;
 
   const go = (path: string) => {
     setOpen(false);
