@@ -8,13 +8,15 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import SignOutIcon from '@atlaskit/icon/core/log-out';
 import ThemeIcon from '@atlaskit/icon/core/theme';
 import { ButtonItem, LinkItem, MenuGroup, Section } from '@atlaskit/menu';
-import { Box, Flex, Stack, Text, xcss } from '@atlaskit/primitives';
+import { Box, Flex, Stack, Text } from '@atlaskit/primitives';
 import Heading from '@atlaskit/heading';
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
-const popupStyles = xcss({ width: 'size.4000' });
+// SettingsMenu RCA: never set Popup-content width via xcss tokens — invalid
+// tokens collapse the Box to zero width and the popup renders invisible.
+// MenuGroup owns the width via its `minWidth` prop; Box only pads.
 
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
