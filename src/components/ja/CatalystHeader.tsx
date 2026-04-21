@@ -100,16 +100,9 @@ export function CatalystHeader() {
           {/* Flex spacer pushes the right cluster to the far edge */}
           <Box xcss={flexSpacerStyles} />
 
-          {/* Right cluster: Ask | Bell | Help | Settings | Avatar */}
+          {/* Right cluster: Bell | Settings | Avatar */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), flex: '0 0 auto' }}>
-            <AskCatalystPill />
             <NotificationsPanel />
-            <IconButton
-              label="Help"
-              appearance="subtle"
-              icon={QuestionCircleIcon}
-              onClick={() => window.open('/wiki', '_self')}
-            />
             <SettingsMenu />
             <ProfileMenu />
           </Box>
