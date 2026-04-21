@@ -125,11 +125,13 @@ export function ProfileMenu() {
           ref={ref as React.Ref<HTMLButtonElement>}
           type="button"
           aria-label="Profile"
+          aria-haspopup="dialog"
+          aria-expanded={open}
           title={tooltipText}
           onClick={() => setOpen((v) => !v)}
           style={{
             background: 'transparent',
-            border: 'none',
+            border: open ? '2px solid #0052CC' : '2px solid transparent',
             padding: 0,
             width: 32,
             height: 32,
@@ -139,11 +141,44 @@ export function ProfileMenu() {
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
+            transition: 'border-color 120ms ease',
           }}
         >
-          <span style={{ pointerEvents: 'none', display: 'inline-flex' }}>
-            <Avatar size="small" src={avatarUrl} name={name} />
-          </span>
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt=""
+              draggable={false}
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                objectFit: 'cover',
+                pointerEvents: 'none',
+                display: 'block',
+              }}
+            />
+          ) : (
+            <span
+              aria-hidden
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: '50%',
+                background: '#DEEBFF',
+                color: '#0052CC',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+                fontFamily: 'Inter, sans-serif',
+                pointerEvents: 'none',
+              }}
+            >
+              {(name || 'U').slice(0, 1).toUpperCase()}
+            </span>
+          )}
         </button>
       )}
     />
