@@ -434,9 +434,11 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/@atlaskit/')) {
             return 'vendor-atlaskit-ui';
           }
-          if (id.includes('node_modules/@tiptap/')) {
-            return 'vendor-tiptap';
-          }
+          // @tiptap/* intentionally not split — it's only reached via the
+          // (lazy) ConfluenceEditor path; in lean builds it's stubbed out
+          // entirely, and in full builds it co-locates fine with whichever
+          // route imports it. A dedicated chunk would fail the SW drift
+          // verify in lean builds (chunk declared but never produced).
 
           if (id.includes('node_modules/framer-motion')) {
             return 'vendor-motion';
