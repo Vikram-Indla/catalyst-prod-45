@@ -7,7 +7,7 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import NotificationIcon from '@atlaskit/icon/glyph/notification';
 import IssuesIcon from '@atlaskit/icon/glyph/issues';
-import ShieldIcon from '@atlaskit/icon/glyph/shield';
+import LockIcon from '@atlaskit/icon/glyph/lock';
 import Textfield from '@atlaskit/textfield';
 import { LinkItem, MenuGroup, Section } from '@atlaskit/menu';
 import { Box, xcss } from '@atlaskit/primitives';
