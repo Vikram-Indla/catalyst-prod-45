@@ -560,18 +560,34 @@ function CatalystShellContent() {
             backfaceVisibility: 'hidden',
             // 2026-04-19 Tier 2: CSS containment on the sidebar wrapper so its
             // subtree's layout/paint work doesn't cascade into main during the
-            // 180ms width animation. Belt-and-suspenders with the SidebarBase
-            // `contain: layout style` — this one isolates the wrapper div,
-            // that one isolates the aside within.
+            // 180ms width animation.
             contain: 'layout style',
+            // Overlay mode (hover-only, not pinned): float over content with
+            // shadow + zero layout width so main canvas stays full-width.
+            // Pinned mode: behaves as before, pushing content.
+            ...(sidebarOverlayMode
+              ? {
+                  position: 'absolute' as const,
+                  top: 0,
+                  left: 0,
+                  bottom: 0,
+                  zIndex: 40,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                }
+              : {}),
           }}
-        >
+          >
             {sidebarHidden ? (
               <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); }} />
-            ) : (
+            ) : sidebarVisuallyOpen ? (
               <Suspense fallback={null}>
                 {renderSidebar()}
               </Suspense>
+            ) : (
+              // Collapsed/closed but not user-hidden: render a minimal hover
+              // sensor so the chevron-only hover region still works (sidebar
+              // mounts on hover via the document-level mousemove listener).
+              <div style={{ width: 0, height: '100%' }} aria-hidden />
             )}
           </div>
 
