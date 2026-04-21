@@ -316,24 +316,9 @@ export function SidebarBase({
               expanded; collapsed mode keeps the rail visually clean. */}
           {expanded && (
             <div className="mb-2">
-              <div style={{ padding: '12px 12px 4px', lineHeight: 1 }}>
-                <span
-                  style={{
-                    fontFamily: "'Sora', sans-serif",
-                    color: sectionLabel,
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    letterSpacing: '0.07em',
-                    textTransform: 'uppercase' as const,
-                  }}
-                >
-                  Hubs
-                </span>
-              </div>
               <div>
                 {HUB_ITEMS.map((hub) => {
                   const active = location.pathname === hub.href || location.pathname.startsWith(hub.href + '/') ||
-                    // Special case: /for-you matches the Home tile
                     (hub.href === '/for-you' && location.pathname === '/for-you');
                   return (
                     <button
@@ -390,7 +375,6 @@ export function SidebarBase({
                   );
                 })}
               </div>
-              <div style={{ borderTop: `1px solid ${dividerColor}`, margin: '8px 12px 0' }} />
             </div>
           )}
 
