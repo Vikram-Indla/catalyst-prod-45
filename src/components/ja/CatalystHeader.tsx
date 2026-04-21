@@ -37,14 +37,23 @@ const productLogoStyles = xcss({
   flexShrink: 0,
 });
 
+// Jira parity: search sits left-of-center with a fixed max-width (~720px).
+// The remaining space becomes a flexible spacer that pushes the right-hand
+// action cluster (Ask, Bell, Help, Settings, Avatar) to the far edge — this
+// is what gives Jira's top-nav its characteristic "search left, controls far
+// right" feel that Catalyst was missing.
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
-  flex: '1 1 auto',
-  minWidth: 0,
-  maxWidth: '680px',
+  width: '100%',
+  maxWidth: '720px',
+  minWidth: '0',
   marginInlineStart: 'space.200',
-  marginInlineEnd: 'space.200',
+});
+
+const flexSpacerStyles = xcss({
+  flex: '1 1 auto',
+  minWidth: 'space.200',
 });
 
 export function CatalystHeader() {
