@@ -2,6 +2,7 @@ import { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
+import Tooltip from '@atlaskit/tooltip';
 
 import { IconButton } from '@atlaskit/button/new';
 import PersonIcon from '@atlaskit/icon/glyph/person';
@@ -143,12 +144,18 @@ export function ProfileMenu() {
         </Box>
       )}
       trigger={(triggerProps) => (
-        <AvatarTriggerButton
-          {...triggerProps}
-          avatarUrl={avatarUrl}
-          name={name}
-          onClick={() => setOpen((v) => !v)}
-        />
+        <Tooltip
+          content={email ? `${name} • ${email}` : name}
+          position="bottom"
+          hideTooltipOnClick
+        >
+          <AvatarTriggerButton
+            {...triggerProps}
+            avatarUrl={avatarUrl}
+            name={name}
+            onClick={() => setOpen((v) => !v)}
+          />
+        </Tooltip>
       )}
     />
   );
