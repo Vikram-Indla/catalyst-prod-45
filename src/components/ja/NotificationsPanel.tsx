@@ -7,7 +7,12 @@ import NotificationPanel from '@/components/notifications/NotificationPanel';
 import { useUnreadCount } from '@/hooks/useUnreadCount';
 
 const triggerWrapStyles = xcss({ position: 'relative', display: 'inline-block' });
-const badgeStyles = xcss({ position: 'absolute', insetBlockStart: 'space.0', insetInlineEnd: 'space.0' });
+const badgeStyles = xcss({
+  position: 'absolute',
+  insetBlockStart: 'space.negative.050',
+  insetInlineEnd: 'space.negative.050',
+  pointerEvents: 'none',
+});
 
 export function NotificationsPanel() {
   const [open, setOpen] = useState(false);
