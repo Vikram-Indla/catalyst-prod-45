@@ -59,7 +59,7 @@ export function ProfileMenu() {
       placement="bottom-end"
       label="Profile"
       content={() => (
-        <Box>
+        <Box padding="space.150">
           {/* Header — large avatar + name + email */}
           <Box padding="space.200" backgroundColor="color.background.neutral.subtle">
             <Flex alignItems="center" gap="space.150">
