@@ -7,6 +7,7 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import NotificationIcon from '@atlaskit/icon/glyph/notification';
 import IssuesIcon from '@atlaskit/icon/glyph/issues';
+import LockIcon from '@atlaskit/icon/glyph/lock';
 import Textfield from '@atlaskit/textfield';
 import { LinkItem, MenuGroup, Section } from '@atlaskit/menu';
 import { Box, xcss } from '@atlaskit/primitives';
@@ -20,6 +21,7 @@ export function SettingsMenu() {
   const navigate = useNavigate();
   const { isAdmin } = useUserRole();
   const items = useMemo(() => [
+    ...(isAdmin ? [{ section: 'Catalyst administration', label: 'Admin', description: 'Open the full administration console', href: '/admin', icon: <LockIcon label="" /> }] : []),
     { section: 'Personal Catalyst settings', label: 'General settings', description: 'Manage language, time zone, and other personal preferences', href: '/settings/general', icon: <PersonIcon label="" /> },
     { section: 'Personal Catalyst settings', label: 'Notification settings', description: 'Manage email and in-app notifications from Catalyst', href: '/settings/notifications', icon: <NotificationIcon label="" /> },
     ...(isAdmin ? [{ section: 'Catalyst admin settings', label: 'Work items', description: 'Configure work types, workflows, screens, fields, and more', href: '/admin/work-items', icon: <IssuesIcon label="" /> }] : []),
