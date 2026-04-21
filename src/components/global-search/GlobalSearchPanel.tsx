@@ -175,7 +175,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
     setActiveIndex(0);
   }, [rows.length]);
 
-  // Keyboard nav (arrow up/down + enter)
+  // Keyboard nav (arrow up/down + enter + escape)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
@@ -190,11 +190,14 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           e.preventDefault();
           r.activate();
         }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [rows, activeIndex]);
+  }, [rows, activeIndex, onClose]);
 
   // Render helpers ─────────────────────────────────────────────────────
   const rowBase: React.CSSProperties = {
