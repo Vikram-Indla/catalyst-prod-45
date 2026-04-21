@@ -79,7 +79,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
     <Popup
       isOpen={isOpen}
       onClose={() => closeSearch()}
-      placement="bottom-start"
+      placement="bottom-end"
       shouldRenderToParent={false}
       content={() => (
         <GlobalSearchPanel
@@ -91,7 +91,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
       trigger={(triggerProps) => (
         <div
           {...triggerProps}
-          style={{ width: '100%', maxWidth: '100%', flexShrink: 1 }}
+          style={{ width: '100%', maxWidth: '100%', flexShrink: 1, minWidth: 0 }}
         >
           <Textfield
             ref={inputRef}
