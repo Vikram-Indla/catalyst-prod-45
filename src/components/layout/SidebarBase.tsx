@@ -311,72 +311,8 @@ export function SidebarBase({
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto" style={{ padding: '4px 6px' }}>
-          {/* Hubs Section — top-of-sidebar app launcher (Apr 2026). Replaces
-              the retired 2x2 AppSwitcher in the top nav. Only renders when
-              expanded; collapsed mode keeps the rail visually clean. */}
-          {expanded && (
-            <div className="mb-2">
-              <div>
-                {HUB_ITEMS.map((hub) => {
-                  const active = location.pathname === hub.href || location.pathname.startsWith(hub.href + '/') ||
-                    (hub.href === '/for-you' && location.pathname === '/for-you');
-                  return (
-                    <button
-                      key={hub.href}
-                      onClick={() => navigate(hub.href)}
-                      className="group w-full flex items-center border-none cursor-pointer transition-all relative"
-                      style={{
-                        height: '32px',
-                        padding: '0 12px',
-                        gap: '10px',
-                        fontSize: '14px',
-                        fontWeight: active ? 600 : 500,
-                        color: active ? tokens.activeText : tokens.itemText,
-                        fontFamily: "'Inter', sans-serif",
-                        outline: 'none',
-                        background: active ? tokens.activeBg : 'transparent',
-                        lineHeight: 1,
-                        borderRadius: '6px',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!active) {
-                          e.currentTarget.style.background = tokens.hoverBg;
-                          e.currentTarget.style.color = tokens.hoverText;
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = active ? tokens.activeBg : 'transparent';
-                        e.currentTarget.style.color = active ? tokens.activeText : tokens.itemText;
-                      }}
-                    >
-                      {active && (
-                        <span
-                          style={{
-                            position: 'absolute',
-                            left: 0,
-                            top: '4px',
-                            bottom: '4px',
-                            width: '3px',
-                            background: 'var(--cp-blue)',
-                            borderRadius: '0 3px 3px 0',
-                          }}
-                        />
-                      )}
-                      <span
-                        className="flex items-center justify-center flex-shrink-0"
-                        style={{ width: '16px', height: '16px', color: hub.tone }}
-                      >
-                        <hub.Icon label="" size="small" primaryColor={hub.tone} />
-                      </span>
-                      <span className="flex-1 text-left" style={{ lineHeight: '20px', whiteSpace: 'nowrap' }}>
-                        {hub.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          {/* Hubs Section removed (Apr 2026): app launcher lives exclusively
+              in the top-nav HubSwitcher popup. Sidebar no longer duplicates it. */}
 
           {/* Favorites Section */}
           {config.showFavorites !== false && favoritedItems.length > 0 && !expanded && null}
