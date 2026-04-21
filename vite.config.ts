@@ -261,6 +261,7 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/icon',
       '@atlaskit/inline-edit',
       '@atlaskit/lozenge',
+      '@atlaskit/menu',
       '@atlaskit/modal-dialog',
       '@atlaskit/user-picker',
       '@atlaskit/page-layout',
