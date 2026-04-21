@@ -127,7 +127,7 @@ function CatalystShellContent() {
       if (!(target instanceof Element)) return false;
       // Chevron IconButton in the header — match by aria-label since the
       // header surface is owned by a separate brief and we can't add hooks.
-      if (target.closest('[data-catalyst-header] button[aria-label="Expand sidebar"], [data-catalyst-header] button[aria-label="Hide sidebar"]')) return true;
+      if (target.closest('button[aria-label="Expand sidebar"], button[aria-label="Hide sidebar"]')) return true;
       if (target.closest('[data-catalyst-sidebar]')) return true;
       return false;
     };
