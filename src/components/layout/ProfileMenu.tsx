@@ -174,7 +174,10 @@ export function ProfileMenu() {
                 tooltipRef={tooltipRef}
                 avatarUrl={avatarUrl}
                 name={name}
-                onClick={() => setOpen((v) => !v)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen((v) => !v);
+                }}
               />
             );
           }}
