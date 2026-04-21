@@ -85,9 +85,9 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
   return (
     <>
       {iconOnly ? (
-        <Tooltip content="Ask Catalyst" position="bottom">
+        <Tooltip content="Ask Caty" position="bottom">
           <IconButton
-            label="Ask Catalyst"
+            label="Ask Caty"
             appearance="subtle"
             icon={AskCatalystIcon}
             onClick={open}
@@ -108,13 +108,13 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
           }}
         >
           <AskCatalystIcon />
-          <span style={{ fontSize: 14, fontWeight: 500 }}>Ask Catalyst</span>
+          <span style={{ fontSize: 14, fontWeight: 500 }}>Ask Caty</span>
         </button>
       )}
-      <Drawer onClose={close} isOpen={isOpen} width="medium" label="Ask Catalyst">
+      <Drawer onClose={close} isOpen={isOpen} width="medium" label="Ask Caty">
         <Box xcss={drawerBodyStyles}>
           <Stack space="space.200">
-            <Text as="strong" size="large" weight="bold">Ask Catalyst</Text>
+            <Text as="strong" size="large" weight="bold">Ask Caty</Text>
             <Text size="medium" color="color.text.subtle">
               Ask a question about projects, releases, incidents, or policies. Enter opens the full wiki.
             </Text>
