@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import { IconButton } from '@atlaskit/button/new';
@@ -8,38 +8,29 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import SignOutIcon from '@atlaskit/icon/core/log-out';
 import ThemeIcon from '@atlaskit/icon/core/theme';
 import { ButtonItem, LinkItem, MenuGroup, Section } from '@atlaskit/menu';
-import { Box, Flex, Stack, Text } from '@atlaskit/primitives';
-import Heading from '@atlaskit/heading';
-import Avatar from '@atlaskit/avatar';
+import { Box } from '@atlaskit/primitives';
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 /**
- * ProfileMenu — RCA Apr 2026 (final-final)
+ * ProfileMenu — surgical rebuild Apr 2026
  *
- * Root cause of prior failures: passing a `useCallback`-created icon component
- * to <IconButton icon={...}>. The component identity changed every render when
- * `open` state toggled, causing IconButton to remount and Atlaskit Popup to
- * lose its anchor ref → popup rendered with zero size / off-screen.
+ * Strict 1:1 mirror of SettingsMenu (which is known-working). Differences
+ * from SettingsMenu kept to the absolute minimum:
+ *   - Custom avatar icon component (module-scope, stable identity)
+ *   - 4 menu items instead of N
+ *   - Sign-out + theme handlers
  *
- * Fix: use a MODULE-SCOPE component reference for the icon, exactly like
- * SettingsMenu does with `icon={SettingsIcon}`. Avatar data flows in via a
- * module-level mutable ref (set per render) so the icon component stays stable.
- *
- * Mirrors SettingsMenu's structure 1:1:
- *  - <Popup placement="bottom-end" label=...>
- *  - <IconButton {...props} appearance="subtle" isSelected={open} icon={Stable} />
- *  - <Box padding="space.150"> shell
- *  - <MenuGroup minWidth="..."> owns width
+ * Removed (caused prior popup-open failures): Avatar inside content, Heading,
+ * Stack, Flex, Text, nested Box. These are the suspects that broke render.
+ * They can be added back once the bare popup is confirmed opening.
  */
 
-// Module-level holder for current avatar render data. Set on each render of
-// ProfileMenu, read by the stable AvatarGlyph icon component.
+// Module-level mutable state read by the stable AvatarGlyph component.
+// Updated each render of ProfileMenu without changing icon component identity.
 const avatarState: { url?: string; initials: string } = { initials: 'U' };
 
-// STABLE module-scope icon component — identity never changes, so IconButton
-// never remounts, so Popup's anchor ref stays attached.
 function AvatarGlyph() {
   return (
     <span
@@ -90,32 +81,31 @@ export function ProfileMenu() {
     resolveAvatarUrl(name) ||
     undefined;
 
-  const initials = useMemo(
-    () =>
-      name
-        .split(' ')
-        .map((n) => n[0])
-        .filter(Boolean)
-        .slice(0, 2)
-        .join('')
-        .toUpperCase() || 'U',
-    [name],
-  );
+  const initials =
+    name
+      .split(' ')
+      .map((n) => n[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'U';
 
-  // Update module-level state so the stable icon component reads fresh data
-  // without changing its own identity.
+  // Update module state for the stable icon component.
   avatarState.url = avatarUrl;
   avatarState.initials = initials;
 
-  const go = (path: string) => {
+  const go = (href: string) => {
     setOpen(false);
-    navigate(path);
+    navigate(href);
   };
 
-  const handleSignOut = async () => {
+  const onSignOut = async () => {
     setOpen(false);
-    await signOut();
-    navigate('/auth');
+    try {
+      await signOut();
+    } finally {
+      navigate('/auth');
+    }
   };
 
   return (
@@ -127,90 +117,101 @@ export function ProfileMenu() {
       }}
       placement="bottom-end"
       label="Profile"
-      content={() => (
-        <Box padding="space.150">
-          <Box
-            padding="space.200"
-            backgroundColor="color.background.neutral.subtle"
-          >
-            <Flex alignItems="center" gap="space.150">
-              <Avatar size="large" src={avatarUrl} name={name} />
-              <Stack space="space.025">
-                <Heading size="small">{name}</Heading>
-                <Text size="small" color="color.text.subtlest">
-                  {email}
-                </Text>
-              </Stack>
-            </Flex>
+      content={() => {
+        // Diagnostic: confirm popup content is being rendered. If you see the
+        // trigger flash selected but never see this log, Atlaskit is bailing
+        // before render — most likely the trigger ref is stale.
+        // eslint-disable-next-line no-console
+        console.log('[ProfileMenu] popup content rendered', {
+          name,
+          email,
+          themeOpen,
+        });
+        return (
+          <Box padding="space.150">
+            <Box padding="space.150">
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: '#172B4D',
+                  marginBottom: 2,
+                }}
+              >
+                {name}
+              </div>
+              <div style={{ fontSize: 12, color: '#6B778C' }}>{email}</div>
+            </Box>
+            <MenuGroup
+              minWidth="280px"
+              spacing="cozy"
+              menuLabel="Profile menu"
+            >
+              <Section>
+                <LinkItem
+                  href="/profile"
+                  iconBefore={<PersonIcon label="" />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    go('/profile');
+                  }}
+                >
+                  Profile
+                </LinkItem>
+                <LinkItem
+                  href="/settings"
+                  iconBefore={<SettingsIcon label="" />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    go('/settings');
+                  }}
+                >
+                  Account settings
+                </LinkItem>
+                <ButtonItem
+                  iconBefore={<ThemeIcon label="" />}
+                  onClick={() => setThemeOpen((v) => !v)}
+                >
+                  Theme
+                </ButtonItem>
+                {themeOpen && (
+                  <Box paddingInlineStart="space.400">
+                    <ButtonItem
+                      isSelected={theme === 'light'}
+                      onClick={() => setTheme('light')}
+                    >
+                      Light
+                    </ButtonItem>
+                    <ButtonItem
+                      isSelected={theme === 'dark'}
+                      onClick={() => setTheme('dark')}
+                    >
+                      Dark
+                    </ButtonItem>
+                    <ButtonItem
+                      isSelected={theme === 'system'}
+                      onClick={() => setTheme('system')}
+                    >
+                      Match system
+                    </ButtonItem>
+                  </Box>
+                )}
+              </Section>
+              <Section hasSeparator>
+                <ButtonItem
+                  iconBefore={<SignOutIcon label="" />}
+                  onClick={() => void onSignOut()}
+                >
+                  Log out
+                </ButtonItem>
+              </Section>
+            </MenuGroup>
           </Box>
-
-          <MenuGroup minWidth="320px" spacing="cozy" menuLabel="Profile menu">
-            <Section>
-              <LinkItem
-                href="/profile"
-                iconBefore={<PersonIcon label="" />}
-                onClick={(e) => {
-                  e.preventDefault();
-                  go('/profile');
-                }}
-              >
-                Profile
-              </LinkItem>
-              <LinkItem
-                href="/settings"
-                iconBefore={<SettingsIcon label="" />}
-                onClick={(e) => {
-                  e.preventDefault();
-                  go('/settings');
-                }}
-              >
-                Account settings
-              </LinkItem>
-
-              <ButtonItem
-                iconBefore={<ThemeIcon label="" />}
-                onClick={() => setThemeOpen((v) => !v)}
-              >
-                Theme
-              </ButtonItem>
-              {themeOpen && (
-                <Box paddingInlineStart="space.400">
-                  <ButtonItem
-                    isSelected={theme === 'light'}
-                    onClick={() => setTheme('light')}
-                  >
-                    Light
-                  </ButtonItem>
-                  <ButtonItem
-                    isSelected={theme === 'dark'}
-                    onClick={() => setTheme('dark')}
-                  >
-                    Dark
-                  </ButtonItem>
-                  <ButtonItem
-                    isSelected={theme === 'system'}
-                    onClick={() => setTheme('system')}
-                  >
-                    Match system
-                  </ButtonItem>
-                </Box>
-              )}
-            </Section>
-
-            <Section hasSeparator>
-              <ButtonItem
-                iconBefore={<SignOutIcon label="" />}
-                onClick={() => void handleSignOut()}
-              >
-                Log out
-              </ButtonItem>
-            </Section>
-          </MenuGroup>
-        </Box>
-      )}
-      trigger={(props) => (
+        );
+      }}
+      trigger={(triggerProps) => (
         <IconButton
-          {...props}
+          {...triggerProps}
           label="Profile"
           appearance="subtle"
           isSelected={open}
