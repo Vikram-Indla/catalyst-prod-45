@@ -20,7 +20,7 @@ interface CatalystContextState {
   
   // Sidebar chrome state (shared between shell + header).
   // Three-state model: expanded (240px) → collapsed (56px) → hidden (0px).
-  // Press `[` (bound in CatalystShell) to cycle through them.
+  // Press ⌘/Ctrl + [ (bound in CatalystShell) to cycle through them.
   sidebarExpanded: boolean;
   setSidebarExpanded: (expanded: boolean | ((prev: boolean) => boolean)) => void;
   sidebarHidden: boolean;
