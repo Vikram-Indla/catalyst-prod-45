@@ -394,6 +394,43 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/@atlaskit/media-')) {
             return 'vendor-atlaskit-media';
           }
+          // ─── @atlaskit/* split per role ──────────────────────────────────
+          // The catch-all `vendor-atlaskit-ui` chunk previously absorbed
+          // every non-editor Atlaskit package and ballooned to ~8.4MB. Most
+          // surfaces use only a handful of these. Splitting along usage
+          // boundaries (drag/drop, mention/emoji/smart-card, user-picker
+          // and form heavies, base primitives) keeps the universally-shared
+          // primitives chunk small and pushes feature-specific weight to
+          // chunks that load on demand.
+          if (id.includes('node_modules/@atlaskit/pragmatic-drag-and-drop')) {
+            return 'vendor-atlaskit-dnd';
+          }
+          if (
+            id.includes('node_modules/@atlaskit/mention') ||
+            id.includes('node_modules/@atlaskit/emoji') ||
+            id.includes('node_modules/@atlaskit/smart-card') ||
+            id.includes('node_modules/@atlaskit/profilecard') ||
+            id.includes('node_modules/@atlaskit/task-decision') ||
+            id.includes('node_modules/@atlaskit/status') ||
+            id.includes('node_modules/@atlaskit/date')
+          ) {
+            return 'vendor-atlaskit-rich';
+          }
+          if (
+            id.includes('node_modules/@atlaskit/user-picker') ||
+            id.includes('node_modules/@atlaskit/form') ||
+            id.includes('node_modules/@atlaskit/dynamic-table') ||
+            id.includes('node_modules/@atlaskit/inline-edit') ||
+            id.includes('node_modules/@atlaskit/modal-dialog') ||
+            id.includes('node_modules/@atlaskit/calendar') ||
+            id.includes('node_modules/@atlaskit/datetime-picker') ||
+            id.includes('node_modules/@atlaskit/page-layout') ||
+            id.includes('node_modules/@atlaskit/atlassian-navigation') ||
+            id.includes('node_modules/@atlaskit/menu') ||
+            id.includes('node_modules/@atlaskit/dropdown-menu')
+          ) {
+            return 'vendor-atlaskit-forms';
+          }
           if (id.includes('node_modules/@atlaskit/')) {
             return 'vendor-atlaskit-ui';
           }
