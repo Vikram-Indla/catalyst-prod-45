@@ -81,7 +81,7 @@ const searchRegionStyles = xcss({
   flexGrow: 0,
   flexShrink: 1,
   flexBasis: '680px',
-  minWidth: 0,
+  minWidth: '0',
   maxWidth: '680px',
   marginInlineStart: 'space.800',
   marginInlineEnd: 'space.200',
@@ -90,7 +90,9 @@ const searchRegionStyles = xcss({
 const searchRegionNarrowStyles = xcss({
   display: 'flex',
   alignItems: 'center',
-  flex: '0 0 auto',
+  flexGrow: 0,
+  flexShrink: 0,
+  flexBasis: 'auto',
   marginInlineStart: 'space.200',
   marginInlineEnd: 'space.100',
 });
@@ -98,8 +100,10 @@ const searchRegionNarrowStyles = xcss({
 // Spacer — rendered in every mode. Eats remaining row space so the right
 // cluster always hugs the trailing edge.
 const spacerStyles = xcss({
-  flex: '1 1 auto',
-  minWidth: 0,
+  flexGrow: 1,
+  flexShrink: 1,
+  flexBasis: 'auto',
+  minWidth: '0',
 });
 
 export function CatalystHeader() {
