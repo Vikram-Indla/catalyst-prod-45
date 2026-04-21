@@ -247,73 +247,21 @@ export function HubSwitcher() {
             <div style={{ flex: 1, overflowY: 'auto', padding: '8px 8px 16px' }}>
               {HUBS.map((hub, index) => {
                 const active = isActive(hub.href);
-                const tone = hubTone(hub.key);
                 return (
                   <button
                     key={hub.href}
                     ref={index === 0 ? firstTileRef : undefined}
                     type="button"
                     onClick={() => go(hub.href)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'flex-start',
-                      gap: 12,
-                      width: '100%',
-                      padding: '10px 12px',
-                      border: 'none',
-                      borderRadius: 6,
-                      background: active ? 'rgba(9,30,66,0.06)' : 'transparent',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      transition: 'background 120ms ease',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!active) e.currentTarget.style.background = 'rgba(9,30,66,0.04)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = active ? 'rgba(9,30,66,0.06)' : 'transparent';
-                    }}
+                    className={`hub-nav-item${active ? ' hub-nav-item--active' : ''}`}
                   >
-                    <span
-                      style={{
-                        width: 32,
-                        height: 32,
-                        flexShrink: 0,
-                        borderRadius: 6,
-                        background: hubTileFill(hub.key),
-                        color: tone,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <hub.Icon label="" color={tone} />
+                    {active && <span className="hub-nav-item__bar" aria-hidden />}
+                    <span className="hub-nav-item__tile">
+                      <HubIcon name={hub.key} size={18} />
                     </span>
-                    <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-                      <span
-                        style={{
-                          fontSize: 13.5,
-                          fontWeight: active ? 700 : 600,
-                          color: '#172B4D',
-                          lineHeight: '18px',
-                        }}
-                      >
-                        {hub.label}
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 11.5,
-                          fontWeight: 400,
-                          color: '#6B778C',
-                          lineHeight: '16px',
-                          marginTop: 1,
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {hub.description}
-                      </span>
+                    <span className="hub-nav-item__text">
+                      <span className="hub-nav-item__label">{hub.label}</span>
+                      <span className="hub-nav-item__desc">{hub.description}</span>
                     </span>
                   </button>
                 );
