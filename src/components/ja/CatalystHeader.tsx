@@ -131,12 +131,7 @@ export function CatalystHeader() {
   const { isCompact, isNarrow } = useNavBreakpoint();
   const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Hide sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
-  const sidebarTooltip = (
-    <Stack space="space.050" alignInline="center">
-      <Text>{sidebarLabel}</Text>
-      <Box as="span" xcss={shortcutChipStyles}>{shortcutLabel}</Box>
-    </Stack>
-  );
+  const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
 
   return (
     <Box
