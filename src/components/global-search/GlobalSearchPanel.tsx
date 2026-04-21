@@ -255,7 +255,8 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       role="dialog"
       aria-label="Global search"
       style={{
-        width: 'min(920px, calc(100vw - 24px))',
+        width: 'min(780px, calc(100vw - 32px))',
+        maxWidth: 'calc(100vw - 32px)',
         maxHeight: 'min(80vh, 720px)',
         background: '#FFFFFF',
         borderRadius: 8,
