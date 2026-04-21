@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
-import { IconButton } from '@atlaskit/button/new';
 
 import PersonIcon from '@atlaskit/icon/core/person';
 import SettingsIcon from '@atlaskit/icon/core/settings';
@@ -16,30 +15,18 @@ import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 /**
- * ProfileMenu — mirrors SettingsMenu's working pattern exactly:
- *  - IconButton trigger (Atlaskit Popup positions reliably against it)
- *  - Box padding="space.150" content shell
- *  - MenuGroup owns width via minWidth
+ * ProfileMenu — RCA Apr 2026
  *
- * RCA: previous custom <button> trigger broke Popup measurement (the popup
- * mounted to a portal but rendered with zero size and was invisible).
- * IconButton is the only trigger pattern that consistently works with
- * @atlaskit/popup v4 in this codebase — verified against SettingsMenu.
+ * PRIOR FAILURE: Wrapping `<Avatar>` inside an Atlaskit `IconButton` (or a
+ * custom button) caused the popup to mount with zero anchor size. Atlaskit
+ * `<Avatar>` renders its own interactive wrapper which breaks ref forwarding
+ * and aria measurement when nested inside another button.
+ *
+ * FIX: Use a plain native <button> as the trigger, spread ALL triggerProps
+ * onto it (this gives Popup the real anchor ref), and render a non-interactive
+ * <Avatar presence="none"> with pointer-events:none so clicks always land on
+ * the button. This matches Atlassian's AppSwitcher pattern.
  */
-function AvatarIcon({
-  avatarUrl,
-  name,
-}: {
-  avatarUrl?: string;
-  name: string;
-}) {
-  return (
-    <span style={{ display: 'inline-flex', pointerEvents: 'none' }}>
-      <Avatar size="small" src={avatarUrl} name={name} />
-    </span>
-  );
-}
-
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
   const [themeOpen, setThemeOpen] = useState(false);
@@ -160,14 +147,28 @@ export function ProfileMenu() {
         </Box>
       )}
       trigger={(triggerProps) => (
-        <IconButton
+        <button
           {...triggerProps}
-          label="Profile"
-          appearance="subtle"
-          isSelected={open}
+          type="button"
+          aria-label="Profile menu"
           onClick={() => setOpen((v) => !v)}
-          icon={() => <AvatarIcon avatarUrl={avatarUrl} name={name} />}
-        />
+          style={{
+            all: 'unset',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            cursor: 'pointer',
+            outline: open ? '2px solid #0052CC' : 'none',
+            outlineOffset: 2,
+          }}
+        >
+          <span style={{ pointerEvents: 'none', display: 'inline-flex' }}>
+            <Avatar size="small" src={avatarUrl} name={name} presence={undefined} />
+          </span>
+        </button>
       )}
     />
   );
