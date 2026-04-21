@@ -2,9 +2,7 @@ import { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
-import Tooltip from '@atlaskit/tooltip';
 
-import { IconButton } from '@atlaskit/button/new';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import SignOutIcon from '@atlaskit/icon/glyph/sign-out';
@@ -21,38 +19,29 @@ const popupStyles = xcss({ width: 'size.4000' });
 type AvatarTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   avatarUrl?: string;
   name: string;
-  tooltipRef?: React.Ref<HTMLButtonElement>;
 };
 
 const AvatarTriggerButton = forwardRef<HTMLButtonElement, AvatarTriggerProps>(
-  ({ avatarUrl, name, tooltipRef, ...rest }, ref) => {
-    const setRefs = (node: HTMLButtonElement | null) => {
-      if (typeof ref === 'function') ref(node);
-      else if (ref) (ref as React.MutableRefObject<HTMLButtonElement | null>).current = node;
-      if (typeof tooltipRef === 'function') tooltipRef(node);
-      else if (tooltipRef) (tooltipRef as React.MutableRefObject<HTMLButtonElement | null>).current = node;
-    };
-    return (
-      <button
-        ref={setRefs}
-        type="button"
-        aria-label="Profile"
-        {...rest}
-        style={{
-          background: 'transparent',
-          border: 'none',
-          padding: 4,
-          borderRadius: 999,
-          cursor: 'pointer',
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Avatar size="small" src={avatarUrl} name={name} />
-      </button>
-    );
-  }
+  ({ avatarUrl, name, ...rest }, ref) => (
+    <button
+      ref={ref}
+      type="button"
+      aria-label="Profile"
+      {...rest}
+      style={{
+        background: 'transparent',
+        border: 'none',
+        padding: 4,
+        borderRadius: 999,
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Avatar size="small" src={avatarUrl} name={name} />
+    </button>
+  )
 );
 AvatarTriggerButton.displayName = 'AvatarTriggerButton';
 
@@ -73,6 +62,8 @@ export function ProfileMenu() {
     (user?.user_metadata?.avatar_url as string | undefined) ||
     resolveAvatarUrl(name) ||
     undefined;
+
+  const tooltipText = email ? `${name} • ${email}` : name;
 
   const go = (path: string) => {
     setOpen(false);
@@ -158,30 +149,13 @@ export function ProfileMenu() {
         </Box>
       )}
       trigger={(triggerProps) => (
-        <Tooltip
-          content={email ? `${name} • ${email}` : name}
-          position="bottom"
-          hideTooltipOnClick
-        >
-          {(tooltipProps) => {
-            const { ref: tooltipRef, ...restTooltip } = tooltipProps as {
-              ref?: React.Ref<HTMLButtonElement>;
-            } & React.HTMLAttributes<HTMLButtonElement>;
-            return (
-              <AvatarTriggerButton
-                {...triggerProps}
-                {...restTooltip}
-                tooltipRef={tooltipRef}
-                avatarUrl={avatarUrl}
-                name={name}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen((v) => !v);
-                }}
-              />
-            );
-          }}
-        </Tooltip>
+        <AvatarTriggerButton
+          {...triggerProps}
+          title={tooltipText}
+          avatarUrl={avatarUrl}
+          name={name}
+          onClick={() => setOpen((v) => !v)}
+        />
       )}
     />
   );
