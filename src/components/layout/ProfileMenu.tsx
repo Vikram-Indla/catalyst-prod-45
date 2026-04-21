@@ -15,7 +15,7 @@ import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
-const popupStyles = xcss({ width: '320px' as never });
+const popupStyles = xcss({ width: 'size.4000' });
 
 export function ProfileMenu() {
   const [open, setOpen] = useState(false);
