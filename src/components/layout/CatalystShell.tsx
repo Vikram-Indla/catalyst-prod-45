@@ -637,7 +637,7 @@ export function CatalystShell() {
   return (
     <CatalystContextProvider>
       <CatalystShellContent />
-      <GlobalSearch />
+      {/* GlobalSearch is rendered inside CatalystHeader as the anchored search trigger */}
       {/* Global CatalystDetailRouter — opened from GlobalSearch, Notifications, ForYou, etc. */}
       {pendingItem && (
         <Suspense fallback={null}>
