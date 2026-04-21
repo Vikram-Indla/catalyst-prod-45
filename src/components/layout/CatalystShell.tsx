@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
-import { PanelLeftOpen } from 'lucide-react';
+// PanelLeftOpen / SidebarEdgeReveal removed 2026-04-21 — replaced by hover-peek
+// overlay driven by the top-nav chevron (see CatalystHeader + sidebarPeek state).
 import { GlobalSearch } from '@/components/global-search';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -58,41 +59,9 @@ function useIsDarkTheme(): boolean {
   );
 }
 
-/**
- * SidebarEdgeReveal — 8px-wide left-edge strip rendered in place of the
- * sidebar when `sidebarHidden` is true. Rest state is nearly invisible; on
- * hover it widens to 32px and fades in a PanelLeftOpen glyph so the user
- * knows where to click to restore the nav. Pattern matches Linear/Notion.
- * Click → set expanded=true, hidden=false (full return, not icon-rail).
- */
-function SidebarEdgeReveal({ onReveal }: { onReveal: () => void }) {
-  return (
-    <button
-      onClick={onReveal}
-      aria-label="Show sidebar (shortcut: [ )"
-      title="Show sidebar  [  "
-      className="group flex items-center justify-center h-full"
-      style={{
-        width: '8px',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        color: 'var(--cp-text-muted, #94A3B8)',
-        flexShrink: 0,
-        padding: 0,
-        // 2026-04-19: Explicit transition aligned with SidebarBase (180ms,
-        // Material emphasized decelerate) instead of Tailwind's
-        // `transition-all` default, so reveal timing matches the sidebar's
-        // own width animation and the header logo zone.
-        transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1), background 180ms cubic-bezier(0.2, 0, 0, 1)',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.width = '32px'; e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-      onMouseLeave={e => { e.currentTarget.style.width = '8px'; e.currentTarget.style.background = 'transparent'; }}
-    >
-      <PanelLeftOpen size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-    </button>
-  );
-}
+// SidebarEdgeReveal removed 2026-04-21 (Vikram): replaced by chevron-driven
+// hover-peek overlay that mounts the full sidebar above main content.
+
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
