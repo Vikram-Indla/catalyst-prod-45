@@ -13,10 +13,37 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PanelLeftClose, PanelLeftOpen, Star, LucideIcon } from 'lucide-react';
+import HomeIcon from '@atlaskit/icon/glyph/home';
+import OfficeBuildingIcon from '@atlaskit/icon/glyph/office-building';
+import PortfolioIcon from '@atlaskit/icon/glyph/portfolio';
+import FolderIcon from '@atlaskit/icon/glyph/folder';
+import ShipIcon from '@atlaskit/icon/glyph/ship';
+import CheckCircleIcon from '@atlaskit/icon/glyph/check-circle';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
+import TaskIcon from '@atlaskit/icon/glyph/task';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
+import BookIcon from '@atlaskit/icon/glyph/book';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/ads';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useTheme } from '@/hooks/useTheme';
+
+// Hub registry — mirrors AppSwitcher.tsx (which is being retired). Tone
+// colors come from Atlassian Design System accent palette; we render the
+// icon inside a 16px tinted square so the section reads as "app launcher"
+// rather than nav links.
+const HUB_ITEMS = [
+  { label: 'Home',        href: '/for-you',                 Icon: HomeIcon,            tone: '#42526E' },
+  { label: 'StrategyHub', href: '/strategyhub',             Icon: OfficeBuildingIcon,  tone: '#8270DB' },
+  { label: 'ProductHub',  href: '/producthub',              Icon: PortfolioIcon,       tone: '#0052CC' },
+  { label: 'ProjectHub',  href: '/project-hub',             Icon: FolderIcon,          tone: '#00A3BF' },
+  { label: 'ReleaseHub',  href: '/release-hub/command-center', Icon: ShipIcon,         tone: '#FF8B00' },
+  { label: 'TestHub',     href: '/testhub/dashboard',       Icon: CheckCircleIcon,     tone: '#36B37E' },
+  { label: 'IncidentHub', href: '/incident-hub',            Icon: WarningIcon,         tone: '#DE350B' },
+  { label: 'TaskHub',     href: '/taskhub/boards',          Icon: TaskIcon,            tone: '#FFAB00' },
+  { label: 'PlanHub',     href: '/planhub',                 Icon: CalendarIcon,        tone: '#E774BB' },
+  { label: 'WikiHub',     href: '/wiki',                    Icon: BookIcon,            tone: '#65BA43' },
+] as const;
 
 /**
  * Route-to-chunk prefetch map — preload lazy page chunks on sidebar hover
