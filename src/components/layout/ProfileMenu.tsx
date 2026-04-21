@@ -121,10 +121,9 @@ export function ProfileMenu() {
           </MenuGroup>
         </Box>
       )}
-      trigger={({ ref, ...triggerProps }) => (
+      trigger={(triggerProps) => (
         <button
           {...triggerProps}
-          ref={ref as React.Ref<HTMLButtonElement>}
           type="button"
           aria-label="Profile"
           aria-haspopup="dialog"
@@ -144,43 +143,12 @@ export function ProfileMenu() {
             justifyContent: 'center',
             overflow: 'hidden',
             transition: 'border-color 120ms ease',
+            position: 'relative',
           }}
         >
-          {avatarUrl ? (
-            <img
-              src={avatarUrl}
-              alt=""
-              draggable={false}
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                objectFit: 'cover',
-                pointerEvents: 'none',
-                display: 'block',
-              }}
-            />
-          ) : (
-            <span
-              aria-hidden
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: '50%',
-                background: '#DEEBFF',
-                color: '#0052CC',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 700,
-                fontFamily: 'Inter, sans-serif',
-                pointerEvents: 'none',
-              }}
-            >
-              {(name || 'U').slice(0, 1).toUpperCase()}
-            </span>
-          )}
+          <span style={{ pointerEvents: 'none', display: 'inline-flex' }}>
+            <Avatar size="small" src={avatarUrl} name={name} />
+          </span>
         </button>
       )}
     />
