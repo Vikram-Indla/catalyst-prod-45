@@ -68,10 +68,17 @@ const productLogoStyles = xcss({
 // Jira parity: search sits left-of-center with a fixed max-width at desktop,
 // and drops to a zero-width icon slot at narrow widths (the search component
 // itself renders as an icon in that mode).
+//
+// IMPORTANT: the search region is a FIXED-WIDTH slot — it never grows past
+// 680px and never owns the leftover row width. A dedicated spacer AFTER the
+// search consumes the rest of the row, pinning the right cluster to the
+// trailing edge at every viewport. Previously the right cluster floated
+// mid-nav with dead space to its right at widths > ~1300px (Vikram flagged:
+// "crystal clear that top nav is wrong in terms of icons spacing").
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
-  flex: '1 1 auto',
+  flex: '0 1 680px',
   minWidth: 0,
   maxWidth: '680px',
   marginInlineStart: 'space.800',
@@ -86,8 +93,8 @@ const searchRegionNarrowStyles = xcss({
   marginInlineEnd: 'space.100',
 });
 
-// Spacer — at narrow widths we still need to push the right cluster to the
-// far edge since the search region no longer eats the remaining space.
+// Spacer — rendered in every mode. Eats remaining row space so the right
+// cluster always hugs the trailing edge.
 const spacerStyles = xcss({
   flex: '1 1 auto',
   minWidth: 0,
@@ -133,19 +140,18 @@ export function CatalystHeader() {
             </a>
           </Box>
 
-          {/* Search — full bar at ≥1024, icon-toggle + spacer at <1024 */}
+          {/* Search — full bar at ≥1024, icon-toggle at <1024. Spacer after
+              either variant pushes the right cluster to the trailing edge. */}
           {isNarrow ? (
-            <>
-              <Box xcss={searchRegionNarrowStyles}>
-                <GlobalSearch collapsed />
-              </Box>
-              <Box xcss={spacerStyles} />
-            </>
+            <Box xcss={searchRegionNarrowStyles}>
+              <GlobalSearch collapsed />
+            </Box>
           ) : (
             <Box xcss={searchRegionStyles}>
               <GlobalSearch />
             </Box>
           )}
+          <Box xcss={spacerStyles} />
 
           {/* Right cluster: Create | Ask Catalyst | Bell | Help | Settings | Avatar */}
           <Box style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), flex: '0 0 auto' }}>
