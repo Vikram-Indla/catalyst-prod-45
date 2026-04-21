@@ -394,19 +394,71 @@ export default defineConfig(({ mode, command }) => {
           if (id.includes('node_modules/@atlaskit/media-')) {
             return 'vendor-atlaskit-media';
           }
+          // ─── @atlaskit/* split per role ──────────────────────────────────
+          // The catch-all `vendor-atlaskit-ui` chunk previously absorbed
+          // every non-editor Atlaskit package and ballooned to ~8.4MB. Most
+          // surfaces use only a handful of these. Splitting along usage
+          // boundaries (drag/drop, mention/emoji/smart-card, user-picker
+          // and form heavies, base primitives) keeps the universally-shared
+          // primitives chunk small and pushes feature-specific weight to
+          // chunks that load on demand.
+          if (id.includes('node_modules/@atlaskit/pragmatic-drag-and-drop')) {
+            return 'vendor-atlaskit-dnd';
+          }
+          if (
+            id.includes('node_modules/@atlaskit/mention') ||
+            id.includes('node_modules/@atlaskit/emoji') ||
+            id.includes('node_modules/@atlaskit/smart-card') ||
+            id.includes('node_modules/@atlaskit/profilecard') ||
+            id.includes('node_modules/@atlaskit/task-decision') ||
+            id.includes('node_modules/@atlaskit/status') ||
+            id.includes('node_modules/@atlaskit/date')
+          ) {
+            return 'vendor-atlaskit-rich';
+          }
+          if (
+            id.includes('node_modules/@atlaskit/user-picker') ||
+            id.includes('node_modules/@atlaskit/form') ||
+            id.includes('node_modules/@atlaskit/dynamic-table') ||
+            id.includes('node_modules/@atlaskit/inline-edit') ||
+            id.includes('node_modules/@atlaskit/modal-dialog') ||
+            id.includes('node_modules/@atlaskit/calendar') ||
+            id.includes('node_modules/@atlaskit/datetime-picker') ||
+            id.includes('node_modules/@atlaskit/page-layout') ||
+            id.includes('node_modules/@atlaskit/atlassian-navigation') ||
+            id.includes('node_modules/@atlaskit/menu') ||
+            id.includes('node_modules/@atlaskit/dropdown-menu')
+          ) {
+            return 'vendor-atlaskit-forms';
+          }
           if (id.includes('node_modules/@atlaskit/')) {
             return 'vendor-atlaskit-ui';
           }
-          if (id.includes('node_modules/@tiptap/')) {
-            return 'vendor-tiptap';
-          }
+          // @tiptap/* intentionally not split — it's only reached via the
+          // (lazy) ConfluenceEditor path; in lean builds it's stubbed out
+          // entirely, and in full builds it co-locates fine with whichever
+          // route imports it. A dedicated chunk would fail the SW drift
+          // verify in lean builds (chunk declared but never produced).
 
           if (id.includes('node_modules/framer-motion')) {
             return 'vendor-motion';
           }
-          if (id.includes('node_modules/exceljs') || id.includes('node_modules/xlsx') || id.includes('node_modules/jspdf') || id.includes('node_modules/pptxgenjs') || id.includes('node_modules/jszip') || id.includes('node_modules/html2canvas') || id.includes('node_modules/file-saver') || id.includes('node_modules/papaparse')) {
-            return 'vendor-export';
-          }
+          // ─── Export libraries: split per-tool ────────────────────────────
+          // Previously fused into one ~2.4MB `vendor-export` chunk that any
+          // single export action (CSV download, PDF render, PPTX export)
+          // would pay in full. They are all dynamic-imported on demand
+          // (see src/lib/exportLoaders.ts and friends) — splitting per
+          // package means a CSV export pulls ~30KB of papaparse instead
+          // of 2.4MB of unrelated tooling.
+          if (id.includes('node_modules/exceljs')) return 'vendor-export-exceljs';
+          if (id.includes('node_modules/xlsx')) return 'vendor-export-xlsx';
+          if (id.includes('node_modules/jspdf-autotable')) return 'vendor-export-jspdf';
+          if (id.includes('node_modules/jspdf')) return 'vendor-export-jspdf';
+          if (id.includes('node_modules/pptxgenjs')) return 'vendor-export-pptx';
+          if (id.includes('node_modules/jszip')) return 'vendor-export-jszip';
+          if (id.includes('node_modules/html2canvas')) return 'vendor-export-html2canvas';
+          if (id.includes('node_modules/papaparse')) return 'vendor-export-papaparse';
+          if (id.includes('node_modules/file-saver')) return 'vendor-export-filesaver';
           if (id.includes('node_modules/lucide-react')) {
             return 'vendor-icons';
           }
