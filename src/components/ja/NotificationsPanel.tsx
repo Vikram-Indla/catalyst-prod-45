@@ -1,11 +1,18 @@
 import { useState } from 'react';
 import { IconButton } from '@atlaskit/button/new';
-import NotificationIcon from '@atlaskit/icon/glyph/notification';
+import { Bell } from 'lucide-react';
 import { Box, xcss } from '@atlaskit/primitives';
 import NotificationPanel from '@/components/notifications/NotificationPanel';
 import { useUnreadCount } from '@/hooks/useUnreadCount';
 
 const triggerWrapStyles = xcss({ position: 'relative', display: 'inline-block' });
+
+// Outline bell to match Jira's transparent/stroked notification icon.
+// Atlaskit's `notification` and `notification-all` glyphs are solid-filled,
+// so we render Lucide `Bell` (1.75 stroke, no fill) at 20px to mirror Jira.
+const BellGlyph = (props: { label: string }) => (
+  <Bell size={20} strokeWidth={1.75} aria-label={props.label} />
+);
 
 export function NotificationsPanel() {
   const [open, setOpen] = useState(false);
@@ -15,7 +22,7 @@ export function NotificationsPanel() {
     <>
       <Box xcss={triggerWrapStyles}>
         <IconButton
-          icon={NotificationIcon}
+          icon={BellGlyph}
           label="Notifications"
           appearance="subtle"
           isSelected={open}
