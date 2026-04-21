@@ -2,6 +2,7 @@ import { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Popup from '@atlaskit/popup';
 import Avatar from '@atlaskit/avatar';
+import Tooltip from '@atlaskit/tooltip';
 
 import { IconButton } from '@atlaskit/button/new';
 import PersonIcon from '@atlaskit/icon/glyph/person';
