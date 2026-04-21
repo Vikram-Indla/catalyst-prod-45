@@ -102,6 +102,7 @@ export function HubSwitcher() {
         side="bottom"
         sideOffset={6}
         alignOffset={-4}
+        avoidCollisions={false}
         className="z-[1000] p-0 border border-[#DFE1E6] shadow-[0_8px_24px_rgba(9,30,66,0.16)]"
         style={{
           width: 320,
@@ -109,6 +110,8 @@ export function HubSwitcher() {
           borderRadius: 6,
           fontFamily: 'Inter, sans-serif',
           padding: 0,
+          maxHeight: 'none',
+          overflow: 'visible',
         }}
       >
         <div style={{ padding: '6px 4px' }}>
