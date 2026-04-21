@@ -275,27 +275,9 @@ export function SidebarBase({
                   {config.label}
                 </span>
               </div>
-              <button
-                onClick={onToggle}
-                className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: chevronColor,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = tokens.hoverBg;
-                  e.currentTarget.style.color = chevronHoverColor;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = chevronColor;
-                }}
-                aria-label="Collapse sidebar (shortcut: [ )"
-              >
-                <PanelLeftClose size={15} />
-              </button>
+              {/* Collapse button removed 2026-04-21 (Vikram): the sidebar
+                  toggle is now exclusively owned by the top-nav chevron in
+                  CatalystHeader. Two-state architecture (expanded ↔ hidden). */}
             </>
           )}
         </div>
