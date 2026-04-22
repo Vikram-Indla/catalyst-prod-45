@@ -61,6 +61,11 @@ export const MOCK_DIRECT_NOTIFICATIONS: DirectNotification[] = [
       statusAppearance: 'inprogress',
       iconType: 'task',
     },
+    thread: {
+      commentPreview: '@Vikram can you confirm if the OAuth flow is scoped for Phase 2 or pushed to Phase 3? The spec doc is ambiguous on this.',
+      reactions: { '👍': 2, '🔥': 1 },
+      replyCount: 4,
+    },
   },
 
   // ── YESTERDAY ──────────────────────────────────────────────────────────
@@ -79,6 +84,11 @@ export const MOCK_DIRECT_NOTIFICATIONS: DirectNotification[] = [
       iconType: 'bug',
     },
     aggregation: { count: 1, actor: YAZEED },
+    thread: {
+      commentPreview: 'The Save Draft button should appear in the bottom action bar. Confirmed in the Figma spec — checking if it's missing from the implementation or just hidden behind a feature flag.',
+      reactions: { '👍': 1 },
+      replyCount: 2,
+    },
   },
   {
     id: 'nd-005',

@@ -70,7 +70,11 @@ function mapNotification(
   profiles: Map<string, { full_name: string; avatar_url: string | null }>
 ): DirectNotification {
   const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
-  const hasThread = !!(n.metadata?.comment_preview);
+  // Show thread card if: there's a comment preview OR the notification is a comment verb.
+  // This ensures "View thread" is always visible on comment-type notifications,
+  // not only when metadata.comment_preview is populated in the DB.
+  const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
+  const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
 
   return {
     id: n.id,
@@ -94,8 +98,11 @@ function mapNotification(
     },
     thread: hasThread
       ? {
-          commentPreview: n.metadata.comment_preview!,
-          reactions: n.metadata.reactions ?? {},
+          // commentPreview may be empty string for comment-verb notifications
+          // that haven't stored a preview yet — the thread card still renders
+          // with the "View thread" link so the user can navigate to it.
+          commentPreview: n.metadata?.comment_preview ?? '',
+          reactions: n.metadata?.reactions ?? {},
           replyCount: 0,
         }
       : undefined,

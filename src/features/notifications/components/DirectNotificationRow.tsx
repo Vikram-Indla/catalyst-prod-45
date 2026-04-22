@@ -250,22 +250,37 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               background: threadBg,
             }}
           >
-            {/* Comment preview text */}
-            <p
-              style={{
-                margin: 0,
-                fontFamily: 'Inter, sans-serif',
-                fontSize: 12,
-                lineHeight: '16px',
-                color: text2,
-                overflow: 'hidden',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical' as const,
-              }}
-            >
-              {thread.commentPreview}
-            </p>
+            {/* Comment preview text (or placeholder when preview not yet stored) */}
+            {thread.commentPreview ? (
+              <p
+                style={{
+                  margin: 0,
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: 12,
+                  lineHeight: '16px',
+                  color: text2,
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical' as const,
+                }}
+              >
+                {thread.commentPreview}
+              </p>
+            ) : (
+              <p
+                style={{
+                  margin: 0,
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: 12,
+                  lineHeight: '16px',
+                  color: text3,
+                  fontStyle: 'italic',
+                }}
+              >
+                View the full thread for context
+              </p>
+            )}
 
             {/* Reactions + Reply + View thread */}
             <div
