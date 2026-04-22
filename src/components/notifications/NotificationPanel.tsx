@@ -18,6 +18,7 @@ import LoadingSkeleton from "./LoadingSkeleton";
 import AIRecapTabV2 from "./AIRecapTabV2";
 import AgeingTab, { useAgeingCount } from "./AgeingTab";
 import WatchingTab from "./WatchingTab";
+import DirectPanel from "@/features/notifications/DirectPanel";
 
 function useLastSyncTime() {
   return useQuery({
@@ -548,29 +549,8 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           <AIRecapTabV2 />
         ) : activeTab === 'ageing' ? (
           <AgeingTab />
-        ) : isLoading && notifications.length === 0 ? (
-          <LoadingSkeleton />
-        ) : notifications.length === 0 ? (
-          <EmptyState variant={getEmptyVariant()} />
         ) : (
-          <>
-            {groups.map(group => (
-              <div key={group.label}>
-                <SectionHeader label={group.label} />
-                {group.items.map(n => (
-                  <NotificationItem
-                    key={n.id}
-                    notification={n}
-                    actorProfile={n.actor_user_id ? actorProfiles?.get(n.actor_user_id) : undefined}
-                    onMarkRead={handleMarkRead}
-                    onClick={handleItemClick}
-                  />
-                ))}
-              </div>
-            ))}
-            {/* Infinite scroll sentinel */}
-            {hasNextPage && <div ref={sentinelRef} style={{ height: 1 }} />}
-          </>
+          <DirectPanel unreadOnly={unreadOnly} isDark={isDark} />
         )}
       </div>
     </div>
