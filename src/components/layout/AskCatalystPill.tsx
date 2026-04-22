@@ -1,8 +1,7 @@
-import { useState, useCallback, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useCallback, useEffect, useRef, useId, lazy, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
-import { xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 
 const DepartmentIntelligenceOverlay = lazy(
@@ -10,39 +9,51 @@ const DepartmentIntelligenceOverlay = lazy(
 );
 
 // Ask Caty — top-nav AI entry point.
-//
-// Apr 2026 rewire: the "Intelligence" button on /for-you was retired and its
-// functionality (department picker → DepartmentIntelligenceOverlay) is now
-// hosted exclusively by this pill. Behavior is route-scoped:
-//
-//   /for-you      → opens the department picker dropdown
-//   anywhere else → button is rendered disabled (placeholder, no-op)
-function AskCatalystIcon() {
+// V2 spec: white pill, neutral border, gradient sparkle glyph (blue→purple),
+// hover halo only (no fill change). Route-scoped: active on Home (/),
+// disabled elsewhere.
+
+interface SparkleProps {
+  size?: number;
+  monochromeColor?: string;
+}
+
+function CatySparkle({ size = 18, monochromeColor }: SparkleProps) {
+  const gradId = useId();
+  const fill = monochromeColor ?? `url(#${gradId})`;
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 20 20"
+      aria-hidden="true"
+      focusable="false"
+    >
+      {!monochromeColor && (
+        <defs>
+          <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#60A5FA" />
+            <stop offset="55%" stopColor="#2563EB" />
+            <stop offset="100%" stopColor="#7C3AED" />
+          </linearGradient>
+        </defs>
+      )}
       <path
-        d="M8 1.5l1.2 3.3 3.3 1.2-3.3 1.2L8 10.5 6.8 7.2 3.5 6l3.3-1.2L8 1.5zM12 9l.7 1.8 1.8.7-1.8.7L12 14l-.7-1.8-1.8-.7 1.8-.7L12 9z"
-        fill={token('color.icon.brand', '#2563EB')}
+        d="M9 2.2 L10.2 6.3 L14.3 7.5 L10.2 8.7 L9 12.8 L7.8 8.7 L3.7 7.5 L7.8 6.3 Z"
+        fill={fill}
+      />
+      <path
+        d="M14.2 12 L14.7 13.7 L16.4 14.2 L14.7 14.7 L14.2 16.4 L13.7 14.7 L12 14.2 L13.7 13.7 Z"
+        fill={fill}
       />
     </svg>
   );
 }
 
-const pillStyles = xcss({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 'space.075',
-  height: '32px',
-  paddingInline: 'space.150',
-  backgroundColor: 'elevation.surface',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border',
-  borderRadius: '9999px',
-  color: 'color.text',
-  font: 'font.body',
-  cursor: 'pointer',
-});
+function AskCatalystIcon() {
+  // Used by IconButton (iconOnly mode) — keep monochrome brand blue
+  return <CatySparkle size={16} monochromeColor={token('color.icon.brand', '#2563EB')} />;
+}
 
 const DEPT_OPTIONS = ['Delivery', 'Product', 'Governance', 'Operations', 'Technical Support', 'Strategy & Planning'];
 
@@ -61,11 +72,15 @@ interface AskCatalystPillProps {
 
 export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
   const location = useLocation();
-  const isForYou = location.pathname === '/for-you' || location.pathname.startsWith('/for-you/');
+  const isForYou =
+    location.pathname === '/' ||
+    location.pathname === '/for-you' ||
+    location.pathname.startsWith('/for-you/');
 
   const [showPicker, setShowPicker] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [selectedDept, setSelectedDept] = useState('');
+  const [hovered, setHovered] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Outside-click closes the picker
@@ -80,7 +95,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
     return () => document.removeEventListener('mousedown', onDown);
   }, [showPicker]);
 
-  // Close picker when navigating off /for-you
+  // Close picker when navigating off home
   useEffect(() => {
     if (!isForYou) {
       setShowPicker(false);
@@ -89,7 +104,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
   }, [isForYou]);
 
   const handleClick = useCallback(() => {
-    if (!isForYou) return; // dead on other pages
+    if (!isForYou) return;
     setShowPicker((v) => !v);
   }, [isForYou]);
 
@@ -114,29 +129,44 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
             onClick={handleClick}
             disabled={!isForYou}
             aria-disabled={!isForYou}
+            aria-label={tooltipLabel}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onFocus={() => setHovered(true)}
+            onBlur={() => setHovered(false)}
             style={{
               all: 'unset',
+              boxSizing: 'border-box',
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 6,
-              cursor: isForYou ? 'pointer' : 'not-allowed',
-              height: 32,
-              paddingInline: 12,
-              border: '1px solid #DFE1E6',
-              borderRadius: 6,
+              gap: 8,
+              height: 36,
+              padding: '0 14px 0 12px',
+              borderRadius: 9999,
               background: '#FFFFFF',
-              opacity: isForYou ? 1 : 0.6,
-              boxSizing: 'border-box',
-            }}
-            onMouseEnter={(e) => {
-              if (isForYou) e.currentTarget.style.background = '#F4F5F7';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#FFFFFF';
+              border: '1px solid rgba(15, 23, 42, 0.12)',
+              boxShadow: hovered && isForYou
+                ? '0 0 0 3px rgba(37,99,235,0.08), 0 4px 10px rgba(37,99,235,0.12)'
+                : '0 1px 2px rgba(15,23,42,0.04)',
+              transition: 'box-shadow 180ms ease, transform 180ms ease',
+              cursor: isForYou ? 'pointer' : 'not-allowed',
+              opacity: isForYou ? 1 : 0.55,
+              fontFamily: "'Inter', system-ui, sans-serif",
+              color: '#0F172A',
             }}
           >
-            <AskCatalystIcon />
-            <span style={{ fontSize: 14, fontWeight: 500 }}>Ask Caty</span>
+            <CatySparkle size={18} />
+            <span
+              style={{
+                fontSize: 14,
+                fontWeight: 650,
+                letterSpacing: '-0.1px',
+                lineHeight: 1,
+                color: '#0F172A',
+              }}
+            >
+              Ask Caty
+            </span>
           </button>
         </Tooltip>
       )}
