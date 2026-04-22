@@ -61,6 +61,7 @@ function App() {
 
   return (
   <ErrorBoundary>
+  <PreviewRecoveryBanner />
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       {/**
