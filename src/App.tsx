@@ -89,7 +89,6 @@ function App() {
           <CatalystToastProvider position="top-right" maxToasts={5}>
               <BrowserRouter>
               <Routes>
-                <Route path="/" element={<Navigate to="/for-you" replace />} />
                 <Route path="/auth" element={<S><CatalystLoginPageLazy /></S>} />
                 <Route path="/auth/slack/callback" element={<S><SlackOAuthCallback /></S>} />
                 <Route path="/submit-request" element={<S><SubmitDemandRequest /></S>} />
@@ -99,8 +98,9 @@ function App() {
 
                 {/* Protected shell with minimal routes */}
                 <Route element={<ProtectedRoute><S><CatalystShell /></S></ProtectedRoute>}>
-                  <Route path="/for-you" element={<S><ForYouPage /></S>} />
-                  <Route path="/home" element={<Navigate to="/for-you" replace />} />
+                  <Route path="/" element={<S><ForYouPage /></S>} />
+                  <Route path="/for-you" element={<Navigate to="/" replace />} />
+                  <Route path="/home" element={<Navigate to="/" replace />} />
 
                   {/* Admin routes — always available for incremental publishing control */}
                   <Route path="/admin" element={<S><AdminLayout /></S>}>
