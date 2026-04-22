@@ -59,6 +59,36 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
   );
 }
 
+function LoadingState({ isDark }: { isDark: boolean }) {
+  const skeletonBg = isDark ? '#1F1F1F' : token('color.background.neutral', '#F4F5F7');
+  return (
+    <Box xcss={panelXcss}>
+      {[0, 1, 2, 3].map((i) => (
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
+            padding: '12px 16px',
+            borderBottom: `1px solid ${isDark ? '#2E2E2E' : token('color.border', '#DFE1E6')}`,
+          }}
+          aria-hidden="true"
+        >
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: skeletonBg, flexShrink: 0 }} />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ width: '70%', height: 12, borderRadius: 3, background: skeletonBg }} />
+            <div style={{ width: '40%', height: 10, borderRadius: 3, background: skeletonBg }} />
+          </div>
+        </div>
+      ))}
+      <span style={{ position: 'absolute', left: -9999 }} role="status" aria-live="polite">
+        Loading notifications…
+      </span>
+    </Box>
+  );
+}
+
 function EmptyUnread({ isDark }: { isDark: boolean }) {
   return (
     <Box xcss={emptyXcss}>
@@ -193,7 +223,7 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
   }, [markAsRead]);
 
   if (isLoading && items.length === 0) {
-    return null;
+    return <LoadingState isDark={isDark} />;
   }
 
   if (items.length === 0) {
