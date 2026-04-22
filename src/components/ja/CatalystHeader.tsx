@@ -80,6 +80,12 @@ const productLogoStyles = xcss({
 // trailing edge at every viewport. Previously the right cluster floated
 // mid-nav with dead space to its right at widths > ~1300px (Vikram flagged:
 // "crystal clear that top nav is wrong in terms of icons spacing").
+//
+// Three variants:
+//   default  (≥1280): 32px start margin, 680px basis
+//   compact (1024–1279): 16px start margin, 680px basis — tighter margin
+//     relieves layout pressure as AskCatalystPill has already collapsed
+//   narrow  (<1024): auto basis, icon-toggle only (zero layout width)
 const searchRegionStyles = xcss({
   display: 'flex',
   alignItems: 'center',
@@ -89,6 +95,18 @@ const searchRegionStyles = xcss({
   minWidth: '0',
   maxWidth: '680px',
   marginInlineStart: 'space.800',
+  marginInlineEnd: 'space.200',
+});
+
+const searchRegionCompactStyles = xcss({
+  display: 'flex',
+  alignItems: 'center',
+  flexGrow: 0,
+  flexShrink: 1,
+  flexBasis: '680px',
+  minWidth: '0',
+  maxWidth: '680px',
+  marginInlineStart: 'space.400',
   marginInlineEnd: 'space.200',
 });
 
@@ -175,10 +193,16 @@ export function CatalystHeader() {
           </Box>
 
           {/* Search — full bar at ≥1024, icon-toggle at <1024. Spacer after
-              either variant pushes the right cluster to the trailing edge. */}
+              either variant pushes the right cluster to the trailing edge.
+              Compact (1024–1279) uses a tighter start margin (16px vs 32px)
+              to relieve layout pressure at mid-range viewport widths. */}
           {isNarrow ? (
             <Box xcss={searchRegionNarrowStyles}>
               <GlobalSearch collapsed />
+            </Box>
+          ) : isCompact ? (
+            <Box xcss={searchRegionCompactStyles}>
+              <GlobalSearch />
             </Box>
           ) : (
             <Box xcss={searchRegionStyles}>

@@ -78,20 +78,30 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
   return (
     <Popup
       isOpen={isOpen}
-      onClose={() => closeSearch()}
-      placement="bottom-end"
+      onClose={() => {
+        closeSearch();
+        if (collapsed) setExpanded(false);
+      }}
+      placement="bottom-start"
       shouldRenderToParent={false}
       content={() => (
         <GlobalSearchPanel
           query={query}
           onQueryChange={setQuery}
-          onClose={() => closeSearch()}
+          onClose={() => {
+            closeSearch();
+            if (collapsed) setExpanded(false);
+          }}
         />
       )}
       trigger={(triggerProps) => (
         <div
           {...triggerProps}
-          style={{ width: '100%', maxWidth: '100%', flexShrink: 1, minWidth: 0 }}
+          style={
+            collapsed
+              ? { width: 'min(680px, calc(100vw - 220px))', flexShrink: 1, minWidth: 0 }
+              : { width: '100%', maxWidth: '100%', flexShrink: 1, minWidth: 0 }
+          }
         >
           <Textfield
             ref={inputRef}
