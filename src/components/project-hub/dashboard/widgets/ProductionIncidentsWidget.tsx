@@ -57,9 +57,15 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     cells: [
       { key: 'key', content: 'Key', isSortable: true },
       { key: 'title', content: 'Title', isSortable: false },
+      { key: 'priority', content: 'Priority', isSortable: true },
       { key: 'status', content: 'Status', isSortable: true },
       { key: 'assignee', content: 'Assignee', isSortable: false },
     ],
+  };
+
+  const isClosed = (s?: string | null) => {
+    const v = (s || '').toLowerCase();
+    return v === 'resolved' || v === 'closed' || v === 'done';
   };
 
   const rows = (incidents ?? []).slice(0, 10).map((inc: any) => {
@@ -80,7 +86,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 whiteSpace: 'nowrap',
               }}
             >
-              {inc.issue_key}
+              {inc.key ?? ''}
             </span>
           ),
         },
@@ -89,6 +95,14 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           content: (
             <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>
               {inc.title ?? ''}
+            </span>
+          ),
+        },
+        {
+          key: 'priority',
+          content: (
+            <span style={{ fontSize: 12, color: token('color.text.subtle', '#42526E') }}>
+              {inc.priority ?? '—'}
             </span>
           ),
         },
@@ -173,14 +187,12 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               {incidents.length} incidents
             </span>
             {(() => {
-              const open = incidents.filter((d: any) => d.status_category !== 'Done').length;
-              const resolved = incidents.filter((d: any) => d.status_category === 'Done' && d.resolution).length;
-              const closed = incidents.filter((d: any) => d.status_category === 'Done' && !d.resolution).length;
+              const open = incidents.filter((d: any) => !isClosed(d.status)).length;
+              const closed = incidents.filter((d: any) => isClosed(d.status)).length;
               return (
                 <>
                   {open > 0 && <Lozenge appearance="inprogress">{open} OPEN</Lozenge>}
-                  {resolved > 0 && <Lozenge appearance="success">{resolved} RESOLVED</Lozenge>}
-                  {closed > 0 && <Lozenge appearance="default">{closed} CLOSED</Lozenge>}
+                  {closed > 0 && <Lozenge appearance="success">{closed} CLOSED</Lozenge>}
                 </>
               );
             })()}
