@@ -57,7 +57,6 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     cells: [
       { key: 'key', content: 'Key', isSortable: true },
       { key: 'title', content: 'Title', isSortable: false },
-      { key: 'priority', content: 'Priority', isSortable: true },
       { key: 'status', content: 'Status', isSortable: true },
       { key: 'assignee', content: 'Assignee', isSortable: false },
     ],
@@ -69,7 +68,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   };
 
   const rows = (incidents ?? []).slice(0, 10).map((inc: any) => {
-    const assigneeName = inc.assignee || '';
+    const assigneeName = inc.assignee_display_name || '';
     const statusLabel = (inc.status || 'open').replace(/_/g, ' ');
     return {
       key: inc.id,
@@ -86,7 +85,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 whiteSpace: 'nowrap',
               }}
             >
-              {inc.key ?? ''}
+              {inc.issue_key ?? ''}
             </span>
           ),
         },
@@ -94,15 +93,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           key: 'title',
           content: (
             <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>
-              {inc.title ?? ''}
-            </span>
-          ),
-        },
-        {
-          key: 'priority',
-          content: (
-            <span style={{ fontSize: 12, color: token('color.text.subtle', '#42526E') }}>
-              {inc.priority ?? '—'}
+              {inc.summary ?? ''}
             </span>
           ),
         },
