@@ -5783,17 +5783,3 @@ input[type="range"]::-moz-range-thumb {
   text-decoration: underline;
 }
 
-/* ── Catalyst Top Nav — Responsive Grid ──────────────────────────────────────
-   Controls grid-template-columns only; all other header styles remain inline.
-   Mobile  (<1216px): auto 1fr auto — search fills the remaining centre space.
-   Desktop (≥1216px): equal 1fr flanks + auto centre → geometrically centred.
-   Matches Atlaskit TopNav compiled CSS (1fr minmax(min-content,max-content) 1fr).
-   ─────────────────────────────────────────────────────────────────────────── */
-[data-catalyst-top-nav] {
-  grid-template-columns: auto 1fr auto;
-}
-@media (min-width: 76rem) {
-  [data-catalyst-top-nav] {
-    grid-template-columns: minmax(min-content, 1fr) auto minmax(min-content, 1fr);
-  }
-}

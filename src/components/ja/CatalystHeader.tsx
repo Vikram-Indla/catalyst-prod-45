@@ -16,18 +16,10 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 const isMacPlatform = () =>
   typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 
-// 3-column grid header (responsive via [data-catalyst-top-nav] CSS in index.css):
-//   mobile  : auto 1fr auto
-//   ≥1216px : minmax(min-content,1fr)  auto  minmax(min-content,1fr)
-//             — equal 1fr sides → center is geometrically centred on screen
-//
-// CENTER is a flex row, NOT a CSS Grid.
-// Using a CSS Grid for the center caused width:100% on the Popup trigger div
-// to resolve to 0 (percentage widths contribute 0 to grid track max-content
-// intrinsic sizing → minmax(0,780px) collapses to 0). Popper.js then used a
-// zero-width reference and anchored the popup at x=0.
-// A flex wrapper with flex:1 1 0 / maxWidth:780px gives the trigger div a
-// definite containing-block width, guaranteeing correct getBoundingClientRect().
+// 3-column inline grid: auto | 1fr | auto
+// Center column is a definite 1fr — flex-grow inside works correctly and
+// the Popup trigger div gets a real containing-block width for Popper.js.
+// justifyContent:center on the flex wrapper visually centres search+create.
 
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
@@ -41,6 +33,7 @@ export function CatalystHeader() {
       data-catalyst-top-nav
       style={{
         display: 'grid',
+        gridTemplateColumns: 'auto 1fr auto',
         alignItems: 'center',
         height: '56px',
         paddingInline: '12px',
@@ -77,7 +70,7 @@ export function CatalystHeader() {
       </div>
 
       {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: 0 }}>
         <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '780px' }}>
           <GlobalSearch />
         </div>
