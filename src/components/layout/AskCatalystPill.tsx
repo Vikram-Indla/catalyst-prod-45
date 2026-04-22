@@ -72,10 +72,8 @@ interface AskCatalystPillProps {
 
 export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
   const location = useLocation();
-  const isForYou =
-    location.pathname === '/' ||
-    location.pathname === '/for-you' ||
-    location.pathname.startsWith('/for-you/');
+  // Caty is now functional on every route.
+  const isForYou = true;
 
   const [showPicker, setShowPicker] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
@@ -144,7 +142,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               padding: '0 14px 0 12px',
               borderRadius: 9999,
               background: '#FFFFFF',
-              border: '1px solid rgba(15, 23, 42, 0.28)',
+              border: '1px solid #2563EB',
               boxShadow: hovered && isForYou
                 ? '0 0 0 3px rgba(37,99,235,0.08), 0 4px 10px rgba(37,99,235,0.12)'
                 : '0 1px 2px rgba(15,23,42,0.04)',
