@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
 import { PanelLeftOpen } from 'lucide-react';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -548,14 +548,8 @@ function CatalystShellContent() {
         Skip to main content
       </a>
 
-      {/* Global Header - Catalyst Native.
-          --n_tNvM: CSS variable consumed by TopNav (navigation-system) for its height.
-          Without Root, this var is not set automatically, so we set it here on the
-          ancestor so TopNav inherits the correct 56px height. */}
-      <div
-        data-catalyst-header
-        style={{ '--n_tNvM': '56px' } as React.CSSProperties}
-      >
+      {/* Global Header */}
+      <div data-catalyst-header>
         <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
