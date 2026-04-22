@@ -21,9 +21,13 @@ const isMacPlatform = () =>
 //   ≥1216px : minmax(min-content,1fr)  auto  minmax(min-content,1fr)
 //             — equal 1fr sides → center is geometrically centred on screen
 //
-// CENTER inner grid mirrors Atlaskit TopNavMiddle:
-//   col 1: minmax(0, 780px)  — search grows up to 780px
-//   col 2: max-content       — Create button at natural width
+// CENTER is a flex row, NOT a CSS Grid.
+// Using a CSS Grid for the center caused width:100% on the Popup trigger div
+// to resolve to 0 (percentage widths contribute 0 to grid track max-content
+// intrinsic sizing → minmax(0,780px) collapses to 0). Popper.js then used a
+// zero-width reference and anchored the popup at x=0.
+// A flex wrapper with flex:1 1 0 / maxWidth:780px gives the trigger div a
+// definite containing-block width, guaranteeing correct getBoundingClientRect().
 
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
@@ -72,15 +76,14 @@ export function CatalystHeader() {
         </a>
       </div>
 
-      {/* CENTER: Search (up to 780px) + Create (max-content) — mirrors Atlaskit TopNavMiddle */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 780px) max-content',
-        alignItems: 'center',
-        gap: '8px',
-      }}>
-        <GlobalSearch />
-        <CreateDropdown />
+      {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0 }}>
+        <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '780px' }}>
+          <GlobalSearch />
+        </div>
+        <div style={{ flexShrink: 0 }}>
+          <CreateDropdown />
+        </div>
       </div>
 
       {/* RIGHT cluster — justifySelf:end pins it to the right screen edge */}
