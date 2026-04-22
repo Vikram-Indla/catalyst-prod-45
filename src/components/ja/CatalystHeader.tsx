@@ -7,7 +7,7 @@ import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
 import { HubSwitcher } from '@/components/layout/HubSwitcher';
-import { GlobalSearch } from '@/components/layout/GlobalSearch';
+import { TopNavSearch } from '@/features/top-nav-search/TopNavSearch';
 import { CreateDropdown } from './CreateDropdown';
 import { NotificationsPanel } from './NotificationsPanel';
 import { useCatalystContext } from '@/contexts/CatalystContext';
@@ -72,7 +72,7 @@ export function CatalystHeader() {
       {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: 0 }}>
         <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '560px' }}>
-          <GlobalSearch />
+          <TopNavSearch />
         </div>
         <div style={{ flexShrink: 0 }}>
           <CreateDropdown />

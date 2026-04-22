@@ -45,6 +45,7 @@
     "@atlaskit/media-core": "^37.0.0",
     "@atlaskit/media-state": "^2.0.0",
     "@atlaskit/menu": "^8.5.0",
+    "@atlaskit/motion": "^5.6.0",
     "@atlaskit/modal-dialog": "^14.15.1",
     "@atlaskit/navigation-system": "^8.0.0",
     "@atlaskit/page-layout": "^4.3.0",
