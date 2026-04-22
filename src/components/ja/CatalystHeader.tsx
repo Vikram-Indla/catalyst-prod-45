@@ -47,8 +47,8 @@ export function CatalystHeader() {
         flexShrink: 0,
       }}
     >
-      {/* LEFT cluster */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      {/* LEFT cluster — justifySelf:start keeps it pinned to the left screen edge */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'start' }}>
         <Tooltip content={sidebarTooltip} position="bottom">
           <IconButton
             label={sidebarLabel}
@@ -83,8 +83,8 @@ export function CatalystHeader() {
         <CreateDropdown />
       </div>
 
-      {/* RIGHT cluster: AskCatalystPill | Notifications | Settings | Profile */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+      {/* RIGHT cluster — justifySelf:end pins it to the right screen edge */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'end' }}>
         <AskCatalystPill />
         <NotificationsPanel />
         <SettingsMenu />
