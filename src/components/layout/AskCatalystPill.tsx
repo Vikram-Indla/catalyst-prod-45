@@ -144,7 +144,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               padding: '0 14px 0 12px',
               borderRadius: 9999,
               background: '#FFFFFF',
-              border: '1px solid rgba(15, 23, 42, 0.12)',
+              border: '1px solid rgba(15, 23, 42, 0.28)',
               boxShadow: hovered && isForYou
                 ? '0 0 0 3px rgba(37,99,235,0.08), 0 4px 10px rgba(37,99,235,0.12)'
                 : '0 1px 2px rgba(15,23,42,0.04)',
