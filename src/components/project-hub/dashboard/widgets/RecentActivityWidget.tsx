@@ -64,24 +64,40 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
               style={{ borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}` }}
             >
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
                   <span
                     style={{
-                      color: token('color.link', '#0052CC'),
-                      fontWeight: 500,
-                      fontFamily: 'var(--cp-font-mono)',
                       fontSize: 11,
+                      fontWeight: 600,
+                      color: token('color.text', '#172B4D'),
                     }}
                   >
-                    {item.issue_key}
+                    {item.activity_label}
                   </span>
-                  <StatusLozenge status={toStatusCategory(item.status)}>
-                    {(item.status || '—').toUpperCase()}
-                  </StatusLozenge>
+                  {item.issue_key && (
+                    <span
+                      style={{
+                        color: token('color.link', '#0052CC'),
+                        fontWeight: 500,
+                        fontFamily: 'var(--cp-font-mono)',
+                        fontSize: 11,
+                      }}
+                    >
+                      {item.issue_key}
+                    </span>
+                  )}
+                  {item.status && (
+                    <StatusLozenge status={toStatusCategory(item.status)}>
+                      {(item.status || '—').toUpperCase()}
+                    </StatusLozenge>
+                  )}
                 </div>
                 <div style={{ marginTop: 2 }}>
                   <TruncateCell
-                    text={item.summary ?? ''}
+                    text={
+                      item.summary ??
+                      `${item.work_item_type} · ${(item.work_item_id || '').slice(0, 8)}`
+                    }
                     style={{
                       fontSize: 12,
                       color: token('color.text.subtle', '#42526E'),
@@ -97,7 +113,7 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
                   flexShrink: 0,
                 }}
               >
-                {timeAgo(item.jira_updated_at)}
+                {timeAgo(item.occurred_at)}
               </span>
             </div>
           ))}
