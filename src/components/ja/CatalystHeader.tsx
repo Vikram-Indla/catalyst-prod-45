@@ -16,19 +16,19 @@ import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 const isMacPlatform = () =>
   typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
 
-// 3-column grid header:
-//   [auto]  LEFT  — sidebar toggle, HubSwitcher, wordmark
-//   [1fr]   CENTER — Search (flex-grow, max 780px) + Create (adjacent, not in right cluster)
-//   [auto]  RIGHT  — AskCatalystPill | Notifications | Settings | Profile
+// 3-column grid header (responsive via [data-catalyst-top-nav] CSS in index.css):
+//   mobile  : auto 1fr auto
+//   ≥1216px : minmax(min-content,1fr)  auto  minmax(min-content,1fr)
+//             — equal 1fr sides → center is geometrically centred on screen
 //
-// The 1fr center column absorbs remaining width. Search fills up to 780px;
-// leftover space sits between Create and the right cluster, making the
-// two regions visually distinct. No dead-zone spacer needed.
+// CENTER inner grid mirrors Atlaskit TopNavMiddle:
+//   col 1: minmax(0, 780px)  — search grows up to 780px
+//   col 2: max-content       — Create button at natural width
 
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
   const isCollapsed = sidebarHidden || !sidebarExpanded;
-  const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Hide sidebar';
+  const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
 
@@ -37,7 +37,6 @@ export function CatalystHeader() {
       data-catalyst-top-nav
       style={{
         display: 'grid',
-        gridTemplateColumns: 'auto 1fr auto',
         alignItems: 'center',
         height: '56px',
         paddingInline: '12px',
@@ -73,14 +72,15 @@ export function CatalystHeader() {
         </a>
       </div>
 
-      {/* CENTER: Search (grows to 780px max) + Create (pinned right of search) */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, overflow: 'hidden' }}>
-        <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '780px' }}>
-          <GlobalSearch />
-        </div>
-        <div style={{ flexShrink: 0 }}>
-          <CreateDropdown />
-        </div>
+      {/* CENTER: Search (up to 780px) + Create (max-content) — mirrors Atlaskit TopNavMiddle */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'minmax(0, 780px) max-content',
+        alignItems: 'center',
+        gap: '8px',
+      }}>
+        <GlobalSearch />
+        <CreateDropdown />
       </div>
 
       {/* RIGHT cluster: AskCatalystPill | Notifications | Settings | Profile */}

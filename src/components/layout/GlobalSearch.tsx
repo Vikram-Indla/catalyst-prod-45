@@ -84,6 +84,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
       }}
       placement="bottom-start"
       shouldRenderToParent={false}
+      zIndex={800}
       content={() => (
         <GlobalSearchPanel
           query={query}
