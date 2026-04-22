@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
+import React, { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
 import { PanelLeftOpen } from 'lucide-react';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
@@ -540,8 +540,22 @@ function CatalystShellContent() {
 
   return (
     <div className="h-screen flex flex-col text-[var(--cp-t1)]" style={{ background: 'var(--cp-bg-canvas)' }} onClickCapture={handleInternalLinkClickCapture}>
-      {/* Global Header - Catalyst Native */}
-      <div data-catalyst-header>
+      {/* Skip link — WCAG AA (CG-12): keyboard users tab here first, then jump to main */}
+      <a
+        href="#catalyst-main"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-3 focus:py-1.5 focus:rounded focus:bg-white focus:text-blue-700 focus:text-sm focus:font-medium focus:shadow-md"
+      >
+        Skip to main content
+      </a>
+
+      {/* Global Header - Catalyst Native.
+          --n_tNvM: CSS variable consumed by TopNav (navigation-system) for its height.
+          Without Root, this var is not set automatically, so we set it here on the
+          ancestor so TopNav inherits the correct 56px height. */}
+      <div
+        data-catalyst-header
+        style={{ '--n_tNvM': '56px' } as React.CSSProperties}
+      >
         <Suspense fallback={<div className="h-[56px] border-b" style={{ background: 'var(--cp-bg)', borderColor: 'var(--cp-bd)' }} />}>
           <CatalystHeader />
         </Suspense>
@@ -556,27 +570,14 @@ function CatalystShellContent() {
         <div
           data-catalyst-sidebar
           className="relative flex-shrink-0"
-          style={{
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-            // 2026-04-19 Tier 2: CSS containment on the sidebar wrapper so its
-            // subtree's layout/paint work doesn't cascade into main during the
-            // 180ms width animation.
-            contain: 'layout style',
-            // Overlay mode (hover-only, not pinned): float over content with
-            // shadow + zero layout width so main canvas stays full-width.
-            // Pinned mode: behaves as before, pushing content.
-            ...(sidebarOverlayMode
-              ? {
-                  position: 'absolute' as const,
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  zIndex: 40,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-                }
-              : {}),
-          }}
+          style={sidebarOverlayMode ? {
+            position: 'absolute' as const,
+            top: 0,
+            left: 0,
+            bottom: 0,
+            zIndex: 40,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+          } : undefined}
           >
             {sidebarHidden ? (
               <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); }} />
@@ -592,25 +593,11 @@ function CatalystShellContent() {
             )}
           </div>
 
-        {/* Route content scroll container (single scroll parent) - workspace frame */}
-        {/* 2026-04-19 Tier 2: Paint isolation on <main>. As the sidebar's width
-            animates over 180ms the flex layout recomputes main's width each
-            frame. Without `contain: paint` every descendant paints on every
-            frame; with it, the browser clips invalidation to main's bounding
-            box and schedules a single compositor-level repaint. The
-            translateZ(0) + backface-visibility pair promote main to its own
-            GPU layer so the per-frame reflow runs independently of the
-            sidebar's layer. Net: kills the mid-animation tearing we were
-            seeing at the hub-chrome / sidebar seam. */}
         <main
+          id="catalyst-main"
           data-catalyst-main
           className="flex-1 min-w-0 w-full max-w-full flex flex-col overflow-hidden"
-          style={{
-            background: mainBg,
-            contain: 'paint',
-            transform: 'translateZ(0)',
-            backfaceVisibility: 'hidden',
-          }}
+          style={{ background: mainBg }}
         >
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
           <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>

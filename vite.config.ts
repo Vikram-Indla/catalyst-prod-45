@@ -249,6 +249,8 @@ export default defineConfig(({ mode, command }) => {
       // first render is warm instead of stalling on cold optimize.
       '@atlaskit/atlassian-navigation',
       '@atlaskit/atlassian-navigation/skeleton',
+      '@atlaskit/navigation-system',
+      '@atlaskit/layering',
       '@atlaskit/avatar',
       '@atlaskit/avatar-group',
       '@atlaskit/badge',
