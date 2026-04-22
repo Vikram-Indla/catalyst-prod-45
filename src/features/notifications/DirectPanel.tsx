@@ -1,9 +1,17 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
-import { MOCK_DIRECT_NOTIFICATIONS } from './mock/directMockData';
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
+import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
+import { useActorProfiles } from '@/hooks/useActorProfiles';
+import type {
+  DirectNotification,
+  DirectVerb,
+  DirectWorkItemIconType,
+  DirectStatusAppearance,
+} from './types';
+import type { Notification, NotificationType, StatusType, WorkItemIconType } from '@/types/notifications';
 
 interface DirectPanelProps {
   unreadOnly: boolean;
@@ -82,29 +90,117 @@ function EmptyUnread({ isDark }: { isDark: boolean }) {
   );
 }
 
+// ───────── Mappers: live Notification → DirectNotification ─────────
+
+function mapVerb(t: NotificationType): DirectVerb {
+  switch (t) {
+    case 'assigned':
+    case 'assigned_work_item':
+    case 'assigned_story':
+    case 'tester_assigned':
+      return 'assigned';
+    case 'unassigned':
+    case 'reassigned_work_item':
+      return 'reassigned';
+    case 'mentioned_in_comment':
+      return 'mentioned';
+    case 'commented':
+    case 'commented_on_work_item':
+      return 'commented';
+    case 'status_changed':
+      return 'status_changed';
+    case 'updated_work_item':
+    case 'created_work_item':
+      return 'updated';
+    case 'release_approval_requested':
+      return 'approved';
+    default:
+      return 'updated';
+  }
+}
+
+function mapIcon(t: WorkItemIconType | string): DirectWorkItemIconType {
+  switch (t) {
+    case 'bug':
+    case 'qa bug':
+    case 'defect':
+      return 'bug';
+    case 'story':
+      return 'story';
+    case 'epic':
+      return 'epic';
+    case 'incident':
+    case 'production incident':
+      return 'incident';
+    default:
+      return 'task';
+  }
+}
+
+function mapAppearance(s: StatusType): DirectStatusAppearance {
+  switch (s) {
+    case 'blue':  return 'inprogress';
+    case 'green': return 'success';
+    default:      return 'default';
+  }
+}
+
+function toDirect(n: Notification, displayName: string | null): DirectNotification {
+  return {
+    id: n.id,
+    createdAt: n.created_at,
+    readAt: n.read_at,
+    actor: n.actor_user_id
+      ? { id: n.actor_user_id, displayName: displayName ?? 'Someone' }
+      : null,
+    verb: mapVerb(n.notification_type),
+    target: {
+      id: n.entity_id,
+      key: n.entity_key,
+      title: n.entity_title,
+      statusLabel: n.status,
+      statusAppearance: mapAppearance(n.status_type),
+      iconType: mapIcon(n.entity_icon_type),
+    },
+  };
+}
+
 export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
-  const [readIds, setReadIds] = useState<Set<string>>(() => {
-    const init = new Set<string>();
-    for (const n of MOCK_DIRECT_NOTIFICATIONS) {
-      if (n.readAt) init.add(n.id);
-    }
-    return init;
-  });
+  const { data: pages, isLoading } = useNotificationsQuery('direct', unreadOnly);
+  const markAsRead = useMarkAsRead();
+
+  const rawNotifications = useMemo(
+    () => (pages?.pages.flat() ?? []) as Notification[],
+    [pages]
+  );
+
+  const actorIds = useMemo(
+    () => rawNotifications.map(n => n.actor_user_id).filter((x): x is string => !!x),
+    [rawNotifications]
+  );
+  const { data: profiles } = useActorProfiles(actorIds);
+
+  const items = useMemo(
+    () => rawNotifications.map(n => {
+      const profile = n.actor_user_id ? profiles?.get(n.actor_user_id) : null;
+      return toDirect(n, profile?.full_name ?? null);
+    }),
+    [rawNotifications, profiles]
+  );
 
   const handleMarkRead = useCallback((id: string) => {
-    setReadIds(prev => new Set(prev).add(id));
-  }, []);
+    markAsRead.mutate(id);
+  }, [markAsRead]);
 
-  const visible = unreadOnly
-    ? MOCK_DIRECT_NOTIFICATIONS.filter(n => !readIds.has(n.id))
-    : MOCK_DIRECT_NOTIFICATIONS;
+  if (isLoading && items.length === 0) {
+    return null;
+  }
 
-  const groups = groupByDate(visible);
-
-  if (visible.length === 0) {
+  if (items.length === 0) {
     return <EmptyUnread isDark={isDark} />;
   }
 
+  const groups = groupByDate(items);
   const dividerColor = isDark ? '#2E2E2E' : token('color.border', '#DFE1E6');
 
   return (
@@ -123,7 +219,7 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
             <DirectNotificationRow
               key={n.id}
               notification={n}
-              isRead={readIds.has(n.id)}
+              isRead={!!n.readAt}
               onMarkRead={handleMarkRead}
               isDark={isDark}
             />
