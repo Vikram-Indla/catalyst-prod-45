@@ -223,7 +223,7 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
   }, [markAsRead]);
 
   if (isLoading && items.length === 0) {
-    return null;
+    return <LoadingState isDark={isDark} />;
   }
 
   if (items.length === 0) {
