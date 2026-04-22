@@ -40,6 +40,7 @@
     "@atlaskit/heading": "^5.4.2",
     "@atlaskit/icon": "^24.1.1",
     "@atlaskit/inline-edit": "^15.6.15",
+    "@atlaskit/layering": "^3.6.2",
     "@atlaskit/lozenge": "^11.14.0",
     "@atlaskit/media-core": "^37.0.0",
     "@atlaskit/media-state": "^2.0.0",
