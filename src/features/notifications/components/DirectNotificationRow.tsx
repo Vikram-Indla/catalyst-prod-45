@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import type React from 'react';
 import Avatar from '@atlaskit/avatar';
-import Lozenge from '@atlaskit/lozenge';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import type { DirectNotification } from '../types';
@@ -32,13 +31,8 @@ const metaRowXcss = xcss({
   marginBlockStart: 'space.050',
 });
 
-const aggRowXcss = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.075',
-  marginBlockStart: 'space.075',
-});
-
+// ─── Emoji reaction emojis (canonical Jira set) ──────────────────────────────
+const REACTION_EMOJIS = ['👍', '👏', '🔥', '❤️', '😊'];
 
 export default function DirectNotificationRow({ notification, isRead, onMarkRead, isDark }: Props) {
   const [hovered, setHovered] = useState(false);
@@ -47,7 +41,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const actorName = notification.actor?.displayName ?? null;
   const verbText  = getVerbText(notification.verb, actorName);
   const relTime   = formatRelativeTime(notification.createdAt);
-  const { target, aggregation } = notification;
+  const { target, aggregation, thread } = notification;
 
   const hoverBg  = isDark ? '#1F1F1F' : token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)');
   const pressBg  = isDark ? '#292929' : token('color.background.neutral.pressed',  'rgba(9,30,66,0.10)');
@@ -59,6 +53,9 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');
   const dotColor = '#2563EB';
 
+  const threadBorderColor = isDark ? '#2E2E2E' : token('color.border', '#DFE1E6');
+  const threadBg          = isDark ? '#111111' : token('color.background.neutral', '#F4F5F7');
+
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
   }, [isRead, notification.id, onMarkRead]);
@@ -67,6 +64,9 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
     e.stopPropagation();
     onMarkRead(notification.id);
   }, [notification.id, onMarkRead]);
+
+  // Build avatar src — prefer real avatar_url, fall back to undefined (shows initials)
+  const avatarSrc = notification.actor?.avatarUrl ?? undefined;
 
   return (
     <button
@@ -98,12 +98,13 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      {/* Avatar */}
+      {/* Avatar — with real face photo when available */}
       <div style={{ flexShrink: 0, marginTop: 2 }}>
         <Avatar
           name={actorName ?? 'System'}
           size="medium"
           appearance="circle"
+          src={avatarSrc}
         />
       </div>
 
@@ -208,7 +209,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           </span>
         </Box>
 
-        {/* Key + status lozenge */}
+        {/* Key + status — plain text like Jira (no Lozenge) */}
         <Box xcss={metaRowXcss}>
           <span
             style={{
@@ -222,17 +223,175 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             {target.key}
           </span>
           <span style={{ color: text3, fontSize: 10, lineHeight: '16px', flexShrink: 0 }}>•</span>
-          <Lozenge appearance={target.statusAppearance}>
+          {/* Plain grey status text matching Jira's style */}
+          <span
+            style={{
+              fontFamily: 'Inter, sans-serif',
+              fontSize: 11,
+              fontWeight: 500,
+              color: text3,
+              textTransform: 'uppercase' as const,
+              letterSpacing: '0.02em',
+              flexShrink: 0,
+            }}
+          >
             {target.statusLabel}
-          </Lozenge>
+          </span>
         </Box>
 
-        {/* Aggregation row */}
-        {aggregation && (
-          <Box xcss={aggRowXcss}>
-            <div style={{ flexShrink: 0 }}>
-              <Avatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" />
+        {/* Thread preview card — shown when notification has a comment thread */}
+        {thread && (
+          <div
+            style={{
+              marginTop: 8,
+              padding: '8px 10px',
+              borderRadius: 4,
+              border: `1px solid ${threadBorderColor}`,
+              background: threadBg,
+            }}
+          >
+            {/* Comment preview text */}
+            <p
+              style={{
+                margin: 0,
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 12,
+                lineHeight: '16px',
+                color: text2,
+                overflow: 'hidden',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical' as const,
+              }}
+            >
+              {thread.commentPreview}
+            </p>
+
+            {/* Reactions + Reply + View thread */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                marginTop: 6,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Emoji reactions */}
+              {REACTION_EMOJIS.map(emoji => {
+                const count = thread.reactions[emoji] ?? 0;
+                return (
+                  <button
+                    key={emoji}
+                    type="button"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 2,
+                      padding: '2px 5px',
+                      borderRadius: 10,
+                      border: `1px solid ${threadBorderColor}`,
+                      background: count > 0
+                        ? (isDark ? '#292929' : 'rgba(37,99,235,0.06)')
+                        : 'transparent',
+                      cursor: 'pointer',
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: 11,
+                      color: text2,
+                      lineHeight: '16px',
+                    }}
+                    title={`React with ${emoji}`}
+                    aria-label={`${emoji} reaction${count > 0 ? `, ${count}` : ''}`}
+                  >
+                    <span style={{ fontSize: 12, lineHeight: 1 }}>{emoji}</span>
+                    {count > 0 && (
+                      <span style={{ fontWeight: 500 }}>{count}</span>
+                    )}
+                  </button>
+                );
+              })}
+
+              {/* Add reaction */}
+              <button
+                type="button"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 22,
+                  height: 22,
+                  borderRadius: 10,
+                  border: `1px solid ${threadBorderColor}`,
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  color: text3,
+                  fontSize: 13,
+                  lineHeight: 1,
+                  padding: 0,
+                }}
+                title="Add reaction"
+                aria-label="Add reaction"
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <circle cx="6" cy="6" r="5" stroke="currentColor" strokeWidth="1.2"/>
+                  <path d="M4 7c.5.8 1.5 1.3 2 1.3s1.5-.5 2-1.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                  <circle cx="4.5" cy="4.5" r=".7" fill="currentColor"/>
+                  <circle cx="7.5" cy="4.5" r=".7" fill="currentColor"/>
+                </svg>
+              </button>
+
+              {/* Spacer */}
+              <div style={{ flex: 1 }} />
+
+              {/* Reply */}
+              <button
+                type="button"
+                style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: linkClr,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0 4px',
+                  lineHeight: '16px',
+                }}
+              >
+                Reply
+              </button>
+
+              {/* View thread */}
+              <button
+                type="button"
+                style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: linkClr,
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '0 4px',
+                  lineHeight: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 3,
+                }}
+              >
+                View thread
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+                  <path d="M2 5h6M5.5 2.5L8 5l-2.5 2.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
             </div>
+          </div>
+        )}
+
+        {/* Aggregation row (multiple updates from same person) */}
+        {aggregation && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+            <Avatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={aggregation.actor.avatarUrl ?? undefined} />
             <span
               style={{
                 fontFamily: 'Inter, sans-serif',
@@ -242,7 +401,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             >
               +{aggregation.count} update from {aggregation.actor.displayName}
             </span>
-          </Box>
+          </div>
         )}
       </Box>
     </button>

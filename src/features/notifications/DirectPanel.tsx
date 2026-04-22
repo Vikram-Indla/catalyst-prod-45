@@ -1,14 +1,108 @@
-import { useState, useCallback } from 'react';
+import { useMemo } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
-import { MOCK_DIRECT_NOTIFICATIONS } from './mock/directMockData';
+import { useNotificationsQuery } from '@/hooks/useNotificationsNew';
+import { useActorProfiles } from '@/hooks/useActorProfiles';
+import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
+import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
 
 interface DirectPanelProps {
   unreadOnly: boolean;
   isDark: boolean;
+  /** Optional: externally managed read-state (e.g. from NotificationPanel) */
+  readIds?: Set<string>;
+  onMarkRead?: (id: string) => void;
 }
+
+// ─── Mapping helpers ────────────────────────────────────────────────────────
+
+function mapVerb(notificationType: string): DirectVerb {
+  switch (notificationType) {
+    case 'assigned':
+    case 'assigned_work_item':
+    case 'assigned_story':
+    case 'tester_assigned':
+      return 'assigned';
+    case 'mentioned_in_comment':
+      return 'mentioned';
+    case 'commented_on_work_item':
+    case 'commented':
+      return 'commented';
+    case 'updated_work_item':
+      return 'updated';
+    case 'status_changed':
+      return 'status_changed';
+    case 'reassigned_work_item':
+      return 'reassigned';
+    case 'okr_milestone_achieved':
+      return 'approved';
+    default:
+      return 'updated';
+  }
+}
+
+function mapIconType(iconType: WorkItemIconType): DirectWorkItemIconType {
+  switch (iconType) {
+    case 'bug':      return 'bug';
+    case 'story':    return 'story';
+    case 'task':     return 'task';
+    case 'epic':     return 'epic';
+    case 'incident': return 'incident';
+    case 'subtask':  return 'task';
+    case 'new_feature': return 'story';
+    case 'improvement': return 'task';
+    default:         return 'task';
+  }
+}
+
+function mapStatusAppearance(statusType: StatusType) {
+  switch (statusType) {
+    case 'blue':  return 'inprogress' as const;
+    case 'green': return 'success' as const;
+    default:      return 'default' as const;
+  }
+}
+
+function mapNotification(
+  n: Notification,
+  profiles: Map<string, { full_name: string; avatar_url: string | null }>
+): DirectNotification {
+  const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
+  const hasThread = !!(n.metadata?.comment_preview);
+
+  return {
+    id: n.id,
+    createdAt: n.created_at,
+    readAt: n.read_at,
+    actor: n.actor_user_id
+      ? {
+          id: n.actor_user_id,
+          displayName: profile?.full_name ?? (n.actor?.full_name ?? 'Unknown'),
+          avatarUrl: profile?.avatar_url ?? n.actor?.avatar_url ?? null,
+        }
+      : null,
+    verb: mapVerb(n.notification_type),
+    target: {
+      id: n.entity_id,
+      key: n.entity_key,
+      title: n.entity_title,
+      statusLabel: n.status,
+      statusAppearance: mapStatusAppearance(n.status_type),
+      iconType: mapIconType(n.entity_icon_type),
+    },
+    thread: hasThread
+      ? {
+          commentPreview: n.metadata.comment_preview!,
+          reactions: n.metadata.reactions ?? {},
+          replyCount: 0,
+        }
+      : undefined,
+  };
+}
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
 const panelXcss = xcss({
   display: 'flex',
@@ -82,22 +176,74 @@ function EmptyUnread({ isDark }: { isDark: boolean }) {
   );
 }
 
-export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
-  const [readIds, setReadIds] = useState<Set<string>>(() => {
+function LoadingState({ isDark }: { isDark: boolean }) {
+  const shimmerBg = isDark ? '#1F1F1F' : '#F4F5F7';
+  const shimmerHighlight = isDark ? '#2E2E2E' : '#E9EBEE';
+  return (
+    <Box xcss={panelXcss}>
+      {[1, 2, 3].map(i => (
+        <div
+          key={i}
+          style={{
+            display: 'flex',
+            gap: 10,
+            padding: '12px 16px',
+            alignItems: 'flex-start',
+          }}
+        >
+          <div style={{ width: 32, height: 32, borderRadius: '50%', background: shimmerBg, flexShrink: 0 }} />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ height: 12, borderRadius: 4, background: shimmerHighlight, width: '60%' }} />
+            <div style={{ height: 12, borderRadius: 4, background: shimmerBg, width: '90%' }} />
+            <div style={{ height: 10, borderRadius: 4, background: shimmerBg, width: '40%' }} />
+          </div>
+        </div>
+      ))}
+    </Box>
+  );
+}
+
+// ─── Main component ──────────────────────────────────────────────────────────
+
+export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadIds, onMarkRead }: DirectPanelProps) {
+  const { data, isLoading } = useNotificationsQuery('direct', unreadOnly);
+
+  // Flatten paginated pages into a flat list of raw Notification rows
+  const rawNotifications = useMemo<Notification[]>(() => {
+    if (!data?.pages) return [];
+    return data.pages.flat() as Notification[];
+  }, [data]);
+
+  // Collect all actor IDs so we can batch-fetch their profiles (with avatar_url)
+  const actorIds = useMemo(
+    () => rawNotifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
+    [rawNotifications]
+  );
+
+  const { data: profilesMap } = useActorProfiles(actorIds);
+  const profiles = profilesMap ?? new Map();
+
+  // Map raw DB rows → DirectNotification display shape
+  const notifications = useMemo<DirectNotification[]>(
+    () => rawNotifications.map(n => mapNotification(n, profiles)),
+    [rawNotifications, profiles]
+  );
+
+  // Read-state: prefer external (from NotificationPanel) else derive from readAt field
+  const resolvedReadIds = useMemo<Set<string>>(() => {
+    if (externalReadIds) return externalReadIds;
     const init = new Set<string>();
-    for (const n of MOCK_DIRECT_NOTIFICATIONS) {
+    for (const n of notifications) {
       if (n.readAt) init.add(n.id);
     }
     return init;
-  });
+  }, [externalReadIds, notifications]);
 
-  const handleMarkRead = useCallback((id: string) => {
-    setReadIds(prev => new Set(prev).add(id));
-  }, []);
+  if (isLoading) return <LoadingState isDark={isDark} />;
 
   const visible = unreadOnly
-    ? MOCK_DIRECT_NOTIFICATIONS.filter(n => !readIds.has(n.id))
-    : MOCK_DIRECT_NOTIFICATIONS;
+    ? notifications.filter(n => !resolvedReadIds.has(n.id))
+    : notifications;
 
   const groups = groupByDate(visible);
 
@@ -123,8 +269,8 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
             <DirectNotificationRow
               key={n.id}
               notification={n}
-              isRead={readIds.has(n.id)}
-              onMarkRead={handleMarkRead}
+              isRead={resolvedReadIds.has(n.id)}
+              onMarkRead={onMarkRead ?? (() => {})}
               isDark={isDark}
             />
           ))}
