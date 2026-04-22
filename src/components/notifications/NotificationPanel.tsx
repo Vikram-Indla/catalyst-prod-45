@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalSearchStore } from "@/store/globalSearchStore";
 import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, RefreshCw, X } from "lucide-react";
+import Toggle from "@atlaskit/toggle";
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
 import { useNotificationsQuery, useMarkAsRead, useMarkAllAsRead, useSnoozeNotification } from "@/hooks/useNotificationsNew";
@@ -18,6 +19,8 @@ import LoadingSkeleton from "./LoadingSkeleton";
 import AIRecapTabV2 from "./AIRecapTabV2";
 import AgeingTab, { useAgeingCount } from "./AgeingTab";
 import WatchingTab from "./WatchingTab";
+// ── Feature: Atlaskit-parity Direct + Watching tab ───────────────────────────
+import { DirectTab } from "@/features/notifications";
 
 function useLastSyncTime() {
   return useQuery({
@@ -376,39 +379,25 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       <div style={{ padding: '16px 20px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: T.text1, margin: 0, lineHeight: 1.2 }}>
+            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 600, color: isDark ? T.text1 : '#292A2E', margin: 0, lineHeight: '28px' }}>
               Notifications
             </span>
             {/* P-01: Sync chip removed from header */}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            {/* m-10: Unread toggle with count */}
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text2 }}>
-              Only show unread{unreadOnly && unreadCount !== undefined ? ` (${unreadCount})` : ''}
-            </span>
-            <button
-              onClick={handleToggleUnread}
-              aria-label={unreadOnly ? 'Show all notifications' : 'Show only unread'}
-              style={{
-                width: 36, height: 20, borderRadius: 12, cursor: 'pointer', border: 'none',
-                background: unreadOnly ? '#16A34A' : (isDark ? '#444444' : '#334155'),
-                position: 'relative', transition: 'background 200ms ease',
-                padding: 0,
-              }}
+            {/* Only show unread — @atlaskit/toggle matching Jira */}
+            <label
+              htmlFor="notif-unread-toggle"
+              style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontSize: 14, color: isDark ? T.text1 : '#292A2E', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
-              <span style={{
-                position: 'absolute', top: 2, left: unreadOnly ? 18 : 2,
-                width: 16, height: 16, borderRadius: '50%', background: '#FFFFFF',
-                transition: 'left 200ms cubic-bezier(0.16,1,0.3,1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                {unreadOnly ? (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4L3 5.5L6.5 2" stroke="#16A34A" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                ) : (
-                  <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2L6 6M6 2L2 6" stroke="#334155" strokeWidth="1.2" strokeLinecap="round"/></svg>
-                )}
-              </span>
-            </button>
+              Only show unread
+            </label>
+            <Toggle
+              id="notif-unread-toggle"
+              isChecked={unreadOnly}
+              onChange={handleToggleUnread}
+              label="Only show unread"
+            />
             {/* Open full page */}
             <button
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: T.text2 }}
@@ -497,15 +486,16 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 aria-selected={isActive}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
-                  padding: '8px 14px', height: 'auto',
-                  background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
+                  padding: '6px 8px', height: 'auto', marginBottom: -1,
+                  background: 'none', border: 'none',
+                  borderBottom: isActive ? '2px solid #1868DB' : '2px solid transparent',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: isActive ? 650 : 500,
-                  color: isActive ? '#2563EB' : T.text2,
+                  fontFamily: 'Inter, -apple-system, sans-serif', fontSize: 14, fontWeight: 500,
+                  color: isActive ? '#1868DB' : '#505258',
                   transition: 'color 150ms ease',
                 }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = T.text1; }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = T.text2; }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = isDark ? T.text1 : '#292A2E'; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = '#505258'; }}
               >
                 {tab.label}
                 {tab.badge === 'ageing' && (
@@ -542,6 +532,16 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
               Retry
             </button>
           </div>
+        ) : activeTab === 'direct' ? (
+          /* ── Atlaskit-parity Direct tab (Jira pixel-matched) ── */
+          <DirectTab
+            unreadOnly={unreadOnly}
+            onItemClick={(item) => {
+              // Bridge to existing detail modal via global search store
+              const { openDetail } = useGlobalSearchStore.getState();
+              openDetail({ id: item.target.id, itemType: undefined });
+            }}
+          />
         ) : activeTab === 'watching' ? (
           <WatchingTab />
         ) : activeTab === 'ai' ? (

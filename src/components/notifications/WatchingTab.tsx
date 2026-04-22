@@ -1,322 +1,352 @@
 /**
- * WatchingTab — Activity feed for watched issues
+ * WatchingTab — Activity feed for watched issues.
+ *
+ * Uses the unified `notifications` table (tab='watching') via
+ * `useNotificationsInfinite` — the same cursor-paginated, actor-hydrated,
+ * realtime-invalidated pipeline as DirectTab.
+ *
+ * Jira parity: same row layout as Direct tab (40px avatar, work-item icon,
+ * verb + timestamp, title, KEY • status). The thread-capable preview card
+ * is also shown when metadata.comment_body is present.
+ *
  * Light mode only.
  */
-import { useEffect, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Eye, MessageSquare, ArrowRightLeft, UserCheck, ArrowUp, Paperclip } from "lucide-react";
 
-// ── Helpers ────────────────────────────────────────
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d`;
-}
+import { useState, useRef, useEffect, useCallback } from 'react';
+import Avatar from '@atlaskit/avatar';
+import Spinner from '@atlaskit/spinner';
+import { Eye } from 'lucide-react';
+import { useNotificationsInfinite } from '@/features/notifications/hooks/useNotificationsInfinite';
+import { useMarkRead } from '@/features/notifications/hooks/useNotificationMutations';
+import { groupNotificationsByDay, formatRelativeTime, getVerbLabel } from '@/features/notifications/utils/date';
+import type { NotificationItem } from '@/features/notifications/types';
 
-function dateBucket(iso: string): string {
-  const d = new Date(iso);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today.getTime() - 86400000);
-  const weekAgo = new Date(today.getTime() - 7 * 86400000);
-  if (d >= today) return "Today";
-  if (d >= yesterday) return "Yesterday";
-  if (d >= weekAgo) return "This week";
-  return "Earlier";
-}
-
-const ACTIVITY_ICONS: Record<string, { icon: typeof MessageSquare; color: string }> = {
-  comment_added: { icon: MessageSquare, color: "#2563EB" },
-  status_changed: { icon: ArrowRightLeft, color: "#D97706" },
-  assignee_changed: { icon: UserCheck, color: "#10B981" },
-  priority_changed: { icon: ArrowUp, color: "#DC2626" },
-  attachment_added: { icon: Paperclip, color: "#64748B" },
+// ── colours (shared Jira palette — same as DirectTab) ────────────────────────
+const C = {
+  text:        '#292A2E',
+  textSubtle:  '#505258',
+  textMuted:   '#6B6E76',
+  blue:        '#1868DB',
+  hover:       '#F7F8F9',
+  border:      '#EBECF0',
+  white:       '#FFFFFF',
 };
 
-const ACTIVITY_LABELS: Record<string, string> = {
-  comment_added: "added a comment",
-  status_changed: "changed status",
-  assignee_changed: "changed assignee",
-  priority_changed: "changed priority",
-  attachment_added: "added an attachment",
-};
+// ── Work-item icon — canonical SVGs & colours (CLAUDE.md §11) ─────────────────
+function WorkItemIcon({ type }: { type?: string }) {
+  const t = (type || '').toLowerCase();
+  if (t === 'bug')
+    return <svg width="18" height="18" viewBox="0 0 16 16" aria-label="Bug"><rect width="16" height="16" rx="2" fill="#E5493A"/><circle cx="8" cy="8" r="3.5" fill="white"/></svg>;
+  if (t === 'story')
+    return <svg width="18" height="18" viewBox="0 0 16 16" aria-label="Story"><rect width="16" height="16" rx="2" fill="#63BA3C"/><path d="M4 3h8v10l-4-2.5L4 13V3z" fill="white"/></svg>;
+  if (t === 'epic')
+    return <svg width="18" height="18" viewBox="0 0 16 16" aria-label="Epic"><rect width="16" height="16" rx="2" fill="#904EE2"/><path d="M9.5 3L5.5 9h4L6.5 13l6-7H9l.5-3z" fill="white"/></svg>;
+  return <svg width="18" height="18" viewBox="0 0 16 16" aria-label="Task"><rect width="16" height="16" rx="2" fill="#4BADE8"/><path d="M4 8.5l2.5 2.5 5.5-5.5" stroke="white" strokeWidth="1.8" fill="none" strokeLinecap="round"/></svg>;
+}
 
-function StatusLozenge({ value }: { value: string }) {
-  const lower = (value || "").toLowerCase();
-  let bg = "#DFE1E6";
-  let color = "#253858";
-  if (lower.includes("progress") || lower.includes("review") || lower.includes("active")) {
-    bg = "#DEEBFF"; color = "#0747A6";
-  } else if (lower.includes("done") || lower.includes("approved") || lower.includes("complete") || lower.includes("closed")) {
-    bg = "#E3FCEF"; color = "#006644";
-  }
+// ── Watching Row ──────────────────────────────────────────────────────────────
+function WatchingRow({
+  item,
+  onMarkRead,
+}: {
+  item: NotificationItem;
+  onMarkRead: (id: string) => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const isUnread = item.readAt === null;
+
+  const handleClick = () => { if (isUnread) onMarkRead(item.id); };
+
+  const verbLabel = getVerbLabel(item.verb, item.actor.displayName);
+  const timeLabel = formatRelativeTime(item.createdAt);
+
   return (
-    <span style={{
-      display: "inline-block", height: 20, lineHeight: "20px",
-      fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-      letterSpacing: "0.03em", borderRadius: 3,
-      padding: "0 6px", background: bg, color,
-      fontFamily: "Inter, sans-serif",
-    }}>
-      {value}
-    </span>
+    <article
+      role="button"
+      tabIndex={0}
+      aria-label={`${verbLabel} — ${item.target.title}${isUnread ? ', unread' : ''}`}
+      onClick={handleClick}
+      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(); } }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'block',
+        padding: '12px 16px 12px 24px',
+        background: hovered ? C.hover : C.white,
+        cursor: 'pointer',
+        outline: 'none',
+        borderBottom: `1px solid ${C.border}`,
+        transition: 'background 120ms ease',
+      }}
+    >
+      <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+        {/* 40px Atlaskit avatar — matches Jira */}
+        <div style={{ flexShrink: 0 }}>
+          <Avatar
+            name={item.actor.displayName}
+            src={item.actor.avatarUrl}
+            size="large"
+            appearance="circle"
+          />
+        </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Verb + timestamp + unread indicator */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+            <span style={{
+              fontFamily: 'Inter, -apple-system, sans-serif',
+              fontSize: 14, fontWeight: 500,
+              color: C.text, lineHeight: '20px',
+              flex: 1, minWidth: 0,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}>
+              {verbLabel}
+            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+              <span style={{
+                fontFamily: 'Inter, -apple-system, sans-serif',
+                fontSize: 14, fontWeight: 400,
+                color: C.textMuted, lineHeight: '20px', whiteSpace: 'nowrap',
+              }}>
+                {timeLabel}
+              </span>
+              {isUnread && !hovered && (
+                <div aria-label="Unread" style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: C.blue, flexShrink: 0 }} />
+              )}
+              {isUnread && hovered && (
+                <button
+                  onClick={e => { e.stopPropagation(); onMarkRead(item.id); }}
+                  aria-label="Mark as read"
+                  title="Mark as read"
+                  style={{
+                    width: 22, height: 22, borderRadius: '50%',
+                    border: '1.5px solid #CBD5E1', background: 'transparent',
+                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: 0, flexShrink: 0,
+                  }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                    <path d="M2 6L5 9L10 3" stroke={C.textSubtle} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Work-item icon + title */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6, marginTop: 2 }}>
+            <span style={{ flexShrink: 0, marginTop: 1 }}>
+              <WorkItemIcon type={item.target.icon} />
+            </span>
+            <span style={{
+              fontFamily: 'Inter, -apple-system, sans-serif',
+              fontSize: 14, fontWeight: 400,
+              color: C.text, lineHeight: '20px',
+              overflow: 'hidden', display: '-webkit-box',
+              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+            }}>
+              {item.target.title}
+            </span>
+          </div>
+
+          {/* KEY • Status */}
+          {item.target.key && (
+            <div style={{ marginTop: 2 }}>
+              <span style={{
+                fontFamily: 'Inter, -apple-system, sans-serif',
+                fontSize: 12, fontWeight: 400,
+                color: C.textSubtle, lineHeight: '16px',
+              }}>
+                {item.target.key}
+                {item.target.statusLabel && <> &bull; {item.target.statusLabel}</>}
+              </span>
+            </div>
+          )}
+
+          {/* Comment preview if present */}
+          {item.thread?.previewText && (
+            <div style={{
+              marginTop: 8, padding: '8px 12px',
+              border: `1px solid ${C.border}`, borderRadius: 4,
+              background: C.white,
+            }}>
+              <p style={{
+                margin: 0, fontFamily: 'Inter, -apple-system, sans-serif',
+                fontSize: 14, color: C.text, lineHeight: '20px',
+                overflow: 'hidden', display: '-webkit-box',
+                WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+              }}>
+                {item.thread.previewText}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Aggregation row */}
+      {item.aggregation && (
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          marginTop: 8, paddingLeft: 52,
+        }}>
+          <Avatar name={item.actor.displayName} src={item.actor.avatarUrl} size="xsmall" appearance="circle" />
+          <span style={{ fontFamily: 'Inter, -apple-system, sans-serif', fontSize: 14, fontWeight: 400, color: C.blue }}>
+            {item.aggregation.label}
+          </span>
+        </div>
+      )}
+    </article>
   );
 }
 
-// ── Initials ────────────────────────────────────────
-function getInitials(name: string): string {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() || "?";
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+// ── Date Group ────────────────────────────────────────────────────────────────
+function WatchingGroup({
+  label,
+  items,
+  onMarkRead,
+}: {
+  label: string;
+  items: NotificationItem[];
+  onMarkRead: (id: string) => void;
+}) {
+  return (
+    <div>
+      <div style={{
+        padding: '12px 24px 6px',
+        fontFamily: 'Inter, -apple-system, sans-serif',
+        fontSize: 12, fontWeight: 600,
+        color: C.textMuted, letterSpacing: 'normal',
+      }}>
+        {label}
+      </div>
+      {items.map(item => (
+        <WatchingRow key={item.id} item={item} onMarkRead={onMarkRead} />
+      ))}
+    </div>
+  );
 }
 
-interface WatchActivity {
-  id: string;
-  issue_id: string;
-  actor_id: string | null;
-  activity_type: string;
-  old_value: string | null;
-  new_value: string | null;
-  comment_body: string | null;
-  created_at: string;
-  issue_key?: string;
-  summary?: string;
-  issue_type?: string;
-  actor_name?: string;
-  actor_avatar?: string | null;
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+function SkeletonRow() {
+  return (
+    <div style={{
+      display: 'flex', gap: 12, alignItems: 'flex-start',
+      padding: '12px 16px 12px 24px',
+      borderBottom: `1px solid ${C.border}`,
+    }}>
+      <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#EBECF0', flexShrink: 0 }} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 4 }}>
+        <div style={{ height: 14, width: '70%', background: '#EBECF0', borderRadius: 3 }} />
+        <div style={{ height: 14, width: '90%', background: '#EBECF0', borderRadius: 3 }} />
+        <div style={{ height: 10, width: '40%', background: '#EBECF0', borderRadius: 3 }} />
+      </div>
+    </div>
+  );
 }
 
+// ── Empty state ───────────────────────────────────────────────────────────────
+function EmptyWatching() {
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', padding: '48px 20px', gap: 12, textAlign: 'center',
+    }}>
+      <Eye size={40} color="#CBD5E1" strokeWidth={1.2} />
+      <span style={{ fontSize: 14, fontWeight: 600, color: C.text, fontFamily: 'Inter, sans-serif' }}>
+        Nothing watched yet
+      </span>
+      <span style={{ fontSize: 12, color: C.textSubtle, fontFamily: 'Inter, sans-serif' }}>
+        Tap 👁 on any issue to start watching it
+      </span>
+    </div>
+  );
+}
+
+// ── WatchingTab ───────────────────────────────────────────────────────────────
 export default function WatchingTab() {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
-  const { data: activities = [], isLoading } = useQuery({
-    queryKey: ["watching-tab", user?.id],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      // Get watched issue IDs
-      const { data: watches } = await supabase
-        .from("issue_watchers")
-        .select("issue_id")
-        .eq("user_id", user!.id);
+  // Unified pipeline — same hook as DirectTab, tab='watching'
+  const { notifications, isLoading, isError, refetch, hasNextPage, fetchNextPage } =
+    useNotificationsInfinite('watching', false);
+  const { mutate: markRead } = useMarkRead('watching', false);
 
-      if (!watches?.length) return [];
+  const handleMarkRead = useCallback((id: string) => { markRead(id); }, [markRead]);
 
-      const issueIds = watches.map(w => w.issue_id);
-
-      // Get activity for those issues
-      const { data: acts } = await supabase
-        .from("watch_activity")
-        .select("*")
-        .in("issue_id", issueIds)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (!acts?.length) return [];
-
-      // Fetch issue details
-      const uniqueIssueIds = [...new Set(acts.map(a => a.issue_id))];
-      const { data: issues } = await supabase
-        .from("catalyst_issues")
-        .select("id, issue_key, title, issue_type")
-        .in("id", uniqueIssueIds);
-
-      const issueMap = new Map(issues?.map(i => [i.id, i]) ?? []);
-
-      // Fetch actor profiles
-      const uniqueActorIds = [...new Set(acts.map(a => a.actor_id).filter(Boolean))] as string[];
-      const { data: profiles } = uniqueActorIds.length > 0
-        ? await supabase.from("profiles").select("id, full_name, avatar_url").in("id", uniqueActorIds)
-        : { data: [] };
-
-      const profileMap = new Map<string, { id: string; full_name: string; avatar_url: string | null }>(
-        (profiles ?? []).map(p => [p.id, p])
-      );
-
-      return acts.map(a => {
-        const issue = issueMap.get(a.issue_id);
-        const actor = a.actor_id ? profileMap.get(a.actor_id) : null;
-        return {
-          ...a,
-          issue_key: issue?.issue_key ?? "—",
-          summary: issue?.title ?? "",
-          issue_type: issue?.issue_type ?? "Story",
-          actor_name: actor?.full_name ?? "Unknown",
-          actor_avatar: actor?.avatar_url ?? null,
-        } as WatchActivity;
-      });
-    },
-    staleTime: 30_000,
-  });
-
-  // Realtime subscription
+  // Infinite scroll sentinel
   useEffect(() => {
-    if (!user?.id) return;
-    const channel = supabase
-      .channel("watch-activity-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "watch_activity" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["watching-tab"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user?.id, queryClient]);
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasNextPage) return;
+    const obs = new IntersectionObserver(
+      entries => { if (entries[0].isIntersecting) fetchNextPage(); },
+      { threshold: 0.1 },
+    );
+    obs.observe(sentinel);
+    return () => obs.disconnect();
+  }, [hasNextPage, fetchNextPage]);
 
-  // Group by date bucket
-  const groups = useMemo(() => {
-    const buckets: Record<string, WatchActivity[]> = {};
-    const order = ["Today", "Yesterday", "This week", "Earlier"];
-    for (const a of activities) {
-      const bucket = dateBucket(a.created_at);
-      if (!buckets[bucket]) buckets[bucket] = [];
-      buckets[bucket].push(a);
-    }
-    return order.filter(b => buckets[b]?.length).map(b => ({ label: b, items: buckets[b]! }));
-  }, [activities]);
-
-  // Empty state
-  if (!isLoading && activities.length === 0) {
+  if (isError) {
     return (
       <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", padding: "48px 20px", gap: 12,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'center', padding: '48px 24px', gap: 12,
       }}>
-        <Eye size={40} color="#CBD5E1" strokeWidth={1.2} />
-        <span style={{ fontSize: 14, color: "#94A3B8", fontFamily: "Inter, sans-serif" }}>
-          Nothing watched yet
+        <span style={{ fontSize: 14, color: C.textSubtle, fontFamily: 'Inter, sans-serif' }}>
+          Could not load watching activity
         </span>
-        <span style={{ fontSize: 12, color: "#CBD5E1", fontFamily: "Inter, sans-serif" }}>
-          Tap 👁 on any issue to start watching it
-        </span>
+        <button
+          onClick={() => refetch()}
+          style={{
+            padding: '6px 16px', borderRadius: 4,
+            border: `1px solid ${C.border}`, background: C.white,
+            fontFamily: 'Inter, sans-serif', fontSize: 14, color: C.text, cursor: 'pointer',
+          }}
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (isLoading && notifications.length === 0) {
     return (
-      <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
-        <div style={{
-          width: 24, height: 24,
-          border: "2.5px solid #E2E8F0", borderTopColor: "#2563EB",
-          borderRadius: "50%", animation: "spin 0.7s linear infinite",
-        }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+        {[1, 2, 3].map(i => <SkeletonRow key={i} />)}
       </div>
     );
   }
+
+  if (notifications.length === 0) {
+    return <EmptyWatching />;
+  }
+
+  const groups = groupNotificationsByDay(notifications);
 
   return (
     <div>
       {groups.map(group => (
-        <div key={group.label}>
-          {/* Section header */}
-          <div style={{
-            position: "sticky", top: 0, zIndex: 10,
-            background: "#F8FAFC", padding: "5px 14px",
-            fontFamily: "Inter, sans-serif", fontSize: 10,
-            fontWeight: 700, color: "#94A3B8",
-            textTransform: "uppercase", letterSpacing: "0.04em",
-          }}>
-            {group.label}
-          </div>
-
-          {group.items.map(activity => {
-            const actCfg = ACTIVITY_ICONS[activity.activity_type] ?? ACTIVITY_ICONS.comment_added;
-            const ActIcon = actCfg.icon;
-
-            return (
-              <div
-                key={activity.id}
-                style={{
-                  display: "flex", gap: 10, padding: "10px 14px",
-                  minHeight: 52,
-                  borderBottom: "0.75px solid #F1F5F9",
-                  transition: "background 120ms",
-                  cursor: "default",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(37,99,235,0.03)"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-              >
-                {/* Activity type icon */}
-                <div style={{ flexShrink: 0, marginTop: 2 }}>
-                  <ActIcon size={16} color={actCfg.color} />
-                </div>
-
-                {/* Actor avatar */}
-                <div style={{
-                  width: 24, height: 24, borderRadius: "50%",
-                  background: activity.actor_id ? "#DEEBFF" : "#E2E8F0",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                  fontSize: 10, fontWeight: 700,
-                  fontFamily: "Inter, sans-serif",
-                  color: activity.actor_id ? "#0747A6" : "#94A3B8",
-                }}>
-                  {getInitials(activity.actor_name ?? "")}
-                </div>
-
-                {/* Content */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 11, lineHeight: "16px" }}>
-                    <span style={{ fontWeight: 600, color: "#1E293B" }}>{activity.actor_name}</span>
-                    {" "}
-                    <span style={{ color: "#64748B" }}>
-                      {ACTIVITY_LABELS[activity.activity_type] ?? activity.activity_type}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 11, lineHeight: "16px", marginTop: 2 }}>
-                    <span style={{
-                      fontFamily: "JetBrains Mono, monospace",
-                      fontSize: 10, color: "#2563EB",
-                    }}>
-                      {activity.issue_key}
-                    </span>
-                    <span style={{ color: "#94A3B8", margin: "0 4px" }}>·</span>
-                    <span style={{
-                      color: "#475569", overflow: "hidden",
-                      textOverflow: "ellipsis", whiteSpace: "nowrap",
-                    }}>
-                      {activity.summary}
-                    </span>
-                  </div>
-                  {activity.activity_type === "comment_added" && activity.comment_body && (
-                    <div style={{
-                      fontSize: 11, color: "#64748B", fontStyle: "italic",
-                      marginTop: 2, lineHeight: "16px",
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      maxWidth: 280,
-                    }}>
-                      {activity.comment_body.slice(0, 80)}
-                    </div>
-                  )}
-                </div>
-
-                {/* Right side — time + status badge */}
-                <div style={{
-                  display: "flex", flexDirection: "column",
-                  alignItems: "flex-end", gap: 4, flexShrink: 0,
-                }}>
-                  <span style={{
-                    fontFamily: "JetBrains Mono, monospace",
-                    fontSize: 10, color: "#94A3B8",
-                  }}>
-                    {relativeTime(activity.created_at)}
-                  </span>
-                  {activity.activity_type === "status_changed" && activity.new_value && (
-                    <StatusLozenge value={activity.new_value} />
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <WatchingGroup
+          key={group.label}
+          label={group.label}
+          items={group.items}
+          onMarkRead={handleMarkRead}
+        />
       ))}
+      {/* Load-more sentinel */}
+      {hasNextPage && (
+        <div
+          ref={sentinelRef}
+          style={{ height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Spinner size="small" />
+        </div>
+      )}
+      {/* Trailing load indicator */}
+      {isLoading && notifications.length > 0 && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
+          <Spinner size="small" />
+        </div>
+      )}
     </div>
   );
 }

@@ -281,6 +281,7 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/primitives',
       '@atlaskit/section-message',
       '@atlaskit/select',
+      '@atlaskit/toggle',
       '@atlaskit/spinner',
       '@atlaskit/textfield',
       '@atlaskit/tokens',

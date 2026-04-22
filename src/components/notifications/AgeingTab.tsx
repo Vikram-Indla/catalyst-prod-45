@@ -1,17 +1,23 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Ageing Tab — SLA-based portfolio health monitor (Catalyst-owned)
+// Design: Atlaskit-first · @atlaskit/lozenge statuses · section-message banners
+// Data:   useAgeingItems hook (shared with governance score badge)
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useAgeingItems } from '@/hooks/useAgeingItems';
-import { Loader2, ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
-import AgeingSkeleton from './AgeingSkeleton';
+import { ChevronDown, ChevronRight, Sparkles } from 'lucide-react';
+import Spinner from '@atlaskit/spinner';
+import Lozenge from '@atlaskit/lozenge';
+import Button from '@atlaskit/button/new';
+import SectionMessage from '@atlaskit/section-message';
+import { token } from '@atlaskit/tokens';
 import { useGovernanceScore } from '@/hooks/useGovernanceScore';
 import { useAuth } from '@/hooks/useAuth';
 
-/* ═══════════════════════════════════════
-   Ageing Tab — Grouped by Time Period
-   V12 Hybrid Precision + Jira Solid Pills
-   ═══════════════════════════════════════ */
+// ── Types ─────────────────────────────────────────────────────────────────────
 
 type ItemType = 'Production Incident' | 'Story' | 'QA Bug' | 'Feature' | 'Sub-task';
 type StatusType = 'TODO' | 'IN PROGRESS';
@@ -26,6 +32,8 @@ interface AgeingItem {
 }
 
 type TimeGroup = 'critical' | 'thisWeek' | 'thisMonth' | 'quarter' | 'older';
+
+// ── SLA thresholds (business rules) ──────────────────────────────────────────
 
 const SLA_THRESHOLDS: Record<ItemType, number> = {
   'Production Incident': 1,
@@ -52,7 +60,16 @@ const GROUP_CONFIG: Record<TimeGroup, { label: string; defaultOpen: boolean }> =
 
 const GROUP_ORDER: TimeGroup[] = ['critical', 'thisWeek', 'thisMonth', 'quarter', 'older'];
 
-/* ── Canonical Jira Work Item SVG Icons ── */
+const GROUP_ACCENT: Record<TimeGroup, string> = {
+  critical:  token('color.border.danger', '#EF4444'),
+  thisWeek:  token('color.border.information', '#0052CC'),
+  thisMonth: token('color.border.warning', '#F59E0B'),
+  quarter:   token('color.border', '#94A3B8'),
+  older:     token('color.border', '#64748B'),
+};
+
+// ── Canonical Jira Work Item SVG icons ───────────────────────────────────────
+
 function TypeIcon({ type }: { type: ItemType }) {
   const size = 16;
   const icons: Record<ItemType, JSX.Element> = {
@@ -90,22 +107,19 @@ function TypeIcon({ type }: { type: ItemType }) {
   return icons[type] || null;
 }
 
+// ── Status Lozenge — @atlaskit/lozenge with CLAUDE.md §5 appearances ─────────
+
 function StatusLozenge({ status }: { status: StatusType }) {
-  const isActive = status === 'IN PROGRESS';
-  const bg = isActive ? '#DEEBFF' : '#DFE1E6';
-  const fg = isActive ? '#0747A6' : '#253858';
+  // appearance="inprogress" → #DEEBFF / #0747A6 = BLUE (CLAUDE.md §5 ✅)
+  // appearance="default"    → #DFE1E6 / #253858 = GREY  (CLAUDE.md §5 ✅)
   return (
-    <span style={{
-      display: 'inline-block', height: 20, lineHeight: '20px',
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-      letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
-      background: bg, color: fg, whiteSpace: 'nowrap',
-      fontFamily: 'Inter, sans-serif',
-    }}>
+    <Lozenge appearance={status === 'IN PROGRESS' ? 'inprogress' : 'default'}>
       {status}
-    </span>
+    </Lozenge>
   );
 }
+
+// ── Mappers (unchanged business logic) ───────────────────────────────────────
 
 function mapIssueType(raw: string): ItemType {
   const v = raw.toLowerCase();
@@ -133,39 +147,50 @@ function classifyTimeGroup(item: AgeingItem): TimeGroup {
   return 'older';
 }
 
-/* ── Filter Pill ── */
-const PILL_ACTIVE: Record<string, { bg: string; border: string; text: string; countBg: string }> = {
-  All:      { bg: '#EFF6FF', border: '#2563EB', text: '#1E40AF', countBg: '#DBEAFE' },
-  Story:    { bg: '#F0FDF4', border: '#16A34A', text: '#166534', countBg: '#DCFCE7' },
-  Bug:      { bg: '#FEF2F2', border: '#DC2626', text: '#991B1B', countBg: '#FEE2E2' },
-  Incident: { bg: '#FEF2F2', border: '#DC2626', text: '#991B1B', countBg: '#FEE2E2' },
+// ── Filter Pill — Atlaskit token-backed interactive pill ─────────────────────
+
+const PILL_ACTIVE_STYLES: Record<string, { bg: string; border: string; text: string }> = {
+  All:      { bg: '#EFF6FF', border: '#2563EB', text: '#1E40AF' },
+  Story:    { bg: '#F0FDF4', border: '#16A34A', text: '#166534' },
+  Bug:      { bg: '#FEF2F2', border: '#DC2626', text: '#991B1B' },
+  Incident: { bg: '#FEF2F2', border: '#DC2626', text: '#991B1B' },
 };
 
 function FilterPill({ label, isActive, count, onClick }: {
   label: string; isActive: boolean; count: number; onClick: () => void;
 }) {
-  const active = PILL_ACTIVE[label] || PILL_ACTIVE.All;
+  const active = PILL_ACTIVE_STYLES[label] || PILL_ACTIVE_STYLES.All;
   return (
     <button
       onClick={onClick}
       style={{
-        border: `1px solid ${isActive ? active.border : '#CBD5E1'}`,
-        background: isActive ? active.bg : 'transparent',
-        color: isActive ? active.text : '#64748B',
-        borderRadius: 16, padding: '3px 10px',
-        fontSize: 13, fontWeight: 600, cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 5,
+        border: `1px solid ${isActive ? active.border : token('color.border', '#091E4224')}`,
+        background: isActive ? active.bg : token('color.background.neutral', 'transparent'),
+        color: isActive ? active.text : token('color.text.subtle', '#44546F'),
+        borderRadius: 16,
+        padding: '3px 10px',
+        fontSize: 13,
+        fontWeight: 600,
+        cursor: 'pointer',
         fontFamily: 'Inter, sans-serif',
         transition: 'all 120ms ease',
-        display: 'flex', alignItems: 'center', gap: 5,
       }}
     >
       {label}
       <span style={{
-        fontSize: 11, fontWeight: 700,
-        background: isActive ? active.countBg : '#F1F5F9',
-        color: isActive ? active.text : '#64748B',
-        borderRadius: 8, padding: '1px 5px',
-        minWidth: 18, textAlign: 'center',
+        fontSize: 11,
+        fontWeight: 700,
+        background: isActive
+          ? (label === 'All' ? '#DBEAFE' : label === 'Story' ? '#DCFCE7' : '#FEE2E2')
+          : token('color.background.neutral', '#F1F5F9'),
+        color: isActive ? active.text : token('color.text.subtlest', '#626F86'),
+        borderRadius: 8,
+        padding: '1px 5px',
+        minWidth: 18,
+        textAlign: 'center',
       }}>
         {count}
       </span>
@@ -173,7 +198,8 @@ function FilterPill({ label, isActive, count, onClick }: {
   );
 }
 
-/* ── Group Header ── */
+// ── Group header row ──────────────────────────────────────────────────────────
+
 function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
   label: string; count: number; isOpen: boolean; onToggle: () => void; accentColor: string;
 }) {
@@ -183,25 +209,41 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
         <button
           onClick={onToggle}
           style={{
-            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
-            padding: '8px 14px', border: 'none', cursor: 'pointer',
-            background: '#F8FAFC',
-            borderBottom: '0.75px solid #E2E8F0',
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '7px 14px',
+            border: 'none',
+            cursor: 'pointer',
+            background: token('color.background.neutral.subtle', '#F7F8F9'),
+            borderBottom: `1px solid ${token('color.border', '#091E4224')}`,
             borderLeft: `3px solid ${accentColor}`,
             fontFamily: 'Inter, sans-serif',
           }}
         >
-          {isOpen ? <ChevronDown size={13} color="#64748B" /> : <ChevronRight size={13} color="#64748B" />}
+          {isOpen
+            ? <ChevronDown size={13} color={token('color.icon.subtle', '#626F86')} />
+            : <ChevronRight size={13} color={token('color.icon.subtle', '#626F86')} />
+          }
           <span style={{
-            fontSize: 11, fontWeight: 700, color: '#475569',
-            textTransform: 'uppercase', letterSpacing: '0.05em',
+            fontSize: 11,
+            fontWeight: 700,
+            color: token('color.text.subtle', '#44546F'),
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
           }}>
             {label}
           </span>
           <span style={{
-            fontSize: 11, fontWeight: 700, color: '#FFFFFF',
-            background: accentColor, borderRadius: 3,
-            padding: '1px 6px', minWidth: 20, textAlign: 'center',
+            fontSize: 11,
+            fontWeight: 700,
+            color: '#FFFFFF',
+            background: accentColor,
+            borderRadius: 3,
+            padding: '1px 6px',
+            minWidth: 20,
+            textAlign: 'center',
           }}>
             {count}
           </span>
@@ -211,64 +253,75 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
   );
 }
 
-/* ── Ageing Item Row ── */
+// ── Ageing data row ───────────────────────────────────────────────────────────
+
 function AgeingRow({ item }: { item: AgeingItem }) {
   const sla = SLA_THRESHOLDS[item.item_type];
   const burnPct = (item.days_assigned / sla) * 100;
-  const daysColor = burnPct > 80 ? '#EF4444' : burnPct >= 50 ? '#F59E0B' : '#22C55E';
+  const daysColor = burnPct > 80
+    ? token('color.text.danger', '#AE2A19')
+    : burnPct >= 50
+      ? token('color.text.warning', '#974F0C')
+      : token('color.text.success', '#216E4E');
 
   return (
     <tr
       style={{
-        height: 36, maxHeight: 36,
-        borderBottom: '0.75px solid #F1F5F9',
+        height: 36,
+        maxHeight: 36,
+        borderBottom: `1px solid ${token('color.border.subtle', '#F1F5F9')}`,
         transition: 'background 120ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.02)')}
+      onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', 'rgba(0,0,0,0.02)'))}
       onMouseLeave={e => (e.currentTarget.style.background = '')}
     >
+      {/* Type icon */}
       <td style={{ ...tdStyle, paddingLeft: 14 }}>
         <TypeIcon type={item.item_type} />
       </td>
+
+      {/* Key */}
       <td style={tdStyle}>
         <span style={{
           fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 13, fontWeight: 700, color: '#2563EB',
+          fontSize: 13,
+          fontWeight: 700,
+          color: token('color.link', '#0C66E4'),
           cursor: 'pointer',
         }}>
           {item.jira_key}
         </span>
       </td>
+
+      {/* Summary */}
       <td style={{
-        ...tdStyle, fontSize: 13, fontWeight: 500,
-        color: '#0F172A',
-        whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+        ...tdStyle,
+        fontSize: 13,
+        fontWeight: 500,
+        color: token('color.text', '#172B4D'),
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
       }}>
         {item.summary}
       </td>
+
+      {/* Status — @atlaskit/lozenge */}
       <td style={tdStyle}>
         <StatusLozenge status={item.status} />
       </td>
+
+      {/* Days assigned + SLA badge */}
       <td style={{ ...tdStyle, textAlign: 'right', paddingRight: 14, verticalAlign: 'middle' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
           <span style={{ fontSize: 13, fontWeight: 700, color: daysColor }}>
             {item.days_assigned}d
           </span>
           {burnPct > 80 && (
-            <span style={{
-              fontSize: 11, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
-              background: '#FEE2E2', color: '#991B1B',
-            }}>
-              Overdue
-            </span>
+            <Lozenge appearance="removed">Overdue</Lozenge>
           )}
           {burnPct >= 50 && burnPct <= 80 && (
-            <span style={{
-              fontSize: 11, fontWeight: 700, borderRadius: 3, padding: '1px 5px',
-              background: '#FEF3C7', color: '#92400E',
-            }}>
-              Watch
-            </span>
+            <Lozenge appearance="moved">Watch</Lozenge>
           )}
         </div>
       </td>
@@ -276,23 +329,8 @@ function AgeingRow({ item }: { item: AgeingItem }) {
   );
 }
 
-/* ── Count badge hook (exported) ── */
-/* Derives count from the same useAgeingItems hook so badge = panel total */
-export function useAgeingCount(): number {
-  const { data: sharedItems, isLoading } = useAgeingItems();
-  if (isLoading || !sharedItems) return 0;
-  return sharedItems.length;
-}
+// ── Governance RAG Pill — Catalyst-owned design ───────────────────────────────
 
-const GROUP_ACCENT: Record<TimeGroup, string> = {
-  critical:  '#EF4444',
-  thisWeek:  '#0052CC',
-  thisMonth: '#F59E0B',
-  quarter:   '#94A3B8',
-  older:     '#64748B',
-};
-
-/* ── Governance RAG Pill ── */
 function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
   const { data } = useGovernanceScore();
   const ragStatus = data?.ragStatus ?? 'green';
@@ -309,16 +347,26 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
       <button
         onClick={onCleanupClick}
         style={{
-          display: 'inline-flex', alignItems: 'center', gap: 4,
-          borderRadius: 20, padding: '3px 9px',
-          fontSize: 11, fontWeight: 700,
-          background: cfg.bg, border: `1.5px solid ${cfg.border}`, color: cfg.color,
-          cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          borderRadius: 20,
+          padding: '3px 9px',
+          fontSize: 11,
+          fontWeight: 700,
+          background: cfg.bg,
+          border: `1.5px solid ${cfg.border}`,
+          color: cfg.color,
+          cursor: 'pointer',
+          fontFamily: 'Inter, sans-serif',
         }}
       >
         <span style={{
-          width: 6, height: 6, borderRadius: '50%',
-          background: cfg.dot, display: 'inline-block',
+          width: 6,
+          height: 6,
+          borderRadius: '50%',
+          background: cfg.dot,
+          display: 'inline-block',
           animation: cfg.anim,
         }} />
         {ragStatus.toUpperCase()}
@@ -327,27 +375,69 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
   );
 }
 
-/* ── AI Cleanup Button ── */
-function AICleanupButton({ onClick }: { onClick: () => void }) {
+// ── Stat chip — summary bar ───────────────────────────────────────────────────
+
+function StatChip({ label, value, color }: { label: string; value: string | number; color: string }) {
   return (
-    <button
-      onClick={onClick}
-      style={{
-        height: 26, padding: '0 10px', borderRadius: 6,
-        background: '#1E293B', color: '#fff',
-        fontSize: 13, fontWeight: 700, border: 'none',
-        cursor: 'pointer', display: 'inline-flex',
-        alignItems: 'center', gap: 5,
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+      <span style={{
+        fontSize: 14,
+        fontWeight: 700,
+        color,
+        fontVariantNumeric: 'tabular-nums',
         fontFamily: 'Inter, sans-serif',
-      }}
-    >
-      <Sparkles size={12} strokeWidth={1.5} />
-      AI Cleanup
-    </button>
+      }}>
+        {value}
+      </span>
+      <span style={{
+        fontSize: 11,
+        fontWeight: 600,
+        color: token('color.text.subtlest', '#626F86'),
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+        fontFamily: 'Inter, sans-serif',
+      }}>
+        {label}
+      </span>
+    </div>
   );
 }
 
-/* ── Main Component ── */
+// ── Group section ─────────────────────────────────────────────────────────────
+
+function GroupSection({ groupKey, items, totalCount, isOpen, onToggle }: {
+  groupKey: TimeGroup; items: AgeingItem[]; totalCount: number;
+  isOpen: boolean; onToggle: () => void;
+}) {
+  const cfg = GROUP_CONFIG[groupKey];
+  const accent = GROUP_ACCENT[groupKey];
+
+  return (
+    <>
+      <GroupHeader
+        label={cfg.label}
+        count={totalCount}
+        isOpen={isOpen}
+        onToggle={onToggle}
+        accentColor={accent}
+      />
+      {isOpen && items.map(item => (
+        <AgeingRow key={item.id} item={item} />
+      ))}
+    </>
+  );
+}
+
+// ── Count badge hook (exported — drives tab badge) ────────────────────────────
+
+export function useAgeingCount(): number {
+  const { data: sharedItems, isLoading } = useAgeingItems();
+  if (isLoading || !sharedItems) return 0;
+  return sharedItems.length;
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function AgeingTab({ onClose }: { onClose?: () => void }) {
   const [activeFilter, setActiveFilter] = useState('All');
   const [sortAsc, setSortAsc] = useState(false);
@@ -365,7 +455,6 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
   const { user } = useAuth();
   const { data: govData } = useGovernanceScore();
 
-  // Use shared hook — single source of truth
   const { data: sharedItems, isLoading: sharedLoading } = useAgeingItems();
 
   useEffect(() => {
@@ -375,7 +464,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
         return {
           id: row.id,
           jira_key: row.jira_key,
-          item_type: row.item_type as ItemType,
+          item_type: mapIssueType(row.item_type ?? ''),
           summary: row.summary,
           status: status || 'TODO' as StatusType,
           days_assigned: row.days_open,
@@ -390,23 +479,23 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
     if (sharedLoading) setLoading(true);
   }, [sharedLoading]);
 
-  // Sync ageing count into governance cache so RAG pill stays in sync
+  // Sync count into governance cache
   useEffect(() => {
     if (!loading && user?.id && items.length >= 0) {
       const totalCount = items.length;
       queryClient.setQueryData(
-        ["governance-score", user.id],
+        ['governance-score', user.id],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (old: any) => ({
           ...(old || {}),
           staleCount: totalCount,
-          ragStatus: totalCount === 0 ? "green" : totalCount <= 20 ? "amber" : "red",
+          ragStatus: totalCount === 0 ? 'green' : totalCount <= 20 ? 'amber' : 'red',
           scorePct: Math.max(0, 100 - Math.min(totalCount * 2, 100)),
         })
       );
     }
   }, [loading, items.length, user?.id, queryClient]);
 
-  // Navigate to cleanup — close panel first
   const handleGoToCleanup = useCallback(() => {
     if (onClose) onClose();
     setTimeout(() => navigate('/cleanup'), 50);
@@ -427,7 +516,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
     return list;
   }, [items, activeFilter, sortAsc]);
 
-  // Group items
+  // Group
   const grouped = useMemo(() => {
     const groups: Record<TimeGroup, AgeingItem[]> = {
       critical: [], thisWeek: [], thisMonth: [], quarter: [], older: [],
@@ -439,7 +528,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
     return groups;
   }, [filtered]);
 
-  // Type counts for pills
+  // Type counts
   const typeCounts = useMemo(() => {
     const counts: Record<string, number> = { All: items.length };
     Object.keys(TYPE_FILTER_MAP).forEach(key => {
@@ -465,7 +554,6 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
 
   const filters = ['All', 'Story', 'Bug', 'Incident'];
 
-  // Summary stats
   const overduePct = useMemo(() => {
     if (filtered.length === 0) return 0;
     const overdue = filtered.filter(i => (i.days_assigned / SLA_THRESHOLDS[i.item_type]) * 100 > 80).length;
@@ -474,21 +562,23 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
 
   return (
     <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
-      {/* Toolbar */}
+
+      {/* ── Toolbar ── */}
       <div style={{
         padding: '10px 14px',
-        borderBottom: '0.75px solid #F1F5F9',
+        borderBottom: `1px solid ${token('color.border', '#091E4224')}`,
       }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 8,
-          flexWrap: 'wrap',
-        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span style={{
-            fontSize: 11, fontWeight: 700, color: '#64748B',
-            textTransform: 'uppercase', letterSpacing: '0.05em',
+            fontSize: 11,
+            fontWeight: 700,
+            color: token('color.text.subtlest', '#626F86'),
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
             flexShrink: 0,
+            fontFamily: 'Inter, sans-serif',
           }}>
-            Ageing — Assigned to You
+            Assigned to You
           </span>
           <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap' }}>
             {filters.map(f => (
@@ -503,81 +593,98 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
           </div>
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
             <GovernanceRagPill onCleanupClick={handleGoToCleanup} />
-            <AICleanupButton onClick={handleGoToCleanup} />
+            <Button
+              appearance="primary"
+              onClick={handleGoToCleanup}
+              iconBefore={() => <Sparkles size={12} strokeWidth={1.5} />}
+            >
+              AI Cleanup
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Summary bar */}
+      {/* ── Summary bar ── */}
       {!loading && filtered.length > 0 && (
         <div style={{
-          display: 'flex', gap: 16, padding: '8px 14px',
-          borderBottom: '0.75px solid #F1F5F9',
-          background: '#F8FAFC',
+          display: 'flex',
+          gap: 16,
+          padding: '8px 14px',
+          borderBottom: `1px solid ${token('color.border.subtle', '#091E4224')}`,
+          background: token('color.background.neutral.subtle', '#F7F8F9'),
         }}>
-          <StatChip label="Total" value={filtered.length} color="#475569" />
-          <StatChip label="Critical" value={grouped.critical.length} color="#EF4444" />
-          <StatChip label="This Week" value={grouped.thisWeek.length} color="#0052CC" />
-          <StatChip label="This Month" value={grouped.thisMonth.length} color="#F59E0B" />
-          <StatChip label="Overdue" value={`${overduePct}%`} color={overduePct > 50 ? '#EF4444' : '#F59E0B'} />
+          <StatChip label="Total" value={filtered.length} color={token('color.text.subtle', '#44546F')} />
+          <StatChip label="Critical" value={grouped.critical.length} color={token('color.text.danger', '#AE2A19')} />
+          <StatChip label="This Week" value={grouped.thisWeek.length} color={token('color.text.information', '#0055CC')} />
+          <StatChip label="This Month" value={grouped.thisMonth.length} color={token('color.text.warning', '#974F0C')} />
+          <StatChip label="Overdue" value={`${overduePct}%`} color={overduePct > 50 ? token('color.text.danger', '#AE2A19') : token('color.text.warning', '#974F0C')} />
         </div>
       )}
 
-      {/* Dynamic Governance Caution Banner */}
-      {!loading && govData && govData.ragStatus === 'amber' && (
-        <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 8,
-          padding: '8px 14px',
-          background: '#FFFBEB', borderBottom: '1px solid #FDE68A',
-          fontSize: 13, color: '#92400E', fontFamily: 'Inter, sans-serif',
-          lineHeight: 1.5,
-        }}>
-          <span style={{ flexShrink: 0, fontSize: 14, color: '#92400E' }}>!</span>
-          <span>
-            <strong>{items.length} aging items</strong> assigned to you.
+      {/* ── Governance banner — @atlaskit/section-message ── */}
+      {!loading && govData?.ragStatus === 'amber' && (
+        <div style={{ padding: '8px 14px' }}>
+          <SectionMessage appearance="warning">
+            <strong>{items.length} ageing items</strong> assigned to you.
             Address them before they reach governance breach.
-          </span>
+          </SectionMessage>
         </div>
       )}
-      {!loading && govData && govData.ragStatus === 'red' && (
-        <div style={{
-          display: 'flex', alignItems: 'flex-start', gap: 8,
-          padding: '8px 14px',
-          background: '#FFF1F2', borderBottom: '1px solid #FECDD3',
-          fontSize: 13, color: '#9F1239', fontFamily: 'Inter, sans-serif',
-          lineHeight: 1.5,
-        }}>
-          <span style={{ flexShrink: 0, fontSize: 14, color: '#9F1239' }}>!</span>
-          <span>
-            Governance breach — <strong>{items.length} aging items</strong>, {govData.breachStreak} day streak.{' '}
+      {!loading && govData?.ragStatus === 'red' && (
+        <div style={{ padding: '8px 14px' }}>
+          <SectionMessage appearance="error">
+            Governance breach — <strong>{items.length} ageing items</strong>
+            {govData.breachStreak ? `, ${govData.breachStreak} day streak` : ''}.{' '}
             <span
               onClick={handleGoToCleanup}
-              style={{ color: '#2563EB', cursor: 'pointer', fontWeight: 650 }}
+              style={{ color: token('color.link', '#0C66E4'), cursor: 'pointer', fontWeight: 600 }}
             >
               Open AI Cleanup
             </span>
-          </span>
+          </SectionMessage>
         </div>
       )}
 
-      {/* Table */}
+      {/* ── Table ── */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
         style={{ flex: 1, overflowY: 'auto' }}
       >
         {loading ? (
-          <AgeingSkeleton />
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '56px 24px',
+            gap: 12,
+          }}>
+            <Spinner size="large" />
+          </div>
         ) : filtered.length === 0 ? (
           <div style={{
-            display: 'flex', flexDirection: 'column', alignItems: 'center',
-            justifyContent: 'center', padding: '48px 24px', gap: 8,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '48px 24px',
+            gap: 8,
           }}>
-            <span style={{ fontSize: 13, color: '#64748B' }}>
-              No ageing items assigned to you
+            <span style={{
+              fontSize: 14,
+              fontWeight: 600,
+              color: token('color.text', '#172B4D'),
+              fontFamily: 'Inter, sans-serif',
+            }}>
+              All caught up
             </span>
-            <span style={{ fontSize: 13, color: '#94A3B8' }}>
-              Open work items will appear here with SLA tracking
+            <span style={{
+              fontSize: 13,
+              color: token('color.text.subtlest', '#626F86'),
+              textAlign: 'center',
+              fontFamily: 'Inter, sans-serif',
+            }}>
+              No ageing items assigned to you. Open work items will appear here with SLA tracking.
             </span>
           </div>
         ) : (
@@ -591,8 +698,8 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
             </colgroup>
             <thead>
               <tr style={{
-                background: '#F8FAFC',
-                borderBottom: '0.75px solid #E2E8F0',
+                background: token('color.background.neutral.subtle', '#F7F8F9'),
+                borderBottom: `1px solid ${token('color.border', '#091E4224')}`,
               }}>
                 <th style={{ ...thStyle, paddingLeft: 14 }} />
                 <th style={thStyle}>KEY</th>
@@ -629,26 +736,31 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
         )}
       </div>
 
-      {/* Footer */}
+      {/* ── Footer legend ── */}
       <div style={{
         padding: '8px 14px',
-        borderTop: '0.75px solid #F1F5F9',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        flexWrap: 'wrap', gap: 6,
+        borderTop: `1px solid ${token('color.border.subtle', '#091E4224')}`,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 6,
       }}>
         <div style={{ display: 'flex', gap: 10 }}>
           {[
-            { color: '#22C55E', label: 'Safe <50% SLA' },
-            { color: '#F59E0B', label: 'Watch 50-80%' },
-            { color: '#EF4444', label: 'Overdue >80%' },
+            { color: token('color.text.success', '#216E4E'), label: 'Safe <50% SLA' },
+            { color: token('color.text.warning', '#974F0C'), label: 'Watch 50–80%' },
+            { color: token('color.text.danger', '#AE2A19'), label: 'Overdue >80%' },
           ].map(l => (
             <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <span style={{ width: 7, height: 7, borderRadius: '50%', background: l.color }} />
-              <span style={{ fontSize: 13, color: '#64748B' }}>{l.label}</span>
+              <span style={{ fontSize: 11, color: token('color.text.subtlest', '#626F86'), fontFamily: 'Inter, sans-serif' }}>
+                {l.label}
+              </span>
             </div>
           ))}
         </div>
-        <span style={{ fontSize: 13, color: '#94A3B8' }}>
+        <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'Inter, sans-serif' }}>
           SLA: Incident 1d · Bug 3d · Story 10d · Feature 15d
         </span>
       </div>
@@ -656,43 +768,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
   );
 }
 
-/* ── Group Section ── */
-function GroupSection({ groupKey, items, totalCount, isOpen, onToggle }: {
-  groupKey: TimeGroup; items: AgeingItem[]; totalCount: number;
-  isOpen: boolean; onToggle: () => void;
-}) {
-  const cfg = GROUP_CONFIG[groupKey];
-  const accent = GROUP_ACCENT[groupKey];
-
-  return (
-    <>
-      <GroupHeader
-        label={cfg.label}
-        count={totalCount}
-        isOpen={isOpen}
-        onToggle={onToggle}
-        accentColor={accent}
-      />
-      {isOpen && items.map(item => (
-        <AgeingRow key={item.id} item={item} />
-      ))}
-    </>
-  );
-}
-
-/* ── Stat Chip ── */
-function StatChip({ label, value, color }: { label: string; value: string | number; color: string }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-      <span style={{ fontSize: 14, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>
-        {value}
-      </span>
-      <span style={{ fontSize: 11, fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-        {label}
-      </span>
-    </div>
-  );
-}
+// ── Table style constants ─────────────────────────────────────────────────────
 
 const thStyle: React.CSSProperties = {
   padding: '10px 12px',
@@ -700,7 +776,7 @@ const thStyle: React.CSSProperties = {
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
-  color: '#64748B',
+  color: token('color.text.subtlest', '#626F86'),
   textAlign: 'left',
   fontFamily: 'Inter, sans-serif',
 };

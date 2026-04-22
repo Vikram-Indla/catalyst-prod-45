@@ -1,13 +1,20 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Recap Tab V2 — Catalyst-owned AI digest surface
+// Design: Atlaskit-first · AI Purple (#7C3AED) brand · Owned Catalyst feature
+// Data:   Supabase ai-digest Edge Function → ai_digest_cache fallback
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useState, useEffect } from 'react';
-import { ChevronRight, Check, Loader2 } from 'lucide-react';
+import { ChevronRight, Check, Sparkles, RefreshCw } from 'lucide-react';
 import DOMPurify from 'dompurify';
 import { supabase } from '@/integrations/supabase/client';
-import AIRecapSkeleton from './AIRecapSkeleton';
+import Spinner from '@atlaskit/spinner';
+import Button from '@atlaskit/button/new';
+import Lozenge from '@atlaskit/lozenge';
+import EmptyState from '@atlaskit/empty-state';
+import { token } from '@atlaskit/tokens';
 
-/* ═══════════════════════════════════════
-   AI Recap Tab V2 — Live Data
-   Design: V12 Hybrid Precision
-   ═══════════════════════════════════════ */
+// ── Types (unchanged from V1) ─────────────────────────────────────────────────
 
 interface RecapItem {
   id: string;
@@ -58,101 +65,140 @@ interface DigestResponse {
 
 type LoadState = 'loading' | 'generating' | 'ready' | 'empty' | 'error';
 
-const T = {
-  primary: 'var(--cp-primary, #2563EB)',
-  primaryLight: 'var(--cp-primary-light, #EFF6FF)',
-  primaryBorder: 'var(--cp-primary-border, #BFDBFE)',
-  ink1: 'var(--cp-ink-1, #0F172A)',
-  ink2: 'var(--cp-ink-2, #334155)',
-  ink3: 'var(--cp-ink-3, #64748B)',
-  ink4: 'var(--cp-ink-4, #94A3B8)',
-  surface: 'var(--cp-surface, #F8FAFC)',
-  card: 'var(--cp-card, #FFFFFF)',
-  border: 'var(--cp-border, #E2E8F0)',
-  borderLt: 'var(--cp-border-lt, #F1F5F9)',
-  successText: 'var(--cp-success-text, #006644)',
-  successLight: 'var(--cp-success-light, #E3FCEF)',
-  success: 'var(--cp-success, #16A34A)',
-  warningText: 'var(--cp-warning-text, #92400E)',
-  warningLight: 'var(--cp-warning-light, #FEF3C7)',
-  warning: 'var(--cp-warning, #D97706)',
-  dangerText: 'var(--cp-danger-text, #991B1B)',
-  dangerLight: 'var(--cp-danger-light, #FEE2E2)',
-};
+// ── Token shorthands ──────────────────────────────────────────────────────────
 
-function RecapCard({ item, borderColor }: { item: RecapItem; borderColor: string }) {
+const AI_PURPLE = '#7C3AED';          // CLAUDE.md §8 — AI elements only
+const AI_PURPLE_LIGHT = '#F5F3FF';    // purple-50 equivalent
+const AI_PURPLE_BORDER = '#DDD6FE';   // purple-200 equivalent
+
+// ── Entity key chip ───────────────────────────────────────────────────────────
+
+function EntityKeyChip({ jiraKey, jiraUrl }: { jiraKey: string; jiraUrl: string }) {
+  return (
+    <a
+      href={jiraUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={e => e.stopPropagation()}
+      style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        fontSize: 11,
+        fontWeight: 700,
+        color: token('color.link', '#0C66E4'),
+        background: token('color.background.information', '#E9F2FF'),
+        padding: '2px 7px',
+        borderRadius: 3,
+        textDecoration: 'none',
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
+      }}
+    >
+      {jiraKey}
+    </a>
+  );
+}
+
+function ProjectChip({ name }: { name: string }) {
+  return (
+    <span style={{
+      fontSize: 10,
+      fontWeight: 700,
+      color: token('color.text.subtlest', '#626F86'),
+      background: token('color.background.neutral', '#F1F2F4'),
+      padding: '2px 7px',
+      borderRadius: 3,
+      whiteSpace: 'nowrap',
+      textTransform: 'uppercase',
+      letterSpacing: '0.03em',
+      flexShrink: 0,
+    }}>
+      {name}
+    </span>
+  );
+}
+
+// ── Recap card — clean Atlaskit token-backed design ───────────────────────────
+
+function RecapCard({ item, accentColor }: { item: RecapItem; accentColor: string }) {
+  const [hovered, setHovered] = useState(false);
   const hasKey = item.jira_key && item.jira_key.length > 0;
+
   return (
     <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
-        border: `0.75px solid ${T.border}`,
-        borderLeft: `3px solid ${borderColor}`,
+        border: `1px solid ${token('color.border', '#091E4224')}`,
+        borderLeft: `3px solid ${accentColor}`,
         borderRadius: 6,
-        padding: '14px 16px',
-        background: T.card,
+        padding: '12px 14px',
+        background: hovered
+          ? token('color.background.neutral.subtle.hovered', '#F7F8F9')
+          : token('color.background.input', '#FFFFFF'),
         transition: 'background 120ms ease',
       }}
-      onMouseEnter={e => (e.currentTarget.style.background = '#FAFBFC')}
-      onMouseLeave={e => (e.currentTarget.style.background = '')}
     >
-      {/* Top row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+      {/* Top row: key / project chip + summary */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 8 }}>
         {hasKey ? (
-          <a
-            href={item.jira_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={e => e.stopPropagation()}
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: 11, fontWeight: 700, color: T.primary,
-              background: T.primaryLight, padding: '2px 7px',
-              borderRadius: 3, textDecoration: 'none', whiteSpace: 'nowrap',
-            }}
-          >
-            {item.jira_key}
-          </a>
+          <EntityKeyChip jiraKey={item.jira_key} jiraUrl={item.jira_url} />
         ) : item.project_name ? (
-          <span style={{
-            fontSize: 10, fontWeight: 700, color: T.ink3,
-            background: '#F1F5F9', padding: '2px 7px',
-            borderRadius: 3, whiteSpace: 'nowrap',
-            textTransform: 'uppercase', letterSpacing: '0.03em',
-          }}>
-            {item.project_name}
-          </span>
+          <ProjectChip name={item.project_name} />
         ) : null}
         <span style={{
-          fontSize: 13, fontWeight: 650, color: T.ink1,
-          flex: 1, lineHeight: 1.35,
-          overflow: 'hidden', textOverflow: 'ellipsis',
-          display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+          fontSize: 14,
+          fontWeight: 600,
+          color: token('color.text', '#172B4D'),
+          lineHeight: '20px',
+          flex: 1,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          fontFamily: 'Inter, sans-serif',
         }}>
           {item.summary}
         </span>
       </div>
 
-      {/* Body */}
+      {/* Body text */}
       {item.ai_body_text && (
         <p
           style={{
-            fontSize: 12.5, color: T.ink2, lineHeight: 1.6,
-            margin: '0 0 10px', fontFamily: 'Inter, sans-serif',
+            fontSize: 14,
+            color: token('color.text.subtle', '#44546F'),
+            lineHeight: '20px',
+            margin: '0 0 10px',
+            fontFamily: 'Inter, sans-serif',
           }}
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.ai_body_text) }}
         />
       )}
 
-      {/* Action row */}
+      {/* AI action callout */}
       {item.ai_action_text && (
         <div style={{
-          display: 'flex', gap: 8, padding: '8px 12px',
-          background: T.surface, borderRadius: 4,
-          border: `0.75px solid ${T.borderLt}`,
+          display: 'flex',
+          gap: 8,
+          padding: '8px 12px',
+          background: AI_PURPLE_LIGHT,
+          borderRadius: 4,
+          border: `1px solid ${AI_PURPLE_BORDER}`,
           alignItems: 'flex-start',
         }}>
-          <span style={{ color: T.warning, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>→</span>
-          <span style={{ fontSize: 12, fontWeight: 600, color: T.ink1, lineHeight: 1.45 }}>
+          <Sparkles
+            size={13}
+            style={{ color: AI_PURPLE, flexShrink: 0, marginTop: 2 }}
+            strokeWidth={1.5}
+          />
+          <span style={{
+            fontSize: 13,
+            fontWeight: 500,
+            color: AI_PURPLE,
+            lineHeight: '18px',
+            fontFamily: 'Inter, sans-serif',
+          }}>
             {item.ai_action_text}
           </span>
         </div>
@@ -161,46 +207,157 @@ function RecapCard({ item, borderColor }: { item: RecapItem; borderColor: string
   );
 }
 
+// ── Section block — Atlaskit lozenge for category label ───────────────────────
+
+type LozengeAppearance = 'default' | 'inprogress' | 'moved' | 'new' | 'removed' | 'success';
+
 function SectionBlock({
-  label, dotColor, countBg, countText, items, borderColor,
+  label,
+  lozengeAppearance,
+  count,
+  items,
+  accentColor,
 }: {
-  label: string; dotColor: string; countBg: string; countText: string;
-  items: RecapItem[]; borderColor: string;
+  label: string;
+  lozengeAppearance: LozengeAppearance;
+  count: number;
+  items: RecapItem[];
+  accentColor: string;
 }) {
   if (items.length === 0) return null;
+
   return (
-    <div>
+    <div style={{ paddingBottom: 12 }}>
+      {/* Section header */}
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '14px 18px 10px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '12px 16px 8px',
       }}>
+        <Lozenge appearance={lozengeAppearance} isBold>
+          {label}
+        </Lozenge>
         <span style={{
-          width: 7, height: 7, borderRadius: '50%',
-          background: dotColor, flexShrink: 0,
-        }} />
-        <span style={{
-          fontSize: 11, fontWeight: 700, color: T.ink1,
-          textTransform: 'uppercase', letterSpacing: '0.04em',
+          fontSize: 12,
+          fontWeight: 600,
+          color: token('color.text.subtlest', '#626F86'),
           fontFamily: 'Inter, sans-serif',
         }}>
-          {label}
-        </span>
-        <span style={{
-          marginLeft: 'auto', fontSize: 10, fontWeight: 700,
-          background: countBg, color: countText,
-          borderRadius: 10, padding: '1px 6px',
-        }}>
-          {items.length}
+          {count} {count === 1 ? 'item' : 'items'}
         </span>
       </div>
-      <div style={{ padding: '0 18px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+      {/* Cards */}
+      <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {items.map(item => (
-          <RecapCard key={item.id} item={item} borderColor={borderColor} />
+          <RecapCard key={item.id} item={item} accentColor={accentColor} />
         ))}
       </div>
     </div>
   );
 }
+
+// ── Done items — collapsible completed section ────────────────────────────────
+
+function DoneSection({ items }: { items: RecapItem[] }) {
+  const [open, setOpen] = useState(false);
+  if (items.length === 0) return null;
+
+  return (
+    <div style={{ borderTop: `1px solid ${token('color.border', '#091E4224')}`, marginTop: 4 }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '10px 16px',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          gap: 8,
+        }}
+      >
+        <Check
+          size={14}
+          style={{ color: token('color.icon.success', '#216E4E'), flexShrink: 0 }}
+          strokeWidth={2.5}
+        />
+        <Lozenge appearance="success" isBold>COMPLETED TODAY</Lozenge>
+        <span style={{
+          fontSize: 12,
+          fontWeight: 600,
+          color: token('color.text.subtlest', '#626F86'),
+          fontFamily: 'Inter, sans-serif',
+        }}>
+          {items.length} {items.length === 1 ? 'item' : 'items'}
+        </span>
+        <ChevronRight
+          size={14}
+          style={{
+            marginLeft: 'auto',
+            color: token('color.icon.subtle', '#626F86'),
+            transform: open ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 150ms ease',
+          }}
+        />
+      </button>
+
+      {open && (
+        <div style={{ padding: '4px 16px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {items.map(item => (
+            <div
+              key={item.id}
+              style={{
+                padding: '10px 12px',
+                background: token('color.background.success', '#DFFCF0'),
+                borderRadius: 6,
+                border: `1px solid ${token('color.border.success', '#BAF3DB')}`,
+                borderLeft: `3px solid ${token('color.border.success', '#BAF3DB')}`,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <Check
+                  size={13}
+                  style={{ color: token('color.icon.success', '#216E4E'), flexShrink: 0 }}
+                  strokeWidth={2.5}
+                />
+                {item.jira_key ? (
+                  <EntityKeyChip jiraKey={item.jira_key} jiraUrl={item.jira_url} />
+                ) : item.project_name ? (
+                  <ProjectChip name={item.project_name} />
+                ) : null}
+                <span style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: token('color.text.success', '#216E4E'),
+                  lineHeight: '20px',
+                  fontFamily: 'Inter, sans-serif',
+                }}>
+                  {item.summary}
+                </span>
+              </div>
+              {item.ai_body_text && (
+                <p style={{
+                  fontSize: 13,
+                  color: token('color.text.subtle', '#44546F'),
+                  lineHeight: '18px',
+                  margin: '0 0 0 21px',
+                  fontFamily: 'Inter, sans-serif',
+                }}>
+                  {item.ai_body_text}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Parser (unchanged) ────────────────────────────────────────────────────────
 
 function parseDigestItems(digest: DigestPayload): RecapItem[] {
   const rawItems = Array.isArray(digest.items) ? digest.items : [];
@@ -233,13 +390,70 @@ function parseDigestItems(digest: DigestPayload): RecapItem[] {
   });
 }
 
+// ── AI Recap header ───────────────────────────────────────────────────────────
+
+function RecapHeader({ dateStr, loadState }: { dateStr: string; loadState: LoadState }) {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10,
+      padding: '12px 16px',
+      borderBottom: `1px solid ${token('color.border', '#091E4224')}`,
+      background: AI_PURPLE_LIGHT,
+    }}>
+      <div style={{
+        width: 28,
+        height: 28,
+        borderRadius: 6,
+        background: AI_PURPLE,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+      }}>
+        <Sparkles size={15} color="#fff" strokeWidth={1.5} />
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontFamily: 'Sora, sans-serif',
+          fontSize: 13,
+          fontWeight: 600,
+          color: AI_PURPLE,
+          lineHeight: '18px',
+        }}>
+          AI Digest
+        </div>
+        <div style={{
+          fontSize: 11,
+          color: token('color.text.subtlest', '#626F86'),
+          fontFamily: 'Inter, sans-serif',
+          lineHeight: '16px',
+        }}>
+          {dateStr}
+        </div>
+      </div>
+      {loadState === 'generating' && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+          <Spinner size="small" />
+          <span style={{ fontSize: 11, color: AI_PURPLE, fontWeight: 500, fontFamily: 'Inter, sans-serif' }}>
+            Generating…
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
 export default function AIRecapTabV2() {
-  const [doneOpen, setDoneOpen] = useState(false);
   const [items, setItems] = useState<RecapItem[]>([]);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [statusMessage, setStatusMessage] = useState("Loading today's AI recap…");
   const [reloadToken, setReloadToken] = useState(0);
 
+  // ── Data fetching (unchanged logic) ────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
 
@@ -328,13 +542,13 @@ export default function AIRecapTabV2() {
         setStatusMessage(
           backendReturnedEmpty
             ? 'No recap was generated because there were no portfolio signals to summarize yet.'
-            : 'The recap response came back empty, so we are treating it as unavailable instead of pretending there is nothing to show.'
+            : 'The recap response came back empty.'
         );
       } catch (error) {
         console.error('[AIRecapTabV2] Failed to parse digest:', error);
         setItems([]);
         setLoadState('error');
-        setStatusMessage('We could not finish generating the AI recap yet. Please retry.');
+        setStatusMessage('We could not finish generating the AI recap. Please retry.');
       }
     };
 
@@ -354,184 +568,85 @@ export default function AIRecapTabV2() {
   const dateStr = `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]}`;
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Overview bar */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '12px 18px',
-        borderBottom: `0.75px solid ${T.borderLt}`,
-      }}>
-        <span style={{
-          fontSize: 11, fontWeight: 700, color: T.ink1,
-          textTransform: 'uppercase', letterSpacing: '0.04em',
-        }}>
-          Today's Overview
-        </span>
-        <span style={{ fontSize: 11, color: T.ink4 }}>{dateStr}</span>
-      </div>
+    <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column' }}>
+      {/* AI Digest header */}
+      <RecapHeader dateStr={dateStr} loadState={loadState} />
 
-      {(loadState === 'loading' || loadState === 'generating') ? (
-        <>
-          <AIRecapSkeleton />
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 8,
-            padding: '6px 18px 18px',
-          }}>
-            <Loader2 size={14} className="animate-spin" style={{ color: T.ink3, flexShrink: 0 }} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: T.ink3 }}>
-              {statusMessage}
-            </span>
-          </div>
-        </>
-      ) : loadState === 'empty' ? (
+      {/* Loading state */}
+      {(loadState === 'loading' || loadState === 'generating') && (
         <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', padding: '48px 24px', gap: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '56px 24px',
+          gap: 16,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 650, color: T.ink2 }}>No AI recap generated yet</span>
+          <Spinner size="large" />
           <span style={{
-            fontSize: 12, color: T.ink3, textAlign: 'center',
-            lineHeight: 1.55, maxWidth: 420,
+            fontSize: 13,
+            fontWeight: 500,
+            color: token('color.text.subtle', '#44546F'),
+            fontFamily: 'Inter, sans-serif',
           }}>
             {statusMessage}
           </span>
         </div>
-      ) : loadState === 'error' ? (
-        <div style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          justifyContent: 'center', padding: '48px 24px', gap: 10,
-        }}>
-          <span style={{ fontSize: 13, fontWeight: 650, color: T.ink2 }}>AI recap is taking longer than expected</span>
-          <span style={{
-            fontSize: 12, color: T.ink3, textAlign: 'center',
-            lineHeight: 1.55, maxWidth: 420,
-          }}>
-            {statusMessage}
-          </span>
-          <button
-            onClick={handleRetry}
-            style={{
-              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-              padding: '8px 12px', borderRadius: 6,
-              border: `0.75px solid ${T.border}`,
-              background: T.card, color: T.ink2,
-              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
-              fontSize: 12, fontWeight: 600,
-            }}
-          >
-            Retry recap
-          </button>
+      )}
+
+      {/* Empty state */}
+      {loadState === 'empty' && (
+        <div style={{ padding: '16px 0' }}>
+          <EmptyState
+            header="No digest yet"
+            description={statusMessage}
+          />
         </div>
-      ) : (
+      )}
+
+      {/* Error state */}
+      {loadState === 'error' && (
+        <div style={{ padding: '16px 0' }}>
+          <EmptyState
+            header="Digest unavailable"
+            description={statusMessage}
+            primaryAction={
+              <Button
+                appearance="primary"
+                onClick={handleRetry}
+                iconBefore={() => <RefreshCw size={14} strokeWidth={2} />}
+              >
+                Retry recap
+              </Button>
+            }
+          />
+        </div>
+      )}
+
+      {/* Ready state — digest content */}
+      {loadState === 'ready' && (
         <>
           <SectionBlock
             label="RECAP"
-            dotColor="#3B82F6"
-            countBg="#DEEBFF"
-            countText="#0747A6"
+            lozengeAppearance="inprogress"
+            count={recapItems.length}
             items={recapItems}
-            borderColor="#3B82F6"
+            accentColor={token('color.border.information', '#0C66E4')}
           />
 
           {suggestionItems.length > 0 && (
-            <div style={{ marginTop: 10 }}>
+            <div style={{ borderTop: `1px solid ${token('color.border', '#091E4224')}` }}>
               <SectionBlock
-                label="SUGGESTIONS FOR TODAY"
-                dotColor="#D97706"
-                countBg={T.warningLight}
-                countText={T.warningText}
+                label="SUGGESTED"
+                lozengeAppearance="moved"
+                count={suggestionItems.length}
                 items={suggestionItems}
-                borderColor="#D97706"
+                accentColor={token('color.border.warning', '#D97706')}
               />
             </div>
           )}
 
-          {/* Completed Today — collapsible with full detail */}
-          {doneItems.length > 0 && (
-            <div style={{ marginTop: 8 }}>
-              <button
-                onClick={() => setDoneOpen(!doneOpen)}
-                style={{
-                  width: '100%', display: 'flex', alignItems: 'center',
-                  padding: '12px 18px', background: 'none', border: 'none',
-                  borderTop: `0.75px solid ${T.borderLt}`,
-                  cursor: 'pointer', gap: 8,
-                }}
-              >
-                <Check size={14} style={{ color: T.success, flexShrink: 0 }} />
-                <span style={{
-                  fontSize: 11, fontWeight: 700, color: T.ink3,
-                  textTransform: 'uppercase', letterSpacing: '0.04em',
-                }}>
-                  Completed Today
-                </span>
-                <span style={{
-                  fontSize: 10, fontWeight: 700,
-                  background: T.successLight, color: T.successText,
-                  borderRadius: 10, padding: '1px 6px',
-                }}>
-                  {doneItems.length}
-                </span>
-                <ChevronRight
-                  size={14}
-                  style={{
-                    marginLeft: 'auto', color: T.ink3,
-                    transform: doneOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                    transition: 'transform 150ms ease',
-                  }}
-                />
-              </button>
-
-              {doneOpen && (
-                <div style={{ padding: '4px 18px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {doneItems.map(item => (
-                    <div
-                      key={item.id}
-                      style={{
-                        padding: '12px 14px',
-                        background: '#F0FDF4',
-                        borderRadius: 6, border: '0.75px solid #D1FAE5',
-                        borderLeft: '3px solid #16A34A',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                        <Check size={14} style={{ color: T.success, flexShrink: 0 }} />
-                        {item.jira_key ? (
-                          <span style={{
-                            fontFamily: "'JetBrains Mono', monospace",
-                            fontSize: 10.5, fontWeight: 700,
-                            background: '#E2E8F0', color: T.ink3,
-                            padding: '2px 6px', borderRadius: 3,
-                          }}>
-                            {item.jira_key}
-                          </span>
-                        ) : item.project_name ? (
-                          <span style={{
-                            fontSize: 10, fontWeight: 700, color: T.ink3,
-                            background: '#E2E8F0', padding: '2px 6px',
-                            borderRadius: 3, textTransform: 'uppercase',
-                          }}>
-                            {item.project_name}
-                          </span>
-                        ) : null}
-                        <span style={{ fontSize: 13, fontWeight: 650, color: '#065F46', lineHeight: 1.35 }}>
-                          {item.summary}
-                        </span>
-                      </div>
-                      {item.ai_body_text && (
-                        <p style={{
-                          fontSize: 12, color: '#334155', lineHeight: 1.55,
-                          margin: '0 0 0 22px',
-                        }}>
-                          {item.ai_body_text}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          <DoneSection items={doneItems} />
         </>
       )}
     </div>
