@@ -350,9 +350,9 @@ export function EditableLabels({ issueId, issueKey, currentLabels, onUpdate }: {
         onChange={(v) => {
           // @atlaskit/select's CreatableSelect yields both existing and
           // newly-created options with the same { value, label } shape.
-          const next = (v ?? []).map(o => o.value.trim()).filter(Boolean);
+          const next: string[] = (v ?? []).map((o) => String(o.value).trim()).filter(Boolean);
           // Dedupe (case-sensitive match) before persisting.
-          const deduped = Array.from(new Set(next));
+          const deduped: string[] = Array.from(new Set<string>(next));
           updateMutation.mutate(deduped);
         }}
         formatCreateLabel={(input) => `Create "${input}"`}
