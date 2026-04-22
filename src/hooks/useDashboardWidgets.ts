@@ -265,43 +265,76 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
   });
 }
 
-// ─── Production Incidents (cross-hub from ph_issues) ───
-export function useDashboardIncidents(projectId: string | null | undefined, projectKey?: string | null) {
-  return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId, projectKey],
-    queryFn: async () => {
-      if (!projectKey) return [];
+// ─── Production Incidents (native, from ph_incidents) ───
+export interface DashboardIncident {
+  id: string;
+  key: string | null;
+  title: string | null;
+  priority: string | null;
+  status: string | null;
+  assigned_to: string | null;
+  resolved_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  // Derived
+  assignee: string;
+  assignee_avatar_url: string | null;
+  days_open: number;
+}
 
-      const [{ data, error }, avatarMap] = await Promise.all([
-        supabase
-          .from('ph_issues')
-          .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
-          .eq('project_key', projectKey)
-          .eq('issue_type', 'Production Incident')
-          .is('deleted_at', null)
-          .order('jira_created_at', { ascending: false })
-          .limit(10),
-        getAvatarMap(),
-      ]);
+export function useDashboardIncidents(projectId: string | null | undefined, _projectKey?: string | null) {
+  return useQuery<DashboardIncident[]>({
+    queryKey: ['ph-dashboard-incidents', projectId],
+    queryFn: async () => {
+      if (!projectId) return [];
+
+      const { data, error } = await supabase
+        .from('ph_incidents')
+        .select('id, key, title, priority, status, assigned_to, resolved_at, created_at, updated_at')
+        .eq('project_id', projectId)
+        .order('created_at', { ascending: false });
       if (error) throw error;
 
-      return (data ?? []).map(inc => ({
-        id: inc.id,
-        issue_key: inc.issue_key,
-        title: inc.summary,
-        priority: inc.priority || 'Medium',
-        status: inc.status,
-        status_category: inc.status_category,
-        assignee: inc.assignee_display_name,
-        assignee_avatar_url: resolveAvatarUrl(avatarMap, inc.assignee_display_name),
-        reporter: inc.reporter_display_name,
-        resolution: inc.resolution,
-        days_open: inc.jira_created_at
-          ? Math.max(0, Math.floor((Date.now() - new Date(inc.jira_created_at).getTime()) / 86400000))
-          : 0,
-      }));
+      const rows = data ?? [];
+      const assigneeIds = Array.from(
+        new Set(rows.map(r => r.assigned_to).filter((v): v is string => !!v))
+      );
+
+      // Resolve assignee display names from profiles (best-effort, no fakes)
+      const nameMap = new Map<string, string>();
+      if (assigneeIds.length) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', assigneeIds);
+        (profs ?? []).forEach((p: any) => {
+          if (p?.id && p?.full_name) nameMap.set(p.id, p.full_name);
+        });
+      }
+
+      const avatarMap = await getAvatarMap();
+
+      return rows.map((inc: any) => {
+        const assignee = inc.assigned_to ? (nameMap.get(inc.assigned_to) ?? '') : '';
+        return {
+          id: inc.id,
+          key: inc.key,
+          title: inc.title,
+          priority: inc.priority,
+          status: inc.status,
+          assigned_to: inc.assigned_to,
+          resolved_at: inc.resolved_at,
+          created_at: inc.created_at,
+          updated_at: inc.updated_at,
+          assignee,
+          assignee_avatar_url: assignee ? resolveAvatarUrl(avatarMap, assignee) : null,
+          days_open: inc.created_at
+            ? Math.max(0, Math.floor((Date.now() - new Date(inc.created_at).getTime()) / 86400000))
+            : 0,
+        };
+      });
     },
-    enabled: !!projectKey,
+    enabled: !!projectId,
     staleTime: 60_000,
   });
 }
