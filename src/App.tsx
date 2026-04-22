@@ -17,6 +17,7 @@ import { FeatureFlagProvider } from "./contexts/FeatureFlagContext";
 import { WorkflowProvider } from "./lib/workflows";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { PreviewRecoveryBanner } from "./components/PreviewRecoveryBanner";
 import { useCommandK } from "@/hooks/useCommandK";
 
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
@@ -61,6 +62,7 @@ function App() {
 
   return (
   <ErrorBoundary>
+  <PreviewRecoveryBanner />
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       {/**
