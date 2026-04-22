@@ -55,8 +55,6 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import MoreIcon from '@atlaskit/icon/glyph/more';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -199,35 +197,6 @@ const helperLinkStyles = xcss({
   textDecoration: 'none',
 });
 
-const moreFieldsToggleStyles = xcss({
-  display: 'inline-flex',
-  alignItems: 'center',
-  gap: 'space.100',
-  paddingBlock: 'space.100',
-  paddingInline: 'space.0',
-  background: 'color.background.neutral.subtle',
-  border: 'none',
-  cursor: 'pointer',
-  font: 'font.body',
-  color: 'color.text',
-  width: 'fit-content',
-});
-
-const moreFieldsBoxStyles = xcss({
-  marginTop: 'space.200',
-  padding: 'space.300',
-  borderRadius: 'border.radius',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border',
-  backgroundColor: 'color.background.neutral.subtle',
-});
-
-const moreFieldsHelperStyles = xcss({
-  font: 'font.body.small',
-  color: 'color.text.subtlest',
-  marginBottom: 'space.300',
-});
 
 const reporterReadonlyBoxStyles = xcss({
   display: 'flex',
@@ -399,7 +368,6 @@ export function CreateStoryModal({
 
   const [workType, setWorkType] = useState<string>('Story');
   const [createAnother, setCreateAnother] = useState(false);
-  const [moreFieldsOpen, setMoreFieldsOpen] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -589,7 +557,7 @@ export function CreateStoryModal({
       {open && (
         <ModalDialog
           onClose={handleClose}
-          width="medium"
+          width="large"
           shouldScrollInViewport
           autoFocus
         >
@@ -757,6 +725,83 @@ export function CreateStoryModal({
                 )}
               </Field>
 
+              {/* ── Parent ─────────────────────────────────────────── */}
+              <Field name="parent" label="Parent">
+                {({ fieldProps: { id, isDisabled } }) => (
+                  <>
+                    <AsyncSelect<IconOption>
+                      id={id}
+                      isDisabled={isDisabled}
+                      inputId="cs-parent"
+                      cacheOptions
+                      defaultOptions
+                      loadOptions={async (input: string) => {
+                        if (!resolvedKey) return [];
+                        const q = supabase
+                          .from('ph_issues')
+                          .select('id, issue_key, summary, issue_type')
+                          .eq('project_key', resolvedKey)
+                          .eq('issue_type', 'Epic')
+                          .is('deleted_at', null)
+                          .neq('status_category', 'done')
+                          .order('jira_updated_at', {
+                            ascending: false,
+                          })
+                          .limit(20);
+                        if (input.trim()) {
+                          q.or(
+                            `issue_key.ilike.${input}%,summary.ilike.%${input}%`,
+                          );
+                        }
+                        const { data, error } = await q;
+                        if (error) return [];
+                        return (data ?? []).map((d: any) => ({
+                          value: d.id,
+                          label: d.summary,
+                          sublabel: d.issue_key,
+                          icon: (
+                            <JiraIssueTypeIcon type="Epic" size={14} />
+                          ),
+                        }));
+                      }}
+                      onChange={(opt) =>
+                        updateField(
+                          'parentId',
+                          (opt as IconOption)?.value ?? null,
+                        )
+                      }
+                      placeholder="Select parent"
+                      formatOptionLabel={formatIconOption}
+                      isClearable
+                    />
+                    <HelperMessage>
+                      Your work type hierarchy determines the work items
+                      you can select here.
+                    </HelperMessage>
+                  </>
+                )}
+              </Field>
+
+              {/* ── MDT Ref ─────────────────────────────────────────── */}
+              <Field name="mdt_ref" label="MDT Ref">
+                {({ fieldProps }) => (
+                  <Textfield
+                    {...(fieldProps as any)}
+                    value={(form.tags ?? []).join(',')}
+                    onChange={(e: any) =>
+                      updateField(
+                        'tags',
+                        e.target.value
+                          .split(',')
+                          .map((s: string) => s.trim())
+                          .filter(Boolean),
+                      )
+                    }
+                    placeholder=""
+                  />
+                )}
+              </Field>
+
               {/* ── Priority ───────────────────────────────────────── */}
               <Field name="priority" label="Priority">
                 {({ fieldProps }) => (
@@ -790,6 +835,67 @@ export function CreateStoryModal({
                       </Box>
                     </a>
                   </>
+                )}
+              </Field>
+
+              {/* ── Description ─────────────────────────────────────── */}
+              <Field name="description" label="Description">
+                {() => (
+                  <Box xcss={editorWrapperStyles}>
+                    <Suspense
+                      fallback={
+                        <Box xcss={editorLoadingStyles}>
+                          <Spinner size="medium" />
+                        </Box>
+                      }
+                    >
+                      <EpicDescriptionEditor
+                        workItemId="__create__"
+                        initialContent={form.descriptionAdf ?? null}
+                        placeholder="Type /ai to Ask Rovo or @ to mention and notify someone."
+                        onSave={(adfJson: string) => {
+                          try {
+                            const parsed = JSON.parse(adfJson);
+                            updateField('descriptionAdf', parsed);
+                            updateField(
+                              'description',
+                              typeof parsed === 'object' &&
+                                parsed?.content
+                                ? JSON.stringify(parsed)
+                                : '',
+                            );
+                          } catch {
+                            /* noop */
+                          }
+                        }}
+                        onCancel={() => undefined}
+                      />
+                    </Suspense>
+                  </Box>
+                )}
+              </Field>
+
+              {/* ── Fix versions ────────────────────────────────────── */}
+              <Field name="fixVersions" label="Fix versions">
+                {({ fieldProps }) => (
+                  <Select<IconOption>
+                    {...fieldProps}
+                    inputId="cs-fixversions"
+                    options={releaseOptions}
+                    value={
+                      releaseOptions.find(
+                        (o) => o.value === (form.releaseId ?? ''),
+                      ) ?? null
+                    }
+                    onChange={(opt) =>
+                      updateField(
+                        'releaseId',
+                        (opt as IconOption)?.value || null,
+                      )
+                    }
+                    isClearable
+                    placeholder=""
+                  />
                 )}
               </Field>
 
@@ -916,181 +1022,6 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── More fields (4) ────────────────────────────────── */}
-              <Box>
-                <button
-                  type="button"
-                  onClick={() => setMoreFieldsOpen((v) => !v)}
-                  aria-expanded={moreFieldsOpen}
-                  aria-controls="cs-more-fields"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: token('space.100'),
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: token('color.text'),
-                    font: token('font.body'),
-                    padding: 0,
-                  }}
-                >
-                  {moreFieldsOpen ? (
-                    <ChevronDownIcon label="" size="small" />
-                  ) : (
-                    <ChevronRightIcon label="" size="small" />
-                  )}
-                  More fields (4)
-                </button>
-
-                {moreFieldsOpen && (
-                  <Box xcss={moreFieldsBoxStyles} id="cs-more-fields">
-                    <Box xcss={moreFieldsHelperStyles}>
-                      Fields you don't use often are automatically listed here.
-                    </Box>
-
-                    <Box xcss={fieldGroupStyles}>
-                      {/* Parent (lazy server-search) */}
-                      <Field name="parent" label="Parent">
-                        {({ fieldProps: { id, isDisabled } }) => (
-                          <>
-                            <AsyncSelect<IconOption>
-                              id={id}
-                              isDisabled={isDisabled}
-                              inputId="cs-parent"
-                              cacheOptions
-                              defaultOptions
-                              loadOptions={async (input: string) => {
-                                if (!resolvedKey) return [];
-                                const q = supabase
-                                  .from('ph_issues')
-                                  .select('id, issue_key, summary, issue_type')
-                                  .eq('project_key', resolvedKey)
-                                  .eq('issue_type', 'Epic')
-                                  .is('deleted_at', null)
-                                  .neq('status_category', 'done')
-                                  .order('jira_updated_at', {
-                                    ascending: false,
-                                  })
-                                  .limit(20);
-                                if (input.trim()) {
-                                  q.or(
-                                    `issue_key.ilike.${input}%,summary.ilike.%${input}%`,
-                                  );
-                                }
-                                const { data, error } = await q;
-                                if (error) return [];
-                                return (data ?? []).map((d: any) => ({
-                                  value: d.id,
-                                  label: d.summary,
-                                  sublabel: d.issue_key,
-                                  icon: (
-                                    <JiraIssueTypeIcon type="Epic" size={14} />
-                                  ),
-                                }));
-                              }}
-                              onChange={(opt) =>
-                                updateField(
-                                  'parentId',
-                                  (opt as IconOption)?.value ?? null,
-                                )
-                              }
-                              placeholder="Select parent"
-                              formatOptionLabel={formatIconOption}
-                              isClearable
-                            />
-                            <HelperMessage>
-                              Your work type hierarchy determines the work items
-                              you can select here.
-                            </HelperMessage>
-                          </>
-                        )}
-                      </Field>
-
-                      {/* MDT Ref */}
-                      <Field name="mdt_ref" label="MDT Ref">
-                        {({ fieldProps }) => (
-                          <Textfield
-                            {...(fieldProps as any)}
-                            value={(form.tags ?? []).join(',')}
-                            onChange={(e: any) =>
-                              updateField(
-                                'tags',
-                                e.target.value
-                                  .split(',')
-                                  .map((s: string) => s.trim())
-                                  .filter(Boolean),
-                              )
-                            }
-                            placeholder=""
-                          />
-                        )}
-                      </Field>
-
-                      {/* Description (Atlaskit editor — lazy) */}
-                      <Field name="description" label="Description">
-                        {() => (
-                          <Box xcss={editorWrapperStyles}>
-                            <Suspense
-                              fallback={
-                                <Box xcss={editorLoadingStyles}>
-                                  <Spinner size="medium" />
-                                </Box>
-                              }
-                            >
-                              <EpicDescriptionEditor
-                                workItemId="__create__"
-                                initialContent={form.descriptionAdf ?? null}
-                                placeholder="Type /ai to Ask Rovo or @ to mention and notify someone."
-                                onSave={(adfJson: string) => {
-                                  try {
-                                    const parsed = JSON.parse(adfJson);
-                                    updateField('descriptionAdf', parsed);
-                                    updateField(
-                                      'description',
-                                      typeof parsed === 'object' &&
-                                        parsed?.content
-                                        ? JSON.stringify(parsed)
-                                        : '',
-                                    );
-                                  } catch {
-                                    /* noop */
-                                  }
-                                }}
-                                onCancel={() => undefined}
-                              />
-                            </Suspense>
-                          </Box>
-                        )}
-                      </Field>
-
-                      {/* Fix versions (Catalyst releases) */}
-                      <Field name="fixVersions" label="Fix versions">
-                        {({ fieldProps }) => (
-                          <Select<IconOption>
-                            {...fieldProps}
-                            inputId="cs-fixversions"
-                            options={releaseOptions}
-                            value={
-                              releaseOptions.find(
-                                (o) => o.value === (form.releaseId ?? ''),
-                              ) ?? null
-                            }
-                            onChange={(opt) =>
-                              updateField(
-                                'releaseId',
-                                (opt as IconOption)?.value || null,
-                              )
-                            }
-                            isClearable
-                            placeholder=""
-                          />
-                        )}
-                      </Field>
-                    </Box>
-                  </Box>
-                )}
-              </Box>
 
               {formError && (
                 <Box
