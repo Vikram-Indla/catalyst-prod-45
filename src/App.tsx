@@ -27,6 +27,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
 const WorkflowsAdminPage = lazy(() => import("./pages/admin/WorkflowsAdminPage").then(m => ({ default: m.default })));
+const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
 const SlackOAuthCallback = lazy(() => import("./pages/SlackOAuthCallback"));
@@ -104,6 +105,8 @@ function App() {
 
                   {/* Admin routes — always available for incremental publishing control */}
                   <Route path="/admin" element={<S><AdminLayout /></S>}>
+                    <Route index element={<Navigate to="/admin/overview" replace />} />
+                    <Route path="overview" element={<S><AdminOverview /></S>} />
                     <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
                     <Route path="workflows" element={<S><WorkflowsAdminPage /></S>} />
                   </Route>
