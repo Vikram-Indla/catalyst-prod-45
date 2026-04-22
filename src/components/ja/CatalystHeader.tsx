@@ -71,7 +71,7 @@ export function CatalystHeader() {
 
       {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', minWidth: 0 }}>
-        <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '780px' }}>
+        <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '560px' }}>
           <GlobalSearch />
         </div>
         <div style={{ flexShrink: 0 }}>

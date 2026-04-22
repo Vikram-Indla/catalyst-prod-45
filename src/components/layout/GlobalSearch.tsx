@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
@@ -7,11 +7,16 @@ import Textfield from '@atlaskit/textfield';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { GlobalSearchPanel } from '@/components/global-search/GlobalSearchPanel';
 
-// GlobalSearch — search trigger anchored directly via getBoundingClientRect.
-// Atlaskit Popup's Manager/Reference context pattern has a React-18 timing
-// bug: referenceNode is null on the first Popper.js layout pass, producing
-// left:0. The fix is to read the trigger's viewport position ourselves and
-// apply it to a portal-rendered, fixed-positioned container.
+// GlobalSearch — correctly anchored search trigger.
+//
+// Popup positioning uses useLayoutEffect (fires before paint) so the
+// position is calculated and applied in the same synchronous flush as the
+// first render that shows the popup. popupStyle starts null; the portal is
+// not rendered until it is set, guaranteeing the popup never appears at the
+// default x=0 position.
+//
+// Field width: flex 1 1 0 / max 560px.
+// Dropdown: width = trigger width (set by the portal container).
 
 interface GlobalSearchProps {
   collapsed?: boolean;
@@ -26,24 +31,30 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
   const closeSearch = useGlobalSearchStore((s) => s.close);
   const [query, setQuery] = useState('');
   const [expanded, setExpanded] = useState(false);
-  const [popupStyle, setPopupStyle] = useState<React.CSSProperties>({});
+  const [popupStyle, setPopupStyle] = useState<React.CSSProperties | null>(null);
 
   const handleClose = () => {
     closeSearch();
     if (collapsed) setExpanded(false);
   };
 
-  // Position popup whenever it opens — read the trigger's live viewport rect.
-  useEffect(() => {
-    if (!isOpen || !triggerRef.current) return;
+  // useLayoutEffect fires BEFORE paint — guarantees correct position on first
+  // visible frame. The portal is not mounted until popupStyle is non-null.
+  useLayoutEffect(() => {
+    if (!isOpen || !triggerRef.current) {
+      setPopupStyle(null);
+      return;
+    }
     const rect = triggerRef.current.getBoundingClientRect();
-    const popupWidth = Math.min(780, window.innerWidth - 32);
-    // Prevent the popup from overflowing off the right edge.
-    const left = Math.min(rect.left, window.innerWidth - popupWidth - 8);
+    const vw = window.innerWidth;
+    const w = rect.width;
+    // Clamp so the popup never overflows the right viewport edge.
+    const left = Math.max(8, Math.min(rect.left, vw - w - 8));
     setPopupStyle({
       position: 'fixed',
       top: rect.bottom + 8,
-      left: Math.max(8, left),
+      left,
+      width: w,
       zIndex: 800,
     });
   }, [isOpen]);
@@ -52,8 +63,8 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e: MouseEvent) => {
-      const target = e.target as Node;
-      if (!triggerRef.current?.contains(target) && !popupRef.current?.contains(target)) {
+      const t = e.target as Node;
+      if (!triggerRef.current?.contains(t) && !popupRef.current?.contains(t)) {
         handleClose();
       }
     };
@@ -61,7 +72,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
     return () => window.removeEventListener('mousedown', handler);
   }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Cmd/Ctrl+K from anywhere → focus input + open panel.
+  // Cmd/Ctrl+K from anywhere.
   useEffect(() => {
     const handler = () => {
       openSearch();
@@ -110,7 +121,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
         ref={triggerRef}
         style={
           collapsed
-            ? { width: 'min(680px, calc(100vw - 220px))', flexShrink: 1, minWidth: 0 }
+            ? { width: 'min(560px, calc(100vw - 220px))', flexShrink: 1, minWidth: 0 }
             : { width: '100%', flexShrink: 1, minWidth: 0 }
         }
         aria-controls={isOpen ? 'gs-popup' : undefined}
@@ -119,6 +130,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
       >
         <Textfield
           ref={inputRef}
+          isCompact
           elemBeforeInput={
             <span style={{ display: 'inline-flex', paddingLeft: 6, color: '#626F86' }}>
               <SearchIcon label="" />
@@ -159,7 +171,9 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
         />
       </div>
 
+      {/* Portal only mounts when popupStyle is ready — no x=0 flash */}
       {isOpen &&
+        popupStyle &&
         createPortal(
           <div id="gs-popup" ref={popupRef} style={popupStyle}>
             <GlobalSearchPanel
