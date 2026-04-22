@@ -43,7 +43,7 @@ export function NotificationsPanel() {
             role="status"
             aria-label={`${unreadCount} unread notifications`}
           >
-            <Badge appearance="important" max={9}>{unreadCount}</Badge>
+            <Badge appearance="important" max={99}>{unreadCount}</Badge>
           </Box>
         ) : null}
       </Box>
