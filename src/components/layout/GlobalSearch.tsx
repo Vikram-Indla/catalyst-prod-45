@@ -130,7 +130,6 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
       >
         <Textfield
           ref={inputRef}
-          isCompact
           elemBeforeInput={
             <span style={{ display: 'inline-flex', paddingLeft: 6, color: '#626F86' }}>
               <SearchIcon label="" />
