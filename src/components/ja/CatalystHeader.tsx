@@ -1,5 +1,3 @@
-import { Box, xcss, Flex } from '@atlaskit/primitives';
-import { token } from '@atlaskit/tokens';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import SidebarExpandIcon from '@atlaskit/icon/core/sidebar-expand';
@@ -15,62 +13,17 @@ import { NotificationsPanel } from './NotificationsPanel';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import catalystWordmark from '@/assets/catalyst-wordmark-3.svg';
 
-// 3-column grid: [left=auto] [center=1fr] [right=auto]
-//
-// LEFT   — sidebar toggle + HubSwitcher + wordmark (auto-sized to content)
-// CENTER — Search (flex-1, max 780px) + Create (flex-shrink:0), filling the
-//          remaining 1fr. Extra space falls between Create and the right
-//          cluster, making the two regions visually distinct. This matches
-//          the Atlaskit navigation-system spec where Search and Create are
-//          TopNavMiddle children and AskCaty onward are TopNavEnd children.
-// RIGHT  — AskCatalystPill | Notifications | Settings | Profile (auto-sized)
-const headerStyles = xcss({
-  display: 'grid',
-  // @ts-expect-error — xcss doesn't type gridTemplateColumns
-  gridTemplateColumns: 'auto 1fr auto',
-  alignItems: 'center',
-  height: '56px',
-  paddingInline: 'space.150',
-  backgroundColor: 'elevation.surface',
-  borderBlockEnd: 'border.width',
-  borderColor: 'color.border',
-  flexShrink: 0,
-});
-
-const leftClusterStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.050',
-});
-
-// Center occupies the 1fr column. Search grows up to 780px; Create sits
-// directly to its right. No spacer — the column's remaining width is simply
-// left as white space between Create and the right cluster.
-const centerStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.100',
-  minWidth: '0',
-  overflow: 'hidden',
-  paddingInline: 'space.150',
-});
-
-// Search stretches to fill available space, capped at 780px (Atlaskit spec).
-const searchWrapperStyles = xcss({
-  flexGrow: 1,
-  flexShrink: 1,
-  minWidth: '0',
-  maxWidth: '780px',
-});
-
-const rightClusterStyles = xcss({
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'space.050',
-});
-
 const isMacPlatform = () =>
   typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
+
+// 3-column grid header:
+//   [auto]  LEFT  — sidebar toggle, HubSwitcher, wordmark
+//   [1fr]   CENTER — Search (flex-grow, max 780px) + Create (adjacent, not in right cluster)
+//   [auto]  RIGHT  — AskCatalystPill | Notifications | Settings | Profile
+//
+// The 1fr center column absorbs remaining width. Search fills up to 780px;
+// leftover space sits between Create and the right cluster, making the
+// two regions visually distinct. No dead-zone spacer needed.
 
 export function CatalystHeader() {
   const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
@@ -80,13 +33,23 @@ export function CatalystHeader() {
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
 
   return (
-    <Box
-      as="header"
-      xcss={headerStyles}
-      data-catalyst-top-nav="true"
+    <header
+      data-catalyst-top-nav
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'auto 1fr auto',
+        alignItems: 'center',
+        height: '56px',
+        paddingInline: '12px',
+        gap: '8px',
+        background: 'var(--ds-surface, var(--cp-bg, #fff))',
+        borderBottom: '1px solid var(--ds-border, var(--cp-bd, #e2e8f0))',
+        boxSizing: 'border-box',
+        flexShrink: 0,
+      }}
     >
-      {/* LEFT: sidebar toggle + HubSwitcher + wordmark */}
-      <Box xcss={leftClusterStyles}>
+      {/* LEFT cluster */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         <Tooltip content={sidebarTooltip} position="bottom">
           <IconButton
             label={sidebarLabel}
@@ -108,24 +71,26 @@ export function CatalystHeader() {
             style={{ height: '28px', width: 'auto', display: 'block' }}
           />
         </a>
-      </Box>
+      </div>
 
-      {/* CENTER: Search (grows to 780px) + Create (adjacent) */}
-      <Box xcss={centerStyles}>
-        <Box xcss={searchWrapperStyles}>
+      {/* CENTER: Search (grows to 780px max) + Create (pinned right of search) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, overflow: 'hidden' }}>
+        <div style={{ flex: '1 1 0', minWidth: 0, maxWidth: '780px' }}>
           <GlobalSearch />
-        </Box>
-        <CreateDropdown />
-      </Box>
+        </div>
+        <div style={{ flexShrink: 0 }}>
+          <CreateDropdown />
+        </div>
+      </div>
 
-      {/* RIGHT: AskCatalystPill | Notifications | Settings | Profile */}
-      <Box xcss={rightClusterStyles}>
+      {/* RIGHT cluster: AskCatalystPill | Notifications | Settings | Profile */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
         <AskCatalystPill />
         <NotificationsPanel />
         <SettingsMenu />
         <ProfileMenu />
-      </Box>
-    </Box>
+      </div>
+    </header>
   );
 }
 
