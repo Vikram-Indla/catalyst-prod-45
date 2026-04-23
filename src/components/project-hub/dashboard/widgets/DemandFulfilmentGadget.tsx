@@ -1093,7 +1093,7 @@ function DemandRowItem({
       {expanded && (
         <div
           style={{
-            background: token('elevation.surface.sunken', '#F7F8F9'),
+            background: '#FFFFFF',
             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
             paddingTop: 4,
             paddingBottom: 6,
