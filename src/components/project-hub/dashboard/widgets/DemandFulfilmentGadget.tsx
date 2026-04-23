@@ -331,7 +331,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, issue_key, summary, status, status_category, assignee_user_id, assignee_display_name, jira_removed_at')
+        .select('parent_key, issue_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, jira_removed_at')
         .in('parent_key', epicKeys)
         .in('issue_type', childTypes)
         .is('jira_removed_at', null)
