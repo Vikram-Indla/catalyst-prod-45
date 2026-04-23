@@ -17,13 +17,33 @@ export function lozengeAppearance(
   statusCategory: string,
   status?: string,
 ): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' {
-  if (!statusCategory) return 'default';
-  const cat = statusCategory.toLowerCase();
-  if (cat === 'done' || cat === 'complete' || cat === 'completed') return 'success';
+  const cat = (statusCategory ?? '').toLowerCase();
+  const st = (status ?? '').toLowerCase();
+
+  // Done category OR done-equivalent status names
+  if (cat === 'done' || ['done', 'closed', 'resolved', 'complete', 'completed'].includes(st))
+    return 'success';
+
+  // In progress category
   if (cat === 'in progress' || cat === 'inprogress') return 'inprogress';
-  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
-    return 'moved';
-  }
+
+  // Blocked statuses
+  if (['on hold', 'blocked', 'awaiting info', 'awaiting approval'].includes(st)) return 'moved';
+
+  // To do
+  if (cat === 'to do' || st === 'to do' || st === 'backlog') return 'default';
+
+  // Custom "in progress-like" names
+  if (
+    st.includes('progress') ||
+    st.includes('review') ||
+    st.includes('qa') ||
+    st.includes('uat') ||
+    st.includes('develop') ||
+    st.includes('ready')
+  )
+    return 'inprogress';
+
   return 'default';
 }
 
@@ -87,9 +107,9 @@ export const DEFAULT_COLUMNS: UWVColumn[] = [
   { fieldId: 'type', label: 'Type', width: 80, visible: true, sortable: false, type: 'type-icon' },
   { fieldId: 'key', label: 'Key', width: 110, visible: true, sortable: true, type: 'string' },
   { fieldId: 'summary', label: 'Summary', width: 380, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'status', label: 'Status', width: 130, visible: true, sortable: true, type: 'status' },
-  { fieldId: 'comments', label: 'Comments', width: 90, visible: true, sortable: false, type: 'comments' },
-  { fieldId: 'assignee', label: 'Assignee', width: 160, visible: true, sortable: true, type: 'user' },
+  { fieldId: 'status', label: 'Status', width: 160, visible: true, sortable: true, type: 'status' },
+  { fieldId: 'comments', label: 'Comments', width: 130, visible: true, sortable: false, type: 'comments' },
+  { fieldId: 'assignee', label: 'Assignee', width: 170, visible: true, sortable: true, type: 'user' },
   { fieldId: 'hubSource', label: 'Hub', width: 110, visible: true, sortable: false, type: 'hub' },
   { fieldId: 'dueDate', label: 'Due date', width: 110, visible: false, sortable: true, type: 'date' },
   { fieldId: 'priority', label: 'Priority', width: 90, visible: false, sortable: true, type: 'string' },

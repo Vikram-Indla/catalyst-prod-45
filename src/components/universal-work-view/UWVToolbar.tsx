@@ -203,10 +203,6 @@ export function UWVToolbar({
           {filteredCount}
         </span>
 
-        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
-          <UWVExport items={allItems} columns={columns} title={title} />
-          <UWVColumnPicker columns={columns} prefs={prefs} onSave={onSavePrefs} />
-        </div>
       </div>
 
       {/* ROW 2 — bulk actions or filter bar */}
@@ -266,9 +262,8 @@ export function UWVToolbar({
           />
 
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Button appearance="subtle" iconAfter={ChevronDown as any}>
-              Group
-            </Button>
+            <UWVExport items={allItems} columns={columns} title={title} />
+            <UWVColumnPicker columns={columns} prefs={prefs} onSave={onSavePrefs} />
             <IconButton icon={MoreIcon as any} label="More actions" appearance="subtle" />
           </div>
         </div>
