@@ -831,10 +831,12 @@ function DemandRowItem({
 export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
+  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
+  const [unlinkedOpen, setUnlinkedOpen] = useState(false);
 
   // Reset expansion if rows change.
   useEffect(() => {
