@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import ProgressBar from '@atlaskit/progress-bar';
+
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import EmptyState from '@atlaskit/empty-state';
