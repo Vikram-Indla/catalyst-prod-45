@@ -1143,7 +1143,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       ) : mergedActive.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
-          <div style={{ padding: '10px 12px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
+          <div style={{ padding: '10px 16px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
             ✓ All demand commitments met this period
           </div>
           {delivered.map((r) => (
@@ -1171,7 +1171,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 12px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
+            <div style={{ padding: '6px 16px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
               <a href="/producthub/backlog" style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
                 View all {visibleByTab.length} in ProductHub ↗
               </a>
@@ -1187,7 +1187,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '8px 12px',
+                  padding: '8px 16px',
                   background: 'transparent',
                   border: 0,
                   cursor: 'pointer',
@@ -1233,7 +1233,7 @@ function DeliveredRow({ row }: { row: DemandRow }) {
         gridTemplateColumns: '20px 60px 1fr 90px 70px 80px',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 12px',
+        padding: '6px 16px',
         borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
         font: token('font.body.small'),
       }}
