@@ -734,8 +734,8 @@ function DemandRowItem({
           }}
         >
           {row.total === 0 ? (
-            <div style={{ fontSize: 12, color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic' }}>
-              <Info size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+            <div style={{ font: token('font.body.small'), color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
               No stories linked. Add stories under the epics in this demand to track progress.
             </div>
           ) : (
@@ -776,16 +776,16 @@ function DemandRowItem({
                         background: ragColors[epicState].dot,
                       }}
                     />
-                    <a
+                    <Link
                       href={`/project-hub/${epic.issue_key.split('-')[0]}/allwork?issue=${epic.issue_key}`}
-                      style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                      style={{ fontSize: 11, fontWeight: 700 }}
                     >
                       {epic.issue_key}
-                    </a>
+                    </Link>
                     <span
                       title={epic.summary}
                       style={{
-                        fontSize: 12,
+                        font: token('font.body.small'),
                         color: token('color.text', '#172B4D'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -794,13 +794,13 @@ function DemandRowItem({
                     >
                       {epic.summary}
                     </span>
-                    <div style={{ height: 3, background: token('color.background.neutral', '#DFE1E6'), borderRadius: 2, overflow: 'hidden' }}>
-                      <div style={{ width: `${epicPct}%`, height: '100%', background: ragColors[epicState].bar }} />
+                    <div>
+                      <ProgressBar value={epicPct / 100} appearance="default" />
                     </div>
-                    <span style={{ fontSize: 10, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epicPct}%
                     </span>
-                    <span style={{ fontSize: 10, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epic.done}/{epic.total}
                     </span>
                   </div>
@@ -808,8 +808,8 @@ function DemandRowItem({
               })}
 
               {!row.target_complete && (
-                <div style={{ marginTop: 8, fontSize: 11, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic' }}>
-                  <Info size={11} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                <div style={{ marginTop: 8, font: token('font.body.UNSAFE_small'), color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
               )}
