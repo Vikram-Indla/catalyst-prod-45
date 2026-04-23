@@ -1081,7 +1081,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   textAlign: 'left',
                 }}
               >
-                <CheckCircle2 size={13} color="#36B37E" />
+                <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
                 {delivered.length} delivered this period
                 <ChevronDown
                   size={12}
