@@ -149,7 +149,7 @@ export default defineConfig(({ mode, command }) => {
   server: {
     host: "0.0.0.0",
     port: 8080,
-    allowedHosts: "all",
+    allowedHosts: true,
     hmr: {
       clientPort: 443,
       protocol: "wss",

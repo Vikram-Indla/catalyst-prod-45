@@ -20,7 +20,8 @@
  *
  * Chrome reuses WidgetWrapper (same shell as every other dashboard gadget).
  */
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
@@ -29,16 +30,17 @@ import {
 } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import ProgressBar from '@atlaskit/progress-bar';
+
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import EmptyState from '@atlaskit/empty-state';
-import Popup from '@atlaskit/popup';
+
 import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import SectionMessage, { SectionMessageAction } from '@atlaskit/section-message';
+import Tooltip from '@atlaskit/tooltip';
 import Badge from '@atlaskit/badge';
 import Link from '@atlaskit/link';
 import AkButton, { IconButton } from '@atlaskit/button/new';
@@ -73,6 +75,7 @@ interface GadgetSettings {
   rag_threshold: number;
   include_stories: boolean;
   include_defects: boolean;
+  status_filter: string[];
 }
 
 const currentQuarter = (): string => {
@@ -89,6 +92,7 @@ const DEFAULT_SETTINGS: GadgetSettings = {
   rag_threshold: 7,
   include_stories: true,
   include_defects: true,
+  status_filter: [],
 };
 
 const QUARTER_OPTIONS = [
@@ -98,7 +102,12 @@ const QUARTER_OPTIONS = [
   { label: 'Q4 2026 · Oct–Dec', value: 'Q4-2026' },
 ];
 
-const THRESHOLD_OPTIONS = [3, 5, 7, 10, 14].map((n) => ({ label: `${n}`, value: n }));
+const THRESHOLD_OPTIONS = [
+  { label: '3 days', value: 3 },
+  { label: '7 days', value: 7 },
+  { label: '14 days', value: 14 },
+  { label: '30 days', value: 30 },
+];
 
 const quarterRange = (q: string): { start: string; end: string; label: string } => {
   const [qPart, yPart] = q.split('-');
@@ -202,6 +211,13 @@ function useGadgetSettings() {
 // Data fetching
 // ─────────────────────────────────────────────────────────────────────────────
 
+interface EpicStoryRow {
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string;
+}
+
 interface EpicRow {
   id: string;
   issue_key: string;
@@ -212,6 +228,8 @@ interface EpicRow {
   blocked: number;
   inprogress: number;
   todo: number;
+  stories?: EpicStoryRow[];
+  status_category?: string;
 }
 
 interface DemandRow {
@@ -232,6 +250,7 @@ interface DemandRow {
   epics: EpicRow[];
   isDelivered: boolean;
   deliveredAt: string | null;
+  isUnlinkedEpic?: boolean;
 }
 
 const BLOCKED_STATUSES = new Set(['On Hold', 'Blocked', 'Awaiting Info']);
@@ -245,6 +264,14 @@ const classifyIssue = (issue: any): 'done' | 'blocked' | 'inprogress' | 'todo' |
   if (cat === 'To Do') return 'todo';
   return null;
 };
+
+interface UnlinkedEpicStory {
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string;
+  assignee_display_name: string | null;
+}
 
 interface UnlinkedEpic {
   id: string;
@@ -260,11 +287,12 @@ interface UnlinkedEpic {
   blocked: number;
   inprogress: number;
   todo: number;
+  stories: UnlinkedEpicStory[];
 }
 
-function useUnlinkedEpics(projectKey: string) {
+function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
   return useQuery({
-    queryKey: ['demand-fulfilment-unlinked', projectKey],
+    queryKey: ['demand-fulfilment-unlinked', projectKey, settings.include_stories, settings.include_defects],
     queryFn: async (): Promise<UnlinkedEpic[]> => {
       // Fetch all linked epic ids first
       const { data: links } = await (supabase as any)
@@ -285,23 +313,41 @@ function useUnlinkedEpics(projectKey: string) {
       if (unlinked.length === 0) return [];
 
       // Fetch child stories/bugs for these epics to compute roll-up counts.
+      const childTypes: string[] = [];
+      if (settings.include_stories) childTypes.push('Story');
+      if (settings.include_defects) childTypes.push('Bug', 'Defect');
+      if (childTypes.length === 0) childTypes.push('Story');
+
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, status, status_category')
+        .select('parent_key, issue_key, summary, status, status_category, assignee_display_name, jira_removed_at')
         .in('parent_key', epicKeys)
-        .in('issue_type', ['Story', 'Bug', 'Defect'])
+        .in('issue_type', childTypes)
         .is('jira_removed_at', null)
         .limit(5000);
 
       const bucketByEpic = new Map<string, { total: number; done: number; blocked: number; inprogress: number; todo: number }>();
-      epicKeys.forEach((k) => bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 }));
+      const storyRowsByEpic = new Map<string, UnlinkedEpicStory[]>();
+      epicKeys.forEach((k) => {
+        bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 });
+        storyRowsByEpic.set(k, []);
+      });
       (children ?? []).forEach((c: any) => {
         const b = bucketByEpic.get(c.parent_key);
         if (!b) return;
         const cls = classifyIssue(c);
         b.total += 1;
         if (cls) (b as any)[cls] += 1;
+        const list = storyRowsByEpic.get(c.parent_key) ?? [];
+        list.push({
+          issue_key: c.issue_key,
+          summary: c.summary ?? '',
+          status: c.status,
+          status_category: c.status_category,
+          assignee_display_name: c.assignee_display_name ?? null,
+        });
+        storyRowsByEpic.set(c.parent_key, list);
       });
 
       // Fetch assignee avatars from profiles.
@@ -328,6 +374,7 @@ function useUnlinkedEpics(projectKey: string) {
           assignee_name: profile?.display_name ?? profile?.full_name ?? e.assignee_display_name ?? '—',
           assignee_avatar: profile?.avatar_url ?? null,
           ...b,
+          stories: storyRowsByEpic.get(e.issue_key) ?? [],
         };
       });
     },
@@ -381,11 +428,12 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       const childTypes: string[] = [];
       if (settings.include_stories) childTypes.push('Story');
       if (settings.include_defects) childTypes.push('Bug', 'Defect');
+      if (childTypes.length === 0) childTypes.push('Story');
       let children: any[] = [];
       if (childTypes.length > 0) {
         const { data } = await (supabase as any)
           .from('ph_issues')
-          .select('issue_key, parent_key, status, status_category')
+          .select('issue_key, parent_key, summary, status, status_category')
           .in('parent_key', epicKeys)
           .in('issue_type', childTypes)
           .is('jira_removed_at', null)
@@ -404,15 +452,27 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         profiles = Object.fromEntries((pr ?? []).map((p: any) => [p.id, p]));
       }
 
-      // 6) Roll up: bucket children per epic.
+      // 6) Roll up: bucket children per epic, and collect individual story rows.
       const bucketByEpicKey = new Map<string, { done: number; blocked: number; inprogress: number; todo: number; total: number }>();
-      epicKeys.forEach((k) => bucketByEpicKey.set(k, { done: 0, blocked: 0, inprogress: 0, todo: 0, total: 0 }));
+      const storyListByEpicKey = new Map<string, EpicStoryRow[]>();
+      epicKeys.forEach((k) => {
+        bucketByEpicKey.set(k, { done: 0, blocked: 0, inprogress: 0, todo: 0, total: 0 });
+        storyListByEpicKey.set(k, []);
+      });
       children.forEach((c: any) => {
         const bucket = bucketByEpicKey.get(c.parent_key);
         if (!bucket) return;
         const cls = classifyIssue(c);
         bucket.total += 1;
         if (cls) (bucket as any)[cls] += 1;
+        const list = storyListByEpicKey.get(c.parent_key) ?? [];
+        list.push({
+          issue_key: c.issue_key,
+          summary: c.summary ?? '',
+          status: c.status,
+          status_category: c.status_category,
+        });
+        storyListByEpicKey.set(c.parent_key, list);
       });
 
       // Group epics under their MDT.
@@ -430,6 +490,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
           summary: epic.summary ?? '',
           status: epic.status,
           ...b,
+          stories: storyListByEpicKey.get(epicKey) ?? [],
         });
         epicsByInitiative.set(l.initiative_id, arr);
       });
@@ -503,17 +564,32 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
 // UI helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-const RagDot = ({ state }: { state: RagState }) => (
-  <span
-    style={{
-      display: 'inline-block',
-      width: 8,
-      height: 8,
-      borderRadius: '50%',
-      background: ragColors[state].dot,
-    }}
-  />
-);
+const RagDot = ({ state }: { state: RagState }) => {
+  if (state === 'none') {
+    // Preserve grid column width when no target date.
+    return <span style={{ width: 8, flexShrink: 0 }} />;
+  }
+  const tooltipContent =
+    state === 'overdue' ? 'Overdue' :
+    state === 'risk' ? 'At risk' :
+    'On track';
+  return (
+    <Tooltip content={tooltipContent}>
+      <span
+        tabIndex={0}
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: ragColors[state].dot,
+          cursor: 'help',
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
+      />
+    </Tooltip>
+  );
+};
 
 const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: number | null; dateStr: string | null }) => {
   if (state === 'none' || !dateStr) {
@@ -568,12 +644,75 @@ function SettingsPopupBody({
   initial,
   onApply,
   onCancel,
+  projectKey,
 }: {
   initial: GadgetSettings;
   onApply: (s: GadgetSettings) => void;
   onCancel: () => void;
+  projectKey: string;
 }) {
   const [draft, setDraft] = useState<GadgetSettings>(initial);
+
+  const { data: statusOptions = [] } = useQuery<Array<{ label: string; options: Array<{ label: string; value: string }> }>>({
+    queryKey: ['demand-fulfilment-distinct-statuses', projectKey],
+    queryFn: async () => {
+      // Fetch all distinct status + status_category combos for the project
+      // (across every issue type — Epic, Story, Bug, Defect, Sub-task, etc.).
+      const { data } = await (supabase as any)
+        .from('ph_issues')
+        .select('status, status_category')
+        .eq('project_key', projectKey)
+        .is('jira_removed_at', null)
+        .not('status', 'is', null)
+        .limit(10000);
+
+      if (!data) return [];
+
+      const categoryMap = new Map<string, Set<string>>();
+      (data as any[]).forEach((row) => {
+        const cat = row.status_category ?? 'Other';
+        const set = categoryMap.get(cat) ?? new Set<string>();
+        if (row.status) set.add(row.status);
+        categoryMap.set(cat, set);
+      });
+
+      const categoryOrder = ['To Do', 'In Progress', 'Done', 'Other'];
+      const sortedCategories = [...categoryMap.keys()].sort((a, b) => {
+        const ia = categoryOrder.indexOf(a);
+        const ib = categoryOrder.indexOf(b);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      });
+
+      return sortedCategories.map((cat) => ({
+        label: cat,
+        options: [...(categoryMap.get(cat) ?? [])].sort().map((s) => ({
+          label: s,
+          value: s,
+        })),
+      }));
+    },
+    enabled: !!projectKey,
+  });
+
+  const today = new Date().toISOString().split('T')[0];
+  const oneMonthAhead = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString().split('T')[0];
+
+  const sectionHeadingStyle = {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase' as const,
+    color: token('color.text.subtlest', '#626F86'),
+    marginBottom: 6,
+  };
+  const subLabelStyle = {
+    fontSize: 11,
+    lineHeight: '16px',
+    fontWeight: 400,
+    color: token('color.text.subtle', '#6B778C'),
+    marginBottom: 2,
+  };
 
   return (
     <div style={{ width: 300, padding: 12 }}>
@@ -592,13 +731,21 @@ function SettingsPopupBody({
       </div>
 
       {/* Time scope */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         Time scope
       </div>
       <RadioGroup
         name="scope_type"
         value={draft.scope_type}
-        onChange={(e: any) => setDraft({ ...draft, scope_type: e.currentTarget.value as ScopeType })}
+        onChange={(e: any) => {
+          const newScope = e.currentTarget.value as ScopeType;
+          setDraft((prev) => ({
+            ...prev,
+            scope_type: newScope,
+            date_from: newScope === 'custom' && !prev.date_from ? today : prev.date_from,
+            date_to: newScope === 'custom' && !prev.date_to ? oneMonthAhead : prev.date_to,
+          }));
+        }}
         options={[
           { name: 'scope_type', value: 'quarter', label: 'This Quarter' },
           { name: 'scope_type', value: 'custom', label: 'Custom timeline' },
@@ -620,18 +767,18 @@ function SettingsPopupBody({
       {draft.scope_type === 'custom' && (
         <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div>
-            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
+            <div style={subLabelStyle}>From</div>
             <DatePicker
               locale="en-GB"
-              value={draft.date_from ?? ''}
+              value={draft.date_from ?? today}
               onChange={(v: string) => setDraft({ ...draft, date_from: v || null })}
             />
           </div>
           <div>
-            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
+            <div style={subLabelStyle}>To</div>
             <DatePicker
               locale="en-GB"
-              value={draft.date_to ?? ''}
+              value={draft.date_to ?? oneMonthAhead}
               minDate={draft.date_from ?? undefined}
               onChange={(v: string) => setDraft({ ...draft, date_to: v || null })}
             />
@@ -642,17 +789,17 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Threshold */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         At-risk threshold
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#172B4D') }}>
         <span>Mark as At Risk when</span>
-        <div style={{ width: 70 }}>
+        <div style={{ width: 100 }}>
           <Select
             spacing="compact"
             options={THRESHOLD_OPTIONS}
-            value={THRESHOLD_OPTIONS.find((o) => o.value === draft.rag_threshold)}
-            onChange={(opt: any) => setDraft({ ...draft, rag_threshold: opt.value })}
+            value={THRESHOLD_OPTIONS.find((o) => o.value === Number(draft.rag_threshold))}
+            onChange={(opt: any) => setDraft({ ...draft, rag_threshold: Number(opt.value) })}
           />
         </div>
         <span>or fewer days remain</span>
@@ -661,7 +808,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Item types */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         Count toward completion
       </div>
       <Checkbox
@@ -674,6 +821,49 @@ function SettingsPopupBody({
         onChange={(e: any) => setDraft({ ...draft, include_defects: e.target.checked })}
         label="Defects / Bugs"
       />
+
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }} />
+
+      {/* Filter by status — grouped by status_category */}
+      <div style={sectionHeadingStyle}>Filter by status</div>
+      <Select
+        isMulti
+        isClearable
+        spacing="compact"
+        placeholder="All statuses (no filter)"
+        options={statusOptions}
+        value={(draft.status_filter ?? []).map((v: string) => ({ label: v, value: v }))}
+        onChange={(selected: any) =>
+          setDraft({
+            ...draft,
+            status_filter: Array.isArray(selected) ? selected.map((o: any) => o.value) : [],
+          })
+        }
+        formatGroupLabel={(group: any) => (
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              color: token('color.text.subtlest', '#626F86'),
+              fontFamily: ATLAS_SANS,
+            }}
+          >
+            {group.label}
+          </span>
+        )}
+      />
+      <div
+        style={{
+          fontSize: 11,
+          color: token('color.text.subtlest', '#626F86'),
+          marginTop: 4,
+          fontFamily: ATLAS_SANS,
+        }}
+      >
+        Leave empty to show all statuses
+      </div>
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 14 }}>
@@ -692,58 +882,120 @@ function SettingsPopupBody({
 // Demand row
 // ─────────────────────────────────────────────────────────────────────────────
 
+const ATLAS_SANS =
+  '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+/**
+ * Map a Jira status_category (+ optional status name for blocked carve-out)
+ * to an ADS Lozenge appearance. Never hardcode colors for status labels —
+ * always use the Lozenge component with one of these appearances.
+ */
+const lozengeAppearance = (
+  statusCategory?: string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!statusCategory) return 'default';
+  const cat = statusCategory.toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress') return 'inprogress';
+  if (cat === 'to do') return 'default';
+  return 'default';
+};
+
 function DemandRowItem({
   row,
   threshold,
   expanded,
   onToggle,
+  projectKey,
+  isUnlinkedEpic,
 }: {
   row: DemandRow;
   threshold: number;
   expanded: boolean;
   onToggle: () => void;
+  projectKey: string;
+  isUnlinkedEpic?: boolean;
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
-  const c = ragColors[state];
-  const productHubUrl = `/producthub/backlog?initiative=${row.initiative_key}`;
+  const detailUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`;
+
+  // Track which linked epics are expanded (Mode 1 only).
+  const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
+  const toggleEpic = (id: string) =>
+    setExpandedEpics((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
 
   return (
-    <div
-      style={{
-        borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
-      }}
-    >
+    <div style={{ borderBottom: `1px solid ${token('color.border', '#DCDFE4')}` }}>
       <div
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '14px 8px 80px 1fr 90px 100px 28px',
+          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
           alignItems: 'center',
           gap: 8,
-          padding: '8px 12px',
-          cursor: 'pointer',
+          padding: `0 ${token('space.200', '16px')}`,
+          minHeight: 40,
           background: 'transparent',
           transition: 'background 120ms',
+          cursor: 'pointer',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
-        <span style={{ display: 'inline-flex', transition: 'transform 150ms', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+        {/* Chevron */}
+        <span
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          style={{
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            transition: 'transform 150ms',
+            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+          }}
+        >
           <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
         </span>
-        <RagDot state={state} />
-        <Link
-          href={productHubUrl}
-          onClick={(e) => e.stopPropagation()}
-          style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}
-        >
-          {row.initiative_key}
-        </Link>
+
+        {/* Key (with leading RAG dot) */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          <RagDot state={state} />
+          <a
+            href={detailUrl}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              fontSize: 12,
+              fontWeight: 500,
+              lineHeight: '16px',
+              fontFamily: ATLAS_SANS,
+              color: token('color.link', '#0C66E4'),
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {row.initiative_key}
+          </a>
+        </span>
+
+        {/* Title */}
         <span
           title={row.title}
           style={{
-            font: token('font.body.small'),
+            fontSize: 13,
+            lineHeight: '20px',
+            fontWeight: 400,
+            fontFamily: ATLAS_SANS,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -752,13 +1004,48 @@ function DemandRowItem({
         >
           {row.title}
         </span>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <ProgressBar value={pct / 100} appearance="default" />
-          <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+
+        {/* Progress + stat — inline (bar left, text right) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div
+            style={{
+              width: 72,
+              height: 6,
+              flexShrink: 0,
+              borderRadius: 3,
+              background: '#DFE1E6',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${pct}%`,
+                height: '100%',
+                borderRadius: 3,
+                transition: 'width 200ms ease',
+                background:
+                  pct === 100 ? '#1F845A' : pct > 0 ? '#0C66E4' : 'transparent',
+              }}
+            />
+          </div>
+          <span
+            style={{
+              fontSize: 12,
+              lineHeight: '16px',
+              fontWeight: 400,
+              fontFamily: ATLAS_SANS,
+              color: pct === 100 ? '#1F845A' : token('color.text.subtle', '#44546F'),
+              whiteSpace: 'nowrap',
+            }}
+          >
             {pct}% · {row.done}/{row.total}
           </span>
         </div>
+
+        {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
+
+        {/* Avatar */}
         <Avatar size="xsmall" name={row.assignee_name} src={row.assignee_avatar ?? undefined}>
           {() => (
             <span
@@ -784,19 +1071,91 @@ function DemandRowItem({
       {expanded && (
         <div
           style={{
-            padding: '8px 12px 12px 34px',
             background: token('elevation.surface.sunken', '#F7F8F9'),
-            borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
+            borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+            paddingTop: 4,
+            paddingBottom: 6,
           }}
         >
           {row.total === 0 ? (
-            <div style={{ font: token('font.body.small'), color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <div
+              style={{
+                fontSize: 12,
+                lineHeight: '16px',
+                fontWeight: 400,
+                fontFamily: ATLAS_SANS,
+                color: token('color.text.subtle', '#44546F'),
+                fontStyle: 'italic',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '6px 16px 6px 28px',
+              }}
+            >
               <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
-              No stories linked. Add stories under the epics in this demand to track progress.
+              {isUnlinkedEpic
+                ? 'No stories under this epic yet.'
+                : 'No stories linked. Add stories under the epics in this demand to track progress.'}
             </div>
+          ) : isUnlinkedEpic ? (
+            // ── MODE 2: Unlinked epic — render its stories directly ──
+            row.epics.map((story) => {
+              const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+              return (
+                <div
+                  key={story.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '20px 90px 1fr auto',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 16px 10px 28px',
+                    minHeight: 40,
+                    borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                    borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
+                  }}
+                >
+                  <span />
+                  <a
+                    href={storyUrl}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 500,
+                      lineHeight: '16px',
+                      fontFamily: ATLAS_SANS,
+                      color: token('color.link', '#0C66E4'),
+                      textDecoration: 'none',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {story.issue_key}
+                  </a>
+                  <span
+                    title={story.summary}
+                    style={{
+                      fontSize: 13,
+                      fontWeight: 400,
+                      lineHeight: '20px',
+                      fontFamily: ATLAS_SANS,
+                      color: token('color.text', '#172B4D'),
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {story.summary}
+                  </span>
+                  <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
+                    {story.status}
+                  </Lozenge>
+                </div>
+              );
+            })
           ) : (
+            // ── MODE 1: MDT — render epic sub-rows; each can expand to its stories ──
             <>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '4px 16px 8px 28px' }}>
                 <Lozenge appearance="default">To Do {row.todo}</Lozenge>
                 <Lozenge appearance="inprogress">In Progress {row.inprogress}</Lozenge>
                 {row.blocked > 0 && <Lozenge appearance="removed">Blocked {row.blocked}</Lozenge>}
@@ -813,58 +1172,165 @@ function DemandRowItem({
                     : epic.done > 0
                     ? 'risk'
                     : 'overdue';
+                const epicUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${epic.issue_key}`;
+                const epicExpanded = expandedEpics.has(epic.id);
+                const hasStories = (epic.stories?.length ?? 0) > 0;
+
                 return (
-                  <div
-                    key={epic.id}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '6px 50px 1fr 56px 36px 52px',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '4px 0',
-                    }}
-                  >
-                    <span
+                  <div key={epic.id}>
+                    <div
+                      onClick={() => hasStories && toggleEpic(epic.id)}
                       style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        background: ragColors[epicState].dot,
-                      }}
-                    />
-                    <Link
-                      href={`/project-hub/${epic.issue_key.split('-')[0]}/allwork?issue=${epic.issue_key}`}
-                      style={{ fontSize: 11, fontWeight: 700 }}
-                    >
-                      {epic.issue_key}
-                    </Link>
-                    <span
-                      title={epic.summary}
-                      style={{
-                        font: token('font.body.small'),
-                        color: token('color.text', '#172B4D'),
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        display: 'grid',
+                        gridTemplateColumns: '20px 90px 1fr 80px auto',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '6px 16px 6px 28px',
+                        borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                        cursor: hasStories ? 'pointer' : 'default',
                       }}
                     >
-                      {epic.summary}
-                    </span>
-                    <div>
-                      <ProgressBar value={epicPct / 100} appearance="default" />
+                      <span
+                        onClick={(e) => { e.stopPropagation(); if (hasStories) toggleEpic(epic.id); }}
+                        style={{
+                          cursor: hasStories ? 'pointer' : 'default',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          transition: 'transform 150ms',
+                          transform: epicExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                          opacity: hasStories ? 1 : 0,
+                        }}
+                      >
+                        <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+                      </span>
+                      <a
+                        href={epicUrl}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 500,
+                          lineHeight: '16px',
+                          fontFamily: ATLAS_SANS,
+                          color: token('color.link', '#0C66E4'),
+                          textDecoration: 'none',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {epic.issue_key}
+                      </a>
+                      <span
+                        title={epic.summary}
+                        style={{
+                          fontSize: 13,
+                          lineHeight: '20px',
+                          fontWeight: 400,
+                          fontFamily: ATLAS_SANS,
+                          color: token('color.text', '#172B4D'),
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {epic.summary}
+                      </span>
+                      <div
+                        style={{
+                          width: '100%',
+                          height: 6,
+                          borderRadius: 3,
+                          background: '#DFE1E6',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${epicPct}%`,
+                            height: '100%',
+                            borderRadius: 3,
+                            transition: 'width 200ms ease',
+                            background:
+                              epicPct === 100 ? '#1F845A' : epicPct > 0 ? '#0C66E4' : 'transparent',
+                          }}
+                        />
+                      </div>
+                      <Lozenge appearance={lozengeAppearance(epic.status_category, epic.status)}>
+                        {epic.status}
+                      </Lozenge>
                     </div>
-                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
-                      {epicPct}%
-                    </span>
-                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
-                      {epic.done}/{epic.total}
-                    </span>
+
+                    {epicExpanded && (epic.stories ?? []).map((story) => {
+                      const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+                      return (
+                        <div
+                          key={story.issue_key}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '20px 90px 1fr auto',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '10px 16px 10px 28px',
+                            minHeight: 40,
+                            borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                            borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
+                            background: token('elevation.surface.sunken', '#F7F8F9'),
+                          }}
+                        >
+                          <span />
+                          <a
+                            href={storyUrl}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 500,
+                              lineHeight: '16px',
+                              fontFamily: ATLAS_SANS,
+                              color: token('color.link', '#0C66E4'),
+                              textDecoration: 'none',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {story.issue_key}
+                          </a>
+                          <span
+                            title={story.summary}
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 400,
+                              lineHeight: '20px',
+                              fontFamily: ATLAS_SANS,
+                              color: token('color.text', '#172B4D'),
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {story.summary}
+                          </span>
+                          <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
+                            {story.status}
+                          </Lozenge>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}
 
               {!row.target_complete && (
-                <div style={{ marginTop: 8, font: token('font.body.UNSAFE_small'), color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <div
+                  style={{
+                    margin: '8px 16px 0 28px',
+                    fontSize: 11,
+                    lineHeight: '16px',
+                    fontWeight: 400,
+                    fontFamily: ATLAS_SANS,
+                    color: token('color.text.subtlest', '#626F86'),
+                    fontStyle: 'italic',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
                   <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
@@ -885,16 +1351,43 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const navigate = useNavigate();
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
-  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const toggleRow = (id: string) => setExpandedRows((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
+  // status filter intentionally omitted — to be reintroduced in a future iteration.
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
+  const gearRef = useRef<HTMLSpanElement>(null);
 
   // Reset expansion if rows change.
   useEffect(() => {
-    if (expandedId && !rows.find((r) => r.id === expandedId)) setExpandedId(null);
-  }, [rows, expandedId]);
+    setExpandedRows((prev) => {
+      const validIds = new Set(rows.map((r) => r.id));
+      const next = new Set<string>();
+      prev.forEach((id) => { if (validIds.has(id)) next.add(id); });
+      return next.size === prev.size ? prev : next;
+    });
+  }, [rows]);
+
+  // Click-outside handler for settings popup.
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const gearEl = gearRef.current;
+      const popupEl = document.getElementById('demand-settings-popup');
+      if (gearEl && !gearEl.contains(target) && popupEl && !popupEl.contains(target)) {
+        setSettingsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [settingsOpen]);
 
   const active = useMemo(() => rows.filter((r) => !r.isDelivered), [rows]);
   const delivered = useMemo(() => rows.filter((r) => r.isDelivered), [rows]);
@@ -915,9 +1408,22 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       todo: epic.todo ?? 0,
       inprogress: epic.inprogress ?? 0,
       blocked: epic.blocked ?? 0,
-      epics: [],
+      epics: (epic.stories ?? []).map((s) => ({
+        id: s.issue_key,
+        issue_key: s.issue_key,
+        summary: s.summary,
+        total: 1,
+        done: s.status_category === 'Done' ? 1 : 0,
+        todo: s.status_category === 'To Do' ? 1 : 0,
+        inprogress: s.status_category === 'In Progress' ? 1 : 0,
+        blocked: ['On Hold', 'Blocked', 'Awaiting Info'].includes(s.status) ? 1 : 0,
+        status: s.status,
+        status_category: s.status_category,
+        stories: [],
+      })),
       isDelivered: false,
       deliveredAt: null,
+      isUnlinkedEpic: true,
     }));
     return [...active, ...epicRows];
   }, [active, unlinkedEpics]);
@@ -929,7 +1435,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   const visibleByTab =
     tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
+
   const visibleRows = visibleByTab.slice(0, 10);
+
+
+
 
   // Period badge text (icon rendered separately as ADS CalendarIcon)
   const periodBadge = (() => {
@@ -985,55 +1495,54 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             <CalendarIcon label="" color="currentColor" />
             {periodBadge}
           </span>
-          <Popup
-            isOpen={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
-            placement="bottom-end"
-            shouldFlip
-            content={() => (
-              <SettingsPopupBody
-                initial={settings}
-                onCancel={() => setSettingsOpen(false)}
-                onApply={async (next) => {
-                  await save(next);
-                  setSettingsOpen(false);
+          <span ref={gearRef} style={{ display: 'inline-flex' }}>
+            <IconButton
+              icon={SettingsIcon}
+              label="Configure demand gadget"
+              appearance="subtle"
+              spacing="compact"
+              isTooltipDisabled={false}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSettingsOpen((prev) => !prev);
+              }}
+            />
+          </span>
+          {settingsOpen && (() => {
+            const rect = gearRef.current?.getBoundingClientRect();
+            return ReactDOM.createPortal(
+              <div
+                id="demand-settings-popup"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: 'fixed',
+                  top: (rect?.bottom ?? 0) + 4,
+                  right: window.innerWidth - (rect?.right ?? 0),
+                  zIndex: 510,
+                  background: token('elevation.surface.overlay', '#FFFFFF'),
+                  borderRadius: token('border.radius.100', '4px'),
+                  boxShadow: '0 4px 8px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+                  minWidth: 300,
                 }}
-              />
-            )}
-            trigger={(triggerProps) => (
-              <span {...triggerProps}>
-                <IconButton
-                  icon={SettingsIcon}
-                  label="Configure demand gadget"
-                  appearance="subtle"
-                  spacing="compact"
-                  isTooltipDisabled={false}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSettingsOpen((v) => !v);
+              >
+                <SettingsPopupBody
+                  initial={settings}
+                  projectKey={projectKey}
+                  onCancel={() => setSettingsOpen(false)}
+                  onApply={async (next) => {
+                    await save(next);
+                    setSettingsOpen(false);
                   }}
                 />
-              </span>
-            )}
-          />
+              </div>,
+              document.body,
+            );
+          })()}
         </span>
-      }
-      footer={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/producthub/backlog">
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px') }}>
-              View all in ProductHub
-              <ShortcutIcon label="" color="currentColor" />
-            </span>
-          </Link>
-          <span style={{ font: token('font.body.small'), color: token('color.text.subtlest') }}>
-            {[settings.include_stories && 'Stories', settings.include_defects && 'Defects'].filter(Boolean).join(' + ')} · Sun–Thu
-          </span>
-        </div>
       }
     >
       {/* Tabs */}
-      <div onClick={(e) => e.stopPropagation()}>
+      <div onClick={(e) => e.stopPropagation()} style={{ padding: `0 ${token('space.200', '16px')}` }}>
         <Tabs id="df-tabs" selected={tab === 'active' ? 0 : tab === 'overdue' ? 1 : 2} onChange={(i: number) => setTab(i === 0 ? 'active' : i === 1 ? 'overdue' : 'all')}>
           <TabList>
             <Tab>
@@ -1058,13 +1567,14 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         </Tabs>
       </div>
 
-      {/* Period strip */}
+      {/* Status filter moved to gadget settings popup */}
+
       <div
         style={{
           background: token('elevation.surface.sunken', '#F7F8F9'),
           borderTop: `1px solid ${token('color.border')}`,
           borderBottom: `1px solid ${token('color.border')}`,
-          padding: `${token('space.050', '4px')} ${token('space.150', '12px')}`,
+          padding: `${token('space.050', '4px')} ${token('space.200', '16px')}`,
           font: token('font.body.small'),
           color: token('color.text.subtlest'),
         }}
@@ -1106,11 +1616,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       ) : mergedActive.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
-          <div style={{ padding: '10px 12px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
+          <div style={{ padding: '10px 16px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
             ✓ All demand commitments met this period
           </div>
           {delivered.map((r) => (
-            <DeliveredRow key={r.id} row={r} />
+            <DeliveredRow key={r.id} row={r} projectKey={projectKey} />
           ))}
         </div>
       ) : (
@@ -1126,17 +1636,29 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   key={row.id}
                   row={row}
                   threshold={settings.rag_threshold}
-                  expanded={expandedId === row.id}
-                  onToggle={() => setExpandedId((id) => (id === row.id ? null : row.id))}
+                  expanded={expandedRows.has(row.id)}
+                  onToggle={() => toggleRow(row.id)}
+                  projectKey={projectKey}
+                  isUnlinkedEpic={row.isUnlinkedEpic}
                 />
               ))
             )}
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 12px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
-              <a href="/producthub/backlog" style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
-                View all {visibleByTab.length} in ProductHub ↗
+            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
+              <a
+                href={`/project-hub/${projectKey}/hierarchy/allwork`}
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  lineHeight: '18px',
+                  fontFamily: ATLAS_SANS,
+                  color: token('color.link', '#0C66E4'),
+                  textDecoration: 'none',
+                }}
+              >
+                View all {visibleByTab.length} in ProjectHub ↗
               </a>
             </div>
           )}
@@ -1150,7 +1672,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   display: 'flex',
                   alignItems: 'center',
                   gap: 6,
-                  padding: '8px 12px',
+                  padding: '8px 16px',
                   background: 'transparent',
                   border: 0,
                   cursor: 'pointer',
@@ -1171,7 +1693,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   }}
                 />
               </button>
-              {deliveredOpen && delivered.map((r) => <DeliveredRow key={r.id} row={r} />)}
+              {deliveredOpen && delivered.map((r) => <DeliveredRow key={r.id} row={r} projectKey={projectKey} />)}
             </div>
           )}
         </>
@@ -1180,7 +1702,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   );
 }
 
-function DeliveredRow({ row }: { row: DemandRow }) {
+function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string }) {
   const onTime =
     row.target_complete && row.deliveredAt
       ? new Date(row.deliveredAt) <= new Date(row.target_complete)
@@ -1196,25 +1718,31 @@ function DeliveredRow({ row }: { row: DemandRow }) {
         gridTemplateColumns: '20px 60px 1fr 90px 70px 80px',
         alignItems: 'center',
         gap: 8,
-        padding: '6px 12px',
+        padding: '6px 16px',
         borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
         font: token('font.body.small'),
       }}
     >
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
-      <Link
-        href={`/producthub/backlog?initiative=${row.initiative_key}`}
-        style={{ fontSize: 11, fontWeight: 700 }}
+      <a
+        href={`/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`}
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: token('color.link', '#0C66E4'),
+          textDecoration: 'none',
+          whiteSpace: 'nowrap',
+        }}
       >
         {row.initiative_key}
-      </Link>
+      </a>
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
         {row.title}
       </span>
-      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (

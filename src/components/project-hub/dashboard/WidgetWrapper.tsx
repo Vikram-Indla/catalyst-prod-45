@@ -25,7 +25,7 @@
  */
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { token } from '@atlaskit/tokens';
-import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+// ChevronDownIcon removed — gadget header no longer renders a collapse chevron.
 import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
@@ -104,12 +104,8 @@ export default function WidgetWrapper({
           minHeight: 38,
         }}
       >
-        {/* Collapse trigger — title only */}
-        <button
-          onClick={onToggleCollapse}
-          aria-expanded={!collapsed}
-          className="flex-1 min-w-0 flex items-center gap-2 cursor-pointer border-0 bg-transparent text-left p-0"
-        >
+        {/* Title — non-interactive. Header has no collapse affordance. */}
+        <div className="flex-1 min-w-0 flex items-center gap-2 text-left">
           {headerIcon}
           <Heading as="h3" size="xsmall" truncate>
             {title}
@@ -125,26 +121,11 @@ export default function WidgetWrapper({
               · {subtitle}
             </span>
           )}
-        </button>
-        {/* Badges + chevron — sibling of the collapse button */}
+        </div>
+        {/* Badges only — no collapse chevron. Settings gear lives inside
+            headerBadges and stops propagation on click. */}
         <div className="flex items-center gap-2 shrink-0">
           {headerBadges}
-          <span
-            onClick={onToggleCollapse}
-            style={{
-              display: 'inline-flex',
-              cursor: 'pointer',
-              transition: 'transform 200ms ease',
-              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-            }}
-            aria-hidden="true"
-          >
-            <ChevronDownIcon
-              label={collapsed ? 'Expand' : 'Collapse'}
-              color={token('color.icon.subtle', '#626F86')}
-              LEGACY_size="small"
-            />
-          </span>
         </div>
       </div>
 
@@ -162,7 +143,7 @@ export default function WidgetWrapper({
           className="flex-1 dashboard-widget-body"
           style={{
             background: token('elevation.surface', '#FFFFFF'),
-            padding: flushBody ? 0 : 14,
+            padding: flushBody ? 0 : token('space.200', '16px'),
           }}
         >
           <WidgetErrorBoundary title={title}>
@@ -177,7 +158,7 @@ export default function WidgetWrapper({
           style={{
             background: token('elevation.surface', '#FFFFFF'),
             borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-            padding: '8px 14px',
+            padding: `8px ${token('space.200', '16px')}`,
           }}
         >
           {footer}

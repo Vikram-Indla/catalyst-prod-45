@@ -159,6 +159,8 @@ export function useCreateStoryMutation() {
           assignee_id: uuid(form.assigneeId),
           reporter_id: uuid(form.reporterId),
           release_id: uuid(form.releaseId),
+          parent_id: uuid(form.parentId),          // was dead — now wired
+          labels: form.labels.length > 0 ? form.labels : [],  // was dead — now wired
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
           sync_enabled: false,

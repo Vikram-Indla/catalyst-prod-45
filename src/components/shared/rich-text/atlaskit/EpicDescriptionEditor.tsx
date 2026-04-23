@@ -51,6 +51,11 @@ export interface EpicDescriptionEditorProps {
   /** Work item id — used to scope uploaded image paths. */
   workItemId: string;
   placeholder?: string;
+  /**
+   * Optional: fired on every editor change (for Create modal auto-sync).
+   * Receives the serialized ADF JSON string.
+   */
+  onChange?: (adfJson: string) => void;
 }
 
 function buildExternalMediaSingle(url: string, filename: string, width?: number, height?: number): ADFEntity {
@@ -95,6 +100,7 @@ export default function EpicDescriptionEditor({
   onCancel,
   workItemId,
   placeholder = 'Add a description...',
+  onChange,
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
@@ -204,6 +210,19 @@ export default function EpicDescriptionEditor({
       .catch(() => onSave(JSON.stringify(initialAdf)));
   }, [onSave, initialAdf]);
 
+  // Auto-sync for Create modal: fire onChange on every editor change
+  const handleEditorChange = useCallback(() => {
+    if (!onChange) return;
+    const actions = actionsRef.current;
+    if (!actions) return;
+    actions.getValue().then((doc) => {
+      try {
+        const normalized = normalizeAdfForAtlaskit(doc);
+        onChange(JSON.stringify(normalized));
+      } catch { /* noop */ }
+    }).catch(() => {});
+  }, [onChange]);
+
   return (
     <IntlProvider locale="en">
       <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
@@ -215,6 +234,7 @@ export default function EpicDescriptionEditor({
             onSave={handleEditorSave}
             onCancel={onCancel}
             onEditorReady={handleEditorReady}
+            onChange={onChange ? handleEditorChange : undefined}
             allowTextColor
             allowTextAlignment
             allowIndentation

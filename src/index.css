@@ -564,6 +564,20 @@
 .dashboard-widget-body thead th:nth-child(2) {
   padding-right: 24px;
 }
+/* First/last cell horizontal inset — DynamicTable defaults to 0 padding on
+   edge cells, which makes the Key column and trailing column sit flush
+   against the WidgetWrapper border in flush-body widgets (Production
+   Incidents, QA Defects). 16px = ADS space.200, matches the non-flush
+   widget body padding so all dashboard widgets share the same left/right
+   inset. (Added Apr 23, 2026.) */
+.dashboard-widget-body tbody td:first-child,
+.dashboard-widget-body thead th:first-child {
+  padding-left: 16px;
+}
+.dashboard-widget-body tbody td:last-child,
+.dashboard-widget-body thead th:last-child {
+  padding-right: 16px;
+}
 
 /* ════════════════════════════════════════════════════════════════════════════
    CATALYST V5 — BLUE + TEAL ENTERPRISE DESIGN SYSTEM

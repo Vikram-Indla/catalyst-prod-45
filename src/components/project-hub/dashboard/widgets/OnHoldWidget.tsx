@@ -49,7 +49,6 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               className="flex items-center gap-2"
               style={{
                 height: 36,
-                padding: '0 4px',
                 borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}`,
                 fontSize: 12,
               }}
