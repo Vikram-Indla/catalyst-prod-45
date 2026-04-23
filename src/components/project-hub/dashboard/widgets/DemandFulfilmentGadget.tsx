@@ -63,6 +63,7 @@ import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import type { WidgetProps } from '../widget-registry';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Settings types & defaults
@@ -1436,6 +1437,7 @@ function DemandRowItem({
 
 export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const navigate = useNavigate();
+  const { openUWV } = useUWV();
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
@@ -1838,19 +1840,35 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
           {visibleByTab.length > 10 && (
             <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
-              <a
-                href={`/project-hub/${projectKey}/hierarchy/allwork`}
+              <button
+                type="button"
+                onClick={() =>
+                  openUWV({
+                    project: projectKey,
+                    hubSource: ['projecthub'],
+                    scope: settings.scope_type as 'quarter' | 'custom' | 'all',
+                    quarter: settings.quarter,
+                    dateFrom: settings.date_from ?? undefined,
+                    dateTo: settings.date_to ?? undefined,
+                    status: settings.status_filter?.length ? settings.status_filter : undefined,
+                    title: `${periodBadge} · Active epics · ${projectKey}`,
+                  })
+                }
                 style={{
                   fontSize: 12,
                   fontWeight: 500,
                   lineHeight: '18px',
                   fontFamily: ATLAS_SANS,
                   color: token('color.link', '#0C66E4'),
+                  background: 'transparent',
+                  border: 0,
+                  cursor: 'pointer',
+                  padding: 0,
                   textDecoration: 'none',
                 }}
               >
                 View all {visibleByTab.length} in ProjectHub ↗
-              </a>
+              </button>
             </div>
           )}
 
