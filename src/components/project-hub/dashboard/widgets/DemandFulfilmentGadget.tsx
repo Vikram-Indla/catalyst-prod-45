@@ -1597,7 +1597,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   );
 }
 
-function DeliveredRow({ row }: { row: DemandRow }) {
+function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string }) {
   const onTime =
     row.target_complete && row.deliveredAt
       ? new Date(row.deliveredAt) <= new Date(row.target_complete)
@@ -1620,7 +1620,7 @@ function DeliveredRow({ row }: { row: DemandRow }) {
     >
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
       <a
-        href={`/producthub/backlog?initiative=${row.initiative_key}`}
+        href={`/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`}
         style={{
           fontSize: 11,
           fontWeight: 700,
