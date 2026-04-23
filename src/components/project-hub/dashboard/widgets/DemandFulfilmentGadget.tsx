@@ -1747,7 +1747,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
+          gridTemplateColumns: '28px 20px 100px 1fr 160px 110px 28px',
           alignItems: 'center',
           gap: 8,
           padding: `6px ${token('space.200', '16px')}`,
@@ -1762,8 +1762,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         }}
       >
         <span />
+        <span />
         <span>Key</span>
-        <span>Title</span>
+        <span>Summary</span>
         <span>Progress</span>
         <span>Target</span>
         <span />
