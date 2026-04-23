@@ -1123,14 +1123,15 @@ function DemandRowItem({
             // ── MODE 2: Unlinked epic — render its stories directly ──
             row.epics.map((story) => {
               const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+              const storyAssignee = story.assignee_display_name ?? '—';
               return (
                 <div
                   key={story.id}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '20px 90px 1fr auto',
+                    gridTemplateColumns: '20px 90px 1fr auto auto',
                     alignItems: 'center',
-                    gap: 8,
+                    gap: 12,
                     padding: '10px 16px 10px 28px',
                     minHeight: 40,
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
@@ -1171,6 +1172,37 @@ function DemandRowItem({
                   <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                     {story.status}
                   </Lozenge>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      lineHeight: '16px',
+                      fontFamily: ATLAS_SANS,
+                      color: token('color.text.subtle', '#44546F'),
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        background: token('color.background.accent.gray.subtle', '#DFE1E6'),
+                        color: token('color.text.subtle', '#42526E'),
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 9,
+                        fontWeight: 600,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {initialsOf(storyAssignee)}
+                    </span>
+                    {storyAssignee.split(' ')[0]}
+                  </span>
                 </div>
               );
             })
