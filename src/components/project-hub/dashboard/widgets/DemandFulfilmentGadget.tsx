@@ -21,10 +21,9 @@
  * Chrome reuses WidgetWrapper (same shell as every other dashboard gadget).
  */
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
-  ChevronDown,
   ChevronRight,
-  Settings,
   Info,
   CheckCircle2,
   AlertTriangle,
@@ -42,6 +41,14 @@ import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
+import SectionMessage from '@atlaskit/section-message';
+import Badge from '@atlaskit/badge';
+import Link from '@atlaskit/link';
+import AkButton, { IconButton } from '@atlaskit/button/new';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import ShortcutIcon from '@atlaskit/icon/core/shortcut';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { differenceInCalendarDays, format, parseISO, eachDayOfInterval, getDay } from 'date-fns';
 
