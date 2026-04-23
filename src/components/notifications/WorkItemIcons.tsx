@@ -4,6 +4,7 @@ import { JiraIssueTypeIcon } from "@/lib/jira-issue-type-icons";
 
 const NOTIFICATION_ICON_TYPE_MAP: Record<WorkItemIconType, string> = {
   bug: 'Bug',
+  'qa bug': 'QA Bug',
   story: 'Story',
   task: 'Task',
   epic: 'Epic',
