@@ -1,15 +1,22 @@
 // @ts-nocheck
 /**
  * UWVTable — virtualized grid using react-window FixedSizeList.
- * Renders sticky header + UWVRow children. Triggers fetchMore at 75% scroll.
+ *
+ * Brought to PARITY with AllWorkTable.tsx header & grid:
+ *   - 44px rows (JIRA_ROW_HEIGHT)
+ *   - Theme tokens (var(--bg-app), var(--fg-3), var(--bd-default))
+ *   - Native checkbox in header
+ *   - Inter font, uppercase 10.5px header labels
+ *   - Lucide ArrowUp / ArrowDown sort indicators
+ *   - Column width=0 → '1fr' (used for Summary column)
+ *   - No trailing "+" placeholder cell
  */
 
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { FixedSizeList } from 'react-window';
-import Checkbox from '@atlaskit/checkbox';
+import { ArrowUp, ArrowDown } from 'lucide-react';
 import EmptyState from '@atlaskit/empty-state';
 import Spinner from '@atlaskit/spinner';
-import { token } from '@atlaskit/tokens';
 import { UWVRow } from './UWVRow';
 import { JIRA_ROW_HEIGHT } from './uwv.utils';
 import type { UWVColumn, UWVItem, UWVSort } from './uwv.types';
@@ -28,7 +35,7 @@ interface UWVTableProps {
   totalCount: number;
 }
 
-const HEADER_HEIGHT = 40;
+const HEADER_HEIGHT = 44;
 
 export function UWVTable({
   columns,
@@ -47,7 +54,7 @@ export function UWVTable({
   const [containerHeight, setContainerHeight] = useState(0);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const rowHeight = density === 'compact' ? 32 : JIRA_ROW_HEIGHT;
+  const rowHeight = density === 'compact' ? 36 : JIRA_ROW_HEIGHT;
 
   useEffect(() => {
     const update = () => {
@@ -62,7 +69,9 @@ export function UWVTable({
 
   const gridTemplate = useMemo(
     () =>
-      `36px ${columns.map((c) => `${c.width}px`).join(' ')} 28px`,
+      `40px ${columns
+        .map((c) => (c.width === 0 ? '1fr' : `${c.width}px`))
+        .join(' ')}`,
     [columns],
   );
 
@@ -122,7 +131,7 @@ export function UWVTable({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#FFFFFF',
+          background: 'var(--bg-app)',
         }}
       >
         <EmptyState
@@ -162,80 +171,88 @@ export function UWVTable({
         minHeight: 0,
         display: 'flex',
         flexDirection: 'column',
-        background: '#FFFFFF',
+        background: 'var(--bg-app)',
         overflow: 'hidden',
       }}
       role="grid"
       aria-rowcount={totalCount}
     >
-      {/* Sticky header */}
+      {/* Sticky header — matches AllWorkTable header style */}
       <div
         role="row"
         style={{
           display: 'grid',
           gridTemplateColumns: gridTemplate,
-          background: '#F4F5F7',
+          background: 'var(--bg-app)',
           height: HEADER_HEIGHT,
-          borderBottom: '2px solid #DFE1E6',
+          maxHeight: HEADER_HEIGHT,
+          borderBottom: '1px solid var(--bd-default, #2E2E2E)',
           position: 'sticky',
           top: 0,
           zIndex: 2,
           flexShrink: 0,
+          alignItems: 'center',
         }}
       >
         <div
           role="columnheader"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <Checkbox
-            isChecked={allSelected}
-            isIndeterminate={someSelected}
-            onChange={(e: any) => toggleAll(e?.currentTarget?.checked ?? !allSelected)}
+          <input
+            type="checkbox"
+            checked={allSelected}
+            ref={(el) => {
+              if (el) el.indeterminate = someSelected;
+            }}
+            onChange={(e) => toggleAll(e.currentTarget.checked)}
+            className="w-4 h-4 rounded cursor-pointer accent-[#2563EB]"
+            aria-label="Select all items"
           />
         </div>
         {columns.map((col) => {
           const sf = sort[0];
           const isSorted = sf?.fieldId === col.fieldId;
           return (
-            <div
+            <button
               key={col.fieldId}
               role="columnheader"
+              aria-sort={
+                col.sortable && isSorted
+                  ? sf!.direction === 'asc'
+                    ? 'ascending'
+                    : 'descending'
+                  : undefined
+              }
               onClick={() => col.sortable && handleSort(col.fieldId)}
               style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: '#5E6C84',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 4,
-                cursor: col.sortable ? 'pointer' : 'default',
-                padding: '0 12px',
-                userSelect: 'none',
-                letterSpacing: '0.04em',
+                background: 'transparent',
+                border: 'none',
+                padding: '0 8px',
+                fontSize: 10.5,
+                fontWeight: 650,
                 textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                color: 'var(--fg-3)',
+                fontFamily: 'Inter, sans-serif',
+                cursor: col.sortable ? 'pointer' : 'default',
+                textAlign: 'left',
+                userSelect: 'none',
               }}
             >
               {col.label}
               {col.sortable && isSorted ? (
-                <span style={{ fontSize: 10, color: '#42526E' }}>
-                  {sf!.direction === 'asc' ? '▲' : '▼'}
-                </span>
+                sf!.direction === 'asc' ? (
+                  <ArrowUp size={12} />
+                ) : (
+                  <ArrowDown size={12} />
+                )
               ) : null}
-            </div>
+            </button>
           );
         })}
-        <div
-          role="columnheader"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#6B778C',
-            fontSize: 14,
-          }}
-        >
-          +
-        </div>
       </div>
 
       {/* Virtualized rows */}
@@ -259,8 +276,8 @@ export function UWVTable({
             alignItems: 'center',
             justifyContent: 'center',
             padding: 12,
-            borderTop: '1px solid #EBECF0',
-            background: '#FAFBFC',
+            borderTop: '1px solid var(--bd-subtle, #292929)',
+            background: 'var(--bg-1)',
           }}
         >
           <Spinner size="small" />
