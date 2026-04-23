@@ -23,9 +23,9 @@
  *       in Commit 8 of the BAU Dashboard Atlaskit migration — see
  *       docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 8.
  */
-import { ChevronDown } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { token } from '@atlaskit/tokens';
+import ChevronDownIcon from '@atlaskit/icon/core/chevron-down';
 import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
@@ -88,7 +88,7 @@ export default function WidgetWrapper({
         gridColumn: `span ${span}`,
         background: token('elevation.surface', '#FFFFFF'),
         border: `1px solid ${token('color.border', '#E2E8F0')}`,
-        borderRadius: 8,
+        borderRadius: token('border.radius.200', '8px'),
       }}
     >
       {/* Header — split into two siblings so headerBadges (which may contain
@@ -99,7 +99,7 @@ export default function WidgetWrapper({
         className="flex items-center justify-between gap-2"
         style={{
           padding: '10px 14px',
-          background: token('color.background.neutral.subtle', '#F1F5F9'),
+          background: token('elevation.surface', '#FFFFFF'),
           borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', '#E2E8F0')}`,
           minHeight: 38,
         }}
@@ -134,16 +134,15 @@ export default function WidgetWrapper({
             style={{
               display: 'inline-flex',
               cursor: 'pointer',
-              color: token('color.text.subtlest', '#6B778C'),
+              transition: 'transform 200ms ease',
+              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
             aria-hidden="true"
           >
-            <ChevronDown
-              size={14}
-              style={{
-                transition: 'transform 200ms ease',
-                transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-              }}
+            <ChevronDownIcon
+              label={collapsed ? 'Expand' : 'Collapse'}
+              color={token('color.icon.subtle', '#626F86')}
+              LEGACY_size="small"
             />
           </span>
         </div>

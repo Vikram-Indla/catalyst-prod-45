@@ -24,12 +24,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
-  ChevronRight,
-  Info,
-  CheckCircle2,
   AlertTriangle,
   Calendar,
-  X,
 } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
@@ -50,6 +46,10 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import CalendarIcon from '@atlaskit/icon/core/calendar';
 import ShortcutIcon from '@atlaskit/icon/core/shortcut';
 import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/core/chevron-right';
+import InformationIcon from '@atlaskit/icon/core/information';
+import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
+import CrossIcon from '@atlaskit/icon/core/cross';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { differenceInCalendarDays, format, parseISO, eachDayOfInterval, getDay } from 'date-fns';
 
@@ -523,20 +523,20 @@ function SettingsPopupBody({
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+        <span style={{ font: token('font.heading.small'), color: token('color.text', '#172B4D') }}>
           Gadget Settings
         </span>
-        <button
+        <IconButton
+          icon={CrossIcon}
+          label="Close settings"
+          appearance="subtle"
+          spacing="compact"
           onClick={onCancel}
-          style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 2, color: token('color.text.subtlest', '#6B778C') }}
-          aria-label="Close"
-        >
-          <X size={14} />
-        </button>
+        />
       </div>
 
       {/* Time scope */}
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
         Time scope
       </div>
       <RadioGroup
@@ -564,7 +564,7 @@ function SettingsPopupBody({
       {draft.scope_type === 'custom' && (
         <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div>
-            <div style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
+            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
             <DatePicker
               locale="en-GB"
               value={draft.date_from ?? ''}
@@ -572,7 +572,7 @@ function SettingsPopupBody({
             />
           </div>
           <div>
-            <div style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
+            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
             <DatePicker
               locale="en-GB"
               value={draft.date_to ?? ''}
@@ -586,7 +586,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Threshold */}
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
         At-risk threshold
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#172B4D') }}>
@@ -605,7 +605,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Item types */}
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
         Count toward completion
       </div>
       <Checkbox
@@ -673,32 +673,21 @@ function DemandRowItem({
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
-        <ChevronRight
-          size={14}
-          style={{
-            color: token('color.text.subtlest', '#6B778C'),
-            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 150ms',
-          }}
-        />
+        <span style={{ display: 'inline-flex', transition: 'transform 150ms', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+          <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+        </span>
         <RagDot state={state} />
-        <a
+        <Link
           href={productHubUrl}
           onClick={(e) => e.stopPropagation()}
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: token('color.text.brand', '#0C66E4'),
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-          }}
+          style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}
         >
           {row.initiative_key}
-        </a>
+        </Link>
         <span
           title={row.title}
           style={{
-            fontSize: 12,
+            font: token('font.body.small'),
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -709,7 +698,7 @@ function DemandRowItem({
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <ProgressBar value={pct / 100} appearance="default" />
-          <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+          <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
             {pct}% · {row.done}/{row.total}
           </span>
         </div>
@@ -745,8 +734,8 @@ function DemandRowItem({
           }}
         >
           {row.total === 0 ? (
-            <div style={{ fontSize: 12, color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic' }}>
-              <Info size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+            <div style={{ font: token('font.body.small'), color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
               No stories linked. Add stories under the epics in this demand to track progress.
             </div>
           ) : (
@@ -787,16 +776,16 @@ function DemandRowItem({
                         background: ragColors[epicState].dot,
                       }}
                     />
-                    <a
+                    <Link
                       href={`/project-hub/${epic.issue_key.split('-')[0]}/allwork?issue=${epic.issue_key}`}
-                      style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                      style={{ fontSize: 11, fontWeight: 700 }}
                     >
                       {epic.issue_key}
-                    </a>
+                    </Link>
                     <span
                       title={epic.summary}
                       style={{
-                        fontSize: 12,
+                        font: token('font.body.small'),
                         color: token('color.text', '#172B4D'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -805,13 +794,13 @@ function DemandRowItem({
                     >
                       {epic.summary}
                     </span>
-                    <div style={{ height: 3, background: token('color.background.neutral', '#DFE1E6'), borderRadius: 2, overflow: 'hidden' }}>
-                      <div style={{ width: `${epicPct}%`, height: '100%', background: ragColors[epicState].bar }} />
+                    <div>
+                      <ProgressBar value={epicPct / 100} appearance="default" />
                     </div>
-                    <span style={{ fontSize: 10, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epicPct}%
                     </span>
-                    <span style={{ fontSize: 10, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epic.done}/{epic.total}
                     </span>
                   </div>
@@ -819,8 +808,8 @@ function DemandRowItem({
               })}
 
               {!row.target_complete && (
-                <div style={{ marginTop: 8, fontSize: 11, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic' }}>
-                  <Info size={11} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                <div style={{ marginTop: 8, font: token('font.body.UNSAFE_small'), color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
               )}
@@ -1092,7 +1081,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   textAlign: 'left',
                 }}
               >
-                <CheckCircle2 size={13} color="#36B37E" />
+                <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
                 {delivered.length} delivered this period
                 <ChevronDown
                   size={12}
@@ -1190,23 +1179,23 @@ function DeliveredRow({ row }: { row: DemandRow }) {
         gap: 8,
         padding: '6px 12px',
         borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-        fontSize: 12,
+        font: token('font.body.small'),
       }}
     >
-      <CheckCircle2 size={14} color="#36B37E" />
-      <a
+      <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
+      <Link
         href={`/producthub/backlog?initiative=${row.initiative_key}`}
-        style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+        style={{ fontSize: 11, fontWeight: 700 }}
       >
         {row.initiative_key}
-      </a>
+      </Link>
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
         {row.title}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (
