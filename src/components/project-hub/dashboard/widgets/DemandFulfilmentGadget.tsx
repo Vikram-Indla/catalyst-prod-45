@@ -1038,12 +1038,42 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       todo: epic.todo ?? 0,
       inprogress: epic.inprogress ?? 0,
       blocked: epic.blocked ?? 0,
-      epics: [],
+      epics: (epic.stories ?? []).map((s) => ({
+        id: s.issue_key,
+        issue_key: s.issue_key,
+        summary: s.summary,
+        total: 1,
+        done: s.status_category === 'Done' ? 1 : 0,
+        todo: s.status_category === 'To Do' ? 1 : 0,
+        inprogress: s.status_category === 'In Progress' ? 1 : 0,
+        blocked: ['On Hold', 'Blocked', 'Awaiting Info'].includes(s.status) ? 1 : 0,
+        status: s.status,
+      })),
       isDelivered: false,
       deliveredAt: null,
     }));
     return [...active, ...epicRows];
   }, [active, unlinkedEpics]);
+
+  const overdueRows = useMemo(
+    () => mergedActive.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
+    [mergedActive, settings.rag_threshold],
+  );
+
+  const visibleByTab =
+    tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
+
+  const filteredRows = statusFilter
+    ? visibleByTab.filter((r) => {
+        if (statusFilter === 'Done') return r.done === r.total && r.total > 0;
+        if (statusFilter === 'In Progress') return r.inprogress > 0;
+        if (statusFilter === 'Blocked') return r.blocked > 0;
+        if (statusFilter === 'To Do') return r.todo > 0 && r.inprogress === 0 && r.done === 0;
+        return true;
+      })
+    : visibleByTab;
+
+  const visibleRows = filteredRows.slice(0, 10);
 
   const overdueRows = useMemo(
     () => mergedActive.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
