@@ -1444,7 +1444,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     if (next.has(id)) next.delete(id); else next.add(id);
     return next;
   });
-  const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
+  const [tab, setTab] = useState<'all' | 'active' | 'overdue' | 'done'>('all');
   // status filter intentionally omitted — to be reintroduced in a future iteration.
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
@@ -1522,7 +1522,13 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   );
 
   const visibleByTab =
-    tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
+    tab === 'overdue'
+      ? overdueRows
+      : tab === 'done'
+      ? delivered
+      : tab === 'active'
+      ? mergedActive.filter((r) => !overdueRows.includes(r))
+      : [...mergedActive, ...delivered];
 
   const visibleRows = visibleByTab.slice(0, 10);
 
