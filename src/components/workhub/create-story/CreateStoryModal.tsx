@@ -62,6 +62,7 @@ import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useAuth } from '@/hooks/useAuth';
@@ -639,6 +640,8 @@ export function CreateStoryModal({
   const [workType, setWorkType] = useState<string>('Story');
   const [createAnother, setCreateAnother] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  // BEH-003: blur-based summary validation — error shows after leaving empty field
+  const [summaryBlurred, setSummaryBlurred] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const isCreateLinkedMode = !!linkedSource;
@@ -721,12 +724,32 @@ export function CreateStoryModal({
     [releases],
   );
 
-  const labelOptions: IconOption[] = useMemo(
-    () =>
-      (form.labels ?? []).map((l) => ({
-        value: l,
-        label: l,
-      })),
+  // STR-005: Fetch existing label vocabulary from catalyst_issues so users can
+  // see and reuse existing labels. CreatableSelect lets them add new ones too.
+  const { data: existingLabelsRaw = [] } = useQuery({
+    queryKey: ['catalyst-issue-labels'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('catalyst_issues')
+        .select('labels')
+        .not('labels', 'is', null);
+      if (error || !data) return [];
+      // Flatten nested arrays, deduplicate, sort
+      const all = data.flatMap((r: any) => Array.isArray(r.labels) ? r.labels : []);
+      return [...new Set(all)].sort() as string[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Vocabulary options for CreatableSelect — merges DB labels with current selection
+  const labelOptions: IconOption[] = useMemo(() => {
+    const vocab = new Set([...existingLabelsRaw, ...(form.labels ?? [])]);
+    return [...vocab].sort().map(l => ({ value: l, label: l }));
+  }, [existingLabelsRaw, form.labels]);
+
+  // Currently selected values (subset of labelOptions)
+  const labelValue: IconOption[] = useMemo(
+    () => (form.labels ?? []).map(l => ({ value: l, label: l })),
     [form.labels],
   );
 
@@ -812,12 +835,16 @@ export function CreateStoryModal({
 
   const handleClose = useCallback(() => {
     setSubmitAttempted(false);
+    setSummaryBlurred(false);
     setFormError(null);
     onClose();
   }, [onClose]);
 
+  // BEH-003: error on blur OR after submit attempt
   const summaryError =
-    submitAttempted && !form.summary.trim() ? 'Summary is required' : undefined;
+    (submitAttempted || summaryBlurred) && !form.summary.trim()
+      ? 'Summary is required'
+      : undefined;
 
   // ─────────────────────────────────────────────────────────────────────────
   // Render
@@ -951,17 +978,28 @@ export function CreateStoryModal({
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status — Jira-parity: chip button → inline picker ── */}
-              {/* Status — chip button (not a form Field/input, label rendered manually) */}
-              <div>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#44546F'), marginBottom: 6, lineHeight: '16px' }}>
-                  Status
-                </div>
-                <StatusChip status={form.status} workType={workType} onChange={(s) => updateField('status', s)} />
-                <div style={{ marginTop: 4, fontFamily: 'Inter, sans-serif', fontSize: 12, color: token('color.text.subtlest', '#8590A2'), lineHeight: '16px' }}>
-                  This is the initial status upon creation
-                </div>
-              </div>
+              {/* ── Status — ADS Field wrapper (STR-002 / A11Y-003) ─────── */}
+              {/* StatusChip is a custom button, not a native input. We use Field for
+                  label rendering + HelperMessage, then aria-labelledby on the chip
+                  trigger via STATUS_CHIP_TRIGGER_ID so screen readers announce correctly. */}
+              <Field
+                name="status"
+                label="Status"
+                aria-label="Status"
+              >
+                {() => (
+                  <>
+                    <StatusChip
+                      status={form.status}
+                      workType={workType}
+                      onChange={(s) => updateField('status', s)}
+                    />
+                    <HelperMessage>
+                      This is the initial status upon creation
+                    </HelperMessage>
+                  </>
+                )}
+              </Field>
 
               {/* ── Summary — required ─────────────────────────────── */}
               <Field name="summary" label="Summary" isRequired>
@@ -975,6 +1013,7 @@ export function CreateStoryModal({
                       onChange={(e: any) =>
                         updateField('summary', e.target.value)
                       }
+                      onBlur={() => setSummaryBlurred(true)}
                       maxLength={200}
                     />
                     {summaryError && (
@@ -995,42 +1034,24 @@ export function CreateStoryModal({
                       cacheOptions
                       defaultOptions
                       loadOptions={async (input: string) => {
-                        if (!resolvedKey) return [];
-                        // ph_issues has no deleted_at column — filter by status_category only
-                        // issue_type in ph_issues can be 'Epic' or 'epic' — use ilike
+                        // STR-004: Query catalyst_issues (same table as insert) not ph_issues.
+                        // catalyst_issues uses project_id (UUID), not project_key (string).
+                        if (!form.projectId) return [];
                         const q = supabase
-                          .from('ph_issues')
-                          .select('id, issue_key, summary, issue_type')
-                          .eq('project_key', resolvedKey)
+                          .from('catalyst_issues')
+                          .select('id, issue_key, title, issue_type')
+                          .eq('project_id', form.projectId)
                           .ilike('issue_type', 'Epic')
-                          .neq('status_category', 'Done')
-                          .order('jira_updated_at', { ascending: false })
+                          .order('issue_key', { ascending: false })
                           .limit(20);
                         if (input.trim()) {
-                          q.or(
-                            `issue_key.ilike.%${input}%,summary.ilike.%${input}%`,
-                          );
+                          q.or(`issue_key.ilike.%${input}%,title.ilike.%${input}%`);
                         }
                         const { data, error } = await q;
-                        if (error || !data?.length) {
-                          // Fallback: try without status filter in case status_category values differ
-                          const { data: fallback } = await supabase
-                            .from('ph_issues')
-                            .select('id, issue_key, summary, issue_type')
-                            .eq('project_key', resolvedKey)
-                            .ilike('issue_type', 'Epic')
-                            .order('jira_updated_at', { ascending: false })
-                            .limit(20);
-                          return (fallback ?? []).map((d: any) => ({
-                            value: d.id,
-                            label: d.summary,
-                            sublabel: d.issue_key,
-                            icon: <JiraIssueTypeIcon type="Epic" size={14} />,
-                          }));
-                        }
+                        if (error) return [];
                         return (data ?? []).map((d: any) => ({
                           value: d.id,
-                          label: d.summary,
+                          label: d.title,      // catalyst_issues uses 'title' not 'summary'
                           sublabel: d.issue_key,
                           icon: <JiraIssueTypeIcon type="Epic" size={14} />,
                         }));
@@ -1259,8 +1280,8 @@ export function CreateStoryModal({
                     {...(fieldProps as any)}
                     inputId="cs-labels"
                     isMulti
-                    options={labelOptions}
-                    value={labelOptions}
+                    options={labelOptions}   // vocabulary (DB + current selection)
+                    value={labelValue}       // currently selected subset
                     onChange={(vals: any) =>
                       updateField(
                         'labels',

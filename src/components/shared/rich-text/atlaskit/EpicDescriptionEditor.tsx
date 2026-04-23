@@ -210,17 +210,26 @@ export default function EpicDescriptionEditor({
       .catch(() => onSave(JSON.stringify(initialAdf)));
   }, [onSave, initialAdf]);
 
-  // Auto-sync for Create modal: fire onChange on every editor change
+  // BEH-001: Debounce onChange to avoid queuing dozens of async getValue()
+  // calls on rapid keystrokes. 300ms is a good balance between responsiveness
+  // and performance for large documents. Final value also flushes on explicit
+  // Save (handleEditorSave) so nothing is lost if debounce hasn't fired yet.
+  const onChangeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const handleEditorChange = useCallback(() => {
     if (!onChange) return;
     const actions = actionsRef.current;
     if (!actions) return;
-    actions.getValue().then((doc) => {
-      try {
-        const normalized = normalizeAdfForAtlaskit(doc);
-        onChange(JSON.stringify(normalized));
-      } catch { /* noop */ }
-    }).catch(() => {});
+
+    if (onChangeDebounceRef.current) clearTimeout(onChangeDebounceRef.current);
+    onChangeDebounceRef.current = setTimeout(() => {
+      actions.getValue().then((doc) => {
+        try {
+          const normalized = normalizeAdfForAtlaskit(doc);
+          onChange(JSON.stringify(normalized));
+        } catch { /* noop */ }
+      }).catch(() => {});
+    }, 300);
   }, [onChange]);
 
   return (
