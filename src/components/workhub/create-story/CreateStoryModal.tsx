@@ -1028,10 +1028,10 @@ export function CreateStoryModal({
                 {({ fieldProps: { id, isDisabled } }) => (
                   <>
                     <AsyncSelect<IconOption>
+                      key={`parent-${resolvedKey || 'none'}`}
                       id={id}
-                      isDisabled={isDisabled}
+                      isDisabled={isDisabled || !resolvedKey}
                       inputId="cs-parent"
-                      cacheOptions
                       defaultOptions
                       loadOptions={async (input: string) => {
                         // STR-004: Query catalyst_issues (same table as insert) not ph_issues.
