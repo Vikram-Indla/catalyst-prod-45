@@ -796,6 +796,37 @@ function SettingsPopupBody({
         label="Defects / Bugs"
       />
 
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }} />
+
+      {/* Status filter */}
+      <div style={sectionHeadingStyle}>
+        Filter by status
+      </div>
+      <Select
+        isMulti
+        isClearable
+        spacing="compact"
+        placeholder="All statuses (no filter)"
+        options={statusOptions}
+        value={(draft.status_filter ?? []).map((v: string) => ({ label: v, value: v }))}
+        onChange={(selected: any) =>
+          setDraft({
+            ...draft,
+            status_filter: Array.isArray(selected) ? selected.map((o: any) => o.value) : [],
+          })
+        }
+      />
+      <div
+        style={{
+          fontSize: 11,
+          color: token('color.text.subtlest', '#626F86'),
+          marginTop: 4,
+          fontFamily: ATLAS_SANS,
+        }}
+      >
+        Leave empty to show all statuses
+      </div>
+
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 14 }}>
         <Button appearance="subtle" spacing="compact" onClick={onCancel}>
