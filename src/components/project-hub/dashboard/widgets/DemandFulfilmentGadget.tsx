@@ -900,13 +900,37 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   const active = useMemo(() => rows.filter((r) => !r.isDelivered), [rows]);
   const delivered = useMemo(() => rows.filter((r) => r.isDelivered), [rows]);
+
+  const mergedActive = useMemo(() => {
+    const epicRows: DemandRow[] = unlinkedEpics.map((epic) => ({
+      id: epic.id,
+      initiative_key: epic.issue_key,
+      title: epic.summary,
+      status: epic.status,
+      target_complete: null,
+      target_quarter: null,
+      assignee_id: epic.assignee_id ?? null,
+      assignee_name: epic.assignee_name ?? '—',
+      assignee_avatar: epic.assignee_avatar ?? null,
+      done: epic.done ?? 0,
+      total: epic.total ?? 0,
+      todo: epic.todo ?? 0,
+      inprogress: epic.inprogress ?? 0,
+      blocked: epic.blocked ?? 0,
+      epics: [],
+      isDelivered: false,
+      deliveredAt: null,
+    }));
+    return [...active, ...epicRows];
+  }, [active, unlinkedEpics]);
+
   const overdueRows = useMemo(
-    () => active.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
-    [active, settings.rag_threshold],
+    () => mergedActive.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
+    [mergedActive, settings.rag_threshold],
   );
 
   const visibleByTab =
-    tab === 'overdue' ? overdueRows : tab === 'all' ? [...active, ...delivered] : active;
+    tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
   const visibleRows = visibleByTab.slice(0, 10);
 
   // Period badge text (icon rendered separately as ADS CalendarIcon)
