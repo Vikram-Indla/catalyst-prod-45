@@ -1080,18 +1080,16 @@ function DemandRowItem({
         {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
 
-        {/* Avatar — canonical CatalystOwnerAvatar (matches All Work) */}
-        <CatalystOwnerAvatar
-          type={row.assignee_name && row.assignee_name !== '—' ? 'human' : 'placeholder'}
-          name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : undefined}
-          avatarUrl={
+        {/* Avatar — Atlaskit Avatar locked to xsmall (16px) */}
+        <Avatar
+          size="xsmall"
+          src={
             row.assignee_avatar
               || (row.assignee_name && row.assignee_name !== '—'
                 ? resolveAvatarUrl(row.assignee_name) ?? undefined
                 : undefined)
           }
-          size="sm"
-          showTooltip
+          name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : 'Unassigned'}
         />
       </div>
 
@@ -1193,17 +1191,15 @@ function DemandRowItem({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <CatalystOwnerAvatar
-                      type={storyAssignee && storyAssignee !== '—' ? 'human' : 'placeholder'}
-                      name={storyAssignee && storyAssignee !== '—' ? storyAssignee : undefined}
-                      avatarUrl={
+                    <Avatar
+                      size="xsmall"
+                      src={
                         (story as any).assignee_avatar
                           || (storyAssignee && storyAssignee !== '—'
                             ? resolveAvatarUrl(storyAssignee) ?? undefined
                             : undefined)
                       }
-                      size="xs"
-                      showTooltip={false}
+                      name={storyAssignee && storyAssignee !== '—' ? storyAssignee : 'Unassigned'}
                     />
                     {storyAssignee.split(' ')[0]}
                   </span>
@@ -1383,17 +1379,15 @@ function DemandRowItem({
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            <CatalystOwnerAvatar
-                              type={storyAssignee && storyAssignee !== '—' ? 'human' : 'placeholder'}
-                              name={storyAssignee && storyAssignee !== '—' ? storyAssignee : undefined}
-                              avatarUrl={
+                            <Avatar
+                              size="xsmall"
+                              src={
                                 (story as any).assignee_avatar
                                   || (storyAssignee && storyAssignee !== '—'
                                     ? resolveAvatarUrl(storyAssignee) ?? undefined
                                     : undefined)
                               }
-                              size="xs"
-                              showTooltip={false}
+                              name={storyAssignee && storyAssignee !== '—' ? storyAssignee : 'Unassigned'}
                             />
                             {storyAssignee.split(' ')[0]}
                           </span>
