@@ -58,6 +58,9 @@ import { differenceInCalendarDays, format, parseISO, eachDayOfInterval, getDay }
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ads';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import type { WidgetProps } from '../widget-registry';
 
