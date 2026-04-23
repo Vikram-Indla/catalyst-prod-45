@@ -1179,23 +1179,23 @@ function DeliveredRow({ row }: { row: DemandRow }) {
         gap: 8,
         padding: '6px 12px',
         borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-        fontSize: 12,
+        font: token('font.body.small'),
       }}
     >
-      <CheckCircle2 size={14} color="#36B37E" />
-      <a
+      <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
+      <Link
         href={`/producthub/backlog?initiative=${row.initiative_key}`}
-        style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+        style={{ fontSize: 11, fontWeight: 700 }}
       >
         {row.initiative_key}
-      </a>
+      </Link>
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
         {row.title}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (
