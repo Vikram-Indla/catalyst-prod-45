@@ -1544,6 +1544,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   expanded={expandedRows.has(row.id)}
                   onToggle={() => toggleRow(row.id)}
                   projectKey={projectKey}
+                  isUnlinkedEpic={row.isUnlinkedEpic}
                 />
               ))
             )}
