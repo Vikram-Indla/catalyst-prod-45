@@ -5,19 +5,8 @@ import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNe
 import { useActorProfiles } from '@/hooks/useActorProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
-import { useCallback, useMemo } from 'react';
-import { Box, xcss } from '@atlaskit/primitives';
-import { token } from '@atlaskit/tokens';
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
-import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
-import type {
-  DirectNotification,
-  DirectVerb,
-  DirectWorkItemIconType,
-  DirectStatusAppearance,
-} from './types';
-import type { Notification, NotificationType, StatusType, WorkItemIconType } from '@/types/notifications';
 
 interface DirectPanelProps {
   unreadOnly: boolean;
