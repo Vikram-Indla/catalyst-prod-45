@@ -1525,7 +1525,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             ✓ All demand commitments met this period
           </div>
           {delivered.map((r) => (
-            <DeliveredRow key={r.id} row={r} />
+            <DeliveredRow key={r.id} row={r} projectKey={projectKey} />
           ))}
         </div>
       ) : (
