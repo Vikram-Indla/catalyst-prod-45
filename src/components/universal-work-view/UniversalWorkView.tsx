@@ -1,0 +1,148 @@
+// @ts-nocheck
+/**
+ * UniversalWorkView — full-screen overlay (z-index 510) replicating Jira's
+ * list view. Pulls data via useUWVData, renders UWVToolbar + UWVTable.
+ */
+
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import Spinner from '@atlaskit/spinner';
+import { UWVToolbar } from './UWVToolbar';
+import { UWVTable } from './UWVTable';
+import { useUWVData } from './useUWVData';
+import { useUWVPrefs } from './useUWVPrefs';
+import type { UWVParams, UWVSort } from './uwv.types';
+
+interface Props {
+  params: UWVParams;
+  onClose: () => void;
+}
+
+export function UniversalWorkView({ params, onClose }: Props) {
+  const [statusFilter, setStatusFilter] = useState<string[]>(params.status ?? []);
+  const [searchText, setSearchText] = useState('');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [sort, setSort] = useState<UWVSort[]>([{ fieldId: 'key', direction: 'asc' }]);
+
+  const viewKey = `uwv:${params.project}:${[...params.hubSource].sort().join(',')}`;
+  const { columns, savePrefs, prefs } = useUWVPrefs(viewKey);
+  const visibleColumns = useMemo(() => columns.filter((c) => c.visible), [columns]);
+
+  const { data, fetchNextPage, hasNextPage, isFetching, isLoading } = useUWVData(
+    params,
+    statusFilter,
+    sort,
+  );
+
+  const allItems = useMemo(() => {
+    const raw = data?.pages.flatMap((p) => p.items) ?? [];
+    if (!searchText.trim()) return raw;
+    const t = searchText.toLowerCase();
+    return raw.filter(
+      (i) => i.key.toLowerCase().includes(t) || i.summary.toLowerCase().includes(t),
+    );
+  }, [data, searchText]);
+
+  const totalCount = data?.pages[0]?.total ?? 0;
+
+  const openDetail = useCallback(
+    (key: string) => {
+      const item = allItems.find((i) => i.key === key);
+      if (item?.hubSource === 'projecthub') {
+        window.history.pushState(
+          {},
+          '',
+          `/project-hub/${params.project}/hierarchy/allwork?selectedIssue=${key}`,
+        );
+        // Trigger a navigation event so React Router picks it up.
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }
+      onClose();
+    },
+    [allItems, params.project, onClose],
+  );
+
+  // Global Escape close.
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', h);
+    return () => document.removeEventListener('keydown', h);
+  }, [onClose]);
+
+  // Lock body scroll while overlay is open.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
+  const title = params.title ?? `${params.project} · Work items`;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 510,
+        background: '#FFFFFF',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily:
+          '"Atlassian Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      }}
+    >
+      <UWVToolbar
+        title={title}
+        filteredCount={allItems.length}
+        totalCount={totalCount}
+        searchText={searchText}
+        onSearchChange={setSearchText}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        selectedIds={selectedIds}
+        onSelectChange={setSelectedIds}
+        allItems={allItems}
+        columns={columns}
+        prefs={prefs}
+        onSavePrefs={savePrefs}
+        project={params.project}
+        onClose={onClose}
+      />
+
+      {isLoading ? (
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Spinner size="large" />
+        </div>
+      ) : (
+        <UWVTable
+          columns={visibleColumns}
+          items={allItems}
+          sort={sort}
+          onSortChange={setSort}
+          selectedIds={selectedIds}
+          onSelectChange={setSelectedIds}
+          onItemClick={openDetail}
+          onLoadMore={() => {
+            if (hasNextPage && !isFetching) fetchNextPage();
+          }}
+          density={prefs.density}
+          isLoadingMore={isFetching}
+          totalCount={totalCount}
+        />
+      )}
+    </div>
+  );
+}
