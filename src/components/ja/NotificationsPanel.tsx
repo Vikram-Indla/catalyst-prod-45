@@ -27,9 +27,8 @@ const BellGlyph = (props: { label: string }) => (
 
 export function NotificationsPanel() {
   const [open, setOpen] = useState(false);
-  const { data: unreadCount = 0 } = useUnreadCount();
-  const queryClient = useQueryClient();
   const { data: unreadCount = 0 } = useUnreadCountFromSync();
+  const queryClient = useQueryClient();
 
   return (
     <>
