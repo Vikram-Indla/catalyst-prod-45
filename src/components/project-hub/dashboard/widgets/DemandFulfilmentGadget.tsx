@@ -1003,12 +1003,39 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       {isLoading ? (
         <div style={{ padding: 20, fontSize: 12, color: token('color.text.subtle', '#6B778C') }}>Loading…</div>
       ) : active.length === 0 && delivered.length === 0 ? (
-        <div style={{ padding: 16 }}>
-          <EmptyState
-            header="No active demand tickets"
-            description="Create an MDT in ProductHub and link it to epics to track delivery here."
-          />
-        </div>
+        // Empty state: differentiate Case A (MDTs exist but none linked → unlinked epics
+        // are visible elsewhere) vs Case B (truly nothing in scope).
+        unlinkedEpics.length > 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              header="No epics linked to demand tickets yet"
+              description="MDTs may exist for this period, but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
+              primaryAction={
+                <a
+                  href="/producthub/backlog"
+                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                >
+                  Open ProductHub ↗
+                </a>
+              }
+            />
+          </div>
+        ) : (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              header="No demand tickets for this period"
+              description="There are no MDTs matching the selected scope. Create MDTs in ProductHub, set their target quarter, then link epics to track delivery here."
+              primaryAction={
+                <a
+                  href="/producthub/backlog"
+                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                >
+                  Create MDT in ProductHub ↗
+                </a>
+              }
+            />
+          </div>
+        )
       ) : active.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
@@ -1081,6 +1108,91 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             </div>
           )}
         </>
+      )}
+
+      {/* Unlinked epics warning — always render when present, regardless of tab state */}
+      {unlinkedEpics.length > 0 && (
+        <div style={{ borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
+          <div
+            style={{
+              padding: '10px 14px',
+              background: '#FFFAE6',
+              borderLeft: '3px solid #FFAB00',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 8,
+            }}
+          >
+            <AlertTriangle size={14} color="#B38600" style={{ marginTop: 2, flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#7F5F01', marginBottom: 2 }}>
+                {unlinkedEpics.length} epic{unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket
+              </div>
+              <div style={{ fontSize: 11, color: '#7F5F01', marginBottom: 6 }}>
+                These epics are progressing but aren't rolled up under any MDT.
+              </div>
+              <button
+                onClick={() => setUnlinkedOpen((v) => !v)}
+                style={{
+                  background: 'transparent',
+                  border: 0,
+                  padding: 0,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: token('color.text.brand', '#0C66E4'),
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                {unlinkedOpen ? 'Hide' : 'View'} unlinked epics {unlinkedOpen ? '▲' : '▼'}
+              </button>
+            </div>
+          </div>
+          {unlinkedOpen && (
+            <div style={{ maxHeight: 200, overflowY: 'auto', background: token('elevation.surface.sunken', '#F7F8F9') }}>
+              {unlinkedEpics.map((e) => (
+                <div
+                  key={e.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '8px 60px 1fr auto',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 14px',
+                    borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
+                    fontSize: 12,
+                  }}
+                >
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#97A0AF' }} />
+                  <a
+                    href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}
+                    style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                  >
+                    {e.issue_key}
+                  </a>
+                  <span
+                    title={e.summary}
+                    style={{
+                      color: token('color.text', '#172B4D'),
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      minWidth: 0,
+                    }}
+                  >
+                    {e.summary}
+                  </span>
+                  <a
+                    href={`/producthub/backlog?linkEpic=${e.issue_key}`}
+                    style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none', whiteSpace: 'nowrap' }}
+                  >
+                    Link to demand ↗
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </WidgetWrapper>
   );
