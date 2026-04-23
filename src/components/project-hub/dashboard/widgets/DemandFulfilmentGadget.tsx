@@ -948,7 +948,12 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const toggleRow = (id: string) => setExpandedRows((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
@@ -956,8 +961,13 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   // Reset expansion if rows change.
   useEffect(() => {
-    if (expandedId && !rows.find((r) => r.id === expandedId)) setExpandedId(null);
-  }, [rows, expandedId]);
+    setExpandedRows((prev) => {
+      const validIds = new Set(rows.map((r) => r.id));
+      const next = new Set<string>();
+      prev.forEach((id) => { if (validIds.has(id)) next.add(id); });
+      return next.size === prev.size ? prev : next;
+    });
+  }, [rows]);
 
   // Click-outside handler for settings popup.
   useEffect(() => {
