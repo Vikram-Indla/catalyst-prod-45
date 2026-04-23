@@ -653,17 +653,43 @@ function SettingsPopupBody({
 }) {
   const [draft, setDraft] = useState<GadgetSettings>(initial);
 
-  const { data: statusOptions = [] } = useQuery({
+  const { data: statusOptions = [] } = useQuery<Array<{ label: string; options: Array<{ label: string; value: string }> }>>({
     queryKey: ['demand-fulfilment-distinct-statuses', projectKey],
     queryFn: async () => {
+      // Fetch all distinct status + status_category combos for the project
+      // (across every issue type — Epic, Story, Bug, Defect, Sub-task, etc.).
       const { data } = await (supabase as any)
         .from('ph_issues')
-        .select('status')
+        .select('status, status_category')
         .eq('project_key', projectKey)
-        .eq('issue_type', 'Epic')
-        .is('jira_removed_at', null);
-      const unique = Array.from(new Set((data ?? []).map((r: any) => r.status).filter(Boolean))).sort();
-      return unique.map((s: string) => ({ label: s, value: s }));
+        .is('jira_removed_at', null)
+        .not('status', 'is', null)
+        .limit(10000);
+
+      if (!data) return [];
+
+      const categoryMap = new Map<string, Set<string>>();
+      (data as any[]).forEach((row) => {
+        const cat = row.status_category ?? 'Other';
+        const set = categoryMap.get(cat) ?? new Set<string>();
+        if (row.status) set.add(row.status);
+        categoryMap.set(cat, set);
+      });
+
+      const categoryOrder = ['To Do', 'In Progress', 'Done', 'Other'];
+      const sortedCategories = [...categoryMap.keys()].sort((a, b) => {
+        const ia = categoryOrder.indexOf(a);
+        const ib = categoryOrder.indexOf(b);
+        return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      });
+
+      return sortedCategories.map((cat) => ({
+        label: cat,
+        options: [...(categoryMap.get(cat) ?? [])].sort().map((s) => ({
+          label: s,
+          value: s,
+        })),
+      }));
     },
     enabled: !!projectKey,
   });
@@ -796,7 +822,48 @@ function SettingsPopupBody({
         label="Defects / Bugs"
       />
 
-      {/* Status filter intentionally omitted — will be reintroduced in a future iteration. */}
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }} />
+
+      {/* Filter by status — grouped by status_category */}
+      <div style={sectionHeadingStyle}>Filter by status</div>
+      <Select
+        isMulti
+        isClearable
+        spacing="compact"
+        placeholder="All statuses (no filter)"
+        options={statusOptions}
+        value={(draft.status_filter ?? []).map((v: string) => ({ label: v, value: v }))}
+        onChange={(selected: any) =>
+          setDraft({
+            ...draft,
+            status_filter: Array.isArray(selected) ? selected.map((o: any) => o.value) : [],
+          })
+        }
+        formatGroupLabel={(group: any) => (
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              color: token('color.text.subtlest', '#626F86'),
+              fontFamily: ATLAS_SANS,
+            }}
+          >
+            {group.label}
+          </span>
+        )}
+      />
+      <div
+        style={{
+          fontSize: 11,
+          color: token('color.text.subtlest', '#626F86'),
+          marginTop: 4,
+          fontFamily: ATLAS_SANS,
+        }}
+      >
+        Leave empty to show all statuses
+      </div>
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 14 }}>
@@ -873,7 +940,7 @@ function DemandRowItem({
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 100px 1fr 150px 110px 28px',
+          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
           alignItems: 'center',
           gap: 8,
           padding: `0 ${token('space.200', '16px')}`,
@@ -938,9 +1005,11 @@ function DemandRowItem({
           {row.title}
         </span>
 
-        {/* Progress + stat */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <ProgressBar value={pct / 100} appearance="default" />
+        {/* Progress + stat — inline (bar left, text right) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 72, flexShrink: 0 }}>
+            <ProgressBar value={pct / 100} appearance={pct === 100 ? 'success' : 'default'} />
+          </div>
           <span
             style={{
               fontSize: 12,
@@ -948,7 +1017,7 @@ function DemandRowItem({
               fontWeight: 400,
               fontFamily: ATLAS_SANS,
               color: token('color.text.subtle', '#44546F'),
-              textAlign: 'right',
+              whiteSpace: 'nowrap',
             }}
           >
             {pct}% · {row.done}/{row.total}
