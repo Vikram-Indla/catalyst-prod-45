@@ -146,7 +146,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         <>
           <div
             style={{
-              padding: '8px 12px',
+              padding: '8px 16px',
               display: 'flex',
               gap: 12,
               alignItems: 'center',

@@ -162,7 +162,7 @@ export default function WidgetWrapper({
           className="flex-1 dashboard-widget-body"
           style={{
             background: token('elevation.surface', '#FFFFFF'),
-            padding: flushBody ? 0 : 14,
+            padding: flushBody ? 0 : token('space.200', '16px'),
           }}
         >
           <WidgetErrorBoundary title={title}>
@@ -177,7 +177,7 @@ export default function WidgetWrapper({
           style={{
             background: token('elevation.surface', '#FFFFFF'),
             borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-            padding: '8px 14px',
+            padding: `8px ${token('space.200', '16px')}`,
           }}
         >
           {footer}

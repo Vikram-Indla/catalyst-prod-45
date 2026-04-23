@@ -161,7 +161,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           {/* Status summary bar */}
           <div
             style={{
-              padding: '8px 12px',
+              padding: '8px 16px',
               display: 'flex',
               gap: 12,
               alignItems: 'center',
