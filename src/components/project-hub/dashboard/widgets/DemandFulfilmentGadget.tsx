@@ -992,8 +992,8 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            fontSize: 16,
-            lineHeight: '24px',
+            fontSize: 13,
+            lineHeight: '20px',
             fontWeight: 400,
             fontFamily: ATLAS_SANS,
             color: token('color.text', '#172B4D'),
@@ -1220,8 +1220,8 @@ function DemandRowItem({
                       <span
                         title={epic.summary}
                         style={{
-                          fontSize: 12,
-                          lineHeight: '16px',
+                          fontSize: 13,
+                          lineHeight: '20px',
                           fontWeight: 400,
                           fontFamily: ATLAS_SANS,
                           color: token('color.text', '#172B4D'),
@@ -1292,9 +1292,9 @@ function DemandRowItem({
                           <span
                             title={story.summary}
                             style={{
-                              fontSize: 11,
+                              fontSize: 13,
                               fontWeight: 400,
-                              lineHeight: '16px',
+                              lineHeight: '20px',
                               fontFamily: ATLAS_SANS,
                               color: token('color.text', '#172B4D'),
                               overflow: 'hidden',
