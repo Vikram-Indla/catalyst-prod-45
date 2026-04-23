@@ -644,12 +644,29 @@ function SettingsPopupBody({
   initial,
   onApply,
   onCancel,
+  projectKey,
 }: {
   initial: GadgetSettings;
   onApply: (s: GadgetSettings) => void;
   onCancel: () => void;
+  projectKey: string;
 }) {
   const [draft, setDraft] = useState<GadgetSettings>(initial);
+
+  const { data: statusOptions = [] } = useQuery({
+    queryKey: ['demand-fulfilment-distinct-statuses', projectKey],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('ph_issues')
+        .select('status')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Epic')
+        .is('jira_removed_at', null);
+      const unique = Array.from(new Set((data ?? []).map((r: any) => r.status).filter(Boolean))).sort();
+      return unique.map((s: string) => ({ label: s, value: s }));
+    },
+    enabled: !!projectKey,
+  });
 
   const today = new Date().toISOString().split('T')[0];
   const oneMonthAhead = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
