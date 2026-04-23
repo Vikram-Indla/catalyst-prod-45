@@ -718,7 +718,7 @@ function DemandRowItem({
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '14px 8px 60px 1fr 90px 100px 28px',
+          gridTemplateColumns: '14px 8px 80px 1fr 90px 100px 28px',
           alignItems: 'center',
           gap: 8,
           padding: '8px 12px',
@@ -887,11 +887,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [expandedUnlinked, setExpandedUnlinked] = useState<string | null>(null);
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
-  const [unlinkedOpen, setUnlinkedOpen] = useState(false);
 
   // Reset expansion if rows change.
   useEffect(() => {
@@ -900,13 +898,37 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   const active = useMemo(() => rows.filter((r) => !r.isDelivered), [rows]);
   const delivered = useMemo(() => rows.filter((r) => r.isDelivered), [rows]);
+
+  const mergedActive = useMemo(() => {
+    const epicRows: DemandRow[] = unlinkedEpics.map((epic) => ({
+      id: epic.id,
+      initiative_key: epic.issue_key,
+      title: epic.summary,
+      status: epic.status,
+      target_complete: null,
+      target_quarter: null,
+      assignee_id: epic.assignee_id ?? null,
+      assignee_name: epic.assignee_name ?? '—',
+      assignee_avatar: epic.assignee_avatar ?? null,
+      done: epic.done ?? 0,
+      total: epic.total ?? 0,
+      todo: epic.todo ?? 0,
+      inprogress: epic.inprogress ?? 0,
+      blocked: epic.blocked ?? 0,
+      epics: [],
+      isDelivered: false,
+      deliveredAt: null,
+    }));
+    return [...active, ...epicRows];
+  }, [active, unlinkedEpics]);
+
   const overdueRows = useMemo(
-    () => active.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
-    [active, settings.rag_threshold],
+    () => mergedActive.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
+    [mergedActive, settings.rag_threshold],
   );
 
   const visibleByTab =
-    tab === 'overdue' ? overdueRows : tab === 'all' ? [...active, ...delivered] : active;
+    tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
   const visibleRows = visibleByTab.slice(0, 10);
 
   // Period badge text (icon rendered separately as ADS CalendarIcon)
@@ -1016,7 +1038,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           <TabList>
             <Tab>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
-                Active <Badge appearance="default">{active.length}</Badge>
+                Active <Badge appearance="default">{mergedActive.length}</Badge>
               </span>
             </Tab>
             <Tab>
@@ -1026,7 +1048,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             </Tab>
             <Tab>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
-                All <Badge appearance="default">{active.length + delivered.length}</Badge>
+                All <Badge appearance="default">{mergedActive.length + delivered.length}</Badge>
               </span>
             </Tab>
           </TabList>
@@ -1053,7 +1075,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       {/* List or empty / all-delivered states */}
       {isLoading ? (
         <div style={{ padding: 20, font: token('font.body.small'), color: token('color.text.subtle') }}>Loading…</div>
-      ) : active.length === 0 && delivered.length === 0 ? (
+      ) : mergedActive.length === 0 && delivered.length === 0 ? (
         // Empty state: differentiate Case A (MDTs exist but none linked → unlinked epics
         // are visible elsewhere) vs Case B (truly nothing in scope).
         unlinkedEpics.length > 0 ? (
@@ -1081,7 +1103,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             />
           </div>
         )
-      ) : active.length === 0 && delivered.length > 0 ? (
+      ) : mergedActive.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
           <div style={{ padding: '10px 12px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
@@ -1153,58 +1175,6 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             </div>
           )}
         </>
-      )}
-
-      {/* Unlinked epics warning — always render when present, regardless of tab state */}
-      {unlinkedEpics.length > 0 && (
-        <div style={{ borderTop: `1px solid ${token('color.border')}` }}>
-          <div style={{ padding: token('space.150', '12px') }}>
-            <SectionMessage
-              appearance="warning"
-              title="Epics without a demand ticket"
-              actions={
-                <SectionMessageAction onClick={() => setUnlinkedOpen((v) => !v)}>
-                  {unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics'}
-                </SectionMessageAction>
-              }
-            >
-              <p>These epics are active but not yet linked to an MDT.</p>
-            </SectionMessage>
-          </div>
-          {unlinkedOpen && (
-            <div style={{ maxHeight: 300, overflowY: 'auto' }}>
-              {unlinkedEpics.map((epic) => (
-                <DemandRowItem
-                  key={epic.id}
-                  row={{
-                    id: epic.id,
-                    initiative_key: epic.issue_key,
-                    title: epic.summary,
-                    status: epic.status,
-                    target_complete: null,
-                    target_quarter: null,
-                    assignee_id: epic.assignee_id,
-                    assignee_name: epic.assignee_name,
-                    assignee_avatar: epic.assignee_avatar,
-                    total: epic.total,
-                    done: epic.done,
-                    blocked: epic.blocked,
-                    inprogress: epic.inprogress,
-                    todo: epic.todo,
-                    epics: [],
-                    isDelivered: false,
-                    deliveredAt: null,
-                  }}
-                  threshold={settings.rag_threshold}
-                  expanded={expandedUnlinked === epic.id}
-                  onToggle={() =>
-                    setExpandedUnlinked((id) => (id === epic.id ? null : epic.id))
-                  }
-                />
-              ))}
-            </div>
-          )}
-        </div>
       )}
     </WidgetWrapper>
   );
