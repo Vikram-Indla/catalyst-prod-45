@@ -42,7 +42,7 @@ import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
-import SectionMessage from '@atlaskit/section-message';
+import SectionMessage, { SectionMessageAction } from '@atlaskit/section-message';
 import Badge from '@atlaskit/badge';
 import Link from '@atlaskit/link';
 import AkButton, { IconButton } from '@atlaskit/button/new';
@@ -1116,13 +1116,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             <SectionMessage
               appearance="warning"
               title={`${unlinkedEpics.length} epic${unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket`}
-              actions={[
-                {
-                  key: 'toggle-unlinked',
-                  text: unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics',
-                  onClick: () => setUnlinkedOpen((v) => !v),
-                },
-              ]}
+              actions={
+                <SectionMessageAction onClick={() => setUnlinkedOpen((v) => !v)}>
+                  {unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics'}
+                </SectionMessageAction>
+              }
             >
               <p>These epics are progressing but aren't rolled up under any MDT.</p>
             </SectionMessage>
