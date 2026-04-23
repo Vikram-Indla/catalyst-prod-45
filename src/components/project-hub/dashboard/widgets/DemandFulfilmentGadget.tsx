@@ -1496,36 +1496,8 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         </Tabs>
       </div>
 
-      {/* Status filter */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: `6px ${token('space.200', '16px')}`,
-          borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-        }}
-      >
-        <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Filter:
-        </span>
-        <div style={{ width: 180 }}>
-          <Select
-            spacing="compact"
-            isClearable
-            placeholder="All statuses"
-            options={[
-              { label: 'To Do', value: 'To Do' },
-              { label: 'In Progress', value: 'In Progress' },
-              { label: 'Blocked', value: 'Blocked' },
-              { label: 'Done', value: 'Done' },
-            ]}
-            value={statusFilter ? { label: statusFilter, value: statusFilter } : null}
-            onChange={(opt: any) => setStatusFilter(opt ? opt.value : null)}
-          />
-        </div>
-      </div>
+      {/* Status filter moved to gadget settings popup */}
+
       <div
         style={{
           background: token('elevation.surface.sunken', '#F7F8F9'),
