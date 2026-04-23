@@ -818,7 +818,7 @@ function DemandRowItem({
         </span>
         <RagDot state={state} />
         <a
-          href={productHubUrl}
+          href={detailUrl}
           onClick={(e) => e.stopPropagation()}
           style={{
             fontSize: 11,
@@ -834,9 +834,10 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            fontSize: 12,
-            lineHeight: '16px',
+            fontSize: 14,
+            lineHeight: '20px',
             fontWeight: 400,
+            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
