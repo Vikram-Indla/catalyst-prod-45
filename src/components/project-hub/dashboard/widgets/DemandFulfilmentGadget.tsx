@@ -794,39 +794,55 @@ function SettingsPopupBody({
 // Demand row
 // ─────────────────────────────────────────────────────────────────────────────
 
+const ATLAS_SANS =
+  '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+
+const storyLozengeAppearance = (cat?: string): any => {
+  if (cat === 'Done') return 'success';
+  if (cat === 'In Progress') return 'inprogress';
+  return 'default';
+};
+
 function DemandRowItem({
   row,
   threshold,
   expanded,
   onToggle,
   projectKey,
+  isUnlinkedEpic,
 }: {
   row: DemandRow;
   threshold: number;
   expanded: boolean;
   onToggle: () => void;
   projectKey: string;
+  isUnlinkedEpic?: boolean;
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
-  const c = ragColors[state];
   const detailUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`;
 
+  // Track which linked epics are expanded (Mode 1 only).
+  const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
+  const toggleEpic = (id: string) =>
+    setExpandedEpics((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
   return (
-    <div
-      style={{
-        borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
-      }}
-    >
+    <div style={{ borderBottom: `1px solid ${token('color.border', '#DCDFE4')}` }}>
       <div
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '14px 8px 90px 1fr 130px 90px 24px',
+          gridTemplateColumns: '28px 100px 1fr 150px 110px 28px',
           alignItems: 'center',
           gap: 8,
-          padding: `8px ${token('space.200', '16px')}`,
-          minHeight: 36,
+          padding: `0 ${token('space.200', '16px')}`,
+          minHeight: 40,
           background: 'transparent',
           transition: 'background 120ms',
           cursor: 'pointer',
@@ -834,34 +850,50 @@ function DemandRowItem({
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
+        {/* Chevron */}
         <span
           onClick={(e) => { e.stopPropagation(); onToggle(); }}
-          style={{ cursor: 'pointer', display: 'inline-flex', transition: 'transform 150ms', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+          style={{
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            transition: 'transform 150ms',
+            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+          }}
         >
           <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
         </span>
-        <RagDot state={state} />
-        <a
-          href={detailUrl}
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: token('color.link', '#0C66E4'),
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-          }}
-        >
-          {row.initiative_key}
-        </a>
+
+        {/* Key (with leading RAG dot) */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+          <RagDot state={state} />
+          <a
+            href={detailUrl}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              lineHeight: '16px',
+              fontFamily: ATLAS_SANS,
+              color: token('color.link', '#0C66E4'),
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            {row.initiative_key}
+          </a>
+        </span>
+
+        {/* Title */}
         <span
           title={row.title}
           style={{
             fontSize: 14,
             lineHeight: '20px',
             fontWeight: 400,
-            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            fontFamily: ATLAS_SANS,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -870,13 +902,28 @@ function DemandRowItem({
         >
           {row.title}
         </span>
+
+        {/* Progress + stat */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <ProgressBar value={pct / 100} appearance="default" />
-          <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+          <span
+            style={{
+              fontSize: 12,
+              lineHeight: '16px',
+              fontWeight: 400,
+              fontFamily: ATLAS_SANS,
+              color: token('color.text.subtle', '#44546F'),
+              textAlign: 'right',
+            }}
+          >
             {pct}% · {row.done}/{row.total}
           </span>
         </div>
+
+        {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
+
+        {/* Avatar */}
         <Avatar size="xsmall" name={row.assignee_name} src={row.assignee_avatar ?? undefined}>
           {() => (
             <span
@@ -902,19 +949,89 @@ function DemandRowItem({
       {expanded && (
         <div
           style={{
-            padding: '8px 16px 12px 38px',
             background: token('elevation.surface.sunken', '#F7F8F9'),
-            borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
+            borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+            paddingTop: 4,
+            paddingBottom: 6,
           }}
         >
           {row.total === 0 ? (
-            <div style={{ fontSize: 12, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <div
+              style={{
+                fontSize: 12,
+                lineHeight: '16px',
+                fontWeight: 400,
+                fontFamily: ATLAS_SANS,
+                color: token('color.text.subtle', '#44546F'),
+                fontStyle: 'italic',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '6px 16px 6px 28px',
+              }}
+            >
               <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
-              No stories linked. Add stories under the epics in this demand to track progress.
+              {isUnlinkedEpic
+                ? 'No stories under this epic yet.'
+                : 'No stories linked. Add stories under the epics in this demand to track progress.'}
             </div>
+          ) : isUnlinkedEpic ? (
+            // ── MODE 2: Unlinked epic — render its stories directly ──
+            row.epics.map((story) => {
+              const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+              return (
+                <div
+                  key={story.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '20px 90px 1fr 90px',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '5px 16px 5px 28px',
+                    borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                  }}
+                >
+                  <span />
+                  <a
+                    href={storyUrl}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      lineHeight: '16px',
+                      fontFamily: ATLAS_SANS,
+                      color: token('color.link', '#0C66E4'),
+                      textDecoration: 'none',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {story.issue_key}
+                  </a>
+                  <span
+                    title={story.summary}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 400,
+                      lineHeight: '16px',
+                      fontFamily: ATLAS_SANS,
+                      color: token('color.text', '#172B4D'),
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {story.summary}
+                  </span>
+                  <Lozenge appearance={storyLozengeAppearance(story.status_category)}>
+                    {story.status}
+                  </Lozenge>
+                </div>
+              );
+            })
           ) : (
+            // ── MODE 1: MDT — render epic sub-rows; each can expand to its stories ──
             <>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '4px 16px 8px 28px' }}>
                 <Lozenge appearance="default">To Do {row.todo}</Lozenge>
                 <Lozenge appearance="inprogress">In Progress {row.inprogress}</Lozenge>
                 {row.blocked > 0 && <Lozenge appearance="removed">Blocked {row.blocked}</Lozenge>}
@@ -931,60 +1048,144 @@ function DemandRowItem({
                     : epic.done > 0
                     ? 'risk'
                     : 'overdue';
+                const epicUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${epic.issue_key}`;
+                const epicExpanded = expandedEpics.has(epic.id);
+                const hasStories = (epic.stories?.length ?? 0) > 0;
+
                 return (
-                  <div
-                    key={epic.id}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '6px 50px 1fr 56px 36px 52px',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '4px 0',
-                    }}
-                  >
-                    <span
+                  <div key={epic.id}>
+                    <div
+                      onClick={() => hasStories && toggleEpic(epic.id)}
                       style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        background: ragColors[epicState].dot,
-                      }}
-                    />
-                    <Link
-                      href={`/project-hub/${epic.issue_key.split('-')[0]}/allwork?issue=${epic.issue_key}`}
-                      style={{ fontSize: 11, fontWeight: 700 }}
-                    >
-                      {epic.issue_key}
-                    </Link>
-                    <span
-                      title={epic.summary}
-                      style={{
-                        fontSize: 12,
-                        lineHeight: '16px',
-                        fontWeight: 400,
-                        color: token('color.text', '#172B4D'),
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
+                        display: 'grid',
+                        gridTemplateColumns: '20px 90px 1fr 80px 60px',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '6px 16px 6px 28px',
+                        borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                        cursor: hasStories ? 'pointer' : 'default',
                       }}
                     >
-                      {epic.summary}
-                    </span>
-                    <div>
+                      <span
+                        onClick={(e) => { e.stopPropagation(); if (hasStories) toggleEpic(epic.id); }}
+                        style={{
+                          cursor: hasStories ? 'pointer' : 'default',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          transition: 'transform 150ms',
+                          transform: epicExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                          opacity: hasStories ? 1 : 0,
+                        }}
+                      >
+                        <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+                      </span>
+                      <a
+                        href={epicUrl}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          lineHeight: '16px',
+                          fontFamily: ATLAS_SANS,
+                          color: token('color.link', '#0C66E4'),
+                          textDecoration: 'none',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {epic.issue_key}
+                      </a>
+                      <span
+                        title={epic.summary}
+                        style={{
+                          fontSize: 12,
+                          lineHeight: '16px',
+                          fontWeight: 400,
+                          fontFamily: ATLAS_SANS,
+                          color: token('color.text', '#172B4D'),
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {epic.summary}
+                      </span>
                       <ProgressBar value={epicPct / 100} appearance="default" />
+                      <Lozenge appearance={storyLozengeAppearance(epic.status_category) || 'default'}>
+                        {epic.status}
+                      </Lozenge>
                     </div>
-                    <span style={{ fontSize: 10, lineHeight: '14px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
-                      {epicPct}%
-                    </span>
-                    <span style={{ fontSize: 10, lineHeight: '14px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
-                      {epic.done}/{epic.total}
-                    </span>
+
+                    {epicExpanded && (epic.stories ?? []).map((story) => {
+                      const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+                      return (
+                        <div
+                          key={story.issue_key}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '20px 90px 1fr 80px',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '4px 16px 4px 48px',
+                            borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                            background: token('elevation.surface.sunken', '#F7F8F9'),
+                          }}
+                        >
+                          <span />
+                          <a
+                            href={storyUrl}
+                            onClick={(e) => e.stopPropagation()}
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 600,
+                              lineHeight: '16px',
+                              fontFamily: ATLAS_SANS,
+                              color: token('color.link', '#0C66E4'),
+                              textDecoration: 'none',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {story.issue_key}
+                          </a>
+                          <span
+                            title={story.summary}
+                            style={{
+                              fontSize: 11,
+                              fontWeight: 400,
+                              lineHeight: '16px',
+                              fontFamily: ATLAS_SANS,
+                              color: token('color.text', '#172B4D'),
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {story.summary}
+                          </span>
+                          <Lozenge appearance={storyLozengeAppearance(story.status_category)}>
+                            {story.status}
+                          </Lozenge>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}
 
               {!row.target_complete && (
-                <div style={{ marginTop: 8, fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <div
+                  style={{
+                    margin: '8px 16px 0 28px',
+                    fontSize: 11,
+                    lineHeight: '16px',
+                    fontWeight: 400,
+                    fontFamily: ATLAS_SANS,
+                    color: token('color.text.subtlest', '#626F86'),
+                    fontStyle: 'italic',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
                   <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
