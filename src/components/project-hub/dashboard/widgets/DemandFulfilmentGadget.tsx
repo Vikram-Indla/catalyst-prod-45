@@ -1267,7 +1267,8 @@ function DemandRowItem({
                             gridTemplateColumns: '20px 90px 1fr auto',
                             alignItems: 'center',
                             gap: 8,
-                            padding: '4px 16px 4px 48px',
+                            padding: '10px 16px 10px 28px',
+                            minHeight: 40,
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                             borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
                             background: token('elevation.surface.sunken', '#F7F8F9'),
@@ -1279,7 +1280,7 @@ function DemandRowItem({
                             onClick={(e) => e.stopPropagation()}
                             style={{
                               fontSize: 11,
-                              fontWeight: 600,
+                              fontWeight: 500,
                               lineHeight: '16px',
                               fontFamily: ATLAS_SANS,
                               color: token('color.link', '#0C66E4'),
