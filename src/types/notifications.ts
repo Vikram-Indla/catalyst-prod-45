@@ -14,7 +14,7 @@ export type NotificationEntityType =
 export type NotificationTab = 'direct' | 'watching' | 'ai' | 'ageing';
 
 export type WorkItemIconType =
-  | 'bug' | 'story' | 'task' | 'epic' | 'subtask'
+  | 'bug' | 'qa bug' | 'story' | 'task' | 'epic' | 'subtask'
   | 'new_feature' | 'improvement' | 'incident' | 'question';
 
 export type StatusType = 'gray' | 'blue' | 'green';

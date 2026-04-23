@@ -15,6 +15,7 @@ export type DirectStatusAppearance = 'default' | 'inprogress' | 'success';
 export interface DirectActor {
   id: string;
   displayName: string;
+  avatarUrl?: string | null;
 }
 
 export interface DirectTarget {
@@ -31,6 +32,12 @@ export interface DirectAggregation {
   actor: DirectActor;
 }
 
+export interface DirectNotificationThread {
+  commentPreview: string;
+  reactions: Record<string, number>;
+  replyCount: number;
+}
+
 export interface DirectNotification {
   id: string;
   createdAt: string;
@@ -39,4 +46,5 @@ export interface DirectNotification {
   verb: DirectVerb;
   target: DirectTarget;
   aggregation?: DirectAggregation;
+  thread?: DirectNotificationThread;
 }

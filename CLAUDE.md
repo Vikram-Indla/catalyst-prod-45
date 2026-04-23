@@ -417,22 +417,64 @@ Send to Vikram for DevTools verification.
 
 ---
 
-## 11. WORK ITEM ICONS (NON-NEGOTIABLE)
+## 11. WORK ITEM ICONS — ABSOLUTE FREEZE
 
-Work item type icons are **canonical SVGs** — never Lucide icons.
+> ⛔ **IMMUTABLE GUARDRAIL — READ BEFORE TOUCHING ANY ICON.**
+> These icons are the canonical Catalyst/Jira work-item type system approved by MoIM.
+> **No AI, no Claude Code pass, no Lovable prompt may change the color, shape, or component
+> of any icon listed below — even to "fix" it, "improve" it, or "align it to a design system".**
+> If an icon looks wrong in a screenshot, check the mapping first before touching any file.
+> The only person who may update this table is Vikram (owner). All other changes are P0 bugs.
 
-| Type | Color | Notes |
-|------|-------|-------|
-| Bug | #E5493A (red) | Spider/bug SVG |
-| Story | #63BA3C (green) | Bookmark SVG |
-| Task | #4BADE8 (blue) | Checkmark SVG |
-| Epic | #904EE2 (purple) | Lightning bolt SVG |
-| Subtask | #4BADE8 (blue) | Small checkmark SVG |
-| New Feature | #63BA3C (green) | Star SVG |
-| Improvement | #4BADE8 (blue) | Up arrow SVG |
-| Incident | #E5493A (red) | Warning SVG |
+### Canonical Icon Table (all 14 types — exact hex, exact shape)
 
-**Lucide icons = UI chrome only** (nav, actions, views, form fields, buttons)
+| `iconType` key | Display Name | Bg Color | Shape | Notes |
+|----------------|--------------|----------|-------|-------|
+| `api_requirement` | API Requirement | `#06B6D4` cyan | Monitor screen + gear badge | Teal monitor outline, small gear bottom-right |
+| `backend` | Backend | `#3B82F6` blue | Stacked server bars | 3 horizontal bars in a server/DB stack |
+| `business_gap` | Business Gap | `#F97316` orange | Lightning bolt in outlined box | Orange border box, lightning fill |
+| `change_request` | Change Request | `#2563EB` blue | Checkbox with check | Square border, diagonal tick |
+| `epic` | Epic | `#8B5CF6` purple | Lightning bolt | Standalone bolt, no background square |
+| `feature` | Feature | `#2563EB` blue | Checkbox with check | Same family as Task/Change Request |
+| `figma` | Figma | `#374151` dark grey | Grid / window icon | Dark charcoal, 4-cell grid |
+| `frontend` | Frontend | `#3B82F6` blue | Monitor / computer screen | Screen with stand |
+| `integration` | Integration | `#2563EB` blue | Gear with spokes | Cog shape with 6–8 teeth |
+| `production_incident` | Production Incident | `#F97316` orange | Circle with question mark | Outlined circle, `?` inside |
+| `bug` | QA Bug | `#E5493A` red | Asterisk / snowflake | 6-arm star (horizontal + vertical + 2 diagonals) |
+| `story` | Story | `#22C55E` green | Bookmark ribbon | Inverted-V bottom notch |
+| `subtask` | Sub-task | `#2563EB` blue | Chain link / two squares | Two overlapping rounded squares |
+| `task` | Task | `#2563EB` blue | Checkbox with check | Square border, thick diagonal tick |
+
+### Mapping aliases (DB value → iconType key)
+
+```
+'assigned_work_item' | 'assigned_story' | 'tester_assigned' → 'task'
+'new_feature'         → 'feature'
+'improvement'         → 'task'
+'question'            → 'production_incident'
+'incident'            → 'production_incident'
+```
+
+### Implementation contract
+
+```
+Canonical component:  src/components/shared/WorkItemIcon.tsx
+  props:  type: WorkItemIconType, size?: number (default 16)
+  renders: inline SVG only — never <img>, never Lucide, never emoji
+
+DirectWorkItemIcon.tsx (notifications):
+  DELEGATES to <WorkItemIcon> — never duplicates SVG paths
+
+All hubs (ProjectHub, TestHub, IncidentHub, etc.):
+  Import WorkItemIcon from '@/components/shared/WorkItemIcon'
+
+BANNED substitutions (zero tolerance):
+  ❌ Lucide icons for work item types (Lucide = UI chrome only)
+  ❌ Emoji as icon fallback
+  ❌ Different hex values than the table above
+  ❌ Any rounding, shadow, or border-radius change to the SVG
+  ❌ Color variation for dark mode (icons are always on-color, no dark swap)
+```
 
 ---
 

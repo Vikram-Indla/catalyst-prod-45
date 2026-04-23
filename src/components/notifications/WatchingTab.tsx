@@ -1,322 +1,263 @@
 /**
- * WatchingTab — Activity feed for watched issues
- * Light mode only.
+ * WatchingTab — notifications where the user is a watcher (not a direct recipient).
+ * Uses the same notifications table + DirectPanel infrastructure as the Direct tab.
+ * Renders with DirectNotificationRow so both tabs look identical.
  */
-import { useEffect, useMemo } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Eye, MessageSquare, ArrowRightLeft, UserCheck, ArrowUp, Paperclip } from "lucide-react";
+import { useMemo, useState, useCallback } from 'react';
+import { Box, xcss } from '@atlaskit/primitives';
+import { token } from '@atlaskit/tokens';
+import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
+import { useActorProfiles } from '@/hooks/useActorProfiles';
+import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
+import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from '@/features/notifications/types';
+import { groupByDate } from '@/features/notifications/utils/date';
+import DirectNotificationRow from '@/features/notifications/components/DirectNotificationRow';
 
-// ── Helpers ────────────────────────────────────────
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h`;
-  const days = Math.floor(hrs / 24);
-  return `${days}d`;
+interface WatchingTabProps {
+  unreadOnly: boolean;
+  isDark: boolean;
 }
 
-function dateBucket(iso: string): string {
-  const d = new Date(iso);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today.getTime() - 86400000);
-  const weekAgo = new Date(today.getTime() - 7 * 86400000);
-  if (d >= today) return "Today";
-  if (d >= yesterday) return "Yesterday";
-  if (d >= weekAgo) return "This week";
-  return "Earlier";
-}
+// ─── Same mapping helpers as DirectPanel ────────────────────────────────────
 
-const ACTIVITY_ICONS: Record<string, { icon: typeof MessageSquare; color: string }> = {
-  comment_added: { icon: MessageSquare, color: "#2563EB" },
-  status_changed: { icon: ArrowRightLeft, color: "#D97706" },
-  assignee_changed: { icon: UserCheck, color: "#10B981" },
-  priority_changed: { icon: ArrowUp, color: "#DC2626" },
-  attachment_added: { icon: Paperclip, color: "#64748B" },
-};
-
-const ACTIVITY_LABELS: Record<string, string> = {
-  comment_added: "added a comment",
-  status_changed: "changed status",
-  assignee_changed: "changed assignee",
-  priority_changed: "changed priority",
-  attachment_added: "added an attachment",
-};
-
-function StatusLozenge({ value }: { value: string }) {
-  const lower = (value || "").toLowerCase();
-  let bg = "#DFE1E6";
-  let color = "#253858";
-  if (lower.includes("progress") || lower.includes("review") || lower.includes("active")) {
-    bg = "#DEEBFF"; color = "#0747A6";
-  } else if (lower.includes("done") || lower.includes("approved") || lower.includes("complete") || lower.includes("closed")) {
-    bg = "#E3FCEF"; color = "#006644";
+function mapVerb(notificationType: string): DirectVerb {
+  switch (notificationType) {
+    case 'assigned':
+    case 'assigned_work_item':
+    case 'assigned_story':
+    case 'tester_assigned':
+      return 'assigned';
+    case 'mentioned_in_comment':
+      return 'mentioned';
+    case 'commented_on_work_item':
+    case 'commented':
+      return 'commented';
+    case 'updated_work_item':
+      return 'updated';
+    case 'status_changed':
+      return 'status_changed';
+    case 'reassigned_work_item':
+      return 'reassigned';
+    case 'okr_milestone_achieved':
+      return 'approved';
+    default:
+      return 'updated';
   }
+}
+
+function mapIconType(iconType: WorkItemIconType): DirectWorkItemIconType {
+  switch (iconType) {
+    case 'bug':
+    case 'qa bug':    return 'bug';
+    case 'story':     return 'story';
+    case 'task':      return 'task';
+    case 'epic':      return 'epic';
+    case 'incident':  return 'incident';
+    case 'subtask':   return 'task';
+    case 'new_feature': return 'story';
+    case 'improvement': return 'task';
+    default:          return 'task';
+  }
+}
+
+function mapStatusAppearance(statusType: StatusType) {
+  switch (statusType) {
+    case 'blue':  return 'inprogress' as const;
+    case 'green': return 'success' as const;
+    default:      return 'default' as const;
+  }
+}
+
+function mapNotification(
+  n: Notification,
+  profiles: Map<string, { full_name: string; avatar_url: string | null }>
+): DirectNotification {
+  const profile = n.actor_user_id ? profiles.get(n.actor_user_id) : null;
+  const isCommentVerb = ['commented', 'mentioned'].includes(mapVerb(n.notification_type));
+  const hasThread = !!(n.metadata?.comment_preview) || isCommentVerb;
+
+  return {
+    id: n.id,
+    createdAt: n.created_at,
+    readAt: n.read_at,
+    actor: n.actor_user_id
+      ? {
+          id: n.actor_user_id,
+          displayName: profile?.full_name ?? (n.actor?.full_name ?? 'Unknown'),
+          avatarUrl: profile?.avatar_url ?? n.actor?.avatar_url ?? null,
+        }
+      : null,
+    verb: mapVerb(n.notification_type),
+    target: {
+      id: n.entity_id,
+      key: n.entity_key,
+      title: n.entity_title,
+      statusLabel: n.status,
+      statusAppearance: mapStatusAppearance(n.status_type),
+      iconType: mapIconType(n.entity_icon_type),
+    },
+    thread: hasThread
+      ? {
+          commentPreview: n.metadata?.comment_preview ?? '',
+          reactions: n.metadata?.reactions ?? {},
+          replyCount: 0,
+        }
+      : undefined,
+  };
+}
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
+
+const panelXcss = xcss({ display: 'flex', flexDirection: 'column', flex: '1' });
+
+const sectionHeaderXcss = xcss({
+  paddingBlock: 'space.100',
+  paddingInline: 'space.200',
+});
+
+const emptyXcss = xcss({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 'space.600',
+  gap: 'space.100',
+});
+
+function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
   return (
-    <span style={{
-      display: "inline-block", height: 20, lineHeight: "20px",
-      fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-      letterSpacing: "0.03em", borderRadius: 3,
-      padding: "0 6px", background: bg, color,
-      fontFamily: "Inter, sans-serif",
-    }}>
-      {value}
-    </span>
+    <Box xcss={sectionHeaderXcss}>
+      <span style={{
+        fontFamily: 'Inter, sans-serif',
+        fontSize: 12,
+        fontWeight: 600,
+        color: isDark ? '#878787' : token('color.text.subtlest', '#8590A2'),
+      }}>
+        {label}
+      </span>
+    </Box>
   );
 }
 
-// ── Initials ────────────────────────────────────────
-function getInitials(name: string): string {
-  if (!name) return "?";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0][0]?.toUpperCase() || "?";
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-interface WatchActivity {
-  id: string;
-  issue_id: string;
-  actor_id: string | null;
-  activity_type: string;
-  old_value: string | null;
-  new_value: string | null;
-  comment_body: string | null;
-  created_at: string;
-  issue_key?: string;
-  summary?: string;
-  issue_type?: string;
-  actor_name?: string;
-  actor_avatar?: string | null;
-}
-
-export default function WatchingTab() {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  const { data: activities = [], isLoading } = useQuery({
-    queryKey: ["watching-tab", user?.id],
-    enabled: !!user?.id,
-    queryFn: async () => {
-      // Get watched issue IDs
-      const { data: watches } = await supabase
-        .from("issue_watchers")
-        .select("issue_id")
-        .eq("user_id", user!.id);
-
-      if (!watches?.length) return [];
-
-      const issueIds = watches.map(w => w.issue_id);
-
-      // Get activity for those issues
-      const { data: acts } = await supabase
-        .from("watch_activity")
-        .select("*")
-        .in("issue_id", issueIds)
-        .order("created_at", { ascending: false })
-        .limit(50);
-
-      if (!acts?.length) return [];
-
-      // Fetch issue details
-      const uniqueIssueIds = [...new Set(acts.map(a => a.issue_id))];
-      const { data: issues } = await supabase
-        .from("catalyst_issues")
-        .select("id, issue_key, title, issue_type")
-        .in("id", uniqueIssueIds);
-
-      const issueMap = new Map(issues?.map(i => [i.id, i]) ?? []);
-
-      // Fetch actor profiles
-      const uniqueActorIds = [...new Set(acts.map(a => a.actor_id).filter(Boolean))] as string[];
-      const { data: profiles } = uniqueActorIds.length > 0
-        ? await supabase.from("profiles").select("id, full_name, avatar_url").in("id", uniqueActorIds)
-        : { data: [] };
-
-      const profileMap = new Map<string, { id: string; full_name: string; avatar_url: string | null }>(
-        (profiles ?? []).map(p => [p.id, p])
-      );
-
-      return acts.map(a => {
-        const issue = issueMap.get(a.issue_id);
-        const actor = a.actor_id ? profileMap.get(a.actor_id) : null;
-        return {
-          ...a,
-          issue_key: issue?.issue_key ?? "—",
-          summary: issue?.title ?? "",
-          issue_type: issue?.issue_type ?? "Story",
-          actor_name: actor?.full_name ?? "Unknown",
-          actor_avatar: actor?.avatar_url ?? null,
-        } as WatchActivity;
-      });
-    },
-    staleTime: 30_000,
-  });
-
-  // Realtime subscription
-  useEffect(() => {
-    if (!user?.id) return;
-    const channel = supabase
-      .channel("watch-activity-realtime")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "watch_activity" }, () => {
-        queryClient.invalidateQueries({ queryKey: ["watching-tab"] });
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user?.id, queryClient]);
-
-  // Group by date bucket
-  const groups = useMemo(() => {
-    const buckets: Record<string, WatchActivity[]> = {};
-    const order = ["Today", "Yesterday", "This week", "Earlier"];
-    for (const a of activities) {
-      const bucket = dateBucket(a.created_at);
-      if (!buckets[bucket]) buckets[bucket] = [];
-      buckets[bucket].push(a);
-    }
-    return order.filter(b => buckets[b]?.length).map(b => ({ label: b, items: buckets[b]! }));
-  }, [activities]);
-
-  // Empty state
-  if (!isLoading && activities.length === 0) {
-    return (
-      <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        justifyContent: "center", padding: "48px 20px", gap: 12,
-      }}>
-        <Eye size={40} color="#CBD5E1" strokeWidth={1.2} />
-        <span style={{ fontSize: 14, color: "#94A3B8", fontFamily: "Inter, sans-serif" }}>
-          Nothing watched yet
-        </span>
-        <span style={{ fontSize: 12, color: "#CBD5E1", fontFamily: "Inter, sans-serif" }}>
-          Tap 👁 on any issue to start watching it
-        </span>
-      </div>
-    );
-  }
-
-  if (isLoading) {
-    return (
-      <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
-        <div style={{
-          width: 24, height: 24,
-          border: "2.5px solid #E2E8F0", borderTopColor: "#2563EB",
-          borderRadius: "50%", animation: "spin 0.7s linear infinite",
-        }} />
-      </div>
-    );
-  }
-
+function EmptyState({ isDark }: { isDark: boolean }) {
   return (
-    <div>
-      {groups.map(group => (
-        <div key={group.label}>
-          {/* Section header */}
-          <div style={{
-            position: "sticky", top: 0, zIndex: 10,
-            background: "#F8FAFC", padding: "5px 14px",
-            fontFamily: "Inter, sans-serif", fontSize: 10,
-            fontWeight: 700, color: "#94A3B8",
-            textTransform: "uppercase", letterSpacing: "0.04em",
-          }}>
-            {group.label}
+    <Box xcss={emptyXcss}>
+      {/* Eye icon */}
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <circle cx="24" cy="24" r="20" fill={isDark ? '#292929' : token('color.background.neutral', '#F4F5F7')} />
+        <ellipse cx="24" cy="24" rx="9" ry="6" stroke={isDark ? '#878787' : token('color.text.subtlest', '#8590A2')} strokeWidth="2" fill="none"/>
+        <circle cx="24" cy="24" r="3" fill={isDark ? '#878787' : token('color.text.subtlest', '#8590A2')} />
+      </svg>
+      <span style={{
+        fontFamily: 'Inter, sans-serif',
+        fontSize: 14,
+        fontWeight: 600,
+        color: isDark ? '#EDEDED' : token('color.text', '#172B4D'),
+      }}>
+        Nothing watched yet
+      </span>
+      <span style={{
+        fontFamily: 'Inter, sans-serif',
+        fontSize: 13,
+        color: isDark ? '#A1A1A1' : token('color.text.subtle', '#626F86'),
+        textAlign: 'center',
+      }}>
+        Watch an issue to see its activity here.
+      </span>
+    </Box>
+  );
+}
+
+function LoadingState({ isDark }: { isDark: boolean }) {
+  const shimmerBg = isDark ? '#1F1F1F' : '#F4F5F7';
+  const shimmerHighlight = isDark ? '#2E2E2E' : '#E9EBEE';
+  return (
+    <Box xcss={panelXcss}>
+      {[1, 2, 3].map(i => (
+        <div key={i} style={{ display: 'flex', gap: 10, padding: '12px 16px', alignItems: 'flex-start' }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: shimmerBg, flexShrink: 0 }} />
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ height: 14, borderRadius: 4, background: shimmerHighlight, width: '60%' }} />
+            <div style={{ height: 14, borderRadius: 4, background: shimmerBg, width: '90%' }} />
+            <div style={{ height: 12, borderRadius: 4, background: shimmerBg, width: '40%' }} />
           </div>
-
-          {group.items.map(activity => {
-            const actCfg = ACTIVITY_ICONS[activity.activity_type] ?? ACTIVITY_ICONS.comment_added;
-            const ActIcon = actCfg.icon;
-
-            return (
-              <div
-                key={activity.id}
-                style={{
-                  display: "flex", gap: 10, padding: "10px 14px",
-                  minHeight: 52,
-                  borderBottom: "0.75px solid #F1F5F9",
-                  transition: "background 120ms",
-                  cursor: "default",
-                }}
-                onMouseEnter={e => e.currentTarget.style.background = "rgba(37,99,235,0.03)"}
-                onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-              >
-                {/* Activity type icon */}
-                <div style={{ flexShrink: 0, marginTop: 2 }}>
-                  <ActIcon size={16} color={actCfg.color} />
-                </div>
-
-                {/* Actor avatar */}
-                <div style={{
-                  width: 24, height: 24, borderRadius: "50%",
-                  background: activity.actor_id ? "#DEEBFF" : "#E2E8F0",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0,
-                  fontSize: 10, fontWeight: 700,
-                  fontFamily: "Inter, sans-serif",
-                  color: activity.actor_id ? "#0747A6" : "#94A3B8",
-                }}>
-                  {getInitials(activity.actor_name ?? "")}
-                </div>
-
-                {/* Content */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 11, lineHeight: "16px" }}>
-                    <span style={{ fontWeight: 600, color: "#1E293B" }}>{activity.actor_name}</span>
-                    {" "}
-                    <span style={{ color: "#64748B" }}>
-                      {ACTIVITY_LABELS[activity.activity_type] ?? activity.activity_type}
-                    </span>
-                  </div>
-                  <div style={{ fontSize: 11, lineHeight: "16px", marginTop: 2 }}>
-                    <span style={{
-                      fontFamily: "JetBrains Mono, monospace",
-                      fontSize: 10, color: "#2563EB",
-                    }}>
-                      {activity.issue_key}
-                    </span>
-                    <span style={{ color: "#94A3B8", margin: "0 4px" }}>·</span>
-                    <span style={{
-                      color: "#475569", overflow: "hidden",
-                      textOverflow: "ellipsis", whiteSpace: "nowrap",
-                    }}>
-                      {activity.summary}
-                    </span>
-                  </div>
-                  {activity.activity_type === "comment_added" && activity.comment_body && (
-                    <div style={{
-                      fontSize: 11, color: "#64748B", fontStyle: "italic",
-                      marginTop: 2, lineHeight: "16px",
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      maxWidth: 280,
-                    }}>
-                      {activity.comment_body.slice(0, 80)}
-                    </div>
-                  )}
-                </div>
-
-                {/* Right side — time + status badge */}
-                <div style={{
-                  display: "flex", flexDirection: "column",
-                  alignItems: "flex-end", gap: 4, flexShrink: 0,
-                }}>
-                  <span style={{
-                    fontFamily: "JetBrains Mono, monospace",
-                    fontSize: 10, color: "#94A3B8",
-                  }}>
-                    {relativeTime(activity.created_at)}
-                  </span>
-                  {activity.activity_type === "status_changed" && activity.new_value && (
-                    <StatusLozenge value={activity.new_value} />
-                  )}
-                </div>
-              </div>
-            );
-          })}
         </div>
       ))}
-    </div>
+    </Box>
+  );
+}
+
+// ─── Main component ──────────────────────────────────────────────────────────
+
+export default function WatchingTab({ unreadOnly, isDark }: WatchingTabProps) {
+  const { data, isLoading } = useNotificationsQuery('watching', unreadOnly);
+  const markAsReadMutation = useMarkAsRead();
+  const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
+
+  const rawNotifications = useMemo<Notification[]>(() => {
+    if (!data?.pages) return [];
+    return data.pages.flat() as Notification[];
+  }, [data]);
+
+  const actorIds = useMemo(
+    () => rawNotifications.map(n => n.actor_user_id).filter((id): id is string => !!id),
+    [rawNotifications]
+  );
+  const { data: profilesMap } = useActorProfiles(actorIds);
+  const profiles = profilesMap ?? new Map();
+
+  const notifications = useMemo<DirectNotification[]>(
+    () => rawNotifications.map(n => mapNotification(n, profiles)),
+    [rawNotifications, profiles]
+  );
+
+  const resolvedReadIds = useMemo<Set<string>>(() => {
+    const ids = new Set<string>(localReadIds);
+    for (const n of notifications) {
+      if (n.readAt) ids.add(n.id);
+    }
+    return ids;
+  }, [localReadIds, notifications]);
+
+  const handleMarkRead = useCallback((id: string) => {
+    setLocalReadIds(prev => new Set(prev).add(id));
+    markAsReadMutation.mutate(id);
+  }, [markAsReadMutation]);
+
+  if (isLoading) return <LoadingState isDark={isDark} />;
+
+  const visible = unreadOnly
+    ? notifications.filter(n => !resolvedReadIds.has(n.id))
+    : notifications;
+
+  if (visible.length === 0) return <EmptyState isDark={isDark} />;
+
+  const groups = groupByDate(visible);
+  const dividerColor = isDark ? '#2E2E2E' : token('color.border', '#DFE1E6');
+
+  return (
+    <Box xcss={panelXcss}>
+      {groups.map((group, gi) => (
+        <Box key={group.label}>
+          {gi > 0 && (
+            <div
+              style={{ height: 1, background: dividerColor, marginInline: 16, marginBlock: 4 }}
+              role="separator"
+              aria-hidden="true"
+            />
+          )}
+          <SectionLabel label={group.label} isDark={isDark} />
+          {group.items.map(n => (
+            <DirectNotificationRow
+              key={n.id}
+              notification={n}
+              isRead={resolvedReadIds.has(n.id)}
+              onMarkRead={handleMarkRead}
+              isDark={isDark}
+            />
+          ))}
+        </Box>
+      ))}
+    </Box>
   );
 }

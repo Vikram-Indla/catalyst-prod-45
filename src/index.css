@@ -5783,3 +5783,14 @@ input[type="range"]::-moz-range-thumb {
   text-decoration: underline;
 }
 
+/* ── Catalyst Top Nav — Responsive Grid ──────────────────────────────────────
+   Center column is always 1fr so flex:1 1 0 on the search wrapper resolves
+   to a definite width and flex-grow fills it up to 780px.
+   ⛔ DO NOT add a @media rule that changes the center column to `auto` or
+      `minmax(min-content,*)` — auto sizes to max-content which collapses
+      the flex:1 1 0 search container to ~200px on wide screens.
+      (RCA: branch fix 463dfbc01, never merged to main)
+   ─────────────────────────────────────────────────────────────────────────── */
+[data-catalyst-top-nav] {
+  grid-template-columns: auto 1fr auto;
+}
