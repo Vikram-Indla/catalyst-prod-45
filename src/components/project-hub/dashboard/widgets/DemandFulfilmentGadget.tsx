@@ -323,11 +323,27 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, issue_key, summary, status, status_category, assignee_display_name, jira_removed_at')
+        .select('parent_key, issue_key, summary, status, status_category, assignee_user_id, assignee_display_name, jira_removed_at')
         .in('parent_key', epicKeys)
         .in('issue_type', childTypes)
         .is('jira_removed_at', null)
         .limit(5000);
+
+      // Fetch assignee avatars for both epics + child stories.
+      const assigneeIds = Array.from(
+        new Set([
+          ...unlinked.map((e: any) => e.assignee_user_id).filter(Boolean),
+          ...((children ?? []).map((c: any) => c.assignee_user_id).filter(Boolean)),
+        ]),
+      );
+      let profiles: Record<string, any> = {};
+      if (assigneeIds.length > 0) {
+        const { data: pr } = await (supabase as any)
+          .from('profiles')
+          .select('id, display_name, full_name, avatar_url')
+          .in('id', assigneeIds);
+        profiles = Object.fromEntries((pr ?? []).map((p: any) => [p.id, p]));
+      }
 
       const bucketByEpic = new Map<string, { total: number; done: number; blocked: number; inprogress: number; todo: number }>();
       const storyRowsByEpic = new Map<string, UnlinkedEpicStory[]>();
@@ -342,26 +358,18 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
         b.total += 1;
         if (cls) (b as any)[cls] += 1;
         const list = storyRowsByEpic.get(c.parent_key) ?? [];
+        const childProfile = c.assignee_user_id ? profiles[c.assignee_user_id] : null;
         list.push({
           issue_key: c.issue_key,
           summary: c.summary ?? '',
           status: c.status,
           status_category: c.status_category,
-          assignee_display_name: c.assignee_display_name ?? null,
+          assignee_display_name:
+            childProfile?.display_name ?? childProfile?.full_name ?? c.assignee_display_name ?? null,
+          assignee_avatar: childProfile?.avatar_url ?? null,
         });
         storyRowsByEpic.set(c.parent_key, list);
       });
-
-      // Fetch assignee avatars from profiles.
-      const assigneeIds = Array.from(new Set(unlinked.map((e: any) => e.assignee_user_id).filter(Boolean)));
-      let profiles: Record<string, any> = {};
-      if (assigneeIds.length > 0) {
-        const { data: pr } = await (supabase as any)
-          .from('profiles')
-          .select('id, display_name, full_name, avatar_url')
-          .in('id', assigneeIds);
-        profiles = Object.fromEntries((pr ?? []).map((p: any) => [p.id, p]));
-      }
 
       return unlinked.map((e: any) => {
         const b = bucketByEpic.get(e.issue_key) ?? { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 };
