@@ -100,7 +100,12 @@ const QUARTER_OPTIONS = [
   { label: 'Q4 2026 · Oct–Dec', value: 'Q4-2026' },
 ];
 
-const THRESHOLD_OPTIONS = [3, 5, 7, 10, 14].map((n) => ({ label: `${n}`, value: n }));
+const THRESHOLD_OPTIONS = [
+  { label: '3 days', value: 3 },
+  { label: '7 days', value: 7 },
+  { label: '14 days', value: 14 },
+  { label: '30 days', value: 30 },
+];
 
 const quarterRange = (q: string): { start: string; end: string; label: string } => {
   const [qPart, yPart] = q.split('-');
@@ -505,17 +510,29 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
 // UI helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-const RagDot = ({ state }: { state: RagState }) => (
-  <span
-    style={{
-      display: 'inline-block',
-      width: 8,
-      height: 8,
-      borderRadius: '50%',
-      background: ragColors[state].dot,
-    }}
-  />
-);
+const RagDot = ({ state }: { state: RagState }) => {
+  const tooltipContent =
+    state === 'none' ? 'No target date set' :
+    state === 'overdue' ? 'Overdue' :
+    state === 'risk' ? 'At risk' :
+    'On track';
+  return (
+    <Tooltip content={tooltipContent}>
+      <span
+        tabIndex={0}
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: ragColors[state].dot,
+          cursor: 'help',
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
+      />
+    </Tooltip>
+  );
+};
 
 const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: number | null; dateStr: string | null }) => {
   if (state === 'none' || !dateStr) {
