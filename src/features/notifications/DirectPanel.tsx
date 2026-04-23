@@ -45,7 +45,8 @@ function mapVerb(notificationType: string): DirectVerb {
 
 function mapIconType(iconType: WorkItemIconType): DirectWorkItemIconType {
   switch (iconType) {
-    case 'bug':      return 'bug';
+    case 'bug':
+    case 'qa bug':   return 'bug';
     case 'story':    return 'story';
     case 'task':     return 'task';
     case 'epic':     return 'epic';

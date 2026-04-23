@@ -236,7 +236,8 @@ export function normalizeIconType(raw: string | undefined | null): WorkItemIconT
     case 'production_incident':
     case 'incident':
     case 'question':        return 'production_incident';
-    case 'bug':             return 'bug';
+    case 'bug':
+    case 'qa bug':          return 'bug';
     case 'story':           return 'story';
     case 'subtask':         return 'subtask';
     case 'task':

@@ -544,7 +544,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
             </button>
           </div>
         ) : activeTab === 'watching' ? (
-          <WatchingTab />
+          <WatchingTab unreadOnly={unreadOnly} isDark={isDark} />
         ) : activeTab === 'ai' ? (
           <AIRecapTabV2 />
         ) : activeTab === 'ageing' ? (

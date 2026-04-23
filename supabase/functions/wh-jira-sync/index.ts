@@ -488,6 +488,75 @@ serve(async (req) => {
           }
         }
 
+        // ── Watching notifications — emit for all mapped team members who are not the assignee ──
+        // This populates the Watching tab in Catalyst, matching Jira's project-level watch behaviour.
+        // Only fires for newly-created issues (created in the last 48h) to avoid backfill spam.
+        if (userMap.size > 0) {
+          const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
+          const newIssues = issues.filter((issue: any) => {
+            const created = issue.fields.created
+            return created && created >= cutoff48h
+          })
+
+          if (newIssues.length > 0) {
+            const watchingNotifRows: any[] = []
+            const allCatalystIds = [...userMap.values()]
+
+            for (const issue of newIssues) {
+              const assigneeAccountId = issue.fields.assignee?.accountId
+              const assigneeCatalystId = assigneeAccountId ? userMap.get(assigneeAccountId) : null
+              const creatorAccountId = issue.fields.reporter?.accountId
+              const creatorCatalystId = creatorAccountId ? userMap.get(creatorAccountId) : null
+
+              // Map issue type to Catalyst icon
+              const issueTypeName = (issue.fields.issuetype?.name || '').toLowerCase()
+              let watchIcon = 'task'
+              if (issueTypeName.includes('bug') || issueTypeName.includes('defect')) watchIcon = 'qa bug'
+              else if (issueTypeName.includes('story') || issueTypeName.includes('feature')) watchIcon = 'story'
+              else if (issueTypeName.includes('epic')) watchIcon = 'epic'
+
+              const statusCat = (issue.fields.status?.statusCategory?.name || '').toLowerCase()
+              const statusType = statusCat === 'done' ? 'green' : statusCat === 'in progress' ? 'blue' : 'gray'
+
+              // Notify all mapped team members EXCEPT the assignee and creator (they get direct notifications)
+              for (const catalystId of allCatalystIds) {
+                if (catalystId === assigneeCatalystId) continue  // has direct 'assigned' notification
+                if (catalystId === creatorCatalystId) continue   // they created it
+                watchingNotifRows.push({
+                  recipient_user_id: catalystId,
+                  actor_user_id: creatorCatalystId || null,
+                  notification_type: 'assigned',
+                  entity_id: issue.id,
+                  entity_type: 'issue',
+                  entity_key: issue.key,
+                  entity_title: issue.fields.summary || '',
+                  hub_source: 'ProjectHub',
+                  entity_icon_type: watchIcon,
+                  status: issue.fields.status?.name || 'To Do',
+                  status_type: statusType,
+                  tab: 'watching',
+                  metadata: {},
+                })
+              }
+            }
+
+            if (watchingNotifRows.length > 0) {
+              // Upsert with dedup: skip if this user already has a watching notif for this entity
+              const { error: wErr } = await supabase
+                .from('notifications')
+                .upsert(watchingNotifRows, {
+                  onConflict: 'recipient_user_id,notification_type,entity_key,tab',
+                  ignoreDuplicates: true,
+                })
+              if (wErr && wErr.code !== '23505') {
+                console.warn(`[sync] watching notifications upsert: ${wErr.message}`)
+              } else {
+                console.log(`[sync] Emitted ${watchingNotifRows.length} watching notifications for ${newIssues.length} new issues`)
+              }
+            }
+          }
+        }
+
         // ── Users ──
         for (const issue of issues) {
           const assignee = issue.fields.assignee
