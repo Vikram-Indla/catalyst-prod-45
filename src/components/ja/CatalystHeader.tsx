@@ -22,11 +22,29 @@ const isMacPlatform = () =>
 // justifyContent:center on the flex wrapper visually centres search+create.
 
 export function CatalystHeader() {
-  const { sidebarExpanded, sidebarHidden, cycleSidebarState } = useCatalystContext();
+  const {
+    sidebarExpanded, sidebarHidden, sidebarPinned,
+    cycleSidebarState, setSidebarHidden, setSidebarHoverOpen,
+  } = useCatalystContext();
   const isCollapsed = sidebarHidden || !sidebarExpanded;
   const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
+
+  // Hover: temporarily open the sidebar without pinning it.
+  // Only activates when the sidebar is collapsed/hidden and not pinned.
+  const handleChevronEnter = () => {
+    if (sidebarHidden && !sidebarPinned) {
+      setSidebarHidden(false);
+      setSidebarHoverOpen(true);
+    }
+  };
+  const handleChevronLeave = () => {
+    if (!sidebarPinned) {
+      setSidebarHoverOpen(false);
+      setSidebarHidden(true);
+    }
+  };
 
   return (
     <header
@@ -50,16 +68,22 @@ export function CatalystHeader() {
             to host the button). When expanded or collapsed to icon-rail, the
             toggle lives inside SidebarBase — Jira-parity positioning. */}
         {isCollapsed && (
-          <Tooltip content={sidebarTooltip} position="bottom">
-            <IconButton
-              label={sidebarLabel}
-              appearance="subtle"
-              onClick={cycleSidebarState}
-              icon={SidebarExpandIcon}
-              aria-expanded={false}
-              aria-controls="catalyst-sidebar"
-            />
-          </Tooltip>
+          <div
+            onMouseEnter={handleChevronEnter}
+            onMouseLeave={handleChevronLeave}
+            style={{ display: 'inline-flex' }}
+          >
+            <Tooltip content={sidebarTooltip} position="bottom">
+              <IconButton
+                label={sidebarLabel}
+                appearance="subtle"
+                onClick={cycleSidebarState}
+                icon={SidebarExpandIcon}
+                aria-expanded={false}
+                aria-controls="catalyst-sidebar"
+              />
+            </Tooltip>
+          </div>
         )}
         <HubSwitcher />
         <a

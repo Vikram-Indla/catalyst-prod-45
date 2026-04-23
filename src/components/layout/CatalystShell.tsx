@@ -364,7 +364,7 @@ function CatalystShellContent() {
       return (
         <ProjectHubSidebar
           expanded={false}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -374,7 +374,7 @@ function CatalystShellContent() {
       return (
         <WikiSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -384,7 +384,7 @@ function CatalystShellContent() {
       return (
         <ProjectHubSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -395,7 +395,7 @@ function CatalystShellContent() {
       return (
         <ReleaseHubSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -405,7 +405,7 @@ function CatalystShellContent() {
       return (
         <IncidentHubSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -415,7 +415,7 @@ function CatalystShellContent() {
       return (
         <ReleasesManagementSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -425,7 +425,7 @@ function CatalystShellContent() {
       return (
         <TestManagementSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -435,7 +435,7 @@ function CatalystShellContent() {
       return (
         <ReleaseRoomSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -445,7 +445,7 @@ function CatalystShellContent() {
       return (
         <ProductRoomSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -455,7 +455,7 @@ function CatalystShellContent() {
       return (
         <PlanHubSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -465,7 +465,7 @@ function CatalystShellContent() {
       return (
         <TaskHubSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -475,7 +475,7 @@ function CatalystShellContent() {
       return (
         <TestHubSidebar
           expanded={sidebarExpanded}
-          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          onToggle={cycleSidebarState}
         />
       );
     }
@@ -489,7 +489,7 @@ function CatalystShellContent() {
               workspaceType="program"
               entityId={activeProgramId}
               expanded={sidebarExpanded}
-              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+              onToggle={cycleSidebarState}
               selectedQuarter={selectedQuarter}
               onQuarterChange={setSelectedQuarter}
             />
@@ -511,7 +511,7 @@ function CatalystShellContent() {
               projectId={activeProjectId}
               projectName={projectData?.name}
               expanded={sidebarExpanded}
-              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+              onToggle={cycleSidebarState}
             />
           );
         }
@@ -529,7 +529,7 @@ function CatalystShellContent() {
         return (
           <EnterpriseSidebar
             expanded={sidebarExpanded}
-            onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+            onToggle={cycleSidebarState}
           />
         );
 
@@ -568,6 +568,13 @@ function CatalystShellContent() {
           aria-label="Main navigation"
           aria-hidden={sidebarHidden}
           className="relative flex-shrink-0"
+          onMouseLeave={() => {
+            // When sidebar opened via hover (not pinned), close it on mouse-leave
+            if (sidebarOverlayMode && !sidebarPinned) {
+              setSidebarHoverOpen(false);
+              setSidebarHidden(true);
+            }
+          }}
           style={sidebarOverlayMode ? {
             position: 'absolute' as const,
             top: 0,

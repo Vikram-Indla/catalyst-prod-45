@@ -1,63 +1,73 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Avatar from '@atlaskit/avatar';
+import { useQuery } from '@tanstack/react-query';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import RecentIcon from '@atlaskit/icon/glyph/recent';
-import AppSwitcherIcon from '@atlaskit/icon/glyph/app-switcher';
 import WorldIcon from '@atlaskit/icon/glyph/world';
 import PersonIcon from '@atlaskit/icon/glyph/person';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
-import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
+import { token } from '@atlaskit/tokens';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 import { useRecentItems, useSearchResults } from '@/hooks/useGlobalSearch';
-import { WorkItemTypeIcon } from '@/components/icons/WorkItemTypeIcon';
+import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import { FilterDropdown, FilterOption } from './FilterDropdown';
-import type { SearchResult, WorkItemType } from '@/types/global-search';
+import type { SearchResult } from '@/types/global-search';
 
-// GlobalSearchPanel — Jira-parity command palette panel rendered by the
-// header search trigger. Anchored bottom-start to the search Textfield via
-// Popup; this component owns content + keyboard nav + filter chip state.
-// Sections (in order, matching Jira reference image):
-//   1. Filter chips row: App / Space / Assignee
-//   2. Suggestions (mocked when no query)
-//   3. Recent search (mocked queries)
-//   4. RECENT items (real data from useRecentItems)
-//   5. Quick scope chips: Boards, Spaces, Filters, Plans, Teams
-//   6. Action rows: Search Jira for work items / Search all apps
-//   7. Footer: Help us improve / Why has search changed
-//
-// Width 920px (capped by viewport - 24px). Only the result list scrolls.
+// ── Data hooks ────────────────────────────────────────────────────────────────
 
-interface GlobalSearchPanelProps {
-  query: string;
-  onQueryChange: (q: string) => void;
-  onClose: () => void;
+/** Fetch distinct projects from ph_issues (real Jira-synced data). */
+function useProjects() {
+  return useQuery({
+    queryKey: ['global-search-projects'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('project_key, project_name')
+        .order('project_key')
+        .limit(500);
+      if (error) return [];
+      // Deduplicate by project_key
+      const seen = new Map<string, FilterOption>();
+      for (const row of data ?? []) {
+        if (row.project_key && !seen.has(row.project_key)) {
+          seen.set(row.project_key, {
+            id: row.project_key,
+            name: row.project_name || row.project_key,
+            tag: row.project_key,
+          });
+        }
+      }
+      return [...seen.values()];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 }
 
-// Mock filter sources — wire to real backend later.
-const APP_OPTIONS: FilterOption[] = [
-  { id: 'jira', name: 'Jira' },
-  { id: 'confluence', name: 'Confluence' },
-  { id: 'github', name: 'GitHub' },
-  { id: 'gdrive', name: 'Google Drive' },
-];
+/** Fetch approved team members for Assignee filter. */
+function useTeamMembers() {
+  return useQuery({
+    queryKey: ['global-search-members'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .eq('approval_status', 'APPROVED')
+        .order('full_name')
+        .limit(100);
+      if (error) return [];
+      return (data ?? []).map((m: any): FilterOption => ({
+        id: m.full_name || m.id,   // use display name as filter id for assignee_display_name search
+        name: m.full_name || 'Unknown',
+        avatarSrc: m.avatar_url ?? undefined,
+      }));
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
 
-const SPACE_OPTIONS: FilterOption[] = [
-  { id: 'BAU', name: 'Senaei BAU', tag: 'BAU' },
-  { id: 'DATA', name: 'DATA Project', tag: 'DATA' },
-  { id: 'IP', name: 'IP Implementation', tag: 'IP' },
-  { id: 'MWR', name: 'MIM Website Revamp', tag: 'MWR' },
-  { id: 'ISA', name: 'Industry.sa', tag: 'ISA' },
-];
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const ASSIGNEE_OPTIONS: FilterOption[] = [
-  { id: 'vikram', name: 'vikram indla' },
-  { id: 'yazeed', name: 'Yazeed Daraz' },
-  { id: 'nada', name: 'Nada alfassam' },
-  { id: 'imran', name: 'Imran Aslam' },
-  { id: 'suleiman', name: 'Suleiman Ahmad Allawanseh' },
-];
-
-// Highlight matched substring inside title.
 function highlight(text: string, q: string) {
   if (!q.trim()) return text;
   const idx = text.toLowerCase().indexOf(q.toLowerCase());
@@ -73,27 +83,34 @@ function highlight(text: string, q: string) {
   );
 }
 
-// Format an ISO timestamp into Jira-style "You viewed N hours/days ago"
 function timeAgo(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
   const m = Math.floor(diff / 60000);
   if (m < 1) return 'You viewed just now';
-  if (m < 60) return `You viewed ${m} minute${m === 1 ? '' : 's'} ago`;
+  if (m < 60) return `You viewed ${m}m ago`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `You viewed ${h} hour${h === 1 ? '' : 's'} ago`;
+  if (h < 24) return `You viewed ${h}h ago`;
   const d = Math.floor(h / 24);
-  return `You viewed ${d} day${d === 1 ? '' : 's'} ago`;
+  return `You viewed ${d}d ago`;
+}
+
+// ── Main component ────────────────────────────────────────────────────────────
+
+interface GlobalSearchPanelProps {
+  query: string;
+  onQueryChange: (q: string) => void;
+  onClose: () => void;
 }
 
 export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearchPanelProps) {
   const navigate = useNavigate();
-  const [appIds, setAppIds] = useState<string[]>([]);
-  const [spaceKeys, setSpaceKeys] = useState<string[]>([]);
+  const { user } = useAuth();
+  const [projectKeys, setProjectKeys] = useState<string[]>([]);
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Debounce the query so suggestions/recent/results all settle together.
+  // Debounce query
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   useEffect(() => {
     const t = window.setTimeout(() => setDebouncedQuery(query), 200);
@@ -103,47 +120,49 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
   const { data: recents = [] } = useRecentItems();
   const { data: searchResults = [] } = useSearchResults(debouncedQuery, {
     hub: null,
-    project: spaceKeys[0] ?? null,
+    project: projectKeys[0] ?? null,
     assignee: assigneeIds[0] ?? null,
     type: null,
   });
+  const { data: projectOptions = [] } = useProjects();
+  const { data: memberOptions = [] } = useTeamMembers();
 
-  // ── Build the concrete row list for keyboard navigation ──────────────
-  // Each row carries a kind (suggestion / recent-search / item / action)
-  // plus whatever payload it needs to perform its activate action.
+  // ── Row model ──────────────────────────────────────────────────────────────
   type Row =
     | { kind: 'suggestion'; id: string; label: React.ReactNode; activate: () => void }
-    | { kind: 'recent-search'; id: string; label: string; activate: () => void }
-    | { kind: 'item'; id: string; item: SearchResult; activate: () => void }
-    | { kind: 'action'; id: string; label: string; activate: () => void };
+    | { kind: 'item'; id: string; item: SearchResult; activate: () => void };
 
   const itemsToShow: SearchResult[] = debouncedQuery.length >= 2 ? searchResults : recents.slice(0, 7);
 
   const rows: Row[] = useMemo(() => {
     const out: Row[] = [];
+
     if (debouncedQuery.length < 2) {
+      // "Show my work items" — filters by current user when clicked
       out.push({
         kind: 'suggestion',
         id: 'sug-mywork',
         label: <>Show my <strong>work items</strong></>,
-        activate: () => navigate('/work-hub/my-work'),
+        activate: () => {
+          navigate('/for-you?tab=assigned');
+          onClose();
+        },
       });
+      // If assignee filter selected, show scoped suggestion
       if (assigneeIds.length > 0) {
-        const name = ASSIGNEE_OPTIONS.find((o) => o.id === assigneeIds[0])?.name ?? '';
+        const name = memberOptions.find((o) => o.id === assigneeIds[0])?.name ?? assigneeIds[0];
         out.push({
           kind: 'suggestion',
           id: 'sug-assignee',
-          label: <>tickets assigned to <strong>{name}</strong></>,
-          activate: () => navigate(`/work-hub/all?assignee=${assigneeIds[0]}`),
+          label: <>Work items assigned to <strong>{name}</strong></>,
+          activate: () => {
+            navigate(`/work-hub/all?assignee=${encodeURIComponent(assigneeIds[0])}`);
+            onClose();
+          },
         });
       }
-      out.push({
-        kind: 'recent-search',
-        id: 'rs-4189',
-        label: '4189',
-        activate: () => onQueryChange('4189'),
-      });
     }
+
     itemsToShow.forEach((it) => {
       out.push({
         kind: 'item',
@@ -155,60 +174,29 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         },
       });
     });
-    out.push({
-      kind: 'action',
-      id: 'act-jira',
-      label: 'Search Jira for work items',
-      activate: () => navigate(`/work-hub/all?q=${encodeURIComponent(debouncedQuery)}`),
-    });
-    out.push({
-      kind: 'action',
-      id: 'act-apps',
-      label: 'Search all apps',
-      activate: () => navigate(`/search?q=${encodeURIComponent(debouncedQuery)}`),
-    });
+
     return out;
-  }, [debouncedQuery, itemsToShow, assigneeIds, navigate, onClose, onQueryChange]);
+  }, [debouncedQuery, itemsToShow, assigneeIds, memberOptions, navigate, onClose]);
 
-  // Reset active index whenever rows change shape.
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [rows.length]);
+  useEffect(() => { setActiveIndex(0); }, [rows.length]);
 
-  // Keyboard nav (arrow up/down + enter + escape)
+  // Keyboard navigation
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setActiveIndex((i) => Math.min(i + 1, rows.length - 1));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setActiveIndex((i) => Math.max(i - 1, 0));
-      } else if (e.key === 'Enter') {
-        const r = rows[activeIndex];
-        if (r) {
-          e.preventDefault();
-          r.activate();
-        }
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        onClose();
-      }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIndex((i) => Math.min(i + 1, rows.length - 1)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIndex((i) => Math.max(i - 1, 0)); }
+      else if (e.key === 'Enter') { const r = rows[activeIndex]; if (r) { e.preventDefault(); r.activate(); } }
+      else if (e.key === 'Escape') { e.preventDefault(); onClose(); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [rows, activeIndex, onClose]);
 
-  // Render helpers ─────────────────────────────────────────────────────
+  // ── Render helpers ─────────────────────────────────────────────────────────
   const rowBase: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12,
-    padding: '8px 16px',
-    cursor: 'pointer',
-    borderRadius: 3,
+    display: 'flex', alignItems: 'center', gap: 12,
+    padding: '8px 16px', cursor: 'pointer', borderRadius: 3,
   };
-  const rowActive: React.CSSProperties = { ...rowBase, background: '#F1F2F4' };
 
   let rowCursor = 0;
   const renderRow = (r: Row, content: React.ReactNode, right?: React.ReactNode) => {
@@ -221,33 +209,22 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         aria-selected={active}
         onMouseEnter={() => setActiveIndex(i)}
         onClick={() => r.activate()}
-        style={active ? rowActive : rowBase}
+        style={active ? { ...rowBase, background: token('color.background.neutral.hovered', '#F1F2F4') } : rowBase}
       >
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 12, minWidth: 0 }}>
           {content}
         </div>
-        {right ? (
-          <div
-            style={{
-              fontSize: 12,
-              color: '#626F86',
-              fontFamily: 'Inter, system-ui, sans-serif',
-              flexShrink: 0,
-            }}
-          >
+        {right && (
+          <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), fontFamily: 'Inter, system-ui, sans-serif', flexShrink: 0 }}>
             {right}
           </div>
-        ) : null}
+        )}
       </div>
     );
   };
 
-  // Bucket rows for section ordering
   const suggestionRows = rows.filter((r) => r.kind === 'suggestion');
-  const recentSearchRows = rows.filter((r) => r.kind === 'recent-search');
   const itemRows = rows.filter((r) => r.kind === 'item');
-  const actionRows = rows.filter((r) => r.kind === 'action');
-
   const showRecentLabel = debouncedQuery.length < 2;
 
   return (
@@ -257,142 +234,93 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       style={{
         width: '100%',
         maxHeight: '60vh',
-        background: '#FFFFFF',
+        background: token('elevation.surface.overlay', '#FFFFFF'),
         borderRadius: 8,
-        border: '1px solid #DFE1E6',
-        boxShadow: '0 8px 24px rgba(9, 30, 66, 0.16), 0 2px 4px rgba(9, 30, 66, 0.08)',
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        boxShadow: '0 8px 24px rgba(9,30,66,0.16), 0 2px 4px rgba(9,30,66,0.08)',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
         fontFamily: 'Inter, system-ui, sans-serif',
       }}
     >
-      {/* Filter chip row — pinned at top */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '12px 16px',
-          borderBottom: '1px solid #F1F2F4',
-          flexShrink: 0,
-        }}
-      >
-        <button
-          type="button"
-          aria-label="Filters"
-          style={{
-            all: 'unset',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 36,
-            height: 36,
-            borderRadius: 4,
-            border: '1px solid #DFE1E6',
-            cursor: 'pointer',
-          }}
-        >
-          <FilterIcon label="" />
-        </button>
+      {/* ── Filter chips row ─────────────────────────────────────────────── */}
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 8,
+        padding: '10px 16px',
+        borderBottom: `1px solid ${token('color.border.subtle', '#F1F2F4')}`,
+        flexShrink: 0,
+      }}>
         <FilterDropdown
-          label="App"
-          searchPlaceholder="Find apps"
-          leadingIcon={AppSwitcherIcon}
-          options={APP_OPTIONS}
-          selectedIds={appIds}
-          onChange={setAppIds}
-        />
-        <FilterDropdown
-          label="Space"
-          searchPlaceholder="Find spaces"
+          label="Projects"
+          searchPlaceholder="Find projects"
           leadingIcon={WorldIcon}
-          options={SPACE_OPTIONS}
-          selectedIds={spaceKeys}
-          onChange={setSpaceKeys}
+          options={projectOptions}
+          selectedIds={projectKeys}
+          onChange={setProjectKeys}
         />
         <FilterDropdown
           label="Assignee"
           searchPlaceholder="Find people"
           leadingIcon={PersonIcon}
-          options={ASSIGNEE_OPTIONS}
+          options={memberOptions}
           selectedIds={assigneeIds}
           onChange={setAssigneeIds}
         />
       </div>
 
-      {/* Scrollable result region */}
+      {/* ── Scrollable results ───────────────────────────────────────────── */}
       <div ref={listRef} style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }} role="listbox">
+
         {/* Suggestions */}
         {suggestionRows.map((r) =>
-          renderRow(
-            r,
+          renderRow(r,
             <>
-              <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: '#626F86' }}>
+              <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: token('color.text.subtle', '#626F86') }}>
                 <SearchIcon label="" />
               </div>
-              <span style={{ fontSize: 14, color: '#172B4D' }}>{(r as any).label}</span>
+              <span style={{ fontSize: 14, color: token('color.text', '#172B4D') }}>
+                {(r as any).label}
+              </span>
             </>,
             'Suggestion',
-          ),
+          )
         )}
 
-        {/* Recent searches */}
-        {recentSearchRows.map((r) =>
-          renderRow(
-            r,
-            <>
-              <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: '#626F86' }}>
-                <RecentIcon label="" />
-              </div>
-              <span style={{ fontSize: 14, color: '#172B4D' }}>{(r as any).label}</span>
-            </>,
-            'Recent search',
-          ),
-        )}
-
-        {/* RECENT items section header */}
-        {itemRows.length > 0 ? (
-          <div
-            style={{
-              padding: '10px 16px 4px',
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '0.04em',
-              textTransform: 'uppercase',
-              color: '#626F86',
-            }}
-          >
+        {/* Recent / Results header */}
+        {itemRows.length > 0 && (
+          <div style={{
+            padding: '10px 16px 4px',
+            fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: token('color.text.subtle', '#626F86'),
+          }}>
             {showRecentLabel ? 'Recent' : 'Results'}
           </div>
-        ) : null}
+        )}
 
+        {/* Result / Recent items */}
         {itemRows.map((r) => {
           const it = (r as any).item as SearchResult;
+          const iconType = normalizeIconType(it.item_type);
           const projectLabel = it.project_name ?? it.project_key ?? '';
           const typeLabel = it.item_type
             ? it.item_type.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
             : '';
-          return renderRow(
-            r,
+          return renderRow(r,
             <>
               <div style={{ width: 28, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-                <WorkItemTypeIcon type={it.item_type as WorkItemType} size={20} />
+                <WorkItemIcon type={iconType} size={18} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0, flex: 1 }}>
-                <div
-                  style={{
-                    fontSize: 14,
-                    color: '#172B4D',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  <strong style={{ fontWeight: 600 }}>{it.item_key}</strong>: {highlight(it.title, debouncedQuery)}
+                <div style={{ fontSize: 14, color: token('color.text', '#172B4D'), overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <strong style={{ fontWeight: 600 }}>{it.item_key}</strong>
+                  {': '}
+                  {highlight(it.title, debouncedQuery)}
                 </div>
-                <div style={{ fontSize: 12, color: '#626F86' }}>
-                  Jira • {typeLabel} • {projectLabel}
+                <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86') }}>
+                  {typeLabel}{projectLabel ? ` • ${projectLabel}` : ''}
+                  {it.assignee_name ? ` • ${it.assignee_name}` : ''}
                 </div>
               </div>
             </>,
@@ -400,92 +328,12 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           );
         })}
 
-        {/* Quick scope chips */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '12px 16px 8px',
-            borderTop: '1px solid #F1F2F4',
-            marginTop: 8,
-          }}
-        >
-          <ShortcutIcon label="" />
-          {['Boards', 'Spaces', 'Filters', 'Plans', 'Teams'].map((l) => (
-            <button
-              key={l}
-              type="button"
-              style={{
-                all: 'unset',
-                cursor: 'pointer',
-                padding: '6px 12px',
-                borderRadius: 16,
-                border: '1px solid #DFE1E6',
-                fontSize: 13,
-                color: '#172B4D',
-                lineHeight: 1,
-              }}
-            >
-              {l}
-            </button>
-          ))}
-        </div>
-
-        {/* Actions */}
-        {actionRows.map((r) =>
-          renderRow(
-            r,
-            <>
-              <div style={{ width: 28, display: 'flex', justifyContent: 'center', color: '#626F86' }}>
-                <SearchIcon label="" />
-              </div>
-              <span style={{ fontSize: 14, color: '#172B4D' }}>{(r as any).label}</span>
-            </>,
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minWidth: 22,
-                height: 20,
-                padding: '0 6px',
-                borderRadius: 3,
-                border: '1px solid #DFE1E6',
-                background: '#F4F5F7',
-                color: '#626F86',
-                fontSize: 11,
-                fontWeight: 600,
-              }}
-            >
-              ↵
-            </span>,
-          ),
+        {/* Empty state */}
+        {debouncedQuery.length >= 2 && itemRows.length === 0 && (
+          <div style={{ padding: '24px 16px', textAlign: 'center', color: token('color.text.subtle', '#626F86'), fontSize: 14 }}>
+            No results for "<strong>{debouncedQuery}</strong>"
+          </div>
         )}
-      </div>
-
-      {/* Footer */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 16px',
-          borderTop: '1px solid #F1F2F4',
-          fontSize: 12,
-          color: '#626F86',
-          flexShrink: 0,
-        }}
-      >
-        <span>
-          Help us improve search{' '}
-          <a href="#" style={{ color: '#0C66E4', textDecoration: 'none' }}>
-            Give feedback
-          </a>
-        </span>
-        <a href="#" style={{ color: '#0C66E4', textDecoration: 'none' }}>
-          Why has search changed?
-        </a>
       </div>
     </div>
   );

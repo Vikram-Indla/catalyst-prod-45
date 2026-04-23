@@ -52,6 +52,8 @@ export function useSearchResults(query: string, filters: ActiveFilters) {
         .or(`issue_key.ilike.%${query}%,summary.ilike.%${query}%`)
         .order('jira_updated_at', { ascending: false })
         .limit(50);
+      if (filters.project) q = q.eq('project_key', filters.project);
+      if (filters.assignee) q = q.ilike('assignee_display_name', `%${filters.assignee}%`);
       if (filters.type) q = q.ilike('issue_type', filters.type.replace('_', ' '));
       const { data, error } = await q;
       if (error) throw error;
