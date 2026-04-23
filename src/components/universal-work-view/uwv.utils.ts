@@ -2,16 +2,19 @@
 /**
  * Universal Work View — pure utilities. No JSX. No React.
  *
- * Verified against live Jira DOM at
- * https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list
+ * Brought to PARITY with src/components/workhub/allwork/AllWorkTable.tsx
+ * (Project Work table) per audit decisions Q1–Q4. See CLAUDE.md §5 (status
+ * lozenge guardrail), §11 (icon registry), and §15 (interaction states).
  */
 
 import type { UWVColumn } from './uwv.types';
 
-// VERIFIED from Jira DOM — key colour is rgb(80,82,88) dark grey, not blue.
-export const JIRA_KEY_COLOR = '#505258';
-export const JIRA_SUMMARY_COLOR = '#29292E'; // rgb(41,42,46)
-export const JIRA_ROW_HEIGHT = 40;
+// Row height + key colour now match Project Work table.
+export const JIRA_ROW_HEIGHT = 44;
+// Key colour: always blue (matches AllWorkTable — `var(--cp-blue)`).
+export const JIRA_KEY_COLOR = 'var(--cp-blue)';
+// Summary uses theme token so dark mode works.
+export const JIRA_SUMMARY_COLOR = 'var(--fg-1)';
 
 export function lozengeAppearance(
   statusCategory: string,
@@ -20,20 +23,11 @@ export function lozengeAppearance(
   const cat = (statusCategory ?? '').toLowerCase();
   const st = (status ?? '').toLowerCase();
 
-  // Done category OR done-equivalent status names
   if (cat === 'done' || ['done', 'closed', 'resolved', 'complete', 'completed'].includes(st))
     return 'success';
-
-  // In progress category
   if (cat === 'in progress' || cat === 'inprogress') return 'inprogress';
-
-  // Blocked statuses
   if (['on hold', 'blocked', 'awaiting info', 'awaiting approval'].includes(st)) return 'moved';
-
-  // To do
   if (cat === 'to do' || st === 'to do' || st === 'backlog') return 'default';
-
-  // Custom "in progress-like" names
   if (
     st.includes('progress') ||
     st.includes('review') ||
@@ -43,32 +37,49 @@ export function lozengeAppearance(
     st.includes('ready')
   )
     return 'inprogress';
-
   return 'default';
 }
 
-export function hubLabel(hub: string): string {
-  const map: Record<string, string> = {
-    projecthub: 'ProjectHub',
-    producthub: 'ProductHub',
-    incidenthub: 'IncidentHub',
-    testhub: 'TestHub',
-  };
-  return map[hub] ?? hub;
+/**
+ * Hub label / colour — matches AllWorkTable.tsx HUB_COLORS exactly.
+ * Lowercase labels ('project', 'product', 'task', 'incident').
+ */
+export function hubTypeFromIssueType(issueType?: string | null): string {
+  const t = (issueType ?? '').toLowerCase();
+  if (t.includes('incident') || t.includes('bug') || t.includes('defect')) return 'incident';
+  if (t.includes('epic') || t.includes('story') || t.includes('feature')) return 'project';
+  if (t.includes('sub-task') || t.includes('subtask') || t.includes('task')) return 'task';
+  return 'product';
 }
 
-export function hubColour(hub: string): { bg: string; text: string } {
+export function hubLabel(hub: string): string {
+  // Map UWV hubSource values to lowercase Project Work labels.
+  const map: Record<string, string> = {
+    projecthub: 'project',
+    producthub: 'product',
+    incidenthub: 'incident',
+    testhub: 'task',
+  };
+  return (map[hub] ?? hub).toLowerCase();
+}
+
+export function hubColour(hub: string): { bg: string; text: string; border: string } {
+  // Mirror HUB_COLORS in AllWorkTable.tsx — token-based, dark-mode aware.
   switch (hub) {
     case 'projecthub':
-      return { bg: '#E9F2FF', text: '#0747A6' };
+    case 'project':
+      return { bg: 'var(--cp-primary-5)', text: 'var(--cp-blue)', border: 'var(--cp-blue)' };
     case 'producthub':
-      return { bg: '#EAE6FF', text: '#403294' };
-    case 'incidenthub':
-      return { bg: '#FFEBE6', text: '#BF2600' };
+    case 'product':
+      return { bg: '#F4F4F5', text: 'var(--fg-2)', border: 'var(--fg-2)' };
     case 'testhub':
-      return { bg: '#E3FCEF', text: '#006644' };
+    case 'task':
+      return { bg: '#F4F4F5', text: 'var(--fg-3)', border: '#D4D4D8' };
+    case 'incidenthub':
+    case 'incident':
+      return { bg: '#FEF2F2', text: 'var(--sem-danger)', border: 'var(--sem-danger)' };
     default:
-      return { bg: '#F4F5F7', text: '#42526E' };
+      return { bg: '#F4F4F5', text: 'var(--fg-3)', border: '#D4D4D8' };
   }
 }
 
@@ -85,55 +96,70 @@ export function formatDate(iso?: string | null): string {
   }
 }
 
+/** Relative time matching AllWorkTable formatRelative ("3d ago"). */
+export function formatRelative(iso?: string | null): string {
+  if (!iso) return '—';
+  try {
+    const diffMs = Date.now() - new Date(iso).getTime();
+    const sec = Math.floor(diffMs / 1000);
+    if (sec < 60) return 'just now';
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 24) return `${hr}h ago`;
+    const d = Math.floor(hr / 24);
+    if (d < 30) return `${d}d ago`;
+    const mo = Math.floor(d / 30);
+    if (mo < 12) return `${mo}mo ago`;
+    return `${Math.floor(mo / 12)}y ago`;
+  } catch {
+    return '—';
+  }
+}
+
 export function isOverdue(iso?: string | null): boolean {
   if (!iso) return false;
   return new Date(iso) < new Date();
 }
 
-/** First name only — used in the assignee column for visual density. */
+/** First name only — kept for backwards compatibility but unused after parity. */
 export function firstName(name?: string | null): string {
   if (!name) return '—';
   return name.split(/\s+/)[0] ?? name;
 }
 
+/** Deterministic avatar colour (mirrors AllWorkTable AVATAR_COLORS). */
+export const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];
+export function nameToHash(name: string): number {
+  return name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+}
+
 /**
- * VERIFIED column order against Jira list DOM:
- * checkbox | type+chevron | key | summary | status | comments | assignee | hub | (+ add)
+ * COLUMN PARITY with AllWorkTable.tsx COLUMNS:
+ *   checkbox · KEY · SUMMARY · STATUS · PROJECT · HUB · PRIORITY · UPDATED · REPORTED BY
  *
- * The leading checkbox cell + trailing "+" cell are rendered by UWVTable directly,
- * not as columns in this list.
+ * Widths (px) mirror AllWorkTable.tsx exactly. Summary uses width: 0 here as a
+ * sentinel; UWVTable converts width=0 → '1fr' so the column is fluid.
  */
 export const DEFAULT_COLUMNS: UWVColumn[] = [
-  { fieldId: 'type', label: 'Type', width: 80, visible: true, sortable: false, type: 'type-icon' },
-  { fieldId: 'key', label: 'Key', width: 110, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'summary', label: 'Summary', width: 380, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'status', label: 'Status', width: 160, visible: true, sortable: true, type: 'status' },
-  { fieldId: 'comments', label: 'Comments', width: 130, visible: true, sortable: false, type: 'comments' },
-  { fieldId: 'assignee', label: 'Assignee', width: 170, visible: true, sortable: true, type: 'user' },
-  { fieldId: 'hubSource', label: 'Hub', width: 110, visible: true, sortable: false, type: 'hub' },
+  { fieldId: 'key', label: 'Key', width: 140, visible: true, sortable: true, type: 'string' },
+  { fieldId: 'summary', label: 'Summary', width: 0, visible: true, sortable: false, type: 'string' },
+  { fieldId: 'status', label: 'Status', width: 120, visible: true, sortable: true, type: 'status' },
+  { fieldId: 'project', label: 'Project', width: 140, visible: true, sortable: false, type: 'string' },
+  { fieldId: 'hubSource', label: 'Hub', width: 95, visible: true, sortable: false, type: 'hub' },
+  { fieldId: 'priority', label: 'Priority', width: 80, visible: true, sortable: true, type: 'string' },
+  { fieldId: 'updated', label: 'Updated', width: 110, visible: true, sortable: true, type: 'date' },
+  { fieldId: 'assignee', label: 'Reported by', width: 180, visible: true, sortable: true, type: 'user' },
+  // Optional / hidden by default — kept available via column picker.
+  { fieldId: 'comments', label: 'Comments', width: 130, visible: false, sortable: false, type: 'comments' },
   { fieldId: 'dueDate', label: 'Due date', width: 110, visible: false, sortable: true, type: 'date' },
-  { fieldId: 'priority', label: 'Priority', width: 90, visible: false, sortable: true, type: 'string' },
   { fieldId: 'created', label: 'Created', width: 110, visible: false, sortable: true, type: 'date' },
-  { fieldId: 'updated', label: 'Updated', width: 110, visible: false, sortable: true, type: 'date' },
   { fieldId: 'parentKey', label: 'Parent', width: 100, visible: false, sortable: false, type: 'string' },
 ];
 
-/**
- * Map a raw issue_type string from ph_issues to the canonical WorkItemIcon
- * iconType. Done here (not in WorkItemIcon) so the work-item-icon registry
- * stays immutable per CLAUDE.md §11.
- */
+/** Map raw issue_type strings to JiraIssueTypeIcon `type` values. */
 export function mapIssueTypeToIcon(issueType?: string | null): string {
-  const t = (issueType ?? '').toLowerCase().trim();
-  if (!t) return 'task';
-  if (t === 'epic') return 'epic';
-  if (t === 'story' || t === 'user story') return 'story';
-  if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'bug';
-  if (t === 'subtask' || t === 'sub-task') return 'subtask';
-  if (t === 'task' || t === 'improvement') return 'task';
-  if (t === 'incident' || t === 'production_incident' || t === 'production incident') {
-    return 'production_incident';
-  }
-  if (t === 'mdt' || t === 'initiative') return 'feature';
-  return 'task';
+  // JiraIssueTypeIcon resolves freely on the raw string via resolveJiraTypeConfig,
+  // so we just pass through. Keep a sensible fallback.
+  return (issueType ?? 'task').trim() || 'task';
 }
