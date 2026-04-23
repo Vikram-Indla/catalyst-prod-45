@@ -673,32 +673,21 @@ function DemandRowItem({
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
-        <ChevronRight
-          size={14}
-          style={{
-            color: token('color.text.subtlest', '#6B778C'),
-            transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-            transition: 'transform 150ms',
-          }}
-        />
+        <span style={{ display: 'inline-flex', transition: 'transform 150ms', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+          <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
+        </span>
         <RagDot state={state} />
-        <a
+        <Link
           href={productHubUrl}
           onClick={(e) => e.stopPropagation()}
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            color: token('color.text.brand', '#0C66E4'),
-            textDecoration: 'none',
-            whiteSpace: 'nowrap',
-          }}
+          style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}
         >
           {row.initiative_key}
-        </a>
+        </Link>
         <span
           title={row.title}
           style={{
-            fontSize: 12,
+            font: token('font.body.small'),
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -709,7 +698,7 @@ function DemandRowItem({
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <ProgressBar value={pct / 100} appearance="default" />
-          <span style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+          <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
             {pct}% · {row.done}/{row.total}
           </span>
         </div>
