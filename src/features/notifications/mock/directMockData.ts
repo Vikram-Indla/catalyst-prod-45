@@ -85,7 +85,7 @@ export const MOCK_DIRECT_NOTIFICATIONS: DirectNotification[] = [
     },
     aggregation: { count: 1, actor: YAZEED },
     thread: {
-      commentPreview: 'The Save Draft button should appear in the bottom action bar. Confirmed in the Figma spec — checking if it's missing from the implementation or just hidden behind a feature flag.',
+      commentPreview: "The Save Draft button should appear in the bottom action bar. Confirmed in the Figma spec — checking if it's missing from the implementation or just hidden behind a feature flag.",
       reactions: { '👍': 1 },
       replyCount: 2,
     },
