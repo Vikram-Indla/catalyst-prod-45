@@ -91,10 +91,12 @@ export default function WidgetWrapper({
         borderRadius: 8,
       }}
     >
-      {/* Header — retains <button> semantics so the entire row is the collapse affordance */}
-      <button
-        onClick={onToggleCollapse}
-        className="w-full flex items-center justify-between gap-2 cursor-pointer border-0 text-left"
+      {/* Header — split into two siblings so headerBadges (which may contain
+          interactive elements like the settings IconButton) are NOT nested
+          inside the collapse <button>. Nested interactives are invalid HTML
+          and browsers route inner clicks to the outer button. */}
+      <div
+        className="flex items-center justify-between gap-2"
         style={{
           padding: '10px 14px',
           background: token('color.background.neutral.subtle', '#F1F5F9'),
@@ -102,7 +104,12 @@ export default function WidgetWrapper({
           minHeight: 38,
         }}
       >
-        <div className="flex items-center gap-2 min-w-0">
+        {/* Collapse trigger — title only */}
+        <button
+          onClick={onToggleCollapse}
+          aria-expanded={!collapsed}
+          className="flex-1 min-w-0 flex items-center gap-2 cursor-pointer border-0 bg-transparent text-left p-0"
+        >
           {headerIcon}
           <Heading as="h3" size="xsmall" truncate>
             {title}
@@ -118,19 +125,29 @@ export default function WidgetWrapper({
               · {subtitle}
             </span>
           )}
-        </div>
+        </button>
+        {/* Badges + chevron — sibling of the collapse button */}
         <div className="flex items-center gap-2 shrink-0">
           {headerBadges}
-          <ChevronDown
-            size={14}
+          <span
+            onClick={onToggleCollapse}
             style={{
+              display: 'inline-flex',
+              cursor: 'pointer',
               color: token('color.text.subtlest', '#6B778C'),
-              transition: 'transform 200ms ease',
-              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
-          />
+            aria-hidden="true"
+          >
+            <ChevronDown
+              size={14}
+              style={{
+                transition: 'transform 200ms ease',
+                transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+              }}
+            />
+          </span>
         </div>
-      </button>
+      </div>
 
       {/* Body */}
       {!collapsed && (
