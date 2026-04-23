@@ -20,7 +20,8 @@
  *
  * Chrome reuses WidgetWrapper (same shell as every other dashboard gadget).
  */
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
@@ -33,7 +34,7 @@ import ProgressBar from '@atlaskit/progress-bar';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import EmptyState from '@atlaskit/empty-state';
-import Popup from '@atlaskit/popup';
+
 import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
@@ -890,11 +891,27 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
+  const gearRef = useRef<HTMLSpanElement>(null);
 
   // Reset expansion if rows change.
   useEffect(() => {
     if (expandedId && !rows.find((r) => r.id === expandedId)) setExpandedId(null);
   }, [rows, expandedId]);
+
+  // Click-outside handler for settings popup.
+  useEffect(() => {
+    if (!settingsOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const gearEl = gearRef.current;
+      const popupEl = document.getElementById('demand-settings-popup');
+      if (gearEl && !gearEl.contains(target) && popupEl && !popupEl.contains(target)) {
+        setSettingsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [settingsOpen]);
 
   const active = useMemo(() => rows.filter((r) => !r.isDelivered), [rows]);
   const delivered = useMemo(() => rows.filter((r) => r.isDelivered), [rows]);
@@ -985,37 +1002,48 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             <CalendarIcon label="" color="currentColor" />
             {periodBadge}
           </span>
-          <Popup
-            isOpen={settingsOpen}
-            onClose={() => setSettingsOpen(false)}
-            placement="bottom-end"
-            shouldFlip
-            content={() => (
-              <SettingsPopupBody
-                initial={settings}
-                onCancel={() => setSettingsOpen(false)}
-                onApply={async (next) => {
-                  await save(next);
-                  setSettingsOpen(false);
+          <span ref={gearRef} style={{ display: 'inline-flex' }}>
+            <IconButton
+              icon={SettingsIcon}
+              label="Configure demand gadget"
+              appearance="subtle"
+              spacing="compact"
+              isTooltipDisabled={false}
+              onClick={(e) => {
+                e.stopPropagation();
+                setSettingsOpen((prev) => !prev);
+              }}
+            />
+          </span>
+          {settingsOpen && (() => {
+            const rect = gearRef.current?.getBoundingClientRect();
+            return ReactDOM.createPortal(
+              <div
+                id="demand-settings-popup"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  position: 'fixed',
+                  top: (rect?.bottom ?? 0) + 4,
+                  right: window.innerWidth - (rect?.right ?? 0),
+                  zIndex: 510,
+                  background: token('elevation.surface.overlay', '#FFFFFF'),
+                  borderRadius: token('border.radius.100', '4px'),
+                  boxShadow: '0 4px 8px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+                  minWidth: 300,
                 }}
-              />
-            )}
-            trigger={(triggerProps) => (
-              <span {...triggerProps}>
-                <IconButton
-                  icon={SettingsIcon}
-                  label="Configure demand gadget"
-                  appearance="subtle"
-                  spacing="compact"
-                  isTooltipDisabled={false}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSettingsOpen((v) => !v);
+              >
+                <SettingsPopupBody
+                  initial={settings}
+                  onCancel={() => setSettingsOpen(false)}
+                  onApply={async (next) => {
+                    await save(next);
+                    setSettingsOpen(false);
                   }}
                 />
-              </span>
-            )}
-          />
+              </div>,
+              document.body,
+            );
+          })()}
         </span>
       }
       footer={
