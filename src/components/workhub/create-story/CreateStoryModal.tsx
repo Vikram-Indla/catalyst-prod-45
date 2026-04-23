@@ -989,10 +989,10 @@ export function CreateStoryModal({
                 {({ fieldProps: { id, isDisabled } }) => (
                   <>
                     <AsyncSelect<IconOption>
+                      key={`parent-${resolvedKey || 'none'}`}
                       id={id}
-                      isDisabled={isDisabled}
+                      isDisabled={isDisabled || !resolvedKey}
                       inputId="cs-parent"
-                      cacheOptions
                       defaultOptions
                       loadOptions={async (input: string) => {
                         if (!resolvedKey) return [];
