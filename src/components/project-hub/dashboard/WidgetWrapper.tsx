@@ -104,12 +104,8 @@ export default function WidgetWrapper({
           minHeight: 38,
         }}
       >
-        {/* Collapse trigger — title only */}
-        <button
-          onClick={onToggleCollapse}
-          aria-expanded={!collapsed}
-          className="flex-1 min-w-0 flex items-center gap-2 cursor-pointer border-0 bg-transparent text-left p-0"
-        >
+        {/* Title — non-interactive. Header has no collapse affordance. */}
+        <div className="flex-1 min-w-0 flex items-center gap-2 text-left">
           {headerIcon}
           <Heading as="h3" size="xsmall" truncate>
             {title}
@@ -125,7 +121,7 @@ export default function WidgetWrapper({
               · {subtitle}
             </span>
           )}
-        </button>
+        </div>
         {/* Badges only — no collapse chevron. Settings gear lives inside
             headerBadges and stops propagation on click. */}
         <div className="flex items-center gap-2 shrink-0">
