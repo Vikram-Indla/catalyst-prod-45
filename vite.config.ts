@@ -149,6 +149,11 @@ export default defineConfig(({ mode, command }) => {
   server: {
     host: "0.0.0.0",
     port: 8080,
+    allowedHosts: "all",
+    hmr: {
+      clientPort: 443,
+      protocol: "wss",
+    },
   },
   plugins: [
     isBuild ? skipHeavyModules() : null,
