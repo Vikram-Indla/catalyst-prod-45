@@ -902,16 +902,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         >
           <span
             style={{
-              fontSize: 12,
-              fontWeight: 500,
-              color: token('color.text.subtle', '#42526E'),
-              background: token('color.background.neutral', '#F4F5F7'),
-              border: `1px solid ${token('color.border', '#E2E8F0')}`,
-              borderRadius: 3,
-              padding: '2px 6px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: token('space.050', '4px'),
+              font: token('font.body.small'),
+              color: token('color.text.subtle'),
+              background: token('color.background.neutral'),
+              borderRadius: token('border.radius.100', '4px'),
+              padding: `${token('space.050', '4px')} ${token('space.100', '8px')}`,
               whiteSpace: 'nowrap',
             }}
           >
+            <CalendarIcon label="" color="currentColor" />
             {periodBadge}
           </span>
           <Popup
@@ -930,36 +932,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               />
             )}
             trigger={(triggerProps) => (
-              <span
-                {...triggerProps}
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setSettingsOpen((v) => !v);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+              <span {...triggerProps}>
+                <IconButton
+                  icon={SettingsIcon}
+                  label="Configure demand gadget"
+                  appearance="subtle"
+                  spacing="compact"
+                  isTooltipDisabled={false}
+                  onClick={(e) => {
                     e.stopPropagation();
-                    e.preventDefault();
                     setSettingsOpen((v) => !v);
-                  }
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  cursor: 'pointer',
-                  padding: 2,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  color: token('color.text.subtlest', '#6B778C'),
-                  borderRadius: 3,
-                }}
-                aria-label="Configure demand gadget"
-                aria-expanded={settingsOpen}
-              >
-                <Settings size={14} />
+                  }}
+                />
               </span>
             )}
           />
@@ -967,13 +951,13 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       }
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <a
-            href="/producthub/backlog"
-            style={{ fontSize: 12, fontWeight: 500, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-          >
-            View all in ProductHub ↗
-          </a>
-          <span style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+          <Link href="/producthub/backlog">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px') }}>
+              View all in ProductHub
+              <ShortcutIcon label="" color="currentColor" />
+            </span>
+          </Link>
+          <span style={{ font: token('font.body.small'), color: token('color.text.subtlest') }}>
             {[settings.include_stories && 'Stories', settings.include_defects && 'Defects'].filter(Boolean).join(' + ')} · Sun–Thu
           </span>
         </div>
