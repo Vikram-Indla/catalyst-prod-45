@@ -1007,8 +1007,26 @@ function DemandRowItem({
 
         {/* Progress + stat — inline (bar left, text right) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 72, flexShrink: 0 }}>
-            <ProgressBar value={pct / 100} appearance={pct === 100 ? 'success' : 'default'} />
+          <div
+            style={{
+              width: 72,
+              height: 6,
+              flexShrink: 0,
+              borderRadius: 3,
+              background: '#DFE1E6',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${pct}%`,
+                height: '100%',
+                borderRadius: 3,
+                transition: 'width 200ms ease',
+                background:
+                  pct === 100 ? '#1F845A' : pct > 0 ? '#0C66E4' : 'transparent',
+              }}
+            />
           </div>
           <span
             style={{
@@ -1016,7 +1034,7 @@ function DemandRowItem({
               lineHeight: '16px',
               fontWeight: 400,
               fontFamily: ATLAS_SANS,
-              color: token('color.text.subtle', '#44546F'),
+              color: pct === 100 ? '#1F845A' : token('color.text.subtle', '#44546F'),
               whiteSpace: 'nowrap',
             }}
           >
