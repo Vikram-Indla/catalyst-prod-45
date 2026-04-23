@@ -965,7 +965,7 @@ function DemandRowItem({
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
+          gridTemplateColumns: '28px 20px 100px 1fr 160px 110px 28px',
           alignItems: 'center',
           gap: 8,
           padding: `0 ${token('space.200', '16px')}`,
@@ -991,6 +991,11 @@ function DemandRowItem({
           <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
         </span>
 
+        {/* Type icon — Epic icon for unlinked epics, Initiative/default for MDTs */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <JiraIssueTypeIcon type={isUnlinkedEpic ? 'Epic' : 'Initiative'} size={16} />
+        </span>
+
         {/* Key (with leading RAG dot) */}
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
           <RagDot state={state} />
@@ -1013,7 +1018,7 @@ function DemandRowItem({
           </a>
         </span>
 
-        {/* Title */}
+        {/* Summary */}
         <span
           title={row.title}
           style={{
@@ -1070,27 +1075,19 @@ function DemandRowItem({
         {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
 
-        {/* Avatar */}
-        <Avatar size="xsmall" name={row.assignee_name} src={row.assignee_avatar ?? undefined}>
-          {() => (
-            <span
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: token('color.background.accent.gray.subtle', '#DFE1E6'),
-                color: token('color.text.subtle', '#42526E'),
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 10,
-                fontWeight: 600,
-              }}
-            >
-              {initialsOf(row.assignee_name)}
-            </span>
-          )}
-        </Avatar>
+        {/* Avatar — canonical CatalystOwnerAvatar (matches All Work) */}
+        <CatalystOwnerAvatar
+          type={row.assignee_name && row.assignee_name !== '—' ? 'human' : 'placeholder'}
+          name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : undefined}
+          avatarUrl={
+            row.assignee_avatar
+              || (row.assignee_name && row.assignee_name !== '—'
+                ? resolveAvatarUrl(row.assignee_name) ?? undefined
+                : undefined)
+          }
+          size="sm"
+          showTooltip
+        />
       </div>
 
       {expanded && (
