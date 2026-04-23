@@ -253,6 +253,14 @@ const classifyIssue = (issue: any): 'done' | 'blocked' | 'inprogress' | 'todo' |
   return null;
 };
 
+interface UnlinkedEpicStory {
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string;
+  assignee_display_name: string | null;
+}
+
 interface UnlinkedEpic {
   id: string;
   issue_key: string;
@@ -267,11 +275,12 @@ interface UnlinkedEpic {
   blocked: number;
   inprogress: number;
   todo: number;
+  stories: UnlinkedEpicStory[];
 }
 
-function useUnlinkedEpics(projectKey: string) {
+function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
   return useQuery({
-    queryKey: ['demand-fulfilment-unlinked', projectKey],
+    queryKey: ['demand-fulfilment-unlinked', projectKey, settings.include_stories, settings.include_defects],
     queryFn: async (): Promise<UnlinkedEpic[]> => {
       // Fetch all linked epic ids first
       const { data: links } = await (supabase as any)
@@ -292,23 +301,41 @@ function useUnlinkedEpics(projectKey: string) {
       if (unlinked.length === 0) return [];
 
       // Fetch child stories/bugs for these epics to compute roll-up counts.
+      const childTypes: string[] = [];
+      if (settings.include_stories) childTypes.push('Story');
+      if (settings.include_defects) childTypes.push('Bug', 'Defect');
+      if (childTypes.length === 0) childTypes.push('Story');
+
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, status, status_category')
+        .select('parent_key, issue_key, summary, status, status_category, assignee_display_name, jira_removed_at')
         .in('parent_key', epicKeys)
-        .in('issue_type', ['Story', 'Bug', 'Defect'])
+        .in('issue_type', childTypes)
         .is('jira_removed_at', null)
         .limit(5000);
 
       const bucketByEpic = new Map<string, { total: number; done: number; blocked: number; inprogress: number; todo: number }>();
-      epicKeys.forEach((k) => bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 }));
+      const storyRowsByEpic = new Map<string, UnlinkedEpicStory[]>();
+      epicKeys.forEach((k) => {
+        bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 });
+        storyRowsByEpic.set(k, []);
+      });
       (children ?? []).forEach((c: any) => {
         const b = bucketByEpic.get(c.parent_key);
         if (!b) return;
         const cls = classifyIssue(c);
         b.total += 1;
         if (cls) (b as any)[cls] += 1;
+        const list = storyRowsByEpic.get(c.parent_key) ?? [];
+        list.push({
+          issue_key: c.issue_key,
+          summary: c.summary ?? '',
+          status: c.status,
+          status_category: c.status_category,
+          assignee_display_name: c.assignee_display_name ?? null,
+        });
+        storyRowsByEpic.set(c.parent_key, list);
       });
 
       // Fetch assignee avatars from profiles.
@@ -335,6 +362,7 @@ function useUnlinkedEpics(projectKey: string) {
           assignee_name: profile?.display_name ?? profile?.full_name ?? e.assignee_display_name ?? '—',
           assignee_avatar: profile?.avatar_url ?? null,
           ...b,
+          stories: storyRowsByEpic.get(e.issue_key) ?? [],
         };
       });
     },
@@ -511,8 +539,11 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const RagDot = ({ state }: { state: RagState }) => {
+  if (state === 'none') {
+    // Preserve grid column width when no target date.
+    return <span style={{ width: 8, flexShrink: 0 }} />;
+  }
   const tooltipContent =
-    state === 'none' ? 'No target date set' :
     state === 'overdue' ? 'Overdue' :
     state === 'risk' ? 'At risk' :
     'On track';
@@ -744,16 +775,18 @@ function DemandRowItem({
   threshold,
   expanded,
   onToggle,
+  projectKey,
 }: {
   row: DemandRow;
   threshold: number;
   expanded: boolean;
   onToggle: () => void;
+  projectKey: string;
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
   const c = ragColors[state];
-  const productHubUrl = `/producthub/backlog?initiative=${row.initiative_key}`;
+  const detailUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`;
 
   return (
     <div
@@ -785,7 +818,7 @@ function DemandRowItem({
         </span>
         <RagDot state={state} />
         <a
-          href={productHubUrl}
+          href={detailUrl}
           onClick={(e) => e.stopPropagation()}
           style={{
             fontSize: 11,
@@ -801,9 +834,10 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            fontSize: 12,
-            lineHeight: '16px',
+            fontSize: 14,
+            lineHeight: '20px',
             fontWeight: 400,
+            fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -947,7 +981,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const navigate = useNavigate();
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
-  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
+  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const toggleRow = (id: string) => setExpandedRows((prev) => {
     const next = new Set(prev);
@@ -955,6 +989,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     return next;
   });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
   const gearRef = useRef<HTMLSpanElement>(null);
@@ -1003,7 +1038,17 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       todo: epic.todo ?? 0,
       inprogress: epic.inprogress ?? 0,
       blocked: epic.blocked ?? 0,
-      epics: [],
+      epics: (epic.stories ?? []).map((s) => ({
+        id: s.issue_key,
+        issue_key: s.issue_key,
+        summary: s.summary,
+        total: 1,
+        done: s.status_category === 'Done' ? 1 : 0,
+        todo: s.status_category === 'To Do' ? 1 : 0,
+        inprogress: s.status_category === 'In Progress' ? 1 : 0,
+        blocked: ['On Hold', 'Blocked', 'Awaiting Info'].includes(s.status) ? 1 : 0,
+        status: s.status,
+      })),
       isDelivered: false,
       deliveredAt: null,
     }));
@@ -1017,7 +1062,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   const visibleByTab =
     tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
-  const visibleRows = visibleByTab.slice(0, 10);
+
+  const filteredRows = statusFilter
+    ? visibleByTab.filter((r) => {
+        if (statusFilter === 'Done') return r.done === r.total && r.total > 0;
+        if (statusFilter === 'In Progress') return r.inprogress > 0;
+        if (statusFilter === 'Blocked') return r.blocked > 0;
+        if (statusFilter === 'To Do') return r.todo > 0 && r.inprogress === 0 && r.done === 0;
+        return true;
+      })
+    : visibleByTab;
+
+  const visibleRows = filteredRows.slice(0, 10);
+
+
+
 
   // Period badge text (icon rendered separately as ADS CalendarIcon)
   const periodBadge = (() => {
@@ -1119,9 +1178,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       }
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/producthub/backlog">
+          <Link href={`/project-hub/${projectKey}/hierarchy/allwork`}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px') }}>
-              View all in ProductHub
+              View all in ProjectHub
               <ShortcutIcon label="" color="currentColor" />
             </span>
           </Link>
@@ -1157,7 +1216,36 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         </Tabs>
       </div>
 
-      {/* Period strip */}
+      {/* Status filter */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: `6px ${token('space.200', '16px')}`,
+          borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
+        }}
+      >
+        <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+          Filter:
+        </span>
+        <div style={{ width: 180 }}>
+          <Select
+            spacing="compact"
+            isClearable
+            placeholder="All statuses"
+            options={[
+              { label: 'To Do', value: 'To Do' },
+              { label: 'In Progress', value: 'In Progress' },
+              { label: 'Blocked', value: 'Blocked' },
+              { label: 'Done', value: 'Done' },
+            ]}
+            value={statusFilter ? { label: statusFilter, value: statusFilter } : null}
+            onChange={(opt: any) => setStatusFilter(opt ? opt.value : null)}
+          />
+        </div>
+      </div>
       <div
         style={{
           background: token('elevation.surface.sunken', '#F7F8F9'),
@@ -1227,15 +1315,16 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   threshold={settings.rag_threshold}
                   expanded={expandedRows.has(row.id)}
                   onToggle={() => toggleRow(row.id)}
+                  projectKey={projectKey}
                 />
               ))
             )}
           </div>
 
-          {visibleByTab.length > 10 && (
+          {filteredRows.length > 10 && (
             <div style={{ padding: '6px 16px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
-              <a href="/producthub/backlog" style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
-                View all {visibleByTab.length} in ProductHub ↗
+              <a href={`/project-hub/${projectKey}/hierarchy/allwork`} style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
+                View all {filteredRows.length} in ProjectHub ↗
               </a>
             </div>
           )}
