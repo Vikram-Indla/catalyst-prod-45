@@ -253,6 +253,14 @@ const classifyIssue = (issue: any): 'done' | 'blocked' | 'inprogress' | 'todo' |
   return null;
 };
 
+interface UnlinkedEpicStory {
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string;
+  assignee_display_name: string | null;
+}
+
 interface UnlinkedEpic {
   id: string;
   issue_key: string;
@@ -267,11 +275,12 @@ interface UnlinkedEpic {
   blocked: number;
   inprogress: number;
   todo: number;
+  stories: UnlinkedEpicStory[];
 }
 
-function useUnlinkedEpics(projectKey: string) {
+function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
   return useQuery({
-    queryKey: ['demand-fulfilment-unlinked', projectKey],
+    queryKey: ['demand-fulfilment-unlinked', projectKey, settings.include_stories, settings.include_defects],
     queryFn: async (): Promise<UnlinkedEpic[]> => {
       // Fetch all linked epic ids first
       const { data: links } = await (supabase as any)
@@ -292,23 +301,41 @@ function useUnlinkedEpics(projectKey: string) {
       if (unlinked.length === 0) return [];
 
       // Fetch child stories/bugs for these epics to compute roll-up counts.
+      const childTypes: string[] = [];
+      if (settings.include_stories) childTypes.push('Story');
+      if (settings.include_defects) childTypes.push('Bug', 'Defect');
+      if (childTypes.length === 0) childTypes.push('Story');
+
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, status, status_category')
+        .select('parent_key, issue_key, summary, status, status_category, assignee_display_name, jira_removed_at')
         .in('parent_key', epicKeys)
-        .in('issue_type', ['Story', 'Bug', 'Defect'])
+        .in('issue_type', childTypes)
         .is('jira_removed_at', null)
         .limit(5000);
 
       const bucketByEpic = new Map<string, { total: number; done: number; blocked: number; inprogress: number; todo: number }>();
-      epicKeys.forEach((k) => bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 }));
+      const storyRowsByEpic = new Map<string, UnlinkedEpicStory[]>();
+      epicKeys.forEach((k) => {
+        bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 });
+        storyRowsByEpic.set(k, []);
+      });
       (children ?? []).forEach((c: any) => {
         const b = bucketByEpic.get(c.parent_key);
         if (!b) return;
         const cls = classifyIssue(c);
         b.total += 1;
         if (cls) (b as any)[cls] += 1;
+        const list = storyRowsByEpic.get(c.parent_key) ?? [];
+        list.push({
+          issue_key: c.issue_key,
+          summary: c.summary ?? '',
+          status: c.status,
+          status_category: c.status_category,
+          assignee_display_name: c.assignee_display_name ?? null,
+        });
+        storyRowsByEpic.set(c.parent_key, list);
       });
 
       // Fetch assignee avatars from profiles.
@@ -335,6 +362,7 @@ function useUnlinkedEpics(projectKey: string) {
           assignee_name: profile?.display_name ?? profile?.full_name ?? e.assignee_display_name ?? '—',
           assignee_avatar: profile?.avatar_url ?? null,
           ...b,
+          stories: storyRowsByEpic.get(e.issue_key) ?? [],
         };
       });
     },
