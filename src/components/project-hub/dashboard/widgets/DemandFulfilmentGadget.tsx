@@ -63,6 +63,7 @@ import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import type { WidgetProps } from '../widget-registry';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Settings types & defaults
