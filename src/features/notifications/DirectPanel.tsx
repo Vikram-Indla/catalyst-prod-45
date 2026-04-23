@@ -1,7 +1,7 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
-import { useNotificationsQuery } from '@/hooks/useNotificationsNew';
+import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
 import { useActorProfiles } from '@/hooks/useActorProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
@@ -212,6 +212,10 @@ function LoadingState({ isDark }: { isDark: boolean }) {
 
 export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadIds, onMarkRead }: DirectPanelProps) {
   const { data, isLoading } = useNotificationsQuery('direct', unreadOnly);
+  const markAsReadMutation = useMarkAsRead();
+
+  // Optimistic local read state — avoids waiting for query refetch after marking read
+  const [localReadIds, setLocalReadIds] = useState<Set<string>>(new Set());
 
   // Flatten paginated pages into a flat list of raw Notification rows
   const rawNotifications = useMemo<Notification[]>(() => {
@@ -234,15 +238,27 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
     [rawNotifications, profiles]
   );
 
-  // Read-state: prefer external (from NotificationPanel) else derive from readAt field
+  // Read-state: merge DB read_at, local optimistic state, and external state
   const resolvedReadIds = useMemo<Set<string>>(() => {
-    if (externalReadIds) return externalReadIds;
-    const init = new Set<string>();
-    for (const n of notifications) {
-      if (n.readAt) init.add(n.id);
+    const ids = new Set<string>(localReadIds);
+    if (externalReadIds) {
+      externalReadIds.forEach(id => ids.add(id));
     }
-    return init;
-  }, [externalReadIds, notifications]);
+    for (const n of notifications) {
+      if (n.readAt) ids.add(n.id);
+    }
+    return ids;
+  }, [externalReadIds, localReadIds, notifications]);
+
+  // handleMarkRead: optimistic update + real Supabase write + badge invalidation
+  const handleMarkRead = useCallback((id: string) => {
+    // Optimistic: mark read immediately in UI
+    setLocalReadIds(prev => new Set(prev).add(id));
+    // Real write to DB — onSuccess invalidates ['notifications'] + ['notifications-unread-count']
+    markAsReadMutation.mutate(id);
+    // Also bubble up if parent needs to know
+    onMarkRead?.(id);
+  }, [markAsReadMutation, onMarkRead]);
 
   if (isLoading) return <LoadingState isDark={isDark} />;
 
@@ -275,7 +291,7 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
               key={n.id}
               notification={n}
               isRead={resolvedReadIds.has(n.id)}
-              onMarkRead={onMarkRead ?? (() => {})}
+              onMarkRead={handleMarkRead}
               isDark={isDark}
             />
           ))}

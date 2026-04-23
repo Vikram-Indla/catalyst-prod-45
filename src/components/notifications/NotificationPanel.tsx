@@ -377,7 +377,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
       <div style={{ padding: '16px 20px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: T.text1, margin: 0, lineHeight: 1.2 }}>
+            <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 600, color: T.text1, margin: 0, lineHeight: 1.2 }}>
               Notifications
             </span>
             {/* P-01: Sync chip removed from header */}
@@ -501,7 +501,7 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                   padding: '8px 14px', height: 'auto',
                   background: 'none', border: 'none', borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: isActive ? 650 : 500,
+                  fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: isActive ? 600 : 500,
                   color: isActive ? '#2563EB' : T.text2,
                   transition: 'color 150ms ease',
                 }}

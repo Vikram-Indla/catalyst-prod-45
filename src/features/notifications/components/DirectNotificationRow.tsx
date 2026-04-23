@@ -52,8 +52,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');
   const dotColor = '#2563EB';
 
-  const threadBorderColor = isDark ? '#2E2E2E' : '#E8ECEF';
-  const threadBg          = isDark ? '#111111' : '#FFFFFF';
+  const threadBorderColor = isDark ? 'rgba(255,255,255,0.10)' : 'rgba(11,18,14,0.14)';
+  const threadBg          = 'transparent';
 
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
@@ -101,7 +101,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       <div style={{ flexShrink: 0, marginTop: 2 }}>
         <Avatar
           name={actorName ?? 'System'}
-          size="medium"
+          size="large"
           appearance="circle"
           src={avatarSrc}
         />
@@ -114,8 +114,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           <span
             style={{
               fontFamily: 'Inter, sans-serif',
-              fontSize: 13,
-              lineHeight: '18px',
+              fontSize: 14,
+              lineHeight: '20px',
               color: text1,
               flex: 1,
               minWidth: 0,
@@ -124,7 +124,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             {actorName && (
               <span style={{ fontWeight: 600 }}>{actorName} </span>
             )}
-            <span style={{ fontWeight: 400 }}>
+            <span style={{ fontWeight: 500 }}>
               {actorName
                 ? verbText.replace(`${actorName} `, '')
                 : verbText}
@@ -135,7 +135,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             <span
               style={{
                 fontFamily: 'Inter, sans-serif',
-                fontSize: 11,
+                fontSize: 14,
                 color: text3,
                 whiteSpace: 'nowrap',
               }}
@@ -192,8 +192,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           <span
             style={{
               fontFamily: 'Inter, sans-serif',
-              fontSize: 13,
-              lineHeight: '18px',
+              fontSize: 14,
+              lineHeight: '20px',
               color: text1,
               flex: 1,
               minWidth: 0,
@@ -208,20 +208,20 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           <span
             style={{
               fontFamily: 'Inter, sans-serif',
-              fontSize: 12,
-              fontWeight: 500,
+              fontSize: 14,
+              fontWeight: 400,
               color: linkClr,
               flexShrink: 0,
             }}
           >
             {target.key}
           </span>
-          <span style={{ color: text3, fontSize: 10, lineHeight: '16px', flexShrink: 0 }}>•</span>
+          <span style={{ color: text3, fontSize: 14, lineHeight: '20px', flexShrink: 0 }}>•</span>
           {/* Plain grey status text — sentence case, matching Jira */}
           <span
             style={{
               fontFamily: 'Inter, sans-serif',
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: 400,
               color: text2,
               flexShrink: 0,
@@ -248,9 +248,9 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 style={{
                   margin: 0,
                   fontFamily: 'Inter, sans-serif',
-                  fontSize: 12,
-                  lineHeight: '16px',
-                  color: text2,
+                  fontSize: 14,
+                  lineHeight: '20px',
+                  color: text1,
                   overflow: 'hidden',
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
@@ -264,8 +264,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 style={{
                   margin: 0,
                   fontFamily: 'Inter, sans-serif',
-                  fontSize: 12,
-                  lineHeight: '16px',
+                  fontSize: 14,
+                  lineHeight: '20px',
                   color: text3,
                   fontStyle: 'italic',
                 }}
@@ -355,7 +355,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 type="button"
                 style={{
                   fontFamily: 'Inter, sans-serif',
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 500,
                   color: linkClr,
                   background: 'none',
@@ -373,7 +373,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                 type="button"
                 style={{
                   fontFamily: 'Inter, sans-serif',
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 500,
                   color: linkClr,
                   background: 'none',
@@ -402,11 +402,12 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             <span
               style={{
                 fontFamily: 'Inter, sans-serif',
-                fontSize: 12,
+                fontSize: 14,
+                fontWeight: 400,
                 color: linkClr,
               }}
             >
-              +{aggregation.count} update from {aggregation.actor.displayName}
+              +{aggregation.count} update{aggregation.count !== 1 ? 's' : ''} from {aggregation.actor.displayName}
             </span>
           </div>
         )}
