@@ -46,16 +46,21 @@ export function CatalystHeader() {
     >
       {/* LEFT cluster — justifySelf:start keeps it pinned to the left screen edge */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'start' }}>
-        <Tooltip content={sidebarTooltip} position="bottom">
-          <IconButton
-            label={sidebarLabel}
-            appearance="subtle"
-            onClick={cycleSidebarState}
-            icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
-            aria-expanded={!isCollapsed}
-            aria-controls="catalyst-sidebar"
-          />
-        </Tooltip>
+        {/* Show chevron in top-nav ONLY when sidebar is fully hidden (no panel
+            to host the button). When expanded or collapsed to icon-rail, the
+            toggle lives inside SidebarBase — Jira-parity positioning. */}
+        {isCollapsed && (
+          <Tooltip content={sidebarTooltip} position="bottom">
+            <IconButton
+              label={sidebarLabel}
+              appearance="subtle"
+              onClick={cycleSidebarState}
+              icon={SidebarExpandIcon}
+              aria-expanded={false}
+              aria-controls="catalyst-sidebar"
+            />
+          </Tooltip>
+        )}
         <HubSwitcher />
         <a
           href="/for-you"

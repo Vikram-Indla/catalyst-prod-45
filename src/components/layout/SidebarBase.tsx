@@ -302,9 +302,33 @@ export function SidebarBase({
                   {config.label}
                 </span>
               </div>
-              {/* Collapse button removed 2026-04-21 (Vikram): the sidebar
-                  toggle is now exclusively owned by the top-nav chevron in
-                  CatalystHeader. Two-state architecture (expanded ↔ hidden). */}
+              {/* Jira-parity: collapse button lives at the RIGHT EDGE of the
+                  expanded sidebar header — matching Jira's ⊡ placement.
+                  The CatalystHeader chevron is hidden when sidebar is expanded
+                  so there is always exactly ONE toggle, inside the panel. */}
+              <button
+                onClick={onToggle}
+                className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0 ml-auto"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: chevronColor,
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = tokens.hoverBg;
+                  e.currentTarget.style.color = chevronHoverColor;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = chevronColor;
+                }}
+                aria-label="Collapse sidebar (shortcut: [ )"
+                title="Collapse sidebar ([ )"
+              >
+                <PanelLeftClose size={15} />
+              </button>
             </>
           )}
         </div>
