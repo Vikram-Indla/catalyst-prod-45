@@ -1239,12 +1239,18 @@ function DeliveredRow({ row }: { row: DemandRow }) {
       }}
     >
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
-      <Link
+      <a
         href={`/producthub/backlog?initiative=${row.initiative_key}`}
-        style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', display: 'block' }}
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          color: token('color.link', '#0C66E4'),
+          textDecoration: 'none',
+          whiteSpace: 'nowrap',
+        }}
       >
         {row.initiative_key}
-      </Link>
+      </a>
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
         {row.title}
       </span>
