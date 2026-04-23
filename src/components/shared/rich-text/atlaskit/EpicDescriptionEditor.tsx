@@ -56,6 +56,11 @@ export interface EpicDescriptionEditorProps {
    * Receives the serialized ADF JSON string.
    */
   onChange?: (adfJson: string) => void;
+  /**
+   * Editor appearance. Use 'chromeless' in Create modals to hide the built-in
+   * Save/Cancel buttons (the modal footer handles submit). Defaults to 'comment'.
+   */
+  appearance?: 'comment' | 'chromeless' | 'full-page';
 }
 
 function buildExternalMediaSingle(url: string, filename: string, width?: number, height?: number): ADFEntity {
@@ -101,6 +106,7 @@ export default function EpicDescriptionEditor({
   workItemId,
   placeholder = 'Add a description...',
   onChange,
+  appearance: appearanceProp = 'comment',
 }: EpicDescriptionEditorProps) {
   const initialAdf = useMemo(() => parseStoredDescriptionToAdf(initialContent), [initialContent]);
   const defaultValueString = useMemo(() => JSON.stringify(initialAdf), [initialAdf]);
@@ -237,11 +243,11 @@ export default function EpicDescriptionEditor({
       <div ref={wrapperRef} className="epic-desc-atlaskit-wrapper" style={{ position: 'relative' }}>
         <Suspense fallback={<div style={{ padding: 12, fontSize: 13, color: '#878787' }}>Loading editor…</div>}>
           <LazyEditor
-            appearance="comment"
+            appearance={appearanceProp}
             defaultValue={defaultValueString}
             placeholder={placeholder}
-            onSave={handleEditorSave}
-            onCancel={onCancel}
+            onSave={appearanceProp !== 'chromeless' ? handleEditorSave : undefined}
+            onCancel={appearanceProp !== 'chromeless' ? onCancel : undefined}
             onEditorReady={handleEditorReady}
             onChange={onChange ? handleEditorChange : undefined}
             allowTextColor

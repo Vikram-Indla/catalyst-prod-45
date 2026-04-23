@@ -15,11 +15,13 @@ export function ModalTransition({ children }: { children?: ReactNode }) {
   return <>{children}</>;
 }
 
-// ── Fullscreen context — shared between ModalDialog and the header buttons ───
+// ── Modal state context — fullscreen + minimized shared with header buttons ───
 export const FullscreenContext = createContext<{
   fullscreen: boolean;
+  minimized: boolean;
   toggleFullscreen: () => void;
-}>({ fullscreen: false, toggleFullscreen: () => {} });
+  toggleMinimize: () => void;
+}>({ fullscreen: false, minimized: false, toggleFullscreen: () => {}, toggleMinimize: () => {} });
 
 export function useFullscreen() {
   return useContext(FullscreenContext);
@@ -43,6 +45,7 @@ const WIDTH_MAP: Record<string, number> = {
 
 export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialogProps) {
   const [fullscreen, setFullscreen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const maxW = typeof width === 'number' ? width : (WIDTH_MAP[width] ?? 640);
 
   useEffect(() => {
@@ -59,45 +62,90 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
   }, [onClose]);
 
   return (
-    <FullscreenContext.Provider value={{ fullscreen, toggleFullscreen: () => setFullscreen(f => !f) }}>
-      {/* Overlay */}
-      <div
-        role="presentation"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 300,
-          background: 'rgba(9,30,66,0.54)',  // scrim always visible — confirmed (b)
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: fullscreen ? '5vh 5vw' : '32px 16px',
-        }}
-        onMouseDown={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
-      >
-        {/* Dialog — normal: 640px; fullscreen: 90vw×90vh centred, scrim stays visible */}
+    <FullscreenContext.Provider value={{
+      fullscreen,
+      minimized,
+      toggleFullscreen: () => { setFullscreen(f => !f); setMinimized(false); },
+      toggleMinimize: () => { setMinimized(m => !m); setFullscreen(false); },
+    }}>
+      {/* Minimized pill bar — bottom-right, Jira-parity */}
+      {minimized && (
         <div
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="create-story-modal-title"
           style={{
-            position: 'relative',
-            background: token('elevation.surface.overlay', '#FFFFFF'),
-            borderRadius: 8,
-            boxShadow: '0 8px 16px -4px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
-            width: fullscreen ? '90vw' : '100%',
-            maxWidth: fullscreen ? '90vw' : maxW,
-            height: fullscreen ? '90vh' : 'auto',
-            maxHeight: fullscreen ? '90vh' : 'min(90vh, 800px)',
+            position: 'fixed',
+            bottom: 0,
+            right: 24,
+            zIndex: 400,
+            background: token('elevation.surface.overlay', '#FFF'),
+            borderRadius: '8px 8px 0 0',
+            boxShadow: '0 -2px 8px rgba(9,30,66,0.20)',
             display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden',
-            transition: 'width 200ms ease, height 200ms ease, max-width 200ms ease',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            cursor: 'pointer',
+            minWidth: 220,
+            borderTop: `2px solid ${token('color.border.brand', '#1868DB')}`,
           }}
+          onClick={() => setMinimized(false)}
+          role="button"
+          aria-label="Restore Create Story dialog"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setMinimized(false); }}
         >
-          {children}
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 500, color: token('color.text', '#172B4D'), flex: 1 }}>
+            Create Story
+          </span>
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={(e) => { e.stopPropagation(); onClose?.(); }}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: token('color.text.subtlest', '#8590A2'), padding: 2, display: 'flex' }}
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+          </button>
         </div>
-      </div>
+      )}
+
+      {/* Full modal — hidden when minimized */}
+      {!minimized && (
+        <div
+          role="presentation"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 300,
+            background: 'rgba(9,30,66,0.54)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: fullscreen ? '5vh 5vw' : '32px 16px',
+          }}
+          onMouseDown={(e) => { if (e.target === e.currentTarget) onClose?.(); }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="create-story-modal-title"
+            style={{
+              position: 'relative',
+              background: token('elevation.surface.overlay', '#FFFFFF'),
+              borderRadius: 8,
+              boxShadow: '0 8px 16px -4px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
+              width: fullscreen ? '90vw' : '100%',
+              maxWidth: fullscreen ? '90vw' : maxW,
+              height: fullscreen ? '90vh' : 'auto',
+              maxHeight: fullscreen ? '90vh' : 'min(90vh, 800px)',
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
+              transition: 'width 200ms ease, height 200ms ease, max-width 200ms ease',
+            }}
+          >
+            {children}
+          </div>
+        </div>
+      )}
     </FullscreenContext.Provider>
   );
 }

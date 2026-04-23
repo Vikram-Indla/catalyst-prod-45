@@ -372,7 +372,24 @@ function PriorityIcon({ name }: { name: string }) {
 }
 
 // Generic Atlaskit avatar fallback — initials in a token-coloured circle.
-// ── FullscreenToggleButton — reads PortalFix context to toggle the modal ────
+// ── Header action buttons — read PortalFix context ──────────────────────────
+function MinimizeButton() {
+  const { toggleMinimize } = useFullscreen();
+  return (
+    <IconButton
+      appearance="subtle"
+      spacing="default"
+      label="Minimize"
+      icon={() => (
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+        </svg>
+      )}
+      onClick={toggleMinimize}
+    />
+  );
+}
+
 function FullscreenToggleButton() {
   const { fullscreen, toggleFullscreen } = useFullscreen();
   return (
@@ -387,6 +404,82 @@ function FullscreenToggleButton() {
       }
       onClick={toggleFullscreen}
     />
+  );
+}
+
+// ── MoreActionsButton — opens a small dropdown with help/feedback actions ────
+function MoreActionsButton() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  const items = [
+    { label: 'Give feedback', action: () => window.open('https://jira.atlassian.com/secure/CreateIssue.jspa', '_blank', 'noopener') },
+    { label: 'Help', action: () => window.open('https://support.atlassian.com/jira-software-cloud/', '_blank', 'noopener') },
+  ];
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <IconButton
+        appearance="subtle"
+        spacing="default"
+        label="More actions"
+        icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
+        onClick={() => setOpen(o => !o)}
+        isSelected={open}
+      />
+      {open && (
+        <div
+          role="menu"
+          style={{
+            position: 'absolute',
+            top: '100%',
+            right: 0,
+            marginTop: 4,
+            background: token('elevation.surface.overlay', '#FFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
+            minWidth: 160,
+            padding: '4px 0',
+            zIndex: 10,
+          }}
+        >
+          {items.map(item => (
+            <button
+              key={item.label}
+              role="menuitem"
+              type="button"
+              onClick={() => { item.action(); setOpen(false); }}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '8px 14px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 14,
+                color: token('color.text', '#172B4D'),
+                textAlign: 'left',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)'))}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -866,25 +959,9 @@ export function CreateStoryModal({
                   : `Create ${workType}`}
               </ModalTitle>
               <Box xcss={headerActionsStyles}>
-                <IconButton
-                  appearance="subtle"
-                  spacing="default"
-                  label="Minimize"
-                  icon={() => (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                      <path d="M3 8h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  )}
-                  onClick={() => undefined}
-                />
+                <MinimizeButton />
                 <FullscreenToggleButton />
-                <IconButton
-                  appearance="subtle"
-                  spacing="default"
-                  label="More actions"
-                  icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
-                  onClick={() => undefined}
-                />
+                <MoreActionsButton />
                 <IconButton
                   appearance="subtle"
                   spacing="default"
@@ -964,8 +1041,9 @@ export function CreateStoryModal({
                     />
                     <a
                       href="https://support.atlassian.com/jira-software-cloud/docs/what-are-issue-types/"
-                      target="_blank"
+                      target="jira-help"
                       rel="noopener noreferrer"
+                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
                     >
                       <Box xcss={helperLinkStyles}>
                         Learn about work types
@@ -1111,8 +1189,9 @@ export function CreateStoryModal({
                     />
                     <a
                       href="https://support.atlassian.com/jira-software-cloud/docs/what-is-issue-priority/"
-                      target="_blank"
+                      target="jira-help"
                       rel="noopener noreferrer"
+                      onClick={(e) => { e.preventDefault(); window.open((e.currentTarget as HTMLAnchorElement).href, 'jira-help', 'width=600,height=500,noopener,noreferrer'); }}
                     >
                       <Box xcss={helperLinkStyles}>
                         Learn about priority levels
@@ -1138,6 +1217,7 @@ export function CreateStoryModal({
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Add a description..."
+                        appearance="comment"
                         onSave={(adfJson: string) => {
                           try {
                             const parsed = JSON.parse(adfJson);
