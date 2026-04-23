@@ -1106,11 +1106,12 @@ function DemandRowItem({
                   key={story.id}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '20px 90px 1fr 90px',
+                    gridTemplateColumns: '20px 90px 1fr auto',
                     alignItems: 'center',
                     gap: 8,
-                    padding: '5px 16px 5px 28px',
+                    padding: '5px 16px 5px 24px',
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                    borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
                   }}
                 >
                   <span />
@@ -1231,7 +1232,26 @@ function DemandRowItem({
                       >
                         {epic.summary}
                       </span>
-                      <ProgressBar value={epicPct / 100} appearance="default" />
+                      <div
+                        style={{
+                          width: '100%',
+                          height: 6,
+                          borderRadius: 3,
+                          background: '#DFE1E6',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${epicPct}%`,
+                            height: '100%',
+                            borderRadius: 3,
+                            transition: 'width 200ms ease',
+                            background:
+                              epicPct === 100 ? '#1F845A' : epicPct > 0 ? '#0C66E4' : 'transparent',
+                          }}
+                        />
+                      </div>
                       <Lozenge appearance={lozengeAppearance(epic.status_category, epic.status)}>
                         {epic.status}
                       </Lozenge>
@@ -1244,11 +1264,12 @@ function DemandRowItem({
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '20px 90px 1fr 80px',
+                            gridTemplateColumns: '20px 90px 1fr auto',
                             alignItems: 'center',
                             gap: 8,
                             padding: '4px 16px 4px 48px',
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                            borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
                             background: token('elevation.surface.sunken', '#F7F8F9'),
                           }}
                         >
