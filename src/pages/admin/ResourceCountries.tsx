@@ -173,9 +173,10 @@ export default function ResourceCountriesPage() {
                 <td className="px-4 py-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center overflow-hidden">
                     {country.flag_svg ? (
-                      <img 
-                        src={country.flag_svg} 
-                        alt={`${country.name} flag`} 
+                      <img
+                        src={country.flag_svg}
+                        alt={`${country.name} flag`}
+                        loading="lazy"
                         className="w-6 h-4 object-cover rounded-sm"
                       />
                     ) : getFlagEmoji(country.code) ? (
