@@ -967,9 +967,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       <div onClick={(e) => e.stopPropagation()}>
         <Tabs id="df-tabs" selected={tab === 'active' ? 0 : tab === 'overdue' ? 1 : 2} onChange={(i: number) => setTab(i === 0 ? 'active' : i === 1 ? 'overdue' : 'all')}>
           <TabList>
-            <Tab>Active ({active.length})</Tab>
-            <Tab>Overdue ({overdueRows.length})</Tab>
-            <Tab>All ({active.length + delivered.length})</Tab>
+            <Tab>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+                Active <Badge appearance="default">{active.length}</Badge>
+              </span>
+            </Tab>
+            <Tab>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+                Overdue <Badge appearance={overdueRows.length > 0 ? 'important' : 'default'}>{overdueRows.length}</Badge>
+              </span>
+            </Tab>
+            <Tab>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+                All <Badge appearance="default">{active.length + delivered.length}</Badge>
+              </span>
+            </Tab>
           </TabList>
           <TabPanel><span /></TabPanel>
           <TabPanel><span /></TabPanel>
