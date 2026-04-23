@@ -1086,7 +1086,7 @@ function DemandRowItem({
                   >
                     {story.summary}
                   </span>
-                  <Lozenge appearance={storyLozengeAppearance(story.status_category)}>
+                  <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                     {story.status}
                   </Lozenge>
                 </div>
@@ -1174,7 +1174,7 @@ function DemandRowItem({
                         {epic.summary}
                       </span>
                       <ProgressBar value={epicPct / 100} appearance="default" />
-                      <Lozenge appearance={storyLozengeAppearance(epic.status_category) || 'default'}>
+                      <Lozenge appearance={lozengeAppearance(epic.status_category, epic.status)}>
                         {epic.status}
                       </Lozenge>
                     </div>
@@ -1225,7 +1225,7 @@ function DemandRowItem({
                           >
                             {story.summary}
                           </span>
-                          <Lozenge appearance={storyLozengeAppearance(story.status_category)}>
+                          <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                             {story.status}
                           </Lozenge>
                         </div>
