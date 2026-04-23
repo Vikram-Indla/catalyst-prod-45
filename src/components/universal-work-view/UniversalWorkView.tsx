@@ -19,6 +19,7 @@ interface Props {
 
 export function UniversalWorkView({ params, onClose }: Props) {
   const [statusFilter, setStatusFilter] = useState<string[]>(params.status ?? []);
+  const [assigneeFilter, setAssigneeFilter] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<UWVSort[]>([{ fieldId: 'key', direction: 'asc' }]);
@@ -34,13 +35,16 @@ export function UniversalWorkView({ params, onClose }: Props) {
   );
 
   const allItems = useMemo(() => {
-    const raw = data?.pages.flatMap((p) => p.items) ?? [];
+    let raw = data?.pages.flatMap((p) => p.items) ?? [];
+    if (assigneeFilter.length > 0) {
+      raw = raw.filter((i) => assigneeFilter.includes(i.assigneeId ?? ''));
+    }
     if (!searchText.trim()) return raw;
     const t = searchText.toLowerCase();
     return raw.filter(
       (i) => i.key.toLowerCase().includes(t) || i.summary.toLowerCase().includes(t),
     );
-  }, [data, searchText]);
+  }, [data, searchText, assigneeFilter]);
 
   const totalCount = data?.pages[0]?.total ?? 0;
 
@@ -105,6 +109,8 @@ export function UniversalWorkView({ params, onClose }: Props) {
         onSearchChange={setSearchText}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
+        assigneeFilter={assigneeFilter}
+        onAssigneeFilterChange={setAssigneeFilter}
         selectedIds={selectedIds}
         onSelectChange={setSelectedIds}
         allItems={allItems}

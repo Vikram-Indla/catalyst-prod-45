@@ -1,8 +1,9 @@
 // @ts-nocheck
 /**
  * UWVToolbar — two-row toolbar:
- *   Row 1 (52px): close button + title + count + export + column picker
- *   Row 2 (48px): search + assignee avatars + filter button + group + columns + more
+ *   Row 1 (52px): close button + title + count
+ *   Row 2 (48px): search + assignee avatars (clickable filter) + filter button
+ *                + group + columns + more-actions (dropdown)
  *
  * When selectedIds.size > 0, Row 2 is replaced with UWVBulkActions.
  */
@@ -13,11 +14,12 @@ import TextField from '@atlaskit/textfield';
 import Popup from '@atlaskit/popup';
 import Checkbox from '@atlaskit/checkbox';
 import AvatarGroup from '@atlaskit/avatar-group';
-import { token } from '@atlaskit/tokens';
+import DropdownMenu, { DropdownItem } from '@atlaskit/dropdown-menu';
 import { UWVExport } from './UWVExport';
 import { UWVColumnPicker } from './UWVColumnPicker';
 import { UWVBulkActions } from './UWVBulkActions';
 import { useUWVStatuses, useUWVAssignees } from './useUWVData';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import type { UWVColumn, UWVItem, UWVPrefs } from './uwv.types';
 
 interface Props {
@@ -28,6 +30,8 @@ interface Props {
   onSearchChange: (s: string) => void;
   statusFilter: string[];
   onStatusFilterChange: (s: string[]) => void;
+  assigneeFilter?: string[];
+  onAssigneeFilterChange?: (ids: string[]) => void;
   selectedIds: Set<string>;
   onSelectChange: (s: Set<string>) => void;
   allItems: UWVItem[];
@@ -79,6 +83,8 @@ export function UWVToolbar({
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
+  assigneeFilter = [],
+  onAssigneeFilterChange,
   selectedIds,
   onSelectChange,
   allItems,
@@ -97,9 +103,19 @@ export function UWVToolbar({
       assignees.slice(0, 12).map((a: any) => ({
         key: a.id,
         name: a.name,
-        src: a.avatar,
+        // Resolve via local chokepoint first, then fall back to whatever the
+        // hook returned (may be null → Atlaskit shows initials).
+        src: resolveAvatarUrl(a.name) ?? a.avatar ?? undefined,
       })),
     [assignees],
+  );
+
+  const selectedAvatarIndexes = useMemo(
+    () =>
+      avatarData
+        .map((av: any, i: number) => (assigneeFilter.includes(av.key) ? i : -1))
+        .filter((i: number) => i >= 0),
+    [avatarData, assigneeFilter],
   );
 
   const toggleStatus = (s: string) => {
@@ -108,6 +124,17 @@ export function UWVToolbar({
     } else {
       onStatusFilterChange([...statusFilter, s]);
     }
+  };
+
+  const handleAvatarClick = (_event: any, { index }: { index: number }) => {
+    if (!onAssigneeFilterChange) return;
+    const clicked = avatarData[index];
+    if (!clicked) return;
+    onAssigneeFilterChange(
+      assigneeFilter.includes(clicked.key)
+        ? assigneeFilter.filter((id) => id !== clicked.key)
+        : [...assigneeFilter, clicked.key],
+    );
   };
 
   const FilterContent = () => (
@@ -202,7 +229,6 @@ export function UWVToolbar({
         >
           {filteredCount}
         </span>
-
       </div>
 
       {/* ROW 2 — bulk actions or filter bar */}
@@ -241,7 +267,24 @@ export function UWVToolbar({
           </div>
 
           {avatarData.length > 0 && (
-            <AvatarGroup appearance="stack" maxCount={4} size="small" data={avatarData as any} />
+            <AvatarGroup
+              appearance="stack"
+              maxCount={4}
+              size="small"
+              data={avatarData as any}
+              onAvatarClick={handleAvatarClick as any}
+              selectedIndexes={selectedAvatarIndexes as any}
+            />
+          )}
+
+          {assigneeFilter.length > 0 && onAssigneeFilterChange && (
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              onClick={() => onAssigneeFilterChange([])}
+            >
+              Clear assignee
+            </Button>
           )}
 
           <Popup
@@ -264,7 +307,31 @@ export function UWVToolbar({
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
             <UWVExport items={allItems} columns={columns} title={title} />
             <UWVColumnPicker columns={columns} prefs={prefs} onSave={onSavePrefs} />
-            <IconButton icon={MoreIcon as any} label="More actions" appearance="subtle" />
+            <DropdownMenu
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <IconButton
+                  {...triggerProps}
+                  ref={triggerRef as any}
+                  icon={MoreIcon as any}
+                  label="More actions"
+                  appearance="subtle"
+                />
+              )}
+              placement="bottom-end"
+            >
+              <DropdownItem onClick={() => window.print()}>Print</DropdownItem>
+              <DropdownItem
+                onClick={() => {
+                  try {
+                    navigator.clipboard?.writeText(window.location.href);
+                  } catch {
+                    /* noop */
+                  }
+                }}
+              >
+                Copy link
+              </DropdownItem>
+            </DropdownMenu>
           </div>
         </div>
       )}

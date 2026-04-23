@@ -174,7 +174,10 @@ export function nameToHash(name: string): number {
 
 /**
  * COLUMN PARITY with AllWorkTable.tsx COLUMNS:
- *   checkbox · KEY · SUMMARY · STATUS · PROJECT · HUB · PRIORITY · UPDATED · REPORTED BY
+ *   checkbox · KEY · SUMMARY · STATUS · PRIORITY · UPDATED · REPORTED BY
+ *
+ * Project + Hub are hidden by default (Project Backlog table doesn't show them).
+ * Users can re-enable via column picker.
  *
  * Widths (px) mirror AllWorkTable.tsx exactly. Summary uses width: 0 here as a
  * sentinel; UWVTable converts width=0 → '1fr' so the column is fluid.
@@ -183,10 +186,10 @@ export const DEFAULT_COLUMNS: UWVColumn[] = [
   { fieldId: 'key', label: 'Key', width: 120, visible: true, sortable: true, type: 'string' },
   { fieldId: 'summary', label: 'Summary', width: 336, visible: true, sortable: false, type: 'string' },
   { fieldId: 'status', label: 'Status', width: 180, visible: true, sortable: true, type: 'status' },
-  { fieldId: 'project', label: 'Project', width: 140, visible: true, sortable: false, type: 'string' },
-  { fieldId: 'hubSource', label: 'Hub', width: 110, visible: true, sortable: false, type: 'hub' },
+  { fieldId: 'project', label: 'Project', width: 140, visible: false, sortable: false, type: 'string' },
+  { fieldId: 'hubSource', label: 'Hub', width: 110, visible: false, sortable: false, type: 'hub' },
   { fieldId: 'priority', label: 'Priority', width: 80, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'updated', label: 'Updated', width: 110, visible: true, sortable: true, type: 'date' },
+  { fieldId: 'updated', label: 'Updated', width: 120, visible: true, sortable: true, type: 'date' },
   { fieldId: 'assignee', label: 'Reported by', width: 168, visible: true, sortable: true, type: 'user' },
   // Optional / hidden by default — kept available via column picker.
   { fieldId: 'comments', label: 'Comments', width: 130, visible: false, sortable: false, type: 'comments' },
