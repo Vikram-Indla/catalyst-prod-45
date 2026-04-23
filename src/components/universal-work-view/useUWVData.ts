@@ -30,7 +30,10 @@ async function loadAssigneeProfiles(ids: string[]): Promise<Record<string, any>>
  */
 function quarterRange(q?: string | null): { start: string; end: string } | null {
   if (!q) return null;
-  const m = /^(\d{4})-Q([1-4])$/.exec(q);
+  // Accept either 'YYYY-QN' or 'QN-YYYY' (gadget emits the latter).
+  const m1 = /^(\d{4})-Q([1-4])$/.exec(q);
+  const m2 = /^Q([1-4])-(\d{4})$/.exec(q);
+  const m = m1 ?? (m2 ? [q, m2[2], m2[1]] as RegExpExecArray : null);
   if (!m) return null;
   const year = Number(m[1]);
   const qnum = Number(m[2]);
@@ -58,11 +61,12 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           .select(
             `id, issue_key, summary, status, status_category, issue_type,
              assignee_user_id, assignee_display_name, parent_key, project_key,
-             created_at, updated_at, due_date, priority`,
+             jira_created_at, jira_updated_at, due_date, priority`,
             { count: 'exact' },
           )
           .eq('project_key', params.project)
-          .is('jira_removed_at', null);
+          .is('jira_removed_at', null)
+          .is('deleted_at', null);
 
         if (statusFilter.length > 0) q = q.in('status', statusFilter);
 
@@ -74,13 +78,13 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
         if (params.scope === 'quarter' && params.quarter) {
           const r = quarterRange(params.quarter);
           if (r) {
-            q = q.gte('created_at', `${r.start}T00:00:00.000Z`)
-                 .lte('created_at', `${r.end}T23:59:59.999Z`);
+            q = q.gte('jira_created_at', `${r.start}T00:00:00.000Z`)
+                 .lte('jira_created_at', `${r.end}T23:59:59.999Z`);
           }
         }
         if (params.scope === 'custom' && params.dateFrom) {
-          q = q.gte('created_at', params.dateFrom);
-          if (params.dateTo) q = q.lte('created_at', params.dateTo);
+          q = q.gte('jira_created_at', params.dateFrom);
+          if (params.dateTo) q = q.lte('jira_created_at', params.dateTo);
         }
 
         if (params.keys?.length) q = q.in('issue_key', params.keys);
@@ -90,8 +94,8 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           summary: 'summary',
           status: 'status',
           assignee: 'assignee_display_name',
-          created: 'created_at',
-          updated: 'updated_at',
+          created: 'jira_created_at',
+          updated: 'jira_updated_at',
           dueDate: 'due_date',
           priority: 'priority',
         };
@@ -128,8 +132,8 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
               assigneeAvatar: profile?.avatar_url ?? null,
               parentKey: r.parent_key,
               priority: r.priority,
-              created: r.created_at,
-              updated: r.updated_at,
+              created: r.jira_created_at,
+              updated: r.jira_updated_at,
               dueDate: r.due_date,
               commentCount: 0,
               hubSource: 'projecthub',
