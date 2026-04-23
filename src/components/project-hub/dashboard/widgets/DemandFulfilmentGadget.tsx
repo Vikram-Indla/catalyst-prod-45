@@ -594,6 +594,26 @@ function SettingsPopupBody({
 }) {
   const [draft, setDraft] = useState<GadgetSettings>(initial);
 
+  const today = new Date().toISOString().split('T')[0];
+  const oneMonthAhead = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString().split('T')[0];
+
+  const sectionHeadingStyle = {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase' as const,
+    color: token('color.text.subtlest', '#626F86'),
+    marginBottom: 6,
+  };
+  const subLabelStyle = {
+    fontSize: 11,
+    lineHeight: '16px',
+    fontWeight: 400,
+    color: token('color.text.subtle', '#6B778C'),
+    marginBottom: 2,
+  };
+
   return (
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
