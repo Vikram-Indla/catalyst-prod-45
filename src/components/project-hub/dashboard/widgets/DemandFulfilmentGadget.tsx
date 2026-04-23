@@ -252,6 +252,14 @@ interface UnlinkedEpic {
   summary: string;
   status: string;
   status_category: string | null;
+  assignee_id: string | null;
+  assignee_name: string;
+  assignee_avatar: string | null;
+  total: number;
+  done: number;
+  blocked: number;
+  inprogress: number;
+  todo: number;
 }
 
 function useUnlinkedEpics(projectKey: string) {
@@ -266,14 +274,62 @@ function useUnlinkedEpics(projectKey: string) {
 
       const { data: epics } = await (supabase as any)
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category')
+        .select('id, issue_key, summary, status, status_category, assignee_user_id, assignee_display_name')
         .eq('issue_type', 'Epic')
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
         .not('status_category', 'eq', 'Done')
         .limit(500);
 
-      return (epics ?? []).filter((e: any) => !linkedIds.has(e.id));
+      const unlinked = (epics ?? []).filter((e: any) => !linkedIds.has(e.id));
+      if (unlinked.length === 0) return [];
+
+      // Fetch child stories/bugs for these epics to compute roll-up counts.
+      const epicKeys = unlinked.map((e: any) => e.issue_key);
+      const { data: children } = await (supabase as any)
+        .from('ph_issues')
+        .select('parent_key, status, status_category')
+        .in('parent_key', epicKeys)
+        .in('issue_type', ['Story', 'Bug', 'Defect'])
+        .is('jira_removed_at', null)
+        .limit(5000);
+
+      const bucketByEpic = new Map<string, { total: number; done: number; blocked: number; inprogress: number; todo: number }>();
+      epicKeys.forEach((k) => bucketByEpic.set(k, { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 }));
+      (children ?? []).forEach((c: any) => {
+        const b = bucketByEpic.get(c.parent_key);
+        if (!b) return;
+        const cls = classifyIssue(c);
+        b.total += 1;
+        if (cls) (b as any)[cls] += 1;
+      });
+
+      // Fetch assignee avatars from profiles.
+      const assigneeIds = Array.from(new Set(unlinked.map((e: any) => e.assignee_user_id).filter(Boolean)));
+      let profiles: Record<string, any> = {};
+      if (assigneeIds.length > 0) {
+        const { data: pr } = await (supabase as any)
+          .from('profiles')
+          .select('id, display_name, full_name, avatar_url')
+          .in('id', assigneeIds);
+        profiles = Object.fromEntries((pr ?? []).map((p: any) => [p.id, p]));
+      }
+
+      return unlinked.map((e: any) => {
+        const b = bucketByEpic.get(e.issue_key) ?? { total: 0, done: 0, blocked: 0, inprogress: 0, todo: 0 };
+        const profile = e.assignee_user_id ? profiles[e.assignee_user_id] : null;
+        return {
+          id: e.id,
+          issue_key: e.issue_key,
+          summary: e.summary ?? '',
+          status: e.status,
+          status_category: e.status_category,
+          assignee_id: e.assignee_user_id ?? null,
+          assignee_name: profile?.display_name ?? profile?.full_name ?? e.assignee_display_name ?? '—',
+          assignee_avatar: profile?.avatar_url ?? null,
+          ...b,
+        };
+      });
     },
     enabled: !!projectKey,
   });
@@ -831,6 +887,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedUnlinked, setExpandedUnlinked] = useState<string | null>(null);
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
@@ -1104,54 +1161,46 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           <div style={{ padding: token('space.150', '12px') }}>
             <SectionMessage
               appearance="warning"
-              title={`${unlinkedEpics.length} epic${unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket`}
+              title="Epics without a demand ticket"
               actions={
                 <SectionMessageAction onClick={() => setUnlinkedOpen((v) => !v)}>
                   {unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics'}
                 </SectionMessageAction>
               }
             >
-              <p>These epics are progressing but aren't rolled up under any MDT.</p>
+              <p>These epics are active but not yet linked to an MDT.</p>
             </SectionMessage>
           </div>
           {unlinkedOpen && (
-            <div style={{ maxHeight: 200, overflowY: 'auto', background: token('elevation.surface.sunken', '#F7F8F9') }}>
-              {unlinkedEpics.map((e) => (
-                <div
-                  key={e.id}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '8px 60px 1fr auto',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 14px',
-                    borderTop: `1px solid ${token('color.border')}`,
-                    font: token('font.body.small'),
+            <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+              {unlinkedEpics.map((epic) => (
+                <DemandRowItem
+                  key={epic.id}
+                  row={{
+                    id: epic.id,
+                    initiative_key: epic.issue_key,
+                    title: epic.summary,
+                    status: epic.status,
+                    target_complete: null,
+                    target_quarter: null,
+                    assignee_id: epic.assignee_id,
+                    assignee_name: epic.assignee_name,
+                    assignee_avatar: epic.assignee_avatar,
+                    total: epic.total,
+                    done: epic.done,
+                    blocked: epic.blocked,
+                    inprogress: epic.inprogress,
+                    todo: epic.todo,
+                    epics: [],
+                    isDelivered: false,
+                    deliveredAt: null,
                   }}
-                >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.text.disabled', '#97A0AF') }} />
-                  <Link href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}>
-                    <span style={{ fontWeight: 700 }}>{e.issue_key}</span>
-                  </Link>
-                  <span
-                    title={e.summary}
-                    style={{
-                      color: token('color.text'),
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      minWidth: 0,
-                    }}
-                  >
-                    {e.summary}
-                  </span>
-                  <Link href={`/producthub/backlog?linkEpic=${e.issue_key}`}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px'), whiteSpace: 'nowrap' }}>
-                      Link to demand
-                      <ShortcutIcon label="" color="currentColor" />
-                    </span>
-                  </Link>
-                </div>
+                  threshold={settings.rag_threshold}
+                  expanded={expandedUnlinked === epic.id}
+                  onToggle={() =>
+                    setExpandedUnlinked((id) => (id === epic.id ? null : epic.id))
+                  }
+                />
               ))}
             </div>
           )}
