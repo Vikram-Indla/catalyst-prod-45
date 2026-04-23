@@ -46,10 +46,10 @@ import SettingsIcon from '@atlaskit/icon/core/settings';
 import CalendarIcon from '@atlaskit/icon/core/calendar';
 import ShortcutIcon from '@atlaskit/icon/core/shortcut';
 import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
-import ChevronRightIcon from '@atlaskit/icon/core/chevron-right';
+import ChevronRightIcon from '@atlaskit/icon/utility/chevron-right';
 import InformationIcon from '@atlaskit/icon/core/information';
 import CheckCircleIcon from '@atlaskit/icon/core/check-circle';
-import CrossIcon from '@atlaskit/icon/core/cross';
+import CrossIcon from '@atlaskit/icon/utility/cross';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { differenceInCalendarDays, format, parseISO, eachDayOfInterval, getDay } from 'date-fns';
 
