@@ -372,6 +372,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
           summary: c.summary ?? '',
           status: c.status,
           status_category: c.status_category,
+          issue_type: c.issue_type ?? 'Story',
           assignee_display_name:
             childProfile?.display_name ?? childProfile?.full_name ?? c.assignee_display_name ?? null,
           assignee_avatar: childProfile?.avatar_url ?? null,
