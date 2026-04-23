@@ -2,30 +2,21 @@
 /**
  * UWVRow — single row in the Universal Work View virtualized grid.
  *
- * VISUAL & COLUMNS PARITY with src/components/workhub/allwork/AllWorkTable.tsx.
- * Audit decisions applied:
- *   Q1 — Icons: JiraIssueTypeIcon (Atlaskit SVGs at /admin/icons/jira/*.svg)
- *   Q2 — Scope (b): columns/widths/fonts/row-height/icons/status/theme parity
- *   Q3 — Status: StatusLozengeByType (CLAUDE.md §5 3-colour guardrail)
- *   Q4 — Theme: var(--bg-*) / var(--fg-*) / var(--bd-*) tokens, no hex literals
- * Plus: 44px rows, Inter / JetBrains Mono fonts, KEY in cp-blue, native
- *       checkbox, Lucide ChevronRight with rotate, 28px depth indent,
- *       PriorityBars, lowercase hub label.
+ * Pixel-perfect parity with JiraTable / BacklogPage.atlaskit.tsx (Project Work table).
  */
 
 import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
+import Checkbox from '@atlaskit/checkbox';
+import Avatar from '@atlaskit/avatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import {
   hubColour,
   hubLabel,
   hubTypeFromIssueType,
-  formatRelative,
   formatDate,
   isOverdue,
-  AVATAR_COLORS,
-  nameToHash,
   JIRA_ROW_HEIGHT,
   getStatusStyle,
 } from './uwv.utils';
@@ -50,8 +41,7 @@ const CELL_BASE: React.CSSProperties = {
   padding: '0 8px',
   fontSize: 13,
   fontWeight: 400,
-  color: 'var(--fg-1)',
-  fontFamily: 'Inter, sans-serif',
+  color: '#292A2E',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
@@ -59,18 +49,58 @@ const CELL_BASE: React.CSSProperties = {
   minWidth: 0,
 };
 
+function formatUpdatedShort(iso?: string | null): string {
+  if (!iso) return '—';
+  try {
+    return new Date(iso).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: '2-digit',
+    });
+  } catch {
+    return '—';
+  }
+}
+
+function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <a
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClick();
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        fontSize: 13,
+        fontWeight: 600,
+        color: 'var(--cp-blue)',
+        fontFamily: "'JetBrains Mono', monospace",
+        textDecoration: hover ? 'underline' : 'none',
+        background: hover ? '#E9F2FF' : 'transparent',
+        padding: '1px 4px',
+        borderRadius: 3,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {keyText}
+    </a>
+  );
+}
+
 function renderCell(
   col: UWVColumn,
   item: UWVItem,
   hasChildren: boolean,
   isExpanded: boolean,
-  depth: number,
   onToggleExpand: () => void,
   onKeyClick: () => void,
 ): React.ReactNode {
   switch (col.fieldId) {
     case 'key': {
-      const hubType = hubTypeFromIssueType(item.issueType);
       return (
         <div
           style={{
@@ -78,7 +108,9 @@ function renderCell(
             alignItems: 'center',
             gap: 6,
             minWidth: 0,
-            paddingLeft: depth * 28,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {hasChildren ? (
@@ -104,39 +136,19 @@ function renderCell(
                 flexShrink: 0,
               }}
             >
-              <ChevronRight
-                size={14}
-                style={{
-                  color: 'var(--fg-3)',
-                  transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                  transition: 'transform 150ms ease',
-                }}
-              />
+              {isExpanded ? (
+                <ChevronDown size={14} color="#6B778C" />
+              ) : (
+                <ChevronRight size={14} color="#6B778C" />
+              )}
             </button>
           ) : (
             <span style={{ width: 16, display: 'inline-block', flexShrink: 0 }} />
           )}
-          <JiraIssueTypeIcon type={item.issueType} size={16} />
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onKeyClick();
-            }}
-            style={{
-              fontSize: 13,
-              fontWeight: 650,
-              color: 'var(--cp-blue)',
-              fontFamily: "'JetBrains Mono', monospace",
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-              overflow: 'visible',
-              flexShrink: 0,
-            }}
-          >
-            <bdi dir="ltr" style={{ overflow: 'visible' }}>{item.key}</bdi>
-          </a>
+          <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <JiraIssueTypeIcon type={item.issueType} size={16} />
+          </span>
+          <KeyLink keyText={item.key} onClick={onKeyClick} />
         </div>
       );
     }
@@ -145,10 +157,9 @@ function renderCell(
         <span
           dir="auto"
           style={{
-            color: 'var(--fg-1)',
+            color: '#292A2E',
             fontSize: 12,
             fontWeight: 400,
-            fontFamily: 'Inter, sans-serif',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -168,9 +179,8 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--fg-2)',
+            color: '#42526E',
             fontSize: 13,
-            fontFamily: 'Inter, sans-serif',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -195,7 +205,6 @@ function renderCell(
             borderRadius: 3,
             textTransform: 'uppercase',
             letterSpacing: '0.02em',
-            fontFamily: 'Inter, sans-serif',
           }}
         >
           {hubLabel(item.hubSource ?? hubType)}
@@ -203,57 +212,50 @@ function renderCell(
       );
     }
     case 'priority':
-      return <PriorityBars priority={normalisePriority(item.priority)} barWidth={3} barHeight={12} />;
+      return (
+        <PriorityBars
+          priority={normalisePriority(item.priority)}
+          barWidth={4}
+          barHeight={16}
+          borderRadius={1}
+        />
+      );
     case 'updated':
       return (
         <span
           style={{
-            color: 'var(--fg-3)',
-            fontSize: 12,
+            color: '#42526E',
+            fontSize: 13,
             fontFamily: "'JetBrains Mono', monospace",
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
         >
-          {formatRelative(item.updated)}
+          {formatUpdatedShort(item.updated)}
         </span>
       );
     case 'assignee': {
       const display = item.assigneeName ?? null;
       if (!display) {
         return (
-          <span style={{ color: 'var(--fg-3)', fontSize: 12, fontStyle: 'italic' }}>
+          <span style={{ color: '#6B778C', fontSize: 12, fontStyle: 'italic' }}>
             Unassigned
           </span>
         );
       }
-      const hash = nameToHash(display);
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
-          <div
-            aria-hidden="true"
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: '50%',
-              background: AVATAR_COLORS[hash % AVATAR_COLORS.length],
-              color: '#fff',
-              fontSize: 10,
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            {display.charAt(0).toUpperCase()}
-          </div>
+          <Avatar
+            appearance="circle"
+            size="small"
+            src={item.assigneeAvatar ?? undefined}
+            name={display}
+          />
           <span
             style={{
-              fontSize: 13,
-              color: 'var(--fg-2)',
-              fontFamily: 'Inter, sans-serif',
+              fontSize: 14,
+              color: '#292A2E',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -272,9 +274,8 @@ function renderCell(
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            color: 'var(--fg-3)',
+            color: '#6B778C',
             fontSize: 13,
-            fontFamily: 'Inter, sans-serif',
           }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
@@ -294,9 +295,8 @@ function renderCell(
       return (
         <span
           style={{
-            color: overdue ? 'var(--sem-danger)' : 'var(--fg-2)',
+            color: overdue ? 'var(--sem-danger)' : '#42526E',
             fontSize: 13,
-            fontFamily: 'Inter, sans-serif',
           }}
         >
           {formatDate(item.dueDate)}
@@ -305,13 +305,7 @@ function renderCell(
     }
     case 'created':
       return (
-        <span
-          style={{
-            color: 'var(--fg-2)',
-            fontSize: 13,
-            fontFamily: 'Inter, sans-serif',
-          }}
-        >
+        <span style={{ color: '#42526E', fontSize: 13 }}>
           {formatDate(item.created)}
         </span>
       );
@@ -319,16 +313,20 @@ function renderCell(
       return (
         <span
           style={{
-            color: 'var(--fg-2)',
-            fontSize: 13,
+            color: '#42526E',
+            fontSize: 12,
             fontFamily: "'JetBrains Mono', monospace",
+            maxWidth: 260,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
           }}
         >
           {item.parentKey ?? '—'}
         </span>
       );
     default:
-      return <span style={{ color: 'var(--fg-3)' }}>—</span>;
+      return <span style={{ color: '#6B778C' }}>—</span>;
   }
 }
 
@@ -343,7 +341,8 @@ export const UWVRow = React.memo(function UWVRow({
   onToggleExpand,
   onClick,
 }: UWVRowProps) {
-  const depth = item.level ?? 0;
+  const selectedShadow = 'inset 3px 0 0 #0C66E4, inset 0 -1px 0 0 #E4E6EA';
+  const restShadow = 'inset 0 -1px 0 0 #E4E6EA';
 
   return (
     <div
@@ -353,29 +352,23 @@ export const UWVRow = React.memo(function UWVRow({
         display: 'grid',
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
-        borderBottom: '1px solid var(--bd-default, #E5E7EB)',
-        borderLeft: isSelected ? '4px solid var(--cp-blue)' : '4px solid transparent',
-        backgroundColor: isSelected
-          ? 'rgba(37,99,235,0.08)'
-          : depth > 0
-          ? 'var(--bg-1)'
-          : 'var(--bg-app)',
+        boxShadow: isSelected ? selectedShadow : restShadow,
+        backgroundColor: isSelected ? '#F4F5F7' : '#FFFFFF',
         cursor: 'pointer',
         transition: 'background-color 80ms ease',
       }}
       onMouseEnter={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor = 'var(--hover, #1F1F1F)';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = '#F7F8F9';
         }
       }}
       onMouseLeave={(e) => {
         if (!isSelected) {
-          (e.currentTarget as HTMLDivElement).style.backgroundColor =
-            depth > 0 ? 'var(--bg-1)' : 'var(--bg-app)';
+          (e.currentTarget as HTMLDivElement).style.backgroundColor = '#FFFFFF';
         }
       }}
     >
-      {/* Native checkbox cell — matches AllWorkTable */}
+      {/* Atlaskit checkbox cell */}
       <div
         role="gridcell"
         onClick={(e) => {
@@ -387,19 +380,17 @@ export const UWVRow = React.memo(function UWVRow({
           justifyContent: 'center',
         }}
       >
-        <input
-          type="checkbox"
-          checked={isSelected}
+        <Checkbox
+          isChecked={isSelected}
           onChange={() => onToggleSelect()}
-          className="w-4 h-4 rounded cursor-pointer"
-          style={{ accentColor: 'var(--cp-blue)' }}
-          aria-label={`Select ${item.key}`}
+          label=""
+          size="medium"
         />
       </div>
 
       {columns.map((col) => (
         <div key={col.fieldId} role="gridcell" style={CELL_BASE}>
-          {renderCell(col, item, hasChildren, isExpanded, depth, onToggleExpand, onClick)}
+          {renderCell(col, item, hasChildren, isExpanded, onToggleExpand, onClick)}
         </div>
       ))}
     </div>

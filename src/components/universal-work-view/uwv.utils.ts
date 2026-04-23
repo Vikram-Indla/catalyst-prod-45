@@ -48,7 +48,7 @@ export function getStatusStyle(
 }
 
 // Row height + key colour now match Project Work table.
-export const JIRA_ROW_HEIGHT = 44;
+export const JIRA_ROW_HEIGHT = 40;
 // Key colour: always blue (matches AllWorkTable — `var(--cp-blue)`).
 export const JIRA_KEY_COLOR = 'var(--cp-blue)';
 // Summary uses theme token so dark mode works.
