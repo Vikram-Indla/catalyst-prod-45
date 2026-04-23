@@ -1326,18 +1326,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const visibleByTab =
     tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
 
-  const filteredRows = (settings.status_filter?.length ?? 0) > 0
-    ? visibleByTab.filter((r) => {
-        // For unlinked-epic rows: filter on the epic's own status.
-        // For MDT rows: include if any child epic's status matches.
-        if (r.isUnlinkedEpic) {
-          return settings.status_filter.includes(r.status);
-        }
-        return r.epics?.some((e) => settings.status_filter.includes(e.status)) ?? false;
-      })
-    : visibleByTab;
-
-  const visibleRows = filteredRows.slice(0, 10);
+  const visibleRows = visibleByTab.slice(0, 10);
 
 
 
