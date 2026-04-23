@@ -52,6 +52,8 @@ export function CatalystHeader() {
             appearance="subtle"
             onClick={cycleSidebarState}
             icon={isCollapsed ? SidebarExpandIcon : SidebarCollapseIcon}
+            aria-expanded={!isCollapsed}
+            aria-controls="catalyst-sidebar"
           />
         </Tooltip>
         <HubSwitcher />

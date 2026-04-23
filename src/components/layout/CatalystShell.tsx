@@ -562,7 +562,11 @@ function CatalystShellContent() {
             cost) and replaced with a thin edge-reveal handle that restores
             the sidebar on click. Keyboard: `[` cycles between states. */}
         <div
+          id="catalyst-sidebar"
           data-catalyst-sidebar
+          role="navigation"
+          aria-label="Main navigation"
+          aria-hidden={sidebarHidden}
           className="relative flex-shrink-0"
           style={sidebarOverlayMode ? {
             position: 'absolute' as const,
