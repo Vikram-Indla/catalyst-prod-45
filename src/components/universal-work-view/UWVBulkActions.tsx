@@ -66,7 +66,7 @@ export function UWVBulkActions({ selectedIds, allItems, project, onClear }: Prop
         borderBottom: '1px solid #DFE1E6',
       }}
     >
-      <span style={{ fontSize: 13, fontWeight: 600, color: '#0747A6' }}>
+      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--cp-blue)' }}>
         {selectedIds.size} selected
       </span>
 

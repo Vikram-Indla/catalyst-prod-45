@@ -146,7 +146,7 @@ function renderCell(
           dir="auto"
           style={{
             color: 'var(--fg-1)',
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: 400,
             fontFamily: 'Inter, sans-serif',
             overflow: 'hidden',
@@ -353,7 +353,8 @@ export const UWVRow = React.memo(function UWVRow({
         display: 'grid',
         gridTemplateColumns: gridTemplate,
         height: JIRA_ROW_HEIGHT,
-        borderBottom: '0.75px solid var(--bd-subtle, #292929)',
+        borderBottom: '1px solid var(--bd-default, #E5E7EB)',
+        borderLeft: isSelected ? '4px solid var(--cp-blue)' : '4px solid transparent',
         backgroundColor: isSelected
           ? 'rgba(37,99,235,0.08)'
           : depth > 0
@@ -390,7 +391,8 @@ export const UWVRow = React.memo(function UWVRow({
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggleSelect()}
-          className="w-4 h-4 rounded cursor-pointer accent-[#2563EB]"
+          className="w-4 h-4 rounded cursor-pointer"
+          style={{ accentColor: 'var(--cp-blue)' }}
           aria-label={`Select ${item.key}`}
         />
       </div>
