@@ -232,6 +232,8 @@ interface EpicRow {
   todo: number;
   stories?: EpicStoryRow[];
   status_category?: string;
+  assignee_display_name?: string | null;
+  assignee_avatar?: string | null;
 }
 
 interface DemandRow {
@@ -1439,6 +1441,8 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         blocked: ['On Hold', 'Blocked', 'Awaiting Info'].includes(s.status) ? 1 : 0,
         status: s.status,
         status_category: s.status_category,
+        assignee_display_name: s.assignee_display_name ?? null,
+        assignee_avatar: s.assignee_avatar ?? null,
         stories: [],
       })),
       isDelivered: false,
