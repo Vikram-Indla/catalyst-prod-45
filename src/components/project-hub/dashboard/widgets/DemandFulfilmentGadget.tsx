@@ -1443,6 +1443,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               >
                 <SettingsPopupBody
                   initial={settings}
+                  projectKey={projectKey}
                   onCancel={() => setSettingsOpen(false)}
                   onApply={async (next) => {
                     await save(next);
