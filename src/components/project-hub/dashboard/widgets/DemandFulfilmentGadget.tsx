@@ -21,10 +21,10 @@
  * Chrome reuses WidgetWrapper (same shell as every other dashboard gadget).
  */
 import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ChevronDown,
   ChevronRight,
-  Settings,
   Info,
   CheckCircle2,
   AlertTriangle,
@@ -42,6 +42,14 @@ import { RadioGroup } from '@atlaskit/radio';
 import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
+import SectionMessage from '@atlaskit/section-message';
+import Badge from '@atlaskit/badge';
+import Link from '@atlaskit/link';
+import AkButton, { IconButton } from '@atlaskit/button/new';
+import SettingsIcon from '@atlaskit/icon/core/settings';
+import CalendarIcon from '@atlaskit/icon/core/calendar';
+import ShortcutIcon from '@atlaskit/icon/core/shortcut';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { differenceInCalendarDays, format, parseISO, eachDayOfInterval, getDay } from 'date-fns';
 
@@ -829,6 +837,7 @@ function DemandRowItem({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+  const navigate = useNavigate();
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
@@ -854,14 +863,14 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     tab === 'overdue' ? overdueRows : tab === 'all' ? active : active;
   const visibleRows = visibleByTab.slice(0, 10);
 
-  // Period badge text
+  // Period badge text (icon rendered separately as ADS CalendarIcon)
   const periodBadge = (() => {
     if (settings.scope_type === 'quarter') {
       const { label } = quarterRange(settings.quarter);
-      return `📅 ${settings.quarter.replace('-', ' ')} · ${label}`;
+      return `${settings.quarter.replace('-', ' ')} · ${label}`;
     }
-    if (settings.scope_type === 'custom') return '📅 Custom range';
-    return '📅 All active demands';
+    if (settings.scope_type === 'custom') return 'Custom range';
+    return 'All active demands';
   })();
 
   // Period strip text
@@ -894,16 +903,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         >
           <span
             style={{
-              fontSize: 12,
-              fontWeight: 500,
-              color: token('color.text.subtle', '#42526E'),
-              background: token('color.background.neutral', '#F4F5F7'),
-              border: `1px solid ${token('color.border', '#E2E8F0')}`,
-              borderRadius: 3,
-              padding: '2px 6px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: token('space.050', '4px'),
+              font: token('font.body.small'),
+              color: token('color.text.subtle'),
+              background: token('color.background.neutral'),
+              borderRadius: token('border.radius.100', '4px'),
+              padding: `${token('space.050', '4px')} ${token('space.100', '8px')}`,
               whiteSpace: 'nowrap',
             }}
           >
+            <CalendarIcon label="" color="currentColor" />
             {periodBadge}
           </span>
           <Popup
@@ -922,36 +933,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               />
             )}
             trigger={(triggerProps) => (
-              <span
-                {...triggerProps}
-                role="button"
-                tabIndex={0}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  setSettingsOpen((v) => !v);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
+              <span {...triggerProps}>
+                <IconButton
+                  icon={SettingsIcon}
+                  label="Configure demand gadget"
+                  appearance="subtle"
+                  spacing="compact"
+                  isTooltipDisabled={false}
+                  onClick={(e) => {
                     e.stopPropagation();
-                    e.preventDefault();
                     setSettingsOpen((v) => !v);
-                  }
-                }}
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  cursor: 'pointer',
-                  padding: 2,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  color: token('color.text.subtlest', '#6B778C'),
-                  borderRadius: 3,
-                }}
-                aria-label="Configure demand gadget"
-                aria-expanded={settingsOpen}
-              >
-                <Settings size={14} />
+                  }}
+                />
               </span>
             )}
           />
@@ -959,13 +952,13 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       }
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <a
-            href="/producthub/backlog"
-            style={{ fontSize: 12, fontWeight: 500, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-          >
-            View all in ProductHub ↗
-          </a>
-          <span style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+          <Link href="/producthub/backlog">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px') }}>
+              View all in ProductHub
+              <ShortcutIcon label="" color="currentColor" />
+            </span>
+          </Link>
+          <span style={{ font: token('font.body.small'), color: token('color.text.subtlest') }}>
             {[settings.include_stories && 'Stories', settings.include_defects && 'Defects'].filter(Boolean).join(' + ')} · Sun–Thu
           </span>
         </div>
@@ -975,9 +968,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       <div onClick={(e) => e.stopPropagation()}>
         <Tabs id="df-tabs" selected={tab === 'active' ? 0 : tab === 'overdue' ? 1 : 2} onChange={(i: number) => setTab(i === 0 ? 'active' : i === 1 ? 'overdue' : 'all')}>
           <TabList>
-            <Tab>Active ({active.length})</Tab>
-            <Tab>Overdue ({overdueRows.length})</Tab>
-            <Tab>All ({active.length + delivered.length})</Tab>
+            <Tab>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+                Active <Badge appearance="default">{active.length}</Badge>
+              </span>
+            </Tab>
+            <Tab>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+                Overdue <Badge appearance={overdueRows.length > 0 ? 'important' : 'default'}>{overdueRows.length}</Badge>
+              </span>
+            </Tab>
+            <Tab>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
+                All <Badge appearance="default">{active.length + delivered.length}</Badge>
+              </span>
+            </Tab>
           </TabList>
           <TabPanel><span /></TabPanel>
           <TabPanel><span /></TabPanel>
@@ -989,11 +994,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       <div
         style={{
           background: token('elevation.surface.sunken', '#F7F8F9'),
-          borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-          borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
-          padding: '4px 12px',
-          fontSize: 11,
-          color: token('color.text.subtlest', '#6B778C'),
+          borderTop: `1px solid ${token('color.border')}`,
+          borderBottom: `1px solid ${token('color.border')}`,
+          padding: `${token('space.050', '4px')} ${token('space.150', '12px')}`,
+          font: token('font.body.small'),
+          color: token('color.text.subtlest'),
         }}
       >
         {periodStrip}
@@ -1001,7 +1006,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
       {/* List or empty / all-delivered states */}
       {isLoading ? (
-        <div style={{ padding: 20, fontSize: 12, color: token('color.text.subtle', '#6B778C') }}>Loading…</div>
+        <div style={{ padding: 20, font: token('font.body.small'), color: token('color.text.subtle') }}>Loading…</div>
       ) : active.length === 0 && delivered.length === 0 ? (
         // Empty state: differentiate Case A (MDTs exist but none linked → unlinked epics
         // are visible elsewhere) vs Case B (truly nothing in scope).
@@ -1009,14 +1014,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           <div style={{ padding: 16 }}>
             <EmptyState
               header="No epics linked to demand tickets yet"
-              description="MDTs may exist for this period, but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
+              description="MDTs exist for this quarter but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
               primaryAction={
-                <a
-                  href="/producthub/backlog"
-                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-                >
-                  Open ProductHub ↗
-                </a>
+                <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
+                  Open ProductHub
+                </AkButton>
               }
             />
           </div>
@@ -1026,12 +1028,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               header="No demand tickets for this period"
               description="There are no MDTs matching the selected scope. Create MDTs in ProductHub, set their target quarter, then link epics to track delivery here."
               primaryAction={
-                <a
-                  href="/producthub/backlog"
-                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-                >
-                  Create MDT in ProductHub ↗
-                </a>
+                <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
+                  Create MDT in ProductHub
+                </AkButton>
               }
             />
           </div>
@@ -1039,7 +1038,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       ) : active.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
-          <div style={{ padding: '10px 12px', fontSize: 13, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+          <div style={{ padding: '10px 12px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
             ✓ All demand commitments met this period
           </div>
           {delivered.map((r) => (
@@ -1112,41 +1111,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
       {/* Unlinked epics warning — always render when present, regardless of tab state */}
       {unlinkedEpics.length > 0 && (
-        <div style={{ borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
-          <div
-            style={{
-              padding: '10px 14px',
-              background: '#FFFAE6',
-              borderLeft: '3px solid #FFAB00',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 8,
-            }}
-          >
-            <AlertTriangle size={14} color="#B38600" style={{ marginTop: 2, flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#7F5F01', marginBottom: 2 }}>
-                {unlinkedEpics.length} epic{unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket
-              </div>
-              <div style={{ fontSize: 11, color: '#7F5F01', marginBottom: 6 }}>
-                These epics are progressing but aren't rolled up under any MDT.
-              </div>
-              <button
-                onClick={() => setUnlinkedOpen((v) => !v)}
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  padding: 0,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: token('color.text.brand', '#0C66E4'),
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                {unlinkedOpen ? 'Hide' : 'View'} unlinked epics {unlinkedOpen ? '▲' : '▼'}
-              </button>
-            </div>
+        <div style={{ borderTop: `1px solid ${token('color.border')}` }}>
+          <div style={{ padding: token('space.150', '12px') }}>
+            <SectionMessage
+              appearance="warning"
+              title={`${unlinkedEpics.length} epic${unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket`}
+              actions={[
+                {
+                  key: 'toggle-unlinked',
+                  text: unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics',
+                  onClick: () => setUnlinkedOpen((v) => !v),
+                },
+              ]}
+            >
+              <p>These epics are progressing but aren't rolled up under any MDT.</p>
+            </SectionMessage>
           </div>
           {unlinkedOpen && (
             <div style={{ maxHeight: 200, overflowY: 'auto', background: token('elevation.surface.sunken', '#F7F8F9') }}>
@@ -1159,21 +1138,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                     alignItems: 'center',
                     gap: 8,
                     padding: '6px 14px',
-                    borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-                    fontSize: 12,
+                    borderTop: `1px solid ${token('color.border')}`,
+                    font: token('font.body.small'),
                   }}
                 >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#97A0AF' }} />
-                  <a
-                    href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}
-                    style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-                  >
-                    {e.issue_key}
-                  </a>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.text.disabled', '#97A0AF') }} />
+                  <Link href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}>
+                    <span style={{ fontWeight: 700 }}>{e.issue_key}</span>
+                  </Link>
                   <span
                     title={e.summary}
                     style={{
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text'),
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -1182,12 +1158,12 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   >
                     {e.summary}
                   </span>
-                  <a
-                    href={`/producthub/backlog?linkEpic=${e.issue_key}`}
-                    style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none', whiteSpace: 'nowrap' }}
-                  >
-                    Link to demand ↗
-                  </a>
+                  <Link href={`/producthub/backlog?linkEpic=${e.issue_key}`}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px'), whiteSpace: 'nowrap' }}>
+                      Link to demand
+                      <ShortcutIcon label="" color="currentColor" />
+                    </span>
+                  </Link>
                 </div>
               ))}
             </div>
