@@ -10153,6 +10153,33 @@ export type Database = {
           },
         ]
       }
+      gadget_settings: {
+        Row: {
+          created_at: string
+          gadget_key: string
+          id: string
+          settings: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          gadget_key: string
+          id?: string
+          settings?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          gadget_key?: string
+          id?: string
+          settings?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       generated_reports: {
         Row: {
           expires_at: string | null

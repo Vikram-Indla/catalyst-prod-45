@@ -6,6 +6,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import Badge from '@atlaskit/badge';
 import NotificationPanel from '@/components/notifications/NotificationPanel';
 import { useUnreadCount, markNotificationsViewed } from '@/hooks/useUnreadCount';
+import { useUnreadCountFromSync } from '@/hooks/useDirectFromSync';
 
 // Anchor sits above the icon button so the Atlaskit Badge reads as an
 // overlay pip, matching Jira's unread count pattern.
@@ -28,6 +29,7 @@ export function NotificationsPanel() {
   const [open, setOpen] = useState(false);
   const { data: unreadCount = 0 } = useUnreadCount();
   const queryClient = useQueryClient();
+  const { data: unreadCount = 0 } = useUnreadCountFromSync();
 
   return (
     <>

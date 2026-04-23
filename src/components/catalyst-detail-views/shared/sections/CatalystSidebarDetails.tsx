@@ -71,6 +71,8 @@ import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
 /* EditablePriority moved to CatalystKeyDetails (main content) per Jira
    parity audit on 2026-04-20. Keeping the other three editable fields. */
 import { EditableAssignee, EditableLabels, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { EpicDueDateField } from '@/components/project/EpicDueDateField';
+import { toast } from 'sonner';
 import {
   STATUS_OPTION_GROUPS,
 } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/constants';
@@ -301,6 +303,31 @@ export function CatalystSidebarDetails({
               />
             )}
           </FieldRow>
+
+          {/* ── Due date (Epic only) ──── */}
+          {issue?.issue_type === 'Epic' && (
+            <>
+              <FieldRow label="Due date">
+                <EpicDueDateField
+                  issueId={issue.id}
+                  dueDate={(issue as any).due_date ?? null}
+                  isEpic
+                  onSave={async (date) => {
+                    const { error } = await (supabase as any)
+                      .from('ph_issues')
+                      .update({ due_date: date })
+                      .eq('id', issue.id);
+                    if (error) {
+                      toast.error('Failed to save due date');
+                      throw error;
+                    }
+                    invalidateIssue();
+                  }}
+                />
+              </FieldRow>
+              <div style={{ borderTop: '1px solid #DCDFE4', margin: '4px 0' }} />
+            </>
+          )}
 
           {/* ── Assignee ──── */}
           <FieldRow label="Assignee">

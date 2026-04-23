@@ -62,8 +62,13 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     ],
   };
 
+  const isClosed = (s?: string | null) => {
+    const v = (s || '').toLowerCase();
+    return v === 'resolved' || v === 'closed' || v === 'done';
+  };
+
   const rows = (incidents ?? []).slice(0, 10).map((inc: any) => {
-    const assigneeName = inc.assignee || '';
+    const assigneeName = inc.assignee_display_name || '';
     const statusLabel = (inc.status || 'open').replace(/_/g, ' ');
     return {
       key: inc.id,
@@ -80,7 +85,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 whiteSpace: 'nowrap',
               }}
             >
-              {inc.issue_key}
+              {inc.issue_key ?? ''}
             </span>
           ),
         },
@@ -88,7 +93,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           key: 'title',
           content: (
             <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>
-              {inc.title ?? ''}
+              {inc.summary ?? ''}
             </span>
           ),
         },
@@ -173,14 +178,12 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               {incidents.length} incidents
             </span>
             {(() => {
-              const open = incidents.filter((d: any) => d.status_category !== 'Done').length;
-              const resolved = incidents.filter((d: any) => d.status_category === 'Done' && d.resolution).length;
-              const closed = incidents.filter((d: any) => d.status_category === 'Done' && !d.resolution).length;
+              const open = incidents.filter((d: any) => !isClosed(d.status)).length;
+              const closed = incidents.filter((d: any) => isClosed(d.status)).length;
               return (
                 <>
                   {open > 0 && <Lozenge appearance="inprogress">{open} OPEN</Lozenge>}
-                  {resolved > 0 && <Lozenge appearance="success">{resolved} RESOLVED</Lozenge>}
-                  {closed > 0 && <Lozenge appearance="default">{closed} CLOSED</Lozenge>}
+                  {closed > 0 && <Lozenge appearance="success">{closed} CLOSED</Lozenge>}
                 </>
               );
             })()}

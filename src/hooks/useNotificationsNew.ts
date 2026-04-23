@@ -14,7 +14,11 @@ function useUserId() {
   });
 }
 
-export function useNotificationsQuery(tab: NotificationTab, unreadOnly: boolean) {
+export function useNotificationsQuery(
+  tab: NotificationTab,
+  unreadOnly: boolean,
+  enabled = true,
+) {
   const { data: userId } = useUserId();
 
   return useInfiniteQuery({
@@ -47,7 +51,7 @@ export function useNotificationsQuery(tab: NotificationTab, unreadOnly: boolean)
       lastPage.length === NOTIFICATIONS_PER_PAGE
         ? lastPage[lastPage.length - 1].created_at
         : undefined,
-    enabled: !!userId,
+    enabled: !!userId && enabled,
     staleTime: 0,
   });
 }

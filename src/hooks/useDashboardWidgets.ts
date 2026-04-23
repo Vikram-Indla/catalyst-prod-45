@@ -265,43 +265,35 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
   });
 }
 
-// ─── Production Incidents (cross-hub from ph_issues) ───
+// ─── Production Incidents (from ph_issues filtered by issue_type) ───
 export function useDashboardIncidents(projectId: string | null | undefined, projectKey?: string | null) {
   return useQuery({
     queryKey: ['ph-dashboard-incidents', projectId, projectKey],
     queryFn: async () => {
-      if (!projectKey) return [];
+      const pKey = projectKey ?? (await getProjectKey(projectId!));
+      if (!pKey) return [];
 
-      const [{ data, error }, avatarMap] = await Promise.all([
-        supabase
-          .from('ph_issues')
-          .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
-          .eq('project_key', projectKey)
-          .eq('issue_type', 'Production Incident')
-          .is('deleted_at', null)
-          .order('jira_created_at', { ascending: false })
-          .limit(10),
-        getAvatarMap(),
-      ]);
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
+        .eq('project_key', pKey)
+        .eq('issue_type', 'Production Incident')
+        .is('deleted_at', null)
+        .order('jira_created_at', { ascending: false })
+        .limit(10);
       if (error) throw error;
 
-      return (data ?? []).map(inc => ({
-        id: inc.id,
-        issue_key: inc.issue_key,
-        title: inc.summary,
-        priority: inc.priority || 'Medium',
-        status: inc.status,
-        status_category: inc.status_category,
-        assignee: inc.assignee_display_name,
+      const avatarMap = await getAvatarMap();
+
+      return (data ?? []).map((inc: any) => ({
+        ...inc,
         assignee_avatar_url: resolveAvatarUrl(avatarMap, inc.assignee_display_name),
-        reporter: inc.reporter_display_name,
-        resolution: inc.resolution,
         days_open: inc.jira_created_at
           ? Math.max(0, Math.floor((Date.now() - new Date(inc.jira_created_at).getTime()) / 86400000))
           : 0,
       }));
     },
-    enabled: !!projectKey,
+    enabled: !!projectId,
     staleTime: 60_000,
   });
 }
@@ -358,23 +350,78 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
   });
 }
 
-// ─── Recent Activity (latest updated ph_issues) ───
+// ─── Recent Activity (from work_item_activity, joined to ph_issues) ───
+const ACTIVITY_LABELS: Record<string, string> = {
+  viewed: 'Viewed',
+  updated: 'Updated',
+  commented: 'Comment added',
+  assigned: 'Assigned',
+  status_changed: 'Status changed',
+};
+
+export interface DashboardActivityItem {
+  id: string;
+  work_item_id: string;
+  work_item_type: string;
+  activity_type: string;
+  activity_label: string;
+  occurred_at: string | null;
+  metadata: any;
+  issue_key: string | null;
+  summary: string | null;
+  status: string | null;
+}
+
 export function useDashboardRecentActivity(projectId: string | null | undefined) {
-  return useQuery({
+  return useQuery<DashboardActivityItem[]>({
     queryKey: ['ph-dashboard-recent-activity', projectId],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      const { data, error } = await supabase
+      // Step A: get ph_issues ids for this project
+      const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_display_name, jira_updated_at, issue_type')
+        .select('id, issue_key, summary, status')
         .eq('project_key', pKey)
-        .is('deleted_at', null)
-        .order('jira_updated_at', { ascending: false })
-        .limit(15);
-      if (error) throw error;
-      return data ?? [];
+        .is('deleted_at', null);
+      if (issuesError) throw issuesError;
+
+      const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
+      const ids: string[] = [];
+      for (const i of issues ?? []) {
+        if (i.id) {
+          ids.push(i.id);
+          issueMap.set(i.id, { issue_key: i.issue_key, summary: i.summary, status: i.status });
+        }
+      }
+      if (!ids.length) return [];
+
+      // Step B: fetch latest activity for those work items
+      const { data: activity, error: actError } = await supabase
+        .from('work_item_activity')
+        .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata')
+        .in('work_item_id', ids)
+        .order('occurred_at', { ascending: false })
+        .limit(20);
+      if (actError) throw actError;
+
+      // Step C: merge
+      return (activity ?? []).map((a: any) => {
+        const issue = issueMap.get(a.work_item_id);
+        return {
+          id: a.id,
+          work_item_id: a.work_item_id,
+          work_item_type: a.work_item_type,
+          activity_type: a.activity_type,
+          activity_label: ACTIVITY_LABELS[a.activity_type] ?? a.activity_type,
+          occurred_at: a.occurred_at,
+          metadata: a.metadata,
+          issue_key: issue?.issue_key ?? null,
+          summary: issue?.summary ?? null,
+          status: issue?.status ?? null,
+        };
+      });
     },
     enabled: !!projectId,
     staleTime: 30_000,
