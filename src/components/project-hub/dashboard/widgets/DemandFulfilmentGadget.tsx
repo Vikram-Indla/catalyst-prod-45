@@ -631,13 +631,21 @@ function SettingsPopupBody({
       </div>
 
       {/* Time scope */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         Time scope
       </div>
       <RadioGroup
         name="scope_type"
         value={draft.scope_type}
-        onChange={(e: any) => setDraft({ ...draft, scope_type: e.currentTarget.value as ScopeType })}
+        onChange={(e: any) => {
+          const newScope = e.currentTarget.value as ScopeType;
+          setDraft((prev) => ({
+            ...prev,
+            scope_type: newScope,
+            date_from: newScope === 'custom' && !prev.date_from ? today : prev.date_from,
+            date_to: newScope === 'custom' && !prev.date_to ? oneMonthAhead : prev.date_to,
+          }));
+        }}
         options={[
           { name: 'scope_type', value: 'quarter', label: 'This Quarter' },
           { name: 'scope_type', value: 'custom', label: 'Custom timeline' },
@@ -659,18 +667,18 @@ function SettingsPopupBody({
       {draft.scope_type === 'custom' && (
         <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div>
-            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
+            <div style={subLabelStyle}>From</div>
             <DatePicker
               locale="en-GB"
-              value={draft.date_from ?? ''}
+              value={draft.date_from ?? today}
               onChange={(v: string) => setDraft({ ...draft, date_from: v || null })}
             />
           </div>
           <div>
-            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
+            <div style={subLabelStyle}>To</div>
             <DatePicker
               locale="en-GB"
-              value={draft.date_to ?? ''}
+              value={draft.date_to ?? oneMonthAhead}
               minDate={draft.date_from ?? undefined}
               onChange={(v: string) => setDraft({ ...draft, date_to: v || null })}
             />
@@ -681,17 +689,17 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Threshold */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         At-risk threshold
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#172B4D') }}>
         <span>Mark as At Risk when</span>
-        <div style={{ width: 70 }}>
+        <div style={{ width: 100 }}>
           <Select
             spacing="compact"
             options={THRESHOLD_OPTIONS}
-            value={THRESHOLD_OPTIONS.find((o) => o.value === draft.rag_threshold)}
-            onChange={(opt: any) => setDraft({ ...draft, rag_threshold: opt.value })}
+            value={THRESHOLD_OPTIONS.find((o) => o.value === Number(draft.rag_threshold))}
+            onChange={(opt: any) => setDraft({ ...draft, rag_threshold: Number(opt.value) })}
           />
         </div>
         <span>or fewer days remain</span>
@@ -700,7 +708,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Item types */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         Count toward completion
       </div>
       <Checkbox
