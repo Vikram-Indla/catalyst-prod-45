@@ -25,7 +25,7 @@
  */
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { token } from '@atlaskit/tokens';
-import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+// ChevronDownIcon removed — gadget header no longer renders a collapse chevron.
 import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
