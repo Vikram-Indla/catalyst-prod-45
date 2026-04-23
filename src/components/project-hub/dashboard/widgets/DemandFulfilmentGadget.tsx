@@ -1181,7 +1181,7 @@ function DemandRowItem({
                       onClick={() => hasStories && toggleEpic(epic.id)}
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '20px 90px 1fr 80px 60px',
+                        gridTemplateColumns: '20px 90px 1fr 80px auto',
                         alignItems: 'center',
                         gap: 8,
                         padding: '6px 16px 6px 28px',
