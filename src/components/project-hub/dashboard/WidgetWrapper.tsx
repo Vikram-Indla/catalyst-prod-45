@@ -25,7 +25,7 @@
  */
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { token } from '@atlaskit/tokens';
-import ChevronDownIcon from '@atlaskit/icon/core/chevron-down';
+import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
 import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
