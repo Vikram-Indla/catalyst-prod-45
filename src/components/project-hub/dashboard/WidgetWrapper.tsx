@@ -99,7 +99,7 @@ export default function WidgetWrapper({
         className="flex items-center justify-between gap-2"
         style={{
           padding: '10px 14px',
-          background: token('color.background.neutral.subtle', '#F1F5F9'),
+          background: token('elevation.surface', '#FFFFFF'),
           borderBottom: collapsed ? 'none' : `1px solid ${token('color.border', '#E2E8F0')}`,
           minHeight: 38,
         }}
@@ -134,16 +134,15 @@ export default function WidgetWrapper({
             style={{
               display: 'inline-flex',
               cursor: 'pointer',
-              color: token('color.text.subtlest', '#6B778C'),
+              transition: 'transform 200ms ease',
+              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
             aria-hidden="true"
           >
-            <ChevronDown
-              size={14}
-              style={{
-                transition: 'transform 200ms ease',
-                transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-              }}
+            <ChevronDownIcon
+              label={collapsed ? 'Expand' : 'Collapse'}
+              color={token('color.icon.subtle', '#626F86')}
+              LEGACY_size="small"
             />
           </span>
         </div>
