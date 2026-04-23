@@ -1178,9 +1178,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       }
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href="/producthub/backlog">
+          <Link href={`/project-hub/${projectKey}/hierarchy/allwork`}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px') }}>
-              View all in ProductHub
+              View all in ProjectHub
               <ShortcutIcon label="" color="currentColor" />
             </span>
           </Link>
