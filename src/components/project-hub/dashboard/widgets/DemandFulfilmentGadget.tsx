@@ -75,6 +75,7 @@ interface GadgetSettings {
   rag_threshold: number;
   include_stories: boolean;
   include_defects: boolean;
+  status_filter: string[];
 }
 
 const currentQuarter = (): string => {
@@ -91,6 +92,7 @@ const DEFAULT_SETTINGS: GadgetSettings = {
   rag_threshold: 7,
   include_stories: true,
   include_defects: true,
+  status_filter: [],
 };
 
 const QUARTER_OPTIONS = [
@@ -642,12 +644,29 @@ function SettingsPopupBody({
   initial,
   onApply,
   onCancel,
+  projectKey,
 }: {
   initial: GadgetSettings;
   onApply: (s: GadgetSettings) => void;
   onCancel: () => void;
+  projectKey: string;
 }) {
   const [draft, setDraft] = useState<GadgetSettings>(initial);
+
+  const { data: statusOptions = [] } = useQuery({
+    queryKey: ['demand-fulfilment-distinct-statuses', projectKey],
+    queryFn: async () => {
+      const { data } = await (supabase as any)
+        .from('ph_issues')
+        .select('status')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Epic')
+        .is('jira_removed_at', null);
+      const unique = Array.from(new Set((data ?? []).map((r: any) => r.status).filter(Boolean))).sort();
+      return unique.map((s: string) => ({ label: s, value: s }));
+    },
+    enabled: !!projectKey,
+  });
 
   const today = new Date().toISOString().split('T')[0];
   const oneMonthAhead = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
@@ -776,6 +795,37 @@ function SettingsPopupBody({
         onChange={(e: any) => setDraft({ ...draft, include_defects: e.target.checked })}
         label="Defects / Bugs"
       />
+
+      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }} />
+
+      {/* Status filter */}
+      <div style={sectionHeadingStyle}>
+        Filter by status
+      </div>
+      <Select
+        isMulti
+        isClearable
+        spacing="compact"
+        placeholder="All statuses (no filter)"
+        options={statusOptions}
+        value={(draft.status_filter ?? []).map((v: string) => ({ label: v, value: v }))}
+        onChange={(selected: any) =>
+          setDraft({
+            ...draft,
+            status_filter: Array.isArray(selected) ? selected.map((o: any) => o.value) : [],
+          })
+        }
+      />
+      <div
+        style={{
+          fontSize: 11,
+          color: token('color.text.subtlest', '#626F86'),
+          marginTop: 4,
+          fontFamily: ATLAS_SANS,
+        }}
+      >
+        Leave empty to show all statuses
+      </div>
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 14 }}>
@@ -1214,7 +1264,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     return next;
   });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  // status filter now lives in gadget settings (settings.status_filter)
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
   const gearRef = useRef<HTMLSpanElement>(null);
@@ -1291,13 +1341,14 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const visibleByTab =
     tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
 
-  const filteredRows = statusFilter
+  const filteredRows = (settings.status_filter?.length ?? 0) > 0
     ? visibleByTab.filter((r) => {
-        if (statusFilter === 'Done') return r.done === r.total && r.total > 0;
-        if (statusFilter === 'In Progress') return r.inprogress > 0;
-        if (statusFilter === 'Blocked') return r.blocked > 0;
-        if (statusFilter === 'To Do') return r.todo > 0 && r.inprogress === 0 && r.done === 0;
-        return true;
+        // For unlinked-epic rows: filter on the epic's own status.
+        // For MDT rows: include if any child epic's status matches.
+        if (r.isUnlinkedEpic) {
+          return settings.status_filter.includes(r.status);
+        }
+        return r.epics?.some((e) => settings.status_filter.includes(e.status)) ?? false;
       })
     : visibleByTab;
 
@@ -1392,6 +1443,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               >
                 <SettingsPopupBody
                   initial={settings}
+                  projectKey={projectKey}
                   onCancel={() => setSettingsOpen(false)}
                   onApply={async (next) => {
                     await save(next);
@@ -1444,36 +1496,8 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         </Tabs>
       </div>
 
-      {/* Status filter */}
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 8,
-          padding: `6px ${token('space.200', '16px')}`,
-          borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-        }}
-      >
-        <span style={{ fontSize: 11, fontWeight: 600, color: token('color.text.subtle', '#6B778C'), textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-          Filter:
-        </span>
-        <div style={{ width: 180 }}>
-          <Select
-            spacing="compact"
-            isClearable
-            placeholder="All statuses"
-            options={[
-              { label: 'To Do', value: 'To Do' },
-              { label: 'In Progress', value: 'In Progress' },
-              { label: 'Blocked', value: 'Blocked' },
-              { label: 'Done', value: 'Done' },
-            ]}
-            value={statusFilter ? { label: statusFilter, value: statusFilter } : null}
-            onChange={(opt: any) => setStatusFilter(opt ? opt.value : null)}
-          />
-        </div>
-      </div>
+      {/* Status filter moved to gadget settings popup */}
+
       <div
         style={{
           background: token('elevation.surface.sunken', '#F7F8F9'),

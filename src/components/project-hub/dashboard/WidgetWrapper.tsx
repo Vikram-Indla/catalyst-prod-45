@@ -25,7 +25,7 @@
  */
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { token } from '@atlaskit/tokens';
-import ChevronDownIcon from '@atlaskit/icon/utility/chevron-down';
+// ChevronDownIcon removed — gadget header no longer renders a collapse chevron.
 import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
@@ -126,29 +126,10 @@ export default function WidgetWrapper({
             </span>
           )}
         </button>
-        {/* Badges + chevron — sibling of the collapse button. Clicking
-            anywhere on this region (except interactive children like the
-            settings gear, which call e.stopPropagation()) toggles collapse. */}
-        <div
-          onClick={onToggleCollapse}
-          className="flex items-center gap-2 shrink-0"
-          style={{ cursor: 'pointer' }}
-        >
+        {/* Badges only — no collapse chevron. Settings gear lives inside
+            headerBadges and stops propagation on click. */}
+        <div className="flex items-center gap-2 shrink-0">
           {headerBadges}
-          <span
-            style={{
-              display: 'inline-flex',
-              transition: 'transform 200ms ease',
-              transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-            }}
-            aria-hidden="true"
-          >
-            <ChevronDownIcon
-              label={collapsed ? 'Expand' : 'Collapse'}
-              color={token('color.icon.subtle', '#626F86')}
-              LEGACY_size="small"
-            />
-          </span>
         </div>
       </div>
 
