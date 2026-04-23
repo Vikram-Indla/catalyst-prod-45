@@ -1110,41 +1110,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
       {/* Unlinked epics warning — always render when present, regardless of tab state */}
       {unlinkedEpics.length > 0 && (
-        <div style={{ borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
-          <div
-            style={{
-              padding: '10px 14px',
-              background: '#FFFAE6',
-              borderLeft: '3px solid #FFAB00',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 8,
-            }}
-          >
-            <AlertTriangle size={14} color="#B38600" style={{ marginTop: 2, flexShrink: 0 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#7F5F01', marginBottom: 2 }}>
-                {unlinkedEpics.length} epic{unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket
-              </div>
-              <div style={{ fontSize: 11, color: '#7F5F01', marginBottom: 6 }}>
-                These epics are progressing but aren't rolled up under any MDT.
-              </div>
-              <button
-                onClick={() => setUnlinkedOpen((v) => !v)}
-                style={{
-                  background: 'transparent',
-                  border: 0,
-                  padding: 0,
-                  fontSize: 11,
-                  fontWeight: 600,
-                  color: token('color.text.brand', '#0C66E4'),
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
-              >
-                {unlinkedOpen ? 'Hide' : 'View'} unlinked epics {unlinkedOpen ? '▲' : '▼'}
-              </button>
-            </div>
+        <div style={{ borderTop: `1px solid ${token('color.border')}` }}>
+          <div style={{ padding: token('space.150', '12px') }}>
+            <SectionMessage
+              appearance="warning"
+              title={`${unlinkedEpics.length} epic${unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket`}
+              actions={[
+                {
+                  key: 'toggle-unlinked',
+                  text: unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics',
+                  onClick: () => setUnlinkedOpen((v) => !v),
+                },
+              ]}
+            >
+              <p>These epics are progressing but aren't rolled up under any MDT.</p>
+            </SectionMessage>
           </div>
           {unlinkedOpen && (
             <div style={{ maxHeight: 200, overflowY: 'auto', background: token('elevation.surface.sunken', '#F7F8F9') }}>
@@ -1157,21 +1137,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                     alignItems: 'center',
                     gap: 8,
                     padding: '6px 14px',
-                    borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-                    fontSize: 12,
+                    borderTop: `1px solid ${token('color.border')}`,
+                    font: token('font.body.small'),
                   }}
                 >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#97A0AF' }} />
-                  <a
-                    href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}
-                    style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-                  >
-                    {e.issue_key}
-                  </a>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.text.disabled', '#97A0AF') }} />
+                  <Link href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}>
+                    <span style={{ fontWeight: 700 }}>{e.issue_key}</span>
+                  </Link>
                   <span
                     title={e.summary}
                     style={{
-                      color: token('color.text', '#172B4D'),
+                      color: token('color.text'),
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -1180,12 +1157,12 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   >
                     {e.summary}
                   </span>
-                  <a
-                    href={`/producthub/backlog?linkEpic=${e.issue_key}`}
-                    style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none', whiteSpace: 'nowrap' }}
-                  >
-                    Link to demand ↗
-                  </a>
+                  <Link href={`/producthub/backlog?linkEpic=${e.issue_key}`}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px'), whiteSpace: 'nowrap' }}>
+                      Link to demand
+                      <ShortcutIcon label="" color="currentColor" />
+                    </span>
+                  </Link>
                 </div>
               ))}
             </div>
