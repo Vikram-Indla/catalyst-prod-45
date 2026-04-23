@@ -23,9 +23,9 @@
  *       in Commit 8 of the BAU Dashboard Atlaskit migration — see
  *       docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 8.
  */
-import { ChevronDown } from 'lucide-react';
 import { Component, type ReactNode, type ErrorInfo } from 'react';
 import { token } from '@atlaskit/tokens';
+import ChevronDownIcon from '@atlaskit/icon/core/chevron-down';
 import { Heading, SectionMessage } from '@/components/ads';
 
 interface WidgetWrapperProps {
@@ -88,7 +88,7 @@ export default function WidgetWrapper({
         gridColumn: `span ${span}`,
         background: token('elevation.surface', '#FFFFFF'),
         border: `1px solid ${token('color.border', '#E2E8F0')}`,
-        borderRadius: 8,
+        borderRadius: token('border.radius.200', '8px'),
       }}
     >
       {/* Header — split into two siblings so headerBadges (which may contain
