@@ -1220,8 +1220,8 @@ function DemandRowItem({
                       <span
                         title={epic.summary}
                         style={{
-                          fontSize: 12,
-                          lineHeight: '16px',
+                          fontSize: 13,
+                          lineHeight: '20px',
                           fontWeight: 400,
                           fontFamily: ATLAS_SANS,
                           color: token('color.text', '#172B4D'),
