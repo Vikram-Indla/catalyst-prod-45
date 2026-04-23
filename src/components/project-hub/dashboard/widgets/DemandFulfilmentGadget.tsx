@@ -862,14 +862,14 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     tab === 'overdue' ? overdueRows : tab === 'all' ? active : active;
   const visibleRows = visibleByTab.slice(0, 10);
 
-  // Period badge text
+  // Period badge text (icon rendered separately as ADS CalendarIcon)
   const periodBadge = (() => {
     if (settings.scope_type === 'quarter') {
       const { label } = quarterRange(settings.quarter);
-      return `📅 ${settings.quarter.replace('-', ' ')} · ${label}`;
+      return `${settings.quarter.replace('-', ' ')} · ${label}`;
     }
-    if (settings.scope_type === 'custom') return '📅 Custom range';
-    return '📅 All active demands';
+    if (settings.scope_type === 'custom') return 'Custom range';
+    return 'All active demands';
   })();
 
   // Period strip text
