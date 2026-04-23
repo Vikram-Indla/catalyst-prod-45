@@ -5,19 +5,8 @@ import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNe
 import { useActorProfiles } from '@/hooks/useActorProfiles';
 import type { Notification, WorkItemIconType, StatusType } from '@/types/notifications';
 import type { DirectNotification, DirectVerb, DirectWorkItemIconType } from './types';
-import { useCallback, useMemo } from 'react';
-import { Box, xcss } from '@atlaskit/primitives';
-import { token } from '@atlaskit/tokens';
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
-import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
-import type {
-  DirectNotification,
-  DirectVerb,
-  DirectWorkItemIconType,
-  DirectStatusAppearance,
-} from './types';
-import type { Notification, NotificationType, StatusType, WorkItemIconType } from '@/types/notifications';
 
 interface DirectPanelProps {
   unreadOnly: boolean;
@@ -223,33 +212,6 @@ function EmptyState({ isDark }: { isDark: boolean }) {
   );
 }
 
-function LoadingState({ isDark }: { isDark: boolean }) {
-  const shimmerBg = isDark ? '#1F1F1F' : '#F4F5F7';
-  const shimmerHighlight = isDark ? '#2E2E2E' : '#E9EBEE';
-  return (
-    <Box xcss={panelXcss}>
-      {[1, 2, 3].map(i => (
-        <div
-          key={i}
-          style={{
-            display: 'flex',
-            gap: 10,
-            padding: '12px 16px',
-            alignItems: 'flex-start',
-          }}
-        >
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: shimmerBg, flexShrink: 0 }} />
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ height: 12, borderRadius: 4, background: shimmerHighlight, width: '60%' }} />
-            <div style={{ height: 12, borderRadius: 4, background: shimmerBg, width: '90%' }} />
-            <div style={{ height: 10, borderRadius: 4, background: shimmerBg, width: '40%' }} />
-          </div>
-        </div>
-      ))}
-    </Box>
-  );
-}
-
 // ─── Main component ──────────────────────────────────────────────────────────
 
 export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadIds, onMarkRead }: DirectPanelProps) {
@@ -307,106 +269,12 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   const visible = unreadOnly
     ? notifications.filter(n => !resolvedReadIds.has(n.id))
     : notifications;
-// ───────── Mappers ─────────
 
-function mapVerb(t: NotificationType): DirectVerb {
-  switch (t) {
-    case 'assigned':
-    case 'assigned_work_item':
-    case 'assigned_story':
-    case 'tester_assigned':
-      return 'assigned';
-    case 'unassigned':
-    case 'reassigned_work_item':
-      return 'reassigned';
-    case 'mentioned_in_comment':
-      return 'mentioned';
-    case 'commented':
-    case 'commented_on_work_item':
-      return 'commented';
-    case 'status_changed':
-      return 'status_changed';
-    case 'updated_work_item':
-    case 'created_work_item':
-      return 'updated';
-    case 'release_approval_requested':
-      return 'approved';
-    default:
-      return 'updated';
-  }
-}
-
-function mapIcon(t: WorkItemIconType | string): DirectWorkItemIconType {
-  switch (t) {
-    case 'bug':
-    case 'qa bug':
-    case 'defect':
-      return 'bug';
-    case 'story':
-      return 'story';
-    case 'epic':
-      return 'epic';
-    case 'incident':
-    case 'production incident':
-      return 'incident';
-    default:
-      return 'task';
-  }
-}
-
-function mapAppearance(s: StatusType): DirectStatusAppearance {
-  switch (s) {
-    case 'blue':  return 'inprogress';
-    case 'green': return 'success';
-    default:      return 'default';
-  }
-}
-
-// Map a ph_issues-derived Notification to DirectNotification.
-// Reporter display name lives in metadata.actor_name (set by useDirectFromSync).
-function toPh(n: Notification): DirectNotification {
-  const actorName = (n.metadata as unknown as { actor_name?: string | null })?.actor_name ?? null;
-  return {
-    id: n.id,
-    createdAt: n.created_at,
-    readAt: n.read_at,
-    actor: actorName ? { id: n.entity_key, displayName: actorName } : null,
-    verb: mapVerb(n.notification_type),
-    target: {
-      id: n.entity_id,
-      key: n.entity_key,
-      title: n.entity_title,
-      statusLabel: n.status,
-      statusAppearance: mapAppearance(n.status_type),
-      iconType: mapIcon(n.entity_icon_type),
-    },
-  };
-}
-
-export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
-  const { data: rawNotifications = [], isLoading } = useDirectFromSync(unreadOnly);
-  const markSyncRead = useMarkSyncAsRead();
-
-  const items = useMemo(
-    () => rawNotifications.map(toPh),
-    [rawNotifications]
-  );
-
-  // Pass the full Notification to the mutation so it can write a read receipt
-  const handleMarkRead = useCallback((id: string) => {
-    const notif = rawNotifications.find(n => n.id === id);
-    if (notif) markSyncRead.mutate(notif);
-  }, [rawNotifications, markSyncRead]);
-
-  if (isLoading && items.length === 0) {
-    return <LoadingState isDark={isDark} />;
-  }
-
-  if (items.length === 0) {
+  if (visible.length === 0) {
     return <EmptyState isDark={isDark} />;
   }
 
-  const groups = groupByDate(items);
+  const groups = groupByDate(visible);
   const dividerColor = isDark ? '#2E2E2E' : token('color.border', '#DFE1E6');
 
   return (
@@ -426,7 +294,6 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
               key={n.id}
               notification={n}
               isRead={resolvedReadIds.has(n.id)}
-              isRead={!!n.readAt}
               onMarkRead={handleMarkRead}
               isDark={isDark}
             />
@@ -436,3 +303,4 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
     </Box>
   );
 }
+
