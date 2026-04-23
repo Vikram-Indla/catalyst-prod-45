@@ -775,16 +775,18 @@ function DemandRowItem({
   threshold,
   expanded,
   onToggle,
+  projectKey,
 }: {
   row: DemandRow;
   threshold: number;
   expanded: boolean;
   onToggle: () => void;
+  projectKey: string;
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
   const c = ragColors[state];
-  const productHubUrl = `/producthub/backlog?initiative=${row.initiative_key}`;
+  const detailUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`;
 
   return (
     <div
