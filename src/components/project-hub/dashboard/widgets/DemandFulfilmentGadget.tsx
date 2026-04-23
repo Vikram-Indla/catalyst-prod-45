@@ -1323,17 +1323,20 @@ function DemandRowItem({
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '20px 90px 1fr auto auto',
+                            gridTemplateColumns: '20px 20px 90px 1fr auto auto',
                             alignItems: 'center',
                             gap: 12,
                             padding: '10px 16px 10px 28px',
                             minHeight: 40,
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                             borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
-                            background: token('elevation.surface.sunken', '#F7F8F9'),
+                            background: '#FFFFFF',
                           }}
                         >
                           <span />
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <JiraIssueTypeIcon type={(story as any).issue_type ?? 'Story'} size={16} />
+                          </span>
                           <a
                             href={storyUrl}
                             onClick={(e) => e.stopPropagation()}
@@ -1379,23 +1382,18 @@ function DemandRowItem({
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            <span
-                              style={{
-                                width: 20,
-                                height: 20,
-                                borderRadius: '50%',
-                                background: token('color.background.accent.gray.subtle', '#DFE1E6'),
-                                color: token('color.text.subtle', '#42526E'),
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 9,
-                                fontWeight: 600,
-                                flexShrink: 0,
-                              }}
-                            >
-                              {initialsOf(storyAssignee)}
-                            </span>
+                            <CatalystOwnerAvatar
+                              type={storyAssignee && storyAssignee !== '—' ? 'human' : 'placeholder'}
+                              name={storyAssignee && storyAssignee !== '—' ? storyAssignee : undefined}
+                              avatarUrl={
+                                (story as any).assignee_avatar
+                                  || (storyAssignee && storyAssignee !== '—'
+                                    ? resolveAvatarUrl(storyAssignee) ?? undefined
+                                    : undefined)
+                              }
+                              size="xs"
+                              showTooltip={false}
+                            />
                             {storyAssignee.split(' ')[0]}
                           </span>
                         </div>
