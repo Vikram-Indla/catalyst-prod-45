@@ -238,6 +238,39 @@ const classifyIssue = (issue: any): 'done' | 'blocked' | 'inprogress' | 'todo' |
   return null;
 };
 
+interface UnlinkedEpic {
+  id: string;
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string | null;
+}
+
+function useUnlinkedEpics(projectKey: string) {
+  return useQuery({
+    queryKey: ['demand-fulfilment-unlinked', projectKey],
+    queryFn: async (): Promise<UnlinkedEpic[]> => {
+      // Fetch all linked epic ids first
+      const { data: links } = await (supabase as any)
+        .from('es_initiative_epics')
+        .select('epic_id');
+      const linkedIds = new Set((links ?? []).map((l: any) => l.epic_id));
+
+      const { data: epics } = await (supabase as any)
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category')
+        .eq('issue_type', 'Epic')
+        .eq('project_key', projectKey)
+        .is('jira_removed_at', null)
+        .not('status_category', 'eq', 'Done')
+        .limit(500);
+
+      return (epics ?? []).filter((e: any) => !linkedIds.has(e.id));
+    },
+    enabled: !!projectKey,
+  });
+}
+
 function useDemandData(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment', projectKey, settings],
