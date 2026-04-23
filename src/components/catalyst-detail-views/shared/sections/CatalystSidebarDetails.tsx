@@ -304,6 +304,31 @@ export function CatalystSidebarDetails({
             )}
           </FieldRow>
 
+          {/* ── Due date (Epic only) ──── */}
+          {issue?.issue_type === 'Epic' && (
+            <>
+              <FieldRow label="Due date">
+                <EpicDueDateField
+                  issueId={issue.id}
+                  dueDate={(issue as any).due_date ?? null}
+                  isEpic
+                  onSave={async (date) => {
+                    const { error } = await (supabase as any)
+                      .from('ph_issues')
+                      .update({ due_date: date })
+                      .eq('id', issue.id);
+                    if (error) {
+                      toast.error('Failed to save due date');
+                      throw error;
+                    }
+                    invalidateIssue();
+                  }}
+                />
+              </FieldRow>
+              <div style={{ borderTop: '1px solid #DCDFE4', margin: '4px 0' }} />
+            </>
+          )}
+
           {/* ── Assignee ──── */}
           <FieldRow label="Assignee">
             <div style={{ display: 'flex', flexDirection: 'column' }}>
