@@ -4,7 +4,7 @@ import { Bell } from 'lucide-react';
 import { Box, xcss } from '@atlaskit/primitives';
 import Badge from '@atlaskit/badge';
 import NotificationPanel from '@/components/notifications/NotificationPanel';
-import { useUnreadCount } from '@/hooks/useUnreadCount';
+import { useUnreadCountFromSync } from '@/hooks/useDirectFromSync';
 
 // Anchor sits above the icon button so the Atlaskit Badge reads as an
 // overlay pip, matching Jira's unread count pattern.
@@ -25,7 +25,7 @@ const BellGlyph = (props: { label: string }) => (
 
 export function NotificationsPanel() {
   const [open, setOpen] = useState(false);
-  const { data: unreadCount = 0 } = useUnreadCount();
+  const { data: unreadCount = 0 } = useUnreadCountFromSync();
 
   return (
     <>
