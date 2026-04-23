@@ -737,7 +737,7 @@ function DemandRowItem({
         <Link
           href={productHubUrl}
           onClick={(e) => e.stopPropagation()}
-          style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap' }}
+          style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', display: 'block' }}
         >
           {row.initiative_key}
         </Link>
@@ -1232,7 +1232,7 @@ function DeliveredRow({ row }: { row: DemandRow }) {
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
       <Link
         href={`/producthub/backlog?initiative=${row.initiative_key}`}
-        style={{ fontSize: 11, fontWeight: 700 }}
+        style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', display: 'block' }}
       >
         {row.initiative_key}
       </Link>
