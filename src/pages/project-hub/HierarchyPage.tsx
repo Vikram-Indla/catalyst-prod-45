@@ -268,7 +268,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                   return (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
                       {avatarUrl ? (
-                        <img src={avatarUrl} alt={opt} style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+                        <img src={avatarUrl} alt={opt} loading="lazy" style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                       ) : (
                         <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                           <span style={{ fontSize: 9, fontWeight: 700, color: '#FFFFFF' }}>{initials}</span>

@@ -663,7 +663,7 @@ const JiraUserSync: React.FC = () => {
                     <td style={{ padding: '8px 12px' }}>
                       <div className="flex items-center gap-2">
                         <div style={{ width: '28px', height: '28px', borderRadius: '50%', flexShrink: 0, background: user.avatar_url ? 'transparent' : avatarColor.bg, color: avatarColor.text, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: 700, overflow: 'hidden' }}>
-                          {user.avatar_url ? <img src={user.avatar_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '50%' }} /> : getInitials(user.display_name || '?')}
+                          {user.avatar_url ? <img src={user.avatar_url} alt="" loading="lazy" style={{ width: '28px', height: '28px', borderRadius: '50%' }} /> : getInitials(user.display_name || '?')}
                         </div>
                         <div style={{ minWidth: 0, maxWidth: '220px' }}>
                           <div className="flex items-center gap-[5px]">

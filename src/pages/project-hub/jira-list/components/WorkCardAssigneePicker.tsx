@@ -202,7 +202,7 @@ export function WorkCardAssigneePicker({
                 onMouseLeave={e => { if (m.user_id !== currentAssigneeId) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
               >
                 {m.avatar_url ? (
-                  <img src={m.avatar_url} alt=""
+                  <img src={m.avatar_url} alt="" loading="lazy"
                     style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
                 ) : (
                   <div style={{
