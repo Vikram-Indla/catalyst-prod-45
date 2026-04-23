@@ -473,11 +473,15 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         bucket.total += 1;
         if (cls) (bucket as any)[cls] += 1;
         const list = storyListByEpicKey.get(c.parent_key) ?? [];
+        const childProfile = c.assignee_user_id ? profiles[c.assignee_user_id] : null;
         list.push({
           issue_key: c.issue_key,
           summary: c.summary ?? '',
           status: c.status,
           status_category: c.status_category,
+          assignee_display_name:
+            childProfile?.display_name ?? childProfile?.full_name ?? c.assignee_display_name ?? null,
+          assignee_avatar: childProfile?.avatar_url ?? null,
         });
         storyListByEpicKey.set(c.parent_key, list);
       });
