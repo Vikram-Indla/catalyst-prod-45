@@ -137,10 +137,8 @@ function SectionLabel({ label, isDark }: { label: string; isDark: boolean }) {
       <span
         style={{
           fontFamily: 'Inter, sans-serif',
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: '0.06em',
-          textTransform: 'uppercase' as const,
+          fontSize: 12,
+          fontWeight: 600,
           color: isDark
             ? '#878787'
             : token('color.text.subtlest', '#8590A2'),

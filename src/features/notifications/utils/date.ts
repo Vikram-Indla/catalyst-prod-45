@@ -11,9 +11,9 @@ export function groupByDate(items: DirectNotification[]): NotificationGroup[] {
   const yesterdayStart = new Date(todayStart.getTime() - 86_400_000);
 
   const groups: NotificationGroup[] = [
-    { label: 'TODAY',     items: [] },
-    { label: 'YESTERDAY', items: [] },
-    { label: 'OLDER',     items: [] },
+    { label: 'Today',     items: [] },
+    { label: 'Yesterday', items: [] },
+    { label: 'Older',     items: [] },
   ];
 
   for (const n of items) {

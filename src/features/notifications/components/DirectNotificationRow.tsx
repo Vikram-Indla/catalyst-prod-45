@@ -18,10 +18,9 @@ const CONTENT_STYLE: React.CSSProperties = { flex: 1, minWidth: 0 };
 
 const entityRowXcss = xcss({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   gap: 'space.075',
   marginBlockStart: 'space.050',
-  overflow: 'hidden',
 });
 
 const metaRowXcss = xcss({
@@ -53,8 +52,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
   const linkClr  = isDark ? '#6698FF' : token('color.link',           '#0C66E4');
   const dotColor = '#2563EB';
 
-  const threadBorderColor = isDark ? '#2E2E2E' : token('color.border', '#DFE1E6');
-  const threadBg          = isDark ? '#111111' : token('color.background.neutral', '#F4F5F7');
+  const threadBorderColor = isDark ? '#2E2E2E' : '#E8ECEF';
+  const threadBg          = isDark ? '#111111' : '#FFFFFF';
 
   const handleClick = useCallback(() => {
     if (!isRead) onMarkRead(notification.id);
@@ -84,7 +83,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
       style={{
         display: 'flex',
         width: '100%',
-        padding: '10px 16px',
+        padding: '8px 16px 10px',
         background: rowBg,
         border: 'none',
         cursor: 'pointer',
@@ -120,9 +119,6 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               color: text1,
               flex: 1,
               minWidth: 0,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
             }}
           >
             {actorName && (
@@ -197,10 +193,8 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             style={{
               fontFamily: 'Inter, sans-serif',
               fontSize: 13,
+              lineHeight: '18px',
               color: text1,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
               flex: 1,
               minWidth: 0,
             }}
@@ -223,15 +217,13 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             {target.key}
           </span>
           <span style={{ color: text3, fontSize: 10, lineHeight: '16px', flexShrink: 0 }}>•</span>
-          {/* Plain grey status text matching Jira's style */}
+          {/* Plain grey status text — sentence case, matching Jira */}
           <span
             style={{
               fontFamily: 'Inter, sans-serif',
-              fontSize: 11,
-              fontWeight: 500,
-              color: text3,
-              textTransform: 'uppercase' as const,
-              letterSpacing: '0.02em',
+              fontSize: 13,
+              fontWeight: 400,
+              color: text2,
               flexShrink: 0,
             }}
           >
