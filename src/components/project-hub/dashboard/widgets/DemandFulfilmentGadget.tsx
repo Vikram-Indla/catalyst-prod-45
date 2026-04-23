@@ -1548,10 +1548,10 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             )}
           </div>
 
-          {filteredRows.length > 10 && (
+          {visibleByTab.length > 10 && (
             <div style={{ padding: '6px 16px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
               <a href={`/project-hub/${projectKey}/hierarchy/allwork`} style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
-                View all {filteredRows.length} in ProjectHub ↗
+                View all {visibleByTab.length} in ProjectHub ↗
               </a>
             </div>
           )}
