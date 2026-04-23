@@ -981,7 +981,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const navigate = useNavigate();
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
-  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
+  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const toggleRow = (id: string) => setExpandedRows((prev) => {
     const next = new Set(prev);
@@ -989,6 +989,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     return next;
   });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
   const gearRef = useRef<HTMLSpanElement>(null);
