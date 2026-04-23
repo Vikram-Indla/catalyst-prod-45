@@ -992,8 +992,8 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            fontSize: 16,
-            lineHeight: '24px',
+            fontSize: 13,
+            lineHeight: '20px',
             fontWeight: 400,
             fontFamily: ATLAS_SANS,
             color: token('color.text', '#172B4D'),
