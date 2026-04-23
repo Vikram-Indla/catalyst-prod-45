@@ -79,6 +79,7 @@ export function ModalDialog({ children, onClose, width = 'medium' }: ModalDialog
         <div
           role="dialog"
           aria-modal="true"
+          aria-labelledby="create-story-modal-title"
           style={{
             position: 'relative',
             background: token('elevation.surface.overlay', '#FFFFFF'),
@@ -113,14 +114,17 @@ export function ModalHeader({ children }: { children: ReactNode }) {
 // ── ModalTitle ───────────────────────────────────────────────────────────────
 export function ModalTitle({ children }: { children: ReactNode }) {
   return (
-    <h1 style={{
-      fontFamily: 'Sora, sans-serif',
-      fontSize: 20,
-      fontWeight: 600,
-      color: token('color.text', '#172B4D'),
-      margin: 0,
-      lineHeight: '28px',
-    }}>
+    <h1
+      id="create-story-modal-title"
+      style={{
+        fontFamily: 'Sora, sans-serif',
+        fontSize: 20,
+        fontWeight: 600,
+        color: token('color.text', '#172B4D'),
+        margin: 0,
+        lineHeight: '28px',
+      }}
+    >
       {children}
     </h1>
   );

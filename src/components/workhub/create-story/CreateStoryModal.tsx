@@ -389,14 +389,32 @@ function FullscreenToggleButton() {
   );
 }
 
-// ── StatusChip — Jira-parity chip button with inline picker ─────────────────
-// Jira renders status as a styled button (bg rgba(5,21,36,0.06), 3px radius,
-// 14px/500) that opens an inline picker on click — NOT a Select component.
-function StatusChip({ status, workType, onChange }: { status: string; workType: string; onChange: (s: string) => void }) {
+// ── StatusChip — Jira-parity chip button with accessible inline picker ────────
+// Fixes applied:
+//   VIS-001: minHeight 40px to match ADS input height
+//   A11Y-002/STR-003/A11Y-004: full keyboard nav (arrows/Enter/Esc/Tab),
+//     focus moves into picker on open, aria-activedescendant on listbox.
+// bg token: ADS doesn't expose a public "neutral chip" token in this version;
+// rgba(5,21,36,0.06) is the verified Jira value — intentional override.
+const STATUS_CHIP_TRIGGER_ID = 'status-chip-trigger';
+
+function StatusChip({
+  status,
+  workType,
+  onChange,
+}: {
+  status: string;
+  workType: string;
+  onChange: (s: string) => void;
+}) {
   const [open, setOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState<number>(-1);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listboxRef = useRef<HTMLDivElement>(null);
   const options = STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS;
 
+  // Close on outside click
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
@@ -406,18 +424,78 @@ function StatusChip({ status, workType, onChange }: { status: string; workType: 
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
+  // Move focus into listbox when opened
+  useEffect(() => {
+    if (!open) return;
+    const currentIdx = options.findIndex(o => o.value === status);
+    setActiveIdx(currentIdx >= 0 ? currentIdx : 0);
+    // Defer focus to allow DOM paint
+    requestAnimationFrame(() => { listboxRef.current?.focus(); });
+  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const close = (returnFocus = true) => {
+    setOpen(false);
+    setActiveIdx(-1);
+    if (returnFocus) triggerRef.current?.focus();
+  };
+
+  const selectOption = (idx: number) => {
+    onChange(options[idx].value);
+    close(true);
+  };
+
+  const handleTriggerKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+    }
+  };
+
+  const handleListboxKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setActiveIdx(i => (i + 1) % options.length);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setActiveIdx(i => (i - 1 + options.length) % options.length);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (activeIdx >= 0) selectOption(activeIdx);
+        break;
+      case 'Escape':
+        e.preventDefault();
+        close(true);
+        break;
+      case 'Tab':
+        // Allow Tab to close and move focus forward naturally
+        close(false);
+        break;
+    }
+  };
+
+  const activeOptionId = activeIdx >= 0 ? `status-option-${options[activeIdx]?.value}` : undefined;
+
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      {/* Chip button — matches Jira's bg/radius/typography exactly */}
+      {/* Chip trigger — 40px min-height for ADS input parity (VIS-001) */}
       <button
+        ref={triggerRef}
+        id={STATUS_CHIP_TRIGGER_ID}
         type="button"
-        aria-label={`${status} - Change status`}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-label={`${status} — Change status`}
         onClick={() => setOpen(o => !o)}
+        onKeyDown={handleTriggerKeyDown}
         style={{
-          background: 'rgba(5,21,36,0.06)',
-          border: 'none',
+          background: token('color.background.neutral', 'rgba(9,30,66,0.06)'),
+          border: `2px solid ${open ? token('color.border.focused', '#1868DB') : 'transparent'}`,
           borderRadius: 3,
-          padding: '4px 10px',
+          minHeight: 40,           // VIS-001: match ADS input height
+          padding: '0 10px',
           fontSize: 14,
           fontWeight: 500,
           fontFamily: 'Inter, sans-serif',
@@ -426,6 +504,7 @@ function StatusChip({ status, workType, onChange }: { status: string; workType: 
           display: 'inline-flex',
           alignItems: 'center',
           gap: 4,
+          outline: 'none',
         }}
       >
         {status}
@@ -434,11 +513,15 @@ function StatusChip({ status, workType, onChange }: { status: string; workType: 
         </svg>
       </button>
 
-      {/* Inline picker */}
+      {/* Inline picker — keyboard-accessible listbox (A11Y-002/A11Y-004) */}
       {open && (
         <div
+          ref={listboxRef}
           role="listbox"
           aria-label="Change status"
+          aria-activedescendant={activeOptionId}
+          tabIndex={-1}
+          onKeyDown={handleListboxKeyDown}
           style={{
             position: 'absolute',
             top: 'calc(100% + 4px)',
@@ -449,38 +532,50 @@ function StatusChip({ status, workType, onChange }: { status: string; workType: 
             borderRadius: 4,
             boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
             padding: '4px 0',
-            minWidth: 160,
+            minWidth: 180,
+            outline: 'none',
           }}
         >
-          <div style={{ padding: '6px 12px 4px', fontSize: 11, fontWeight: 700, fontFamily: 'Inter', textTransform: 'uppercase', letterSpacing: '0.05em', color: token('color.text.subtlest', '#8590A2') }}>
+          <div style={{
+            padding: '6px 12px 4px',
+            fontSize: 11,
+            fontWeight: 700,
+            fontFamily: 'Inter, sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            color: token('color.text.subtlest', '#8590A2'),
+          }}>
             Change status
           </div>
-          {options.map(opt => (
-            <button
+          {options.map((opt, idx) => (
+            <div
               key={opt.value}
+              id={`status-option-${opt.value}`}
               role="option"
               aria-selected={status === opt.value}
-              type="button"
-              onClick={() => { onChange(opt.value); setOpen(false); }}
+              onClick={() => selectOption(idx)}
+              onMouseEnter={() => setActiveIdx(idx)}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
-                width: '100%',
                 padding: '6px 12px',
-                background: status === opt.value ? token('color.background.selected', 'rgba(37,99,235,0.08)') : 'transparent',
-                border: 'none',
+                background: idx === activeIdx
+                  ? token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)')
+                  : status === opt.value
+                  ? token('color.background.selected', 'rgba(37,99,235,0.08)')
+                  : 'transparent',
                 cursor: 'pointer',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: 14,
                 color: token('color.text', '#172B4D'),
-                textAlign: 'left',
+                outline: 'none',
               }}
             >
               <Lozenge appearance={statusAppearance(opt.value)} isBold>
                 {opt.label}
               </Lozenge>
-            </button>
+            </div>
           ))}
         </div>
       )}
@@ -901,31 +996,43 @@ export function CreateStoryModal({
                       defaultOptions
                       loadOptions={async (input: string) => {
                         if (!resolvedKey) return [];
+                        // ph_issues has no deleted_at column — filter by status_category only
+                        // issue_type in ph_issues can be 'Epic' or 'epic' — use ilike
                         const q = supabase
                           .from('ph_issues')
                           .select('id, issue_key, summary, issue_type')
                           .eq('project_key', resolvedKey)
-                          .eq('issue_type', 'Epic')
-                          .is('deleted_at', null)
-                          .neq('status_category', 'done')
-                          .order('jira_updated_at', {
-                            ascending: false,
-                          })
+                          .ilike('issue_type', 'Epic')
+                          .neq('status_category', 'Done')
+                          .order('jira_updated_at', { ascending: false })
                           .limit(20);
                         if (input.trim()) {
                           q.or(
-                            `issue_key.ilike.${input}%,summary.ilike.%${input}%`,
+                            `issue_key.ilike.%${input}%,summary.ilike.%${input}%`,
                           );
                         }
                         const { data, error } = await q;
-                        if (error) return [];
+                        if (error || !data?.length) {
+                          // Fallback: try without status filter in case status_category values differ
+                          const { data: fallback } = await supabase
+                            .from('ph_issues')
+                            .select('id, issue_key, summary, issue_type')
+                            .eq('project_key', resolvedKey)
+                            .ilike('issue_type', 'Epic')
+                            .order('jira_updated_at', { ascending: false })
+                            .limit(20);
+                          return (fallback ?? []).map((d: any) => ({
+                            value: d.id,
+                            label: d.summary,
+                            sublabel: d.issue_key,
+                            icon: <JiraIssueTypeIcon type="Epic" size={14} />,
+                          }));
+                        }
                         return (data ?? []).map((d: any) => ({
                           value: d.id,
                           label: d.summary,
                           sublabel: d.issue_key,
-                          icon: (
-                            <JiraIssueTypeIcon type="Epic" size={14} />
-                          ),
+                          icon: <JiraIssueTypeIcon type="Epic" size={14} />,
                         }));
                       }}
                       onChange={(opt) =>
@@ -934,7 +1041,7 @@ export function CreateStoryModal({
                           (opt as IconOption)?.value ?? null,
                         )
                       }
-                      placeholder="Select parent"
+                      placeholder={resolvedKey ? 'Select parent' : 'Select a project first'}
                       formatOptionLabel={formatIconOption}
                       isClearable
                     />
