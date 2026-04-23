@@ -182,7 +182,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
             outline: '1px solid rgba(15,23,42,0.08)',
           }}>
             {avatarUrl ? (
-              <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              <img src={avatarUrl} alt={name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (
               <span style={{ fontSize: '22px', fontWeight: 700, color: 'white', fontFamily: "'Sora', sans-serif" }}>{initials(name)}</span>
@@ -329,7 +329,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           outline: '1px solid rgba(15,23,42,0.08)',
         }}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            <img src={avatarUrl} alt={name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
           ) : (
             <span style={{ fontSize: '18px', fontWeight: 700, color: 'white' }}>{initials(name)}</span>
