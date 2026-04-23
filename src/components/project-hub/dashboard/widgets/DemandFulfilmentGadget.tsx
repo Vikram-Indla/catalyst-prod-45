@@ -30,7 +30,7 @@ import {
 } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import ProgressBar from '@atlaskit/progress-bar';
+
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import EmptyState from '@atlaskit/empty-state';
@@ -1007,8 +1007,26 @@ function DemandRowItem({
 
         {/* Progress + stat — inline (bar left, text right) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 72, flexShrink: 0 }}>
-            <ProgressBar value={pct / 100} appearance={pct === 100 ? 'success' : 'default'} />
+          <div
+            style={{
+              width: 72,
+              height: 6,
+              flexShrink: 0,
+              borderRadius: 3,
+              background: '#DFE1E6',
+              overflow: 'hidden',
+            }}
+          >
+            <div
+              style={{
+                width: `${pct}%`,
+                height: '100%',
+                borderRadius: 3,
+                transition: 'width 200ms ease',
+                background:
+                  pct === 100 ? '#1F845A' : pct > 0 ? '#0C66E4' : 'transparent',
+              }}
+            />
           </div>
           <span
             style={{
@@ -1016,7 +1034,7 @@ function DemandRowItem({
               lineHeight: '16px',
               fontWeight: 400,
               fontFamily: ATLAS_SANS,
-              color: token('color.text.subtle', '#44546F'),
+              color: pct === 100 ? '#1F845A' : token('color.text.subtle', '#44546F'),
               whiteSpace: 'nowrap',
             }}
           >
@@ -1088,11 +1106,12 @@ function DemandRowItem({
                   key={story.id}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '20px 90px 1fr 90px',
+                    gridTemplateColumns: '20px 90px 1fr auto',
                     alignItems: 'center',
                     gap: 8,
-                    padding: '5px 16px 5px 28px',
+                    padding: '5px 16px 5px 24px',
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                    borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
                   }}
                 >
                   <span />
@@ -1162,7 +1181,7 @@ function DemandRowItem({
                       onClick={() => hasStories && toggleEpic(epic.id)}
                       style={{
                         display: 'grid',
-                        gridTemplateColumns: '20px 90px 1fr 80px 60px',
+                        gridTemplateColumns: '20px 90px 1fr 80px auto',
                         alignItems: 'center',
                         gap: 8,
                         padding: '6px 16px 6px 28px',
@@ -1213,7 +1232,26 @@ function DemandRowItem({
                       >
                         {epic.summary}
                       </span>
-                      <ProgressBar value={epicPct / 100} appearance="default" />
+                      <div
+                        style={{
+                          width: '100%',
+                          height: 6,
+                          borderRadius: 3,
+                          background: '#DFE1E6',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: `${epicPct}%`,
+                            height: '100%',
+                            borderRadius: 3,
+                            transition: 'width 200ms ease',
+                            background:
+                              epicPct === 100 ? '#1F845A' : epicPct > 0 ? '#0C66E4' : 'transparent',
+                          }}
+                        />
+                      </div>
                       <Lozenge appearance={lozengeAppearance(epic.status_category, epic.status)}>
                         {epic.status}
                       </Lozenge>
@@ -1226,11 +1264,12 @@ function DemandRowItem({
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '20px 90px 1fr 80px',
+                            gridTemplateColumns: '20px 90px 1fr auto',
                             alignItems: 'center',
                             gap: 8,
                             padding: '4px 16px 4px 48px',
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
+                            borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
                             background: token('elevation.surface.sunken', '#F7F8F9'),
                           }}
                         >
