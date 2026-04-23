@@ -762,6 +762,7 @@ function DemandRowItem({
       }}
     >
       <div
+        onClick={onToggle}
         style={{
           display: 'grid',
           gridTemplateColumns: '14px 8px 90px 1fr 130px 90px 24px',
@@ -771,6 +772,7 @@ function DemandRowItem({
           minHeight: 36,
           background: 'transparent',
           transition: 'background 120ms',
+          cursor: 'pointer',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
@@ -799,7 +801,9 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            font: token('font.body.small'),
+            fontSize: 12,
+            lineHeight: '16px',
+            fontWeight: 400,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -810,7 +814,7 @@ function DemandRowItem({
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <ProgressBar value={pct / 100} appearance="default" />
-          <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+          <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
             {pct}% · {row.done}/{row.total}
           </span>
         </div>
@@ -846,7 +850,7 @@ function DemandRowItem({
           }}
         >
           {row.total === 0 ? (
-            <div style={{ font: token('font.body.small'), color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ fontSize: 12, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
               No stories linked. Add stories under the epics in this demand to track progress.
             </div>
@@ -897,7 +901,9 @@ function DemandRowItem({
                     <span
                       title={epic.summary}
                       style={{
-                        font: token('font.body.small'),
+                        fontSize: 12,
+                        lineHeight: '16px',
+                        fontWeight: 400,
                         color: token('color.text', '#172B4D'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -909,10 +915,10 @@ function DemandRowItem({
                     <div>
                       <ProgressBar value={epicPct / 100} appearance="default" />
                     </div>
-                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ fontSize: 10, lineHeight: '14px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epicPct}%
                     </span>
-                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ fontSize: 10, lineHeight: '14px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epic.done}/{epic.total}
                     </span>
                   </div>
@@ -920,7 +926,7 @@ function DemandRowItem({
               })}
 
               {!row.target_complete && (
-                <div style={{ marginTop: 8, font: token('font.body.UNSAFE_small'), color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ marginTop: 8, fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
@@ -1300,10 +1306,10 @@ function DeliveredRow({ row }: { row: DemandRow }) {
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
         {row.title}
       </span>
-      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (
