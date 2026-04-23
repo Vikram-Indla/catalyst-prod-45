@@ -61034,6 +61034,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_view_preferences: {
+        Row: {
+          id: string
+          preferences: Json
+          updated_at: string
+          user_id: string
+          view_key: string
+        }
+        Insert: {
+          id?: string
+          preferences?: Json
+          updated_at?: string
+          user_id: string
+          view_key: string
+        }
+        Update: {
+          id?: string
+          preferences?: Json
+          updated_at?: string
+          user_id?: string
+          view_key?: string
+        }
+        Relationships: []
+      }
       user_workload_summary: {
         Row: {
           actual_hours_spent: number | null

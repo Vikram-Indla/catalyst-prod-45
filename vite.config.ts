@@ -291,6 +291,7 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/textfield',
       '@atlaskit/tokens',
       '@atlaskit/tooltip',
+      'react-window',
       // Force-pre-bundle the popper chain pulled in transitively by
       // @atlaskit/select + @atlaskit/user-picker. Without explicit entries,
       // vite's hot re-optimize (triggered when a new @atlaskit/* dep lands

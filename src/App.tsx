@@ -19,6 +19,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { PreviewRecoveryBanner } from "./components/PreviewRecoveryBanner";
 import { useCommandK } from "@/hooks/useCommandK";
+import { UWVProvider } from "@/components/universal-work-view/UWVContext";
 
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
@@ -83,6 +84,7 @@ function App() {
       <IntlProvider locale="en" messages={{}}>
       <Toaster />
       <Suspense fallback={null}><HotToaster position="bottom-right" /></Suspense>
+      <UWVProvider>
       <AuthProvider>
         
         <FeatureFlagProvider>
@@ -135,6 +137,7 @@ function App() {
         </WorkflowProvider>
         </FeatureFlagProvider>
       </AuthProvider>
+      </UWVProvider>
       </IntlProvider>
       </AdsThemeProvider>
     </ThemeProvider>
