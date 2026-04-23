@@ -847,9 +847,23 @@ function SettingsPopupBody({
 const ATLAS_SANS =
   '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-const storyLozengeAppearance = (cat?: string): any => {
-  if (cat === 'Done') return 'success';
-  if (cat === 'In Progress') return 'inprogress';
+/**
+ * Map a Jira status_category (+ optional status name for blocked carve-out)
+ * to an ADS Lozenge appearance. Never hardcode colors for status labels —
+ * always use the Lozenge component with one of these appearances.
+ */
+const lozengeAppearance = (
+  statusCategory?: string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!statusCategory) return 'default';
+  const cat = statusCategory.toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress') return 'inprogress';
+  if (cat === 'to do') return 'default';
   return 'default';
 };
 
