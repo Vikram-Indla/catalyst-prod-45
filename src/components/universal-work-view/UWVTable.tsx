@@ -15,6 +15,7 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { FixedSizeList } from 'react-window';
 import { ArrowUp, ArrowDown } from 'lucide-react';
+import Checkbox from '@atlaskit/checkbox';
 import EmptyState from '@atlaskit/empty-state';
 import Spinner from '@atlaskit/spinner';
 import { UWVRow } from './UWVRow';
@@ -54,7 +55,7 @@ export function UWVTable({
   const [containerHeight, setContainerHeight] = useState(0);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const rowHeight = density === 'compact' ? 32 : 36;
+  const rowHeight = density === 'compact' ? 36 : JIRA_ROW_HEIGHT;
 
   useEffect(() => {
     const update = () => {
@@ -177,16 +178,16 @@ export function UWVTable({
       role="grid"
       aria-rowcount={totalCount}
     >
-      {/* Sticky header — matches AllWorkTable header style */}
+      {/* Sticky header — matches JiraTable header style */}
       <div
         role="row"
         style={{
           display: 'grid',
           gridTemplateColumns: gridTemplate,
-          background: 'var(--bg-app)',
+          background: '#F7F8F9',
           height: HEADER_HEIGHT,
           maxHeight: HEADER_HEIGHT,
-          borderBottom: '1px solid var(--bd-default, #2E2E2E)',
+          borderBottom: '2px solid #C1C7D0',
           position: 'sticky',
           top: 0,
           zIndex: 2,
@@ -198,16 +199,11 @@ export function UWVTable({
           role="columnheader"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          <input
-            type="checkbox"
-            checked={allSelected}
-            ref={(el) => {
-              if (el) el.indeterminate = someSelected;
-            }}
-            onChange={(e) => toggleAll(e.currentTarget.checked)}
-            className="w-4 h-4 rounded cursor-pointer"
-            style={{ accentColor: 'var(--cp-blue)' }}
-            aria-label="Select all items"
+          <Checkbox
+            isChecked={allSelected}
+            isIndeterminate={someSelected && !allSelected}
+            onChange={(e: any) => toggleAll(e.currentTarget.checked)}
+            label="Select all"
           />
         </div>
         {columns.map((col) => {
@@ -236,8 +232,7 @@ export function UWVTable({
                 fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-                color: 'var(--fg-3)',
-                fontFamily: 'Inter, sans-serif',
+                color: '#6B778C',
                 cursor: col.sortable ? 'pointer' : 'default',
                 textAlign: 'left',
                 userSelect: 'none',
