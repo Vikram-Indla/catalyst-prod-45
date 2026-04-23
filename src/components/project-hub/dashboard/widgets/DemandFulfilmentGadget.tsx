@@ -1225,8 +1225,8 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   key={row.id}
                   row={row}
                   threshold={settings.rag_threshold}
-                  expanded={expandedId === row.id}
-                  onToggle={() => setExpandedId((id) => (id === row.id ? null : row.id))}
+                  expanded={expandedRows.has(row.id)}
+                  onToggle={() => toggleRow(row.id)}
                 />
               ))
             )}
