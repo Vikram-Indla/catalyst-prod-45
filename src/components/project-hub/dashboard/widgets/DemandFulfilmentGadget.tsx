@@ -1005,7 +1005,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
       {/* List or empty / all-delivered states */}
       {isLoading ? (
-        <div style={{ padding: 20, fontSize: 12, color: token('color.text.subtle', '#6B778C') }}>Loading…</div>
+        <div style={{ padding: 20, font: token('font.body.small'), color: token('color.text.subtle') }}>Loading…</div>
       ) : active.length === 0 && delivered.length === 0 ? (
         // Empty state: differentiate Case A (MDTs exist but none linked → unlinked epics
         // are visible elsewhere) vs Case B (truly nothing in scope).
@@ -1013,14 +1013,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           <div style={{ padding: 16 }}>
             <EmptyState
               header="No epics linked to demand tickets yet"
-              description="MDTs may exist for this period, but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
+              description="MDTs exist for this quarter but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
               primaryAction={
-                <a
-                  href="/producthub/backlog"
-                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-                >
-                  Open ProductHub ↗
-                </a>
+                <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
+                  Open ProductHub
+                </AkButton>
               }
             />
           </div>
@@ -1030,12 +1027,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               header="No demand tickets for this period"
               description="There are no MDTs matching the selected scope. Create MDTs in ProductHub, set their target quarter, then link epics to track delivery here."
               primaryAction={
-                <a
-                  href="/producthub/backlog"
-                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
-                >
-                  Create MDT in ProductHub ↗
-                </a>
+                <AkButton appearance="primary" onClick={() => navigate('/producthub/backlog')}>
+                  Create MDT in ProductHub
+                </AkButton>
               }
             />
           </div>
@@ -1043,7 +1037,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       ) : active.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
-          <div style={{ padding: '10px 12px', fontSize: 13, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+          <div style={{ padding: '10px 12px', font: token('font.body'), fontWeight: 600, color: token('color.text') }}>
             ✓ All demand commitments met this period
           </div>
           {delivered.map((r) => (
