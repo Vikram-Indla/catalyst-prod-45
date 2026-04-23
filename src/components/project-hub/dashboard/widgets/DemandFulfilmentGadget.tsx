@@ -796,36 +796,7 @@ function SettingsPopupBody({
         label="Defects / Bugs"
       />
 
-      <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#DCDFE4')}` }} />
-
-      {/* Status filter */}
-      <div style={sectionHeadingStyle}>
-        Filter by status
-      </div>
-      <Select
-        isMulti
-        isClearable
-        spacing="compact"
-        placeholder="All statuses (no filter)"
-        options={statusOptions}
-        value={(draft.status_filter ?? []).map((v: string) => ({ label: v, value: v }))}
-        onChange={(selected: any) =>
-          setDraft({
-            ...draft,
-            status_filter: Array.isArray(selected) ? selected.map((o: any) => o.value) : [],
-          })
-        }
-      />
-      <div
-        style={{
-          fontSize: 11,
-          color: token('color.text.subtlest', '#626F86'),
-          marginTop: 4,
-          fontFamily: ATLAS_SANS,
-        }}
-      >
-        Leave empty to show all statuses
-      </div>
+      {/* Status filter intentionally omitted — will be reintroduced in a future iteration. */}
 
       {/* Footer */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6, marginTop: 14 }}>
@@ -847,9 +818,23 @@ function SettingsPopupBody({
 const ATLAS_SANS =
   '"Atlassian Sans", ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
 
-const storyLozengeAppearance = (cat?: string): any => {
-  if (cat === 'Done') return 'success';
-  if (cat === 'In Progress') return 'inprogress';
+/**
+ * Map a Jira status_category (+ optional status name for blocked carve-out)
+ * to an ADS Lozenge appearance. Never hardcode colors for status labels —
+ * always use the Lozenge component with one of these appearances.
+ */
+const lozengeAppearance = (
+  statusCategory?: string | null,
+  status?: string | null,
+): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' => {
+  if (status && ['on hold', 'blocked', 'awaiting info'].includes(status.toLowerCase())) {
+    return 'moved';
+  }
+  if (!statusCategory) return 'default';
+  const cat = statusCategory.toLowerCase();
+  if (cat === 'done') return 'success';
+  if (cat === 'in progress') return 'inprogress';
+  if (cat === 'to do') return 'default';
   return 'default';
 };
 
@@ -1072,7 +1057,7 @@ function DemandRowItem({
                   >
                     {story.summary}
                   </span>
-                  <Lozenge appearance={storyLozengeAppearance(story.status_category)}>
+                  <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                     {story.status}
                   </Lozenge>
                 </div>
@@ -1160,7 +1145,7 @@ function DemandRowItem({
                         {epic.summary}
                       </span>
                       <ProgressBar value={epicPct / 100} appearance="default" />
-                      <Lozenge appearance={storyLozengeAppearance(epic.status_category) || 'default'}>
+                      <Lozenge appearance={lozengeAppearance(epic.status_category, epic.status)}>
                         {epic.status}
                       </Lozenge>
                     </div>
@@ -1211,7 +1196,7 @@ function DemandRowItem({
                           >
                             {story.summary}
                           </span>
-                          <Lozenge appearance={storyLozengeAppearance(story.status_category)}>
+                          <Lozenge appearance={lozengeAppearance(story.status_category, story.status)}>
                             {story.status}
                           </Lozenge>
                         </div>
@@ -1264,7 +1249,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     return next;
   });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
-  // status filter now lives in gadget settings (settings.status_filter)
+  // status filter intentionally omitted — to be reintroduced in a future iteration.
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
   const gearRef = useRef<HTMLSpanElement>(null);
@@ -1341,18 +1326,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const visibleByTab =
     tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
 
-  const filteredRows = (settings.status_filter?.length ?? 0) > 0
-    ? visibleByTab.filter((r) => {
-        // For unlinked-epic rows: filter on the epic's own status.
-        // For MDT rows: include if any child epic's status matches.
-        if (r.isUnlinkedEpic) {
-          return settings.status_filter.includes(r.status);
-        }
-        return r.epics?.some((e) => settings.status_filter.includes(e.status)) ?? false;
-      })
-    : visibleByTab;
-
-  const visibleRows = filteredRows.slice(0, 10);
+  const visibleRows = visibleByTab.slice(0, 10);
 
 
 
@@ -1574,10 +1548,10 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             )}
           </div>
 
-          {filteredRows.length > 10 && (
+          {visibleByTab.length > 10 && (
             <div style={{ padding: '6px 16px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
               <a href={`/project-hub/${projectKey}/hierarchy/allwork`} style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
-                View all {filteredRows.length} in ProjectHub ↗
+                View all {visibleByTab.length} in ProjectHub ↗
               </a>
             </div>
           )}
