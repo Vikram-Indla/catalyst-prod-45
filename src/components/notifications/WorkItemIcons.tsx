@@ -17,6 +17,7 @@ const NOTIFICATION_ICON_TYPE_MAP: Record<WorkItemIconType, string> = {
 
 export const WORK_ITEM_ICONS: Record<WorkItemIconType, React.FC> = {
   bug: () => <WorkItemIcon type="bug" />,
+  'qa bug': () => <WorkItemIcon type="qa bug" />,
   story: () => <WorkItemIcon type="story" />,
   task: () => <WorkItemIcon type="task" />,
   epic: () => <WorkItemIcon type="epic" />,
