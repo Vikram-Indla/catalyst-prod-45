@@ -11,6 +11,7 @@ import Checkbox from '@atlaskit/checkbox';
 import Avatar from '@atlaskit/avatar';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import {
   hubColour,
   hubLabel,
@@ -158,7 +159,7 @@ function renderCell(
           dir="auto"
           style={{
             color: '#292A2E',
-            fontSize: 12,
+            fontSize: 13,
             fontWeight: 400,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -249,7 +250,7 @@ function renderCell(
           <Avatar
             appearance="circle"
             size="small"
-            src={item.assigneeAvatar ?? undefined}
+            src={resolveAvatarUrl(display) ?? item.assigneeAvatar ?? undefined}
             name={display}
           />
           <span
