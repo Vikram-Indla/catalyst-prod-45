@@ -238,6 +238,39 @@ const classifyIssue = (issue: any): 'done' | 'blocked' | 'inprogress' | 'todo' |
   return null;
 };
 
+interface UnlinkedEpic {
+  id: string;
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string | null;
+}
+
+function useUnlinkedEpics(projectKey: string) {
+  return useQuery({
+    queryKey: ['demand-fulfilment-unlinked', projectKey],
+    queryFn: async (): Promise<UnlinkedEpic[]> => {
+      // Fetch all linked epic ids first
+      const { data: links } = await (supabase as any)
+        .from('es_initiative_epics')
+        .select('epic_id');
+      const linkedIds = new Set((links ?? []).map((l: any) => l.epic_id));
+
+      const { data: epics } = await (supabase as any)
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category')
+        .eq('issue_type', 'Epic')
+        .eq('project_key', projectKey)
+        .is('jira_removed_at', null)
+        .not('status_category', 'eq', 'Done')
+        .limit(500);
+
+      return (epics ?? []).filter((e: any) => !linkedIds.has(e.id));
+    },
+    enabled: !!projectKey,
+  });
+}
+
 function useDemandData(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment', projectKey, settings],
@@ -798,10 +831,12 @@ function DemandRowItem({
 export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
+  const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
+  const [unlinkedOpen, setUnlinkedOpen] = useState(false);
 
   // Reset expansion if rows change.
   useEffect(() => {
@@ -853,7 +888,10 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       span={2}
       flushBody
       headerBadges={
-        <>
+        <span
+          onClick={(e) => e.stopPropagation()}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}
+        >
           <span
             style={{
               fontSize: 12,
@@ -884,11 +922,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               />
             )}
             trigger={(triggerProps) => (
-              <button
+              <span
                 {...triggerProps}
+                role="button"
+                tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   setSettingsOpen((v) => !v);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setSettingsOpen((v) => !v);
+                  }
                 }}
                 style={{
                   background: 'transparent',
@@ -896,15 +944,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   cursor: 'pointer',
                   padding: 2,
                   display: 'inline-flex',
+                  alignItems: 'center',
                   color: token('color.text.subtlest', '#6B778C'),
+                  borderRadius: 3,
                 }}
-                aria-label="Gadget settings"
+                aria-label="Configure demand gadget"
+                aria-expanded={settingsOpen}
               >
                 <Settings size={14} />
-              </button>
+              </span>
             )}
           />
-        </>
+        </span>
       }
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -952,12 +1003,39 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       {isLoading ? (
         <div style={{ padding: 20, fontSize: 12, color: token('color.text.subtle', '#6B778C') }}>Loading…</div>
       ) : active.length === 0 && delivered.length === 0 ? (
-        <div style={{ padding: 16 }}>
-          <EmptyState
-            header="No active demand tickets"
-            description="Create an MDT in ProductHub and link it to epics to track delivery here."
-          />
-        </div>
+        // Empty state: differentiate Case A (MDTs exist but none linked → unlinked epics
+        // are visible elsewhere) vs Case B (truly nothing in scope).
+        unlinkedEpics.length > 0 ? (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              header="No epics linked to demand tickets yet"
+              description="MDTs may exist for this period, but no epics have been linked to them. Open ProductHub to link epics to MDTs so progress can be rolled up here."
+              primaryAction={
+                <a
+                  href="/producthub/backlog"
+                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                >
+                  Open ProductHub ↗
+                </a>
+              }
+            />
+          </div>
+        ) : (
+          <div style={{ padding: 16 }}>
+            <EmptyState
+              header="No demand tickets for this period"
+              description="There are no MDTs matching the selected scope. Create MDTs in ProductHub, set their target quarter, then link epics to track delivery here."
+              primaryAction={
+                <a
+                  href="/producthub/backlog"
+                  style={{ fontSize: 12, fontWeight: 600, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                >
+                  Create MDT in ProductHub ↗
+                </a>
+              }
+            />
+          </div>
+        )
       ) : active.length === 0 && delivered.length > 0 ? (
         // All commitments met — show delivered list expanded.
         <div>
@@ -1030,6 +1108,91 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             </div>
           )}
         </>
+      )}
+
+      {/* Unlinked epics warning — always render when present, regardless of tab state */}
+      {unlinkedEpics.length > 0 && (
+        <div style={{ borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
+          <div
+            style={{
+              padding: '10px 14px',
+              background: '#FFFAE6',
+              borderLeft: '3px solid #FFAB00',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 8,
+            }}
+          >
+            <AlertTriangle size={14} color="#B38600" style={{ marginTop: 2, flexShrink: 0 }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12, fontWeight: 600, color: '#7F5F01', marginBottom: 2 }}>
+                {unlinkedEpics.length} epic{unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket
+              </div>
+              <div style={{ fontSize: 11, color: '#7F5F01', marginBottom: 6 }}>
+                These epics are progressing but aren't rolled up under any MDT.
+              </div>
+              <button
+                onClick={() => setUnlinkedOpen((v) => !v)}
+                style={{
+                  background: 'transparent',
+                  border: 0,
+                  padding: 0,
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: token('color.text.brand', '#0C66E4'),
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                {unlinkedOpen ? 'Hide' : 'View'} unlinked epics {unlinkedOpen ? '▲' : '▼'}
+              </button>
+            </div>
+          </div>
+          {unlinkedOpen && (
+            <div style={{ maxHeight: 200, overflowY: 'auto', background: token('elevation.surface.sunken', '#F7F8F9') }}>
+              {unlinkedEpics.map((e) => (
+                <div
+                  key={e.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '8px 60px 1fr auto',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '6px 14px',
+                    borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
+                    fontSize: 12,
+                  }}
+                >
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#97A0AF' }} />
+                  <a
+                    href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}
+                    style={{ fontSize: 11, fontWeight: 700, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}
+                  >
+                    {e.issue_key}
+                  </a>
+                  <span
+                    title={e.summary}
+                    style={{
+                      color: token('color.text', '#172B4D'),
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      minWidth: 0,
+                    }}
+                  >
+                    {e.summary}
+                  </span>
+                  <a
+                    href={`/producthub/backlog?linkEpic=${e.issue_key}`}
+                    style={{ fontSize: 11, fontWeight: 500, color: token('color.text.brand', '#0C66E4'), textDecoration: 'none', whiteSpace: 'nowrap' }}
+                  >
+                    Link to demand ↗
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
     </WidgetWrapper>
   );
