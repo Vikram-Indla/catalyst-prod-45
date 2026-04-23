@@ -425,7 +425,7 @@ export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
             <DirectNotificationRow
               key={n.id}
               notification={n}
-              isRead={resolvedReadIds.has(n.id) || !!n.readAt}
+              isRead={!!n.readAt}
               onMarkRead={handleMarkRead}
               isDark={isDark}
             />
