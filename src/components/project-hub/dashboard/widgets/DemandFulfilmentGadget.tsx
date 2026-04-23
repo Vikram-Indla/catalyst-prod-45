@@ -209,6 +209,13 @@ function useGadgetSettings() {
 // Data fetching
 // ─────────────────────────────────────────────────────────────────────────────
 
+interface EpicStoryRow {
+  issue_key: string;
+  summary: string;
+  status: string;
+  status_category: string;
+}
+
 interface EpicRow {
   id: string;
   issue_key: string;
@@ -219,6 +226,8 @@ interface EpicRow {
   blocked: number;
   inprogress: number;
   todo: number;
+  stories?: EpicStoryRow[];
+  status_category?: string;
 }
 
 interface DemandRow {
@@ -239,6 +248,7 @@ interface DemandRow {
   epics: EpicRow[];
   isDelivered: boolean;
   deliveredAt: string | null;
+  isUnlinkedEpic?: boolean;
 }
 
 const BLOCKED_STATUSES = new Set(['On Hold', 'Blocked', 'Awaiting Info']);
