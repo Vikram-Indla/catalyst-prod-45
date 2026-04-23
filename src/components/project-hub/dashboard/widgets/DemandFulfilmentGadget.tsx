@@ -974,7 +974,7 @@ function DemandRowItem({
             onClick={(e) => e.stopPropagation()}
             style={{
               fontSize: 12,
-              fontWeight: 600,
+              fontWeight: 500,
               lineHeight: '16px',
               fontFamily: ATLAS_SANS,
               color: token('color.link', '#0C66E4'),
@@ -992,8 +992,8 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            fontSize: 14,
-            lineHeight: '20px',
+            fontSize: 16,
+            lineHeight: '24px',
             fontWeight: 400,
             fontFamily: ATLAS_SANS,
             color: token('color.text', '#172B4D'),
@@ -1207,7 +1207,7 @@ function DemandRowItem({
                         onClick={(e) => e.stopPropagation()}
                         style={{
                           fontSize: 12,
-                          fontWeight: 600,
+                          fontWeight: 500,
                           lineHeight: '16px',
                           fontFamily: ATLAS_SANS,
                           color: token('color.link', '#0C66E4'),
@@ -1644,8 +1644,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           </div>
 
           {visibleByTab.length > 10 && (
-            <div style={{ padding: '6px 16px', fontSize: 11, textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
-              <a href={`/project-hub/${projectKey}/hierarchy/allwork`} style={{ color: token('color.text.brand', '#0C66E4'), textDecoration: 'none' }}>
+            <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
+              <a
+                href={`/project-hub/${projectKey}/hierarchy/allwork`}
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  lineHeight: '18px',
+                  fontFamily: ATLAS_SANS,
+                  color: token('color.link', '#0C66E4'),
+                  textDecoration: 'none',
+                }}
+              >
                 View all {visibleByTab.length} in ProjectHub ↗
               </a>
             </div>
