@@ -58,6 +58,9 @@ import { differenceInCalendarDays, format, parseISO, eachDayOfInterval, getDay }
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ads';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
+import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import type { WidgetProps } from '../widget-registry';
 
@@ -216,6 +219,7 @@ interface EpicStoryRow {
   summary: string;
   status: string;
   status_category: string;
+  issue_type?: string | null;
   assignee_display_name?: string | null;
   assignee_avatar?: string | null;
 }
@@ -274,6 +278,7 @@ interface UnlinkedEpicStory {
   summary: string;
   status: string;
   status_category: string;
+  issue_type?: string | null;
   assignee_display_name: string | null;
   assignee_avatar?: string | null;
 }
@@ -326,7 +331,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
       const epicKeys = unlinked.map((e: any) => e.issue_key);
       const { data: children } = await (supabase as any)
         .from('ph_issues')
-        .select('parent_key, issue_key, summary, status, status_category, assignee_user_id, assignee_display_name, jira_removed_at')
+        .select('parent_key, issue_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name, jira_removed_at')
         .in('parent_key', epicKeys)
         .in('issue_type', childTypes)
         .is('jira_removed_at', null)
@@ -367,6 +372,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
           summary: c.summary ?? '',
           status: c.status,
           status_category: c.status_category,
+          issue_type: c.issue_type ?? 'Story',
           assignee_display_name:
             childProfile?.display_name ?? childProfile?.full_name ?? c.assignee_display_name ?? null,
           assignee_avatar: childProfile?.avatar_url ?? null,
@@ -446,7 +452,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       if (childTypes.length > 0) {
         const { data } = await (supabase as any)
           .from('ph_issues')
-          .select('issue_key, parent_key, summary, status, status_category, assignee_user_id, assignee_display_name')
+          .select('issue_key, parent_key, summary, status, status_category, issue_type, assignee_user_id, assignee_display_name')
           .in('parent_key', epicKeys)
           .in('issue_type', childTypes)
           .is('jira_removed_at', null)
@@ -490,6 +496,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
           summary: c.summary ?? '',
           status: c.status,
           status_category: c.status_category,
+          issue_type: c.issue_type ?? 'Story',
           assignee_display_name:
             childProfile?.display_name ?? childProfile?.full_name ?? c.assignee_display_name ?? null,
           assignee_avatar: childProfile?.avatar_url ?? null,
@@ -962,7 +969,7 @@ function DemandRowItem({
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
+          gridTemplateColumns: '28px 20px 100px 1fr 160px 110px 28px',
           alignItems: 'center',
           gap: 8,
           padding: `0 ${token('space.200', '16px')}`,
@@ -988,6 +995,11 @@ function DemandRowItem({
           <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
         </span>
 
+        {/* Type icon — Epic icon for unlinked epics, Initiative/default for MDTs */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <JiraIssueTypeIcon type={isUnlinkedEpic ? 'Epic' : 'Initiative'} size={16} />
+        </span>
+
         {/* Key (with leading RAG dot) */}
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
           <RagDot state={state} />
@@ -1010,7 +1022,7 @@ function DemandRowItem({
           </a>
         </span>
 
-        {/* Title */}
+        {/* Summary */}
         <span
           title={row.title}
           style={{
@@ -1067,33 +1079,25 @@ function DemandRowItem({
         {/* Date / RAG pill */}
         <DatePill state={state} daysLeft={daysLeft} dateStr={row.target_complete} />
 
-        {/* Avatar */}
-        <Avatar size="xsmall" name={row.assignee_name} src={row.assignee_avatar ?? undefined}>
-          {() => (
-            <span
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                background: token('color.background.accent.gray.subtle', '#DFE1E6'),
-                color: token('color.text.subtle', '#42526E'),
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 10,
-                fontWeight: 600,
-              }}
-            >
-              {initialsOf(row.assignee_name)}
-            </span>
-          )}
-        </Avatar>
+        {/* Avatar — canonical CatalystOwnerAvatar (matches All Work) */}
+        <CatalystOwnerAvatar
+          type={row.assignee_name && row.assignee_name !== '—' ? 'human' : 'placeholder'}
+          name={row.assignee_name && row.assignee_name !== '—' ? row.assignee_name : undefined}
+          avatarUrl={
+            row.assignee_avatar
+              || (row.assignee_name && row.assignee_name !== '—'
+                ? resolveAvatarUrl(row.assignee_name) ?? undefined
+                : undefined)
+          }
+          size="sm"
+          showTooltip
+        />
       </div>
 
       {expanded && (
         <div
           style={{
-            background: token('elevation.surface.sunken', '#F7F8F9'),
+            background: '#FFFFFF',
             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
             paddingTop: 4,
             paddingBottom: 6,
@@ -1129,16 +1133,20 @@ function DemandRowItem({
                   key={story.id}
                   style={{
                     display: 'grid',
-                    gridTemplateColumns: '20px 90px 1fr auto auto',
+                    gridTemplateColumns: '20px 20px 90px 1fr auto auto',
                     alignItems: 'center',
                     gap: 12,
                     padding: '10px 16px 10px 28px',
                     minHeight: 40,
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                     borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
+                    background: '#FFFFFF',
                   }}
                 >
                   <span />
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <JiraIssueTypeIcon type={(story as any).issue_type ?? 'Story'} size={16} />
+                  </span>
                   <a
                     href={storyUrl}
                     onClick={(e) => e.stopPropagation()}
@@ -1184,23 +1192,18 @@ function DemandRowItem({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    <span
-                      style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: '50%',
-                        background: token('color.background.accent.gray.subtle', '#DFE1E6'),
-                        color: token('color.text.subtle', '#42526E'),
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: 9,
-                        fontWeight: 600,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {initialsOf(storyAssignee)}
-                    </span>
+                    <CatalystOwnerAvatar
+                      type={storyAssignee && storyAssignee !== '—' ? 'human' : 'placeholder'}
+                      name={storyAssignee && storyAssignee !== '—' ? storyAssignee : undefined}
+                      avatarUrl={
+                        (story as any).assignee_avatar
+                          || (storyAssignee && storyAssignee !== '—'
+                            ? resolveAvatarUrl(storyAssignee) ?? undefined
+                            : undefined)
+                      }
+                      size="xs"
+                      showTooltip={false}
+                    />
                     {storyAssignee.split(' ')[0]}
                   </span>
                 </div>
@@ -1320,17 +1323,20 @@ function DemandRowItem({
                           key={story.issue_key}
                           style={{
                             display: 'grid',
-                            gridTemplateColumns: '20px 90px 1fr auto auto',
+                            gridTemplateColumns: '20px 20px 90px 1fr auto auto',
                             alignItems: 'center',
                             gap: 12,
                             padding: '10px 16px 10px 28px',
                             minHeight: 40,
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                             borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
-                            background: token('elevation.surface.sunken', '#F7F8F9'),
+                            background: '#FFFFFF',
                           }}
                         >
                           <span />
+                          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <JiraIssueTypeIcon type={(story as any).issue_type ?? 'Story'} size={16} />
+                          </span>
                           <a
                             href={storyUrl}
                             onClick={(e) => e.stopPropagation()}
@@ -1376,23 +1382,18 @@ function DemandRowItem({
                               whiteSpace: 'nowrap',
                             }}
                           >
-                            <span
-                              style={{
-                                width: 20,
-                                height: 20,
-                                borderRadius: '50%',
-                                background: token('color.background.accent.gray.subtle', '#DFE1E6'),
-                                color: token('color.text.subtle', '#42526E'),
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: 9,
-                                fontWeight: 600,
-                                flexShrink: 0,
-                              }}
-                            >
-                              {initialsOf(storyAssignee)}
-                            </span>
+                            <CatalystOwnerAvatar
+                              type={storyAssignee && storyAssignee !== '—' ? 'human' : 'placeholder'}
+                              name={storyAssignee && storyAssignee !== '—' ? storyAssignee : undefined}
+                              avatarUrl={
+                                (story as any).assignee_avatar
+                                  || (storyAssignee && storyAssignee !== '—'
+                                    ? resolveAvatarUrl(storyAssignee) ?? undefined
+                                    : undefined)
+                              }
+                              size="xs"
+                              showTooltip={false}
+                            />
                             {storyAssignee.split(' ')[0]}
                           </span>
                         </div>
@@ -1747,7 +1748,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
+          gridTemplateColumns: '28px 20px 100px 1fr 160px 110px 28px',
           alignItems: 'center',
           gap: 8,
           padding: `6px ${token('space.200', '16px')}`,
@@ -1762,8 +1763,9 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         }}
       >
         <span />
+        <span />
         <span>Key</span>
-        <span>Title</span>
+        <span>Summary</span>
         <span>Progress</span>
         <span>Target</span>
         <span />
