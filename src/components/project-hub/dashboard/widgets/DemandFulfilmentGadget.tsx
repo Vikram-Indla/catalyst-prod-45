@@ -716,31 +716,40 @@ function DemandRowItem({
       }}
     >
       <div
-        onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '14px 8px 80px 1fr 90px 100px 28px',
+          gridTemplateColumns: '14px 8px 90px 1fr 130px 90px 24px',
           alignItems: 'center',
           gap: 8,
           padding: '8px 12px',
-          cursor: 'pointer',
+          minHeight: 36,
           background: 'transparent',
           transition: 'background 120ms',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
-        <span style={{ display: 'inline-flex', transition: 'transform 150ms', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+        <span
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          style={{ cursor: 'pointer', display: 'inline-flex', transition: 'transform 150ms', transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
+        >
           <ChevronRightIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
         </span>
         <RagDot state={state} />
-        <Link
+        <a
           href={productHubUrl}
           onClick={(e) => e.stopPropagation()}
-          style={{ fontSize: 11, fontWeight: 700, whiteSpace: 'nowrap', display: 'block' }}
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: token('color.link', '#0C66E4'),
+            textDecoration: 'none',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+          }}
         >
           {row.initiative_key}
-        </Link>
+        </a>
         <span
           title={row.title}
           style={{
