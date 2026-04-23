@@ -978,28 +978,41 @@ export function CreateStoryModal({
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status — ADS Field wrapper (STR-002 / A11Y-003) ─────── */}
-              {/* StatusChip is a custom button, not a native input. We use Field for
-                  label rendering + HelperMessage, then aria-labelledby on the chip
-                  trigger via STATUS_CHIP_TRIGGER_ID so screen readers announce correctly. */}
-              <Field
-                name="status"
-                label="Status"
-                aria-label="Status"
-              >
-                {() => (
-                  <>
-                    <StatusChip
-                      status={form.status}
-                      workType={workType}
-                      onChange={(s) => updateField('status', s)}
-                    />
-                    <HelperMessage>
-                      This is the initial status upon creation
-                    </HelperMessage>
-                  </>
-                )}
-              </Field>
+              {/* ── Status — manual label (StatusChip is not a native input;
+                  ADS Field renders the label inline which breaks the layout).
+                  Accessibility: chip trigger has aria-label + aria-haspopup.
+                  Screen readers will announce via aria-label on the button. */}
+              <div>
+                {/* Label styled to match ADS Field label: 12px/600/color.text.subtle */}
+                <label
+                  htmlFor={STATUS_CHIP_TRIGGER_ID}
+                  style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: token('color.text.subtle', '#44546F'),
+                    display: 'block',
+                    marginBottom: 4,
+                    lineHeight: '16px',
+                  }}
+                >
+                  Status
+                </label>
+                <StatusChip
+                  status={form.status}
+                  workType={workType}
+                  onChange={(s) => updateField('status', s)}
+                />
+                <p style={{
+                  fontFamily: 'Inter, sans-serif',
+                  fontSize: 12,
+                  color: token('color.text.subtlest', '#8590A2'),
+                  marginTop: 4,
+                  lineHeight: '16px',
+                }}>
+                  This is the initial status upon creation
+                </p>
+              </div>
 
               {/* ── Summary — required ─────────────────────────────── */}
               <Field name="summary" label="Summary" isRequired>
