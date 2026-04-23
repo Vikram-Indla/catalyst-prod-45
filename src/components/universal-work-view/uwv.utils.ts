@@ -7,7 +7,45 @@
  * lozenge guardrail), §11 (icon registry), and §15 (interaction states).
  */
 
+import type React from 'react';
 import type { UWVColumn } from './uwv.types';
+
+/**
+ * Status pill style — verified from live backlog DOM at /project-hub/BAU/backlog.
+ * Plain inline styles, NOT @atlaskit/lozenge.
+ */
+export function getStatusStyle(
+  statusCategory: string,
+  status?: string,
+): React.CSSProperties {
+  const cat = (statusCategory ?? '').toLowerCase();
+  const st = (status ?? '').toLowerCase();
+
+  const done = ['done', 'closed', 'resolved', 'complete', 'completed', 'merged', 'released'];
+  const blocked = ['on hold', 'blocked', 'awaiting info', 'awaiting approval', 'rejected'];
+  const todo = ['to do', 'backlog', 'open', 'new', 'draft'];
+
+  const base: React.CSSProperties = {
+    fontSize: 13,
+    fontWeight: 400,
+    borderRadius: 3,
+    padding: '0px 4px',
+    display: 'inline-block',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  };
+
+  if (done.some((d) => st.includes(d)) || cat === 'done')
+    return { ...base, background: '#E3FCEF', color: '#006644' };
+  if (blocked.some((b) => st.includes(b)))
+    return { ...base, background: '#FFF0B3', color: '#172B4D' };
+  if (todo.some((t) => st.includes(t)) || cat === 'to do')
+    return { ...base, background: '#F4F5F7', color: '#42526E' };
+  // Default: in-progress (verified from backlog DOM)
+  return { ...base, background: '#DFEDFF', color: '#0055CC' };
+}
 
 // Row height + key colour now match Project Work table.
 export const JIRA_ROW_HEIGHT = 44;
@@ -142,24 +180,17 @@ export function nameToHash(name: string): number {
  * sentinel; UWVTable converts width=0 → '1fr' so the column is fluid.
  */
 export const DEFAULT_COLUMNS: UWVColumn[] = [
-  { fieldId: 'key', label: 'Key', width: 140, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'summary', label: 'Summary', width: 0, visible: true, sortable: false, type: 'string' },
-  { fieldId: 'status', label: 'Status', width: 120, visible: true, sortable: true, type: 'status' },
+  { fieldId: 'key', label: 'Key', width: 120, visible: true, sortable: true, type: 'string' },
+  { fieldId: 'summary', label: 'Summary', width: 336, visible: true, sortable: false, type: 'string' },
+  { fieldId: 'status', label: 'Status', width: 180, visible: true, sortable: true, type: 'status' },
   { fieldId: 'project', label: 'Project', width: 140, visible: true, sortable: false, type: 'string' },
-  { fieldId: 'hubSource', label: 'Hub', width: 95, visible: true, sortable: false, type: 'hub' },
+  { fieldId: 'hubSource', label: 'Hub', width: 110, visible: true, sortable: false, type: 'hub' },
   { fieldId: 'priority', label: 'Priority', width: 80, visible: true, sortable: true, type: 'string' },
   { fieldId: 'updated', label: 'Updated', width: 110, visible: true, sortable: true, type: 'date' },
-  { fieldId: 'assignee', label: 'Reported by', width: 180, visible: true, sortable: true, type: 'user' },
+  { fieldId: 'assignee', label: 'Reported by', width: 168, visible: true, sortable: true, type: 'user' },
   // Optional / hidden by default — kept available via column picker.
   { fieldId: 'comments', label: 'Comments', width: 130, visible: false, sortable: false, type: 'comments' },
   { fieldId: 'dueDate', label: 'Due date', width: 110, visible: false, sortable: true, type: 'date' },
   { fieldId: 'created', label: 'Created', width: 110, visible: false, sortable: true, type: 'date' },
   { fieldId: 'parentKey', label: 'Parent', width: 100, visible: false, sortable: false, type: 'string' },
 ];
-
-/** Map raw issue_type strings to JiraIssueTypeIcon `type` values. */
-export function mapIssueTypeToIcon(issueType?: string | null): string {
-  // JiraIssueTypeIcon resolves freely on the raw string via resolveJiraTypeConfig,
-  // so we just pass through. Keep a sensible fallback.
-  return (issueType ?? 'task').trim() || 'task';
-}

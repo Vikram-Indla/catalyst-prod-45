@@ -16,7 +16,6 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { StatusLozengeByType } from '@/components/workflow';
 import { PriorityBars, normalisePriority } from '@/components/shared/PriorityIndicator';
 import {
   hubColour,
@@ -28,6 +27,7 @@ import {
   AVATAR_COLORS,
   nameToHash,
   JIRA_ROW_HEIGHT,
+  getStatusStyle,
 } from './uwv.utils';
 import type { UWVColumn, UWVItem } from './uwv.types';
 
@@ -131,12 +131,11 @@ function renderCell(
               fontFamily: "'JetBrains Mono', monospace",
               textDecoration: 'none',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              minWidth: 0,
+              overflow: 'visible',
+              flexShrink: 0,
             }}
           >
-            <bdi dir="ltr">{item.key}</bdi>
+            <bdi dir="ltr" style={{ overflow: 'visible' }}>{item.key}</bdi>
           </a>
         </div>
       );
@@ -161,13 +160,9 @@ function renderCell(
       );
     case 'status':
       return (
-        <StatusLozengeByType
-          issueType={item.issueType}
-          statusName={item.status}
-          statusCategory={item.statusCategory}
-          variant="bold"
-          maxWidth={160}
-        />
+        <span style={getStatusStyle(item.statusCategory, item.status)} title={item.status}>
+          {item.status}
+        </span>
       );
     case 'project':
       return (
