@@ -1588,7 +1588,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   }}
                 />
               </button>
-              {deliveredOpen && delivered.map((r) => <DeliveredRow key={r.id} row={r} />)}
+              {deliveredOpen && delivered.map((r) => <DeliveredRow key={r.id} row={r} projectKey={projectKey} />)}
             </div>
           )}
         </>
