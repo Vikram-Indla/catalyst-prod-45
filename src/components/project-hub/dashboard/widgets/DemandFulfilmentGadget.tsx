@@ -40,6 +40,7 @@ import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import SectionMessage, { SectionMessageAction } from '@atlaskit/section-message';
+import Tooltip from '@atlaskit/tooltip';
 import Badge from '@atlaskit/badge';
 import Link from '@atlaskit/link';
 import AkButton, { IconButton } from '@atlaskit/button/new';
