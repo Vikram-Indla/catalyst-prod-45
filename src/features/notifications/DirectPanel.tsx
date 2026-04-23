@@ -3,8 +3,7 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import { groupByDate } from './utils/date';
 import DirectNotificationRow from './components/DirectNotificationRow';
-import { useNotificationsQuery, useMarkAsRead } from '@/hooks/useNotificationsNew';
-import { useActorProfiles } from '@/hooks/useActorProfiles';
+import { useDirectFromSync, useMarkSyncAsRead } from '@/hooks/useDirectFromSync';
 import type {
   DirectNotification,
   DirectVerb,
@@ -89,7 +88,7 @@ function LoadingState({ isDark }: { isDark: boolean }) {
   );
 }
 
-function EmptyUnread({ isDark }: { isDark: boolean }) {
+function EmptyState({ isDark }: { isDark: boolean }) {
   return (
     <Box xcss={emptyXcss}>
       <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
@@ -120,7 +119,7 @@ function EmptyUnread({ isDark }: { isDark: boolean }) {
   );
 }
 
-// ───────── Mappers: live Notification → DirectNotification ─────────
+// ───────── Mappers ─────────
 
 function mapVerb(t: NotificationType): DirectVerb {
   switch (t) {
@@ -175,14 +174,15 @@ function mapAppearance(s: StatusType): DirectStatusAppearance {
   }
 }
 
-function toDirect(n: Notification, displayName: string | null): DirectNotification {
+// Map a ph_issues-derived Notification to DirectNotification.
+// Reporter display name lives in metadata.actor_name (set by useDirectFromSync).
+function toPh(n: Notification): DirectNotification {
+  const actorName = (n.metadata as unknown as { actor_name?: string | null })?.actor_name ?? null;
   return {
     id: n.id,
     createdAt: n.created_at,
     readAt: n.read_at,
-    actor: n.actor_user_id
-      ? { id: n.actor_user_id, displayName: displayName ?? 'Someone' }
-      : null,
+    actor: actorName ? { id: n.entity_key, displayName: actorName } : null,
     verb: mapVerb(n.notification_type),
     target: {
       id: n.entity_id,
@@ -196,38 +196,26 @@ function toDirect(n: Notification, displayName: string | null): DirectNotificati
 }
 
 export default function DirectPanel({ unreadOnly, isDark }: DirectPanelProps) {
-  const { data: pages, isLoading } = useNotificationsQuery('direct', unreadOnly);
-  const markAsRead = useMarkAsRead();
-
-  const rawNotifications = useMemo(
-    () => (pages?.pages.flat() ?? []) as Notification[],
-    [pages]
-  );
-
-  const actorIds = useMemo(
-    () => rawNotifications.map(n => n.actor_user_id).filter((x): x is string => !!x),
-    [rawNotifications]
-  );
-  const { data: profiles } = useActorProfiles(actorIds);
+  const { data: rawNotifications = [], isLoading } = useDirectFromSync(unreadOnly);
+  const markSyncRead = useMarkSyncAsRead();
 
   const items = useMemo(
-    () => rawNotifications.map(n => {
-      const profile = n.actor_user_id ? profiles?.get(n.actor_user_id) : null;
-      return toDirect(n, profile?.full_name ?? null);
-    }),
-    [rawNotifications, profiles]
+    () => rawNotifications.map(toPh),
+    [rawNotifications]
   );
 
+  // Pass the full Notification to the mutation so it can write a read receipt
   const handleMarkRead = useCallback((id: string) => {
-    markAsRead.mutate(id);
-  }, [markAsRead]);
+    const notif = rawNotifications.find(n => n.id === id);
+    if (notif) markSyncRead.mutate(notif);
+  }, [rawNotifications, markSyncRead]);
 
   if (isLoading && items.length === 0) {
     return <LoadingState isDark={isDark} />;
   }
 
   if (items.length === 0) {
-    return <EmptyUnread isDark={isDark} />;
+    return <EmptyState isDark={isDark} />;
   }
 
   const groups = groupByDate(items);

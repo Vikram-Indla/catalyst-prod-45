@@ -5,6 +5,7 @@ import { ExternalLink, MoreVertical, CheckCheck, MessageSquare, Settings, Refres
 import type { Notification, NotificationTab } from "@/types/notifications";
 import { PANEL_WIDTH } from "@/constants/notificationConstants";
 import { useNotificationsQuery, useMarkAsRead, useMarkAllAsRead, useSnoozeNotification } from "@/hooks/useNotificationsNew";
+import { NOTIF_LAST_OPENED_KEY } from "@/hooks/useDirectFromSync";
 import { useUnreadCount } from "@/hooks/useUnreadCount";
 import { useRealtimeNotifications } from "@/hooks/useRealtimeNotifications";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -187,8 +188,12 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   // Unread count for toggle display (m-10)
   const { data: unreadCount } = useUnreadCount();
 
-  // W1 — Real data from Supabase
-  const { data, fetchNextPage, hasNextPage, isLoading, isError, refetch } = useNotificationsQuery(activeTab, unreadOnly);
+  // W1 — Real data from Supabase (disabled for 'direct' — DirectPanel fetches its own data)
+  const { data, fetchNextPage, hasNextPage, isLoading, isError, refetch } = useNotificationsQuery(
+    activeTab,
+    unreadOnly,
+    activeTab !== 'direct',
+  );
   const allNotifications: Notification[] = (data?.pages.flat() ?? []) as unknown as Notification[];
 
   // Deduplicate: keep only the most recent notification per entity_key+type
@@ -248,6 +253,14 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
   useEffect(() => {
     if (isOpen) setIsAnimating(true);
   }, [isOpen]);
+
+  // Record panel-open timestamp so the badge resets to 0 after opening
+  useEffect(() => {
+    if (isOpen) {
+      localStorage.setItem(NOTIF_LAST_OPENED_KEY, new Date().toISOString());
+      queryClient.invalidateQueries({ queryKey: ['notifications-unread-count-sync'] });
+    }
+  }, [isOpen, queryClient]);
 
   // Click outside
   useEffect(() => {
