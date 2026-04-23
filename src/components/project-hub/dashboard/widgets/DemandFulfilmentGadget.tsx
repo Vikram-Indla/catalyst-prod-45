@@ -75,6 +75,7 @@ interface GadgetSettings {
   rag_threshold: number;
   include_stories: boolean;
   include_defects: boolean;
+  status_filter: string[];
 }
 
 const currentQuarter = (): string => {
