@@ -886,7 +886,10 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       span={2}
       flushBody
       headerBadges={
-        <>
+        <span
+          onClick={(e) => e.stopPropagation()}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}
+        >
           <span
             style={{
               fontSize: 12,
@@ -917,11 +920,21 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
               />
             )}
             trigger={(triggerProps) => (
-              <button
+              <span
                 {...triggerProps}
+                role="button"
+                tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.preventDefault();
                   setSettingsOpen((v) => !v);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setSettingsOpen((v) => !v);
+                  }
                 }}
                 style={{
                   background: 'transparent',
@@ -929,15 +942,18 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   cursor: 'pointer',
                   padding: 2,
                   display: 'inline-flex',
+                  alignItems: 'center',
                   color: token('color.text.subtlest', '#6B778C'),
+                  borderRadius: 3,
                 }}
-                aria-label="Gadget settings"
+                aria-label="Configure demand gadget"
+                aria-expanded={settingsOpen}
               >
                 <Settings size={14} />
-              </button>
+              </span>
             )}
           />
-        </>
+        </span>
       }
       footer={
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
