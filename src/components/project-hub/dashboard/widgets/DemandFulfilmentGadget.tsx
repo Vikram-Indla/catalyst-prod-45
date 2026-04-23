@@ -1072,9 +1072,12 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         inprogress: s.status_category === 'In Progress' ? 1 : 0,
         blocked: ['On Hold', 'Blocked', 'Awaiting Info'].includes(s.status) ? 1 : 0,
         status: s.status,
+        status_category: s.status_category,
+        stories: [],
       })),
       isDelivered: false,
       deliveredAt: null,
+      isUnlinkedEpic: true,
     }));
     return [...active, ...epicRows];
   }, [active, unlinkedEpics]);
