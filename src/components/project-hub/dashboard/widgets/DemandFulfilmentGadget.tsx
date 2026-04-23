@@ -794,7 +794,7 @@ function DemandRowItem({
       {expanded && (
         <div
           style={{
-            padding: '8px 12px 12px 34px',
+            padding: '8px 16px 12px 38px',
             background: token('elevation.surface.sunken', '#F7F8F9'),
             borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
           }}
@@ -1070,7 +1070,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       }
     >
       {/* Tabs */}
-      <div onClick={(e) => e.stopPropagation()}>
+      <div onClick={(e) => e.stopPropagation()} style={{ padding: `0 ${token('space.200', '16px')}` }}>
         <Tabs id="df-tabs" selected={tab === 'active' ? 0 : tab === 'overdue' ? 1 : 2} onChange={(i: number) => setTab(i === 0 ? 'active' : i === 1 ? 'overdue' : 'all')}>
           <TabList>
             <Tab>
@@ -1101,7 +1101,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           background: token('elevation.surface.sunken', '#F7F8F9'),
           borderTop: `1px solid ${token('color.border')}`,
           borderBottom: `1px solid ${token('color.border')}`,
-          padding: `${token('space.050', '4px')} ${token('space.150', '12px')}`,
+          padding: `${token('space.050', '4px')} ${token('space.200', '16px')}`,
           font: token('font.body.small'),
           color: token('color.text.subtlest'),
         }}
