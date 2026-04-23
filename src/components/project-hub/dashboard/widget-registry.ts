@@ -36,7 +36,7 @@ export interface WidgetDefinition {
 }
 
 // Lazy imports for widget components
-import KeyMilestonesWidget from './widgets/KeyMilestonesWidget';
+import DemandFulfilmentGadget from './widgets/DemandFulfilmentGadget';
 import ReleaseHealthWidget from './widgets/ReleaseHealthWidget';
 import ItemsByStatusWidget from './widgets/ItemsByStatusWidget';
 import OverdueWidget from './widgets/OverdueWidget';
@@ -52,12 +52,13 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   // DELIVERY GROUP
   {
     id: 'milestones',
-    title: 'Key Milestones',
-    subtitle: 'Configurable status gates',
+    title: 'Demand Fulfilment',
+    subtitle: 'MDT delivery rollup',
     group: 'delivery',
     defaultSpan: 2,
+    minSpan: 2,
     defaultPosition: 0,
-    component: KeyMilestonesWidget,
+    component: DemandFulfilmentGadget,
   },
   {
     id: 'release-health',
