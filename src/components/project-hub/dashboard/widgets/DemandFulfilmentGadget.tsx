@@ -887,6 +887,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedUnlinked, setExpandedUnlinked] = useState<string | null>(null);
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
