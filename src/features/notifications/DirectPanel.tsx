@@ -296,7 +296,40 @@ export default function DirectPanel({ unreadOnly, isDark, readIds: externalReadI
   const visible = unreadOnly
     ? notifications.filter(n => !resolvedReadIds.has(n.id))
     : notifications;
-// ───────── Mappers ─────────
+
+  if (visible.length === 0) {
+    return <EmptyState isDark={isDark} />;
+  }
+
+  const groups = groupByDate(visible);
+  const dividerColor = isDark ? '#2E2E2E' : token('color.border', '#DFE1E6');
+
+  return (
+    <Box xcss={panelXcss}>
+      {groups.map((group, gi) => (
+        <Box key={group.label}>
+          {gi > 0 && (
+            <div
+              style={{ height: 1, background: dividerColor, marginInline: 16, marginBlock: 4 }}
+              role="separator"
+              aria-hidden="true"
+            />
+          )}
+          <SectionLabel label={group.label} isDark={isDark} />
+          {group.items.map(n => (
+            <DirectNotificationRow
+              key={n.id}
+              notification={n}
+              isRead={resolvedReadIds.has(n.id)}
+              onMarkRead={handleMarkRead}
+              isDark={isDark}
+            />
+          ))}
+        </Box>
+      ))}
+    </Box>
+  );
+}
 
 function mapVerb(t: NotificationType): DirectVerb {
   switch (t) {
