@@ -54,7 +54,7 @@ export function UWVTable({
   const [containerHeight, setContainerHeight] = useState(0);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const rowHeight = density === 'compact' ? 36 : JIRA_ROW_HEIGHT;
+  const rowHeight = density === 'compact' ? 32 : 36;
 
   useEffect(() => {
     const update = () => {
@@ -205,7 +205,8 @@ export function UWVTable({
               if (el) el.indeterminate = someSelected;
             }}
             onChange={(e) => toggleAll(e.currentTarget.checked)}
-            className="w-4 h-4 rounded cursor-pointer accent-[#2563EB]"
+            className="w-4 h-4 rounded cursor-pointer"
+            style={{ accentColor: 'var(--cp-blue)' }}
             aria-label="Select all items"
           />
         </div>
@@ -231,8 +232,8 @@ export function UWVTable({
                 background: 'transparent',
                 border: 'none',
                 padding: '0 8px',
-                fontSize: 10.5,
-                fontWeight: 650,
+                fontSize: 12,
+                fontWeight: 600,
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 color: 'var(--fg-3)',

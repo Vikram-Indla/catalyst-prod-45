@@ -42,31 +42,31 @@ interface Props {
 function CloseIcon({ label }: { label?: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label={label} role="img">
-      <path d="M6 6l12 12M18 6L6 18" stroke="#42526E" strokeWidth="2" strokeLinecap="round" />
+      <path d="M6 6l12 12M18 6L6 18" stroke="var(--fg-3)" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
 }
 function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="11" cy="11" r="6" stroke="#6B778C" strokeWidth="1.6" />
-      <path d="M20 20l-4-4" stroke="#6B778C" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="11" cy="11" r="6" stroke="var(--fg-3)" strokeWidth="1.6" />
+      <path d="M20 20l-4-4" stroke="var(--fg-3)" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M6 9l6 6 6-6" stroke="#42526E" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 9l6 6 6-6" stroke="var(--fg-3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 function MoreIcon({ label }: { label?: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label={label} role="img">
-      <circle cx="5" cy="12" r="1.6" fill="#42526E" />
-      <circle cx="12" cy="12" r="1.6" fill="#42526E" />
-      <circle cx="19" cy="12" r="1.6" fill="#42526E" />
+      <circle cx="5" cy="12" r="1.6" fill="var(--fg-3)" />
+      <circle cx="12" cy="12" r="1.6" fill="var(--fg-3)" />
+      <circle cx="19" cy="12" r="1.6" fill="var(--fg-3)" />
     </svg>
   );
 }
@@ -117,14 +117,14 @@ export function UWVToolbar({
         maxHeight: 420,
         overflowY: 'auto',
         padding: 12,
-        background: '#FFFFFF',
+        background: 'var(--bg-app)',
         border: '1px solid #DFE1E6',
         borderRadius: 6,
         boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
       }}
     >
       {statusGroups.length === 0 ? (
-        <div style={{ fontSize: 13, color: '#6B778C' }}>No statuses available</div>
+        <div style={{ fontSize: 13, color: 'var(--fg-3)' }}>No statuses available</div>
       ) : (
         statusGroups.map((group: any) => (
           <div key={group.label} style={{ marginBottom: 12 }}>
@@ -132,7 +132,7 @@ export function UWVToolbar({
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: '#5E6C84',
+                color: 'var(--fg-3)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 marginBottom: 6,
@@ -173,7 +173,7 @@ export function UWVToolbar({
           alignItems: 'center',
           padding: '0 16px',
           borderBottom: '1px solid #DFE1E6',
-          background: '#FFFFFF',
+          background: 'var(--bg-app)',
           flexShrink: 0,
         }}
       >
@@ -182,7 +182,7 @@ export function UWVToolbar({
           style={{
             fontSize: 15,
             fontWeight: 600,
-            color: '#172B4D',
+            color: 'var(--fg-1)',
             marginLeft: 8,
             fontFamily: '"Atlassian Sans", -apple-system, sans-serif',
           }}
@@ -192,8 +192,8 @@ export function UWVToolbar({
         <span
           style={{
             fontSize: 12,
-            background: '#F1F2F4',
-            color: '#626F86',
+            background: 'var(--bg-2)',
+            color: 'var(--fg-3)',
             padding: '2px 8px',
             borderRadius: 10,
             marginLeft: 8,
