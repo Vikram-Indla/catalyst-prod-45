@@ -435,7 +435,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       if (childTypes.length > 0) {
         const { data } = await (supabase as any)
           .from('ph_issues')
-          .select('issue_key, parent_key, summary, status, status_category')
+          .select('issue_key, parent_key, summary, status, status_category, assignee_user_id, assignee_display_name')
           .in('parent_key', epicKeys)
           .in('issue_type', childTypes)
           .is('jira_removed_at', null)
@@ -443,8 +443,13 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         children = data ?? [];
       }
 
-      // 5) Fetch assignee profiles for avatars.
-      const assigneeIds = Array.from(new Set(initiatives.map((i: any) => i.assignee_id).filter(Boolean)));
+      // 5) Fetch assignee profiles for avatars (initiatives + child stories).
+      const assigneeIds = Array.from(
+        new Set([
+          ...initiatives.map((i: any) => i.assignee_id).filter(Boolean),
+          ...children.map((c: any) => c.assignee_user_id).filter(Boolean),
+        ]),
+      );
       let profiles: Record<string, any> = {};
       if (assigneeIds.length > 0) {
         const { data: pr } = await (supabase as any)
