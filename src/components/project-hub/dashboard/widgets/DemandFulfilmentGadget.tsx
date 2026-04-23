@@ -1161,54 +1161,46 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           <div style={{ padding: token('space.150', '12px') }}>
             <SectionMessage
               appearance="warning"
-              title={`${unlinkedEpics.length} epic${unlinkedEpics.length === 1 ? '' : 's'} not linked to any demand ticket`}
+              title="Epics without a demand ticket"
               actions={
                 <SectionMessageAction onClick={() => setUnlinkedOpen((v) => !v)}>
                   {unlinkedOpen ? 'Hide unlinked epics' : 'View unlinked epics'}
                 </SectionMessageAction>
               }
             >
-              <p>These epics are progressing but aren't rolled up under any MDT.</p>
+              <p>These epics are active but not yet linked to an MDT.</p>
             </SectionMessage>
           </div>
           {unlinkedOpen && (
-            <div style={{ maxHeight: 200, overflowY: 'auto', background: token('elevation.surface.sunken', '#F7F8F9') }}>
-              {unlinkedEpics.map((e) => (
-                <div
-                  key={e.id}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '8px 60px 1fr auto',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '6px 14px',
-                    borderTop: `1px solid ${token('color.border')}`,
-                    font: token('font.body.small'),
+            <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+              {unlinkedEpics.map((epic) => (
+                <DemandRowItem
+                  key={epic.id}
+                  row={{
+                    id: epic.id,
+                    initiative_key: epic.issue_key,
+                    title: epic.summary,
+                    status: epic.status,
+                    target_complete: null,
+                    target_quarter: null,
+                    assignee_id: epic.assignee_id,
+                    assignee_name: epic.assignee_name,
+                    assignee_avatar: epic.assignee_avatar,
+                    total: epic.total,
+                    done: epic.done,
+                    blocked: epic.blocked,
+                    inprogress: epic.inprogress,
+                    todo: epic.todo,
+                    epics: [],
+                    isDelivered: false,
+                    deliveredAt: null,
                   }}
-                >
-                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: token('color.text.disabled', '#97A0AF') }} />
-                  <Link href={`/project-hub/${e.issue_key.split('-')[0]}/hierarchy/allwork?selectedIssue=${e.issue_key}`}>
-                    <span style={{ fontWeight: 700 }}>{e.issue_key}</span>
-                  </Link>
-                  <span
-                    title={e.summary}
-                    style={{
-                      color: token('color.text'),
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      minWidth: 0,
-                    }}
-                  >
-                    {e.summary}
-                  </span>
-                  <Link href={`/producthub/backlog?linkEpic=${e.issue_key}`}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px'), whiteSpace: 'nowrap' }}>
-                      Link to demand
-                      <ShortcutIcon label="" color="currentColor" />
-                    </span>
-                  </Link>
-                </div>
+                  threshold={settings.rag_threshold}
+                  expanded={expandedUnlinked === epic.id}
+                  onToggle={() =>
+                    setExpandedUnlinked((id) => (id === epic.id ? null : epic.id))
+                  }
+                />
               ))}
             </div>
           )}
