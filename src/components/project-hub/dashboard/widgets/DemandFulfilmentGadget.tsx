@@ -426,11 +426,12 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       const childTypes: string[] = [];
       if (settings.include_stories) childTypes.push('Story');
       if (settings.include_defects) childTypes.push('Bug', 'Defect');
+      if (childTypes.length === 0) childTypes.push('Story');
       let children: any[] = [];
       if (childTypes.length > 0) {
         const { data } = await (supabase as any)
           .from('ph_issues')
-          .select('issue_key, parent_key, status, status_category')
+          .select('issue_key, parent_key, summary, status, status_category')
           .in('parent_key', epicKeys)
           .in('issue_type', childTypes)
           .is('jira_removed_at', null)
@@ -449,15 +450,27 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         profiles = Object.fromEntries((pr ?? []).map((p: any) => [p.id, p]));
       }
 
-      // 6) Roll up: bucket children per epic.
+      // 6) Roll up: bucket children per epic, and collect individual story rows.
       const bucketByEpicKey = new Map<string, { done: number; blocked: number; inprogress: number; todo: number; total: number }>();
-      epicKeys.forEach((k) => bucketByEpicKey.set(k, { done: 0, blocked: 0, inprogress: 0, todo: 0, total: 0 }));
+      const storyListByEpicKey = new Map<string, EpicStoryRow[]>();
+      epicKeys.forEach((k) => {
+        bucketByEpicKey.set(k, { done: 0, blocked: 0, inprogress: 0, todo: 0, total: 0 });
+        storyListByEpicKey.set(k, []);
+      });
       children.forEach((c: any) => {
         const bucket = bucketByEpicKey.get(c.parent_key);
         if (!bucket) return;
         const cls = classifyIssue(c);
         bucket.total += 1;
         if (cls) (bucket as any)[cls] += 1;
+        const list = storyListByEpicKey.get(c.parent_key) ?? [];
+        list.push({
+          issue_key: c.issue_key,
+          summary: c.summary ?? '',
+          status: c.status,
+          status_category: c.status_category,
+        });
+        storyListByEpicKey.set(c.parent_key, list);
       });
 
       // Group epics under their MDT.
@@ -475,6 +488,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
           summary: epic.summary ?? '',
           status: epic.status,
           ...b,
+          stories: storyListByEpicKey.get(epicKey) ?? [],
         });
         epicsByInitiative.set(l.initiative_id, arr);
       });
