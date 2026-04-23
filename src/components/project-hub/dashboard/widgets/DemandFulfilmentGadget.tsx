@@ -40,6 +40,7 @@ import Select from '@atlaskit/select';
 import { Checkbox } from '@atlaskit/checkbox';
 import { DatePicker } from '@atlaskit/datetime-picker';
 import SectionMessage, { SectionMessageAction } from '@atlaskit/section-message';
+import Tooltip from '@atlaskit/tooltip';
 import Badge from '@atlaskit/badge';
 import Link from '@atlaskit/link';
 import AkButton, { IconButton } from '@atlaskit/button/new';
@@ -99,7 +100,12 @@ const QUARTER_OPTIONS = [
   { label: 'Q4 2026 · Oct–Dec', value: 'Q4-2026' },
 ];
 
-const THRESHOLD_OPTIONS = [3, 5, 7, 10, 14].map((n) => ({ label: `${n}`, value: n }));
+const THRESHOLD_OPTIONS = [
+  { label: '3 days', value: 3 },
+  { label: '7 days', value: 7 },
+  { label: '14 days', value: 14 },
+  { label: '30 days', value: 30 },
+];
 
 const quarterRange = (q: string): { start: string; end: string; label: string } => {
   const [qPart, yPart] = q.split('-');
@@ -504,17 +510,29 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
 // UI helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-const RagDot = ({ state }: { state: RagState }) => (
-  <span
-    style={{
-      display: 'inline-block',
-      width: 8,
-      height: 8,
-      borderRadius: '50%',
-      background: ragColors[state].dot,
-    }}
-  />
-);
+const RagDot = ({ state }: { state: RagState }) => {
+  const tooltipContent =
+    state === 'none' ? 'No target date set' :
+    state === 'overdue' ? 'Overdue' :
+    state === 'risk' ? 'At risk' :
+    'On track';
+  return (
+    <Tooltip content={tooltipContent}>
+      <span
+        tabIndex={0}
+        style={{
+          width: 8,
+          height: 8,
+          borderRadius: '50%',
+          background: ragColors[state].dot,
+          cursor: 'help',
+          flexShrink: 0,
+          display: 'inline-block',
+        }}
+      />
+    </Tooltip>
+  );
+};
 
 const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: number | null; dateStr: string | null }) => {
   if (state === 'none' || !dateStr) {
@@ -576,6 +594,26 @@ function SettingsPopupBody({
 }) {
   const [draft, setDraft] = useState<GadgetSettings>(initial);
 
+  const today = new Date().toISOString().split('T')[0];
+  const oneMonthAhead = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    .toISOString().split('T')[0];
+
+  const sectionHeadingStyle = {
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase' as const,
+    color: token('color.text.subtlest', '#626F86'),
+    marginBottom: 6,
+  };
+  const subLabelStyle = {
+    fontSize: 11,
+    lineHeight: '16px',
+    fontWeight: 400,
+    color: token('color.text.subtle', '#6B778C'),
+    marginBottom: 2,
+  };
+
   return (
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
@@ -593,13 +631,21 @@ function SettingsPopupBody({
       </div>
 
       {/* Time scope */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         Time scope
       </div>
       <RadioGroup
         name="scope_type"
         value={draft.scope_type}
-        onChange={(e: any) => setDraft({ ...draft, scope_type: e.currentTarget.value as ScopeType })}
+        onChange={(e: any) => {
+          const newScope = e.currentTarget.value as ScopeType;
+          setDraft((prev) => ({
+            ...prev,
+            scope_type: newScope,
+            date_from: newScope === 'custom' && !prev.date_from ? today : prev.date_from,
+            date_to: newScope === 'custom' && !prev.date_to ? oneMonthAhead : prev.date_to,
+          }));
+        }}
         options={[
           { name: 'scope_type', value: 'quarter', label: 'This Quarter' },
           { name: 'scope_type', value: 'custom', label: 'Custom timeline' },
@@ -621,18 +667,18 @@ function SettingsPopupBody({
       {draft.scope_type === 'custom' && (
         <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div>
-            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
+            <div style={subLabelStyle}>From</div>
             <DatePicker
               locale="en-GB"
-              value={draft.date_from ?? ''}
+              value={draft.date_from ?? today}
               onChange={(v: string) => setDraft({ ...draft, date_from: v || null })}
             />
           </div>
           <div>
-            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
+            <div style={subLabelStyle}>To</div>
             <DatePicker
               locale="en-GB"
-              value={draft.date_to ?? ''}
+              value={draft.date_to ?? oneMonthAhead}
               minDate={draft.date_from ?? undefined}
               onChange={(v: string) => setDraft({ ...draft, date_to: v || null })}
             />
@@ -643,17 +689,17 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Threshold */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         At-risk threshold
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#172B4D') }}>
         <span>Mark as At Risk when</span>
-        <div style={{ width: 70 }}>
+        <div style={{ width: 100 }}>
           <Select
             spacing="compact"
             options={THRESHOLD_OPTIONS}
-            value={THRESHOLD_OPTIONS.find((o) => o.value === draft.rag_threshold)}
-            onChange={(opt: any) => setDraft({ ...draft, rag_threshold: opt.value })}
+            value={THRESHOLD_OPTIONS.find((o) => o.value === Number(draft.rag_threshold))}
+            onChange={(opt: any) => setDraft({ ...draft, rag_threshold: Number(opt.value) })}
           />
         </div>
         <span>or fewer days remain</span>
@@ -662,7 +708,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Item types */}
-      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={sectionHeadingStyle}>
         Count toward completion
       </div>
       <Checkbox
@@ -716,6 +762,7 @@ function DemandRowItem({
       }}
     >
       <div
+        onClick={onToggle}
         style={{
           display: 'grid',
           gridTemplateColumns: '14px 8px 90px 1fr 130px 90px 24px',
@@ -725,6 +772,7 @@ function DemandRowItem({
           minHeight: 36,
           background: 'transparent',
           transition: 'background 120ms',
+          cursor: 'pointer',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
@@ -753,7 +801,9 @@ function DemandRowItem({
         <span
           title={row.title}
           style={{
-            font: token('font.body.small'),
+            fontSize: 12,
+            lineHeight: '16px',
+            fontWeight: 400,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -764,7 +814,7 @@ function DemandRowItem({
         </span>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <ProgressBar value={pct / 100} appearance="default" />
-          <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+          <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
             {pct}% · {row.done}/{row.total}
           </span>
         </div>
@@ -800,7 +850,7 @@ function DemandRowItem({
           }}
         >
           {row.total === 0 ? (
-            <div style={{ font: token('font.body.small'), color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+            <div style={{ fontSize: 12, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
               <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
               No stories linked. Add stories under the epics in this demand to track progress.
             </div>
@@ -851,7 +901,9 @@ function DemandRowItem({
                     <span
                       title={epic.summary}
                       style={{
-                        font: token('font.body.small'),
+                        fontSize: 12,
+                        lineHeight: '16px',
+                        fontWeight: 400,
                         color: token('color.text', '#172B4D'),
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -863,10 +915,10 @@ function DemandRowItem({
                     <div>
                       <ProgressBar value={epicPct / 100} appearance="default" />
                     </div>
-                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ fontSize: 10, lineHeight: '14px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epicPct}%
                     </span>
-                    <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
+                    <span style={{ fontSize: 10, lineHeight: '14px', fontWeight: 400, color: token('color.text.subtle', '#6B778C'), textAlign: 'right' }}>
                       {epic.done}/{epic.total}
                     </span>
                   </div>
@@ -874,7 +926,7 @@ function DemandRowItem({
               })}
 
               {!row.target_complete && (
-                <div style={{ marginTop: 8, font: token('font.body.UNSAFE_small'), color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ marginTop: 8, fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtlest', '#6B778C'), fontStyle: 'italic', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                   <InformationIcon label="" color={token('color.icon.subtle', '#626F86')} LEGACY_size="small" />
                   Set a target date on {row.initiative_key} in ProductHub to enable RAG tracking.
                 </div>
@@ -896,7 +948,12 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const toggleRow = (id: string) => setExpandedRows((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
@@ -904,8 +961,13 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   // Reset expansion if rows change.
   useEffect(() => {
-    if (expandedId && !rows.find((r) => r.id === expandedId)) setExpandedId(null);
-  }, [rows, expandedId]);
+    setExpandedRows((prev) => {
+      const validIds = new Set(rows.map((r) => r.id));
+      const next = new Set<string>();
+      prev.forEach((id) => { if (validIds.has(id)) next.add(id); });
+      return next.size === prev.size ? prev : next;
+    });
+  }, [rows]);
 
   // Click-outside handler for settings popup.
   useEffect(() => {
@@ -1163,8 +1225,8 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
                   key={row.id}
                   row={row}
                   threshold={settings.rag_threshold}
-                  expanded={expandedId === row.id}
-                  onToggle={() => setExpandedId((id) => (id === row.id ? null : row.id))}
+                  expanded={expandedRows.has(row.id)}
+                  onToggle={() => toggleRow(row.id)}
                 />
               ))
             )}
@@ -1254,10 +1316,10 @@ function DeliveredRow({ row }: { row: DemandRow }) {
       <span title={row.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: token('color.text', '#172B4D') }}>
         {row.title}
       </span>
-      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
         {row.deliveredAt ? format(new Date(row.deliveredAt), 'dd MMM yyyy') : '—'}
       </span>
-      <span style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C') }}>
+      <span style={{ fontSize: 11, lineHeight: '16px', fontWeight: 400, color: token('color.text.subtle', '#6B778C') }}>
         {row.total} {row.total === 1 ? 'story' : 'stories'}
       </span>
       {onTime ? (

@@ -126,14 +126,18 @@ export default function WidgetWrapper({
             </span>
           )}
         </button>
-        {/* Badges + chevron — sibling of the collapse button */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Badges + chevron — sibling of the collapse button. Clicking
+            anywhere on this region (except interactive children like the
+            settings gear, which call e.stopPropagation()) toggles collapse. */}
+        <div
+          onClick={onToggleCollapse}
+          className="flex items-center gap-2 shrink-0"
+          style={{ cursor: 'pointer' }}
+        >
           {headerBadges}
           <span
-            onClick={onToggleCollapse}
             style={{
               display: 'inline-flex',
-              cursor: 'pointer',
               transition: 'transform 200ms ease',
               transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
             }}
