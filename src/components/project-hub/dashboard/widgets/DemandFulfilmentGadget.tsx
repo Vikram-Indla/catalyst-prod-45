@@ -1120,7 +1120,7 @@ function DemandRowItem({
                     href={storyUrl}
                     onClick={(e) => e.stopPropagation()}
                     style={{
-                      fontSize: 11,
+                      fontSize: 12,
                       fontWeight: 500,
                       lineHeight: '16px',
                       fontFamily: ATLAS_SANS,
@@ -1280,7 +1280,7 @@ function DemandRowItem({
                             href={storyUrl}
                             onClick={(e) => e.stopPropagation()}
                             style={{
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: 500,
                               lineHeight: '16px',
                               fontFamily: ATLAS_SANS,
