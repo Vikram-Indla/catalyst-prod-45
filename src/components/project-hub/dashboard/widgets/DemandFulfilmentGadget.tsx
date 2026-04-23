@@ -539,8 +539,11 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const RagDot = ({ state }: { state: RagState }) => {
+  if (state === 'none') {
+    // Preserve grid column width when no target date.
+    return <span style={{ width: 8, flexShrink: 0 }} />;
+  }
   const tooltipContent =
-    state === 'none' ? 'No target date set' :
     state === 'overdue' ? 'Overdue' :
     state === 'risk' ? 'At risk' :
     'On track';
