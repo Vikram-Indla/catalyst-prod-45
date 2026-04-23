@@ -1635,33 +1635,141 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
         </span>
       }
     >
-      {/* Tabs */}
-      <div onClick={(e) => e.stopPropagation()} style={{ padding: `0 ${token('space.200', '16px')}` }}>
-        <Tabs id="df-tabs" selected={tab === 'active' ? 0 : tab === 'overdue' ? 1 : 2} onChange={(i: number) => setTab(i === 0 ? 'active' : i === 1 ? 'overdue' : 'all')}>
-          <TabList>
-            <Tab>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
-                Active <Badge appearance="default">{mergedActive.length}</Badge>
+      {/* Counts strip — clickable filters (Production Incidents pattern) */}
+      {(() => {
+        const totalCount = mergedActive.length + delivered.length;
+        const activeCount = mergedActive.filter((r) => !overdueRows.includes(r)).length;
+        const overdueCount = overdueRows.length;
+        const doneCount = delivered.length;
+
+        const pillBase: React.CSSProperties = {
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          padding: '2px 8px',
+          borderRadius: 3,
+          fontSize: 11,
+          fontWeight: 700,
+          letterSpacing: '0.03em',
+          textTransform: 'uppercase',
+          fontFamily: ATLAS_SANS,
+          cursor: 'pointer',
+          border: '1px solid transparent',
+          userSelect: 'none',
+        };
+        const palette = {
+          active:  { bg: '#DEEBFF', fg: '#0747A6', ring: '#0C66E4' },
+          overdue: { bg: '#FFF7D6', fg: '#7F5F01', ring: '#B38600' },
+          done:    { bg: '#E3FCEF', fg: '#006644', ring: '#1F845A' },
+        } as const;
+        const renderPill = (
+          key: 'active' | 'overdue' | 'done',
+          label: string,
+          count: number,
+        ) => {
+          const isOn = tab === key;
+          const c = palette[key];
+          return (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={() => setTab(isOn ? 'all' : key)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setTab(isOn ? 'all' : key);
+                }
+              }}
+              style={{
+                ...pillBase,
+                background: c.bg,
+                color: c.fg,
+                borderColor: isOn ? c.ring : 'transparent',
+                boxShadow: isOn ? `0 0 0 1px ${c.ring}` : 'none',
+              }}
+            >
+              {label} {count}
+            </span>
+          );
+        };
+
+        return (
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: `8px ${token('space.200', '16px')}`,
+              borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+              fontFamily: ATLAS_SANS,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 13,
+                fontWeight: 600,
+                color: token('color.text', '#172B4D'),
+              }}
+            >
+              {totalCount} demand{totalCount === 1 ? '' : 's'}
+            </span>
+            {renderPill('active', 'Active', activeCount)}
+            {renderPill('overdue', 'Overdue', overdueCount)}
+            {renderPill('done', 'Done', doneCount)}
+            {tab !== 'all' && (
+              <span
+                role="button"
+                tabIndex={0}
+                onClick={() => setTab('all')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setTab('all');
+                  }
+                }}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  color: token('color.link', '#0C66E4'),
+                  cursor: 'pointer',
+                  marginLeft: 'auto',
+                }}
+              >
+                Clear filter
               </span>
-            </Tab>
-            <Tab>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
-                Overdue <Badge appearance={overdueRows.length > 0 ? 'important' : 'default'}>{overdueRows.length}</Badge>
-              </span>
-            </Tab>
-            <Tab>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.075', '6px') }}>
-                All <Badge appearance="default">{mergedActive.length + delivered.length}</Badge>
-              </span>
-            </Tab>
-          </TabList>
-          <TabPanel><span /></TabPanel>
-          <TabPanel><span /></TabPanel>
-          <TabPanel><span /></TabPanel>
-        </Tabs>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Key / Title sortable header bar */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '28px 100px 1fr 160px 110px 28px',
+          alignItems: 'center',
+          gap: 8,
+          padding: `6px ${token('space.200', '16px')}`,
+          borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+          background: token('elevation.surface.sunken', '#F7F8F9'),
+          fontFamily: ATLAS_SANS,
+          fontSize: 11,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          color: token('color.text.subtlest', '#626F86'),
+        }}
+      >
+        <span />
+        <span>Key</span>
+        <span>Title</span>
+        <span>Progress</span>
+        <span>Target</span>
+        <span />
       </div>
 
-      {/* Status filter moved to gadget settings popup */}
+
 
       {/* List or empty / all-delivered states */}
       {isLoading ? (
