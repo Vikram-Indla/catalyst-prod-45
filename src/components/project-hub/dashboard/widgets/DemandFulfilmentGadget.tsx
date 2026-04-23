@@ -59,7 +59,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ads';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
-import { CatalystOwnerAvatar } from '@/components/ui/catalyst';
+// CatalystOwnerAvatar removed — DemandRowItem uses Atlaskit Avatar size="xsmall" directly
 import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
 import type { WidgetProps } from '../widget-registry';
