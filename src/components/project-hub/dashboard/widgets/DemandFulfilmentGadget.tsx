@@ -1538,19 +1538,6 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           })()}
         </span>
       }
-      footer={
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Link href={`/project-hub/${projectKey}/hierarchy/allwork`}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: token('space.050', '4px') }}>
-              View all in ProjectHub
-              <ShortcutIcon label="" color="currentColor" />
-            </span>
-          </Link>
-          <span style={{ font: token('font.body.small'), color: token('color.text.subtlest') }}>
-            {[settings.include_stories && 'Stories', settings.include_defects && 'Defects'].filter(Boolean).join(' + ')} · Sun–Thu
-          </span>
-        </div>
-      }
     >
       {/* Tabs */}
       <div onClick={(e) => e.stopPropagation()} style={{ padding: `0 ${token('space.200', '16px')}` }}>
