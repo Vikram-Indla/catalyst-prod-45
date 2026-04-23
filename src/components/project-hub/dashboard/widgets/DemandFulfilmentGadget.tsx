@@ -1109,7 +1109,8 @@ function DemandRowItem({
                     gridTemplateColumns: '20px 90px 1fr auto',
                     alignItems: 'center',
                     gap: 8,
-                    padding: '5px 16px 5px 24px',
+                    padding: '10px 16px 10px 28px',
+                    minHeight: 40,
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                     borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
                   }}
@@ -1120,7 +1121,7 @@ function DemandRowItem({
                     onClick={(e) => e.stopPropagation()}
                     style={{
                       fontSize: 11,
-                      fontWeight: 600,
+                      fontWeight: 500,
                       lineHeight: '16px',
                       fontFamily: ATLAS_SANS,
                       color: token('color.link', '#0C66E4'),
@@ -1133,9 +1134,9 @@ function DemandRowItem({
                   <span
                     title={story.summary}
                     style={{
-                      fontSize: 11,
+                      fontSize: 13,
                       fontWeight: 400,
-                      lineHeight: '16px',
+                      lineHeight: '20px',
                       fontFamily: ATLAS_SANS,
                       color: token('color.text', '#172B4D'),
                       overflow: 'hidden',
