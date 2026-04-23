@@ -278,6 +278,7 @@ interface UnlinkedEpicStory {
   summary: string;
   status: string;
   status_category: string;
+  issue_type?: string | null;
   assignee_display_name: string | null;
   assignee_avatar?: string | null;
 }
