@@ -1249,7 +1249,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
     return next;
   });
   const [tab, setTab] = useState<'active' | 'overdue' | 'all'>('active');
-  // status filter now lives in gadget settings (settings.status_filter)
+  // status filter intentionally omitted — to be reintroduced in a future iteration.
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [deliveredOpen, setDeliveredOpen] = useState(false);
   const gearRef = useRef<HTMLSpanElement>(null);
