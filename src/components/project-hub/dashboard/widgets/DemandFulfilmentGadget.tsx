@@ -721,7 +721,7 @@ function DemandRowItem({
           gridTemplateColumns: '14px 8px 90px 1fr 130px 90px 24px',
           alignItems: 'center',
           gap: 8,
-          padding: '8px 12px',
+          padding: `8px ${token('space.200', '16px')}`,
           minHeight: 36,
           background: 'transparent',
           transition: 'background 120ms',
