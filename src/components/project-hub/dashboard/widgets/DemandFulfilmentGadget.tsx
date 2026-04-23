@@ -260,9 +260,9 @@ function useUnlinkedEpics(projectKey: string) {
     queryFn: async (): Promise<UnlinkedEpic[]> => {
       // Fetch all linked epic ids first
       const { data: links } = await (supabase as any)
-        .from('es_initiative_epics')
-        .select('epic_id');
-      const linkedIds = new Set((links ?? []).map((l: any) => l.epic_id));
+        .from('ph_initiative_links')
+        .select('issue_id');
+      const linkedIds = new Set((links ?? []).map((l: any) => l.issue_id));
 
       const { data: epics } = await (supabase as any)
         .from('ph_issues')
@@ -283,15 +283,15 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment', projectKey, settings],
     queryFn: async (): Promise<DemandRow[]> => {
-      // 1) Fetch epic↔initiative links (es_initiative_epics).
+      // 1) Fetch epic↔initiative links (ph_initiative_links).
       const { data: links } = await (supabase as any)
-        .from('es_initiative_epics')
-        .select('initiative_id, epic_id');
+        .from('ph_initiative_links')
+        .select('initiative_id, issue_id');
 
       if (!links || links.length === 0) return [];
 
       const initiativeIds = Array.from(new Set(links.map((l: any) => l.initiative_id)));
-      const epicIds = Array.from(new Set(links.map((l: any) => l.epic_id)));
+      const epicIds = Array.from(new Set(links.map((l: any) => l.issue_id)));
 
       // 2) Fetch initiatives (filtered later by scope; do not filter on status).
       const { data: initiatives } = await (supabase as any)
@@ -362,7 +362,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       // Group epics under their MDT.
       const epicsByInitiative = new Map<string, EpicRow[]>();
       links.forEach((l: any) => {
-        const epicKey = epicByIdToKey.get(l.epic_id);
+        const epicKey = epicByIdToKey.get(l.issue_id);
         if (!epicKey) return;
         const epic = epicByKey.get(epicKey);
         if (!epic) return;
@@ -860,7 +860,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
   );
 
   const visibleByTab =
-    tab === 'overdue' ? overdueRows : tab === 'all' ? active : active;
+    tab === 'overdue' ? overdueRows : tab === 'all' ? [...active, ...delivered] : active;
   const visibleRows = visibleByTab.slice(0, 10);
 
   // Period badge text (icon rendered separately as ADS CalendarIcon)
