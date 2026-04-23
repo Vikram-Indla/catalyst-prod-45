@@ -993,11 +993,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       <div
         style={{
           background: token('elevation.surface.sunken', '#F7F8F9'),
-          borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-          borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
-          padding: '4px 12px',
-          fontSize: 11,
-          color: token('color.text.subtlest', '#6B778C'),
+          borderTop: `1px solid ${token('color.border')}`,
+          borderBottom: `1px solid ${token('color.border')}`,
+          padding: `${token('space.050', '4px')} ${token('space.150', '12px')}`,
+          font: token('font.body.small'),
+          color: token('color.text.subtlest'),
         }}
       >
         {periodStrip}
