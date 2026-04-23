@@ -1569,19 +1569,6 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
       {/* Status filter moved to gadget settings popup */}
 
-      <div
-        style={{
-          background: token('elevation.surface.sunken', '#F7F8F9'),
-          borderTop: `1px solid ${token('color.border')}`,
-          borderBottom: `1px solid ${token('color.border')}`,
-          padding: `${token('space.050', '4px')} ${token('space.200', '16px')}`,
-          font: token('font.body.small'),
-          color: token('color.text.subtlest'),
-        }}
-      >
-        {periodStrip}
-      </div>
-
       {/* List or empty / all-delivered states */}
       {isLoading ? (
         <div style={{ padding: 20, font: token('font.body.small'), color: token('color.text.subtle') }}>Loading…</div>
