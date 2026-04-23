@@ -131,12 +131,11 @@ function renderCell(
               fontFamily: "'JetBrains Mono', monospace",
               textDecoration: 'none',
               whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              minWidth: 0,
+              overflow: 'visible',
+              flexShrink: 0,
             }}
           >
-            <bdi dir="ltr">{item.key}</bdi>
+            <bdi dir="ltr" style={{ overflow: 'visible' }}>{item.key}</bdi>
           </a>
         </div>
       );
