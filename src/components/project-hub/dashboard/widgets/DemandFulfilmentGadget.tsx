@@ -1075,14 +1075,8 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
 
   const visibleRows = filteredRows.slice(0, 10);
 
-  const overdueRows = useMemo(
-    () => mergedActive.filter((r) => computeRag(r.target_complete, settings.rag_threshold).state === 'overdue'),
-    [mergedActive, settings.rag_threshold],
-  );
 
-  const visibleByTab =
-    tab === 'overdue' ? overdueRows : tab === 'all' ? [...mergedActive, ...delivered] : mergedActive;
-  const visibleRows = visibleByTab.slice(0, 10);
+
 
   // Period badge text (icon rendered separately as ADS CalendarIcon)
   const periodBadge = (() => {
