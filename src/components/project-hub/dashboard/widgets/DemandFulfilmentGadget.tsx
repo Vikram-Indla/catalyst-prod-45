@@ -216,6 +216,8 @@ interface EpicStoryRow {
   summary: string;
   status: string;
   status_category: string;
+  assignee_display_name?: string | null;
+  assignee_avatar?: string | null;
 }
 
 interface EpicRow {
