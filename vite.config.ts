@@ -149,6 +149,8 @@ export default defineConfig(({ mode, command }) => {
   server: {
     host: "0.0.0.0",
     port: 8080,
+    allowedHosts: ['localhost', 'amber-crushable-comrade.ngrok-free.dev'],
+
   },
   plugins: [
     isBuild ? skipHeavyModules() : null,

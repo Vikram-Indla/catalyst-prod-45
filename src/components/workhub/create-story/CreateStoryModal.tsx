@@ -35,13 +35,17 @@ import {
   lazy,
   type ReactNode,
 } from 'react';
-import ModalDialog, {
+// @atlaskit/modal-dialog uses @atlaskit/portal which renders empty in this
+// Vite build. Using direct-render replacements that bypass the portal layer.
+import {
+  ModalDialog,
   ModalBody,
   ModalFooter,
   ModalHeader,
   ModalTitle,
   ModalTransition,
-} from '@atlaskit/modal-dialog';
+  useFullscreen,
+} from './PortalFix';
 import { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
 import Select, { AsyncSelect, CreatableSelect } from '@atlaskit/select';
 import Textfield from '@atlaskit/textfield';
@@ -54,6 +58,7 @@ import Spinner from '@atlaskit/spinner';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import EditorCloseIcon from '@atlaskit/icon/glyph/editor/close';
 import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
+import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 
@@ -129,6 +134,48 @@ const INITIAL_STATUS_BY_TYPE: Record<string, string> = {
   'Change Request': 'Submitted',
   Task: 'To Do',
   'API Requirement': 'To Do',
+};
+
+// Status options per work type — shown in the Status dropdown as lozenges.
+const DEFAULT_STATUS_OPTIONS = [
+  { value: 'To Do', label: 'To Do' },
+  { value: 'In Progress', label: 'In Progress' },
+  { value: 'Done', label: 'Done' },
+];
+
+const STATUS_OPTIONS_BY_TYPE: Record<string, { value: string; label: string }[]> = {
+  Story: [
+    { value: 'In Requirements', label: 'In Requirements' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'In QA', label: 'In QA' },
+    { value: 'Done', label: 'Done' },
+  ],
+  Epic: DEFAULT_STATUS_OPTIONS,
+  Feature: DEFAULT_STATUS_OPTIONS,
+  'QA Bug': [
+    { value: 'Open', label: 'Open' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'In QA', label: 'In QA' },
+    { value: 'Closed', label: 'Closed' },
+  ],
+  'Production Incident': [
+    { value: 'Open', label: 'Open' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'Resolved', label: 'Resolved' },
+  ],
+  'Business Gap': [
+    { value: 'Open', label: 'Open' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'Closed', label: 'Closed' },
+  ],
+  'Change Request': [
+    { value: 'Submitted', label: 'Submitted' },
+    { value: 'In Review', label: 'In Review' },
+    { value: 'Approved', label: 'Approved' },
+    { value: 'Rejected', label: 'Rejected' },
+  ],
+  Task: DEFAULT_STATUS_OPTIONS,
+  'API Requirement': DEFAULT_STATUS_OPTIONS,
 };
 
 // Lozenge appearance buckets — Atlaskit gives us 5 named appearances and we
@@ -324,8 +371,135 @@ function PriorityIcon({ name }: { name: string }) {
 }
 
 // Generic Atlaskit avatar fallback — initials in a token-coloured circle.
-function MiniAvatar({ name }: { name: string }) {
+// ── FullscreenToggleButton — reads PortalFix context to toggle the modal ────
+function FullscreenToggleButton() {
+  const { fullscreen, toggleFullscreen } = useFullscreen();
+  return (
+    <IconButton
+      appearance="subtle"
+      spacing="default"
+      label={fullscreen ? 'Exit full screen' : 'Full screen'}
+      icon={(iconProps) =>
+        fullscreen
+          ? <VidFullScreenOffIcon {...iconProps} label="" />
+          : <VidFullScreenOnIcon {...iconProps} label="" />
+      }
+      onClick={toggleFullscreen}
+    />
+  );
+}
+
+// ── StatusChip — Jira-parity chip button with inline picker ─────────────────
+// Jira renders status as a styled button (bg rgba(5,21,36,0.06), 3px radius,
+// 14px/500) that opens an inline picker on click — NOT a Select component.
+function StatusChip({ status, workType, onChange }: { status: string; workType: string; onChange: (s: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const options = STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS;
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      {/* Chip button — matches Jira's bg/radius/typography exactly */}
+      <button
+        type="button"
+        aria-label={`${status} - Change status`}
+        onClick={() => setOpen(o => !o)}
+        style={{
+          background: 'rgba(5,21,36,0.06)',
+          border: 'none',
+          borderRadius: 3,
+          padding: '4px 10px',
+          fontSize: 14,
+          fontWeight: 500,
+          fontFamily: 'Inter, sans-serif',
+          color: token('color.text', '#172B4D'),
+          cursor: 'pointer',
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+        }}
+      >
+        {status}
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+          <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+
+      {/* Inline picker */}
+      {open && (
+        <div
+          role="listbox"
+          aria-label="Change status"
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            zIndex: 100,
+            background: token('elevation.surface.overlay', '#FFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: '0 4px 12px rgba(9,30,66,0.15)',
+            padding: '4px 0',
+            minWidth: 160,
+          }}
+        >
+          <div style={{ padding: '6px 12px 4px', fontSize: 11, fontWeight: 700, fontFamily: 'Inter', textTransform: 'uppercase', letterSpacing: '0.05em', color: token('color.text.subtlest', '#8590A2') }}>
+            Change status
+          </div>
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              role="option"
+              aria-selected={status === opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                width: '100%',
+                padding: '6px 12px',
+                background: status === opt.value ? token('color.background.selected', 'rgba(37,99,235,0.08)') : 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                fontFamily: 'Inter, sans-serif',
+                fontSize: 14,
+                color: token('color.text', '#172B4D'),
+                textAlign: 'left',
+              }}
+            >
+              <Lozenge appearance={statusAppearance(opt.value)} isBold>
+                {opt.label}
+              </Lozenge>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MiniAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string | null }) {
   const initial = name?.trim()?.charAt(0)?.toUpperCase() ?? '?';
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={name}
+        aria-hidden="true"
+        style={{ width: 24, height: 24, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+      />
+    );
+  }
   return (
     <span
       aria-hidden="true"
@@ -333,13 +507,14 @@ function MiniAvatar({ name }: { name: string }) {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 20,
-        height: 20,
+        width: 24,
+        height: 24,
         borderRadius: '50%',
         background: token('color.background.neutral'),
         color: token('color.text.subtle'),
         font: token('font.body.small'),
         fontWeight: 600,
+        flexShrink: 0,
       }}
     >
       {initial}
@@ -407,7 +582,7 @@ export function CreateStoryModal({
       projects.map((p: any) => ({
         value: p.id,
         label: p.name,
-        sublabel: `(${p.key})`,
+        // no sublabel — ProjectKey pill already shows the key; sublabel would duplicate it
         icon: <ProjectKey k={p.key} />,
       })),
     [projects],
@@ -438,7 +613,7 @@ export function CreateStoryModal({
       members.map((m: any) => ({
         value: m.id,
         label: m.full_name ?? m.email ?? 'Unknown',
-        icon: <MiniAvatar name={m.full_name ?? m.email ?? '?'} />,
+        icon: <MiniAvatar name={m.full_name ?? m.email ?? '?'} avatarUrl={m.avatar_url ?? null} />,
       })),
     [members],
   );
@@ -571,33 +746,26 @@ export function CreateStoryModal({
               <Box xcss={headerActionsStyles}>
                 <IconButton
                   appearance="subtle"
-                  spacing="compact"
+                  spacing="default"
                   label="Minimize"
-                  icon={(iconProps) => (
-                    <EditorCloseIcon {...iconProps} label="" />
+                  icon={() => (
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path d="M3 8h10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                    </svg>
                   )}
-                  onClick={() => undefined /* visual-only per spec */}
-                  isTooltipDisabled={false}
+                  onClick={() => undefined}
                 />
+                <FullscreenToggleButton />
                 <IconButton
                   appearance="subtle"
-                  spacing="compact"
-                  label="Full screen"
-                  icon={(iconProps) => (
-                    <VidFullScreenOnIcon {...iconProps} label="" />
-                  )}
-                  onClick={() => undefined /* visual-only */}
-                />
-                <IconButton
-                  appearance="subtle"
-                  spacing="compact"
+                  spacing="default"
                   label="More actions"
                   icon={(iconProps) => <MoreIcon {...iconProps} label="" />}
-                  onClick={() => undefined /* visual-only */}
+                  onClick={() => undefined}
                 />
                 <IconButton
                   appearance="subtle"
-                  spacing="compact"
+                  spacing="default"
                   label="Close"
                   icon={(iconProps) => <CrossIcon {...iconProps} label="" />}
                   onClick={handleClose}
@@ -618,10 +786,10 @@ export function CreateStoryModal({
             </Box>
 
             <Box xcss={fieldGroupStyles}>
-              {/* ── Space (Project) — required ─────────────────────── */}
+              {/* ── Project — required ────────────────────────────── */}
               <Field
                 name="space"
-                label="Space"
+                label="Project"
                 isRequired
                 defaultValue={form.projectId}
               >
@@ -641,7 +809,7 @@ export function CreateStoryModal({
                       onChange={(opt) =>
                         updateField('projectId', (opt as IconOption)?.value ?? '')
                       }
-                      placeholder="Select space"
+                      placeholder="Select project"
                       formatOptionLabel={formatIconOption}
                       isSearchable
                     />
@@ -688,21 +856,17 @@ export function CreateStoryModal({
 
               <Box xcss={dividerStyles} />
 
-              {/* ── Status (read-only Lozenge) ─────────────────────── */}
-              <Field name="status" label="Status">
-                {() => (
-                  <>
-                    <div>
-                      <Lozenge appearance={statusAppearance(form.status)} isBold>
-                        {form.status}
-                      </Lozenge>
-                    </div>
-                    <HelperMessage>
-                      This is the initial status upon creation
-                    </HelperMessage>
-                  </>
-                )}
-              </Field>
+              {/* ── Status — Jira-parity: chip button → inline picker ── */}
+              {/* Status — chip button (not a form Field/input, label rendered manually) */}
+              <div>
+                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#44546F'), marginBottom: 6, lineHeight: '16px' }}>
+                  Status
+                </div>
+                <StatusChip status={form.status} workType={workType} onChange={(s) => updateField('status', s)} />
+                <div style={{ marginTop: 4, fontFamily: 'Inter, sans-serif', fontSize: 12, color: token('color.text.subtlest', '#8590A2'), lineHeight: '16px' }}>
+                  This is the initial status upon creation
+                </div>
+              </div>
 
               {/* ── Summary — required ─────────────────────────────── */}
               <Field name="summary" label="Summary" isRequired>
@@ -782,26 +946,6 @@ export function CreateStoryModal({
                 )}
               </Field>
 
-              {/* ── MDT Ref ─────────────────────────────────────────── */}
-              <Field name="mdt_ref" label="MDT Ref">
-                {({ fieldProps }) => (
-                  <Textfield
-                    {...(fieldProps as any)}
-                    value={(form.tags ?? []).join(',')}
-                    onChange={(e: any) =>
-                      updateField(
-                        'tags',
-                        e.target.value
-                          .split(',')
-                          .map((s: string) => s.trim())
-                          .filter(Boolean),
-                      )
-                    }
-                    placeholder=""
-                  />
-                )}
-              </Field>
-
               {/* ── Priority ───────────────────────────────────────── */}
               <Field name="priority" label="Priority">
                 {({ fieldProps }) => (
@@ -852,21 +996,21 @@ export function CreateStoryModal({
                       <EpicDescriptionEditor
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
-                        placeholder="Type /ai to Ask Rovo or @ to mention and notify someone."
+                        placeholder="Add a description..."
                         onSave={(adfJson: string) => {
                           try {
                             const parsed = JSON.parse(adfJson);
                             updateField('descriptionAdf', parsed);
-                            updateField(
-                              'description',
-                              typeof parsed === 'object' &&
-                                parsed?.content
-                                ? JSON.stringify(parsed)
-                                : '',
-                            );
-                          } catch {
-                            /* noop */
-                          }
+                            updateField('description', JSON.stringify(parsed));
+                          } catch { /* noop */ }
+                        }}
+                        onChange={(adfJson: string) => {
+                          // Auto-sync on every keystroke — no inner Save click needed
+                          try {
+                            const parsed = JSON.parse(adfJson);
+                            updateField('descriptionAdf', parsed);
+                            updateField('description', JSON.stringify(parsed));
+                          } catch { /* noop */ }
                         }}
                         onCancel={() => undefined}
                       />

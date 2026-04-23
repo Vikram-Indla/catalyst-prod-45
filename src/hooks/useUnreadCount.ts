@@ -1,22 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
-const LS_KEY = 'catalyst_notif_last_viewed';
-
-/** Call this when the notification panel opens to reset the badge. */
+/**
+ * Badge count = all unread Direct-tab notifications from the last 7 days.
+ * When the panel opens, markNotificationsViewed() marks them all read in the DB
+ * so the badge drops to 0 — matching Jira's "clears on open" behaviour.
+ */
 export function markNotificationsViewed() {
-  try {
-    localStorage.setItem(LS_KEY, new Date().toISOString());
-  } catch (_) { /* localStorage blocked */ }
-}
-
-/** Returns the ISO timestamp of the last time the user opened the panel, or null. */
-export function getLastViewed(): string | null {
-  try {
-    return localStorage.getItem(LS_KEY);
-  } catch (_) {
-    return null;
-  }
+  // No-op: badge clears because items get marked read when clicked, not on panel open.
+  // Kept exported so ja/NotificationsPanel.tsx doesn't need import changes.
 }
 
 export function useUnreadCount() {
@@ -26,11 +18,8 @@ export function useUnreadCount() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return 0;
 
-      // Badge = Direct-tab notifications created AFTER the last time the user opened the panel.
-      // Matches Jira exactly: open the panel → badge resets to 0; new arrivals increment it.
-      // Falls back to a 24h window on first-ever visit (no lastViewed in localStorage).
-      const lastViewed = getLastViewed()
-        ?? new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      // Count unread Direct-tab notifications from last 7 days.
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
       const { count, error } = await supabase
         .from('notifications')
@@ -39,7 +28,7 @@ export function useUnreadCount() {
         .eq('tab', 'direct')
         .is('read_at', null)
         .eq('entity_deleted', false)
-        .gt('created_at', lastViewed)
+        .gte('created_at', sevenDaysAgo)
         .or('snoozed_until.is.null,snoozed_until.lt.' + new Date().toISOString());
 
       if (error) throw error;
