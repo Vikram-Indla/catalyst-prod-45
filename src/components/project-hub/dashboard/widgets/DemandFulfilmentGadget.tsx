@@ -523,20 +523,20 @@ function SettingsPopupBody({
     <div style={{ width: 300, padding: 12 }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ fontSize: 14, fontWeight: 600, color: token('color.text', '#172B4D') }}>
+        <span style={{ font: token('font.heading.small'), color: token('color.text', '#172B4D') }}>
           Gadget Settings
         </span>
-        <button
+        <IconButton
+          icon={CrossIcon}
+          label="Close settings"
+          appearance="subtle"
+          spacing="compact"
           onClick={onCancel}
-          style={{ background: 'transparent', border: 0, cursor: 'pointer', padding: 2, color: token('color.text.subtlest', '#6B778C') }}
-          aria-label="Close"
-        >
-          <X size={14} />
-        </button>
+        />
       </div>
 
       {/* Time scope */}
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
         Time scope
       </div>
       <RadioGroup
@@ -564,7 +564,7 @@ function SettingsPopupBody({
       {draft.scope_type === 'custom' && (
         <div style={{ marginTop: 8, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <div>
-            <div style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
+            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>From</div>
             <DatePicker
               locale="en-GB"
               value={draft.date_from ?? ''}
@@ -572,7 +572,7 @@ function SettingsPopupBody({
             />
           </div>
           <div>
-            <div style={{ fontSize: 11, color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
+            <div style={{ font: token('font.body.UNSAFE_small'), color: token('color.text.subtle', '#6B778C'), marginBottom: 2 }}>To</div>
             <DatePicker
               locale="en-GB"
               value={draft.date_to ?? ''}
@@ -586,7 +586,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Threshold */}
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
         At-risk threshold
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: token('color.text', '#172B4D') }}>
@@ -605,7 +605,7 @@ function SettingsPopupBody({
       <hr style={{ margin: '14px 0 10px', border: 0, borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }} />
 
       {/* Item types */}
-      <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
+      <div style={{ font: token('font.body.UNSAFE_small'), fontWeight: 700, letterSpacing: 0.04, textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C'), marginBottom: 6 }}>
         Count toward completion
       </div>
       <Checkbox
