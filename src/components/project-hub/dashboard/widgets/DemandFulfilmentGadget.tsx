@@ -836,6 +836,7 @@ function DemandRowItem({
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+  const navigate = useNavigate();
   const { settings, save } = useGadgetSettings();
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey);
