@@ -92,6 +92,7 @@ const DEFAULT_SETTINGS: GadgetSettings = {
   rag_threshold: 7,
   include_stories: true,
   include_defects: true,
+  status_filter: [],
 };
 
 const QUARTER_OPTIONS = [
