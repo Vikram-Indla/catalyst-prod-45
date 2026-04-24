@@ -42,12 +42,15 @@ export function UniversalWorkView({ params, onClose }: Props) {
     if (assigneeFilter.length > 0) {
       raw = raw.filter((i) => assigneeFilter.includes(i.assigneeId ?? ''));
     }
+    if (typeFilter !== 'all') {
+      raw = raw.filter((i) => classifyType(i.issueType) === typeFilter);
+    }
     if (!searchText.trim()) return raw;
     const t = searchText.toLowerCase();
     return raw.filter(
       (i) => i.key.toLowerCase().includes(t) || i.summary.toLowerCase().includes(t),
     );
-  }, [data, searchText, assigneeFilter]);
+  }, [data, searchText, assigneeFilter, typeFilter]);
 
   const totalCount = data?.pages[0]?.total ?? 0;
 
