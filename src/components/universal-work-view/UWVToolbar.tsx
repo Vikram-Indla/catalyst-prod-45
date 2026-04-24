@@ -241,6 +241,68 @@ export function UWVToolbar({
         </span>
       </div>
 
+      {/* ROW 1.5 — Type chips (Backlog parity) */}
+      {(() => {
+        const counts = {
+          all: allItems.length,
+          epic: allItems.filter((i) => classifyType(i.issueType) === 'epic').length,
+          feature: allItems.filter((i) => classifyType(i.issueType) === 'feature').length,
+          story: allItems.filter((i) => classifyType(i.issueType) === 'story').length,
+          bug: allItems.filter((i) => classifyType(i.issueType) === 'bug').length,
+          task: allItems.filter((i) => classifyType(i.issueType) === 'task').length,
+        };
+        const chips: Array<[typeof typeFilter, string, number, React.ReactNode]> = [
+          ['all', 'All', counts.all, null],
+          ['epic', 'Epics', counts.epic, <JiraIssueTypeIcon type="Epic" size={12} />],
+          ['feature', 'Features', counts.feature, <JiraIssueTypeIcon type="Feature" size={12} />],
+          ['story', 'Stories', counts.story, <JiraIssueTypeIcon type="Story" size={12} />],
+          ['bug', 'Bugs', counts.bug, <JiraIssueTypeIcon type="Bug" size={12} />],
+          ['task', 'Tasks', counts.task, <JiraIssueTypeIcon type="Task" size={12} />],
+        ];
+        return (
+          <div
+            style={{
+              padding: '8px 16px',
+              display: 'flex',
+              gap: 6,
+              background: 'var(--bg-app)',
+              borderBottom: '1px solid #DFE1E6',
+              flexShrink: 0,
+              flexWrap: 'wrap',
+            }}
+          >
+            {chips.map(([key, label, count, icon]) => {
+              const active = typeFilter === key;
+              return (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => onTypeFilterChange(key)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    height: 26,
+                    padding: '0 10px',
+                    borderRadius: 13,
+                    border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`,
+                    background: active ? '#E9F2FF' : '#FFFFFF',
+                    color: active ? '#0C66E4' : '#42526E',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {icon}
+                  {label}
+                  <span style={{ opacity: 0.7, fontWeight: 500 }}>{count}</span>
+                </button>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       {/* ROW 2 — bulk actions or filter bar */}
       {selectedIds.size > 0 ? (
         <UWVBulkActions
