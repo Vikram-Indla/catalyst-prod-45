@@ -158,3 +158,51 @@ After iteration 1 ships, re-probe Catalyst and these must all pass:
 - [ ] `ProjectKindIcon.tsx` deleted
 - [ ] `ForYouRow.tsx` no longer imports `ProjectKindIcon`
 - [ ] No HSL, no new `!important`, single `.dark` block (CLAUDE.md §10)
+
+---
+
+## 6. Iteration 1 verdict (post-fix re-probe, 2026-04-24)
+
+Files changed in this iteration:
+- `src/components/for-you/atlaskit/RecommendedProjectsStrip.tsx` — rewritten
+- `src/components/for-you/atlaskit/ForYouTabs.tsx` — rewritten as pill cluster
+- `src/components/for-you/atlaskit/ForYouRow.tsx` — ProjectKindIcon removed, project slot is plain subtle text
+- `src/components/shared/ProjectKindIcon.tsx` — **DELETED**
+
+### Gate results
+
+| Gate | Target | Post-fix | Pass |
+|---|---|---|---|
+| Tab container bg | `rgba(5,21,36,0.06)` | `rgba(5,21,36,0.06)` | ✅ EXACT |
+| Tab container radius | `8px` | `8px` | ✅ |
+| Tab container padding | `4px` | `4px` | ✅ |
+| Tab container height | `32px` | `32px` | ✅ |
+| Tab container hugs content | yes (w=563) | yes (w=524) | ✅ |
+| Tab height | `24px` | `24px` | ✅ |
+| Selected tab bg | `#FFFFFF` | `rgb(255,255,255)` | ✅ |
+| Tab widths | 127·162·76·99·76 | 119·148·70·92·71 | 🟡 ~6px narrower — Inter metrics vs Atlassian Sans |
+| Card width | `230px` | `230px` | ✅ EXACT |
+| Card height | `62px` | `62px` | ✅ EXACT |
+| Card radius | `4px` | `4px` | ✅ |
+| Card padding | `12px 16px` | `12px 16px` | ✅ |
+| Card border | 1.11px `color.border` | 1.11px `color.border` | ✅ |
+| Icon size | 32×32 | 32×32 | ✅ |
+| Icon radius | `4px` (img in Jira) | `25%` (= 8px on Atlaskit `appearance="square" size="medium"`) | 🟡 Atlaskit default |
+| Strip heading | `600 16/20 rgb(41,42,46)` | `600 16/20 rgb(41,42,46)` | ✅ |
+| View all color | `rgb(41,42,46)` | `rgb(41,42,46)` | ✅ |
+| View all weight | `400` | `400` | ✅ |
+| Strip layout | grid, gap 16, wraps | grid, gap 16, wraps | ✅ |
+| `ProjectKindIcon.tsx` removed | — | deleted | ✅ |
+| `ForYouRow.tsx` no longer imports it | — | confirmed | ✅ |
+
+### Deltas accepted at iteration 1
+
+1. **Avatar radius 8 vs 4.** `@atlaskit/avatar` `appearance="square" size="medium"` uses a 25% radius that works out to 8px at 32px. Atlaskit ships this as the design-token behavior; altering it would mean either forking the Avatar or wrapping it in `overflow: hidden` with a tighter radius, which defeats the purpose of using the primitive. Jira's cards use a `<img>` directly with a `4px` radius applied in their own CSS — a custom treatment, not a standard Atlaskit primitive. **Accept 8px; revisit if Vikram flags it visually.**
+2. **Tab widths ~6px narrower each.** Catalyst uses Inter (house body font) where Jira uses Atlassian Sans. Tab text is identical; font metrics differ. Swapping fonts would violate CLAUDE.md §4. **Accept.**
+3. **RecommendedPanel "Reply to mentions" structure.** Still the simple blue banner; Jira renders a full mentions feed. **Scheduled for iteration 2** (separate audit report — larger than a styling pass because it requires new data plumbing).
+
+### Verdict
+
+Recommended tab chrome (greeting row, strip, tab cluster) now passes Jira parity to within ~6px on tab widths and a 4px avatar radius delta. The body panel structure (Reply to mentions) is a separate, larger fix deferred to iteration 2 and will be tracked under P7.6+.
+
+**Recommended tab — PASS with accepted deltas.** Moving to P7.6 (Assigned tab).
