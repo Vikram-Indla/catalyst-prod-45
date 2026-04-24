@@ -70,8 +70,22 @@ import ThemeIssueList from './ThemeIssueList';
 // Radius note: original was 8px; Atlaskit token `border.radius.300` = 8px
 // (canonical = 3px which is too tight for theme cards at this density).
 //
-// Transitions stay here so the surface keeps its 150ms ease-in baseline;
-// B2 layers the elevation.shadow.overlay :hover state on top.
+// B2 · Hover/focus-within elevation
+// ─────────────────────────────────
+// On pointer hover OR when keyboard focus enters any descendant, the card
+// promotes from elevation.shadow.raised → elevation.shadow.overlay. This is
+// the standard ADS "interactive card" affordance — Linear, Jira, Notion all
+// use the same shadow-up cue. Pure CSS via xcss nested pseudos so we avoid
+// onMouseEnter/onMouseLeave state churn and React re-renders. Border
+// strengthens to color.border.bold on the same trigger to reinforce the
+// "this is reachable" signal at WCAG-friendly contrast (>3:1 against the
+// raised surface). The 150ms ease transition declared above animates both
+// box-shadow and border-color simultaneously.
+//
+// :focus-within (rather than :focus) is intentional — the card itself is not
+// focusable, but its inner buttons are. focus-within lifts the card while
+// any of its descendants holds keyboard focus, mirroring the visual pattern
+// of the hover state for keyboard users.
 const cardStyles = xcss({
   display: 'flex',
   flexDirection: 'column',
@@ -91,6 +105,14 @@ const cardStyles = xcss({
   // border-radius and never bleeds past the corner.
   position: 'relative',
   overflow: 'hidden',
+  ':hover': {
+    boxShadow: 'elevation.shadow.overlay',
+    borderColor: 'color.border.bold',
+  },
+  ':focus-within': {
+    boxShadow: 'elevation.shadow.overlay',
+    borderColor: 'color.border.bold',
+  },
 });
 
 // ─── Intent → Atlaskit lozenge mapping ──────────────────────────────────────
@@ -233,6 +255,54 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       >
         {theme.summary}
       </p>
+
+      {/* ─── Row 3.5: B3 · issue-key chips ──────────────────────────────
+          Surfaces the first three issue keys inside the card so the user
+          can read "what's actually inside this theme" without expanding
+          the drill-in. Mirrors Linear's cluster-card pattern.
+
+          Why Lozenge appearance="default" rather than StatusLozenge:
+          these are NOT statuses — they're identifiers, so the 3-colour
+          guardrail (CLAUDE.md §5) does not apply. Atlaskit's neutral
+          lozenge (grey/grey) is the canonical chrome for keys.
+
+          Overflow: any keys beyond 3 collapse into a "+N more" lozenge
+          so the chip row never wraps to two lines on the typical 3-up
+          grid breakpoint. Clicking the row delegates to the existing
+          `View issues` toggle so the user gets the full table without
+          a second affordance to learn. The whole row is a single button
+          for keyboard parity. */}
+      {(theme.issueKeys?.length ?? 0) > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          aria-label={`Show all ${theme.issueKeys?.length} issues in this theme`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            flexWrap: 'wrap',
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            margin: 0,
+            cursor: 'pointer',
+            textAlign: 'left',
+            fontFamily: token('font.family.code', 'JetBrains Mono, ui-monospace, monospace'),
+          }}
+        >
+          {(theme.issueKeys ?? []).slice(0, 3).map((key) => (
+            <Lozenge key={key} appearance="default">
+              {key}
+            </Lozenge>
+          ))}
+          {(theme.issueKeys?.length ?? 0) > 3 && (
+            <Lozenge appearance="default">
+              +{(theme.issueKeys?.length ?? 0) - 3} more
+            </Lozenge>
+          )}
+        </button>
+      )}
 
       {/* ─── Row 4: progress bar ───────────────────────────────────────── */}
       <div aria-label={`Share of input issues: ${theme.percentage}%`}>
