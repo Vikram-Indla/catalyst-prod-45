@@ -26,14 +26,17 @@
  *
  * Actions
  * ───────
- *   Create Epic: MVP is clipboard-copy (theme name + summary + issueKeys)
- *   plus a deep link to the Jira "Create issue" form prefilled with the
- *   issue-type param. Full Atlassian OAuth + server-side create is
- *   tracked as a follow-up (see TaskCreate when touched).
+ *   View issues: toggles the in-card drill-in DynamicTable.
  *
  *   Copy summary: straight clipboard write of a markdown-formatted block
  *   — title, summary, 1 line per issue. Lets the user paste into Slack /
  *   WikiHub without leaving the page.
+ *
+ *   Note: a "Create Epic" deep-link sat between these two until April 2026.
+ *   It was removed because the prefilled Jira create-issue form was a
+ *   noisy hand-off — users already paste the Copy summary output into
+ *   their own Epic flow. If a server-side OAuth-backed Create Epic lands
+ *   later, restore it as the primary action.
  *
  * Status lozenge guardrail
  * ────────────────────────
@@ -54,7 +57,6 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
-import AddIcon from '@atlaskit/icon/glyph/add';
 import { type } from '@/lib/typography';
 import type { Theme, ThemeIntent } from '@/hooks/useAiThemes';
 import ThemeIssueList from './ThemeIssueList';
@@ -84,6 +86,11 @@ const cardStyles = xcss({
   transitionProperty: 'box-shadow, border-color',
   transitionDuration: '150ms',
   transitionTimingFunction: 'ease',
+  // B1 anchor: relative positioning so the absolute intent ribbon attaches
+  // to the card's edge; overflow: hidden so the ribbon respects the card's
+  // border-radius and never bleeds past the corner.
+  position: 'relative',
+  overflow: 'hidden',
 });
 
 // ─── Intent → Atlaskit lozenge mapping ──────────────────────────────────────
@@ -99,6 +106,20 @@ const INTENT_META: Record<ThemeIntent, { label: string; appearance: React.Compon
   ux:      { label: 'UX',           appearance: 'moved' },      // yellow
   data:    { label: 'Data',         appearance: 'success' },    // green
   other:   { label: 'Other',        appearance: 'default' },    // grey
+};
+
+// ─── B1 · Intent ribbon → ADS semantic background tokens ───────────────────
+// The 4px sticky left edge that gives each card an instant intent read at
+// peripheral vision, even before the lozenge label registers. Token names
+// match the Lozenge appearance family above, but use the *.bolder ramp so
+// the ribbon stays legible against both light and dark page surfaces.
+const INTENT_RIBBON: Record<ThemeIntent, { name: string; fallback: string }> = {
+  bug:     { name: 'color.background.danger.bolder',    fallback: '#CA3521' },
+  feature: { name: 'color.background.discovery.bolder', fallback: '#5E4DB2' },
+  infra:   { name: 'color.background.brand.bolder',     fallback: '#0C66E4' },
+  ux:      { name: 'color.background.warning.bolder',   fallback: '#B65C02' },
+  data:    { name: 'color.background.success.bolder',   fallback: '#1F845A' },
+  other:   { name: 'color.background.neutral.bolder',   fallback: '#626F86' },
 };
 
 // ─── Progress bar appearance (Atlaskit v4) ──────────────────────────────────
@@ -124,23 +145,6 @@ function formatThemeMarkdown(theme: Theme): string {
   lines.push('Issues:');
   for (const key of theme.issueKeys ?? []) lines.push(`- ${key}`);
   return lines.join('\n');
-}
-
-function buildJiraCreateUrl(theme: Theme): string {
-  // MVP deep-link — Atlassian's "Create issue" form accepts prefilled
-  // summary + description + issuetype as query params. The exact cloud
-  // subdomain is env-scoped (jira.example.com is a placeholder used
-  // throughout the app) — if Catalyst ever publishes a real Jira host
-  // env var, thread it through here instead of hardcoding.
-  const base = 'https://jira.example.com/secure/CreateIssue!default.jspa';
-  const keys = theme.issueKeys ?? [];
-  const body = [theme.summary, '', 'Linked issues:', ...keys.map(k => `- ${k}`)].join('\n');
-  const params = new URLSearchParams({
-    issuetype: '10000', // Epic — Jira default issue type id
-    summary: theme.name,
-    description: body,
-  });
-  return `${base}?${params.toString()}`;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
@@ -174,17 +178,31 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
     }
   };
 
-  const handleCreateEpic = () => {
-    // New tab so the user doesn't lose context on For You. Jira will
-    // open its own workflow; we're just handing off the seed data.
-    window.open(buildJiraCreateUrl(theme), '_blank', 'noopener,noreferrer');
-  };
-
   return (
     <Box xcss={cardStyles}>
-      {/* ─── Row 1: intent lozenge + count/percentage ──────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-        <Lozenge appearance={intent.appearance}>{intent.label}</Lozenge>
+      {/* B1 · Intent ribbon — 4px sticky left edge mapped to ADS semantic
+          *.bolder tokens. The ribbon gives a peripheral-vision intent read
+          at the page level, even before the lozenge label registers in
+          the action toolbar. aria-hidden because INTENT_META lozenge below
+          conveys the same information to assistive tech. */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          insetBlock: 0,
+          insetInlineStart: 0,
+          width: 4,
+          backgroundColor: token(
+            INTENT_RIBBON[theme.intent].name,
+            INTENT_RIBBON[theme.intent].fallback,
+          ),
+        }}
+      />
+
+      {/* ─── Row 1: count/percentage (right-aligned) ────────────────────
+          B1 · Lozenge previously sat here; relocated into the action toolbar
+          so the top row reads as pure metadata. */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         <span
           style={{
             ...type.meta,
@@ -235,13 +253,12 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           paddingBlockStart: 4,
         }}
       >
-        {/* A4 · Action hierarchy.
-            Old: View issues flipped to `primary` when expanded; Create Epic
-            sat at `default`. That overweighted a navigational reveal and
-            underweighted the durable action ("turn this cluster into work").
-            New: Create Epic = primary always; View issues = default always;
-            Copy summary = subtle (unchanged). Reads CTA → reveal → utility
-            left-to-right, matching ADS button hierarchy norms. */}
+        {/* Action toolbar — Lozenge + View issues + Copy summary.
+            B1 · INTENT_META lozenge moved here from row 1, sits to the
+            left of View issues so the action block reads
+            [INTENT] [reveal] [utility]. View issues stays `default`
+            (navigational reveal), Copy summary stays `subtle` (utility). */}
+        <Lozenge appearance={intent.appearance}>{intent.label}</Lozenge>
         <Button
           spacing="compact"
           appearance="default"
@@ -249,14 +266,6 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           iconBefore={expanded ? ChevronDownIcon : ChevronRightIcon}
         >
           {expanded ? 'Hide issues' : 'View issues'}
-        </Button>
-        <Button
-          spacing="compact"
-          appearance="primary"
-          onClick={handleCreateEpic}
-          iconBefore={AddIcon}
-        >
-          Create Epic
         </Button>
         <Button
           spacing="compact"

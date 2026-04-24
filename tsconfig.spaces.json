@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.app.json",
-  "include": [
-    "src/spaces/**/*",
-    "src/components/projecthub/AllProjectsTable.tsx",
-    "src/pages/project-hub/AllProjectsPage.tsx"
-  ]
-}
