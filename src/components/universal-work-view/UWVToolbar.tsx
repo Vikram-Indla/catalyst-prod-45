@@ -42,6 +42,10 @@ interface Props {
   onSavePrefs: (p: UWVPrefs) => void;
   project: string;
   onClose: () => void;
+  typeFilter: 'all' | 'epic' | 'feature' | 'story' | 'bug' | 'task';
+  onTypeFilterChange: (t: 'all' | 'epic' | 'feature' | 'story' | 'bug' | 'task') => void;
+  groupBy: UWVGroupBy;
+  onGroupByChange: (g: UWVGroupBy) => void;
 }
 
 // Inline icons — keep toolbar fully Atlaskit otherwise.
