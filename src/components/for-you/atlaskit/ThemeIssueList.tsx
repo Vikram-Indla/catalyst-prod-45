@@ -25,11 +25,23 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
+import { Box, Text, xcss } from '@atlaskit/primitives';
 import Spinner from '@atlaskit/spinner';
 import { DynamicTable, StatusLozenge, toStatusCategory } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
-import { type } from '@/lib/typography';
+
+// ─── A5 · Atlaskit-pure cell tokens ─────────────────────────────────────────
+// Loading + empty wrappers used `paddingBlock: 12` literals and a `type.meta`
+// font; switched to Box + xcss + Text so every value resolves through ADS.
+// `type.*` import dropped from this file — DynamicTable cells now lean on
+// the Atlaskit token chain for typography (size & color from primitives).
+const stateMessageStyles = xcss({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'space.100',
+  paddingBlock: 'space.150',
+});
 
 interface IssueRow {
   id: string;
@@ -44,11 +56,13 @@ interface ThemeIssueListProps {
   issueKeys: string[];
 }
 
+// Column widths total 100 (14 + 64 + 22). Saudi-context names + transliterated
+// Arabic summary lines run long, so summary widens at the cost of key + status.
 const HEAD = {
   cells: [
-    { key: 'key',     content: 'Key',     isSortable: true,  width: 16 },
-    { key: 'summary', content: 'Summary', isSortable: false, width: 60 },
-    { key: 'status',  content: 'Status',  isSortable: true,  width: 24 },
+    { key: 'key',     content: 'Key',     isSortable: true,  width: 14 },
+    { key: 'summary', content: 'Summary', isSortable: false, width: 64 },
+    { key: 'status',  content: 'Status',  isSortable: true,  width: 22 },
   ],
 };
 
@@ -101,14 +115,14 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
                 projectKey: row.project_key,
               })}
               style={{
-                ...type.body,
                 color: token('color.link', '#0C66E4'),
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
                 cursor: 'pointer',
-                fontFamily: 'var(--cp-font-mono, "JetBrains Mono", ui-monospace, monospace)',
+                fontFamily: token('font.family.code', 'JetBrains Mono, ui-monospace, monospace'),
                 fontSize: 12,
+                fontWeight: 500,
               }}
             >
               {row.issue_key}
@@ -118,7 +132,7 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
         {
           key: 'summary',
           content: (
-            <span style={{ ...type.body, color: token('color.text', '#172B4D') }}>
+            <span style={{ color: token('color.text', '#172B4D') }}>
               {row.summary}
             </span>
           ),
@@ -137,22 +151,22 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingBlock: 12 }}>
+      <Box xcss={stateMessageStyles}>
         <Spinner size="small" />
-        <span style={{ ...type.meta, color: token('color.text.subtle', '#44546F') }}>
+        <Text size="small" color="color.text.subtle">
           Loading issues…
-        </span>
-      </div>
+        </Text>
+      </Box>
     );
   }
 
   if (!rows || rows.length === 0) {
     return (
-      <div style={{ paddingBlock: 12 }}>
-        <span style={{ ...type.meta, color: token('color.text.subtle', '#44546F') }}>
+      <Box xcss={stateMessageStyles}>
+        <Text size="small" color="color.text.subtle">
           No synced issue records for this theme yet.
-        </span>
-      </div>
+        </Text>
+      </Box>
     );
   }
 

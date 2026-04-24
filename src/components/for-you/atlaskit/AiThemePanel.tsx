@@ -45,6 +45,7 @@
  */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
+import { Box, Text, xcss } from '@atlaskit/primitives';
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
 import Select from '@atlaskit/select';
@@ -54,6 +55,27 @@ import type { Project } from '@/hooks/useForYouData';
 import ThemeCard from './ThemeCard';
 import { ForYouEmptyState } from './helpers';
 import { type } from '@/lib/typography';
+
+// ─── A1 · Toolbar surface (Atlaskit primitives Box + xcss) ──────────────────
+// Replaces the previous `<div style={{ paddingInline: 12, ... borderBlockEnd:
+// `1px solid ${token(...)}` }}>` with a Box driven by space.* / border.*
+// tokens. Keeps the same visual rhythm (12-8-12 inset, 1px hairline below)
+// but every value resolves through @atlaskit/tokens — guaranteeing dark-mode
+// + WCAG inheritance "for free". CLAUDE.md §1 / §10 surgical scope: only
+// the header chrome changes; render-state branches below the header keep
+// their existing inline styles (those land in later commits).
+const headerStyles = xcss({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'space.150',
+  flexWrap: 'wrap',
+  paddingInline: 'space.150',
+  paddingBlockStart: 'space.100',
+  paddingBlockEnd: 'space.150',
+  borderBottomWidth: 'border.width',
+  borderBottomStyle: 'solid',
+  borderBottomColor: 'color.border',
+});
 
 type Scope = 'personal' | 'project';
 
@@ -175,18 +197,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
   // ─── Header chrome (scope toggle + project picker + refresh) ──────────────
 
   const header = (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        flexWrap: 'wrap',
-        paddingInline: 12,
-        paddingBlockStart: 8,
-        paddingBlockEnd: 12,
-        borderBlockEnd: `1px solid ${token('color.border', '#DFE1E6')}`,
-      }}
-    >
+    <Box xcss={headerStyles}>
       {/* Segmented scope control — two Atlaskit buttons adjacent, first is
           primary when active. Subtle when inactive. Avoids a custom toggle. */}
       <div role="group" aria-label="Theme scope" style={{ display: 'inline-flex', gap: 4 }}>
@@ -224,12 +235,12 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
       <div style={{ flex: 1 }} />
 
       {data && !isLoading && Array.isArray(data.themes) && (
-        <span style={{ ...type.meta, color: token('color.text.subtle', '#44546F') }}>
+        <Text size="small" color="color.text.subtle">
           Analysed {data.totalIssuesAnalyzed ?? 0}{' '}
           {(data.totalIssuesAnalyzed ?? 0) === 1 ? 'issue' : 'issues'} into {data.themes.length}{' '}
           {data.themes.length === 1 ? 'theme' : 'themes'} · {formatGeneratedAt(data.generatedAt)}
           {data.cached ? ' · cached' : ''}
-        </span>
+        </Text>
       )}
 
       <Button
@@ -241,7 +252,7 @@ export default function AiThemePanel({ allUserProjects }: AiThemePanelProps) {
       >
         {isRefreshing ? 'Re-analyzing…' : 'Re-analyze'}
       </Button>
-    </div>
+    </Box>
   );
 
   // ─── Render states ───────────────────────────────────────────────────────

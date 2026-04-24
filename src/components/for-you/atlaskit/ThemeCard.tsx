@@ -46,6 +46,8 @@
  */
 import React, { useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
+import { Box, xcss } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
 import ProgressBar from '@atlaskit/progress-bar';
 import Button, { IconButton } from '@atlaskit/button/new';
@@ -56,6 +58,33 @@ import AddIcon from '@atlaskit/icon/glyph/add';
 import { type } from '@/lib/typography';
 import type { Theme, ThemeIntent } from '@/hooks/useAiThemes';
 import ThemeIssueList from './ThemeIssueList';
+
+// ─── A2 · Card surface (Atlaskit primitives Box + elevation tokens) ─────────
+// Prior surface used `elevation.surface` (page-level white) — visually flat
+// against the page. Promoted to `elevation.surface.raised` so the card reads
+// as a floating layer. Border + shadow + radius all flow through tokens, so
+// dark mode (NOCTURNE, CLAUDE.md §3) inherits without an override block.
+//
+// Radius note: original was 8px; Atlaskit token `border.radius.300` = 8px
+// (canonical = 3px which is too tight for theme cards at this density).
+//
+// Transitions stay here so the surface keeps its 150ms ease-in baseline;
+// B2 layers the elevation.shadow.overlay :hover state on top.
+const cardStyles = xcss({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'space.150',
+  padding: 'space.200',
+  borderRadius: 'border.radius.300',
+  backgroundColor: 'elevation.surface.raised',
+  borderColor: 'color.border',
+  borderWidth: 'border.width',
+  borderStyle: 'solid',
+  boxShadow: 'elevation.shadow.raised',
+  transitionProperty: 'box-shadow, border-color',
+  transitionDuration: '150ms',
+  transitionTimingFunction: 'ease',
+});
 
 // ─── Intent → Atlaskit lozenge mapping ──────────────────────────────────────
 // Lozenge appearance values exposed by @atlaskit/lozenge v11: 'default' |
@@ -152,21 +181,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
   };
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 12,
-        padding: 16,
-        borderRadius: 8,
-        background: token('elevation.surface', '#FFFFFF'),
-        border: `1px solid ${token('color.border', '#DFE1E6')}`,
-        boxShadow: token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
-        // Match ForYouRow hover surface so cards feel like one family
-        // across the page — no bespoke card chrome.
-        transition: 'box-shadow 150ms ease, border-color 150ms ease',
-      }}
-    >
+    <Box xcss={cardStyles}>
       {/* ─── Row 1: intent lozenge + count/percentage ──────────────────── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
         <Lozenge appearance={intent.appearance}>{intent.label}</Lozenge>
@@ -182,15 +197,13 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       </div>
 
       {/* ─── Row 2: theme name ─────────────────────────────────────────── */}
-      <h3
-        style={{
-          ...type.h4,
-          color: token('color.text', '#172B4D'),
-          margin: 0,
-        }}
-      >
+      {/* A3 · @atlaskit/heading replaces the bespoke `type.h4` styled <h3>.
+          size="small" maps to the Atlaskit heading.small spec (16/20 700)
+          and inherits color.text from the active theme automatically — no
+          token() call needed at the JSX site. */}
+      <Heading size="small" as="h3">
         {theme.name}
-      </h3>
+      </Heading>
 
       {/* ─── Row 3: summary (2 sentences) ──────────────────────────────── */}
       <p
@@ -222,9 +235,16 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           paddingBlockStart: 4,
         }}
       >
+        {/* A4 · Action hierarchy.
+            Old: View issues flipped to `primary` when expanded; Create Epic
+            sat at `default`. That overweighted a navigational reveal and
+            underweighted the durable action ("turn this cluster into work").
+            New: Create Epic = primary always; View issues = default always;
+            Copy summary = subtle (unchanged). Reads CTA → reveal → utility
+            left-to-right, matching ADS button hierarchy norms. */}
         <Button
           spacing="compact"
-          appearance={expanded ? 'primary' : 'default'}
+          appearance="default"
           onClick={() => setExpanded(v => !v)}
           iconBefore={expanded ? ChevronDownIcon : ChevronRightIcon}
         >
@@ -232,7 +252,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
         </Button>
         <Button
           spacing="compact"
-          appearance="default"
+          appearance="primary"
           onClick={handleCreateEpic}
           iconBefore={AddIcon}
         >
@@ -259,6 +279,6 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           <ThemeIssueList issueKeys={theme.issueKeys ?? []} />
         </div>
       )}
-    </div>
+    </Box>
   );
 }
