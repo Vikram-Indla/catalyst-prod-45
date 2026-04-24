@@ -64,6 +64,39 @@ export interface WorkItem {
   attachmentCount?: number;
 }
 
+/**
+ * RecommendedMention — a single row in the "Reply to mentions" feed that
+ * sits at the top of the Recommended tab.
+ *
+ * Jira parity (from /jira-compare 2026-04-24, RecommendedPanel iteration 2):
+ *   "<Mentioner> mentioned you on <issueTypeIcon> <issueTitle>"
+ *   + comment body preview
+ *   + circular 32px avatar of the mentioner (NOT square — square is the
+ *     project card treatment)
+ *   + timestamp (relative)
+ *
+ * We populate this from `ph_comments` rows that ILIKE-match the user's
+ * first name, joined to `profiles` for the mentioner's display name and
+ * avatar URL, and to `ph_issues` for the target issue summary + type.
+ *
+ * The commentId is stable so React keys stay correct across refetches,
+ * and the issueKey doubles as the route target when the row is clicked.
+ */
+export interface RecommendedMention {
+  commentId: string;
+  commentBody: string;
+  commentCreatedAt: string;
+  issueKey: string;
+  issueId: string;
+  issueSummary: string;
+  issueType: string;
+  projectKey: string;
+  projectName: string;
+  mentionerId: string | null;
+  mentionerName: string;
+  mentionerAvatarUrl?: string;
+}
+
 export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
 
 export interface AISuggestion {
@@ -410,6 +443,7 @@ export function useForYouData() {
   const [assignedItems, setAssignedItems] = useState<any[]>([]);
   const [starredData, setStarredData] = useState<any[]>([]);
   const [recommendedItems, setRecommendedItems] = useState<any[]>([]);
+  const [recommendedMentions, setRecommendedMentions] = useState<RecommendedMention[]>([]);
   const [viewedItems, setViewedItems] = useState<any[]>([]);
   const [attachmentCounts, setAttachmentCounts] = useState<Map<string, number>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
@@ -484,10 +518,12 @@ export function useForYouData() {
         // Build project maps
         const projectIdMap = new Map<string, string>();
         if (catalystProjects) catalystProjects.forEach(p => projectIdMap.set(p.key, p.id));
+        // Local copy of the project-key → name lookup so downstream code
+        // in this same tick can resolve names before state propagates.
+        const localProjectNameMap = new Map<string, string>();
         if (jiraProjects) {
-          const pMap = new Map<string, string>();
-          jiraProjects.forEach(p => pMap.set(p.project_key, p.name));
-          setProjectNameMap(pMap);
+          jiraProjects.forEach(p => localProjectNameMap.set(p.project_key, p.name));
+          setProjectNameMap(localProjectNameMap);
         }
 
         const userName = userProfileData?.full_name || 'Unassigned';
@@ -630,16 +666,28 @@ export function useForYouData() {
         const recommendedKeySet = new Set<string>();
 
         // (a) Comment-mention heuristic — cheap, best-effort
+        //
+        // We pull the full body + author_id + the joined issue metadata
+        // (key, summary, issue_type, project_key) so the RecommendedPanel
+        // can render a Jira-parity "Reply to mentions" feed:
+        //   "<Mentioner> mentioned you on <issueType icon> <issueTitle>"
+        //   <comment body preview>
+        //
+        // We then enrich the author side with a single profiles round-trip
+        // (full_name + avatar_url) keyed by the unique author_id set.
+        const mentionsToPopulate: RecommendedMention[] = [];
         if (userName && userName !== 'Unassigned') {
           const firstName = userName.split(' ')[0];
           if (firstName && firstName.length >= 2) {
             const { data: mentionHits } = await supabase
               .from('ph_comments')
-              .select('work_item_id, created_at, ph_issues!inner(issue_key)')
+              .select(
+                'id, body, created_at, author_id, ph_issues!inner(id, issue_key, summary, issue_type, project_key)'
+              )
               .ilike('body', `%@${firstName}%`)
               .neq('author_id', authUser.id)
               .order('created_at', { ascending: false })
-              .limit(30);
+              .limit(10);
 
             (mentionHits || []).forEach((row: any) => {
               const key = row.ph_issues?.issue_key;
@@ -648,8 +696,56 @@ export function useForYouData() {
                 recommendedKeyOrder.push(key);
               }
             });
+
+            // Resolve mentioner display data in a single round trip.
+            const authorIds = Array.from(
+              new Set(
+                (mentionHits || [])
+                  .map((r: any) => r.author_id)
+                  .filter((id: string | null): id is string => !!id)
+              )
+            );
+            let profileMap = new Map<string, { name: string; avatarUrl?: string }>();
+            if (authorIds.length > 0) {
+              const { data: profs } = await supabase
+                .from('profiles')
+                .select('id, full_name, avatar_url')
+                .in('id', authorIds);
+              profileMap = new Map(
+                (profs || []).map((p: any) => [
+                  p.id,
+                  {
+                    name: p.full_name || 'Unknown',
+                    avatarUrl: p.avatar_url || undefined,
+                  },
+                ])
+              );
+            }
+
+            (mentionHits || []).forEach((row: any) => {
+              const issue = row.ph_issues;
+              if (!issue?.issue_key) return;
+              const mentioner = row.author_id
+                ? profileMap.get(row.author_id)
+                : undefined;
+              mentionsToPopulate.push({
+                commentId: row.id,
+                commentBody: row.body || '',
+                commentCreatedAt: row.created_at || new Date().toISOString(),
+                issueKey: issue.issue_key,
+                issueId: issue.id,
+                issueSummary: issue.summary || issue.issue_key,
+                issueType: issue.issue_type || 'task',
+                projectKey: issue.project_key || '',
+                projectName: localProjectNameMap.get(issue.project_key) || issue.project_key || '',
+                mentionerId: row.author_id || null,
+                mentionerName: mentioner?.name || 'A teammate',
+                mentionerAvatarUrl: mentioner?.avatarUrl,
+              });
+            });
           }
         }
+        setRecommendedMentions(mentionsToPopulate);
 
         // (b) Top of assigned queue — "you should look at this next"
         (jiraAssigned as any[]).slice(0, 10).forEach((r: any) => {
@@ -855,5 +951,8 @@ export function useForYouData() {
     selectedItem, handleRowClick, closeDetailPanel,
     handleStartTask, generateStatusUpdate, generateImpactReport, showDeprioritize, toggleStar,
     trackView,
+    // Rich mentions feed used by RecommendedPanel (Jira "Reply to mentions"
+    // parity — see src/components/for-you/atlaskit/RecommendedPanel.tsx).
+    recommendedMentions,
   };
 }

@@ -63,6 +63,7 @@ export default function ForYouPageAtlaskit() {
     toggleStar,
     trackView,
     handleRowClick,
+    recommendedMentions,
   } = data;
 
   // ─── Persist the tab across refreshes ────────────────────────────────────
@@ -122,14 +123,14 @@ export default function ForYouPageAtlaskit() {
       onToggleStar: toggleStar,
     };
     switch (activeTab) {
-      case 'recommended': return <RecommendedPanel {...panelProps} />;
+      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
       case 'starred':     return <StarredPanel     {...panelProps} />;
       case 'worked':      return <WorkedOnPanel    {...panelProps} />;
       case 'viewed':      return <ViewedPanel      {...panelProps} />;
-      default:            return <RecommendedPanel {...panelProps} />;
+      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar]);
+  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions]);
 
   return (
     <div
