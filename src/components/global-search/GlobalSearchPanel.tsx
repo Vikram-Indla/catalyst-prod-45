@@ -248,7 +248,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8,
         padding: '10px 16px',
-        borderBottom: `1px solid ${token('color.border.subtle', '#F1F2F4')}`,
+        borderBottom: `1px solid ${token('color.border', '#F1F2F4')}`,
         flexShrink: 0,
       }}>
         <FilterDropdown
