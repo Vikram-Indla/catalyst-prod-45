@@ -1228,7 +1228,7 @@ function DemandRowItem({
                     : epic.done > 0
                     ? 'risk'
                     : 'overdue';
-                const epicUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${epic.issue_key}`;
+                const epicUrl = `/project-hub/${projectKey}/allwork?selectedIssue=${epic.issue_key}`;
                 const epicExpanded = expandedEpics.has(epic.id);
                 const hasStories = (epic.stories?.length ?? 0) > 0;
 
