@@ -102,22 +102,27 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
         // Branch A: explicit keys → fetch parents + their children, interleave.
         if (params.keys?.length) {
           const keys = params.keys;
-          const [parentRes, childRes] = await Promise.all([
-            (supabase as any)
-              .from('ph_issues')
-              .select(PROJECT_SELECT, { count: 'exact' })
-              .eq('project_key', params.project)
-              .is('jira_removed_at', null)
-              .is('deleted_at', null)
-              .in('issue_key', keys),
-            (supabase as any)
-              .from('ph_issues')
-              .select(PROJECT_SELECT)
-              .eq('project_key', params.project)
-              .is('jira_removed_at', null)
-              .is('deleted_at', null)
-              .in('parent_key', keys),
-          ]);
+          let parentQ = (supabase as any)
+            .from('ph_issues')
+            .select(PROJECT_SELECT, { count: 'exact' })
+            .eq('project_key', params.project)
+            .is('jira_removed_at', null)
+            .is('deleted_at', null)
+            .in('issue_key', keys);
+          let childQ = (supabase as any)
+            .from('ph_issues')
+            .select(PROJECT_SELECT)
+            .eq('project_key', params.project)
+            .is('jira_removed_at', null)
+            .is('deleted_at', null)
+            .in('parent_key', keys);
+
+          if (statusFilter.length > 0) {
+            parentQ = parentQ.in('status', statusFilter);
+            childQ = childQ.in('status', statusFilter);
+          }
+
+          const [parentRes, childRes] = await Promise.all([parentQ, childQ]);
           if (parentRes.error) throw parentRes.error;
           if (childRes.error) throw childRes.error;
 
