@@ -64,6 +64,7 @@ export default function ForYouPageAtlaskit() {
     trackView,
     handleRowClick,
     recommendedMentions,
+    allUserProjects,
   } = data;
 
   // ─── Persist the tab across refreshes ────────────────────────────────────
@@ -159,8 +160,11 @@ export default function ForYouPageAtlaskit() {
         Good to see you, {user.firstName}
       </h1>
 
-      {/* Recommended projects strip — derived from everything we know */}
-      <RecommendedProjectsStrip items={workItems} />
+      {/* Recommended projects strip — account-scoped, stable across tab
+          switches. We pass `allUserProjects` (from useForYouData) instead
+          of the per-tab filtered `workItems` so the strip doesn't re-derive
+          on every tab click. */}
+      <RecommendedProjectsStrip projects={allUserProjects} />
 
       {/* Tab strip */}
       <ForYouTabs

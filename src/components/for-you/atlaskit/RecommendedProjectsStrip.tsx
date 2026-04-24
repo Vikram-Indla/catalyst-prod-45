@@ -4,75 +4,46 @@
  *
  * Parity target (from /jira-compare 2026-04-24):
  *   - Card: 230w × 62h, radius 4, padding 12px 16px, 1.11px subtle border
- *   - Icon: 32×32 @atlaskit/avatar appearance="square" (radius 4, initials)
- *     when no avatar_url is available.
+ *   - Icon: 32×32 @atlaskit/avatar appearance="square" (radius 4).
+ *     When `src` is set → image. When unset → Atlaskit's hashed-initials
+ *     tile (same fallback Jira uses for projects without a custom avatar).
  *   - Heading: "Recommended projects" (house vocab divergence from Jira's
  *     "Recommended spaces"), Inter 600 16px/20px, color.text
  *   - View all: "View all projects" → /projects — text color, weight 400
- *   - Layout: wrapping grid at minmax(230px, 1fr), gap 16 — NOT horizontal
- *     scroll. Jira's strip wraps onto subsequent rows at narrow widths and
- *     has no overflow-x:auto.
+ *   - Layout: wrapping grid at minmax(230px, 1fr), gap 16.
  *
  * Data source
  * ───────────
- * We derive the 6 projects from the user's currently-visible items — ranked
- * by how many of those items sit in that project, then alpha. This matches
- * Jira's "projects you're closest to" behavior without needing a separate
- * server-side ranking.
+ * Jira's strip is account-scoped, not tab-scoped — the same projects render
+ * regardless of which For You tab is active. We mirror that by consuming the
+ * `allUserProjects` collection from useForYouData() instead of deriving from
+ * the per-tab visible items. This fixes the "dancing" bug where cards
+ * changed count and order on every tab click.
  *
- * Icon sourcing
- * ─────────────
- * Jira binds the card image to a project-configured avatar URL (e.g.
- * /rest/api/2/universal_avatar/view/type/project/avatar/10413). Catalyst's
- * `projects` table does not currently store an avatar_url, so we let
- * Atlaskit's <Avatar appearance="square" /> render initials on a
- * deterministically-hashed square — this is the same fallback Jira uses
- * when a project hasn't uploaded a custom avatar. If/when we plumb
- * `projects.avatar_url` through `useForYouData`, pass it as `src` here and
- * Atlaskit switches to the image automatically.
+ * When `projects[i].avatar_url` is set, @atlaskit/avatar renders the image.
+ * When null, it renders a hashed-initials tile derived from `name`.
  */
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
-import type { WorkItem } from '@/hooks/useForYouData';
+import type { Project } from '@/hooks/useForYouData';
 
 interface RecommendedProjectsStripProps {
-  items: WorkItem[];
+  projects: Project[];
   maxCards?: number;
 }
 
-interface ProjectCard {
-  key: string;
-  name: string;
-  count: number;
-  projectId?: string;
-  avatarUrl?: string;
-}
-
-export default function RecommendedProjectsStrip({ items, maxCards = 6 }: RecommendedProjectsStripProps) {
+export default function RecommendedProjectsStrip({ projects, maxCards = 6 }: RecommendedProjectsStripProps) {
   const navigate = useNavigate();
 
-  const cards = useMemo<ProjectCard[]>(() => {
-    const byKey = new Map<string, ProjectCard>();
-    items.forEach(item => {
-      if (!item.projectKey) return;
-      const existing = byKey.get(item.projectKey);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        byKey.set(item.projectKey, {
-          key: item.projectKey,
-          name: item.project,
-          count: 1,
-          projectId: item.projectId,
-        });
-      }
-    });
-    return Array.from(byKey.values())
-      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+  // Alpha-sort and cap. No reduce over items, no per-tab dependency — the
+  // same `projects` value produces the same cards every render.
+  const cards = React.useMemo(() => {
+    return [...projects]
+      .sort((a, b) => a.name.localeCompare(b.name))
       .slice(0, maxCards);
-  }, [items, maxCards]);
+  }, [projects, maxCards]);
 
   if (cards.length === 0) return null;
 
@@ -87,9 +58,8 @@ export default function RecommendedProjectsStrip({ items, maxCards = 6 }: Recomm
       }}
     >
       {/* Header row: title + "View all projects" link.
-          Jira parity note: the heading is 16/20 weight 600 (maps to
-          Atlaskit's 653) and the "View all" link is plain body text
-          color/weight — NOT a blue link. */}
+          Jira parity note: the heading is 16/20 weight 600 and the "View
+          all" link is plain body text color/weight — NOT a blue link. */}
       <div
         style={{
           display: 'flex',
@@ -140,11 +110,11 @@ export default function RecommendedProjectsStrip({ items, maxCards = 6 }: Recomm
       >
         {cards.map(card => (
           <ProjectCardButton
-            key={card.key}
+            key={card.id}
             card={card}
             onClick={() => {
               // Prefer the canonical ProjectHub route when we have an id.
-              if (card.projectId) navigate(`/projects/${card.projectId}`);
+              if (card.id) navigate(`/projects/${card.id}`);
               else navigate('/projects');
             }}
           />
@@ -156,7 +126,7 @@ export default function RecommendedProjectsStrip({ items, maxCards = 6 }: Recomm
 
 // ─── Project card ───────────────────────────────────────────────────────────
 
-function ProjectCardButton({ card, onClick }: { card: ProjectCard; onClick: () => void }) {
+function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => void }) {
   const [hover, setHover] = React.useState(false);
   return (
     <button
@@ -184,15 +154,15 @@ function ProjectCardButton({ card, onClick }: { card: ProjectCard; onClick: () =
       }}
     >
       {/* 32×32 square avatar with radius 4 — matches Jira's project avatar tile.
-          Atlaskit's Avatar at size="medium" is 32×32 (size="small" is 24×24,
-          too small for this surface); appearance="square" applies the 4px
-          radius and when no src is set it shows hashed initials — the same
-          fallback Jira renders for projects without a custom avatar. */}
+          Atlaskit's Avatar at size="medium" is 32×32; appearance="square"
+          applies the 4px radius. When `src` is set we render the branded
+          image; when null, Atlaskit renders the hashed-initials fallback —
+          the same fallback Jira uses for projects without a custom avatar. */}
       <Avatar
         appearance="square"
         size="medium"
         name={card.name}
-        src={card.avatarUrl}
+        src={card.avatar_url || undefined}
       />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div

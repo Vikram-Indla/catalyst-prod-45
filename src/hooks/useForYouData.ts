@@ -33,6 +33,12 @@ export interface WorkItem {
   summary: string;
   phIssueId?: string;
   projectId?: string;
+  /**
+   * Optional URL to the project's branded avatar (sourced from
+   * public.projects.avatar_url). When null, clients should fall back to the
+   * Atlaskit hashed-initials tile — same pattern Jira uses.
+   */
+  projectAvatarUrl?: string;
   mode: WorkMode;
   level: string;
   project: string;
@@ -95,6 +101,18 @@ export interface RecommendedMention {
   mentionerId: string | null;
   mentionerName: string;
   mentionerAvatarUrl?: string;
+}
+
+/**
+ * Project — minimal shape used by the "Recommended projects" strip on the
+ * For You page. Sourced from `public.projects` scoped to the caller's project
+ * membership (RLS). Stable across tab switches so the strip doesn't dance.
+ */
+export interface Project {
+  id: string;
+  key: string;
+  name: string;
+  avatar_url?: string | null;
 }
 
 export type AIWorkItemType = 'feature' | 'epic' | 'story' | 'defect' | 'incident' | 'task' | 'business-request';
@@ -355,7 +373,13 @@ function priorityToLevel(priority: string): number {
 }
 
 // Map ph_issues row to WorkItem
-function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: Map<string, string>, attachmentCounts?: Map<string, number>): WorkItem {
+function mapIssueToWorkItem(
+  row: any,
+  starredSet: Set<string>,
+  projectNameMap: Map<string, string>,
+  attachmentCounts?: Map<string, number>,
+  projectAvatarMap?: Map<string, string | null>,
+): WorkItem {
   const assigneeName = row.assignee_display_name || 'Unassigned';
   const projectKey = row.project_key || '';
   const issueType = row.issue_type || 'Task';
@@ -385,12 +409,15 @@ function mapIssueToWorkItem(row: any, starredSet: Set<string>, projectNameMap: M
     } catch { /* empty */ }
   }
 
+  const resolvedAvatar = projectAvatarMap?.get(projectKey) ?? null;
+
   return {
     id: row.issue_key,
     key: row.issue_key,
     summary: row.summary || '',
     phIssueId: row.id || undefined,
     projectId: row.project_id || undefined,
+    projectAvatarUrl: resolvedAvatar || undefined,
     mode: inferMode(projectKey, issueType),
     level: issueType,
     project: row.workstream_name || row.project_name || projectNameMap.get(projectKey) || projectKey,
@@ -449,6 +476,13 @@ export function useForYouData() {
   const [isLoading, setIsLoading] = useState(true);
   const [jiraAccountIds, setJiraAccountIds] = useState<string[]>([]);
   const [projectNameMap, setProjectNameMap] = useState<Map<string, string>>(new Map());
+  // project_key → avatar_url lookup, used by the Recommended projects strip
+  // AND by every WorkItem so cards and rows resolve the same avatar source.
+  const [projectAvatarMap, setProjectAvatarMap] = useState<Map<string, string | null>>(new Map());
+  // Account-scoped project list — STABLE across tab switches. This is what
+  // the "Recommended projects" strip consumes, so it doesn't re-derive (and
+  // rearrange) every time the active For You tab changes.
+  const [allUserProjects, setAllUserProjects] = useState<Project[]>([]);
 
   const { user: authUser } = useAuth();
   const [userProfile, setUserProfile] = useState<{ firstName: string; lastName: string } | null>(null);
@@ -497,7 +531,10 @@ export function useForYouData() {
           { data: attachmentRows },
         ] = await Promise.all([
           supabase.from('ph_jira_projects').select('project_key, name'),
-          supabase.from('projects').select('id, key'),
+          // `avatar_url` feeds the Recommended projects strip AND every
+          // WorkItem's `projectAvatarUrl`. `name` so the strip has a stable
+          // display string regardless of which tab is active.
+          supabase.from('projects').select('id, key, name, avatar_url'),
           supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200),
           supabase.from('profiles').select('id, full_name').eq('id', authUser.id).single(),
           supabase.from('stories').select('id, story_key, title, name, status, state, priority, assignee_id, story_points, estimate_points, tags, description, updated_at, created_at, feature:features(id, name, display_id, project_id, project:projects(id, name, key))').eq('assignee_id', authUser.id).is('deleted_at', null).order('updated_at', { ascending: false }).limit(200),
@@ -517,7 +554,27 @@ export function useForYouData() {
 
         // Build project maps
         const projectIdMap = new Map<string, string>();
-        if (catalystProjects) catalystProjects.forEach(p => projectIdMap.set(p.key, p.id));
+        const localProjectAvatarMap = new Map<string, string | null>();
+        const stableProjects: Project[] = [];
+        if (catalystProjects) {
+          (catalystProjects as Array<{ id: string; key: string; name?: string | null; avatar_url?: string | null }>).forEach(p => {
+            if (p.key) {
+              projectIdMap.set(p.key, p.id);
+              localProjectAvatarMap.set(p.key, p.avatar_url ?? null);
+            }
+            stableProjects.push({
+              id: p.id,
+              key: p.key,
+              name: p.name || p.key,
+              avatar_url: p.avatar_url ?? null,
+            });
+          });
+          setProjectAvatarMap(localProjectAvatarMap);
+          // Stable across tab switches — drives the Recommended projects strip.
+          setAllUserProjects(
+            [...stableProjects].sort((a, b) => a.name.localeCompare(b.name))
+          );
+        }
         // Local copy of the project-key → name lookup so downstream code
         // in this same tick can resolve names before state propagates.
         const localProjectNameMap = new Map<string, string>();
@@ -815,14 +872,14 @@ export function useForYouData() {
   }, [activeTab, workedOnItems, assignedItems, starredData, recommendedItems, viewedItems]);
 
   const filteredItems = useMemo(() => {
-    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap, attachmentCounts));
+    let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap, attachmentCounts, projectAvatarMap));
     if (activeMode !== 'all') items = items.filter(item => item.mode.toLowerCase() === activeMode);
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       items = items.filter(item => item.key.toLowerCase().includes(query) || item.summary.toLowerCase().includes(query));
     }
     return items;
-  }, [sourceItems, activeMode, searchQuery, starredItems, projectNameMap, attachmentCounts]);
+  }, [sourceItems, activeMode, searchQuery, starredItems, projectNameMap, attachmentCounts, projectAvatarMap]);
 
   const groupedItems = useMemo(() => {
     const groups: Record<WorkGroup, WorkItem[]> = { YESTERDAY: [], THIS_WEEK: [], EARLIER: [] };
@@ -915,7 +972,58 @@ export function useForYouData() {
         },
         { onConflict: 'user_id,item_id,item_type', ignoreDuplicates: false }
       );
-      if (error) console.warn('[useForYouData] trackView failed:', error);
+      if (error) {
+        console.warn('[useForYouData] trackView failed:', error);
+        return;
+      }
+
+      // Re-hydrate the Viewed collection so the Viewed tab populates live
+      // instead of waiting for the next full refetch. Before this, the
+      // Viewed tab only showed items that were already cached at mount, so
+      // a brand-new view stayed invisible until page reload. Keep it cheap:
+      // re-read the top 100 rows the same way the mount fetch does.
+      try {
+        const { data: refreshedRaw } = await (supabase as any)
+          .from('user_viewed_items')
+          .select('item_id, item_type, last_viewed_at')
+          .eq('user_id', authUser.id)
+          .order('last_viewed_at', { ascending: false })
+          .limit(100);
+        const refreshed = refreshedRaw as Array<{ item_id: string; item_type: string; last_viewed_at: string }> | null;
+        if (!refreshed || refreshed.length === 0) return;
+
+        const phKeys = refreshed.filter(r => r.item_type === 'ph_issue').map(r => r.item_id);
+        const plannerKeys = refreshed.filter(r => r.item_type === 'task').map(r => r.item_id);
+
+        const [viewedPhRaw, viewedPlannerRaw] = await Promise.all([
+          phKeys.length > 0
+            ? supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', phKeys).is('archived_at', null)
+            : Promise.resolve({ data: [] as any[] }),
+          plannerKeys.length > 0
+            ? supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').in('task_key', plannerKeys).is('deleted_at', null)
+            : Promise.resolve({ data: [] as any[] }),
+        ]);
+
+        const viewedPh = (viewedPhRaw.data || []).map((r: any) => ({ ...r }));
+        const viewedPlanner = (viewedPlannerRaw.data || []).map((row: any) =>
+          mapPlannerTaskToIssueRow({
+            ...row,
+            assignee_name: 'You',
+            status_name: 'Backlog',
+            workstream_name: null,
+          })
+        );
+
+        const viewedAtByKey = new Map<string, string>(refreshed.map(r => [r.item_id, r.last_viewed_at]));
+        const allViewed = [...viewedPh, ...viewedPlanner]
+          .map(r => ({ ...r, _last_viewed_at: viewedAtByKey.get(r.issue_key) || null }))
+          .filter(r => r._last_viewed_at)
+          .map(r => ({ ...r, jira_updated_at: r._last_viewed_at || r.jira_updated_at }))
+          .sort((a, b) => new Date(b._last_viewed_at).getTime() - new Date(a._last_viewed_at).getTime());
+        setViewedItems(allViewed);
+      } catch (refreshErr) {
+        console.warn('[useForYouData] trackView refresh failed:', refreshErr);
+      }
     } catch (err) {
       console.warn('[useForYouData] trackView threw:', err);
     }
@@ -954,5 +1062,9 @@ export function useForYouData() {
     // Rich mentions feed used by RecommendedPanel (Jira "Reply to mentions"
     // parity — see src/components/for-you/atlaskit/RecommendedPanel.tsx).
     recommendedMentions,
+    // Account-scoped project list. Stable across every tab switch — the
+    // Recommended projects strip consumes this so it doesn't rebuild from
+    // the active tab's filtered items on every click.
+    allUserProjects,
   };
 }
