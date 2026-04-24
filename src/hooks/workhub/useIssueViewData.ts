@@ -130,7 +130,7 @@ export function useIssueViewData(
   return {
     items: filteredItems,
     itemsLoading,
-    selectedItem,
+    selectedItem: resolvedItem,
     parentItem,
     children,
     childrenLoading,
