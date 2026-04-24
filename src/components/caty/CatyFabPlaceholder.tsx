@@ -11,29 +11,8 @@ import '@/styles/caty.css';
 export function CatyFabPlaceholder() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleAction = (action: string) => {
-    console.log('Caty action:', action);
-    // Handle capacity planning actions here
-    switch (action) {
-      case 'extend-all':
-        console.log('Extending all contracts...');
-        break;
-      case 'review':
-        console.log('Opening individual review...');
-        break;
-      case 'assign':
-        console.log('Assigning to project...');
-        break;
-      case 'compare':
-        console.log('Comparing skills...');
-        break;
-      case 'live-chat':
-        console.log('Starting live chat...');
-        break;
-      case 'schedule':
-        console.log('Opening scheduler...');
-        break;
-    }
+  const handleAction = (_action: string) => {
+    // TODO: wire capacity planning actions
   };
 
   return (
