@@ -65,6 +65,7 @@
     "@atlaskit/side-navigation": "^11.2.0",
     "@atlaskit/spinner": "^19.1.2",
     "@atlaskit/tabs": "^19.1.0",
+    "@atlaskit/textarea": "^7.1.0",
     "@atlaskit/textfield": "^6.7.0",
     "@atlaskit/toggle": "^15.6.0",
     "@atlaskit/tokens": "^13.0.0",
