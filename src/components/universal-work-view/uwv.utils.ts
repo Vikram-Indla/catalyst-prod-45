@@ -16,6 +16,41 @@ import type { UWVColumn, UWVItem } from './uwv.types';
 
 /** UWV row height — matches BacklogPage compact density. */
 export const JIRA_ROW_HEIGHT = 36;
+
+/** Hub source → human label (used by legacy UWVRow / UWVExport). */
+export function hubLabel(hub?: string | null): string {
+  switch ((hub ?? '').toLowerCase()) {
+    case 'projecthub': return 'Project Hub';
+    case 'producthub': return 'Product Hub';
+    case 'taskhub': return 'Task Hub';
+    case 'incidenthub': return 'Incident Hub';
+    case 'testhub': return 'Test Hub';
+    case 'releasehub': return 'Release Hub';
+    default: return hub ?? '—';
+  }
+}
+
+/** Hub source → accent colour (legacy UWVRow). */
+export function hubColour(hub?: string | null): string {
+  switch ((hub ?? '').toLowerCase()) {
+    case 'projecthub': return '#2563EB';
+    case 'producthub': return '#3F3F46';
+    case 'taskhub': return '#D4D4D8';
+    case 'incidenthub': return '#DC2626';
+    case 'testhub': return '#0D9488';
+    case 'releasehub': return '#7C3AED';
+    default: return '#64748B';
+  }
+}
+
+/** Issue type → hub source bucket (legacy UWVRow). */
+export function hubTypeFromIssueType(issueType?: string | null): string {
+  const t = (issueType ?? '').toLowerCase();
+  if (t.includes('incident')) return 'incidenthub';
+  if (t.includes('test')) return 'testhub';
+  if (t.includes('task') && !t.includes('sub')) return 'taskhub';
+  return 'projecthub';
+}
 export const JIRA_KEY_COLOR = 'var(--cp-blue)';
 export const JIRA_SUMMARY_COLOR = 'var(--fg-1)';
 
