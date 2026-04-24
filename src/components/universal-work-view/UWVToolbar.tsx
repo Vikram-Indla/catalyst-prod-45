@@ -375,6 +375,21 @@ export function UWVToolbar({
               </Button>
             )}
           />
+          <label style={{ fontSize: 12, color: '#6B778C', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            Group by:
+            <select
+              value={groupBy}
+              onChange={(e) => onGroupByChange(e.target.value as UWVGroupBy)}
+              style={{ height: 28, padding: '0 6px', fontSize: 13, border: '1px solid #DFE1E6', borderRadius: 3, background: '#FFFFFF', color: '#172B4D', fontFamily: 'inherit' }}
+            >
+              <option value="none">None</option>
+              <option value="status">Status</option>
+              <option value="parent">Parent</option>
+              <option value="assignee">Assignee</option>
+              <option value="priority">Priority</option>
+              <option value="type">Type</option>
+            </select>
+          </label>
 
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>
             <UWVExport items={allItems} columns={columns} title={title} />
