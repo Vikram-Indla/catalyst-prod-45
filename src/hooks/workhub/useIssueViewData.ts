@@ -5,7 +5,7 @@
  * Handles: item list, selected item detail, comments, links, history, children.
  */
 import { useMemo } from 'react';
-import { useProjectAllWorkItems, useWorkItemChildren } from '@/hooks/useProjectListItems';
+import { useProjectAllWorkItems, useWorkItemChildren, useWorkItem } from '@/hooks/useProjectListItems';
 import { useWhComments, useWhLinks, useWhHistory, useWhWorkLogs, useCreateComment, useLogWork } from '@/hooks/workhub/useAllWork';
 import type { AllWorkItem } from '@/types/allwork.types';
 
