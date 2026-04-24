@@ -10,6 +10,7 @@ import { UWVToolbar } from './UWVToolbar';
 import { UWVTable } from './UWVTable';
 import { useUWVData } from './useUWVData';
 import { useUWVPrefs } from './useUWVPrefs';
+import { classifyType, type UWVGroupBy } from './uwv.utils';
 import type { UWVParams, UWVSort } from './uwv.types';
 
 interface Props {
