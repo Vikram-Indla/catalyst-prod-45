@@ -108,8 +108,8 @@ export function useIssueViewData(
   }, [rawChildren]);
 
   // Derive lookup IDs — wh_ tables use item.id, ph_issues fallback uses issue_key
-  const itemId = selectedItem?.id ?? null;
-  const issueKey = selectedItem?.issue_key ?? null;
+  const itemId = resolvedItem?.id ?? null;
+  const issueKey = resolvedItem?.issue_key ?? null;
 
   // ─── Links (raw wh_work_item_links rows) ───
   const { data: links = [], isLoading: linksLoading } = useWhLinks(itemId);
