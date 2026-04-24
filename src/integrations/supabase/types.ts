@@ -36455,7 +36455,7 @@ export type Database = {
           readiness_pct: number | null
           release_date: string | null
           release_manager_id: string | null
-          release_vehicle_id: string
+          release_vehicle_id: string | null
           scope_creep_percent: number | null
           start_date: string | null
           status: Database["public"]["Enums"]["release_status"] | null
@@ -36499,7 +36499,7 @@ export type Database = {
           readiness_pct?: number | null
           release_date?: string | null
           release_manager_id?: string | null
-          release_vehicle_id: string
+          release_vehicle_id?: string | null
           scope_creep_percent?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
@@ -36543,7 +36543,7 @@ export type Database = {
           readiness_pct?: number | null
           release_date?: string | null
           release_manager_id?: string | null
-          release_vehicle_id?: string
+          release_vehicle_id?: string | null
           scope_creep_percent?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["release_status"] | null
