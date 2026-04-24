@@ -23,8 +23,9 @@
  * ───────────
  *  - Left 32px tile = <WorkItemIcon> (IMMUTABLE per CLAUDE.md §11) — the
  *    work-item TYPE icon (task/story/epic/etc). Never a project glyph here.
- *  - Small inline project pill renders <ProjectKindIcon size=14> + project
- *    name, mirroring Jira's recent-work breadcrumb.
+ *  - Project breadcrumb is plain subtle text next to the key — Jira's
+ *    /jira/for-you DOM (April 2026) renders no icon and no pill in the
+ *    row's project slot, just text in `color.text.subtle`.
  *
  * Star behavior
  * ─────────────
@@ -47,7 +48,6 @@ import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
 import { Star, StarOff } from 'lucide-react';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
-import ProjectKindIcon, { pickProjectKind } from '@/components/shared/ProjectKindIcon';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import type { WorkItem } from '@/hooks/useForYouData';
 
@@ -77,7 +77,6 @@ function statusToAppearance(status: string): LozengeAppearance {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false }: ForYouRowProps) {
-  const projectKind = pickProjectKind(item.projectKey, item.issueType);
   const avatarUrl = resolveAvatarUrl(item.assignee.name) || undefined;
   const isStarred = !!item.starred;
   const [isActive, setIsActive] = useState(false);
@@ -168,25 +167,21 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             {item.key}
           </span>
           {!hideProject && (
+            // Jira parity: project name renders as plain subtle text
+            // next to the key — no pill, no icon. This is the recent-work
+            // breadcrumb pattern in Jira's For You rows (April 2026 DOM).
             <Tooltip content={item.project}>
               <span
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  paddingInline: 6,
-                  backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
-                  borderRadius: 4,
-                  font: `500 12px/16px "Inter", system-ui, sans-serif`,
-                  color: token('color.text.subtle', '#626F86'),
+                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                  color: token('color.text.subtle', '#505258'),
                   maxWidth: 180,
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                 }}
               >
-                <ProjectKindIcon kind={projectKind} size={14} />
-                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.project}</span>
+                {item.project}
               </span>
             </Tooltip>
           )}

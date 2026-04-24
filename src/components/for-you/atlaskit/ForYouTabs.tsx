@@ -1,12 +1,20 @@
 /**
- * ForYouTabs — the 5-tab pill strip at the top of the For You page.
+ * ForYouTabs — the 5-tab pill cluster at the top of the For You page.
+ *
+ * Parity target (from /jira-compare 2026-04-24, Jira DOM ground truth):
+ *   - Container: inline-flex, bg rgba(5,21,36,0.06) (== `color.background.neutral`),
+ *     radius 8, padding 4, gap 4 — hugs its content width (NOT full-width).
+ *   - Each tab: height 24, padding 2px 12px, radius 6, font 13.33px/normal
+ *     weight 400 "Atlassian Sans" (mapped to Inter in Catalyst's typography).
+ *   - Rest: transparent bg. Hover: `color.background.neutral.hovered`.
+ *     Selected: white bg + 0.12 opacity shadow — the "pill" look.
+ *   - Counter: inline with label (e.g. "Assigned to me99" in Jira DOM —
+ *     no separator, no separate badge). We keep a subtle separation here
+ *     via a small inline chip for readability while honouring the inline
+ *     layout with 2px gap.
  *
  * Tab order mirrors Jira exactly (April 2026):
  *   Recommended · Assigned to me (99) · Starred · Worked on · Viewed
- *
- * Counters appear only on tabs with meaningful quantities — Assigned and
- * Starred always show a count; the others stay label-only. When the count
- * exceeds 99 we print "99+" to match Jira's overflow treatment.
  *
  * Persistence
  * ───────────
@@ -42,28 +50,34 @@ interface ForYouTabsProps {
 
 export default function ForYouTabs({ activeTab, tabCounts, onChange }: ForYouTabsProps) {
   return (
-    <div
-      role="tablist"
-      aria-label="For You tabs"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 4,
-        borderBottom: `2px solid ${token('color.border', '#DFE1E6')}`,
-        paddingInline: 0,
-        marginBlockEnd: 16,
-        overflowX: 'auto',
-      }}
-    >
-      {FOR_YOU_TAB_ORDER.map(tab => (
-        <TabButton
-          key={tab.id}
-          tab={tab}
-          isActive={activeTab === tab.id}
-          count={tabCounts[tab.id] ?? 0}
-          onClick={() => onChange(tab.id)}
-        />
-      ))}
+    // Outer wrapper kept at page width so we can left-align the inline
+    // pill cluster without it stretching. The inner role="tablist" is the
+    // cluster itself — that's what Jira returns as its tablist.
+    <div style={{ display: 'flex', marginBlockEnd: 16 }}>
+      <div
+        role="tablist"
+        aria-label="For You tabs"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 4,
+          padding: 4,
+          background: token('color.background.neutral', 'rgba(5,21,36,0.06)'),
+          borderRadius: 8,
+          height: 32,
+          boxSizing: 'border-box',
+        }}
+      >
+        {FOR_YOU_TAB_ORDER.map(tab => (
+          <TabButton
+            key={tab.id}
+            tab={tab}
+            isActive={activeTab === tab.id}
+            count={tabCounts[tab.id] ?? 0}
+            onClick={() => onChange(tab.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -84,6 +98,14 @@ function TabButton({
   const [hover, setHover] = React.useState(false);
   const showCounter = tab.showCount && count > 0;
 
+  // Selected: elevated-white pill. Hover (only when not selected): faint
+  // neutral bg. Rest: transparent.
+  const background = isActive
+    ? token('elevation.surface', '#FFFFFF')
+    : hover
+      ? token('color.background.neutral.hovered', 'rgba(11,18,14,0.14)')
+      : 'transparent';
+
   return (
     <button
       type="button"
@@ -98,26 +120,26 @@ function TabButton({
         position: 'relative',
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
-        padding: '10px 12px',
-        marginBlockEnd: -2,        // overlap the bottom border by the indicator
-        background: 'transparent',
+        gap: 4,
+        height: 24,
+        padding: '2px 12px',
+        background,
         border: 'none',
+        borderRadius: 6,
         cursor: 'pointer',
-        font: `500 14px/20px "Inter", system-ui, sans-serif`,
-        color: isActive
-          ? token('color.text.selected', '#0C66E4')
-          : hover
-            ? token('color.text', '#172B4D')
-            : token('color.text.subtle', '#626F86'),
-        borderBottom: `2px solid ${
-          isActive
-            ? token('color.border.selected', '#0C66E4')
-            : 'transparent'
-        }`,
+        // 13.33px / line-height normal / weight 400 — matches Jira's
+        // "Atlassian Sans 13.33px 400" on the tab text, routed through
+        // Catalyst's Inter.
+        font: `400 13.33px/normal "Inter", system-ui, sans-serif`,
+        color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
-        transition: 'color 150ms ease, border-color 150ms ease',
+        // Only the selected pill gets a shadow — the visual lift that
+        // distinguishes it inside the neutral container.
+        boxShadow: isActive
+          ? '0 1px 1px rgba(9,30,66,0.12), 0 0 1px rgba(9,30,66,0.16)'
+          : 'none',
+        transition: 'background-color 150ms ease, box-shadow 150ms ease',
       }}
     >
       {tab.label}
@@ -127,16 +149,14 @@ function TabButton({
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
-            minWidth: 20,
-            height: 18,
-            padding: '0 6px',
+            minWidth: 16,
+            height: 16,
+            padding: '0 4px',
             borderRadius: 999,
             background: isActive
-              ? token('color.background.selected', '#E9F2FF')
-              : token('elevation.surface.sunken', '#F1F2F4'),
-            color: isActive
-              ? token('color.text.selected', '#0C66E4')
-              : token('color.text.subtle', '#626F86'),
+              ? token('color.background.neutral', 'rgba(5,21,36,0.06)')
+              : token('color.background.neutral.subtle', 'transparent'),
+            color: token('color.text.subtle', '#505258'),
             font: `600 11px/14px "Inter", system-ui, sans-serif`,
           }}
         >
