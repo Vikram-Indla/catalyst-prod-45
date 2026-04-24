@@ -313,7 +313,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
 
       const { data: epics } = await (supabase as any)
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_user_id, assignee_display_name')
+        .select('id, issue_key, summary, status, status_category, assignee_user_id, assignee_display_name, due_date')
         .eq('issue_type', 'Epic')
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
