@@ -181,7 +181,15 @@ export function ModalTitle({ children }: { children: ReactNode }) {
 // ── ModalBody ────────────────────────────────────────────────────────────────
 export function ModalBody({ children }: { children: ReactNode }) {
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '16px 24px' }}>
+    <div style={{
+      flex: 1,
+      overflowY: 'auto',
+      padding: '16px 24px',
+      // Prevents scroll events from bubbling to the locked body (document.body overflow:hidden).
+      // Without this, the modal scroll feels laggy because events are captured/cancelled.
+      overscrollBehavior: 'contain',
+      WebkitOverflowScrolling: 'touch',
+    }}>
       {children}
     </div>
   );

@@ -1125,24 +1125,24 @@ export function CreateStoryModal({
                       inputId="cs-parent"
                       defaultOptions
                       loadOptions={async (input: string) => {
-                        // STR-004: Query catalyst_issues (same table as insert) not ph_issues.
-                        // catalyst_issues uses project_id (UUID), not project_key (string).
-                        if (!form.projectId) return [];
+                        // Epics live in ph_issues (Jira-synced). Filter by project_key.
+                        // resolvedKey = the Jira project key string e.g. "BAU"
+                        if (!resolvedKey) return [];
                         const q = supabase
-                          .from('catalyst_issues')
-                          .select('id, issue_key, title, issue_type')
-                          .eq('project_id', form.projectId)
+                          .from('ph_issues')
+                          .select('id, issue_key, summary, issue_type')
+                          .eq('project_key', resolvedKey)
                           .ilike('issue_type', 'Epic')
-                          .order('issue_key', { ascending: false })
-                          .limit(20);
+                          .order('jira_updated_at', { ascending: false })
+                          .limit(30);
                         if (input.trim()) {
-                          q.or(`issue_key.ilike.%${input}%,title.ilike.%${input}%`);
+                          q.or(`issue_key.ilike.%${input}%,summary.ilike.%${input}%`);
                         }
                         const { data, error } = await q;
                         if (error) return [];
                         return (data ?? []).map((d: any) => ({
                           value: d.id,
-                          label: d.title,      // catalyst_issues uses 'title' not 'summary'
+                          label: d.summary,
                           sublabel: d.issue_key,
                           icon: <JiraIssueTypeIcon type="Epic" size={14} />,
                         }));
@@ -1213,20 +1213,12 @@ export function CreateStoryModal({
                         </Box>
                       }
                     >
+                      {/* Identical pattern to StoryDetailModal — no appearance override */}
                       <EpicDescriptionEditor
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Add a description..."
-                        appearance="comment"
                         onSave={(adfJson: string) => {
-                          try {
-                            const parsed = JSON.parse(adfJson);
-                            updateField('descriptionAdf', parsed);
-                            updateField('description', JSON.stringify(parsed));
-                          } catch { /* noop */ }
-                        }}
-                        onChange={(adfJson: string) => {
-                          // Auto-sync on every keystroke — no inner Save click needed
                           try {
                             const parsed = JSON.parse(adfJson);
                             updateField('descriptionAdf', parsed);
@@ -1332,6 +1324,7 @@ export function CreateStoryModal({
                         <Box xcss={reporterReadonlyBoxStyles}>
                           <MiniAvatar
                             name={reporter.full_name ?? reporter.email ?? '?'}
+                            avatarUrl={(reporter as any).avatar_url ?? null}
                           />
                           <span>
                             {reporter.full_name ?? reporter.email ?? '—'}
