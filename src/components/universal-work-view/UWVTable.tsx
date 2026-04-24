@@ -1,23 +1,40 @@
 // @ts-nocheck
 /**
- * UWVTable — virtualized grid using react-window FixedSizeList.
+ * UWVTable — pixel-perfect Project Backlog parity.
  *
- * Brought to PARITY with AllWorkTable.tsx (Project Backlog table):
- *   - 40px rows (JIRA_ROW_HEIGHT)
- *   - Header: 12px / 600 / #6B778C / 2px #C1C7D0 border / #F7F8F9 bg
- *   - Atlaskit checkbox icon-only (label visually hidden)
- *   - Column resize via right-edge drag handle (per-column, persisted in local state)
- *   - Width=0 sentinel → '1fr' (Summary)
+ * Renders the canonical <JiraTable> with the same cell renderers used on
+ * /project-hub/:key/backlog (BacklogPage.atlaskit.tsx). Read-only: no edit
+ * affordances, since UWV rows are 100% Jira-synced and any inline mutation
+ * would immediately error.
+ *
+ * Supports group-by (status / priority / parent / assignee / type) and
+ * hierarchical depth indent for parent → child nesting.
  */
 
-import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
-import { FixedSizeList } from 'react-window';
-import { ArrowUp, ArrowDown } from 'lucide-react';
-import Checkbox from '@atlaskit/checkbox';
+import React, { useMemo, useState, useCallback } from 'react';
 import EmptyState from '@atlaskit/empty-state';
-import Spinner from '@atlaskit/spinner';
-import { UWVRow } from './UWVRow';
-import { JIRA_ROW_HEIGHT } from './uwv.utils';
+import {
+  JiraTable,
+  makeKeyCell,
+  makeSummaryCell,
+  makeStatusCell,
+  makeAssigneeCell,
+  makePriorityCell,
+  makeDateCell,
+  makeCommentsCell,
+  makeParentCell,
+  makeTypeIconCell,
+  makeCaretCell,
+} from '@/components/shared/JiraTable';
+import type { Column, RowGroup } from '@/components/shared/JiraTable';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import {
+  classifyType,
+  jiraIconType,
+  lozengeAppearance,
+  buildGroups,
+  type UWVGroupBy,
+} from './uwv.utils';
 import type { UWVColumn, UWVItem, UWVSort } from './uwv.types';
 
 interface UWVTableProps {
@@ -32,9 +49,8 @@ interface UWVTableProps {
   density: 'comfortable' | 'compact';
   isLoadingMore: boolean;
   totalCount: number;
+  groupBy: UWVGroupBy;
 }
-
-const HEADER_HEIGHT = 44;
 
 export function UWVTable({
   columns,
@@ -48,168 +64,237 @@ export function UWVTable({
   density,
   isLoadingMore,
   totalCount,
+  groupBy,
 }: UWVTableProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerHeight, setContainerHeight] = useState(0);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
-
-  const rowHeight = density === 'compact' ? 36 : JIRA_ROW_HEIGHT;
-
-  // ─── Column width state (resizable) ──────────────────────────────────
-  // Seeded from columns[].width. Width 0 = fluid (treated as '1fr').
-  const [colWidths, setColWidths] = useState<Record<string, number>>(() =>
-    Object.fromEntries(columns.map((c) => [c.fieldId, c.width])),
-  );
-
-  // Reseed when the visible column set changes (e.g., column picker toggle).
-  useEffect(() => {
-    setColWidths((prev) => {
-      const next: Record<string, number> = { ...prev };
-      for (const c of columns) {
-        if (next[c.fieldId] == null) next[c.fieldId] = c.width;
-      }
+  // ─── Hierarchy expand/collapse ──────────────────────────────────────────
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const toggleExpanded = useCallback((row: UWVItem) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(row.id)) next.delete(row.id);
+      else next.add(row.id);
       return next;
     });
-  }, [columns]);
-
-  const startResize = useCallback(
-    (e: React.MouseEvent, fieldId: string) => {
-      e.preventDefault();
-      e.stopPropagation();
-      const startX = e.clientX;
-      const startWidth = colWidths[fieldId] ?? 120;
-      // If column was fluid (width=0), use measured size as the starting point.
-      const effectiveStart = startWidth === 0 ? 240 : startWidth;
-      const onMove = (mv: MouseEvent) => {
-        const diff = mv.clientX - startX;
-        setColWidths((w) => ({
-          ...w,
-          [fieldId]: Math.max(48, effectiveStart + diff),
-        }));
-      };
-      const onUp = () => {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-        document.body.style.cursor = '';
-        document.body.style.userSelect = '';
-      };
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-      document.body.style.cursor = 'col-resize';
-      document.body.style.userSelect = 'none';
-    },
-    [colWidths],
-  );
-
-  useEffect(() => {
-    const update = () => {
-      if (containerRef.current) {
-        setContainerHeight(containerRef.current.clientHeight - HEADER_HEIGHT);
-      }
-    };
-    update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
   }, []);
 
-  const gridTemplate = useMemo(
-    () =>
-      `40px ${columns
-        .map((c) => {
-          const w = colWidths[c.fieldId] ?? c.width;
-          return w === 0 ? '1fr' : `${w}px`;
-        })
-        .join(' ')}`,
-    [columns, colWidths],
+  // ─── Children index (parentKey → rows) ──────────────────────────────────
+  const childrenByParentKey = useMemo(() => {
+    const m = new Map<string, UWVItem[]>();
+    for (const it of items) {
+      if (!it.parentKey) continue;
+      const arr = m.get(it.parentKey);
+      if (arr) arr.push(it);
+      else m.set(it.parentKey, [it]);
+    }
+    return m;
+  }, [items]);
+
+  const hasChildren = useCallback(
+    (row: UWVItem) => childrenByParentKey.has(row.key),
+    [childrenByParentKey],
   );
 
-  const handleSort = useCallback(
-    (fieldId: string) => {
-      const current = sort[0];
-      if (current?.fieldId === fieldId) {
-        onSortChange([{ fieldId, direction: current.direction === 'asc' ? 'desc' : 'asc' }]);
-      } else {
-        onSortChange([{ fieldId, direction: 'asc' }]);
+  // ─── Visible row computation respecting expanded state ─────────────────
+  // Top-level rows = those whose parent is NOT in the result set.
+  const visibleRows = useMemo(() => {
+    const idsByKey = new Map(items.map((i) => [i.key, i]));
+    const top = items.filter((i) => !i.parentKey || !idsByKey.has(i.parentKey));
+    const out: UWVItem[] = [];
+    const walk = (row: UWVItem) => {
+      out.push(row);
+      if (expandedIds.has(row.id)) {
+        const kids = childrenByParentKey.get(row.key) ?? [];
+        for (const k of kids) walk(k);
       }
+    };
+    for (const t of top) walk(t);
+    return out;
+  }, [items, expandedIds, childrenByParentKey]);
+
+  const getRowDepth = useCallback(
+    (row: UWVItem) => {
+      // Two-level: anything with a parent in-set sits at depth 1.
+      if (!row.parentKey) return 0;
+      return items.some((i) => i.key === row.parentKey) ? 1 : 0;
     },
-    [sort, onSortChange],
+    [items],
   );
 
-  const allSelected = items.length > 0 && items.every((i) => selectedIds.has(i.id));
-  const someSelected = !allSelected && items.some((i) => selectedIds.has(i.id));
+  // ─── Group buckets ──────────────────────────────────────────────────────
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const toggleGroup = useCallback((id: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
 
-  const toggleAll = (checked: boolean) => {
-    if (checked) onSelectChange(new Set(items.map((i) => i.id)));
-    else onSelectChange(new Set());
-  };
+  const groups: RowGroup<UWVItem>[] | null = useMemo(() => {
+    const built = buildGroups(visibleRows, groupBy);
+    if (!built) return null;
+    return built.map((g) => ({ id: g.id, label: g.label, rows: g.rows }));
+  }, [visibleRows, groupBy]);
 
-  const toggleSelect = (id: string) => {
-    const next = new Set(selectedIds);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    onSelectChange(next);
-  };
-
-  const toggleExpand = (id: string) => {
-    const next = new Set(expanded);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setExpanded(next);
-  };
-
-  const onScroll = useCallback(
-    ({ scrollOffset }: { scrollOffset: number }) => {
-      if (!items.length) return;
-      const totalHeight = items.length * rowHeight;
-      const visibleEnd = scrollOffset + containerHeight;
-      if (visibleEnd / totalHeight >= 0.75) {
-        onLoadMore();
-      }
-    },
-    [items.length, rowHeight, containerHeight, onLoadMore],
+  // ─── Visible column set (driven by toolbar prefs) ─────────────────────
+  const visibleColumnIds = useMemo(
+    () => new Set(columns.filter((c) => c.visible).map((c) => c.fieldId)),
+    [columns],
   );
 
-  if (items.length === 0) {
-    return (
-      <div
-        ref={containerRef}
-        style={{
-          flex: 1,
-          minHeight: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'var(--bg-app)',
-        }}
-      >
-        <EmptyState
-          header="No work items"
-          description="Adjust filters or scope to see more items."
-        />
-      </div>
-    );
-  }
+  // ─── Column schema (canonical JiraTable cell renderers, read-only) ─────
+  const tableColumns = useMemo<Column<UWVItem>[]>(
+    () => [
+      {
+        id: '__caret',
+        label: '',
+        width: 3,
+        align: 'center',
+        alwaysVisible: true,
+        cell: makeCaretCell({
+          hasChildren,
+          isExpanded: (r) => expandedIds.has(r.id),
+          toggle: toggleExpanded,
+        }),
+      },
+      {
+        id: '__type',
+        label: '',
+        width: 3,
+        align: 'center',
+        alwaysVisible: true,
+        cell: makeTypeIconCell((r: UWVItem) => (
+          <JiraIssueTypeIcon type={jiraIconType(r.issueType)} size={16} />
+        )),
+      },
+      {
+        id: 'key',
+        label: 'Key',
+        width: 9,
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.key,
+        cell: makeKeyCell((r: UWVItem) => r.key),
+      },
+      {
+        id: 'summary',
+        label: 'Summary',
+        width: 28,
+        sortable: true,
+        alwaysVisible: true,
+        accessor: (r) => r.summary,
+        cell: makeSummaryCell((r: UWVItem) => r.summary),
+      },
+      {
+        id: 'status',
+        label: 'Status',
+        width: 13,
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.status,
+        cell: makeStatusCell(
+          (r: UWVItem) => r.status || null,
+          (s) => lozengeAppearance('', s ?? ''),
+        ),
+      },
+      {
+        id: 'comments',
+        label: 'Comments',
+        width: 8,
+        defaultVisible: false,
+        cell: makeCommentsCell((r: UWVItem) => r.commentCount ?? 0),
+      },
+      {
+        id: 'parent',
+        label: 'Parent',
+        width: 14,
+        defaultVisible: true,
+        accessor: (r) => r.parentKey,
+        cell: makeParentCell((r: UWVItem) =>
+          r.parentKey
+            ? {
+                key: r.parentKey,
+                label: '',
+                icon: <JiraIssueTypeIcon type="Epic" size={12} />,
+              }
+            : null,
+        ),
+      },
+      {
+        id: 'assignee',
+        label: 'Assignee',
+        width: 13,
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.assigneeName,
+        cell: makeAssigneeCell((r: UWVItem) =>
+          r.assigneeName ? { name: r.assigneeName, avatarUrl: r.assigneeAvatar ?? null } : null,
+        ),
+      },
+      {
+        id: 'priority',
+        label: 'Priority',
+        width: 5,
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.priority,
+        cell: makePriorityCell((r: UWVItem) => r.priority ?? null),
+      },
+      {
+        id: 'updated',
+        label: 'Updated',
+        width: 7,
+        sortable: true,
+        defaultVisible: true,
+        accessor: (r) => r.updated,
+        cell: makeDateCell((r: UWVItem) => r.updated ?? null),
+      },
+      {
+        id: 'created',
+        label: 'Created',
+        width: 7,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.created,
+        cell: makeDateCell((r: UWVItem) => r.created ?? null),
+      },
+      {
+        id: 'dueDate',
+        label: 'Due date',
+        width: 7,
+        sortable: true,
+        defaultVisible: false,
+        accessor: (r) => r.dueDate,
+        cell: makeDateCell((r: UWVItem) => r.dueDate ?? null),
+      },
+    ],
+    [hasChildren, expandedIds, toggleExpanded],
+  );
 
-  const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-    const item = items[index];
-    if (!item) return null;
-    const hasChildren = items.some((i) => i.parentKey === item.key);
-    return (
-      <div style={style}>
-        <UWVRow
-          item={item}
-          columns={columns}
-          gridTemplate={gridTemplate}
-          isSelected={selectedIds.has(item.id)}
-          isExpanded={expanded.has(item.id)}
-          hasChildren={hasChildren}
-          onToggleSelect={() => toggleSelect(item.id)}
-          onToggleExpand={() => toggleExpand(item.id)}
-          onClick={() => onItemClick(item.key)}
-        />
-      </div>
-    );
-  };
+  // Sort state translation (uwv.types uses fieldId/asc-desc; JiraTable uses key/ASC-DESC).
+  const sf = sort[0];
+  const sortKey = sf?.fieldId;
+  const sortOrder = sf ? (sf.direction === 'asc' ? 'ASC' : 'DESC') : undefined;
+
+  const handleSortChange = useCallback(
+    (k: string, ord: 'ASC' | 'DESC') => {
+      onSortChange([{ fieldId: k, direction: ord === 'ASC' ? 'asc' : 'desc' }]);
+    },
+    [onSortChange],
+  );
+
+  // Infinite scroll trigger — lightweight scroll listener on container.
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 200) onLoadMore();
+    };
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
+  }, [onLoadMore]);
 
   return (
     <div
@@ -217,149 +302,36 @@ export function UWVTable({
       style={{
         flex: 1,
         minHeight: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--bg-app)',
-        overflow: 'hidden',
+        overflow: 'auto',
+        background: '#FFFFFF',
+        padding: '4px 16px 16px',
       }}
-      role="grid"
-      aria-rowcount={totalCount}
     >
-      {/* Sticky header — matches JiraTable header style */}
-      <div
-        role="row"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: gridTemplate,
-          background: '#F7F8F9',
-          height: HEADER_HEIGHT,
-          maxHeight: HEADER_HEIGHT,
-          borderBottom: '2px solid #C1C7D0',
-          position: 'sticky',
-          top: 0,
-          zIndex: 2,
-          flexShrink: 0,
-          alignItems: 'center',
-        }}
-      >
-        <div
-          role="columnheader"
-          aria-label="Select all"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Checkbox
-            isChecked={allSelected}
-            isIndeterminate={someSelected && !allSelected}
-            onChange={(e: any) => toggleAll(e.currentTarget.checked)}
-            label=""
+      <JiraTable<UWVItem>
+        columns={tableColumns}
+        data={groups ? undefined : visibleRows}
+        groups={groups ?? undefined}
+        collapsedGroups={collapsedGroups}
+        onToggleGroup={toggleGroup}
+        columnVisibility={visibleColumnIds}
+        getRowId={(r) => r.id}
+        getRowDepth={getRowDepth}
+        onRowClick={(r) => onItemClick(r.key)}
+        selectable
+        selection={selectedIds}
+        onSelectionChange={onSelectChange}
+        sortKey={sortKey}
+        sortOrder={sortOrder as any}
+        onSortChange={handleSortChange}
+        density={density === 'compact' ? 'compact' : 'comfortable'}
+        ariaLabel="Universal work view"
+        emptyView={
+          <EmptyState
+            header="No work items"
+            description="Adjust filters or scope to see more items."
           />
-        </div>
-        {columns.map((col) => {
-          const sf = sort[0];
-          const isSorted = sf?.fieldId === col.fieldId;
-          return (
-            <div
-              key={col.fieldId}
-              role="columnheader"
-              aria-sort={
-                col.sortable && isSorted
-                  ? sf!.direction === 'asc'
-                    ? 'ascending'
-                    : 'descending'
-                  : undefined
-              }
-              style={{
-                position: 'relative',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-              }}
-            >
-              <button
-                type="button"
-                onClick={() => col.sortable && handleSort(col.fieldId)}
-                style={{
-                  flex: 1,
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  background: 'transparent',
-                  border: 'none',
-                  padding: '0 8px',
-                  fontSize: 12,
-                  fontWeight: 600,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
-                  color: '#6B778C',
-                  cursor: col.sortable ? 'pointer' : 'default',
-                  textAlign: 'left',
-                  userSelect: 'none',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {col.label}
-                {col.sortable && isSorted ? (
-                  sf!.direction === 'asc' ? (
-                    <ArrowUp size={12} />
-                  ) : (
-                    <ArrowDown size={12} />
-                  )
-                ) : null}
-              </button>
-              {/* Resize handle — right edge */}
-              <div
-                role="separator"
-                aria-orientation="vertical"
-                aria-label={`Resize ${col.label}`}
-                onMouseDown={(e) => startResize(e, col.fieldId)}
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  width: 6,
-                  height: '100%',
-                  cursor: 'col-resize',
-                  zIndex: 3,
-                  userSelect: 'none',
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Virtualized rows */}
-      {containerHeight > 0 && (
-        <FixedSizeList
-          height={containerHeight}
-          width="100%"
-          itemCount={items.length}
-          itemSize={rowHeight}
-          onScroll={onScroll}
-          overscanCount={6}
-        >
-          {Row}
-        </FixedSizeList>
-      )}
-
-      {isLoadingMore && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: 12,
-            borderTop: '1px solid var(--bd-subtle, #292929)',
-            background: 'var(--bg-1)',
-          }}
-        >
-          <Spinner size="small" />
-        </div>
-      )}
+        }
+      />
     </div>
   );
 }
