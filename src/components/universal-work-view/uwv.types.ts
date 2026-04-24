@@ -4,7 +4,7 @@
  * See spec at /docs/uwv-spec.md (Forge G7 brief).
  */
 
-export type HubSource = 'projecthub' | 'producthub' | 'incidenthub' | 'testhub';
+export type HubSource = 'projecthub' | 'producthub' | 'incidenthub' | 'testhub' | 'releasehub';
 
 export interface UWVParams {
   project: string;
@@ -20,6 +20,8 @@ export interface UWVParams {
   issueTypes?: string[];
   /** Optional explicit list of epic keys whose children should also be loaded. */
   epicKeys?: string[];
+  /** Optional data type hint for downstream consumers. */
+  dataType?: 'epics' | 'incidents' | 'defects' | 'releases' | 'overdue' | 'onhold' | 'demand';
 }
 
 export type ColumnType =

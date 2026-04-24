@@ -54,93 +54,156 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
       const items: UWVItem[] = [];
       let total = 0;
 
+      // Helper: map status name → category bucket (mirrors ph_issues semantics).
+      const mapStatusToCategory = (s?: string | null): string => {
+        const v = (s ?? '').toLowerCase();
+        if (!v) return '';
+        if (['done', 'closed', 'resolved', 'complete', 'completed'].some((k) => v.includes(k))) return 'Done';
+        if (['progress', 'review', 'doing', 'active', 'testing'].some((k) => v.includes(k))) return 'In Progress';
+        return 'To Do';
+      };
+
+      // Normalise a ph_issues row into a UWVItem.
+      const normaliseProjectRow = (
+        r: any,
+        profiles: Record<string, any>,
+        levelOverride?: 0 | 1 | 2,
+        parentKeyOverride?: string | null,
+      ): UWVItem => {
+        const profile = r.assignee_user_id ? profiles[r.assignee_user_id] : null;
+        return {
+          id: r.id,
+          key: r.issue_key,
+          summary: r.summary ?? '',
+          issueType: r.issue_type ?? 'Story',
+          status: r.status ?? '',
+          statusCategory: r.status_category ?? '',
+          assigneeId: r.assignee_user_id,
+          assigneeName:
+            profile?.display_name ?? profile?.full_name ?? r.assignee_display_name ?? null,
+          assigneeAvatar: profile?.avatar_url ?? null,
+          parentKey: parentKeyOverride !== undefined ? parentKeyOverride : r.parent_key,
+          priority: r.priority,
+          created: r.jira_created_at,
+          updated: r.jira_updated_at,
+          dueDate: r.due_date,
+          commentCount: 0,
+          hubSource: 'projecthub',
+          level: levelOverride !== undefined ? levelOverride : (r.parent_key ? 1 : 0),
+        };
+      };
+
+      const PROJECT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
+             assignee_user_id, assignee_display_name, parent_key, project_key,
+             jira_created_at, jira_updated_at, due_date, priority`;
+
       // ─── ProjectHub source ────────────────────────────────────────────────
       if (params.hubSource.includes('projecthub')) {
-        let q = (supabase as any)
-          .from('ph_issues')
-          .select(
-            `id, issue_key, summary, status, status_category, issue_type,
-             assignee_user_id, assignee_display_name, parent_key, project_key,
-             jira_created_at, jira_updated_at, due_date, priority`,
-            { count: 'exact' },
-          )
-          .eq('project_key', params.project)
-          .is('jira_removed_at', null)
-          .is('deleted_at', null);
+        // Branch A: explicit keys → fetch parents + their children, interleave.
+        if (params.keys?.length) {
+          const keys = params.keys;
+          const [parentRes, childRes] = await Promise.all([
+            (supabase as any)
+              .from('ph_issues')
+              .select(PROJECT_SELECT, { count: 'exact' })
+              .eq('project_key', params.project)
+              .is('jira_removed_at', null)
+              .is('deleted_at', null)
+              .in('issue_key', keys),
+            (supabase as any)
+              .from('ph_issues')
+              .select(PROJECT_SELECT)
+              .eq('project_key', params.project)
+              .is('jira_removed_at', null)
+              .is('deleted_at', null)
+              .in('parent_key', keys),
+          ]);
+          if (parentRes.error) throw parentRes.error;
+          if (childRes.error) throw childRes.error;
 
-        if (statusFilter.length > 0) q = q.in('status', statusFilter);
+          const parents = parentRes.data ?? [];
+          const children = childRes.data ?? [];
+          total += parentRes.count ?? parents.length;
 
-        if (params.issueTypes && params.issueTypes.length > 0) {
-          q = q.in('issue_type', params.issueTypes);
-        }
+          const allAssigneeIds = [
+            ...parents.map((r: any) => r.assignee_user_id).filter(Boolean),
+            ...children.map((r: any) => r.assignee_user_id).filter(Boolean),
+          ];
+          const profiles = await loadAssigneeProfiles(allAssigneeIds);
 
-        // Scope filter — match gadget semantics.
-        if (params.scope === 'quarter' && params.quarter) {
-          const r = quarterRange(params.quarter);
-          if (r) {
-            q = q.gte('jira_created_at', `${r.start}T00:00:00.000Z`)
-                 .lte('jira_created_at', `${r.end}T23:59:59.999Z`);
-          }
-        }
-        if (params.scope === 'custom' && params.dateFrom) {
-          q = q.gte('jira_created_at', params.dateFrom);
-          if (params.dateTo) q = q.lte('jira_created_at', params.dateTo);
-        }
+          // Group children by their parent_key for interleaving.
+          const childrenByParent = new Map<string, any[]>();
+          children.forEach((c: any) => {
+            const pk = c.parent_key;
+            if (!pk) return;
+            if (!childrenByParent.has(pk)) childrenByParent.set(pk, []);
+            childrenByParent.get(pk)!.push(c);
+          });
 
-        if (params.keys?.length) q = q.in('issue_key', params.keys);
-
-        const sortMap: Record<string, string> = {
-          key: 'issue_key',
-          summary: 'summary',
-          status: 'status',
-          assignee: 'assignee_display_name',
-          created: 'jira_created_at',
-          updated: 'jira_updated_at',
-          dueDate: 'due_date',
-          priority: 'priority',
-        };
-        const sf = sort[0];
-        if (sf && sortMap[sf.fieldId]) {
-          q = q.order(sortMap[sf.fieldId], { ascending: sf.direction === 'asc' });
+          parents.forEach((p: any) => {
+            items.push(normaliseProjectRow(p, profiles, 0, p.parent_key ?? null));
+            const kids = childrenByParent.get(p.issue_key) ?? [];
+            kids.forEach((c: any) => {
+              items.push(normaliseProjectRow(c, profiles, 1, p.issue_key));
+            });
+          });
         } else {
-          q = q.order('issue_key', { ascending: true });
+          // Branch B: no explicit keys → existing paginated behaviour.
+          let q = (supabase as any)
+            .from('ph_issues')
+            .select(PROJECT_SELECT, { count: 'exact' })
+            .eq('project_key', params.project)
+            .is('jira_removed_at', null)
+            .is('deleted_at', null);
+
+          if (statusFilter.length > 0) q = q.in('status', statusFilter);
+
+          if (params.issueTypes && params.issueTypes.length > 0) {
+            q = q.in('issue_type', params.issueTypes);
+          }
+
+          // Scope filter — match gadget semantics.
+          if (params.scope === 'quarter' && params.quarter) {
+            const r = quarterRange(params.quarter);
+            if (r) {
+              q = q.gte('jira_created_at', `${r.start}T00:00:00.000Z`)
+                   .lte('jira_created_at', `${r.end}T23:59:59.999Z`);
+            }
+          }
+          if (params.scope === 'custom' && params.dateFrom) {
+            q = q.gte('jira_created_at', params.dateFrom);
+            if (params.dateTo) q = q.lte('jira_created_at', params.dateTo);
+          }
+
+          const sortMap: Record<string, string> = {
+            key: 'issue_key',
+            summary: 'summary',
+            status: 'status',
+            assignee: 'assignee_display_name',
+            created: 'jira_created_at',
+            updated: 'jira_updated_at',
+            dueDate: 'due_date',
+            priority: 'priority',
+          };
+          const sf = sort[0];
+          if (sf && sortMap[sf.fieldId]) {
+            q = q.order(sortMap[sf.fieldId], { ascending: sf.direction === 'asc' });
+          } else {
+            q = q.order('issue_key', { ascending: true });
+          }
+
+          q = q.range(pageParam * PAGE_SIZE, pageParam * PAGE_SIZE + PAGE_SIZE - 1);
+
+          const { data, error, count } = await q;
+          if (error) throw error;
+          total += count ?? 0;
+
+          const profiles = await loadAssigneeProfiles(
+            (data ?? []).map((r: any) => r.assignee_user_id).filter(Boolean),
+          );
+
+          items.push(...(data ?? []).map((r: any) => normaliseProjectRow(r, profiles)));
         }
-
-        q = q.range(pageParam * PAGE_SIZE, pageParam * PAGE_SIZE + PAGE_SIZE - 1);
-
-        const { data, error, count } = await q;
-        if (error) throw error;
-        total += count ?? 0;
-
-        const profiles = await loadAssigneeProfiles(
-          (data ?? []).map((r: any) => r.assignee_user_id).filter(Boolean),
-        );
-
-        items.push(
-          ...(data ?? []).map((r: any): UWVItem => {
-            const profile = r.assignee_user_id ? profiles[r.assignee_user_id] : null;
-            return {
-              id: r.id,
-              key: r.issue_key,
-              summary: r.summary ?? '',
-              issueType: r.issue_type ?? 'Story',
-              status: r.status ?? '',
-              statusCategory: r.status_category ?? '',
-              assigneeId: r.assignee_user_id,
-              assigneeName:
-                profile?.display_name ?? profile?.full_name ?? r.assignee_display_name ?? null,
-              assigneeAvatar: profile?.avatar_url ?? null,
-              parentKey: r.parent_key,
-              priority: r.priority,
-              created: r.jira_created_at,
-              updated: r.jira_updated_at,
-              dueDate: r.due_date,
-              commentCount: 0,
-              hubSource: 'projecthub',
-              level: r.parent_key ? 1 : 0,
-            };
-          }),
-        );
       }
 
       // ─── ProductHub source (initiatives / MDTs) ───────────────────────────
@@ -190,6 +253,104 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
               level: 0,
             };
           }),
+        );
+      }
+
+      // ─── TestHub source (defects) ─────────────────────────────────────────
+      if (params.hubSource.includes('testhub')) {
+        let q = (supabase as any)
+          .from('tm_defects')
+          .select(
+            'id, defect_key, title, status, severity, assignee_id, created_at, updated_at, project_id, jira_project_key',
+            { count: 'exact' },
+          );
+
+        const numericProjectId = Number(params.project);
+        if (!Number.isNaN(numericProjectId) && /^\d+$/.test(String(params.project))) {
+          q = q.eq('project_id', params.project);
+        } else {
+          q = q.eq('jira_project_key', params.project);
+        }
+
+        if (statusFilter.length > 0) q = q.in('status', statusFilter);
+        if (params.keys?.length) q = q.in('defect_key', params.keys);
+
+        q = q.range(pageParam * PAGE_SIZE, pageParam * PAGE_SIZE + PAGE_SIZE - 1);
+
+        const { data, error, count } = await q;
+        if (error) throw error;
+        total += count ?? 0;
+
+        const profiles = await loadAssigneeProfiles(
+          (data ?? []).map((r: any) => r.assignee_id).filter(Boolean),
+        );
+
+        items.push(
+          ...(data ?? []).map((r: any): UWVItem => {
+            const profile = r.assignee_id ? profiles[r.assignee_id] : null;
+            return {
+              id: r.id,
+              key: r.defect_key,
+              summary: r.title ?? '',
+              issueType: 'Defect',
+              status: r.status ?? '',
+              statusCategory: mapStatusToCategory(r.status),
+              assigneeId: r.assignee_id,
+              assigneeName: profile?.display_name ?? profile?.full_name ?? null,
+              assigneeAvatar: profile?.avatar_url ?? null,
+              parentKey: null,
+              priority: r.severity,
+              created: r.created_at,
+              updated: r.updated_at,
+              dueDate: null,
+              commentCount: 0,
+              hubSource: 'testhub',
+              level: 0,
+            };
+          }),
+        );
+      }
+
+      // ─── ReleaseHub source (releases) ─────────────────────────────────────
+      if (params.hubSource.includes('releasehub')) {
+        let q = (supabase as any)
+          .from('releases')
+          .select(
+            'id, name, status, target_date, project_id, created_at, updated_at',
+            { count: 'exact' },
+          );
+
+        if (params.project) {
+          q = q.eq('project_id', params.project);
+        }
+        if (params.keys?.length) q = q.in('id', params.keys);
+
+        q = q.range(pageParam * PAGE_SIZE, pageParam * PAGE_SIZE + PAGE_SIZE - 1);
+
+        const { data, error, count } = await q;
+        if (error) throw error;
+        total += count ?? 0;
+
+        items.push(
+          ...(data ?? []).map((r: any): UWVItem => ({
+            id: r.id,
+            key: r.id,
+            summary: r.name ?? '',
+            issueType: 'Release',
+            status: r.status ?? '',
+            statusCategory: mapStatusToCategory(r.status),
+            assigneeId: null,
+            assigneeName: null,
+            assigneeAvatar: null,
+            parentKey: null,
+            priority: null,
+            created: r.created_at,
+            updated: r.updated_at,
+            dueDate: r.target_date,
+            commentCount: 0,
+            hubSource: 'releasehub',
+            level: 0,
+          })),
         );
       }
 
