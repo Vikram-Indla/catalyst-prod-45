@@ -21,7 +21,6 @@ import {
 import { getWeekStartDate, formatWeekRange, formatT10WeekRange } from '../utils';
 import type { T10Item, T10CheckoutDecision } from '../types';
 import { useToast } from '@/hooks/use-toast';
-import '../styles/task10.css';
 import '../styles/task10-detail.css';
 
 export function T10WeekPage() {

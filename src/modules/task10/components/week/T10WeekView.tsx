@@ -14,8 +14,6 @@ import {
   useT10Items,
   useT10BufferItems,
 } from '../../hooks';
-import '../../styles/task10.css';
-
 export function T10WeekView() {
   const { listId, weekId } = useParams<{ listId: string; weekId: string }>();
   const navigate = useNavigate();
