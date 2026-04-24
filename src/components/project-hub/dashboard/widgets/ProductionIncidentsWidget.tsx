@@ -17,8 +17,8 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
-import { ExternalLink } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
   DynamicTable,
   Lozenge,
@@ -30,22 +30,32 @@ import {
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: incidents, isLoading } = useDashboardIncidents(projectId, projectKey);
+  const { openUWV } = useUWV();
 
   const footer = (
-    <a
-      href="/incident-hub"
+    <button
+      type="button"
+      onClick={() => openUWV({
+        project: projectKey,
+        hubSource: ['projecthub'],
+        issueTypes: ['Production Incident'],
+        dataType: 'incidents',
+        title: `Production Incidents · ${projectKey}`,
+      })}
       style={{
+        background: 'transparent',
+        border: 0,
+        cursor: 'pointer',
         fontSize: 12,
-        fontWeight: 500,
-        color: token('color.link', '#0052CC'),
-        textDecoration: 'none',
+        color: 'var(--cp-blue)',
+        padding: 0,
         display: 'flex',
         alignItems: 'center',
         gap: 4,
       }}
     >
-      View All in IncidentHub <ExternalLink size={11} />
-    </a>
+      View All in IncidentHub ↗
+    </button>
   );
 
   // No width hints — .dashboard-widget-body in index.css sets
