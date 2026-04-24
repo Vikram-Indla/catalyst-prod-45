@@ -5,7 +5,7 @@
  * Handles: item list, selected item detail, comments, links, history, children.
  */
 import { useMemo } from 'react';
-import { useProjectAllWorkItems, useWorkItemChildren } from '@/hooks/useProjectListItems';
+import { useProjectAllWorkItems, useWorkItemChildren, useWorkItem } from '@/hooks/useProjectListItems';
 import { useWhComments, useWhLinks, useWhHistory, useWhWorkLogs, useCreateComment, useLogWork } from '@/hooks/workhub/useAllWork';
 import type { AllWorkItem } from '@/types/allwork.types';
 
@@ -82,11 +82,20 @@ export function useIssueViewData(
     return filteredItems.find(i => i.issue_key === selectedIssueKey) ?? null;
   }, [filteredItems, selectedIssueKey]);
 
+  // ─── Fallback fetch when selected item isn't in the list (e.g. deep-link) ───
+  const isMissing = !!selectedIssueKey && !selectedItem && !itemsLoading;
+  const { data: fetchedRaw } = useWorkItem(isMissing ? selectedIssueKey : undefined);
+  const fetchedItem: AllWorkItem | null = useMemo(
+    () => (fetchedRaw ? workItemToAllWork(fetchedRaw) : null),
+    [fetchedRaw],
+  );
+  const resolvedItem = selectedItem ?? fetchedItem ?? null;
+
   // ─── Parent item ───
   const parentItem = useMemo(() => {
-    if (!selectedItem?.parent_key) return null;
-    return items.find(i => i.issue_key === selectedItem.parent_key) ?? null;
-  }, [items, selectedItem]);
+    if (!resolvedItem?.parent_key) return null;
+    return items.find(i => i.issue_key === resolvedItem.parent_key) ?? null;
+  }, [items, resolvedItem]);
 
   // ─── Children (subtasks) — useWorkItemChildren returns WorkItem[] ───
   const { data: rawChildren, isLoading: childrenLoading } = useWorkItemChildren(
@@ -99,8 +108,8 @@ export function useIssueViewData(
   }, [rawChildren]);
 
   // Derive lookup IDs — wh_ tables use item.id, ph_issues fallback uses issue_key
-  const itemId = selectedItem?.id ?? null;
-  const issueKey = selectedItem?.issue_key ?? null;
+  const itemId = resolvedItem?.id ?? null;
+  const issueKey = resolvedItem?.issue_key ?? null;
 
   // ─── Links (raw wh_work_item_links rows) ───
   const { data: links = [], isLoading: linksLoading } = useWhLinks(itemId);
@@ -121,7 +130,7 @@ export function useIssueViewData(
   return {
     items: filteredItems,
     itemsLoading,
-    selectedItem,
+    selectedItem: resolvedItem,
     parentItem,
     children,
     childrenLoading,
