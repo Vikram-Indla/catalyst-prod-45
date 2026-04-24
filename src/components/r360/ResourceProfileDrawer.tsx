@@ -3,7 +3,6 @@
  * Stage A: Shell only
  */
 
-import { useEffect } from 'react';
 import type { R360ActiveTab } from '@/pages/R360ProfilePage';
 import { OverviewTab } from './ResourceProfileDrawer.tabs/OverviewTab';
 import { BehaviouralTab } from './ResourceProfileDrawer.tabs/BehaviouralTab';
@@ -27,6 +26,5 @@ export function ResourceProfileDrawer({
   weekOffset,
   onWeekOffsetChange,
 }: ResourceProfileDrawerProps) {
-  useEffect(() => { console.log('[R360] ResourceProfileDrawer mounted'); }, []);
   return <div data-component="ResourceProfileDrawer" />;
 }

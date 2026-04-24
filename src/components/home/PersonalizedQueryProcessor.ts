@@ -208,7 +208,7 @@ async function fetchTeamWorkload(ctx: UserContext): Promise<QueryResult> {
     .not('status', 'ilike', '%done%')
     .not('status', 'ilike', '%closed%')
     .not('status', 'ilike', '%resolved%')
-    .limit(2000);
+    .limit(500);
   if (error) throw error;
 
   if (!data?.length) return {
@@ -511,7 +511,7 @@ async function fetchReleaseReadiness(ctx: UserContext): Promise<QueryResult> {
     .in('project_key', ctx.projectKeys)
     .is('jira_removed_at', null)
     .not('status', 'ilike', '%cancelled%')
-    .limit(2000);
+    .limit(500);
   if (error) throw error;
 
   if (!data?.length) return {
@@ -569,7 +569,7 @@ async function fetchProjectSummary(ctx: UserContext): Promise<QueryResult> {
 async function fetchItemByKey(key: string, ctx: UserContext): Promise<QueryResult> {
   const { data, error } = await supabase
     .from('ph_issues')
-    .select('*')
+    .select(FIELDS)
     .eq('issue_key', key)
     .is('jira_removed_at', null)
     .maybeSingle();
