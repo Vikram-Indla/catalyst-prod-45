@@ -24,7 +24,12 @@ import { UWVProvider } from "@/components/universal-work-view/UWVContext";
 const CatalystLoginPageLazy = lazy(() => import("./components/auth/login").then(m => ({ default: m.CatalystLoginPage })));
 const CatalystShell = lazy(() => import("./components/layout/CatalystShell").then(m => ({ default: m.CatalystShell })));
 const HotToaster = lazy(() => import('react-hot-toast').then(m => ({ default: m.Toaster })));
-const ForYouPage = lazy(() => import("./pages/ForYouPage"));
+// For You surface — Atlaskit/Jira-parity rebuild (Apr 2026).
+// Legacy `./pages/ForYouPage` remains in the tree for reference but is no
+// longer mounted on any route. Safe to delete once QA signs off on the new
+// surface; leaving it in place gives us a one-line rollback if parity
+// issues surface during the visual audit loop (P7).
+const ForYouPage = lazy(() => import("./pages/ForYouPage.atlaskit"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));

@@ -9,7 +9,12 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type WorkMode = 'OPS' | 'DEL' | 'TSK';
 export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
-export type TabType = 'worked' | 'assigned' | 'starred';
+/**
+ * Jira "For You" tab order (as of April 2026):
+ *   Recommended | Assigned to me | Starred | Worked on | Viewed
+ * — ordered here to match that left→right reading.
+ */
+export type TabType = 'recommended' | 'assigned' | 'starred' | 'worked' | 'viewed';
 export type ModeFilter = 'all' | 'ops' | 'del' | 'tsk';
 
 export interface WorkItemAssignee {
@@ -392,7 +397,9 @@ const SELECT_FIELDS = 'id, issue_key, project_key, project_name, issue_type, sum
 
 export function useForYouData() {
   const [activeMode, setActiveMode] = useState<ModeFilter>('all');
-  const [activeTab, setActiveTab] = useState<TabType>('worked');
+  // Default tab mirrors Jira For You: Recommended. Persistence to localStorage
+  // is handled by the page shell so refresh stays on the last-viewed tab.
+  const [activeTab, setActiveTab] = useState<TabType>('recommended');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ field: string; order: 'asc' | 'desc' }>({ field: 'updated', order: 'desc' });
   const [isAIPanelOpen, setIsAIPanelOpen] = useState(false);
@@ -402,6 +409,8 @@ export function useForYouData() {
   const [workedOnItems, setWorkedOnItems] = useState<any[]>([]);
   const [assignedItems, setAssignedItems] = useState<any[]>([]);
   const [starredData, setStarredData] = useState<any[]>([]);
+  const [recommendedItems, setRecommendedItems] = useState<any[]>([]);
+  const [viewedItems, setViewedItems] = useState<any[]>([]);
   const [attachmentCounts, setAttachmentCounts] = useState<Map<string, number>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
   const [jiraAccountIds, setJiraAccountIds] = useState<string[]>([]);
@@ -548,6 +557,120 @@ export function useForYouData() {
         const recentNativeItems = dedupedNativeItems.filter(item => item.jira_updated_at && new Date(item.jira_updated_at) >= ninetyDaysAgo);
         setWorkedOnItems([...jiraWorked, ...recentPlannerTasks, ...recentNativeItems]);
 
+        // ── Recently viewed (drives "Viewed" tab) ──
+        //
+        // user_viewed_items holds (user, item_id, item_type, last_viewed_at).
+        // We hydrate the actual issue rows in a second query so the Viewed
+        // tab can render the same ForYouRow shape as every other tab.
+        //
+        // We split by item_type — ph_issue keys go to ph_issues, planner
+        // task_keys to planner_tasks — and skip other types for now.
+        const { data: viewedRows } = await supabase
+          .from('user_viewed_items')
+          .select('item_id, item_type, last_viewed_at')
+          .eq('user_id', authUser.id)
+          .order('last_viewed_at', { ascending: false })
+          .limit(100);
+
+        if (viewedRows && viewedRows.length > 0) {
+          const phKeys = viewedRows.filter(r => r.item_type === 'ph_issue').map(r => r.item_id);
+          const plannerKeys = viewedRows.filter(r => r.item_type === 'task').map(r => r.item_id);
+
+          const [viewedPhRaw, viewedPlannerRaw] = await Promise.all([
+            phKeys.length > 0
+              ? supabase.from('ph_issues').select(SELECT_FIELDS).in('issue_key', phKeys).is('archived_at', null)
+              : Promise.resolve({ data: [] as any[] }),
+            plannerKeys.length > 0
+              ? supabase.from('planner_tasks').select('task_key, title, priority, assignee_id, updated_at, created_at, status_id, workstream_id, reporter_id').in('task_key', plannerKeys).is('deleted_at', null)
+              : Promise.resolve({ data: [] as any[] }),
+          ]);
+
+          const viewedPh = (viewedPhRaw.data || []).map((r: any) => ({
+            ...r,
+            project_id: projectIdMap.get(r.project_key) || null,
+          }));
+          const viewedPlanner = (viewedPlannerRaw.data || []).map((row: any) =>
+            mapPlannerTaskToIssueRow({
+              ...row,
+              assignee_name: userName,
+              status_name: 'Backlog',
+              workstream_name: null,
+            })
+          );
+
+          // Preserve the user_viewed_items ordering (most-recent-first).
+          const viewedAtByKey = new Map<string, string>(viewedRows.map(r => [r.item_id, r.last_viewed_at]));
+          const allViewed = [...viewedPh, ...viewedPlanner]
+            .map(r => ({ ...r, _last_viewed_at: viewedAtByKey.get(r.issue_key) || null }))
+            .filter(r => r._last_viewed_at) // drop hydration misses
+            // Overwrite jira_updated_at with last_viewed_at so grouping uses the VIEW time.
+            .map(r => ({ ...r, jira_updated_at: r._last_viewed_at || r.jira_updated_at }))
+            .sort((a, b) => new Date(b._last_viewed_at).getTime() - new Date(a._last_viewed_at).getTime());
+          setViewedItems(allViewed);
+        } else {
+          setViewedItems([]);
+        }
+
+        // ── Recommended (drives "Recommended" tab) ──
+        //
+        // Jira's Recommended tab is primarily "mentions + team activity on
+        // work you're close to". We don't have a first-class mentions table
+        // yet, so we approximate:
+        //
+        //   (a) issues where a teammate posted a comment body that @-mentions
+        //       the current user by first name (best-effort ILIKE),
+        //   (b) union recent activity on work items in the assignedItems set
+        //       (already fetched above) — a user's own assigned work is a
+        //       very strong "recommended" signal.
+        //
+        // (a) is a placeholder until a proper ph_comment_mentions join table
+        // lands; (b) guarantees the tab is never empty for real users.
+        const recommendedKeyOrder: string[] = [];
+        const recommendedKeySet = new Set<string>();
+
+        // (a) Comment-mention heuristic — cheap, best-effort
+        if (userName && userName !== 'Unassigned') {
+          const firstName = userName.split(' ')[0];
+          if (firstName && firstName.length >= 2) {
+            const { data: mentionHits } = await supabase
+              .from('ph_comments')
+              .select('work_item_id, created_at, ph_issues!inner(issue_key)')
+              .ilike('body', `%@${firstName}%`)
+              .neq('author_id', authUser.id)
+              .order('created_at', { ascending: false })
+              .limit(30);
+
+            (mentionHits || []).forEach((row: any) => {
+              const key = row.ph_issues?.issue_key;
+              if (key && !recommendedKeySet.has(key)) {
+                recommendedKeySet.add(key);
+                recommendedKeyOrder.push(key);
+              }
+            });
+          }
+        }
+
+        // (b) Top of assigned queue — "you should look at this next"
+        (jiraAssigned as any[]).slice(0, 10).forEach((r: any) => {
+          if (!recommendedKeySet.has(r.issue_key)) {
+            recommendedKeySet.add(r.issue_key);
+            recommendedKeyOrder.push(r.issue_key);
+          }
+        });
+
+        if (recommendedKeyOrder.length > 0) {
+          const { data: recRaw } = await supabase
+            .from('ph_issues')
+            .select(SELECT_FIELDS)
+            .in('issue_key', recommendedKeyOrder)
+            .is('archived_at', null);
+
+          const recByKey = new Map<string, any>((recRaw || []).map((r: any) => [r.issue_key, { ...r, project_id: projectIdMap.get(r.project_key) || null }]));
+          setRecommendedItems(recommendedKeyOrder.map(k => recByKey.get(k)).filter(Boolean));
+        } else {
+          setRecommendedItems([]);
+        }
+
         // ── Starred items (parallel) ──
         if (stars && stars.length > 0) {
           const starredKeys = new Set(stars.map(s => s.item_id));
@@ -585,12 +708,14 @@ export function useForYouData() {
 
   const sourceItems = useMemo(() => {
     switch (activeTab) {
-      case 'assigned': return assignedItems;
-      case 'starred': return starredData;
+      case 'recommended': return recommendedItems;
+      case 'assigned':    return assignedItems;
+      case 'starred':     return starredData;
+      case 'viewed':      return viewedItems;
       case 'worked':
-      default: return workedOnItems;
+      default:            return workedOnItems;
     }
-  }, [activeTab, workedOnItems, assignedItems, starredData]);
+  }, [activeTab, workedOnItems, assignedItems, starredData, recommendedItems, viewedItems]);
 
   const filteredItems = useMemo(() => {
     let items = sourceItems.map(row => mapIssueToWorkItem(row, starredItems, projectNameMap, attachmentCounts));
@@ -613,8 +738,14 @@ export function useForYouData() {
       if (activeMode === 'all') return items;
       return items.filter(row => inferMode(row.project_key, row.issue_type).toLowerCase() === activeMode);
     };
-    return { worked: filterByMode(workedOnItems).length, assigned: filterByMode(assignedItems).length, starred: filterByMode(starredData).length };
-  }, [workedOnItems, assignedItems, starredData, activeMode]);
+    return {
+      recommended: filterByMode(recommendedItems).length,
+      assigned:    filterByMode(assignedItems).length,
+      starred:     filterByMode(starredData).length,
+      worked:      filterByMode(workedOnItems).length,
+      viewed:      filterByMode(viewedItems).length,
+    };
+  }, [workedOnItems, assignedItems, starredData, recommendedItems, viewedItems, activeMode]);
 
   // Hub stats from current filtered items
   const hubStats = useMemo(() => {
@@ -649,6 +780,50 @@ export function useForYouData() {
   const generateImpactReport = () => { console.log('Generate impact report'); };
   const showDeprioritize = () => { console.log('Show deprioritize options'); };
 
+  /**
+   * Record a view on a work item. Upserts into `user_viewed_items` so the
+   * Viewed tab always shows the most-recently-opened things first.
+   *
+   * - Fire-and-forget: callers do NOT need to await; UI should not block.
+   * - Safe on anonymous sessions — no-ops without auth.
+   * - Optimistic: pushes the item to the top of local viewedItems so a user
+   *   who clicks a row and hits "Viewed" sees it immediately.
+   *
+   * `itemType` defaults to 'ph_issue' because the surface overwhelmingly
+   * renders Jira-synced issues. Use 'task' for planner rows.
+   */
+  const trackView = useCallback(async (itemId: string, itemType: string = 'ph_issue') => {
+    if (!authUser?.id || !itemId) return;
+
+    // Optimistic local ordering — hoist the row to top if we have it cached.
+    const now = new Date().toISOString();
+    setViewedItems(prev => {
+      const existing = prev.find(r => r.issue_key === itemId);
+      if (existing) {
+        const rest = prev.filter(r => r.issue_key !== itemId);
+        return [{ ...existing, jira_updated_at: now, _last_viewed_at: now }, ...rest];
+      }
+      // If we haven't cached the row yet, leave the list alone — the next
+      // data wave will hydrate it with the correct issue_key.
+      return prev;
+    });
+
+    try {
+      const { error } = await supabase.from('user_viewed_items').upsert(
+        {
+          user_id: authUser.id,
+          item_id: itemId,
+          item_type: itemType,
+          last_viewed_at: now,
+        },
+        { onConflict: 'user_id,item_id,item_type', ignoreDuplicates: false }
+      );
+      if (error) console.warn('[useForYouData] trackView failed:', error);
+    } catch (err) {
+      console.warn('[useForYouData] trackView threw:', err);
+    }
+  }, [authUser?.id]);
+
   const toggleStar = async (itemId: string) => {
     if (!authUser?.id) return;
     const isCurrentlyStarred = starredItems.has(itemId);
@@ -678,5 +853,6 @@ export function useForYouData() {
     aiData, performanceStats, isLoading,
     selectedItem, handleRowClick, closeDetailPanel,
     handleStartTask, generateStatusUpdate, generateImpactReport, showDeprioritize, toggleStar,
+    trackView,
   };
 }
