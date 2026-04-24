@@ -5,8 +5,7 @@ import '@/styles/product-backlog.css';
 import { useTableColumns, type ColumnDef as TColDef } from '@/hooks/useTableColumns';
 import { ResizableTableHeader, type SortDir } from '@/components/shared/ResizableTableHeader';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ProjectListItem, SortColumn, SortDirection, ProjectStatus } from '@/types/projecthub';
-import { ProjectStatusBadge } from './ProjectStatusBadge';
+import type { ProjectListItem, SortColumn, SortDirection } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { formatDistanceToNowStrict, format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -67,55 +66,7 @@ function useAllProfiles() {
   });
 }
 
-const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-  { value: 'active', label: 'ACTIVE' },
-  { value: 'planning', label: 'PLANNING' },
-  { value: 'on_hold', label: 'ON HOLD' },
-  { value: 'completed', label: 'COMPLETED' },
-];
-
 // ── Sub-components ─────────────────────────────────────
-
-function StatusChangePopover({ project }: { project: ProjectListItem }) {
-  const queryClient = useQueryClient();
-  const [open, setOpen] = useState(false);
-
-  const handleChange = async (newStatus: string, label: string) => {
-    const { error } = await supabase
-      .from('projects')
-      .update({ display_status: newStatus } as any)
-      .eq('id', project.id);
-    if (error) { toast.error('Failed to update status'); return; }
-    toast.success(`Status changed to ${label}`);
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
-    setOpen(false);
-  };
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button onClick={e => e.stopPropagation()} className="bg-transparent border-none cursor-pointer p-0 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none rounded">
-          <ProjectStatusBadge status={project.status} />
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="center"
-        className="w-44 p-1 bg-white dark:!bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]"
-        onClick={e => e.stopPropagation()}
-      >
-        {STATUS_OPTIONS.map(opt => (
-          <button
-            key={opt.value}
-            onClick={() => handleChange(opt.value, opt.label)}
-            className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-slate-50 dark:hover:bg-white/5 bg-transparent border-none cursor-pointer text-left focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
-          >
-            <ProjectStatusBadge status={opt.value} />
-          </button>
-        ))}
-      </PopoverContent>
-    </Popover>
-  );
-}
 
 // FIX 2 + FIX 4: Lead cell with pencil icon trigger + undo toast
 function LeadReassignPopover({ project }: { project: ProjectListItem }) {
@@ -420,7 +371,6 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
 // ── Column key → SortColumn mapping ──
 const COL_TO_SORT: Record<string, SortColumn> = {
   project_name: 'name',
-  status: 'status',
 };
 const SORTABLE_PROJECT_KEYS = new Set(Object.keys(COL_TO_SORT));
 
@@ -430,7 +380,6 @@ const PROJECT_COLUMNS: TColDef[] = [
   { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
   { key: 'project_key', label: 'KEY', defaultWidth: 100, minWidth: 70 },
   { key: 'project_name', label: 'PROJECT NAME', defaultWidth: 280, minWidth: 150 },
-  { key: 'status', label: 'STATUS', defaultWidth: 110, minWidth: 80 },
   { key: 'lead', label: 'LEAD', defaultWidth: 200, minWidth: 120 },
   { key: 'members', label: 'MEMBERS', defaultWidth: 150, minWidth: 80 },
   { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 100 },
@@ -542,7 +491,6 @@ export function AllProjectsTable({
       case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} /></button></div></td>;
       case 'project_key': return <td key={colKey}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>{p.project_key}</span></div></td>;
       case 'project_name': return <td key={colKey}><span onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)} className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white" title={p.name} style={{ pointerEvents: 'auto' }}>{p.name}</span></td>;
-      case 'status': return <td key={colKey} className="text-center">{active ? <StatusChangePopover project={p} /> : <ProjectStatusBadge status={p.status} />}</td>;
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
       case 'sync': return (

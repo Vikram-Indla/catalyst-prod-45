@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, lazy, Suspense } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, FolderKanban, FolderOpen, Star } from 'lucide-react';
 import type { ViewMode, ProjectFilters, SortColumn, SortDirection } from '@/types/projecthub';
 import { DEFAULT_FILTERS } from '@/types/projecthub';
@@ -17,7 +17,7 @@ import { AllProjectsToolbar } from '@/components/projecthub/AllProjectsToolbar';
 import { AllProjectsTable } from '@/components/projecthub/AllProjectsTable';
 import { AllProjectsCardGrid } from '@/components/projecthub/AllProjectsCardGrid';
 import { ProjectDetailPanel } from '@/components/projecthub/ProjectDetailPanel';
-import { CreateProjectDialog } from '@/components/projecthub/CreateProjectDialog';
+import { CreateSpaceModal } from '@/spaces';
 import { JiraSyncPanel, SyncCTALabel } from '@/components/projecthub/JiraSyncPanel';
 import { toast } from 'sonner';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
@@ -44,6 +44,7 @@ export default function AllProjectsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [syncPanelOpen, setSyncPanelOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   // Get current user for "My Projects" tab
   useEffect(() => {
@@ -174,7 +175,7 @@ export default function AllProjectsPage() {
               onClick={() => setShowCreateModal(true)}
               className="h-10 px-5 rounded-md text-sm font-semibold flex items-center gap-2 text-white bg-blue-600 hover:bg-blue-700 border-none cursor-pointer shadow-[0_2px_8px_rgba(37,99,235,0.15)] focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
             >
-              <Plus size={16} strokeWidth={2.5} /> New Project
+              <Plus size={16} strokeWidth={2.5} /> Create project
             </button>
           </div>
         }
@@ -228,7 +229,7 @@ export default function AllProjectsPage() {
                 onClick={() => setShowCreateModal(true)}
                 className="h-9 px-4 bg-blue-600 text-white rounded-md text-sm font-semibold hover:bg-blue-700 flex items-center gap-2 border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none"
               >
-                <Plus className="w-4 h-4" /> New Project
+                <Plus className="w-4 h-4" /> Create project
               </button>
             </div>
           </div>
@@ -351,7 +352,16 @@ export default function AllProjectsPage() {
           isFav={selectedProject ? favorites.has(selectedProject) : false}
           onToggleFav={() => { if (selectedProject) toggleFav.mutate({ projectId: selectedProject, isFavorited: favorites.has(selectedProject) }); }}
         />
-        <CreateProjectDialog open={showCreateModal} onClose={() => setShowCreateModal(false)} />
+        <CreateSpaceModal
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onCreated={() => {
+            // Refresh the v_project_list query so the new row shows up
+            // immediately without waiting for the realtime subscription.
+            queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+            toast.success('Project created');
+          }}
+        />
         {new URLSearchParams(window.location.search).has('debug') && (
           <Suspense fallback={null}>
             <WiringAuditLazy />
