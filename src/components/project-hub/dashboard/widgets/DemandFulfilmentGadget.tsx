@@ -1127,7 +1127,7 @@ function DemandRowItem({
           ) : isUnlinkedEpic ? (
             // ── MODE 2: Unlinked epic — render its stories directly ──
             row.epics.map((story) => {
-              const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+              const storyUrl = `/project-hub/${projectKey}/allwork?selectedIssue=${story.issue_key}`;
               const storyAssignee = story.assignee_display_name ?? '—';
               return (
                 <div
