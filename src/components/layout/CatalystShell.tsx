@@ -363,7 +363,7 @@ function CatalystShellContent() {
     if (isIssueFullPageRoute) {
       return (
         <ProjectHubSidebar
-          expanded={false}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -373,7 +373,7 @@ function CatalystShellContent() {
     if (isWikiRoute) {
       return (
         <WikiSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -383,7 +383,7 @@ function CatalystShellContent() {
     if (isProjectHubRoute) {
       return (
         <ProjectHubSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -394,7 +394,7 @@ function CatalystShellContent() {
     if (isReleaseHubRoute) {
       return (
         <ReleaseHubSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -404,7 +404,7 @@ function CatalystShellContent() {
     if (isIncidentHubRoute) {
       return (
         <IncidentHubSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -414,7 +414,7 @@ function CatalystShellContent() {
     if (isReleasesRoute) {
       return (
         <ReleasesManagementSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -424,7 +424,7 @@ function CatalystShellContent() {
     if (isTestsRoute) {
       return (
         <TestManagementSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -434,7 +434,7 @@ function CatalystShellContent() {
     if (isReleaseRoute) {
       return (
         <ReleaseRoomSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -444,7 +444,7 @@ function CatalystShellContent() {
     if (isProductRoute && isModuleEnabled('PRODUCT')) {
       return (
         <ProductRoomSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -454,7 +454,7 @@ function CatalystShellContent() {
     if (isPlanHubRoute) {
       return (
         <PlanHubSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -464,7 +464,7 @@ function CatalystShellContent() {
     if (isTaskHubRoute) {
       return (
         <TaskHubSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -474,7 +474,7 @@ function CatalystShellContent() {
     if (isTestHubRoute) {
       return (
         <TestHubSidebar
-          expanded={sidebarExpanded}
+          expanded={true}
           onToggle={cycleSidebarState}
         />
       );
@@ -488,7 +488,7 @@ function CatalystShellContent() {
             <UnifiedSidebar
               workspaceType="program"
               entityId={activeProgramId}
-              expanded={sidebarExpanded}
+              expanded={true}
               onToggle={cycleSidebarState}
               selectedQuarter={selectedQuarter}
               onQuarterChange={setSelectedQuarter}
@@ -510,7 +510,7 @@ function CatalystShellContent() {
             <ProjectSidebar
               projectId={activeProjectId}
               projectName={projectData?.name}
-              expanded={sidebarExpanded}
+              expanded={true}
               onToggle={cycleSidebarState}
             />
           );
@@ -528,7 +528,7 @@ function CatalystShellContent() {
         // Always show enterprise sidebar for enterprise routes
         return (
           <EnterpriseSidebar
-            expanded={sidebarExpanded}
+            expanded={true}
             onToggle={cycleSidebarState}
           />
         );

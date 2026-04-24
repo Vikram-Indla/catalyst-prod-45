@@ -90,13 +90,12 @@ const SIDEBAR_STORAGE_KEYS = {
 
 function loadSidebarState(): { expanded: boolean; hidden: boolean } {
   try {
-    const expanded = localStorage.getItem(SIDEBAR_STORAGE_KEYS.expanded);
     const hidden = localStorage.getItem(SIDEBAR_STORAGE_KEYS.hidden);
+    // Icon-rail (expanded=false) has been removed — always expanded=true.
+    // Clear any stale expanded=false value so old sessions don't persist icon-rail.
+    localStorage.removeItem(SIDEBAR_STORAGE_KEYS.expanded);
     return {
-      // Default to expanded=true on first load so new users get the full nav.
-      expanded: expanded === null ? true : expanded === 'true',
-      // Never default to hidden — it's an explicit user action only, otherwise
-      // first-time users would boot into a blank shell.
+      expanded: true, // always — no icon-rail state
       hidden: hidden === 'true',
     };
   } catch {
@@ -228,7 +227,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   // errors (private browsing, Safari ITP) without breaking the app.
   useEffect(() => {
     try {
-      localStorage.setItem(SIDEBAR_STORAGE_KEYS.expanded, String(sidebarExpanded));
+      // expanded is always true — don't persist it (avoid re-creating stale icon-rail state)
       localStorage.setItem(SIDEBAR_STORAGE_KEYS.hidden, String(sidebarHidden));
     } catch {
       // ignore — ephemeral preference, not worth surfacing
