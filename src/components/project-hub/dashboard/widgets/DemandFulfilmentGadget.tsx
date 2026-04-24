@@ -1941,7 +1941,9 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
     >
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
       <a
-        href={`/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`}
+        href={row.isUnlinkedEpic
+          ? `/project-hub/${projectKey}/allwork?selectedIssue=${row.initiative_key}`
+          : `/producthub/backlog?selectedIssue=${row.initiative_key}`}
         style={{
           fontSize: 11,
           fontWeight: 700,
