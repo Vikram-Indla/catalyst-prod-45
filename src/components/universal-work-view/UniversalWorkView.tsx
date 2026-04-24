@@ -125,6 +125,10 @@ export function UniversalWorkView({ params, onClose }: Props) {
         onSavePrefs={savePrefs}
         project={params.project}
         onClose={onClose}
+        typeFilter={typeFilter}
+        onTypeFilterChange={setTypeFilter}
+        groupBy={groupBy}
+        onGroupByChange={setGroupBy}
       />
 
       {isLoading ? (
