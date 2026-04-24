@@ -2,71 +2,42 @@
 /**
  * Universal Work View — pure utilities. No JSX. No React.
  *
- * Brought to PARITY with src/components/workhub/allwork/AllWorkTable.tsx
- * (Project Work table) per audit decisions Q1–Q4. See CLAUDE.md §5 (status
- * lozenge guardrail), §11 (icon registry), and §15 (interaction states).
+ * Brought to PARITY with src/modules/project-work-hub/pages/BacklogPage.atlaskit.tsx
+ * (Project Backlog table) — uses the canonical <JiraTable> + cell renderers.
+ *
+ * Read-only mode: cells render their visual chrome only (StatusPill, Avatar,
+ * PriorityBars, etc.). No edit affordances since UWV rows are 100% Jira-synced
+ * and any inline mutation would immediately error.
  */
 
 import type React from 'react';
-import type { UWVColumn } from './uwv.types';
+import type { LozengeAppearance } from '@/components/shared/JiraTable';
+import type { UWVColumn, UWVItem } from './uwv.types';
 
-/**
- * Status pill style — verified from live backlog DOM at /project-hub/BAU/backlog.
- * Plain inline styles, NOT @atlaskit/lozenge.
- */
-export function getStatusStyle(
-  statusCategory: string,
-  status?: string,
-): React.CSSProperties {
-  const cat = (statusCategory ?? '').toLowerCase();
-  const st = (status ?? '').toLowerCase();
-
-  const done = ['done', 'closed', 'resolved', 'complete', 'completed', 'merged', 'released'];
-  const blocked = ['on hold', 'blocked', 'awaiting info', 'awaiting approval', 'rejected'];
-  const todo = ['to do', 'backlog', 'open', 'new', 'draft'];
-
-  const base: React.CSSProperties = {
-    fontSize: 13,
-    fontWeight: 400,
-    borderRadius: 3,
-    padding: '0px 4px',
-    display: 'inline-block',
-    maxWidth: '100%',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
-    whiteSpace: 'nowrap',
-  };
-
-  if (done.some((d) => st.includes(d)) || cat === 'done')
-    return { ...base, background: '#E3FCEF', color: '#006644' };
-  if (blocked.some((b) => st.includes(b)))
-    return { ...base, background: '#FFF0B3', color: '#172B4D' };
-  if (todo.some((t) => st.includes(t)) || cat === 'to do')
-    return { ...base, background: '#F4F5F7', color: '#42526E' };
-  // Default: in-progress (verified from backlog DOM)
-  return { ...base, background: '#DFEDFF', color: '#0055CC' };
-}
-
-// Row height + key colour now match Project Work table.
-export const JIRA_ROW_HEIGHT = 40;
-// Key colour: always blue (matches AllWorkTable — `var(--cp-blue)`).
+/** UWV row height — matches BacklogPage compact density. */
+export const JIRA_ROW_HEIGHT = 36;
 export const JIRA_KEY_COLOR = 'var(--cp-blue)';
-// Summary uses theme token so dark mode works.
 export const JIRA_SUMMARY_COLOR = 'var(--fg-1)';
 
+/**
+ * Map a raw issue_type string to the StatusPill appearance vocabulary used
+ * by JiraTable.makeStatusCell. Mirrors backlog.utils statusAppearance().
+ */
 export function lozengeAppearance(
   statusCategory: string,
   status?: string,
-): 'default' | 'success' | 'removed' | 'inprogress' | 'moved' | 'new' {
+): LozengeAppearance {
   const cat = (statusCategory ?? '').toLowerCase();
   const st = (status ?? '').toLowerCase();
 
   if (cat === 'done' || ['done', 'closed', 'resolved', 'complete', 'completed'].includes(st))
     return 'success';
-  if (cat === 'in progress' || cat === 'inprogress') return 'inprogress';
   if (['on hold', 'blocked', 'awaiting info', 'awaiting approval'].includes(st)) return 'moved';
-  if (cat === 'to do' || st === 'to do' || st === 'backlog') return 'default';
+  if (cat === 'to do' || st === 'to do' || st === 'backlog' || st === 'open' || st === 'new')
+    return 'default';
   if (
+    cat === 'in progress' ||
+    cat === 'inprogress' ||
     st.includes('progress') ||
     st.includes('review') ||
     st.includes('qa') ||
@@ -79,77 +50,41 @@ export function lozengeAppearance(
 }
 
 /**
- * Hub label / colour — matches AllWorkTable.tsx HUB_COLORS exactly.
- * Lowercase labels ('project', 'product', 'task', 'incident').
+ * Backlog-style type discriminator for chip filtering and group buckets.
+ * Maps Jira issue_type strings to: epic | feature | story | bug | task | other.
  */
-export function hubTypeFromIssueType(issueType?: string | null): string {
+export type UWVBacklogType = 'epic' | 'feature' | 'story' | 'bug' | 'task' | 'other';
+
+export function classifyType(issueType?: string | null): UWVBacklogType {
   const t = (issueType ?? '').toLowerCase();
-  if (t.includes('incident') || t.includes('bug') || t.includes('defect')) return 'incident';
-  if (t.includes('epic') || t.includes('story') || t.includes('feature')) return 'project';
-  if (t.includes('sub-task') || t.includes('subtask') || t.includes('task')) return 'task';
-  return 'product';
+  if (t.includes('epic')) return 'epic';
+  if (t.includes('feature')) return 'feature';
+  if (t.includes('story')) return 'story';
+  if (t.includes('bug') || t.includes('defect') || t.includes('incident')) return 'bug';
+  if (t.includes('task') || t.includes('sub')) return 'task';
+  return 'other';
 }
 
-export function hubLabel(hub: string): string {
-  // Map UWV hubSource values to lowercase Project Work labels.
-  const map: Record<string, string> = {
-    projecthub: 'project',
-    producthub: 'product',
-    incidenthub: 'incident',
-    testhub: 'task',
-  };
-  return (map[hub] ?? hub).toLowerCase();
-}
-
-export function hubColour(hub: string): { bg: string; text: string; border: string } {
-  // Mirror HUB_COLORS in AllWorkTable.tsx — token-based, dark-mode aware.
-  switch (hub) {
-    case 'projecthub':
-    case 'project':
-      return { bg: 'var(--cp-primary-5)', text: 'var(--cp-blue)', border: 'var(--cp-blue)' };
-    case 'producthub':
-    case 'product':
-      return { bg: '#F4F4F5', text: 'var(--fg-2)', border: 'var(--fg-2)' };
-    case 'testhub':
-    case 'task':
-      return { bg: '#F4F4F5', text: 'var(--fg-3)', border: '#D4D4D8' };
-    case 'incidenthub':
-    case 'incident':
-      return { bg: '#FEF2F2', text: 'var(--sem-danger)', border: 'var(--sem-danger)' };
-    default:
-      return { bg: '#F4F4F5', text: 'var(--fg-3)', border: '#D4D4D8' };
-  }
+/** Map UWV issueType to the canonical JiraIssueTypeIcon's `type` prop. */
+export function jiraIconType(
+  issueType?: string | null,
+): 'Epic' | 'Story' | 'Feature' | 'Task' | 'Bug' | 'Sub-task' {
+  const k = classifyType(issueType);
+  if (k === 'epic') return 'Epic';
+  if (k === 'feature') return 'Feature';
+  if (k === 'bug') return 'Bug';
+  if (k === 'task') return 'Task';
+  return 'Story';
 }
 
 export function formatDate(iso?: string | null): string {
   if (!iso) return '—';
   try {
     return new Date(iso).toLocaleDateString('en-GB', {
-      day: 'numeric',
+      day: '2-digit',
       month: 'short',
-      year: 'numeric',
+      year: '2-digit',
     });
-  } catch {
-    return '—';
-  }
-}
-
-/** Relative time matching AllWorkTable formatRelative ("3d ago"). */
-export function formatRelative(iso?: string | null): string {
-  if (!iso) return '—';
-  try {
-    const diffMs = Date.now() - new Date(iso).getTime();
-    const sec = Math.floor(diffMs / 1000);
-    if (sec < 60) return 'just now';
-    const min = Math.floor(sec / 60);
-    if (min < 60) return `${min}m ago`;
-    const hr = Math.floor(min / 60);
-    if (hr < 24) return `${hr}h ago`;
-    const d = Math.floor(hr / 24);
-    if (d < 30) return `${d}d ago`;
-    const mo = Math.floor(d / 30);
-    if (mo < 12) return `${mo}mo ago`;
-    return `${Math.floor(mo / 12)}y ago`;
   } catch {
     return '—';
   }
@@ -160,40 +95,68 @@ export function isOverdue(iso?: string | null): boolean {
   return new Date(iso) < new Date();
 }
 
-/** First name only — kept for backwards compatibility but unused after parity. */
-export function firstName(name?: string | null): string {
-  if (!name) return '—';
-  return name.split(/\s+/)[0] ?? name;
-}
+/** Group-by key vocabulary — mirrors BacklogPage. */
+export type UWVGroupBy = 'none' | 'status' | 'priority' | 'parent' | 'assignee' | 'type';
 
-/** Deterministic avatar colour (mirrors AllWorkTable AVATAR_COLORS). */
-export const AVATAR_COLORS = ['#4C6EF5', '#FA8C16', '#52C41A', '#EB2F96', '#722ED1', '#13C2C2', '#F5222D'];
-export function nameToHash(name: string): number {
-  return name.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+/**
+ * Build group buckets for JiraTable.groups. Each bucket carries the rows
+ * that match that key's value, with a stable id and human-readable label.
+ */
+export function buildGroups(
+  rows: UWVItem[],
+  groupBy: UWVGroupBy,
+): { id: string; label: string; rows: UWVItem[] }[] | null {
+  if (groupBy === 'none') return null;
+  const map = new Map<string, { id: string; label: string; rows: UWVItem[] }>();
+  const push = (id: string, label: string, row: UWVItem) => {
+    const b = map.get(id);
+    if (b) b.rows.push(row);
+    else map.set(id, { id, label, rows: [row] });
+  };
+  for (const r of rows) {
+    switch (groupBy) {
+      case 'status':
+        push(r.status || 'No status', r.status || 'No status', r);
+        break;
+      case 'priority': {
+        const p = (r.priority || '').trim();
+        push(p || 'No priority', p ? p[0].toUpperCase() + p.slice(1) : 'No priority', r);
+        break;
+      }
+      case 'parent':
+        push(r.parentKey || 'No parent', r.parentKey || 'No parent', r);
+        break;
+      case 'assignee':
+        push(r.assigneeName || 'Unassigned', r.assigneeName || 'Unassigned', r);
+        break;
+      case 'type': {
+        const k = classifyType(r.issueType);
+        push(k, k[0].toUpperCase() + k.slice(1), r);
+        break;
+      }
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => a.label.localeCompare(b.label));
 }
 
 /**
- * COLUMN PARITY with AllWorkTable.tsx COLUMNS:
- *   checkbox · KEY · SUMMARY · STATUS · PRIORITY · UPDATED · REPORTED BY
+ * COLUMN PARITY with BacklogPage.atlaskit.tsx COLUMNS:
+ *   caret · type · KEY · SUMMARY · STATUS · COMMENTS · PARENT · ASSIGNEE · PRIORITY · UPDATED
  *
- * Project + Hub are hidden by default (Project Backlog table doesn't show them).
- * Users can re-enable via column picker.
- *
- * Widths (px) mirror AllWorkTable.tsx exactly. Summary uses width: 0 here as a
- * sentinel; UWVTable converts width=0 → '1fr' so the column is fluid.
+ * Width values are RECOMMENDED PIXELS (UWVTable still uses px templates,
+ * not the JiraTable fractional widths). The JiraTable instance below
+ * passes the same columns ids so visibility prefs persist correctly.
  */
 export const DEFAULT_COLUMNS: UWVColumn[] = [
   { fieldId: 'key', label: 'Key', width: 120, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'summary', label: 'Summary', width: 336, visible: true, sortable: false, type: 'string' },
+  { fieldId: 'summary', label: 'Summary', width: 0, visible: true, sortable: true, type: 'string' },
   { fieldId: 'status', label: 'Status', width: 180, visible: true, sortable: true, type: 'status' },
-  { fieldId: 'project', label: 'Project', width: 140, visible: false, sortable: false, type: 'string' },
-  { fieldId: 'hubSource', label: 'Hub', width: 110, visible: false, sortable: false, type: 'hub' },
+  { fieldId: 'parent', label: 'Parent', width: 200, visible: true, sortable: false, type: 'string' },
+  { fieldId: 'assignee', label: 'Assignee', width: 180, visible: true, sortable: true, type: 'user' },
   { fieldId: 'priority', label: 'Priority', width: 80, visible: true, sortable: true, type: 'string' },
-  { fieldId: 'updated', label: 'Updated', width: 120, visible: true, sortable: true, type: 'date' },
-  { fieldId: 'assignee', label: 'Reported by', width: 168, visible: true, sortable: true, type: 'user' },
+  { fieldId: 'updated', label: 'Updated', width: 110, visible: true, sortable: true, type: 'date' },
   // Optional / hidden by default — kept available via column picker.
   { fieldId: 'comments', label: 'Comments', width: 130, visible: false, sortable: false, type: 'comments' },
   { fieldId: 'dueDate', label: 'Due date', width: 110, visible: false, sortable: true, type: 'date' },
   { fieldId: 'created', label: 'Created', width: 110, visible: false, sortable: true, type: 'date' },
-  { fieldId: 'parentKey', label: 'Parent', width: 100, visible: false, sortable: false, type: 'string' },
 ];
