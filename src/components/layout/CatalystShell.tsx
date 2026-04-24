@@ -111,50 +111,30 @@ function CatalystShellContent() {
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
-  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, sidebarHoverOpen, setSidebarHoverOpen, cycleSidebarState } = useCatalystContext();
+  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, cycleSidebarState } = useCatalystContext();
 
-  // ─── Jira-parity hover-reveal on the chevron ─────────────────────────
-  // The chevron lives in CatalystHeader (out of scope for edits this brief).
-  // We detect hover via DOM event delegation on the document, matching the
-  // chevron IconButton by aria-label ("Expand sidebar" / "Hide sidebar") and
-  // the sidebar root by [data-catalyst-sidebar]. When the cursor enters
-  // either region we open transiently; when it leaves both we close after a
-  // 150ms grace so flick-through micro-gaps don't trigger a collapse.
-  // Pinned mode (set via click → cycleSidebarState) bypasses this entirely.
-  useEffect(() => {
-    if (sidebarPinned) return; // no hover behavior when pinned
-    let closeTimer: number | null = null;
-    const insideHoverZone = (target: EventTarget | null): boolean => {
-      if (!(target instanceof Element)) return false;
-      // Chevron IconButton in the header — match by aria-label since the
-      // header surface is owned by a separate brief and we can't add hooks.
-      if (target.closest('button[aria-label="Expand sidebar"], button[aria-label="Hide sidebar"]')) return true;
-      // HubSwitcher trigger (beside chevron) — shares the hover-peek zone
-      // so hovering EITHER control keeps the sidebar open.
-      if (target.closest('[data-hub-switcher]')) return true;
-      if (target.closest('[data-catalyst-sidebar]')) return true;
-      return false;
-    };
-    const handleMove = (e: MouseEvent) => {
-      if (insideHoverZone(e.target)) {
-        if (closeTimer) { window.clearTimeout(closeTimer); closeTimer = null; }
-        setSidebarHoverOpen(true);
-      } else {
-        if (closeTimer) window.clearTimeout(closeTimer);
-        closeTimer = window.setTimeout(() => setSidebarHoverOpen(false), 300);
-      }
-    };
-    document.addEventListener('mousemove', handleMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMove);
-      if (closeTimer) window.clearTimeout(closeTimer);
-    };
-  }, [sidebarPinned, setSidebarHoverOpen]);
+  // ─── Sidebar is CLICK-ONLY ────────────────────────────────────────────
+  // Removed (April 2026): the document-level mousemove hover-peek that
+  // opened the sidebar when the cursor entered the chevron / HubSwitcher /
+  // sidebar body. The peek caused two pain points:
+  //   1. The peek width drifted from the pinned width on some routes,
+  //      making "hover" and "click" feel like two different UIs.
+  //   2. Users reported the sidebar flashing open during normal mouse
+  //      movement across the top-nav — the hover-peek was firing on
+  //      unrelated header interactions.
+  // The chevron in the header now responds to CLICK only (via
+  // cycleSidebarState in CatalystContext). `sidebarHoverOpen` stays in the
+  // context for future use but is never mutated here.
 
-  // Effective visibility: pinned-open OR hover-open (and never when hidden by
-  // explicit user action via the edge-reveal handle).
-  const sidebarVisuallyOpen = !sidebarHidden && (sidebarPinned || sidebarHoverOpen);
-  const sidebarOverlayMode = !sidebarHidden && !sidebarPinned && sidebarHoverOpen;
+  // Effective visibility (Jira parity):
+  //   - Pinned + not hidden → solid sidebar panel (pushes content right)
+  //   - Hover-peek → overlay panel, regardless of whether sidebarHidden is
+  //     true (peeking from edge-reveal) or false (peeking from a half-state).
+  //     We no longer require !sidebarHidden, because the chevron is now
+  //     always in the top-nav and we don't mutate sidebarHidden on hover.
+  // Overlay mode is any "visible but not pinned" render — i.e. a peek.
+  const sidebarVisuallyOpen = (sidebarPinned && !sidebarHidden) || sidebarHoverOpen;
+  const sidebarOverlayMode = !sidebarPinned && sidebarHoverOpen;
 
   // ⌘/Ctrl + [ toggles the sidebar (Jira parity, P2-1). Requires the platform
   // modifier so we don't swallow a literal `[` keystroke in any focusable
@@ -568,32 +548,49 @@ function CatalystShellContent() {
           aria-label="Main navigation"
           aria-hidden={sidebarHidden}
           className="relative flex-shrink-0"
-          onMouseLeave={() => {
-            // When sidebar opened via hover (not pinned), close it on mouse-leave
-            if (sidebarOverlayMode && !sidebarPinned) {
-              setSidebarHoverOpen(false);
-              setSidebarHidden(true);
-            }
+          // No onMouseLeave here — the document mousemove effect (lines
+          // 124-156) already handles close with a 300ms grace that also
+          // covers the gap between the chevron (in the header, above this
+          // wrapper) and the sidebar body. A local onMouseLeave fired the
+          // moment the cursor moved UP toward the chevron, collapsing the
+          // peek before the chevron's own hover zone could take over, which
+          // is why users saw two different widths when hovering vs clicking.
+          style={{
+            // Parity guarantee: hover-peek and pinned states MUST render at
+            // the same 240px that SidebarBase expects when expanded=true.
+            // Without this, the overlay wrapper had no explicit width and
+            // was collapsing to intrinsic child width, which drifted under
+            // certain routes (e.g. TeamRoomSidebar uses 220px, not 240).
+            // When NOT visually open we let the child (SidebarEdgeReveal or
+            // zero-width placeholder) size itself — forcing a width here
+            // would collapse the edge-reveal handle.
+            ...(sidebarVisuallyOpen ? { width: 240 } : null),
+            ...(sidebarOverlayMode ? {
+              position: 'absolute' as const,
+              top: 56,   // start BELOW the 56px top nav — never covers the header
+              left: 0,
+              bottom: 0,
+              zIndex: 40,
+              boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+            } : {}),
           }}
-          style={sidebarOverlayMode ? {
-            position: 'absolute' as const,
-            top: 56,   // start BELOW the 56px top nav — never covers the header
-            left: 0,
-            bottom: 0,
-            zIndex: 40,
-            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-          } : undefined}
           >
-            {sidebarHidden ? (
-              <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); }} />
-            ) : sidebarVisuallyOpen ? (
+            {sidebarVisuallyOpen ? (
+              // Visible — either pinned (solid panel) or hover-peek (overlay).
+              // Order matters: peek MUST win over the edge-reveal below so a
+              // user hovering the top-nav chevron from the edge-reveal state
+              // sees the sidebar rather than the 8px strip.
               <Suspense fallback={null}>
                 {renderSidebar()}
               </Suspense>
+            ) : sidebarHidden ? (
+              // Click pins the sidebar open (Jira parity — click = intent to stick).
+              // Previously only set hidden=false + expanded=true which left the
+              // sidebar in overlay/unpinned mode, so onMouseLeave re-hid it.
+              <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); setSidebarPinned(true); }} />
             ) : (
-              // Collapsed/closed but not user-hidden: render a minimal hover
-              // sensor so the chevron-only hover region still works (sidebar
-              // mounts on hover via the document-level mousemove listener).
+              // Intermediate state: not hidden, not pinned, not peeking.
+              // Render a zero-width placeholder so the flex row stays stable.
               <div style={{ width: 0, height: '100%' }} aria-hidden />
             )}
           </div>

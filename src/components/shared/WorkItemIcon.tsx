@@ -218,30 +218,67 @@ export default function WorkItemIcon({ type, size = 16, className }: WorkItemIco
 
 /**
  * Normalize a raw DB/API icon type string to the canonical WorkItemIconType.
- * Use this when mapping notification.entity_icon_type or work_item.icon_type
- * before passing to <WorkItemIcon>.
+ *
+ * The normalizer is the single chokepoint between whatever string a caller
+ * happens to have (Jira display name, internal snake_case enum, legacy alias)
+ * and the 14 canonical icons frozen in CLAUDE.md §11.
+ *
+ * Accepts (all forms collapse to the same canonical key):
+ *   - snake_case internal enums: "business_gap", "production_incident"
+ *   - Jira display names:        "Business Gap", "Production Incident"
+ *   - Jira hyphenated names:     "Sub-task"
+ *   - Mixed case / stray spaces: "  QA Bug "
+ *
+ * Strategy: lowercase + strip, then replace any hyphens/spaces with
+ * underscores, then match. A miss logs a warning (so drift is visible) and
+ * falls back to 'task' — same behaviour as before, but now with telemetry.
+ *
+ * Use this when mapping notification.entity_icon_type or
+ * ph_issues.issue_type before passing to <WorkItemIcon>.
  */
 export function normalizeIconType(raw: string | undefined | null): WorkItemIconType {
-  switch (raw) {
-    case 'api_requirement': return 'api_requirement';
-    case 'backend':         return 'backend';
-    case 'business_gap':    return 'business_gap';
-    case 'change_request':  return 'change_request';
-    case 'epic':            return 'epic';
+  if (!raw) return 'task';
+  const key = String(raw).trim().toLowerCase().replace(/[-\s]+/g, '_');
+  switch (key) {
+    // ── canonical (internal snake_case) ─────────────────────────────────────
+    case 'api_requirement':    return 'api_requirement';
+    case 'backend':            return 'backend';
+    case 'business_gap':       return 'business_gap';
+    case 'change_request':     return 'change_request';
+    case 'epic':               return 'epic';
     case 'feature':
-    case 'new_feature':     return 'feature';
-    case 'figma':           return 'figma';
-    case 'frontend':        return 'frontend';
-    case 'integration':     return 'integration';
+    case 'new_feature':        return 'feature';
+    case 'figma':              return 'figma';
+    case 'frontend':           return 'frontend';
+    case 'integration':        return 'integration';
     case 'production_incident':
     case 'incident':
-    case 'question':        return 'production_incident';
+    case 'question':           return 'production_incident';
     case 'bug':
-    case 'qa bug':          return 'bug';
-    case 'story':           return 'story';
-    case 'subtask':         return 'subtask';
+    case 'qa_bug':
+    case 'defect':             return 'bug';
+    case 'story':
+    case 'user_story':         return 'story';
+    case 'subtask':
+    case 'sub_task':
+    case 'sub-task':           return 'subtask';
     case 'task':
     case 'improvement':
-    default:                return 'task';
+    case 'technical_task':     return 'task';
+
+    // ── Jira product / category display names not covered above ────────────
+    // Jira's "Service Request" / "Incident" categories also surface under
+    // various custom names in the MoIM tenant — they all resolve to the
+    // production_incident icon per CLAUDE.md §11.
+    case 'service_request':
+    case 'problem':
+    case 'prod_issue':
+    case 'production_issue':   return 'production_incident';
+
+    default:
+      if (typeof console !== 'undefined' && console.warn) {
+        console.warn(`[WorkItemIcon] Unknown icon type "${raw}" (normalized → "${key}") — falling back to 'task'`);
+      }
+      return 'task';
   }
 }

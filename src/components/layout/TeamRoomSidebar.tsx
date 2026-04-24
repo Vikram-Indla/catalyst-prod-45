@@ -124,9 +124,12 @@ export function TeamRoomSidebar({
   };
 
   return (
-    <aside 
+    <aside
       style={{
-        width: expanded ? '220px' : '60px',
+        // Parity with every other sidebar variant — 240/56, NOT 220/60.
+        // The outer wrapper in CatalystShell now force-sets width:240 on
+        // visually-open, so any variant below that would render a gap.
+        width: expanded ? '240px' : '56px',
         height: '100%',
         background: 'var(--surface-1)',
         borderRight: '1px solid var(--divider)',

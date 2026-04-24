@@ -23,33 +23,43 @@ const isMacPlatform = () =>
 
 export function CatalystHeader() {
   const {
-    sidebarExpanded, sidebarHidden, sidebarPinned,
-    cycleSidebarState, setSidebarHidden, setSidebarHoverOpen,
+    sidebarHidden, sidebarPinned, sidebarHoverOpen,
+    cycleSidebarState, setSidebarHoverOpen,
   } = useCatalystContext();
-  const isCollapsed = sidebarHidden || !sidebarExpanded;
-  const sidebarLabel = isCollapsed ? 'Expand sidebar' : 'Collapse sidebar';
+
+  // Jira parity — the chevron's POSITION/ICON is driven by stickiness
+  // (sidebarPinned), NOT by visibility. When the sidebar is in hover-peek,
+  // the chevron stays at x=12 with the Expand icon so the user can click
+  // to promote the peek into a pinned expansion (Jira behaviour from the
+  // reference screenshot). Only a real pinned-visible state moves the
+  // chevron to the right edge (x=240) with the Collapse icon.
+  const isPinnedOpen = sidebarPinned && !sidebarHidden;
+  const sidebarLabel = isPinnedOpen ? 'Collapse sidebar' : 'Expand sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
 
-  // Hover: temporarily open the sidebar without pinning it.
-  // Only activates when the sidebar is collapsed/hidden and not pinned.
+  // Hover-peek contract (Jira parity):
+  //   - Only sidebarHoverOpen is toggled. We NEVER mutate sidebarHidden
+  //     on hover — that was causing the chevron to jump to the right-edge
+  //     position mid-peek because the old isCollapsed flag depended on it.
+  //   - When pinned, hover is a no-op (always open).
   const handleChevronEnter = () => {
-    if (sidebarHidden && !sidebarPinned) {
-      setSidebarHidden(false);
-      setSidebarHoverOpen(true);
-    }
+    if (!sidebarPinned) setSidebarHoverOpen(true);
   };
   const handleChevronLeave = () => {
-    if (!sidebarPinned) {
-      setSidebarHoverOpen(false);
-      setSidebarHidden(true);
-    }
+    if (!sidebarPinned) setSidebarHoverOpen(false);
   };
+
+  // Divider visibility — show whenever the sidebar body is visible on
+  // screen (pinned OR hover-peek), so the ceiling extension aligns with
+  // either the solid sidebar panel or its overlay preview.
+  const sidebarOnScreen = isPinnedOpen || sidebarHoverOpen;
 
   return (
     <header
       data-catalyst-top-nav
       style={{
+        position: 'relative',
         display: 'grid',
         gridTemplateColumns: 'auto 1fr auto',
         alignItems: 'center',
@@ -62,12 +72,85 @@ export function CatalystHeader() {
         flexShrink: 0,
       }}
     >
-      {/* LEFT cluster — justifySelf:start keeps it pinned to the left screen edge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'start' }}>
-        {/* Show chevron in top-nav ONLY when sidebar is fully hidden (no panel
-            to host the button). When expanded or collapsed to icon-rail, the
-            toggle lives inside SidebarBase — Jira-parity positioning. */}
-        {isCollapsed && (
+      {/* Ceiling-extension divider — mirrors Jira's ::after pattern. Draws a
+          1px vertical line at the sidebar's right edge (x=240) spanning the
+          full 56px of the top-nav so the sidebar border reads as one
+          continuous line from viewport top to bottom. Shown when the sidebar
+          is visible (pinned OR hover-peek overlay); hidden in edge-reveal
+          state so there's no orphan line when the sidebar isn't on screen. */}
+      {sidebarOnScreen && (
+        <div
+          aria-hidden="true"
+          data-catalyst-sidebar-ceiling
+          style={{
+            position: 'absolute',
+            left: '240px',
+            top: 0,
+            bottom: 0,
+            width: '1px',
+            background: 'var(--ds-border, var(--cp-bd, #DFE1E6))',
+            pointerEvents: 'none',
+          }}
+        />
+      )}
+      {/* LEFT cluster — in Jira parity, this column mirrors the sidebar's
+          footprint (screen x=0 → x=240) when expanded, so the chevron right-
+          anchors on the sidebar edge and lines up with the ceiling-extension
+          divider at x=240. Header has paddingInline:12px, so the grid track
+          starts at x=12 — the inner cluster width is therefore 240 - 12 =
+          228px to make its right edge land exactly on x=240 (chevron inside
+          the line, not past it). When collapsed, width:auto so the chevron
+          sits on the left at x≈12 before the HubSwitcher. */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
+          justifySelf: 'start',
+          justifyContent: 'space-between',
+          width: isPinnedOpen ? '228px' : 'auto',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Brand cluster — HubSwitcher + wordmark. When NOT pinned-open
+            (collapsed, hidden, or hover-peek), the chevron is injected IN
+            FRONT of this group so it stays at the top-nav's leading edge
+            (x≈12). When pinned-open, the chevron moves to the trailing
+            slot below, anchored to the sidebar's right edge (x=240). */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', minWidth: 0 }}>
+          {!isPinnedOpen && (
+            <div
+              onMouseEnter={handleChevronEnter}
+              onMouseLeave={handleChevronLeave}
+              style={{ display: 'inline-flex' }}
+            >
+              <Tooltip content={sidebarTooltip} position="bottom">
+                <IconButton
+                  label={sidebarLabel}
+                  appearance="subtle"
+                  onClick={cycleSidebarState}
+                  icon={SidebarExpandIcon}
+                  aria-expanded={false}
+                  aria-controls="catalyst-sidebar"
+                />
+              </Tooltip>
+            </div>
+          )}
+          <HubSwitcher />
+          <a
+            href="/for-you"
+            aria-label="Catalyst home"
+            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
+          >
+            <img
+              src={catalystWordmark}
+              alt=""
+              height={28}
+              style={{ height: '28px', width: 'auto', display: 'block' }}
+            />
+          </a>
+        </div>
+        {isPinnedOpen && (
           <div
             onMouseEnter={handleChevronEnter}
             onMouseLeave={handleChevronLeave}
@@ -78,26 +161,13 @@ export function CatalystHeader() {
                 label={sidebarLabel}
                 appearance="subtle"
                 onClick={cycleSidebarState}
-                icon={SidebarExpandIcon}
-                aria-expanded={false}
+                icon={SidebarCollapseIcon}
+                aria-expanded={true}
                 aria-controls="catalyst-sidebar"
               />
             </Tooltip>
           </div>
         )}
-        <HubSwitcher />
-        <a
-          href="/for-you"
-          aria-label="Catalyst home"
-          style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-        >
-          <img
-            src={catalystWordmark}
-            alt=""
-            height={28}
-            style={{ height: '28px', width: 'auto', display: 'block' }}
-          />
-        </a>
       </div>
 
       {/* CENTER: flex row so the Popup trigger div gets a definite containing-block width */}

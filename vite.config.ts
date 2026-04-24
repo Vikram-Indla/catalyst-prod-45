@@ -288,6 +288,7 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/section-message',
       '@atlaskit/select',
       '@atlaskit/spinner',
+      '@atlaskit/textarea',
       '@atlaskit/textfield',
       '@atlaskit/tokens',
       '@atlaskit/tooltip',

@@ -192,11 +192,28 @@ Deno.serve(async (req) => {
       return 2
     }
 
-    // Helper: convert Jira ADF to plain text
+    // Helper: convert Jira ADF to plain text.
+    //
+    // CRITICAL: ADF mention nodes have NO `content` array — the display name
+    // lives in `attrs.text` (e.g. "@vikram indla"). Without the explicit
+    // mention branch the @-mention is silently dropped during sync, which
+    // breaks every downstream feature that matches on "@name" in the body
+    // (For You "Reply to mentions", comment search, notifications).
+    // This must stay in lock-step with wh-jira-sync's adfToPlainText.
+    // (RCA 2026-04-24 — BAU-5648 Muhammad Ayaz mention was invisible until
+    //  this landed; deploy the pair together whenever either is touched.)
     function adfToPlainText(node: any): string {
       if (!node) return ''
       if (typeof node === 'string') return node
       if (node.type === 'text') return node.text || ''
+      if (node.type === 'mention') {
+        const t = node.attrs?.text
+        if (t) return t
+        const id = node.attrs?.id
+        return id ? `@${id}` : ''
+      }
+      if (node.type === 'emoji') return node.attrs?.shortName || node.attrs?.text || ''
+      if (node.type === 'hardBreak') return '\n'
       if (node.content && Array.isArray(node.content)) {
         return node.content.map(adfToPlainText).join(node.type === 'paragraph' ? '\n' : '')
       }

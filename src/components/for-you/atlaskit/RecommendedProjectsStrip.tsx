@@ -2,14 +2,20 @@
  * RecommendedProjectsStrip — horizontal strip of project cards at the top
  * of the For You page, directly above the tab bar.
  *
- * Parity target (from /jira-compare 2026-04-24):
- *   - Card: 230w × 62h, radius 4, padding 12px 16px, 1.11px subtle border
- *   - Icon: 32×32 @atlaskit/avatar appearance="square" (radius 4).
- *     When `src` is set → image. When unset → Atlaskit's hashed-initials
- *     tile (same fallback Jira uses for projects without a custom avatar).
+ * Parity target (from /jira-compare 2026-04-24, iteration 3):
+ *   - 3 cards only (cap: maxCards=3). Jira's strip caps at 3 regardless of
+ *     how many spaces the user has — extras live behind "View all".
+ *   - Card: 230w × 61h, radius 4, padding 12px 16px, 0.56px subtle border.
+ *   - Icon: 32×32 @atlaskit/avatar appearance="square" (radius 4). When
+ *     `src` is set → image. When unset → Atlaskit's hashed-initials tile
+ *     (same fallback Jira uses for spaces without a custom avatar).
+ *   - Title: Inter 600 14px/20px, ellipsis single-line.
+ *   - Subtitle: "Software project" (Catalyst vocab divergence — Jira says
+ *     "Software space" because its container is a "space"). Inter 400
+ *     12px/16px, color.text.subtlest.
  *   - Heading: "Recommended projects" (house vocab divergence from Jira's
- *     "Recommended spaces"), Inter 600 16px/20px, color.text
- *   - View all: "View all projects" → /projects — text color, weight 400
+ *     "Recommended spaces"), Inter 600 16px/20px, color.text.
+ *   - View all: "View all projects" → /projects — text color, weight 400.
  *   - Layout: wrapping grid at minmax(230px, 1fr), gap 16.
  *
  * Data source
@@ -34,7 +40,7 @@ interface RecommendedProjectsStripProps {
   maxCards?: number;
 }
 
-export default function RecommendedProjectsStrip({ projects, maxCards = 6 }: RecommendedProjectsStripProps) {
+export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: RecommendedProjectsStripProps) {
   const navigate = useNavigate();
 
   // Alpha-sort and cap. No reduce over items, no per-tab dependency — the
@@ -167,14 +173,34 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
-            font: `600 14px/20px "Inter", system-ui, sans-serif`,
-            color: token('color.text', '#292A2E'),
+            // Jira parity: flat weight 400. Primary color provides the
+            // hierarchy against the 400-subtle subtitle beneath.
+            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            color: token('color.text', '#172B4D'),
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            letterSpacing: 0,
+          }}
+        >
+          {card.name}
+        </div>
+        {/* Subtitle — Jira parity: shows the project product type beneath the title.
+            Jira's equivalent text is "Software space" (all spaces in digital-transformation
+            tenant are Software spaces). Catalyst vocab divergence: we say "project" not
+            "space", so this reads "Software project" — consistent with the header's
+            "Recommended projects" and the "View all projects" link. */}
+        <div
+          style={{
+            font: `400 12px/16px "Inter", system-ui, sans-serif`,
+            color: token('color.text.subtlest', '#626F86'),
+            marginTop: 2,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
           }}
         >
-          {card.name}
+          Software project
         </div>
       </div>
     </button>

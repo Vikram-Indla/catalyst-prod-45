@@ -10,11 +10,23 @@ import { supabase } from '@/integrations/supabase/client';
 export type WorkMode = 'OPS' | 'DEL' | 'TSK';
 export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
 /**
- * Jira "For You" tab order (as of April 2026):
- *   Recommended | Assigned to me | Starred | Worked on | Viewed
- * — ordered here to match that left→right reading.
+ * Catalyst "For You" tab order (as of April 2026):
+ *   AI Recap | Recommended | Assigned to me | Starred | Worked on | Viewed | Ageing
+ *
+ * AI Recap and Ageing are Catalyst extensions to the Jira "For You" strip —
+ * they were previously tabs inside the Notifications drawer and were relocated
+ * here so the For You page becomes a single pane of glass for personal work.
+ * Data wiring for both is unchanged (useAiRecap / useAgeingItems hooks
+ * continue to drive them). See context pack: for-you-v2-ai-recap-ageing-migration.
  */
-export type TabType = 'recommended' | 'assigned' | 'starred' | 'worked' | 'viewed';
+export type TabType =
+  | 'ai-recap'
+  | 'recommended'
+  | 'assigned'
+  | 'starred'
+  | 'worked'
+  | 'viewed'
+  | 'ageing';
 export type ModeFilter = 'all' | 'ops' | 'del' | 'tsk';
 
 export interface WorkItemAssignee {
@@ -101,6 +113,40 @@ export interface RecommendedMention {
   mentionerId: string | null;
   mentionerName: string;
   mentionerAvatarUrl?: string;
+}
+
+/**
+ * RecommendedComment — a single row in the "Reply to comments" feed that sits
+ * immediately under "Reply to mentions" on the Recommended tab.
+ *
+ * Jira parity (from /jira-compare 2026-04-24 DOM probe):
+ *   "<Author> commented on <issueType> <issueTitle>"
+ *   + comment body preview (with @-mention chips inline, rendered client-side)
+ *   + project name · ISSUE-KEY · relative timestamp
+ *   + "Leave a reply / Suggest a reply" footer
+ *
+ * Distinguished from RecommendedMention by intent: these are comments on work
+ * items the user is assigned / reporting / has been watching, but the comment
+ * does NOT @-mention the user explicitly. It's a "hey FYI something happened
+ * on your ticket" signal.
+ *
+ * Populated from `jira_sync_comments` filtered to issues in the user's
+ * assigned/reporting set, last ~30 days, excluding self-authored. The
+ * commentId is stable so React keys stay correct across refetches.
+ */
+export interface RecommendedComment {
+  commentId: string;
+  commentBody: string;
+  commentCreatedAt: string;
+  issueKey: string;
+  issueId: string;
+  issueSummary: string;
+  issueType: string;
+  projectKey: string;
+  projectName: string;
+  authorId: string | null;
+  authorName: string;
+  authorAvatarUrl?: string;
 }
 
 /**
@@ -471,6 +517,7 @@ export function useForYouData() {
   const [starredData, setStarredData] = useState<any[]>([]);
   const [recommendedItems, setRecommendedItems] = useState<any[]>([]);
   const [recommendedMentions, setRecommendedMentions] = useState<RecommendedMention[]>([]);
+  const [recommendedComments, setRecommendedComments] = useState<RecommendedComment[]>([]);
   const [viewedItems, setViewedItems] = useState<any[]>([]);
   const [attachmentCounts, setAttachmentCounts] = useState<Map<string, number>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
@@ -722,87 +769,274 @@ export function useForYouData() {
         const recommendedKeyOrder: string[] = [];
         const recommendedKeySet = new Set<string>();
 
-        // (a) Comment-mention heuristic — cheap, best-effort
+        // (a) Comment-mention heuristic — sourced from jira_sync_comments
         //
-        // We pull the full body + author_id + the joined issue metadata
-        // (key, summary, issue_type, project_key) so the RecommendedPanel
-        // can render a Jira-parity "Reply to mentions" feed:
-        //   "<Mentioner> mentioned you on <issueType icon> <issueTitle>"
-        //   <comment body preview>
+        // RCA (2026-04-24): ph_comments is a broken mirror (1 row across the
+        // whole DB vs. jira_sync_comments' 10,636). The wh-jira-sync edge
+        // function's ph_comments upsert fails silently on a constraint we
+        // haven't tracked down yet. Meanwhile, jira_sync_comments is the
+        // live-synced source of truth — it's what the Activity panel reads
+        // today and it's what we read here. When the ph_comments mirror is
+        // fixed we can switch back (or keep jira_sync_comments — it has
+        // everything we need without the extra join).
         //
-        // We then enrich the author side with a single profiles round-trip
-        // (full_name + avatar_url) keyed by the unique author_id set.
+        // Match strategy:
+        //   1. "@{firstName}" — modern Jira cloud comments with proper ADF
+        //      mention nodes (preserved once wh-jira-sync's adfToPlainText
+        //      stops dropping them).
+        //   2. "{firstName} {lastName}" — legacy comments where the ADF
+        //      flattener dropped the @ but left the display name as plain
+        //      text (we observed this on Hadeel Alrdaddi's 2025 comments).
+        //
+        // We run both matches, merge by jira_comment_id, and drop any
+        // comment the current user authored.
         const mentionsToPopulate: RecommendedMention[] = [];
         if (userName && userName !== 'Unassigned') {
-          const firstName = userName.split(' ')[0];
-          if (firstName && firstName.length >= 2) {
-            const { data: mentionHits } = await supabase
-              .from('ph_comments')
-              .select(
-                'id, body, created_at, author_id, ph_issues!inner(id, issue_key, summary, issue_type, project_key)'
-              )
-              .ilike('body', `%@${firstName}%`)
-              .neq('author_id', authUser.id)
-              .order('created_at', { ascending: false })
-              .limit(10);
+          const parts = userName.trim().split(/\s+/);
+          const firstName = parts[0];
+          const lastName = parts.length > 1 ? parts[parts.length - 1] : '';
 
-            (mentionHits || []).forEach((row: any) => {
-              const key = row.ph_issues?.issue_key;
-              if (key && !recommendedKeySet.has(key)) {
-                recommendedKeySet.add(key);
-                recommendedKeyOrder.push(key);
-              }
+          if (firstName && firstName.length >= 2) {
+            // Two parallel ILIKE queries — one for modern `@name` form,
+            // one for legacy plain-text name form. We union client-side
+            // to keep each query simple and indexable.
+            const [modernQ, legacyQ] = await Promise.all([
+              supabase
+                .from('jira_sync_comments')
+                .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
+                .ilike('body', `%@${firstName}%`)
+                .order('jira_created_at', { ascending: false })
+                .limit(10),
+              lastName
+                ? supabase
+                    .from('jira_sync_comments')
+                    .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
+                    .ilike('body', `%${firstName} ${lastName}%`)
+                    .order('jira_created_at', { ascending: false })
+                    .limit(10)
+                : Promise.resolve({ data: [] as any[] }),
+            ]);
+
+            // Merge + dedupe by jira_comment_id, exclude self-authored.
+            const mergedById = new Map<string, any>();
+            [...(modernQ.data || []), ...(legacyQ.data || [])].forEach((row: any) => {
+              if (!row.jira_comment_id) return;
+              // Don't surface the user's own comments as "mentions of me"
+              if (
+                row.author_display_name &&
+                row.author_display_name.trim().toLowerCase() === userName.trim().toLowerCase()
+              ) return;
+              if (!mergedById.has(row.jira_comment_id)) mergedById.set(row.jira_comment_id, row);
             });
 
-            // Resolve mentioner display data in a single round trip.
-            const authorIds = Array.from(
-              new Set(
-                (mentionHits || [])
-                  .map((r: any) => r.author_id)
-                  .filter((id: string | null): id is string => !!id)
-              )
-            );
-            let profileMap = new Map<string, { name: string; avatarUrl?: string }>();
-            if (authorIds.length > 0) {
-              const { data: profs } = await supabase
-                .from('profiles')
-                .select('id, full_name, avatar_url')
-                .in('id', authorIds);
-              profileMap = new Map(
-                (profs || []).map((p: any) => [
-                  p.id,
-                  {
-                    name: p.full_name || 'Unknown',
-                    avatarUrl: p.avatar_url || undefined,
-                  },
-                ])
-              );
+            // Order by recency (most-recent first) and cap at 5 for the feed.
+            const merged = [...mergedById.values()]
+              .sort((a, b) => new Date(b.jira_created_at || 0).getTime() - new Date(a.jira_created_at || 0).getTime())
+              .slice(0, 5);
+
+            // Enrich with ph_issues metadata (summary, issue_type) via a
+            // single follow-up query keyed on issue_key.
+            //
+            // Two-tier enrichment — ph_issues first, then catalyst_issues for
+            // any keys ph_issues missed. RCA (2026-04-24, SIMP-1699): the
+            // wh-jira-sync mirror doesn't cover every project (SIMP in
+            // particular), so mentions from those projects fell through the
+            // `issue?.issue_type || 'task'` default below and rendered as the
+            // blue-check task icon even though SIMP-1699 is a "QA Bug".
+            // catalyst_issues is the Catalyst-native mirror that DOES have
+            // those rows — use it as the second-chance lookup so the icon
+            // normalizer can route to the correct primitive (bug → red asterisk).
+            const issueKeys = [...new Set(merged.map(r => r.issue_key).filter(Boolean))];
+            const issueByKey = new Map<string, any>();
+            if (issueKeys.length > 0) {
+              const { data: issueRows } = await supabase
+                .from('ph_issues')
+                .select('id, issue_key, summary, issue_type, project_key')
+                .in('issue_key', issueKeys);
+              (issueRows || []).forEach((r: any) => issueByKey.set(r.issue_key, r));
+
+              const missedKeys = issueKeys.filter(k => !issueByKey.has(k));
+              if (missedKeys.length > 0) {
+                const { data: catRows } = await supabase
+                  .from('catalyst_issues')
+                  .select('id, issue_key, title, issue_type')
+                  .in('issue_key', missedKeys);
+                (catRows || []).forEach((r: any) => issueByKey.set(r.issue_key, {
+                  id: r.id,
+                  issue_key: r.issue_key,
+                  summary: r.title,                                   // catalyst_issues uses `title`
+                  issue_type: r.issue_type,
+                  project_key: (r.issue_key || '').split('-')[0],
+                }));
+                // Diagnostic — make icon misses visible in the console. When
+                // BOTH mirrors (ph_issues, catalyst_issues) lack a row, the
+                // mention falls through to the 'task' default and renders
+                // the blue-check icon. Surfacing the gap here lets us decide
+                // whether to (a) extend the sync to cover the project or
+                // (b) add a real-time Jira API fallback.
+                const stillMissing = missedKeys.filter(k => !issueByKey.has(k));
+                if (stillMissing.length > 0) {
+                  console.warn(
+                    '[useForYouData] mentions enrichment miss (icon may default to task):',
+                    stillMissing,
+                  );
+                } else if (typeof console !== 'undefined' && console.info) {
+                  console.info(
+                    '[useForYouData] mentions enrichment hit via catalyst_issues:',
+                    (catRows || []).map((r: any) => ({ key: r.issue_key, type: r.issue_type })),
+                  );
+                }
+              }
             }
 
-            (mentionHits || []).forEach((row: any) => {
-              const issue = row.ph_issues;
-              if (!issue?.issue_key) return;
-              const mentioner = row.author_id
-                ? profileMap.get(row.author_id)
-                : undefined;
+            // Permissive enrichment — when ph_issues has the key, use its
+            // rich metadata. When it doesn't (older projects not fully
+            // indexed yet), fall back to the raw issue_key + best-effort
+            // project key split. This keeps the mentions feed populated for
+            // 2025-era comments like Hadeel Alrdaddi's SIMP-1706/MDT-384
+            // which aren't in ph_issues but are what the user actually
+            // needs to see in the "Reply to mentions" card.
+            merged.forEach((row: any) => {
+              if (!row.issue_key) return;
+              const issue = issueByKey.get(row.issue_key);
+              const projectKey = issue?.project_key
+                || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
+              if (!recommendedKeySet.has(row.issue_key)) {
+                recommendedKeySet.add(row.issue_key);
+                recommendedKeyOrder.push(row.issue_key);
+              }
               mentionsToPopulate.push({
-                commentId: row.id,
+                commentId: row.jira_comment_id,
                 commentBody: row.body || '',
-                commentCreatedAt: row.created_at || new Date().toISOString(),
-                issueKey: issue.issue_key,
-                issueId: issue.id,
-                issueSummary: issue.summary || issue.issue_key,
-                issueType: issue.issue_type || 'task',
-                projectKey: issue.project_key || '',
-                projectName: localProjectNameMap.get(issue.project_key) || issue.project_key || '',
-                mentionerId: row.author_id || null,
-                mentionerName: mentioner?.name || 'A teammate',
-                mentionerAvatarUrl: mentioner?.avatarUrl,
+                commentCreatedAt: row.jira_created_at || new Date().toISOString(),
+                issueKey: row.issue_key,
+                issueId: issue?.id || row.issue_key,
+                issueSummary: issue?.summary || row.issue_key,
+                issueType: issue?.issue_type || 'task',
+                projectKey,
+                projectName: localProjectNameMap.get(projectKey) || projectKey || '',
+                mentionerId: row.author_account_id || null,
+                mentionerName: row.author_display_name || 'A teammate',
+                mentionerAvatarUrl: row.author_avatar_url || undefined,
               });
             });
           }
         }
         setRecommendedMentions(mentionsToPopulate);
+
+        // ── Recommended — "Reply to comments" feed ──
+        //
+        // Jira parity: the Recommended tab has TWO stacked cards —
+        //   1. "Reply to mentions"  (you were @-mentioned)
+        //   2. "Reply to comments"  (someone commented on work you care about
+        //                            but didn't explicitly @-mention you)
+        //
+        // Population rule for (2): comments on work items in the user's
+        // assigned/reporting set, within the last 30 days, excluding
+        // self-authored and excluding anything already surfaced in (1). We
+        // cap at 5 newest.
+        //
+        // Data source: jira_sync_comments (10k+ rows, live-synced). Same
+        // source of truth as (1) — we only change the filter predicate.
+        const commentsToPopulate: RecommendedComment[] = [];
+        {
+          // The "care about" set = user's assigned Jira issues
+          // + their reporting set (derived from userProfileData).
+          const watchedKeys = new Set<string>(
+            (jiraAssignedRaw as any[])
+              .map((r: any) => r.issue_key)
+              .filter(Boolean)
+          );
+
+          if (watchedKeys.size > 0 && userName && userName !== 'Unassigned') {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            // Cap the IN() clause at 200 keys — more than enough headroom
+            // for "Reply to comments" (we display 5) and stays well under
+            // PostgREST's URL-length ceiling.
+            const watchedKeyList = [...watchedKeys].slice(0, 200);
+
+            const { data: commentRows } = await supabase
+              .from('jira_sync_comments')
+              .select('id, jira_comment_id, issue_key, body, jira_created_at, author_account_id, author_display_name, author_avatar_url')
+              .in('issue_key', watchedKeyList)
+              .gte('jira_created_at', thirtyDaysAgo.toISOString())
+              .order('jira_created_at', { ascending: false })
+              .limit(50);
+
+            // Exclude self-authored AND exclude anything already in
+            // mentionsToPopulate (dedupe across the two cards).
+            const mentionIds = new Set(mentionsToPopulate.map(m => m.commentId));
+            const filtered = (commentRows || []).filter((row: any) => {
+              if (!row.jira_comment_id) return false;
+              if (mentionIds.has(row.jira_comment_id)) return false;
+              const self = row.author_display_name
+                && row.author_display_name.trim().toLowerCase() === userName.trim().toLowerCase();
+              return !self;
+            }).slice(0, 5);
+
+            // Enrich with ph_issues summary/issue_type — reuse issueByKey map
+            // where available; otherwise query fresh.
+            //
+            // Two-tier enrichment mirrors the mentions block above. SIMP and
+            // other projects not covered by wh-jira-sync are absent from
+            // ph_issues but DO live in catalyst_issues — try both before the
+            // icon normalizer falls back to 'task'. See RCA note in the
+            // mentions enrichment for the full chain.
+            const commentIssueKeys = [...new Set(filtered.map((r: any) => r.issue_key).filter(Boolean))];
+            const commentIssueByKey = new Map<string, any>();
+            if (commentIssueKeys.length > 0) {
+              const { data: issueRows } = await supabase
+                .from('ph_issues')
+                .select('id, issue_key, summary, issue_type, project_key')
+                .in('issue_key', commentIssueKeys);
+              (issueRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, r));
+
+              const missedKeys = commentIssueKeys.filter(k => !commentIssueByKey.has(k));
+              if (missedKeys.length > 0) {
+                const { data: catRows } = await supabase
+                  .from('catalyst_issues')
+                  .select('id, issue_key, title, issue_type')
+                  .in('issue_key', missedKeys);
+                (catRows || []).forEach((r: any) => commentIssueByKey.set(r.issue_key, {
+                  id: r.id,
+                  issue_key: r.issue_key,
+                  summary: r.title,
+                  issue_type: r.issue_type,
+                  project_key: (r.issue_key || '').split('-')[0],
+                }));
+              }
+            }
+
+            filtered.forEach((row: any) => {
+              const issue = commentIssueByKey.get(row.issue_key);
+              const projectKey = issue?.project_key
+                || (typeof row.issue_key === 'string' ? row.issue_key.split('-')[0] : '');
+              // Thread this key into the recommendedKeyOrder so the detail
+              // modal can resolve the WorkItem when the card is clicked.
+              if (!recommendedKeySet.has(row.issue_key)) {
+                recommendedKeySet.add(row.issue_key);
+                recommendedKeyOrder.push(row.issue_key);
+              }
+              commentsToPopulate.push({
+                commentId: row.jira_comment_id,
+                commentBody: row.body || '',
+                commentCreatedAt: row.jira_created_at || new Date().toISOString(),
+                issueKey: row.issue_key,
+                issueId: issue?.id || row.issue_key,
+                issueSummary: issue?.summary || row.issue_key,
+                issueType: issue?.issue_type || 'task',
+                projectKey,
+                projectName: localProjectNameMap.get(projectKey) || projectKey || '',
+                authorId: row.author_account_id || null,
+                authorName: row.author_display_name || 'A teammate',
+                authorAvatarUrl: row.author_avatar_url || undefined,
+              });
+            });
+          }
+        }
+        setRecommendedComments(commentsToPopulate);
 
         // (b) Top of assigned queue — "you should look at this next"
         (jiraAssigned as any[]).slice(0, 10).forEach((r: any) => {
@@ -826,6 +1060,20 @@ export function useForYouData() {
         }
 
         // ── Starred items (parallel) ──
+        // Cross-source contract (April 2026): "Starred" returns every item
+        // the user has starred regardless of origin system. The star itself
+        // is always recorded in `user_starred_items` (Catalyst-owned), but
+        // the referenced `item_id` may point at either:
+        //   • a Jira-synced row in `ph_issues` (source='jira' or 'catalyst'),
+        //   • a Catalyst-native row in `planner_tasks`, or
+        //   • a native item surfaced through `allNativeItems`.
+        // We fan out across all three tables and merge the results — any
+        // starred issue_key that exists in Jira comes back with its full
+        // Jira metadata intact (summary, status, assignee, etc.). No
+        // server-side Jira favourite-sync is required for this to work:
+        // because Catalyst mirrors the Jira issue in ph_issues, starring it
+        // in Catalyst is semantically identical to marking it a favourite
+        // on the Jira side from the user's point of view.
         if (stars && stars.length > 0) {
           const starredKeys = new Set(stars.map(s => s.item_id));
           setStarredItems(starredKeys as any);
@@ -866,6 +1114,12 @@ export function useForYouData() {
       case 'assigned':    return assignedItems;
       case 'starred':     return starredData;
       case 'viewed':      return viewedItems;
+      // AI Recap + Ageing panels own their own data pipelines and render
+      // without the shared row-based pagination, so return an empty list
+      // here — the page shell skips the Load-more sentinel when the active
+      // tab is one of these.
+      case 'ai-recap':    return [];
+      case 'ageing':      return [];
       case 'worked':
       default:            return workedOnItems;
     }
@@ -893,11 +1147,17 @@ export function useForYouData() {
       return items.filter(row => inferMode(row.project_key, row.issue_type).toLowerCase() === activeMode);
     };
     return {
+      // AI Recap + Ageing are first-class tabs on the For You strip but
+      // their counts are owned by their own hooks (useAiRecap / useAgeingCount)
+      // rendered alongside the tab label in ForYouTabs.tsx. We expose 0 here
+      // purely to satisfy the Record<TabType, number> shape.
+      'ai-recap':  0,
       recommended: filterByMode(recommendedItems).length,
       assigned:    filterByMode(assignedItems).length,
       starred:     filterByMode(starredData).length,
       worked:      filterByMode(workedOnItems).length,
       viewed:      filterByMode(viewedItems).length,
+      ageing:      0,
     };
   }, [workedOnItems, assignedItems, starredData, recommendedItems, viewedItems, activeMode]);
 
@@ -1062,6 +1322,10 @@ export function useForYouData() {
     // Rich mentions feed used by RecommendedPanel (Jira "Reply to mentions"
     // parity — see src/components/for-you/atlaskit/RecommendedPanel.tsx).
     recommendedMentions,
+    // Recent comments on the user's watched work (assigned / reporting)
+    // where the user was NOT explicitly mentioned — drives the second
+    // "Reply to comments" card below the mentions card on Recommended.
+    recommendedComments,
     // Account-scoped project list. Stable across every tab switch — the
     // Recommended projects strip consumes this so it doesn't rebuild from
     // the active tab's filtered items on every click.

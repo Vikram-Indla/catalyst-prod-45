@@ -16,8 +16,10 @@ import NotificationItem from "./NotificationItem";
 import SectionHeader from "./SectionHeader";
 import EmptyState from "./EmptyState";
 import LoadingSkeleton from "./LoadingSkeleton";
-import AIRecapTabV2 from "./AIRecapTabV2";
-import AgeingTab, { useAgeingCount } from "./AgeingTab";
+// NOTE (2026-04-24 migration): AIRecapTabV2 and AgeingTab have moved to the
+// For You page as dedicated tabs. They are intentionally NOT imported here
+// anymore. The AgeingTab file is still the home of `useAgeingCount`, now
+// consumed by ForYouTabs — do not delete that file.
 import WatchingTab from "./WatchingTab";
 import DirectPanel from "@/features/notifications/DirectPanel";
 
@@ -86,26 +88,14 @@ function groupByDate(items: Notification[]): { label: string; items: Notificatio
   return groups.filter(g => g.items.length > 0);
 }
 
-const TABS: { key: NotificationTab; label: string; badge?: 'ageing' }[] = [
+// After the 2026-04-24 For You migration, the notifications drawer is a
+// two-tab surface: Direct (the default feed) and Watching. AI Recap and
+// Ageing previously lived here but have been relocated to /for-you where
+// they render as first-class tabs alongside Recommended / Assigned / etc.
+const TABS: { key: NotificationTab; label: string }[] = [
   { key: 'direct', label: 'Direct' },
   { key: 'watching', label: 'Watching' },
-  { key: 'ai', label: 'AI Recap' },
-  { key: 'ageing', label: 'Ageing', badge: 'ageing' },
 ];
-
-function AgeingBadge() {
-  const count = useAgeingCount();
-  if (count === 0) return null;
-  return (
-    <span style={{
-      fontSize: 10, fontWeight: 700, borderRadius: 10,
-      padding: '1px 6px', background: '#FEE2E2', color: '#991B1B',
-      lineHeight: '16px',
-    }}>
-      {count}
-    </span>
-  );
-}
 
 export default function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
   const { data: userId } = useUserId();
@@ -522,9 +512,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = T.text2; }}
               >
                 {tab.label}
-                {tab.badge === 'ageing' && (
-                  <AgeingBadge />
-                )}
               </button>
             );
           })}
@@ -558,10 +545,6 @@ export default function NotificationPanel({ isOpen, onClose }: NotificationPanel
           </div>
         ) : activeTab === 'watching' ? (
           <WatchingTab unreadOnly={unreadOnly} isDark={isDark} />
-        ) : activeTab === 'ai' ? (
-          <AIRecapTabV2 />
-        ) : activeTab === 'ageing' ? (
-          <AgeingTab />
         ) : (
           <DirectPanel unreadOnly={unreadOnly} isDark={isDark} />
         )}

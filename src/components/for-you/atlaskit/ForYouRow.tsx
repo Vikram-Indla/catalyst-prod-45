@@ -59,6 +59,13 @@ interface ForYouRowProps {
   onToggleStar?: (id: string) => void;
   /** Suppress the project breadcrumb if the surrounding card already names it. */
   hideProject?: boolean;
+  /**
+   * Optional AI-Recap-style action fragment appended to the meta row as an
+   * additional subtle span (truncated + tooltipped). Keeps AI Recap rows
+   * visually identical to Assigned rows while preserving the digest's
+   * actionable intent. Omit for all other tabs — they stay unchanged.
+   */
+  suggestion?: string;
 }
 
 // ─── Status → Atlaskit Lozenge mapping ───────────────────────────────────────
@@ -76,7 +83,7 @@ function statusToAppearance(status: string): LozengeAppearance {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false }: ForYouRowProps) {
+function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, hideProject = false, suggestion }: ForYouRowProps) {
   const avatarUrl = resolveAvatarUrl(item.assignee.name) || undefined;
   const isStarred = !!item.starred;
   const [isActive, setIsActive] = useState(false);
@@ -147,11 +154,15 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
         <div
           style={{
-            font: `500 14px/20px "Inter", system-ui, sans-serif`,
+            // Jira parity: flat weight 400, saturated primary color does
+            // the contrast. Bolding row titles made prior builds read as
+            // jittery/faded against Jira's dense scan pattern.
+            font: `400 14px/20px "Inter", system-ui, sans-serif`,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
+            letterSpacing: 0,
           }}
         >
           {item.summary || item.key}
@@ -159,9 +170,12 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <span
             style={{
-              font: `500 12px/16px "JetBrains Mono", ui-monospace, monospace`,
-              color: token('color.text.subtlest', '#8590A2'),
-              letterSpacing: '0.01em',
+              // Jira renders the key inline in the same Inter stack at
+              // the meta-row size — NOT a monospace pill. Matches the
+              // 12/16/400 subtle meta pattern from the Recommended card.
+              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              color: token('color.text.subtle', '#44546F'),
+              letterSpacing: 0,
             }}
           >
             {item.key}
@@ -196,6 +210,27 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           >
             {item.updatedAt}
           </span>
+          {suggestion && (
+            // AI Recap meta fragment: 12/16/400, color.text.subtle (same as
+            // meta siblings), max-width to prevent the row pushing wider
+            // than Jira's 920px feed. Tooltip shows the full text on hover
+            // so nothing gets permanently clipped. Inherits elevation tokens
+            // from the parent row — zero bespoke color.
+            <Tooltip content={suggestion}>
+              <span
+                style={{
+                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                  color: token('color.text.subtle', '#626F86'),
+                  maxWidth: 260,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                · {suggestion}
+              </span>
+            </Tooltip>
+          )}
         </div>
       </div>
 

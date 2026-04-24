@@ -11,7 +11,14 @@ export type NotificationEntityType =
   | 'work_item' | 'project' | 'release' | 'incident'
   | 'test_case' | 'okr' | 'document' | 'risk' | 'issue';
 
-export type NotificationTab = 'direct' | 'watching' | 'ai' | 'ageing';
+// As of the 2026-04-24 For You migration, the notifications drawer is a
+// two-tab surface: Direct + Watching. The former 'ai' and 'ageing' tabs
+// have been relocated to /for-you (AI Recap = first tab, Ageing = last).
+// The DB `notifications.tab` column may still carry 'ai' for pre-existing
+// rows, but the UI never surfaces them — `useNotificationsQuery` only
+// filters by `{ direct | watching }`. If backfill is required, handle it
+// as a one-off migration; do not widen this union.
+export type NotificationTab = 'direct' | 'watching';
 
 export type WorkItemIconType =
   | 'bug' | 'qa bug' | 'story' | 'task' | 'epic' | 'subtask'

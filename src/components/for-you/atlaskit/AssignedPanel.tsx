@@ -12,18 +12,22 @@ import React from 'react';
 import { token } from '@atlaskit/tokens';
 import ForYouRow from './ForYouRow';
 import { ForYouEmptyState } from './helpers';
+import { text } from '@/lib/typography';
 import type { WorkItem } from '@/hooks/useForYouData';
 
-type StatusBucket = 'TO DO' | 'IN PROGRESS' | 'IN REVIEW' | 'DONE';
+// Jira parity (DOM probe 2026-04-24, Assigned tab): the group heading is
+// rendered in Title Case as plain text (CSS text-transform: none), so the
+// enum values ARE the display strings — no uppercase conversion.
+type StatusBucket = 'To Do' | 'In Progress' | 'In Review' | 'Done';
 
-const STATUS_ORDER: StatusBucket[] = ['TO DO', 'IN PROGRESS', 'IN REVIEW', 'DONE'];
+const STATUS_ORDER: StatusBucket[] = ['To Do', 'In Progress', 'In Review', 'Done'];
 
 function toBucket(status: string): StatusBucket {
   const s = (status || '').toLowerCase();
-  if (s.includes('done') || s.includes('closed') || s.includes('complet') || s.includes('approved')) return 'DONE';
-  if (s.includes('review')) return 'IN REVIEW';
-  if (s.includes('progress') || s.includes('dev') || s === 'active') return 'IN PROGRESS';
-  return 'TO DO';
+  if (s.includes('done') || s.includes('closed') || s.includes('complet') || s.includes('approved')) return 'Done';
+  if (s.includes('review')) return 'In Review';
+  if (s.includes('progress') || s.includes('dev') || s === 'active') return 'In Progress';
+  return 'To Do';
 }
 
 interface AssignedPanelProps {
@@ -78,20 +82,27 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
         paddingBlockEnd: 8,
       }}
     >
+      {/* Section label — Jira parity (DOM probe 2026-04-24, Assigned tab):
+          14px / weight 500 / Title Case / color #6B6E76 (subtlest). NOT
+          uppercase — Jira renders "In Progress", not "IN PROGRESS". This
+          matches the `<span>` at level-0 inside
+          `global-pages.home.common.ui.item-list.list`. */}
       <span
         style={{
-          font: `600 11px/16px "Inter", system-ui, sans-serif`,
-          letterSpacing: '0.08em',
-          color: token('color.text.subtlest', '#8590A2'),
-          textTransform: 'uppercase',
+          font: `500 14px/20px "Inter", system-ui, sans-serif`,
+          letterSpacing: 'normal',
+          color: text.subtlest,
+          textTransform: 'none',
         }}
       >
         {label}
       </span>
+      {/* Count chip — weight 400, kept compact. Background + shape
+          distinguish it from the label, no weight jump needed. */}
       <span
         style={{
-          font: `500 11px/14px "Inter", system-ui, sans-serif`,
-          color: token('color.text.subtle', '#626F86'),
+          font: `400 12px/16px "Inter", system-ui, sans-serif`,
+          color: text.subtle,
           backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
           paddingInline: 6,
           borderRadius: 999,

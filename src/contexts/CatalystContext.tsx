@@ -207,22 +207,31 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const setSidebarHoverOpen = useCallback((open: boolean) => {
     setSidebarHoverOpenState(open);
   }, []);
-  // Click-driven toggle. Click = pin intent: opening pins, closing unpins so
-  // the next hover starts in transient mode again. Matches Jira parity.
+  // Click-driven toggle. Click = pin intent. Three cases:
+  //   1) Pinned + visible  → unpin + hide (user wants to close)
+  //   2) Hover-peek visible (unpinned, hidden=false) → PIN IT (user clicked
+  //      while peeking — intent is to make it stick, not close it). This was
+  //      the "sidepanel won't stick" bug: the old code treated hover-peek
+  //      visibility the same as pinned visibility and collapsed on click.
+  //   3) Hidden (edge-reveal) → pin + show
   const cycleSidebarState = useCallback(() => {
     setSidebarState(prev => {
-      const isVisible = !prev.hidden && prev.expanded;
-      if (isVisible) {
+      const isPinnedVisible = sidebarPinned && !prev.hidden && prev.expanded;
+      if (isPinnedVisible) {
+        // Case 1: close
         setSidebarPinnedState(false);
         try { localStorage.setItem('catalyst.sidebarPinned', 'false'); } catch { /* noop */ }
         setSidebarHoverOpenState(false);
         return { hidden: true, expanded: true };
       }
+      // Cases 2 + 3: pin open. Clear hoverOpen so a subsequent mouseleave
+      // from the chevron doesn't race the pin state.
       setSidebarPinnedState(true);
       try { localStorage.setItem('catalyst.sidebarPinned', 'true'); } catch { /* noop */ }
+      setSidebarHoverOpenState(false);
       return { hidden: false, expanded: true };
     });
-  }, []);
+  }, [sidebarPinned]);
   // Persist sidebar state on every change — fire-and-forget, swallow quota
   // errors (private browsing, Safari ITP) without breaking the app.
   useEffect(() => {

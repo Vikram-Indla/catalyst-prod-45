@@ -215,121 +215,50 @@ export function SidebarBase({
           scrollbarColor: isDark ? '#454545 transparent' : '#DFE1E6 transparent',
         }}
       >
-        {/* Header with collapse toggle */}
-        <div 
+        {/* Header — hub badge + label only. The collapse toggle now lives
+            exclusively in CatalystHeader (top-nav) in BOTH sidebar states,
+            so the chevron anchors on a fixed Y axis (Jira parity). Previously
+            this header mounted a second chevron when expanded and the edge-
+            reveal owned it when hidden, causing the chevron to "hop" 54px
+            down on expand. Removed entirely — single source of truth. */}
+        <div
           className={cn(
-            "border-b flex-shrink-0",
-            expanded
-              ? "flex items-center justify-between"
-              : "flex flex-col items-center justify-center"
+            "border-b flex-shrink-0 flex items-center",
+            expanded ? "justify-start" : "justify-center"
           )}
           style={{
             minHeight: '48px',
             borderColor: sidebarBorder,
             padding: expanded ? '12px 12px 12px 16px' : '12px 0',
-            gap: expanded ? undefined : '4px',
+            gap: expanded ? '10px' : '4px',
             background: 'transparent',
           }}
         >
-          {!expanded ? (
-            // Chevron critique (2026-04-19): collapsed-mode order flipped so
-            // the toggle button renders ABOVE the avatar. Combined with the
-            // expanded-mode right-anchor, the chevron now lives at the
-            // trailing/top edge of the header in both states — Jira-parity
-            // anchor instead of the previous stack order that jumped the
-            // chevron from right (expanded) to bottom (collapsed).
-            <>
-              <button
-                onClick={onToggle}
-                className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: chevronColor,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = tokens.hoverBg;
-                  e.currentTarget.style.color = chevronHoverColor;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = chevronColor;
-                }}
-                aria-label="Expand sidebar (shortcut: [ )"
-              >
-                <PanelLeftOpen size={15} />
-              </button>
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{
-                  background: 'var(--cp-blue)',
-                  color: 'var(--bg-app)',
-                  fontSize: '0.62rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.02em',
-                }}
-              >
-                {config.badge}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-2.5 overflow-hidden min-w-0">
-                <div 
-                  className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
-                  style={{
-                    background: 'var(--cp-blue)',
-                    color: 'var(--bg-app)',
-                    fontSize: '0.62rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.02em',
-                  }}
-                >
-                  {config.badge}
-                </div>
-                {/* Hub label — t1 in dark mode (NOT blue) per D8-R3 Fix 2 */}
-                <span 
-                  className="truncate"
-                  style={{ 
-                    fontFamily: "'Sora', sans-serif",
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    color: hubLabel,
-                    letterSpacing: '-0.3px',
-                  }}
-                >
-                  {config.label}
-                </span>
-              </div>
-              {/* Jira-parity: collapse button lives at the RIGHT EDGE of the
-                  expanded sidebar header — matching Jira's ⊡ placement.
-                  The CatalystHeader chevron is hidden when sidebar is expanded
-                  so there is always exactly ONE toggle, inside the panel. */}
-              <button
-                onClick={onToggle}
-                className="flex items-center justify-center w-[26px] h-[26px] rounded transition-all flex-shrink-0 ml-auto"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: chevronColor,
-                  flexShrink: 0,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = tokens.hoverBg;
-                  e.currentTarget.style.color = chevronHoverColor;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.color = chevronColor;
-                }}
-                aria-label="Collapse sidebar (shortcut: [ )"
-                title="Collapse sidebar ([ )"
-              >
-                <PanelLeftClose size={15} />
-              </button>
-            </>
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{
+              background: 'var(--cp-blue)',
+              color: 'var(--bg-app)',
+              fontSize: '0.62rem',
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+            }}
+          >
+            {config.badge}
+          </div>
+          {expanded && (
+            <span
+              className="truncate"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: '14px',
+                fontWeight: 700,
+                color: hubLabel,
+                letterSpacing: '-0.3px',
+              }}
+            >
+              {config.label}
+            </span>
           )}
         </div>
 

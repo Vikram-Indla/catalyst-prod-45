@@ -44,11 +44,41 @@ import ForYouTabs, { FOR_YOU_TAB_KEY } from '@/components/for-you/atlaskit/ForYo
 import RecommendedPanel from '@/components/for-you/atlaskit/RecommendedPanel';
 import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
-import WorkedOnPanel from '@/components/for-you/atlaskit/WorkedOnPanel';
-import ViewedPanel from '@/components/for-you/atlaskit/ViewedPanel';
+// WorkedOnPanel / ViewedPanel removed April 2026 — those tabs were pruned
+// from FOR_YOU_TAB_ORDER because they had low real-world use; keeping the
+// imports around would just be dead wiring.
+import AiRecapPanel from '@/components/for-you/atlaskit/AiRecapPanel';
+import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
+import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const PAGE_SIZE = 20;
+
+/**
+ * Business-request routing
+ * ────────────────────────
+ * The canonical Catalyst detail modal (StoryDetailModal via
+ * useGlobalSearchStore.openDetail) is the surface we use everywhere for
+ * Jira-synced work items — notifications, global search, project sidebar,
+ * hub row clicks. For You now follows the same convention.
+ *
+ * EXCEPTION: business_gap / business_request items still open the legacy
+ * ForYouDetailPanel drawer because that panel has bespoke BRD affordances
+ * (stakeholder list, gap status workflow, impact assessment) that the
+ * canonical modal doesn't surface. Migration of BRDs to the canonical
+ * modal is tracked separately; until then, keep the divergence here.
+ */
+const BUSINESS_REQUEST_TYPES = new Set([
+  'business_gap',
+  'Business Gap',
+  'business_request',
+  'Business Request',
+]);
+
+function isBusinessRequest(item: WorkItem | null | undefined): boolean {
+  if (!item) return false;
+  return BUSINESS_REQUEST_TYPES.has(String(item.issueType || '').trim());
+}
 
 export default function ForYouPageAtlaskit() {
   const data = useForYouData();
@@ -64,14 +94,25 @@ export default function ForYouPageAtlaskit() {
     trackView,
     handleRowClick,
     recommendedMentions,
+    recommendedComments,
     allUserProjects,
   } = data;
 
   // ─── Persist the tab across refreshes ────────────────────────────────────
+  // April 2026 — Worked on / Viewed were pruned from the tab strip. Any
+  // stale localStorage value from before the prune is migrated to
+  // 'recommended' on mount so the user lands on a real tab instead of
+  // staring at an orphaned selection state.
   useEffect(() => {
     try {
       const stored = localStorage.getItem(FOR_YOU_TAB_KEY) as TabType | null;
-      if (stored && stored !== activeTab) setActiveTab(stored);
+      const RETIRED: TabType[] = ['worked' as TabType, 'viewed' as TabType];
+      if (stored && (RETIRED as string[]).includes(stored)) {
+        localStorage.setItem(FOR_YOU_TAB_KEY, 'recommended');
+        setActiveTab('recommended');
+      } else if (stored && stored !== activeTab) {
+        setActiveTab(stored);
+      }
     } catch {
       /* localStorage unavailable (SSR/privacy) — no-op */
     }
@@ -86,10 +127,27 @@ export default function ForYouPageAtlaskit() {
     setVisibleCount(PAGE_SIZE); // reset pagination when switching tabs
   }, [setActiveTab]);
 
-  // ─── Row click → detail panel AND view tracking ─────────────────────────
+  // ─── Row click → canonical detail modal (Jira parity) ───────────────────
+  // Route through useGlobalSearchStore.openDetail() — the same entry point
+  // notifications, global search, and project sidebars use to surface the
+  // canonical StoryDetailModal. ForYouDetailPanel is reserved for BRDs
+  // (business_gap / business_request) which have bespoke affordances the
+  // canonical modal doesn't yet support.
   const handleSelect = useCallback((item: WorkItem) => {
-    handleRowClick(item.id);
     trackView(item.id, item.issueType === 'planner_task' ? 'task' : 'ph_issue');
+    if (isBusinessRequest(item)) {
+      // Legacy drawer — preserves BRD-specific UI (stakeholders, impact, etc.)
+      handleRowClick(item.id);
+    } else {
+      // Canonical path — same modal everywhere else in Catalyst.
+      // Prefer phIssueId (the real ph_issues row UUID) when present so the
+      // detail modal can resolve the Jira-synced record; fall back to id.
+      useGlobalSearchStore.getState().openDetail({
+        id: item.phIssueId || item.id,
+        itemType: item.issueType,
+        projectKey: item.projectKey,
+      });
+    }
   }, [handleRowClick, trackView]);
 
   // ─── Client-side pagination ─────────────────────────────────────────────
@@ -116,6 +174,15 @@ export default function ForYouPageAtlaskit() {
   }, [workItems.length]);
 
   // ─── Panel selection ─────────────────────────────────────────────────────
+  // Compose a display-name for the reply composer avatar in the Recommended
+  // panel. `user` is sourced from useForYouData (firstName + lastName is
+  // resolved from the `profiles` row) so we get the same name the rest of
+  // the app does — routed through the single resolveAvatarUrl chokepoint.
+  const currentUserName = useMemo(() => {
+    const parts = [user?.firstName, user?.lastName].filter(Boolean);
+    return parts.join(' ').trim() || undefined;
+  }, [user?.firstName, user?.lastName]);
+
   const panel = useMemo(() => {
     const panelProps = {
       items: visibleItems,
@@ -124,14 +191,23 @@ export default function ForYouPageAtlaskit() {
       onToggleStar: toggleStar,
     };
     switch (activeTab) {
-      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} />;
+      // AI Recap and Ageing own their own data pipelines — the generic
+      // {items, onSelect, onToggleStar} row-feed props don't apply. Their
+      // wrappers are framed with the same Atlaskit chrome as the other
+      // panels so they slot in visually without bleeding internals.
+      case 'ai-recap':    return <AiRecapPanel />;
+      case 'ageing':      return <AgeingPanel />;
+      case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
       case 'starred':     return <StarredPanel     {...panelProps} />;
-      case 'worked':      return <WorkedOnPanel    {...panelProps} />;
-      case 'viewed':      return <ViewedPanel      {...panelProps} />;
-      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} />;
+      default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions]);
+  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName]);
+
+  // AI Recap and Ageing render their own vertical lists internally — neither
+  // shares the client-side pagination window that the row-feed tabs use.
+  // Suppress Load more + sentinel for those tabs to avoid dead chrome.
+  const showPagination = activeTab !== 'ai-recap' && activeTab !== 'ageing';
 
   return (
     <div
@@ -148,30 +224,42 @@ export default function ForYouPageAtlaskit() {
         boxSizing: 'border-box',
       }}
     >
-      {/* Greeting — Jira's version personalises on first name. */}
-      <h1
-        style={{
-          font: `700 24px/32px "Sora", system-ui, sans-serif`,
-          color: token('color.text', '#172B4D'),
-          margin: 0,
-          marginBlockEnd: 20,
-        }}
-      >
-        Good to see you, {user.firstName}
-      </h1>
-
       {/* Recommended projects strip — account-scoped, stable across tab
-          switches. We pass `allUserProjects` (from useForYouData) instead
-          of the per-tab filtered `workItems` so the strip doesn't re-derive
-          on every tab click. */}
+          switches. Jira parity (image ref 2026-04-24): projects strip comes
+          FIRST, then the "For you" heading + tab strip share a single row
+          directly above the feed. */}
       <RecommendedProjectsStrip projects={allUserProjects} />
 
-      {/* Tab strip */}
-      <ForYouTabs
-        activeTab={activeTab}
-        tabCounts={tabCounts}
-        onChange={handleTabChange}
-      />
+      {/* Heading + tabs — single flex row, "For you" left-aligned, tabs
+          right-aligned. Jira's DOM ships this as a div with
+          `display:flex; justify-content:space-between`. */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          marginBlockStart: 20,
+          marginBlockEnd: 16,
+          flexWrap: 'wrap',
+        }}
+      >
+        <h1
+          style={{
+            font: `500 20px/24px "Inter", system-ui, sans-serif`,
+            color: token('color.text', '#172B4D'),
+            margin: 0,
+            letterSpacing: '-0.003em',
+          }}
+        >
+          For you
+        </h1>
+        <ForYouTabs
+          activeTab={activeTab}
+          tabCounts={tabCounts}
+          onChange={handleTabChange}
+        />
+      </div>
 
       {/* Active panel */}
       <div
@@ -183,7 +271,7 @@ export default function ForYouPageAtlaskit() {
       </div>
 
       {/* Load more + sentinel */}
-      {hasMore && (
+      {showPagination && hasMore && (
         <div style={{ display: 'flex', justifyContent: 'center', paddingBlock: 24 }}>
           <button
             type="button"
@@ -204,10 +292,11 @@ export default function ForYouPageAtlaskit() {
         </div>
       )}
 
-      {/* Detail panel (reuses existing legacy panel — no Atlaskit equivalent yet).
-          ForYouDetailPanel is a NAMED export and takes only { item, onClose } —
-          visibility is controlled by mount/unmount, no `isOpen` prop. */}
-      {selectedItem && (
+      {/* Detail panel — ONLY for business_gap / business_request items.
+          Everything else routes to the canonical StoryDetailModal via
+          useGlobalSearchStore.openDetail() (see handleSelect above).
+          This gate is what deprecates ForYouDetailPanel for non-BRD work. */}
+      {selectedItem && isBusinessRequest(selectedItem) && (
         <ForYouDetailPanel
           item={selectedItem}
           onClose={closeDetailPanel}

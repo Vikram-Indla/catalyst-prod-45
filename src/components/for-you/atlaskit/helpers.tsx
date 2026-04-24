@@ -15,6 +15,7 @@
 import React from 'react';
 import EmptyState from '@atlaskit/empty-state';
 import { token } from '@atlaskit/tokens';
+import { text } from '@/lib/typography';
 import type { WorkItem } from '@/hooks/useForYouData';
 
 // ─── Recency buckets ────────────────────────────────────────────────────────
@@ -26,11 +27,14 @@ export type Recency =
   | 'EARLIER';
 
 export const RECENCY_LABELS: Record<Recency, string> = {
-  TODAY:      'TODAY',
-  YESTERDAY:  'YESTERDAY',
-  LAST_WEEK:  'IN THE LAST WEEK',
-  LAST_MONTH: 'IN THE LAST MONTH',
-  EARLIER:    'EARLIER',
+  // Jira parity (DOM probe 2026-04-24, Assigned tab): Title Case, not
+  // SHOUTING CAPS. Jira's group heading is a plain 14px/500 span — CSS
+  // does not uppercase it, and the raw text is Title Case.
+  TODAY:      'Today',
+  YESTERDAY:  'Yesterday',
+  LAST_WEEK:  'In the last week',
+  LAST_MONTH: 'In the last month',
+  EARLIER:    'Earlier',
 };
 
 /**
@@ -91,13 +95,17 @@ export function groupByRecency(items: WorkItem[], order: Recency[]): Array<{ buc
 // ─── Group heading ──────────────────────────────────────────────────────────
 
 export function GroupHeading({ bucket }: { bucket: Recency }) {
+  // Jira parity (DOM probe 2026-04-24): the group heading on For You is a
+  // 14px / weight 500 / Title Case span in `color.text.subtlest` (#6B6E76,
+  // rgb(107,110,118)). It is NOT uppercase and has no letter-spacing —
+  // earlier iterations mistook a per-row status lozenge for the group heading.
   return (
     <div
       style={{
-        font: `600 11px/16px "Inter", system-ui, sans-serif`,
-        letterSpacing: '0.08em',
-        color: token('color.text.subtlest', '#8590A2'),
-        textTransform: 'uppercase',
+        font: `500 14px/20px "Inter", system-ui, sans-serif`,
+        letterSpacing: 'normal',
+        color: text.subtlest,
+        textTransform: 'none',
         paddingInline: 12,
         paddingBlockEnd: 8,
         paddingBlockStart: 16,

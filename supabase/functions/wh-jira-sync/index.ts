@@ -110,6 +110,21 @@ serve(async (req) => {
       if (!node) return ''
       if (typeof node === 'string') return node
       if (node.type === 'text') return node.text || ''
+      // ADF mention nodes have NO `content` array — the display name lives
+      // in node.attrs.text (e.g. "@vikram indla"). Without this branch the
+      // @-mention was silently dropped during sync, which broke the For You
+      // "Reply to mentions" feed. (RCA 2026-04-24.)
+      if (node.type === 'mention') {
+        const t = node.attrs?.text
+        if (t) return t
+        const id = node.attrs?.id
+        return id ? `@${id}` : ''
+      }
+      // ADF emoji nodes — surface the shortName so search/display doesn't
+      // silently drop them. Example: { type:'emoji', attrs:{ shortName:':+1:' } }
+      if (node.type === 'emoji') return node.attrs?.shortName || node.attrs?.text || ''
+      // ADF hardBreak / inline breaks — preserve line boundary.
+      if (node.type === 'hardBreak') return '\n'
       if (node.content && Array.isArray(node.content)) {
         return node.content.map(adfToPlainText).join(node.type === 'paragraph' ? '\n' : '')
       }

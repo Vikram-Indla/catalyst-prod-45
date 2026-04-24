@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.jira-title-case-pass]
 verify_jwt = true
+
+[functions.jira-issue-type-resolver]
+verify_jwt = true
