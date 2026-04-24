@@ -82,11 +82,20 @@ export function useIssueViewData(
     return filteredItems.find(i => i.issue_key === selectedIssueKey) ?? null;
   }, [filteredItems, selectedIssueKey]);
 
+  // ─── Fallback fetch when selected item isn't in the list (e.g. deep-link) ───
+  const isMissing = !!selectedIssueKey && !selectedItem && !itemsLoading;
+  const { data: fetchedRaw } = useWorkItem(isMissing ? selectedIssueKey : undefined);
+  const fetchedItem: AllWorkItem | null = useMemo(
+    () => (fetchedRaw ? workItemToAllWork(fetchedRaw) : null),
+    [fetchedRaw],
+  );
+  const resolvedItem = selectedItem ?? fetchedItem ?? null;
+
   // ─── Parent item ───
   const parentItem = useMemo(() => {
-    if (!selectedItem?.parent_key) return null;
-    return items.find(i => i.issue_key === selectedItem.parent_key) ?? null;
-  }, [items, selectedItem]);
+    if (!resolvedItem?.parent_key) return null;
+    return items.find(i => i.issue_key === resolvedItem.parent_key) ?? null;
+  }, [items, resolvedItem]);
 
   // ─── Children (subtasks) — useWorkItemChildren returns WorkItem[] ───
   const { data: rawChildren, isLoading: childrenLoading } = useWorkItemChildren(
