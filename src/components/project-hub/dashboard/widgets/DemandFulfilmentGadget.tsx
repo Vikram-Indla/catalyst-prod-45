@@ -1836,18 +1836,29 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
             <div style={{ padding: '6px 16px', textAlign: 'center', borderTop: `1px solid ${token('color.border', '#E2E8F0')}` }}>
               <button
                 type="button"
-                onClick={() =>
+                onClick={() => {
+                  const epicIssueKeys = (unlinkedEpics as any[])
+                    .map((e: any) => e.issue_key)
+                    .filter(Boolean) as string[];
+                  const mdtKeys = (active as any[])
+                    .map((r: any) => r.initiative_key)
+                    .filter((k: any) => k && !epicIssueKeys.includes(k)) as string[];
+                  const hasMdtKeys = mdtKeys.length > 0;
                   openUWV({
                     project: projectKey,
-                    hubSource: ['projecthub'],
+                    hubSource: hasMdtKeys
+                      ? (['producthub', 'projecthub'] as any)
+                      : (['projecthub'] as any),
                     scope: settings.scope_type as 'quarter' | 'custom' | 'all',
                     quarter: settings.quarter,
                     dateFrom: settings.date_from ?? undefined,
                     dateTo: settings.date_to ?? undefined,
                     status: settings.status_filter?.length ? settings.status_filter : undefined,
+                    keys: epicIssueKeys.length > 0 ? epicIssueKeys : undefined,
                     title: `${periodBadge} · Active epics · ${projectKey}`,
-                  })
-                }
+                    dataType: 'demand',
+                  });
+                }}
                 style={{
                   fontSize: 12,
                   fontWeight: 500,
