@@ -565,12 +565,13 @@ export function useForYouData() {
         //
         // We split by item_type — ph_issue keys go to ph_issues, planner
         // task_keys to planner_tasks — and skip other types for now.
-        const { data: viewedRows } = await supabase
+        const { data: viewedRowsRaw } = await (supabase as any)
           .from('user_viewed_items')
           .select('item_id, item_type, last_viewed_at')
           .eq('user_id', authUser.id)
           .order('last_viewed_at', { ascending: false })
           .limit(100);
+        const viewedRows = viewedRowsRaw as Array<{ item_id: string; item_type: string; last_viewed_at: string }> | null;
 
         if (viewedRows && viewedRows.length > 0) {
           const phKeys = viewedRows.filter(r => r.item_type === 'ph_issue').map(r => r.item_id);
@@ -809,7 +810,7 @@ export function useForYouData() {
     });
 
     try {
-      const { error } = await supabase.from('user_viewed_items').upsert(
+      const { error } = await (supabase as any).from('user_viewed_items').upsert(
         {
           user_id: authUser.id,
           item_id: itemId,
