@@ -577,7 +577,7 @@ function CatalystShellContent() {
           }}
           style={sidebarOverlayMode ? {
             position: 'absolute' as const,
-            top: 0,
+            top: 56,   // start BELOW the 56px top nav — never covers the header
             left: 0,
             bottom: 0,
             zIndex: 40,
