@@ -46,7 +46,7 @@ import AssignedPanel from '@/components/for-you/atlaskit/AssignedPanel';
 import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 import WorkedOnPanel from '@/components/for-you/atlaskit/WorkedOnPanel';
 import ViewedPanel from '@/components/for-you/atlaskit/ViewedPanel';
-import ForYouDetailPanel from '@/components/for-you/ForYouDetailPanel';
+import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
 
 const PAGE_SIZE = 20;
 
@@ -199,11 +199,12 @@ export default function ForYouPageAtlaskit() {
         </div>
       )}
 
-      {/* Detail panel (reuses existing legacy panel — no Atlaskit equivalent yet) */}
+      {/* Detail panel (reuses existing legacy panel — no Atlaskit equivalent yet).
+          ForYouDetailPanel is a NAMED export and takes only { item, onClose } —
+          visibility is controlled by mount/unmount, no `isOpen` prop. */}
       {selectedItem && (
         <ForYouDetailPanel
           item={selectedItem}
-          isOpen={!!selectedItem}
           onClose={closeDetailPanel}
         />
       )}
