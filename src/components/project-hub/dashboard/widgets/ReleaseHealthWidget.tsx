@@ -11,29 +11,39 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
-import { ExternalLink, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge, ProgressBar } from '@/components/ads';
 
 export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: releases, isLoading } = useDashboardReleaseHealth(projectId);
   const rel = releases?.[0];
+  const { openUWV } = useUWV();
 
   const footer = (
-    <a
-      href={`/release-hub?project=${projectKey}`}
+    <button
+      type="button"
+      onClick={() => openUWV({
+        project: projectKey,
+        hubSource: ['releasehub'],
+        dataType: 'releases',
+        title: `Releases · ${projectKey}`,
+      })}
       style={{
+        background: 'transparent',
+        border: 0,
+        cursor: 'pointer',
         fontSize: 12,
-        fontWeight: 500,
-        color: token('color.link', '#0052CC'),
-        textDecoration: 'none',
+        color: 'var(--cp-blue)',
+        padding: 0,
         display: 'flex',
         alignItems: 'center',
         gap: 4,
       }}
     >
-      View in ReleaseHub <ExternalLink size={11} />
-    </a>
+      View in ReleaseHub ↗
+    </button>
   );
 
   return (

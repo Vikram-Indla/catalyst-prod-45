@@ -11,14 +11,41 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOverdueItems } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge } from '@/components/ads';
 
 export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: items, isLoading } = useDashboardOverdueItems(projectId);
   const count = items?.length ?? 0;
+  const { openUWV } = useUWV();
 
   const badge = (
     <Lozenge appearance={count === 0 ? 'success' : 'removed'}>{count}</Lozenge>
+  );
+
+  const footer = (
+    <button
+      type="button"
+      onClick={() => openUWV({
+        project: projectKey,
+        hubSource: ['projecthub'],
+        dataType: 'overdue',
+        title: `Overdue Items · ${projectKey}`,
+      })}
+      style={{
+        background: 'transparent',
+        border: 0,
+        cursor: 'pointer',
+        fontSize: 12,
+        color: 'var(--cp-blue)',
+        padding: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
+      }}
+    >
+      View all overdue ↗
+    </button>
   );
 
   return (
@@ -29,6 +56,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
       onToggleCollapse={onToggleCollapse}
       span={1}
       headerBadges={badge}
+      footer={footer}
     >
       {isLoading ? (
         <div className="animate-pulse">
