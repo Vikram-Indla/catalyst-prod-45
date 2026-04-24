@@ -952,7 +952,9 @@ function DemandRowItem({
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
-  const detailUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`;
+  const detailUrl = isUnlinkedEpic
+    ? `/project-hub/${projectKey}/allwork?selectedIssue=${row.initiative_key}`
+    : `/producthub/backlog?selectedIssue=${row.initiative_key}`;
 
   // Track which linked epics are expanded (Mode 1 only).
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
