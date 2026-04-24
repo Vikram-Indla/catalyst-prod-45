@@ -20,6 +20,8 @@ import { UWVColumnPicker } from './UWVColumnPicker';
 import { UWVBulkActions } from './UWVBulkActions';
 import { useUWVStatuses, useUWVAssignees } from './useUWVData';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import { classifyType, type UWVGroupBy } from './uwv.utils';
 import type { UWVColumn, UWVItem, UWVPrefs } from './uwv.types';
 
 interface Props {
