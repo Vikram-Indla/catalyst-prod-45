@@ -99,6 +99,10 @@ export function UWVToolbar({
   onSavePrefs,
   project,
   onClose,
+  typeFilter,
+  onTypeFilterChange,
+  groupBy,
+  onGroupByChange,
 }: Props) {
   const [filterOpen, setFilterOpen] = useState(false);
   const { data: statusGroups = [] } = useUWVStatuses(project);
