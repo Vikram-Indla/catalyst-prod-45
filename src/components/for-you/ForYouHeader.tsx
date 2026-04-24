@@ -24,7 +24,7 @@ export function ForYouHeader() {
           fontFamily: "'Sora', system-ui", fontSize: isMobile ? 18 : 22, fontWeight: 700,
           color: 'var(--cp-t1)', letterSpacing: '-0.025em', margin: 0,
         }}>
-          For You
+          AI Focus
         </h1>
         {/* Subtitle hidden at mobile — title alone carries context; saves vertical space */}
         {!isMobile && (
