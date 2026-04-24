@@ -11,13 +11,40 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: items, isLoading } = useDashboardOnHoldItems(projectId);
   const count = items?.length ?? 0;
+  const { openUWV } = useUWV();
 
   const badge = <StatusLozenge status="todo">{String(count)}</StatusLozenge>;
+
+  const footer = (
+    <button
+      type="button"
+      onClick={() => openUWV({
+        project: projectKey,
+        hubSource: ['projecthub'],
+        dataType: 'onhold',
+        title: `On Hold Items · ${projectKey}`,
+      })}
+      style={{
+        background: 'transparent',
+        border: 0,
+        cursor: 'pointer',
+        fontSize: 12,
+        color: 'var(--cp-blue)',
+        padding: 0,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 4,
+      }}
+    >
+      View all on hold ↗
+    </button>
+  );
 
   return (
     <WidgetWrapper
@@ -27,6 +54,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
       onToggleCollapse={onToggleCollapse}
       span={1}
       headerBadges={badge}
+      footer={footer}
     >
       {isLoading ? (
         <div className="animate-pulse">

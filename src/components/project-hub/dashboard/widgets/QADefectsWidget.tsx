@@ -17,8 +17,8 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
-import { ExternalLink } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
   DynamicTable,
   Lozenge,
@@ -30,22 +30,31 @@ import {
 
 export default function QADefectsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: defects, isLoading } = useDashboardDefects(projectId, projectKey);
+  const { openUWV } = useUWV();
 
   const footer = (
-    <a
-      href="/test-hub"
+    <button
+      type="button"
+      onClick={() => openUWV({
+        project: projectKey,
+        hubSource: ['testhub'],
+        dataType: 'defects',
+        title: `QA Defects · ${projectKey}`,
+      })}
       style={{
+        background: 'transparent',
+        border: 0,
+        cursor: 'pointer',
         fontSize: 12,
-        fontWeight: 500,
-        color: token('color.link', '#0052CC'),
-        textDecoration: 'none',
+        color: 'var(--cp-blue)',
+        padding: 0,
         display: 'flex',
         alignItems: 'center',
         gap: 4,
       }}
     >
-      View All in TestHub <ExternalLink size={11} />
-    </a>
+      View All in TestHub ↗
+    </button>
   );
 
   // No width hints — .dashboard-widget-body in index.css sets

@@ -952,7 +952,9 @@ function DemandRowItem({
 }) {
   const { state, daysLeft } = computeRag(row.target_complete, threshold);
   const pct = row.total > 0 ? Math.round((row.done / row.total) * 100) : 0;
-  const detailUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`;
+  const detailUrl = isUnlinkedEpic
+    ? `/project-hub/${projectKey}/allwork?selectedIssue=${row.initiative_key}`
+    : `/producthub/backlog?selectedIssue=${row.initiative_key}`;
 
   // Track which linked epics are expanded (Mode 1 only).
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
@@ -1125,7 +1127,7 @@ function DemandRowItem({
           ) : isUnlinkedEpic ? (
             // ── MODE 2: Unlinked epic — render its stories directly ──
             row.epics.map((story) => {
-              const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+              const storyUrl = `/project-hub/${projectKey}/allwork?selectedIssue=${story.issue_key}`;
               const storyAssignee = story.assignee_display_name ?? '—';
               return (
                 <div
@@ -1226,7 +1228,7 @@ function DemandRowItem({
                     : epic.done > 0
                     ? 'risk'
                     : 'overdue';
-                const epicUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${epic.issue_key}`;
+                const epicUrl = `/project-hub/${projectKey}/allwork?selectedIssue=${epic.issue_key}`;
                 const epicExpanded = expandedEpics.has(epic.id);
                 const hasStories = (epic.stories?.length ?? 0) > 0;
 
@@ -1313,7 +1315,7 @@ function DemandRowItem({
                     </div>
 
                     {epicExpanded && (epic.stories ?? []).map((story) => {
-                      const storyUrl = `/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${story.issue_key}`;
+                      const storyUrl = `/project-hub/${projectKey}/allwork?selectedIssue=${story.issue_key}`;
                       const storyAssignee = story.assignee_display_name ?? '—';
                       return (
                         <div
@@ -1939,7 +1941,9 @@ function DeliveredRow({ row, projectKey }: { row: DemandRow; projectKey: string 
     >
       <CheckCircleIcon label="" color={token('color.icon.success', '#1F845A')} LEGACY_size="small" />
       <a
-        href={`/project-hub/${projectKey}/hierarchy/allwork?selectedIssue=${row.initiative_key}`}
+        href={row.isUnlinkedEpic
+          ? `/project-hub/${projectKey}/allwork?selectedIssue=${row.initiative_key}`
+          : `/producthub/backlog?selectedIssue=${row.initiative_key}`}
         style={{
           fontSize: 11,
           fontWeight: 700,
