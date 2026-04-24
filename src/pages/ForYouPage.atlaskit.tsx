@@ -47,7 +47,7 @@ import StarredPanel from '@/components/for-you/atlaskit/StarredPanel';
 // WorkedOnPanel / ViewedPanel removed April 2026 — those tabs were pruned
 // from FOR_YOU_TAB_ORDER because they had low real-world use; keeping the
 // imports around would just be dead wiring.
-import AiRecapPanel from '@/components/for-you/atlaskit/AiRecapPanel';
+import AiThemePanel from '@/components/for-you/atlaskit/AiThemePanel';
 import AgeingPanel from '@/components/for-you/atlaskit/AgeingPanel';
 import { ForYouDetailPanel } from '@/components/for-you/ForYouDetailPanel';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -99,19 +99,24 @@ export default function ForYouPageAtlaskit() {
   } = data;
 
   // ─── Persist the tab across refreshes ────────────────────────────────────
-  // April 2026 — Worked on / Viewed were pruned from the tab strip. Any
-  // stale localStorage value from before the prune is migrated to
-  // 'recommended' on mount so the user lands on a real tab instead of
+  // April 2026 — Worked on / Viewed were pruned from the tab strip.
+  // Late April 2026 — 'ai-recap' was replaced by 'ai-theme' (same slot).
+  // Any stale localStorage value from before either change is migrated
+  // to a live tab on mount so the user lands on a real tab instead of
   // staring at an orphaned selection state.
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(FOR_YOU_TAB_KEY) as TabType | null;
-      const RETIRED: TabType[] = ['worked' as TabType, 'viewed' as TabType];
-      if (stored && (RETIRED as string[]).includes(stored)) {
+      const stored = localStorage.getItem(FOR_YOU_TAB_KEY) as string | null;
+      // 'ai-recap' migrates to 'ai-theme' (same slot, successor tab).
+      // 'worked' / 'viewed' migrate to 'recommended' (landing default).
+      if (stored === 'ai-recap') {
+        localStorage.setItem(FOR_YOU_TAB_KEY, 'ai-theme');
+        setActiveTab('ai-theme');
+      } else if (stored === 'worked' || stored === 'viewed') {
         localStorage.setItem(FOR_YOU_TAB_KEY, 'recommended');
         setActiveTab('recommended');
       } else if (stored && stored !== activeTab) {
-        setActiveTab(stored);
+        setActiveTab(stored as TabType);
       }
     } catch {
       /* localStorage unavailable (SSR/privacy) — no-op */
@@ -191,23 +196,26 @@ export default function ForYouPageAtlaskit() {
       onToggleStar: toggleStar,
     };
     switch (activeTab) {
-      // AI Recap and Ageing own their own data pipelines — the generic
+      // AI Theme and Ageing own their own data pipelines — the generic
       // {items, onSelect, onToggleStar} row-feed props don't apply. Their
       // wrappers are framed with the same Atlaskit chrome as the other
       // panels so they slot in visually without bleeding internals.
-      case 'ai-recap':    return <AiRecapPanel />;
+      //
+      // AiThemePanel receives allUserProjects as a prop rather than calling
+      // useForYouData itself — see note in AiThemePanel.tsx for rationale.
+      case 'ai-theme':    return <AiThemePanel allUserProjects={allUserProjects} />;
       case 'ageing':      return <AgeingPanel />;
       case 'recommended': return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
       case 'assigned':    return <AssignedPanel    {...panelProps} />;
       case 'starred':     return <StarredPanel     {...panelProps} />;
       default:            return <RecommendedPanel {...panelProps} mentions={recommendedMentions} comments={recommendedComments} currentUserName={currentUserName} />;
     }
-  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName]);
+  }, [activeTab, visibleItems, isLoading, handleSelect, toggleStar, recommendedMentions, recommendedComments, currentUserName, allUserProjects]);
 
-  // AI Recap and Ageing render their own vertical lists internally — neither
-  // shares the client-side pagination window that the row-feed tabs use.
-  // Suppress Load more + sentinel for those tabs to avoid dead chrome.
-  const showPagination = activeTab !== 'ai-recap' && activeTab !== 'ageing';
+  // AI Theme and Ageing render their own vertical lists/grids internally —
+  // neither shares the client-side pagination window that the row-feed tabs
+  // use. Suppress Load more + sentinel for those tabs to avoid dead chrome.
+  const showPagination = activeTab !== 'ai-theme' && activeTab !== 'ageing';
 
   return (
     <div

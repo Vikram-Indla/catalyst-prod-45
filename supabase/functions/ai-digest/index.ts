@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { handleThemesRequest } from "./themes.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -82,6 +83,40 @@ serve(async (req) => {
       });
     }
     const userId = user.id;
+
+    // ── MODE DISPATCH ────────────────────────────────────────────────
+    // The ai-digest endpoint serves two modes:
+    //   (a) default — daily portfolio digest (AI Recap, existing code)
+    //   (b) themes  — AI Theme Analyzer for the For You → AI Theme tab
+    //
+    // We clone the request so existing body consumers downstream keep
+    // working in default mode. An empty or missing body = default mode.
+    let body: Record<string, unknown> = {};
+    if (req.headers.get('content-length') && req.headers.get('content-length') !== '0') {
+      try {
+        body = await req.clone().json();
+      } catch {
+        body = {};
+      }
+    }
+
+    if (body.mode === 'themes') {
+      const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+      if (!lovableApiKey) {
+        console.error("LOVABLE_API_KEY not configured for themes mode");
+        return new Response(
+          JSON.stringify({ error: "themes_unavailable" }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return handleThemesRequest({
+        body: body as Parameters<typeof handleThemesRequest>[0]['body'],
+        supabase,
+        userId,
+        lovableApiKey,
+        corsHeaders,
+      });
+    }
 
     // ── FETCH SOURCE DATA (always needed for fingerprint) ────────────
     const now = new Date();

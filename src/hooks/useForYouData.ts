@@ -13,14 +13,18 @@ export type WorkGroup = 'YESTERDAY' | 'THIS_WEEK' | 'EARLIER';
  * Catalyst "For You" tab order (as of April 2026):
  *   AI Recap | Recommended | Assigned to me | Starred | Worked on | Viewed | Ageing
  *
- * AI Recap and Ageing are Catalyst extensions to the Jira "For You" strip —
+ * AI Theme and Ageing are Catalyst extensions to the Jira "For You" strip —
  * they were previously tabs inside the Notifications drawer and were relocated
  * here so the For You page becomes a single pane of glass for personal work.
- * Data wiring for both is unchanged (useAiRecap / useAgeingItems hooks
- * continue to drive them). See context pack: for-you-v2-ai-recap-ageing-migration.
+ * Data wiring for both lives in their panel-local hooks (useAiThemes /
+ * useAgeingItems). See context pack: for-you-v2-ai-recap-ageing-migration.
+ *
+ * Apr 2026: 'ai-recap' → 'ai-theme' rename. The AI Recap digest tab was
+ * replaced by the AI Theme Analyzer (issue-clustering) in the same tab slot
+ * — same sparkle icon, brand-blue accent, first position in the strip.
  */
 export type TabType =
-  | 'ai-recap'
+  | 'ai-theme'
   | 'recommended'
   | 'assigned'
   | 'starred'
@@ -1114,11 +1118,11 @@ export function useForYouData() {
       case 'assigned':    return assignedItems;
       case 'starred':     return starredData;
       case 'viewed':      return viewedItems;
-      // AI Recap + Ageing panels own their own data pipelines and render
+      // AI Theme + Ageing panels own their own data pipelines and render
       // without the shared row-based pagination, so return an empty list
       // here — the page shell skips the Load-more sentinel when the active
       // tab is one of these.
-      case 'ai-recap':    return [];
+      case 'ai-theme':    return [];
       case 'ageing':      return [];
       case 'worked':
       default:            return workedOnItems;
@@ -1147,11 +1151,11 @@ export function useForYouData() {
       return items.filter(row => inferMode(row.project_key, row.issue_type).toLowerCase() === activeMode);
     };
     return {
-      // AI Recap + Ageing are first-class tabs on the For You strip but
-      // their counts are owned by their own hooks (useAiRecap / useAgeingCount)
+      // AI Theme + Ageing are first-class tabs on the For You strip but
+      // their counts are owned by their own hooks (useAiThemes / useAgeingCount)
       // rendered alongside the tab label in ForYouTabs.tsx. We expose 0 here
       // purely to satisfy the Record<TabType, number> shape.
-      'ai-recap':  0,
+      'ai-theme':  0,
       recommended: filterByMode(recommendedItems).length,
       assigned:    filterByMode(assignedItems).length,
       starred:     filterByMode(starredData).length,

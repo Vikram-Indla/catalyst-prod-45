@@ -42,7 +42,7 @@ export interface ForYouTabDefinition {
 }
 
 export const FOR_YOU_TAB_ORDER: ForYouTabDefinition[] = [
-  { id: 'ai-recap',    label: 'AI Recap',        showCount: false },
+  { id: 'ai-theme',    label: 'AI Theme',        showCount: false },
   { id: 'recommended', label: 'Recommended',     showCount: false },
   { id: 'assigned',    label: 'Assigned to me',  showCount: true  },
   { id: 'starred',     label: 'Starred',         showCount: false },
@@ -113,7 +113,7 @@ function TabButton({
 }) {
   const [hover, setHover] = React.useState(false);
   const showCounter = tab.showCount && count > 0;
-  const showSparkle = tab.id === 'ai-recap';
+  const showSparkle = tab.id === 'ai-theme';
   // Ageing uses a red-tinted counter to signal SLA risk, matching the
   // AMBER/RED governance language the panel itself renders. All other
   // counters keep the neutral Atlaskit treatment.
