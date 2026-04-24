@@ -251,17 +251,62 @@ export async function handleThemesRequest(args: {
   const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
   // ── 1. Fetch input issues from ph_issues ────────────────────────────────
-  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+  // Schema reminders (verified against ph_issues 2026-04):
+  //   • Time column is `jira_updated_at` (NOT updated_at — that doesn't exist).
+  //   • Assignee linkage is `assignee_account_id` (Jira account id), NOT a
+  //     supabase auth user id. The user's auth.users.id maps to one or more
+  //     Jira account ids via ph_user_mapping. We mirror useForYouData here.
+  //   • Filter out archived rows (`archived_at IS NULL`) to match what the
+  //     user actually sees in the rest of For You.
+  // Time window widened to 90 days (from 7) so personal-scope analysis has
+  // enough material to cluster — Catalyst portfolios update slowly and 7d
+  // routinely returned <5 issues, falling into the empty-state branch.
+  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
 
   let query = supabase
     .from('ph_issues')
-    .select('issue_key, summary, description_text, issue_type, project_key, status, updated_at, assignee_id')
-    .gte('updated_at', sevenDaysAgo)
-    .order('updated_at', { ascending: false })
+    .select('issue_key, summary, description_text, issue_type, project_key, status, jira_updated_at, assignee_account_id')
+    .is('archived_at', null)
+    .gte('jira_updated_at', ninetyDaysAgo)
+    .order('jira_updated_at', { ascending: false })
     .limit(limit);
 
   if (scope === 'personal') {
-    query = query.eq('assignee_id', userId);
+    // Look up the user's Jira account ids (a single auth user can be mapped
+    // to multiple Jira accounts — e.g. work + personal). Empty array = no
+    // mapped Jira account, surfaces as the empty state.
+    const { data: mappings, error: mapErr } = await supabase
+      .from('ph_user_mapping')
+      .select('jira_account_id')
+      .eq('catalyst_profile_id', userId)
+      .eq('is_mapped', true);
+
+    if (mapErr) {
+      console.error('[themes] ph_user_mapping error:', mapErr);
+      return new Response(
+        JSON.stringify({ error: 'query_failed', message: mapErr.message }),
+        { status: 500, headers: jsonHeaders },
+      );
+    }
+
+    const jiraAccountIds = (mappings ?? [])
+      .map((m: { jira_account_id: string | null }) => m.jira_account_id)
+      .filter((id): id is string => Boolean(id));
+
+    if (jiraAccountIds.length === 0) {
+      // No Jira mapping for this user — return typed empty so UI shows
+      // the "not enough activity to theme yet" state instead of a stack trace.
+      const empty: ThemesResponse = {
+        themes: [],
+        generatedAt: new Date().toISOString(),
+        totalIssuesAnalyzed: 0,
+        scope: { mode: scope, projectKey: undefined },
+        cached: false,
+      };
+      return new Response(JSON.stringify(empty), { headers: jsonHeaders });
+    }
+
+    query = query.in('assignee_account_id', jiraAccountIds);
   } else {
     if (!projectKey) {
       return new Response(
@@ -287,7 +332,8 @@ export async function handleThemesRequest(args: {
     issue_type: string;
     project_key: string;
     status: string;
-    updated_at: string;
+    jira_updated_at: string;
+    assignee_account_id: string | null;
   }>;
 
   // ── 2. Min-dataset guard ────────────────────────────────────────────────
@@ -305,7 +351,11 @@ export async function handleThemesRequest(args: {
   }
 
   // ── 3. Cache check via (user_id, scope_mode, project_key) ───────────────
-  const signature = await computeIssuesSignature(issueRows);
+  // Adapt our row shape (jira_updated_at) to the signature helper's
+  // generic {updated_at} contract — same hash semantics either way.
+  const signature = await computeIssuesSignature(
+    issueRows.map(i => ({ issue_key: i.issue_key, updated_at: i.jira_updated_at })),
+  );
   if (!forceRefresh) {
     const cacheQuery = supabase
       .from('ai_theme_cache')
