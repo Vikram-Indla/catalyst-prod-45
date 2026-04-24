@@ -157,6 +157,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
           density={prefs.density}
           isLoadingMore={isFetching}
           totalCount={totalCount}
+          groupBy={groupBy}
         />
       )}
     </div>
