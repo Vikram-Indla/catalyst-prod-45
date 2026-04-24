@@ -24,6 +24,8 @@ export function UniversalWorkView({ params, onClose }: Props) {
   const [searchText, setSearchText] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sort, setSort] = useState<UWVSort[]>([{ fieldId: 'key', direction: 'asc' }]);
+  const [typeFilter, setTypeFilter] = useState<'all' | 'epic' | 'feature' | 'story' | 'bug' | 'task'>('all');
+  const [groupBy, setGroupBy] = useState<UWVGroupBy>('none');
 
   const viewKey = `uwv:${params.project}:${[...params.hubSource].sort().join(',')}`;
   const { columns, savePrefs, prefs } = useUWVPrefs(viewKey);
