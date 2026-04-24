@@ -299,6 +299,7 @@ interface UnlinkedEpic {
   inprogress: number;
   todo: number;
   stories: UnlinkedEpicStory[];
+  due_date: string | null;
 }
 
 function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
@@ -395,6 +396,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
           assignee_avatar: profile?.avatar_url ?? null,
           ...b,
           stories: storyRowsByEpic.get(e.issue_key) ?? [],
+          due_date: e.due_date ?? null,
         };
       });
     },
@@ -1483,7 +1485,7 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
       initiative_key: epic.issue_key,
       title: epic.summary,
       status: epic.status,
-      target_complete: null,
+      target_complete: epic.due_date ?? null,
       target_quarter: null,
       assignee_id: epic.assignee_id ?? null,
       assignee_name: epic.assignee_name ?? '—',
