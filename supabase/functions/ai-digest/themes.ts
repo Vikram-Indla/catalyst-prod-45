@@ -94,7 +94,9 @@ function buildThemesPrompt(args: {
   issues: Array<{
     issue_key: string;
     summary: string;
-    description: string | null;
+    // ph_issues schema: column is description_text (plain), description_adf
+    // is the ADF JSON variant. We feed plain text to the LLM.
+    description_text: string | null;
     issue_type: string;
     status: string;
     project_key: string;
@@ -139,7 +141,7 @@ Do NOT include count or percentage — the server computes those from issueKeys 
     : `These issues are all from project ${projectKey}.`;
 
   const issueLines = issues.map(i => {
-    const desc = i.description ? ` — ${i.description.slice(0, 180).replace(/\s+/g, ' ').trim()}` : '';
+    const desc = i.description_text ? ` — ${i.description_text.slice(0, 180).replace(/\s+/g, ' ').trim()}` : '';
     return `[${i.issue_key}] (${i.issue_type}, ${i.status}) ${i.summary}${desc}`;
   }).join('\n');
 
@@ -253,7 +255,7 @@ export async function handleThemesRequest(args: {
 
   let query = supabase
     .from('ph_issues')
-    .select('issue_key, summary, description, issue_type, project_key, status, updated_at, assignee_id')
+    .select('issue_key, summary, description_text, issue_type, project_key, status, updated_at, assignee_id')
     .gte('updated_at', sevenDaysAgo)
     .order('updated_at', { ascending: false })
     .limit(limit);
@@ -281,7 +283,7 @@ export async function handleThemesRequest(args: {
   const issueRows = (issues ?? []) as Array<{
     issue_key: string;
     summary: string;
-    description: string | null;
+    description_text: string | null;
     issue_type: string;
     project_key: string;
     status: string;
