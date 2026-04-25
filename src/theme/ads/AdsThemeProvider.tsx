@@ -60,6 +60,7 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
     // light-mode default is already applied by its auto-setup.
     void setGlobalTheme({
       colorMode: mode,
+      typography: 'typography',
       // @atlaskit/tokens accepts `customColors` as an opt-in override. We
       // feed it our bridge so every Atlaskit component inherits Catalyst
       // values without per-component work. Null-safe on older Atlaskit
