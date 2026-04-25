@@ -438,7 +438,7 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL on parent issues
+      // 🛡️ 2026 GUARDRAIL on parent issues (used to scope activity to this project)
       const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status')
@@ -448,25 +448,24 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       if (issuesError) throw issuesError;
 
       const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
-      const ids: string[] = [];
       for (const i of issues ?? []) {
-        if (i.id) {
-          ids.push(i.id);
-          issueMap.set(i.id, { issue_key: i.issue_key, summary: i.summary, status: i.status });
-        }
+        if (i.id) issueMap.set(i.id, { issue_key: i.issue_key, summary: i.summary, status: i.status });
       }
-      if (!ids.length) return [];
+      if (!issueMap.size) return [];
 
-      // Step B: 🛡️ 2026 GUARDRAIL — only activity that occurred in 2026
+      // Step B: 🛡️ 2026 GUARDRAIL — fetch recent 2026 activity, then filter to
+      // this project's issues client-side. This avoids sending 700+ UUIDs in
+      // the URL (PostgREST 400 "URI too long").
       const { data: activity, error: actError } = await supabase
         .from('work_item_activity')
         .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata')
-        .in('work_item_id', ids)
         .gte('occurred_at', YEAR_2026_START)
         .lt('occurred_at', YEAR_2026_END)
         .order('occurred_at', { ascending: false })
-        .limit(20);
+        .limit(500);
       if (actError) throw actError;
+
+      const scoped = (activity ?? []).filter((a: any) => issueMap.has(a.work_item_id)).slice(0, 20);
 
       // Step C: merge
       return (activity ?? []).map((a: any) => {
