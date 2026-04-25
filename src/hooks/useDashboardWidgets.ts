@@ -325,12 +325,14 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
       const pKey = projectKey ?? (await getProjectKey(projectId!));
       if (!pKey) return [];
 
+      // 🛡️ 2026 GUARDRAIL
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
         .eq('project_key', pKey)
         .eq('issue_type', 'Production Incident')
         .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'))
         .order('jira_created_at', { ascending: false })
         .limit(10);
       if (error) throw error;
