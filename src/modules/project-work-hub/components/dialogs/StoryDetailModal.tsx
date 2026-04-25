@@ -196,22 +196,88 @@ export default function StoryDetailModal({
       const { data } = await supabase.from('ph_issues').select('*').eq('id', itemId).is('deleted_at', null).maybeSingle();
       if (data) return data as unknown as PhIssue;
       // Fallback: catalyst_issues (locally-created items like BAU-1)
-      const { data: cat } = await supabase.from('catalyst_issues').select('*').eq('id', itemId).maybeSingle();
-      if (cat) {
-        return {
-          id: cat.id, issue_key: cat.issue_key, summary: cat.title, description: cat.description,
-          status: cat.status, status_category: cat.status === 'Done' ? 'Done' : cat.status === 'In Progress' ? 'In Progress' : 'To Do',
-          issue_type: cat.issue_type, priority: cat.priority, story_points: cat.story_points,
-          assignee_account_id: cat.assignee_id, assignee_display_name: null,
-          reporter_account_id: cat.reporter_id, reporter_display_name: null,
-          project_key: cat.issue_key?.split('-')[0] || projectKey || '',
-          sprint_name: cat.sprint_name, created_at: cat.created_at, updated_at: cat.updated_at,
-          parent_key: null, acceptance_criteria: null, labels: null,
-        } as unknown as PhIssue;
+      const { data: cat } = await supabase
+        .from('catalyst_issues')
+        .select('*')
+        .eq('id', itemId)
+        .is('deleted_at', null)
+        .maybeSingle();
+      if (!cat) return null;
+
+      // Resolve assignee + reporter display names from profiles (catalyst stores
+      // profiles.id directly in assignee_id/reporter_id, unlike ph_issues which
+      // stores Atlassian account_id strings).
+      const profileIds = [cat.assignee_id, cat.reporter_id].filter(Boolean) as string[];
+      const profileMap = new Map<string, { full_name: string | null; avatar_url: string | null }>();
+      if (profileIds.length) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', profileIds);
+        for (const p of profs ?? []) {
+          const localized = localizeAvatar(p as any);
+          profileMap.set(p.id, { full_name: localized?.full_name ?? null, avatar_url: localized?.avatar_url ?? null });
+        }
       }
-      return null;
+
+      // Resolve parent (catalyst uses parent_id uuid → look up issue_key)
+      let parentKey: string | null = null;
+      if (cat.parent_id) {
+        const { data: par } = await supabase
+          .from('catalyst_issues')
+          .select('issue_key')
+          .eq('id', cat.parent_id)
+          .maybeSingle();
+        parentKey = par?.issue_key ?? null;
+      }
+
+      // Acceptance criteria — preserved as a JSON extension key when the editor
+      // saves it (see handleApplyAC). Read it back from description_adf_raw.
+      const acExt = (cat.description_adf_raw && typeof cat.description_adf_raw === 'object'
+        && (cat.description_adf_raw as any).__catalyst_extensions?.acceptance_criteria) ?? null;
+
+      const assignee = cat.assignee_id ? profileMap.get(cat.assignee_id) : undefined;
+      const reporter = cat.reporter_id ? profileMap.get(cat.reporter_id) : undefined;
+
+      return {
+        id: cat.id,
+        issue_key: cat.issue_key,
+        summary: cat.title,
+        description: cat.description,
+        description_text: cat.description,
+        description_adf: cat.description_adf_raw,
+        status: cat.status,
+        status_category: cat.status === 'Done' ? 'Done' : cat.status === 'In Progress' ? 'In Progress' : 'To Do',
+        issue_type: cat.issue_type,
+        priority: cat.priority,
+        story_points: cat.story_points,
+        assignee_account_id: cat.assignee_id,
+        assignee_display_name: assignee?.full_name ?? null,
+        reporter_account_id: cat.reporter_id,
+        reporter_display_name: reporter?.full_name ?? null,
+        project_key: cat.issue_key?.split('-')[0] || projectKey || '',
+        sprint_name: cat.sprint_name,
+        created_at: cat.created_at,
+        updated_at: cat.updated_at,
+        // Sidebar renders Created/Updated from jira_* keys — alias them.
+        jira_created_at: cat.created_at,
+        jira_updated_at: cat.updated_at,
+        parent_key: parentKey,
+        acceptance_criteria: acExt,
+        labels: cat.tags ?? null,
+        fix_versions: null,
+        // Marker so downstream code can detect source without re-querying.
+        __catalyst_source: true,
+      } as unknown as PhIssue;
     },
   });
+
+  // Source detection — every mutation in this modal must target the right table.
+  const workItemSource: 'jira' | 'catalyst' = (issue as any)?.__catalyst_source ? 'catalyst' : 'jira';
+  const resolvedSource = useMemo(
+    () => issue ? ({ source: workItemSource, id: issue.id, issueKey: issue.issue_key ?? null, projectKey: (issue as any).project_key ?? null } as const) : null,
+    [issue, workItemSource],
+  );
 
   // ── Recents tracking (sidebar Recent rail picks this up) ──
   // The story modal also opens for issue_type === 'Subtask'. Subtask exclusion
