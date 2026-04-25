@@ -409,6 +409,29 @@ export default function HomeSidebar({
               projectKey: item.projectKey,
             });
           },
+          // Star override — Pinned rows live in user_starred_items, not
+          // the SidebarBase path-favorites store. Clicking the filled
+          // star unpins via useToggleStar (the same mutation Star
+          // buttons elsewhere call) and shows a confirming toast.
+          onStarClick: () => {
+            toggleStar.mutate(
+              {
+                itemId: item.id,
+                itemType: item.type as StarredItemType,
+                isCurrentlyStarred: true,
+              },
+              {
+                onSuccess: () => {
+                  toast.success(`Unpinned ${item.key}`);
+                },
+                onError: (err) => {
+                  // eslint-disable-next-line no-console
+                  console.error('[HomeSidebar] unpin failed', err);
+                  toast.error(`Could not unpin ${item.key}. Please try again.`);
+                },
+              },
+            );
+          },
         }));
 
     const recentItems: SidebarMenuItem[] = recentLoading
@@ -437,6 +460,21 @@ export default function HomeSidebar({
           // production_issue, user_story, improvement, technical_task)
           // and console.warns on any unknown type so we surface gaps.
           const iconType = normalizeIconType(issue.issueType);
+          // Diagnostic — surface raw issue_type → resolved iconType so we
+          // can see in DevTools whether normalizeIconType is missing a
+          // mapping (e.g., a custom MoIM Jira type). Remove once the
+          // Recent-icon mismatch is verified resolved.
+          // eslint-disable-next-line no-console
+          if (typeof console !== 'undefined') {
+            console.debug(
+              '[HomeSidebar.Recent]',
+              issue.issueKey,
+              'issue_type=',
+              JSON.stringify(issue.issueType),
+              '→ iconType=',
+              iconType,
+            );
+          }
           return {
             id: `recent-${issue.id}`,
             title: (
@@ -476,7 +514,7 @@ export default function HomeSidebar({
         { title: 'Jump to', items: jumpToItems },
       ],
     };
-  }, [pinned, recent, starredLoading, recentLoading, openDetail, handlePinnedClick]);
+  }, [pinned, recent, starredLoading, recentLoading, openDetail, handlePinnedClick, toggleStar]);
 
   return (
     <SidebarBase

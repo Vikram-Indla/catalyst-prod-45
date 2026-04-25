@@ -294,9 +294,19 @@ function CatalystShellContent() {
     /^\/project-hub\/[^/]+\/backlog/.test(location.pathname) ||
     location.pathname.startsWith('/issue/');  // full-screen issue view
 
-  const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute;
+  // Hub routes that explicitly opt out of the Jira blue canvas — pure white
+  // page surface (Confluence Spaces parity, not Jira hub parity). Owner
+  // decision (Apr 2026): the All Projects landing should match Confluence's
+  // Spaces page, not Jira's hub canvas.
+  const isWhiteCanvasRoute =
+    location.pathname === '/project-hub/projects' ||
+    location.pathname === '/project/all-projects';
+
+  const shouldWrapHubSurface = isHubSurfaceRoute && !isSelfFramedRoute && !isWhiteCanvasRoute;
   const isDarkTheme = useIsDarkTheme();
-  const mainBg = isHubSurfaceRoute && !isDarkTheme ? JIRA_CANVAS_BG : 'var(--cp-bg)';
+  const mainBg = isHubSurfaceRoute && !isDarkTheme && !isWhiteCanvasRoute
+    ? JIRA_CANVAS_BG
+    : 'var(--cp-bg)';
 
   // Prevent full document reloads caused by accidental <a href="/..."> navigation.
   // IMPORTANT: In Preview, the URL contains special query params (e.g. __lovable_token).

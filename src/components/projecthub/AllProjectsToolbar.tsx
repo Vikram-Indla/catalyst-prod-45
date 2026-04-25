@@ -1,8 +1,30 @@
-import { Search, ChevronDown, List, LayoutGrid, X } from 'lucide-react';
+// ============================================================================
+// AllProjectsToolbar — Atlaskit-only filter rail (Apr 2026 page-scope rebuild)
+// ============================================================================
+//
+// Per CLAUDE.md §7A page-level scope rule: when AllProjectsPage migrated to
+// ADS, this sibling toolbar came in scope. Bespoke pill-chips and shadcn
+// Popover replaced with @atlaskit/tabs + @atlaskit/select + @atlaskit/textfield.
+// View-toggle uses Atlaskit Button with appearance="subtle" + isSelected.
+// Lucide imports retained ONLY for view-toggle glyphs since @atlaskit/icon
+// doesn't ship clean list/grid analogues; flagged for future swap.
+// ============================================================================
+
+import { useState, useEffect, useMemo } from 'react';
 import type { ProjectFilters, ViewMode } from '@/types/projecthub';
-import { useState, useEffect } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
+
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
+import Select from '@atlaskit/select';
+import Textfield from '@atlaskit/textfield';
+import Button from '@atlaskit/button/new';
+import Badge from '@atlaskit/badge';
+import { token } from '@atlaskit/tokens';
+import SearchIcon from '@atlaskit/icon/glyph/search';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+// View-toggle: Atlaskit doesn't ship list/grid glyphs. These two Lucide imports
+// are explicitly retained per CLAUDE.md §7A allowance (UI chrome with no
+// Atlaskit equivalent). Replace if @atlaskit/icon-lab adds them.
+import { List as ListIcon, LayoutGrid as GridIcon } from 'lucide-react';
 
 interface ToolbarProps {
   view: ViewMode;
@@ -21,157 +43,195 @@ interface ToolbarProps {
 }
 
 const TABS = ['All', 'My Projects', 'Starred'] as const;
-const STATUS_OPTIONS = ['Any', 'Active', 'Planning', 'On Hold', 'Completed'] as const;
+type TabName = typeof TABS[number];
 
-export function AllProjectsToolbar({ view, onViewChange, filters, onFilterChange, stats }: ToolbarProps) {
+const STATUS_OPTIONS = ['Any', 'Active', 'Planning', 'On Hold', 'Completed'] as const;
+type StatusOption = { label: string; value: string };
+const STATUS_SELECT_OPTIONS: StatusOption[] = STATUS_OPTIONS.map((s) => ({ label: s, value: s }));
+
+export function AllProjectsToolbar({
+  view,
+  onViewChange,
+  filters,
+  onFilterChange,
+  stats,
+}: ToolbarProps) {
   const [localSearch, setLocalSearch] = useState(filters.search);
-  const [statusOpen, setStatusOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => onFilterChange({ ...filters, search: localSearch }), 300);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [localSearch]);
 
-  const activeTab = filters.statusChip;
-  const statusFilter = filters.statuses[0]
-    ? STATUS_OPTIONS.find(s => s.toLowerCase().replace(/\s/g, '_') === filters.statuses[0]) || 'Any'
-    : 'Any';
+  const activeTabIdx = Math.max(0, TABS.indexOf(filters.statusChip as TabName));
 
-  function getCount(tab: string): number {
+  const currentStatus: StatusOption = useMemo(() => {
+    const raw = filters.statuses[0];
+    if (!raw) return STATUS_SELECT_OPTIONS[0];
+    const match = STATUS_OPTIONS.find(
+      (s) => s.toLowerCase().replace(/\s/g, '_') === raw,
+    );
+    return match
+      ? { label: match, value: match }
+      : STATUS_SELECT_OPTIONS[0];
+  }, [filters.statuses]);
+
+  function getCount(tab: TabName): number {
     if (tab === 'All') return stats.total;
     if (tab === 'Starred') return stats.statusStarred;
     if (tab === 'My Projects') return stats.statusMyProjects ?? 0;
     return 0;
   }
 
-  function handleTabClick(tab: string) {
-    onFilterChange({ ...filters, statusChip: tab, statuses: [] });
+  function handleTabSelect(idx: number) {
+    onFilterChange({ ...filters, statusChip: TABS[idx], statuses: [] });
   }
 
-  function handleStatusChange(s: string) {
-    const mapped = s === 'Any' ? [] : [s.toLowerCase().replace(/\s/g, '_')];
+  function handleStatusChange(opt: StatusOption | null) {
+    if (!opt) return;
+    const mapped =
+      opt.value === 'Any' ? [] : [opt.value.toLowerCase().replace(/\s/g, '_')];
     onFilterChange({ ...filters, statuses: mapped });
-    setStatusOpen(false);
   }
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {/* Primary tabs — pill style */}
-      <div className="flex gap-1">
-       {TABS.map(tab => {
-          const isActive = activeTab === tab;
-          return (
-            <button
-              key={tab}
-              onClick={() => handleTabClick(tab)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '8px 16px',
-                borderRadius: 20,
-                fontSize: 13,
-                transition: 'all 200ms cubic-bezier(0.4,0,0.2,1)',
-                cursor: 'pointer',
-                border: isActive ? 'none' : '1px solid var(--cp-bd, #E2E8F0)',
-                background: isActive ? 'var(--cp-blue, #2563EB)' : 'transparent',
-                color: isActive ? '#FFFFFF' : 'var(--cp-t2, #475569)',
-                fontWeight: isActive ? 600 : 500,
-                outline: 'none',
-              }}
-            >
-              {tab === 'Starred' && '★ '}{tab}
-              {!(tab === 'Starred' && getCount(tab) === 0) && (
-                <span
-                  style={{
-                    minWidth: 22,
-                    height: 18,
-                    padding: '0 6px',
-                    borderRadius: 12,
-                    fontSize: 11,
-                    fontWeight: 700,
-                    fontVariantNumeric: 'tabular-nums',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: isActive ? 'rgba(255,255,255,0.9)' : 'var(--cp-hover, #F1F5F9)',
-                    color: isActive ? 'var(--cp-blue-text, #1D4ED8)' : 'var(--cp-t3, #94A3B8)',
-                  }}
-                >
-                  {getCount(tab)}
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        flexWrap: 'wrap',
+      }}
+    >
+      {/* Atlaskit Tabs — All / My Projects / Starred */}
+      <div style={{ minWidth: 320 }}>
+        <Tabs
+          id="all-projects-tabs"
+          selected={activeTabIdx}
+          onChange={handleTabSelect}
+        >
+          <TabList>
+            {TABS.map((tab) => (
+              <Tab key={tab}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {tab}
+                  <Badge appearance="default">{getCount(tab)}</Badge>
                 </span>
-              )}
-            </button>
-          );
-        })}
+              </Tab>
+            ))}
+          </TabList>
+        </Tabs>
       </div>
 
-      {/* Status dropdown */}
-      <Popover open={statusOpen} onOpenChange={setStatusOpen}>
-        <PopoverTrigger asChild>
-          <button className="h-8 px-3 border border-slate-200 dark:border-[#2E2E2E] rounded-md text-xs font-medium text-slate-600 dark:text-[#A1A1A1] hover:border-blue-600 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 flex items-center gap-1.5 bg-transparent transition-colors">
-            Status: {statusFilter} <ChevronDown className="w-3.5 h-3.5" />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent className="w-44 p-1 bg-white dark:bg-[#1A1A1A]" align="start">
-          {STATUS_OPTIONS.map(s => (
-            <button
-              key={s}
-              onClick={() => handleStatusChange(s)}
-              className="w-full text-left px-3 py-2 text-sm rounded hover:bg-slate-50 dark:hover:bg-[#2E2E2E] text-slate-700 dark:text-[#A1A1A1]"
-              style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
-            >
-              {s}
-            </button>
-          ))}
-        </PopoverContent>
-      </Popover>
+      {/* Atlaskit Select — Status filter (always shows "Status:" prefix) */}
+      <div style={{ minWidth: 180 }}>
+        <Select<StatusOption>
+          inputId="status-filter"
+          options={STATUS_SELECT_OPTIONS}
+          value={currentStatus}
+          onChange={(v) => handleStatusChange(v)}
+          isSearchable={false}
+          spacing="compact"
+          aria-label="Filter by status"
+          menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+          styles={{
+            menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+          }}
+          components={{
+            SingleValue: (props: any) => (
+              <div
+                {...props.innerProps}
+                style={{
+                  gridArea: '1 / 1 / 2 / 3',
+                  color: token('color.text'),
+                  fontSize: 13,
+                  marginLeft: 2,
+                  marginRight: 2,
+                  maxWidth: '100%',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ color: token('color.text.subtle') }}>Status: </span>
+                {props.data.label}
+              </div>
+            ),
+          }}
+        />
+      </div>
 
-      {/* Right side: search + view toggle */}
-      <div className="ml-auto flex items-center gap-2">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 dark:text-[#878787]" />
-          <input
+      {/* Right side: Atlaskit Textfield search + view toggle */}
+      <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 240 }}>
+          <Textfield
             value={localSearch}
-            onChange={e => setLocalSearch(e.target.value)}
+            onChange={(e) => setLocalSearch((e.target as HTMLInputElement).value)}
             placeholder="Search projects..."
-            className="h-9 w-[220px] pl-9 pr-8 border border-slate-200 dark:border-[#2E2E2E] rounded text-[13px] bg-transparent text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] outline-none focus:border-blue-500"
+            aria-label="Search projects"
+            elemBeforeInput={
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  paddingLeft: 8,
+                  color: token('color.text.subtle'),
+                }}
+              >
+                <SearchIcon label="" size="small" />
+              </span>
+            }
+            elemAfterInput={
+              localSearch ? (
+                <button
+                  type="button"
+                  onClick={() => setLocalSearch('')}
+                  aria-label="Clear search"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    paddingRight: 8,
+                    color: token('color.text.subtle'),
+                  }}
+                >
+                  <CrossIcon label="" size="small" />
+                </button>
+              ) : undefined
+            }
           />
-          {localSearch && (
-            <button
-              onClick={() => setLocalSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2"
-              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
-            >
-              <X size={12} className="text-slate-400 dark:text-[#878787]" />
-            </button>
-          )}
         </div>
 
-        {/* View toggle */}
-        <div className="flex border border-slate-200 dark:border-[#2E2E2E] rounded-md overflow-hidden">
-          <button
+        {/* View toggle — Atlaskit Buttons with isSelected */}
+        <div
+          style={{
+            display: 'inline-flex',
+            border: `1px solid ${token('color.border')}`,
+            borderRadius: 4,
+            overflow: 'hidden',
+          }}
+        >
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            isSelected={view === 'list'}
             onClick={() => onViewChange('list')}
-            className={cn(
-              "w-8 h-8 flex items-center justify-center border-r border-slate-200 dark:border-[#2E2E2E] transition-colors",
-              view === 'list'
-                ? "bg-blue-50 text-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-blue-400"
-                : "bg-transparent text-slate-400 dark:text-[#878787] hover:text-slate-600"
-            )}
+            aria-label="List view"
           >
-            <List size={14} />
-          </button>
-          <button
+            <ListIcon size={14} />
+          </Button>
+          <Button
+            appearance="subtle"
+            spacing="compact"
+            isSelected={view === 'cards' || view === 'card'}
             onClick={() => onViewChange('cards')}
-            className={cn(
-              "w-8 h-8 flex items-center justify-center transition-colors",
-              view === 'cards' || view === 'card'
-                ? "bg-blue-50 text-blue-600 dark:bg-[rgba(37,99,235,0.12)] dark:text-blue-400"
-                : "bg-transparent text-slate-400 dark:text-[#878787] hover:text-slate-600"
-            )}
+            aria-label="Grid view"
           >
-            <LayoutGrid size={14} />
-          </button>
+            <GridIcon size={14} />
+          </Button>
         </div>
       </div>
     </div>

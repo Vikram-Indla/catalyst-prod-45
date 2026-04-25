@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
 
-export type StarredItemType = 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect' | 'business_request' | 'theme' | 'objective' | 'dependency' | 'risk';
+export type StarredItemType = 'epic' | 'feature' | 'story' | 'task' | 'incident' | 'defect' | 'business_request' | 'theme' | 'objective' | 'dependency' | 'risk' | 'project';
 
 export interface StarredItem {
   id: string;
@@ -150,6 +150,7 @@ export function useStarredDeliveryItems() {
       const featureIds = starredItems.filter(s => s.item_type === 'feature').map(s => s.item_id);
       const epicIds = starredItems.filter(s => s.item_type === 'epic').map(s => s.item_id);
       const taskIds = starredItems.filter(s => s.item_type === 'task').map(s => s.item_id);
+      const projectIds = starredItems.filter(s => s.item_type === 'project').map(s => s.item_id);
 
       const items: any[] = [];
       // Track which (item_id, item_type) tuples resolved to a real row in
@@ -267,13 +268,38 @@ export function useStarredDeliveryItems() {
         });
       }
 
+      // Fetch projects (Phase D — universal star ↔ Home pinned)
+      if (projectIds.length > 0) {
+        const { data: projects } = await supabase
+          .from('projects')
+          .select('id, name, project_key, status, status_category, updated_at, lead_id')
+          .in('id', projectIds);
+
+        (projects || []).forEach((proj: any) => {
+          resolved.add(resolveKey(proj.id, 'project'));
+          const starredItem = starredItems.find(s => s.item_id === proj.id);
+          items.push({
+            id: proj.id,
+            key: proj.project_key || `PRJ-${proj.id.slice(0, 6)}`,
+            summary: proj.name,
+            project: proj.name,
+            projectKey: proj.project_key,
+            status: proj.status_category || proj.status || 'active',
+            type: 'project',
+            activityDate: new Date(proj.updated_at),
+            activityType: 'Updated',
+            starredAt: starredItem?.starred_at,
+          });
+        });
+      }
+
       // Orphan-star cleanup — find starred rows whose item_id was NOT
-      // present in any of the four resolved sets (or whose type isn't one
+      // present in any of the resolved sets (or whose type isn't one
       // we can resolve at all) and silently delete them. We only consider
-      // the four types we actually queried; an item_type we don't yet
+      // the types we actually queried; an item_type we don't yet
       // support (e.g. 'incident', 'business_request') is left alone so we
       // don't lose pins the moment we add support for that type later.
-      const supportedTypes = new Set(['story', 'feature', 'epic', 'task']);
+      const supportedTypes = new Set(['story', 'feature', 'epic', 'task', 'project']);
       const orphans = starredItems.filter(s =>
         supportedTypes.has(s.item_type) && !resolved.has(resolveKey(s.item_id, s.item_type))
       );

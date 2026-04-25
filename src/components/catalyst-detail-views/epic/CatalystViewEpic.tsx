@@ -4,10 +4,11 @@
  * Canonical sections: Title, Description, Acceptance Criteria, Activity, Sidebar.
  * Epic-unique: Child work items table (Jira-parity with inline CRUD).
  */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
+import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails,
@@ -24,6 +25,25 @@ export default function CatalystViewEpic({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+
+  // Track this view in user_recent_items so the sidebar Recents rail picks it up.
+  // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.
+  const trackRecent = useTrackRecentItem();
+  const recordedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isOpen || !issue?.id || !issue?.summary) return;
+    if (recordedRef.current === issue.id) return;
+    recordedRef.current = issue.id;
+    trackRecent.mutate({
+      entityType: 'epic',
+      entityId: issue.id,
+      entityKey: issue.issue_key ?? undefined,
+      displaySummary: issue.summary,
+      projectId: projectId ?? undefined,
+      projectName: issue.project_name ?? undefined,
+      navPath: `/project-hub/${issue.project_key ?? projectKey ?? ''}/issue/${issue.issue_key ?? issue.id}`,
+    });
+  }, [isOpen, issue?.id, issue?.summary, issue?.issue_key, issue?.project_key, issue?.project_name, projectId, projectKey, trackRecent]);
 
   const leftContent = (
     <>

@@ -6,47 +6,50 @@
  * The previous Home rail used `useRecentRooms()`, which queries the
  * page/space-level `recent_activity` table. That gave the user rows like
  * "Product Room", "Core Banking", "Test Room" — pages, not the issues the
- * user actually cares about. Vikram's directive (Apr 2026):
+ * user actually cares about. Recent now surfaces *issues*.
  *
- *   "under recent qa bug/defects, production incident, release numbers
- *    if they come up makes more sense including other issue types also
- *    but the priority is above"
+ * Strict type filter (Apr 2026 — Vikram directive, refined)
+ * ──────────────────────────────────────────────────────────
+ * The rail surfaces ONLY four operational types — Feature/Sub-task/Task/
+ * Epic/Backend/Frontend/Improvement etc. are filtered out entirely.
  *
- * So Recent now surfaces *issues*, not rooms, with a priority order that
- * matches operational urgency.
+ *   "I don't want any subtask category. I need always to have:
+ *      • Production defects
+ *      • QA defects or bugs
+ *      • Stories
+ *      • Business requests
+ *    These are the things which should be in recent, nothing else."
+ *
+ * Bucketing (within the filtered set)
+ *   Bucket 0 (P0): 'Production Incident'   → orange ? circle
+ *   Bucket 1 (P1): 'QA Bug' / 'Defect' / 'Bug' → red asterisk
+ *   Bucket 2 (P2): 'Story'                 → green bookmark
+ *   Bucket 3 (P3): 'Business Request'      → business_gap (orange) icon alias
+ *
+ * Within each bucket items are ordered by `jira_updated_at` desc — the
+ * most recently touched item floats to the top of its bucket.
  *
  * Data source
  * ───────────
  * `ph_issues` joined to the current user's Jira identity through
- * `ph_user_mapping` (same path useForYouData.ts walks):
+ * `ph_user_mapping`:
  *
  *   1. authUser.id  →  ph_user_mapping.catalyst_profile_id
- *                  →  ph_user_mapping.jira_account_id (1:N — user can be
- *                                                       mapped to multiple
- *                                                       Jira accounts)
+ *                  →  ph_user_mapping.jira_account_id (1:N)
  *   2. ph_issues where assignee_account_id ∈ jira_account_ids
  *                  OR    reporter_account_id ∈ jira_account_ids
  *   3. filter archived_at IS NULL AND deleted_at IS NULL
- *   4. order by jira_updated_at desc, overfetch ~5x
- *   5. JS-side sort: priority bucket asc, then jira_updated_at desc
- *   6. take top `limit`
+ *   4. order by jira_updated_at desc, overfetch 10x (was 5x — tightened
+ *      filter discards more rows so we need a wider net to find `limit`
+ *      matches; without this the rail under-filled when most recent
+ *      activity was on Features/Sub-tasks/etc.)
+ *   5. JS-side: filter to the 4 allowed types, then bucket-sort, then
+ *      slice to `limit`
  *
  * Note: "Release" is NOT a ph_issues issue_type — release information is
- * stored in `fix_versions` JSONB on individual issues, and ReleaseHub
- * sources its own list separately. We deliberately do NOT fabricate a
- * Release bucket; if releases need their own line in the rail later, that
- * is a separate hook.
- *
- * Priority bucketing (matches Vikram's directive)
- * ───────────────────────────────────────────────
- *   Bucket 0 (P0): 'Production Incident'
- *   Bucket 1 (P1): 'QA Bug', 'Defect', 'Bug'
- *   Bucket 2 (P2): 'Story', 'Feature', 'New Feature'
- *   Bucket 3:      everything else (Task, Sub-task, Backend, Frontend,
- *                  Figma, Integration, Improvement, BRD Task, Epic, …)
- *
- * Within each bucket, items are ordered by `jira_updated_at` desc — the
- * most recently touched item floats to the top.
+ * stored in `fix_versions` JSONB on individual issues. Vikram's earlier
+ * mention of "release numbers" was de-scoped here; releases need their
+ * own rail or are out-of-scope for Recent.
  *
  * Click behaviour
  * ───────────────
@@ -86,22 +89,44 @@ interface UseRecentIssuesResult {
   loading: boolean;
 }
 
+/**
+ * Strict bucket map. Keys are normalized (lowercase, hyphens/spaces → '_')
+ * to absorb common DB casing variants like "production incident" /
+ * "Production Incident" / "PRODUCTION_INCENTITY". A miss returns -1
+ * which we use as the "drop this row" sentinel.
+ */
 const PRIORITY_BUCKETS: Record<string, number> = {
-  // Bucket 0 — operational P0
-  'Production Incident': 0,
-  // Bucket 1 — defect class
-  'QA Bug': 1,
-  Defect: 1,
-  Bug: 1,
-  // Bucket 2 — delivery-class (releases-adjacent work surfaces here)
-  Story: 2,
-  Feature: 2,
-  'New Feature': 2,
+  // Bucket 0 — Production defects / Production incidents
+  production_incident: 0,
+  prod_incident: 0,
+  production_issue: 0,
+  prod_issue: 0,
+  incident: 0,
+  // Bucket 1 — QA defects / Bugs
+  qa_bug: 1,
+  defect: 1,
+  bug: 1,
+  // Bucket 2 — Stories
+  story: 2,
+  user_story: 2,
+  // Bucket 3 — Business Requests
+  business_request: 3,
+  brd_task: 3,
 };
 
+function normalizeTypeKey(raw: string | null | undefined): string {
+  if (!raw) return '';
+  return String(raw).trim().toLowerCase().replace(/[-\s]+/g, '_');
+}
+
+/**
+ * Returns the bucket index (0–3) for an issue_type that should appear in
+ * the rail, or -1 to indicate the row should be filtered out entirely.
+ */
 function bucketFor(issueType: string | null | undefined): number {
-  if (!issueType) return 3;
-  return PRIORITY_BUCKETS[issueType] ?? 3;
+  const key = normalizeTypeKey(issueType);
+  if (!key) return -1;
+  return PRIORITY_BUCKETS[key] ?? -1;
 }
 
 export function useRecentIssues(
@@ -168,10 +193,11 @@ export function useRecentIssues(
         }
 
         // 3. Pull issues where the user is assignee OR reporter. We
-        //    overfetch ~5x to give the bucket sort enough rows to reorder
-        //    a P0 incident to the top even if it's a few days older than
-        //    the last touched task.
-        const overfetchLimit = Math.max(limit * 5, 25);
+        //    overfetch 10x because the strict type filter (incident /
+        //    bug / story / business_request only) discards most rows;
+        //    without a wide net the rail under-fills when most recent
+        //    activity sits on Features/Sub-tasks/Tasks.
+        const overfetchLimit = Math.max(limit * 10, 60);
         const accountList = jiraAccountIds
           .map((id) => `"${id.replace(/"/g, '\\"')}"`)
           .join(',');
@@ -189,8 +215,10 @@ export function useRecentIssues(
 
         if (error) throw error;
 
-        // 4. Bucket sort. Stable order within bucket = jira_updated_at desc
-        //    (already the DB sort), so we only need to compare buckets.
+        // 4. Filter strictly to the four allowed buckets, then bucket-sort.
+        //    Within a bucket, items are already in jira_updated_at desc
+        //    order from the DB, so the comparator only needs to handle
+        //    cross-bucket ordering and tie-break by updated time.
         const sorted = (data ?? [])
           .map((row): RecentIssue => ({
             id: row.id,
@@ -201,6 +229,7 @@ export function useRecentIssues(
             updatedAt: row.jira_updated_at ?? new Date(0).toISOString(),
             status: row.status,
           }))
+          .filter((r) => bucketFor(r.issueType) >= 0)
           .sort((a, b) => {
             const ba = bucketFor(a.issueType);
             const bb = bucketFor(b.issueType);

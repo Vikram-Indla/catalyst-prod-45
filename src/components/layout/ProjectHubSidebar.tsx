@@ -7,6 +7,7 @@
  */
 
 import { useMemo, useState } from 'react';
+import { token } from '@atlaskit/tokens';
 import {
   LayoutGrid,
   LayoutDashboard,
@@ -146,6 +147,8 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
   const [recentsExpanded, setRecentsExpanded] = useState(true);
 
   // Fetch global recent items (across all projects)
+  // Excludes 'subtask' per Apr 2026 owner directive — subtasks are too granular
+  // for the Recents rail; users want to see the parent context (Story / Task).
   const { data: recentItems = [] } = useQuery({
     queryKey: ['global-recent-items'],
     queryFn: async () => {
@@ -155,13 +158,34 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
         .from('user_recent_items')
         .select('id, entity_type, entity_id, entity_key, display_summary, nav_path, visited_at, project_id')
         .eq('user_id', user.id)
+        .neq('entity_type', 'subtask')
         .order('visited_at', { ascending: false })
-        .limit(10);
+        .limit(15);
       if (error) { console.warn('global recents error:', error.message); return []; }
       return data ?? [];
     },
     staleTime: 30_000,
   });
+
+  // Group recents by time bucket (Atlassian convention)
+  const groupedRecents = useMemo(() => {
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const groups: { label: string; items: typeof recentItems }[] = [
+      { label: 'Today', items: [] },
+      { label: 'Yesterday', items: [] },
+      { label: 'Earlier this week', items: [] },
+      { label: 'Earlier', items: [] },
+    ];
+    for (const item of recentItems) {
+      const age = now - new Date(item.visited_at).getTime();
+      if (age < dayMs) groups[0].items.push(item);
+      else if (age < 2 * dayMs) groups[1].items.push(item);
+      else if (age < 7 * dayMs) groups[2].items.push(item);
+      else groups[3].items.push(item);
+    }
+    return groups.filter(g => g.items.length > 0);
+  }, [recentItems]);
 
   const removeRecent = async (itemId: string) => {
     await supabase.from('user_recent_items').delete().eq('id', itemId);
@@ -203,59 +227,126 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
 
   const recentsSection = expanded && recentItems.length > 0 ? (
     <div style={{ marginTop: 8 }}>
-      <div style={{ height: 1, background: isDark ? '#2E2E2E' : '#EBECF0', margin: '4px 12px 8px' }} />
+      <div style={{ height: 1, background: token('color.border'), margin: '4px 12px 8px' }} />
       <button
         onClick={() => setRecentsExpanded(p => !p)}
         className="flex items-center w-full"
         style={{ padding: '6px 12px', border: 'none', background: 'transparent', cursor: 'pointer', gap: 4 }}
+        aria-expanded={recentsExpanded}
       >
         <ChevronRight
           size={12}
-          style={{ color: isDark ? '#7D7D7D' : '#6B778C', transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 150ms ease' }}
+          style={{
+            color: token('color.text.subtlest'),
+            transform: recentsExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+            transition: 'transform 150ms ease',
+          }}
         />
-        <Clock size={12} style={{ color: isDark ? '#7D7D7D' : '#6B778C' }} />
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: isDark ? '#7D7D7D' : '#6B778C' }}>
-          Recents
+        <Clock size={12} style={{ color: token('color.text.subtlest') }} />
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
+            color: token('color.text.subtlest'),
+            fontFamily: 'var(--cp-font-body)',
+          }}
+        >
+          Recent
         </span>
-        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: 'var(--cp-font-mono)' }}>
+        <span
+          style={{
+            marginLeft: 'auto',
+            fontSize: 10,
+            fontWeight: 600,
+            color: token('color.text.subtlest'),
+            fontFamily: 'var(--cp-font-mono)',
+          }}
+        >
           {recentItems.length}
         </span>
       </button>
 
       {recentsExpanded && (
         <div style={{ padding: '2px 0' }}>
-          {recentItems.map(item => (
-            <div
-              key={item.id}
-              onClick={() => handleRecentClick(item)}
-              className="group"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '5px 12px 5px 28px', cursor: 'pointer',
-                borderRadius: 4, margin: '0 4px',
-                transition: 'background 80ms ease',
-              }}
-              onMouseEnter={e => e.currentTarget.style.background = isDark ? '#1F1F1F' : '#F4F5F7'}
-              onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-            >
-              <span style={{ width: 8, height: 8, borderRadius: 2, background: issueTypeColor(item.entity_type), flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: 'var(--cp-font-mono)', flexShrink: 0 }}>
-                {item.entity_key}
-              </span>
-              <span style={{
-                fontSize: 12, color: isDark ? '#A1A1A1' : '#172B4D', fontWeight: 450,
-                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-              }}>
-                {item.display_summary}
-              </span>
-              <button
-                className="opacity-0 group-hover:opacity-100"
-                onClick={(e) => { e.stopPropagation(); removeRecent(item.id); }}
-                style={{ width: 18, height: 18, borderRadius: 4, border: 'none', background: 'transparent', cursor: 'pointer', flexShrink: 0, color: isDark ? '#878787' : '#6B778C' }}
-                title="Remove from recents"
+          {groupedRecents.map((group) => (
+            <div key={group.label}>
+              <div
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.06em',
+                  textTransform: 'uppercase',
+                  color: token('color.text.subtlest'),
+                  padding: '6px 12px 2px 28px',
+                  fontFamily: 'var(--cp-font-body)',
+                }}
               >
-                <X size={12} />
-              </button>
+                {group.label}
+              </div>
+              {group.items.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => handleRecentClick(item)}
+                  className="group"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '5px 12px 5px 28px', cursor: 'pointer',
+                    borderRadius: 3, margin: '0 4px',
+                    transition: 'background 80ms ease',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = token('color.background.neutral.subtle.hovered')}
+                  onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  <span
+                    style={{
+                      width: 8, height: 8, borderRadius: 2,
+                      background: issueTypeColor(item.entity_type),
+                      flexShrink: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      color: token('color.text.subtle'),
+                      fontFamily: 'var(--cp-font-mono)',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {item.entity_key}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      color: token('color.text'),
+                      fontWeight: 450,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      flex: 1,
+                      fontFamily: 'var(--cp-font-body)',
+                    }}
+                  >
+                    {item.display_summary}
+                  </span>
+                  <button
+                    className="opacity-0 group-hover:opacity-100"
+                    onClick={(e) => { e.stopPropagation(); removeRecent(item.id); }}
+                    style={{
+                      width: 18, height: 18, borderRadius: 3,
+                      border: 'none', background: 'transparent',
+                      cursor: 'pointer', flexShrink: 0,
+                      color: token('color.text.subtlest'),
+                    }}
+                    title="Remove from recents"
+                    aria-label="Remove from recents"
+                  >
+                    <X size={12} />
+                  </button>
+                </div>
+              ))}
             </div>
           ))}
         </div>

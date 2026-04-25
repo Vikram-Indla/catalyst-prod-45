@@ -29,6 +29,7 @@ import { CloneIssueDialog } from './CloneIssueDialog';
 import { MoveIssueDialog } from './MoveIssueDialog';
 import { ArchiveConfirmDialog } from './ArchiveConfirmDialog';
 import { useProjectMemberRole } from '../../hooks/useProjectMemberRole';
+import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 
 
 // Ring-fenced CSS for extension components
@@ -211,6 +212,38 @@ export default function StoryDetailModal({
       return null;
     },
   });
+
+  // ── Recents tracking (sidebar Recent rail picks this up) ──
+  // The story modal also opens for issue_type === 'Subtask'. Subtask exclusion
+  // is enforced by skipping the track call when issue.parent_key is set.
+  const trackRecent = useTrackRecentItem();
+  const recordedRecentRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isOpen || !issue?.id || !issue?.summary) return;
+    if (recordedRecentRef.current === issue.id) return;
+    if ((issue as any).parent_key) return; // subtask guard
+    recordedRecentRef.current = issue.id;
+    // Map issue_type → entity_type. Story modal can host stories, bugs, tasks
+    // depending on issue_type. Default to 'story' for the canonical case.
+    const issueType = String(issue.issue_type ?? '').toLowerCase();
+    const entityType =
+      issueType.includes('bug') ? 'defect'
+      : issueType.includes('task') ? 'task'
+      : issueType.includes('epic') ? 'epic'
+      : issueType.includes('feature') ? 'feature'
+      : 'story';
+    trackRecent.mutate({
+      entityType,
+      entityId: issue.id,
+      entityKey: (issue as any).issue_key ?? undefined,
+      displaySummary: issue.summary,
+      projectId: undefined,
+      projectName: undefined,
+      navPath: `/project-hub/${(issue as any).project_key ?? projectKey ?? ''}/issue/${(issue as any).issue_key ?? issue.id}`,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, issue?.id, issue?.summary]);
+
   /**
    * §19 chokepoint (2026-04-20): reporter avatar resolution.
    * Previously queried `jira_identity_map.avatar_url` + `profiles.avatar_url`

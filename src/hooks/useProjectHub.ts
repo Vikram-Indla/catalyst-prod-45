@@ -99,20 +99,45 @@ export function useToggleFavorite() {
       if (!user) throw new Error('Not authenticated');
 
       if (isFavorited) {
+        // Project-hub-local favourites table (existing hooks read this)
         const { error } = await typedQuery('project_favorites')
           .delete()
           .eq('project_id', projectId)
           .eq('user_id', user.id);
         if (error) throw error;
+
+        // Universal star store (Home "Pinned" rail reads this).
+        // Fire-and-forget — the project_favorites delete is the source of truth
+        // for project-hub UI; if the universal-store write fails (RLS/auth race)
+        // the orphan cleanup in useStarredDeliveryItems will reconcile.
+        await supabase
+          .from('user_starred_items')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('item_id', projectId)
+          .eq('item_type', 'project');
       } else {
         const { error } = await typedQuery('project_favorites')
           .insert({ project_id: projectId, user_id: user.id });
         if (error) throw error;
+
+        // Universal star store — upsert so a re-star after a stale read doesn't 23505.
+        await supabase
+          .from('user_starred_items')
+          .upsert(
+            { user_id: user.id, item_id: projectId, item_type: 'project' },
+            { onConflict: 'user_id,item_id,item_type' },
+          );
       }
     },
     onMutate: async ({ projectId, isFavorited }) => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.favorites });
       const previous = queryClient.getQueryData<Set<string>>(QUERY_KEYS.favorites);
+
+      // Also invalidate the universal Home Pinned rail so it picks up
+      // the new state on next read (Phase D — universal star).
+      void queryClient.invalidateQueries({ queryKey: ['starred-item-ids'] });
+      void queryClient.invalidateQueries({ queryKey: ['starred-delivery-items'] });
 
       queryClient.setQueryData<Set<string>>(QUERY_KEYS.favorites, (old) => {
         const next = new Set(old);

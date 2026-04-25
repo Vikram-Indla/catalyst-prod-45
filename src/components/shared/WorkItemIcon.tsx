@@ -275,6 +275,18 @@ export function normalizeIconType(raw: string | undefined | null): WorkItemIconT
     case 'prod_issue':
     case 'production_issue':   return 'production_incident';
 
+    // ── Business Request alias ─────────────────────────────────────────────
+    // Catalyst's "Business Request" issue type has no dedicated entry in the
+    // canonical 14-icon work-item set (CLAUDE.md §11 — frozen). The closest
+    // semantic + visual match is `business_gap` (orange #F97316, lightning
+    // bolt in outlined box) — a "request"-class artifact in the same color
+    // family the wider Catalyst codebase uses for Business Request elsewhere
+    // (amber #FFAB00 in jira-issue-type-icons.tsx). Aliasing here avoids
+    // adding a new icon to the frozen set while still rendering BR rows
+    // with a recognizable, non-default mark.
+    case 'business_request':
+    case 'brd_task':           return 'business_gap';
+
     default:
       if (typeof console !== 'undefined' && console.warn) {
         console.warn(`[WorkItemIcon] Unknown icon type "${raw}" (normalized → "${key}") — falling back to 'task'`);

@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
+import { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { Star, MoreHorizontal, Lock, ChevronUp, ChevronDown, ExternalLink, Settings, Archive, Search, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import '@/styles/product-backlog.css';
@@ -15,13 +15,18 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Avatar, Tooltip } from '@/components/ads';
 import { IssueBreakdownPopover } from './IssueBreakdownPopover';
-// Atlaskit primitives for Lead reassign + row actions (Atlaskit migration scope)
-import Popup from '@atlaskit/popup';
+// Atlaskit primitives for Lead reassign + row actions (Atlaskit migration scope).
+// Note: @atlaskit/popup v4.16 renders empty portals in this codebase (Apr 2026
+// runtime probe via Chrome MCP), so Lead/Members popups use self-rolled
+// positioned divs with useClickOutside instead. Popup kept available for
+// future use when the lib is upgraded.
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
 import AKDropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import AKModal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import AKButton from '@atlaskit/button/new';
+import { MenuGroup, ButtonItem, Section } from '@atlaskit/menu';
+import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -74,14 +79,79 @@ function useAllProfiles() {
 }
 
 // ── Sub-components ─────────────────────────────────────
+//
+// useClickOutside — fires onOutside when a mousedown lands outside ANY of
+// the supplied refs. Used by Lead/Members popups since @atlaskit/popup v4.16
+// is rendering empty portals in this codebase (Apr 2026 RCA via Chrome MCP).
+function useClickOutside(
+  isOpen: boolean,
+  refs: Array<React.RefObject<HTMLElement | null>>,
+  onOutside: () => void,
+) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const inside = refs.some(r => r.current?.contains(target));
+      if (!inside) onOutside();
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [isOpen, refs, onOutside]);
+}
 
-// FIX 2 + FIX 4: Lead cell with pencil icon trigger + undo toast
+// useFixedPopupPosition — captures the trigger's viewport coordinates on open
+// and returns them so the popup can render via `position: fixed` regardless
+// of any parent containing-block weirdness (transformed ancestors, sticky
+// table headers, scroll containers, etc.). Re-positions on scroll/resize.
+function useFixedPopupPosition(
+  isOpen: boolean,
+  triggerRef: React.RefObject<HTMLElement | null>,
+  popupWidth: number,
+): { top: number; left: number } | null {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  const recompute = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    // Default: anchor below the trigger, left-aligned. If popup would overflow
+    // the right edge, right-align it to the trigger instead.
+    let left = r.left;
+    if (left + popupWidth > window.innerWidth - 8) {
+      left = Math.max(8, r.right - popupWidth);
+    }
+    setPos({ top: r.bottom + 4, left });
+  }, [triggerRef, popupWidth]);
+
+  useEffect(() => {
+    if (!isOpen) { setPos(null); return; }
+    recompute();
+    window.addEventListener('scroll', recompute, true);
+    window.addEventListener('resize', recompute);
+    return () => {
+      window.removeEventListener('scroll', recompute, true);
+      window.removeEventListener('resize', recompute);
+    };
+  }, [isOpen, recompute]);
+
+  return pos;
+}
+
+
+// FIX 2 + FIX 4: Lead cell with click-anywhere-on-chip → reassign popup.
+// @atlaskit/popup v4.16 renders empty portals in this codebase, so we use a
+// self-rolled positioned div + useClickOutside instead. Atlaskit token styling.
 function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const searchTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  useClickOutside(open, [triggerRef, popupRef], () => { setOpen(false); setSearch(''); });
+  const popupPos = useFixedPopupPosition(open, triggerRef, 300);
   const { data: profiles = [] } = useAllProfiles();
   const [optimisticLead, setOptimisticLead] = useState<{ id: string; name: string; avatar_url: string | null } | null>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -139,55 +209,60 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   }, [profiles, project, queryClient]);
 
   return (
-    <Popup
-      isOpen={open}
-      onClose={() => { setOpen(false); setSearch(''); }}
-      placement="bottom-start"
-      trigger={(triggerProps) => (
-        <button
-          {...triggerProps}
-          onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
-          aria-label={`Lead: ${displayLead.name || 'unassigned'} (click to reassign)`}
-          className="inline-flex items-center gap-2 max-w-full overflow-hidden rounded-md px-1.5 py-1 -ml-1.5 bg-transparent border-0 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
-        >
-          {displayLead.name ? (
-            <>
-              <span className="flex-shrink-0">
-                <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="xsmall" />
-              </span>
-              <span className="text-[13px] font-medium truncate text-slate-700 dark:text-[#EDEDED]" title={displayLead.name || ''}>
-                {(displayLead.name || '').split(' ').slice(0, 2).join(' ')}
-              </span>
-              <Pencil size={12} className="flex-shrink-0 text-slate-400 dark:text-[#878787]" />
-            </>
-          ) : (
-            <span className="text-[13px] text-slate-500 dark:text-[#A1A1A1]">— Assign lead</span>
-          )}
-        </button>
-      )}
-      content={() => (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        aria-label={`Lead: ${displayLead.name || 'unassigned'} (click to reassign)`}
+        aria-expanded={open}
+        style={{ pointerEvents: 'auto' }}
+        className="inline-flex items-center gap-2 max-w-full overflow-hidden rounded-md px-1.5 py-1 -ml-1.5 bg-transparent border-0 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
+      >
+        {displayLead.name ? (
+          <>
+            <span style={{ flexShrink: 0, pointerEvents: 'none' }}>
+              <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="small" />
+            </span>
+            <span
+              title={displayLead.name || ''}
+              style={{
+                pointerEvents: 'none',
+                fontSize: 14,
+                fontWeight: 500,
+                color: token('color.text'),
+                fontFamily: 'var(--cp-font-body)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {(displayLead.name || '').split(' ').slice(0, 2).join(' ')}
+            </span>
+          </>
+        ) : (
+          <span style={{ pointerEvents: 'none', fontSize: 14, color: token('color.text.subtle'), fontFamily: 'var(--cp-font-body)' }}>— Assign lead</span>
+        )}
+      </button>
+
+      {open && popupPos && (
         <div
+          ref={popupRef}
           onClick={(e) => e.stopPropagation()}
           style={{
-            width: 280,
-            padding: 12,
+            position: 'fixed',
+            top: popupPos.top,
+            left: popupPos.left,
+            zIndex: 9999,
+            width: 300,
             background: token('elevation.surface.overlay'),
             border: `1px solid ${token('color.border')}`,
             borderRadius: 4,
             boxShadow: token('elevation.shadow.overlay'),
+            overflow: 'hidden',
           }}
         >
-          <div style={{
-            fontSize: 11,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.04em',
-            color: token('color.text.subtlest'),
-            marginBottom: 8,
-          }}>
-            Reassign lead
-          </div>
-          <div style={{ marginBottom: 8 }}>
+          <div style={{ padding: '10px 12px 4px' }}>
             <Textfield
               value={search}
               onChange={(e) => handleSearchChange((e.target as HTMLInputElement).value)}
@@ -200,66 +275,100 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
               }
             />
           </div>
-          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
-            {filtered.map(p => (
-              <button
-                key={p.id}
-                onClick={() => handleLeadChange(p.id)}
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              color: token('color.text.subtlest'),
+              padding: '8px 12px 4px',
+            }}
+          >
+            Reassign lead
+          </div>
+          <div style={{ maxHeight: 280, overflowY: 'auto', paddingBottom: 6 }}>
+            {filtered.map((p) => {
+              const isCurrent = p.id === displayLead.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handleLeadChange(p.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    width: '100%',
+                    padding: '8px 12px',
+                    background: isCurrent
+                      ? token('color.background.selected')
+                      : 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: token('color.text'),
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!isCurrent) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered');
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isCurrent) e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <Avatar
+                    src={p.avatar_url || undefined}
+                    name={p.display_name || '??'}
+                    size="small"
+                  />
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 500,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {p.display_name}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 11,
+                        color: token('color.text.subtlest'),
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                      }}
+                    >
+                      {formatRole(p.role || 'Team Member')}
+                    </div>
+                  </div>
+                  {isCurrent && (
+                    <span style={{ fontSize: 10, fontWeight: 700, color: token('color.text.brand') }}>
+                      CURRENT
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+            {filtered.length === 0 && (
+              <div
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '8px 10px',
-                  borderRadius: 4,
-                  width: '100%',
-                  textAlign: 'left',
-                  background: p.id === displayLead.id ? token('color.background.selected') : 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => {
-                  if (p.id !== displayLead.id) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered');
-                }}
-                onMouseLeave={(e) => {
-                  if (p.id !== displayLead.id) e.currentTarget.style.background = 'transparent';
+                  fontSize: 12,
+                  color: token('color.text.subtlest'),
+                  textAlign: 'center',
+                  padding: '12px 0',
                 }}
               >
-                <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: token('color.text'),
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {p.display_name}
-                  </div>
-                  <div style={{
-                    fontSize: 11,
-                    color: token('color.text.subtlest'),
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}>
-                    {formatRole(p.role || 'Team Member')}
-                  </div>
-                </div>
-                {p.id === displayLead.id && (
-                  <span style={{ fontSize: 10, color: token('color.text.brand'), fontWeight: 700 }}>CURRENT</span>
-                )}
-              </button>
-            ))}
-            {filtered.length === 0 && (
-              <p style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0', margin: 0 }}>
                 No results
-              </p>
+              </div>
             )}
           </div>
         </div>
       )}
-    />
+    </>
   );
 }
 
@@ -269,8 +378,14 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
   const [search, setSearch] = useState('');
   const [debouncedMemberSearch, setDebouncedMemberSearch] = useState('');
   const memberSearchTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const [addMode, setAddMode] = useState(false);
+  // Optimistic membership map — flips a row instantly while the DB write
+  // is in flight, so add/remove feels seamless (no spinner, no mode change).
+  const [pending, setPending] = useState<Record<string, 'adding' | 'removing'>>({});
   const { data: profiles = [] } = useAllProfiles();
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  useClickOutside(open, [triggerRef, popupRef], () => { setOpen(false); setSearch(''); });
+  const popupPos = useFixedPopupPosition(open, triggerRef, 320);
 
   const handleMemberSearchChange = useCallback((val: string) => {
     setSearch(val);
@@ -280,275 +395,284 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
 
   const memberIds = project.member_ids || [];
 
-  const members = useMemo(() => {
-    return memberIds.map(id => {
-      const p = profiles.find(pr => pr.id === id);
-      return { id, display_name: p?.display_name || 'Unknown', role: p?.role || '', avatar_url: p?.avatar_url || null };
+  // Effective membership = real members + adding optimistic - removing optimistic
+  const isEffectiveMember = useCallback((userId: string) => {
+    if (pending[userId] === 'adding') return true;
+    if (pending[userId] === 'removing') return false;
+    return memberIds.includes(userId);
+  }, [memberIds, pending]);
+
+  // Sort: members first, then non-members; both groups by display name. Filter by search.
+  const sortedFiltered = useMemo(() => {
+    const q = debouncedMemberSearch.toLowerCase();
+    const visible = profiles.filter(p => !q || p.display_name?.toLowerCase().includes(q));
+    return [...visible].sort((a, b) => {
+      const aMember = isEffectiveMember(a.id);
+      const bMember = isEffectiveMember(b.id);
+      if (aMember !== bMember) return aMember ? -1 : 1;
+      return (a.display_name || '').localeCompare(b.display_name || '');
     });
-  }, [memberIds, profiles]);
+  }, [profiles, debouncedMemberSearch, isEffectiveMember]);
 
-  const nonMembers = useMemo(() => profiles.filter(p =>
-    !memberIds.includes(p.id) && p.display_name?.toLowerCase().includes(debouncedMemberSearch.toLowerCase())
-  ), [profiles, memberIds, debouncedMemberSearch]);
+  const memberCount = useMemo(
+    () => profiles.filter(p => isEffectiveMember(p.id)).length,
+    [profiles, isEffectiveMember],
+  );
 
-  const handleRemove = async (userId: string) => {
-    const { error } = await supabase
-      .from('project_members')
-      .delete()
-      .eq('project_id', project.id)
-      .eq('user_id', userId);
-    if (error) { toast.error('Failed to remove member'); return; }
-    toast.success('Member removed');
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
-  };
-
-  const handleAdd = async (userId: string) => {
-    const { error } = await supabase
-      .from('project_members')
-      .insert({ project_id: project.id, user_id: userId, role: 'member' } as any);
-    if (error) { toast.error('Failed to add member'); return; }
-    toast.success('Member added');
-    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
-  };
+  const handleToggle = useCallback(async (userId: string) => {
+    if (userId === project.lead_id) return; // lead cannot be removed
+    const wasMember = isEffectiveMember(userId);
+    // Optimistic flip
+    setPending(prev => ({ ...prev, [userId]: wasMember ? 'removing' : 'adding' }));
+    try {
+      if (wasMember) {
+        const { error } = await supabase
+          .from('project_members')
+          .delete()
+          .eq('project_id', project.id)
+          .eq('user_id', userId);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('project_members')
+          .insert({ project_id: project.id, user_id: userId, role: 'member' } as any);
+        if (error) throw error;
+      }
+      // Refresh from server, then drop the optimistic entry
+      await queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+      setPending(prev => {
+        const next = { ...prev };
+        delete next[userId];
+        return next;
+      });
+    } catch (e) {
+      // Roll back optimistic on failure
+      setPending(prev => {
+        const next = { ...prev };
+        delete next[userId];
+        return next;
+      });
+      toast.error(wasMember ? 'Failed to remove member' : 'Failed to add member');
+    }
+  }, [isEffectiveMember, project.id, project.lead_id, queryClient]);
 
   const popupContent = () => (
     <div
       onClick={(e) => e.stopPropagation()}
       style={{
-        width: 280,
-        padding: 12,
+        width: 320,
         background: token('elevation.surface.overlay'),
         border: `1px solid ${token('color.border')}`,
         borderRadius: 4,
         boxShadow: token('elevation.shadow.overlay'),
+        overflow: 'hidden',
       }}
     >
-      <div style={{
-        fontSize: 11,
-        fontWeight: 700,
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
-        color: token('color.text.subtlest'),
-        marginBottom: 8,
-      }}>
-        {addMode ? 'Add members' : 'Manage members'}
+      <div style={{ padding: '10px 12px 6px' }}>
+        <Textfield
+          value={search}
+          onChange={(e) => handleMemberSearchChange((e.target as HTMLInputElement).value)}
+          placeholder="Search people..."
+          autoFocus
+          elemBeforeInput={
+            <span style={{ paddingLeft: 8, display: 'inline-flex', alignItems: 'center', color: token('color.text.subtlest') }}>
+              <Search size={12} />
+            </span>
+          }
+        />
       </div>
-
-      {addMode ? (
-        <>
-          <div style={{ marginBottom: 8 }}>
-            <Textfield
-              value={search}
-              onChange={(e) => handleMemberSearchChange((e.target as HTMLInputElement).value)}
-              placeholder="Search people..."
-              autoFocus
-              elemBeforeInput={
-                <span style={{ paddingLeft: 8, display: 'inline-flex', alignItems: 'center', color: token('color.text.subtlest') }}>
-                  <Search size={12} />
-                </span>
-              }
-            />
-          </div>
-          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
-            {nonMembers.map(p => (
-              <button
-                key={p.id}
-                onClick={() => handleAdd(p.id)}
+      <div
+        style={{
+          fontSize: 11,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          color: token('color.text.subtlest'),
+          padding: '4px 12px',
+        }}
+      >
+        Members · {memberCount}
+      </div>
+      <div style={{ maxHeight: 320, overflowY: 'auto', paddingBottom: 6 }}>
+        {sortedFiltered.map((p) => {
+          const isMember = isEffectiveMember(p.id);
+          const isLead = p.id === project.lead_id;
+          return (
+            <div
+              key={p.id}
+              role="button"
+              tabIndex={isLead ? -1 : 0}
+              onClick={() => { if (!isLead) handleToggle(p.id); }}
+              onKeyDown={(e) => {
+                if (isLead) return;
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(p.id); }
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 10,
+                padding: '8px 12px',
+                cursor: isLead ? 'default' : 'pointer',
+                color: token('color.text'),
+                opacity: pending[p.id] ? 0.6 : 1,
+                outline: 'none',
+              }}
+              onMouseEnter={(e) => { if (!isLead) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+              onMouseLeave={(e) => { if (!isLead) e.currentTarget.style.background = 'transparent'; }}
+              aria-pressed={isMember}
+              aria-label={isLead ? `${p.display_name} (lead, locked)` : `${p.display_name}${isMember ? ' — click to remove' : ' — click to add'}`}
+            >
+              <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="small" />
+              <span
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '6px 8px',
-                  borderRadius: 4,
-                  width: '100%',
-                  textAlign: 'left',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
+                  fontSize: 13,
+                  flex: 1,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  fontFamily: 'var(--cp-font-body)',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
-                <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
-                <span style={{ fontSize: 13, color: token('color.text'), flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {p.display_name}
-                </span>
-                <span style={{ color: token('color.text.brand'), fontSize: 14, fontWeight: 700 }}>+</span>
-              </button>
-            ))}
-            {nonMembers.length === 0 && (
-              <p style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0', margin: 0 }}>
-                No results
-              </p>
-            )}
-          </div>
-          <button
-            onClick={() => { setAddMode(false); setSearch(''); }}
-            style={{
-              marginTop: 8,
-              fontSize: 12,
-              color: token('color.text.subtle'),
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              padding: '4px 0',
-            }}
-          >← Back</button>
-        </>
-      ) : (
-        <>
-          <div style={{
-            fontSize: 10,
-            fontWeight: 700,
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-            color: token('color.text.subtlest'),
-            marginBottom: 4,
-          }}>
-            Current · {members.length}
-          </div>
-          <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 8 }}>
-            {members.map(m => (
-              <div
-                key={m.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  padding: '6px 8px',
-                  borderRadius: 4,
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                <Avatar src={m.avatar_url || undefined} name={m.display_name || '??'} size="xsmall" />
-                <span style={{ fontSize: 13, color: token('color.text'), flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {m.display_name}
-                </span>
-                {m.id === project.lead_id ? (
-                  <span style={{
+                {p.display_name}
+              </span>
+              {isLead ? (
+                <span
+                  style={{
                     fontSize: 10,
                     fontWeight: 700,
                     color: token('color.text.brand'),
                     background: token('color.background.selected'),
                     padding: '2px 6px',
                     borderRadius: 3,
-                  }}>LEAD</span>
-                ) : (
-                  <button
-                    onClick={() => handleRemove(m.id)}
-                    aria-label={`Remove ${m.display_name}`}
-                    style={{
-                      color: token('color.text.subtlest'),
-                      background: 'transparent',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontSize: 14,
-                      lineHeight: 1,
-                      padding: 2,
-                    }}
-                  >×</button>
-                )}
-              </div>
-            ))}
-            {members.length === 0 && (
-              <p style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '8px 0', margin: 0 }}>
-                No members
-              </p>
-            )}
+                  }}
+                  aria-label="Project lead"
+                >
+                  LEAD
+                </span>
+              ) : isMember ? (
+                <span
+                  aria-hidden
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 22,
+                    height: 22,
+                    borderRadius: 11,
+                    background: token('color.background.success'),
+                    color: token('color.text.inverse'),
+                    fontSize: 12,
+                    fontWeight: 700,
+                  }}
+                >
+                  ✓
+                </span>
+              ) : (
+                <span
+                  aria-hidden
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 22,
+                    height: 22,
+                    borderRadius: 11,
+                    border: `1px dashed ${token('color.border')}`,
+                    color: token('color.text.subtle'),
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                >
+                  +
+                </span>
+              )}
+            </div>
+          );
+        })}
+        {sortedFiltered.length === 0 && (
+          <div
+            style={{
+              fontSize: 12,
+              color: token('color.text.subtlest'),
+              textAlign: 'center',
+              padding: '12px 0',
+            }}
+          >
+            No results
           </div>
-          <div style={{ borderTop: `1px solid ${token('color.border')}`, paddingTop: 8 }}>
-            <button
-              onClick={() => setAddMode(true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                padding: '6px 8px',
-                color: token('color.text.brand'),
-                fontSize: 13,
-                fontWeight: 500,
-                borderRadius: 4,
-                width: '100%',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.selected.hovered'); }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
-            >+ Add member</button>
-          </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 
   return (
-    <Popup
-      isOpen={open}
-      onClose={() => { setOpen(false); setAddMode(false); setSearch(''); }}
-      placement="bottom-start"
-      trigger={(triggerProps) => (
-        <button
-          {...triggerProps}
-          onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
-          aria-label={`${memberIds.length} members (click to manage)`}
-          className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none rounded"
-        >
-          {memberIds.length > 0 ? (
-            <>
-              <MemberStack memberIds={memberIds} memberCount={project.member_count} max={10} />
-              <span
-                aria-hidden
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 22,
-                  height: 22,
-                  borderRadius: 11,
-                  border: `1px dashed ${token('color.border')}`,
-                  color: token('color.text.subtle'),
-                  fontSize: 14,
-                  fontWeight: 700,
-                  marginLeft: -4,
-                  background: token('elevation.surface'),
-                }}
-              >+</span>
-            </>
-          ) : (
+    <>
+      <div
+        ref={triggerRef}
+        role="button"
+        tabIndex={0}
+        onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); setOpen(o => !o); } }}
+        aria-label={memberIds.length > 0 ? `${memberIds.length} members. Click to manage.` : 'Add members'}
+        aria-expanded={open}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 8,
+          cursor: 'pointer',
+          pointerEvents: 'auto',
+          outline: 'none',
+          borderRadius: 6,
+          padding: '2px 4px',
+        }}
+      >
+        {memberIds.length > 0 ? (
+          <MemberStack
+            memberIds={memberIds}
+            memberCount={project.member_count}
+            max={4}
+          />
+        ) : (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 13,
+              color: token('color.text.subtle'),
+            }}
+          >
             <span
+              aria-hidden
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
-                fontSize: 13,
+                justifyContent: 'center',
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                border: `1px dashed ${token('color.border')}`,
                 color: token('color.text.subtle'),
+                fontSize: 14,
+                fontWeight: 700,
               }}
-            >
-              <span
-                aria-hidden
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 22,
-                  height: 22,
-                  borderRadius: 11,
-                  border: `1px dashed ${token('color.border')}`,
-                  color: token('color.text.subtle'),
-                  fontSize: 14,
-                  fontWeight: 700,
-                }}
-              >+</span>
-              Add members
-            </span>
-          )}
-        </button>
+            >+</span>
+            Add members
+          </span>
+        )}
+      </div>
+
+      {open && popupPos && (
+        <div ref={popupRef} style={{
+          position: 'fixed',
+          top: popupPos.top,
+          left: popupPos.left,
+          zIndex: 9999,
+        }}>
+          {popupContent()}
+        </div>
       )}
-      content={popupContent}
-    />
+    </>
   );
 }
 
@@ -619,20 +743,13 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
         )}
       >
         <DropdownItemGroup>
-          <DropdownItem
-            elemBefore={<ExternalLink size={14} />}
-            onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}
-          >
+          <DropdownItem onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}>
             Open project
           </DropdownItem>
-          <DropdownItem
-            elemBefore={<Pencil size={14} />}
-            onClick={() => { setRenameValue(project.name); setRenameOpen(true); }}
-          >
+          <DropdownItem onClick={() => { setRenameValue(project.name); setRenameOpen(true); }}>
             Rename
           </DropdownItem>
           <DropdownItem
-            elemBefore={<Settings size={14} />}
             onClick={() => navigate(`/project-hub/${project.project_key}/sync`)}
             isDisabled
           >
@@ -640,16 +757,10 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
           </DropdownItem>
         </DropdownItemGroup>
         <DropdownItemGroup hasSeparator>
-          <DropdownItem
-            elemBefore={<Archive size={14} />}
-            onClick={handleArchive}
-          >
+          <DropdownItem onClick={handleArchive}>
             Archive project
           </DropdownItem>
-          <DropdownItem
-            elemBefore={<span style={{ color: token('color.text.danger') }}>×</span>}
-            onClick={() => setDeleteOpen(true)}
-          >
+          <DropdownItem onClick={() => setDeleteOpen(true)}>
             <span style={{ color: token('color.text.danger') }}>Delete project…</span>
           </DropdownItem>
         </DropdownItemGroup>
@@ -761,16 +872,31 @@ const COL_TO_SORT: Record<string, SortColumn> = {
 const SORTABLE_PROJECT_KEYS = new Set(Object.keys(COL_TO_SORT));
 
 // ── Resizable column config ──
+// Apr 2026: Jira spec verified via /jira-compare — Name · Key · Lead
+// (Category, Space URL, Type excluded per owner directives). Catalyst
+// additions: Star (left-edge, locked), Members, Sync, Actions (right-edge).
 const PROJECT_COLUMNS: TColDef[] = [
-  { key: 'num', label: '#', defaultWidth: 40, minWidth: 40, locked: true },
-  { key: 'star', label: '', defaultWidth: 36, minWidth: 36, locked: true },
-  { key: 'project_key', label: 'KEY', defaultWidth: 100, minWidth: 70 },
-  { key: 'project_name', label: 'PROJECT NAME', defaultWidth: 280, minWidth: 150 },
-  { key: 'lead', label: 'LEAD', defaultWidth: 200, minWidth: 120 },
-  { key: 'members', label: 'MEMBERS', defaultWidth: 150, minWidth: 80 },
-  { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 100 },
-  { key: 'actions', label: '', defaultWidth: 48, minWidth: 48, locked: true },
+  { key: 'star', label: '', defaultWidth: 32, minWidth: 32, locked: true },
+  { key: 'project_name', label: 'NAME', defaultWidth: 280, minWidth: 200 },
+  { key: 'project_key', label: 'KEY', defaultWidth: 90, minWidth: 70 },
+  { key: 'lead', label: 'LEAD', defaultWidth: 180, minWidth: 130 },
+  { key: 'members', label: 'MEMBERS', defaultWidth: 160, minWidth: 100 },
+  { key: 'sync', label: 'SYNC', defaultWidth: 200, minWidth: 110 },
+  { key: 'actions', label: '', defaultWidth: 40, minWidth: 40, locked: true },
 ];
+
+// Jira "Type" column mapping — projects.project_type → display label
+const PROJECT_TYPE_LABEL: Record<string, string> = {
+  kanban: 'Team-managed software',
+  scrum: 'Team-managed software',
+  business: 'Team-managed business',
+  service_desk: 'Team-managed service',
+  company_managed: 'Company-managed software',
+};
+function formatProjectType(type: string | null | undefined): string {
+  if (!type) return 'Team-managed software';
+  return PROJECT_TYPE_LABEL[type] ?? 'Team-managed software';
+}
 
 // ── Props ──────────────────────────────────────────────
 interface Props {
@@ -793,6 +919,22 @@ export function AllProjectsTable({
   selectedRows, onToggleRow, pageOffset = 0,
 }: Props) {
   const navigate = useNavigate();
+  const trackRecent = useTrackRecentItem();
+
+  // Record a project view in user_recent_items so the sidebar Recents
+  // rail and Home pinned section have something to surface.
+  // Excludes subtasks per CLAUDE.md (Apr 2026 owner directive).
+  const recordProjectView = useCallback((p: ProjectListItem) => {
+    trackRecent.mutate({
+      entityType: 'project',
+      entityId: p.id,
+      entityKey: p.project_key,
+      displaySummary: p.name,
+      projectId: p.id,
+      projectName: p.name,
+      navPath: `/project-hub/${p.project_key}/dashboard`,
+    });
+  }, [trackRecent]);
 
   const handleHeaderSort = useCallback((colKey: string) => {
     const mappedCol = COL_TO_SORT[colKey];
@@ -873,10 +1015,10 @@ export function AllProjectsTable({
     const syncTooltipText = getSyncTooltip(syncTs, null);
 
     switch (colKey) {
-      case 'num': return <td key={colKey} className="text-center"><span className="text-xs text-slate-400 dark:text-[#878787] tabular-nums">{rowNum}</span></td>;
       case 'star': return <td key={colKey} style={{ overflow: 'visible', textOverflow: 'clip' }}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><button onClick={e => { e.stopPropagation(); onToggleFav(p.id, isFav); }} className="bg-transparent border-none cursor-pointer p-0 outline-none rounded flex-shrink-0" style={{ pointerEvents: 'auto' }}><Star size={14} fill={isFav ? '#F59E0B' : 'none'} className={isFav ? 'text-amber-500' : 'text-slate-300 dark:text-[#878787]'} /></button></div></td>;
-      case 'project_key': return <td key={colKey}><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}><span className="font-mono text-[11px] font-bold tracking-wide text-white px-1.5 py-0.5 rounded" style={{ background: badgeColor }}>{p.project_key}</span></div></td>;
-      case 'project_name': return <td key={colKey}><span onClick={() => navigate(`/project-hub/${p.project_key}/dashboard`)} className="font-semibold text-[13px] truncate hover:text-blue-600 hover:underline cursor-pointer text-slate-900 dark:text-white" title={p.name} style={{ pointerEvents: 'auto' }}>{p.name}</span></td>;
+      case 'project_name': return <td key={colKey}><span onClick={() => { recordProjectView(p); navigate(`/project-hub/${p.project_key}/dashboard`); }} title={p.name} style={{ pointerEvents: 'auto', fontSize: 14, fontWeight: 500, color: token('color.link'), fontFamily: 'var(--cp-font-body)', cursor: 'pointer', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'inline-block', maxWidth: '100%' }} onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; }} onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; }}>{p.name}</span></td>;
+      case 'project_key': return <td key={colKey}><span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: token('color.text.subtle'), letterSpacing: '0.02em' }}>{p.project_key}</span></td>;
+      case 'type': return <td key={colKey}><span className="text-[13px] text-slate-600 dark:text-[#A1A1A1]">{formatProjectType((p as any).project_type)}</span></td>;
       case 'lead': return <td key={colKey}><LeadReassignPopover project={p} /></td>;
       case 'members': return <td key={colKey}><MemberManagePopover project={p} /></td>;
       case 'sync': return (
@@ -929,7 +1071,7 @@ export function AllProjectsTable({
             const checked = selectedRows.has(p.id);
             const active = isActiveStatus(p.status);
             return (
-              <tr key={p.id} className={cn('group', checked && 'pb-row-selected')} style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none' }}>
+              <tr key={p.id} className={cn('group', checked && 'pb-row-selected')} style={{ opacity: active ? 1 : 0.45, pointerEvents: active ? 'auto' : 'none', height: 56 }}>
                 {orderedColumns.map(c => renderProjectCell(c.key, p, idx))}
               </tr>
             );

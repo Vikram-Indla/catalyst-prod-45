@@ -93,6 +93,17 @@ export interface SidebarMenuItem {
    * navigation-by-path behaviour.
    */
   onClick?: () => void;
+  /**
+   * Optional handler for the row's star button. When provided, overrides
+   * the built-in path-based `toggleFavorite` (which writes to the
+   * SidebarBase favorites store / localStorage). Added April 2026 so
+   * HomeSidebar's "Pinned" rows — which represent rows in the
+   * `user_starred_items` Supabase table, NOT the path-based favorite
+   * system — can call `useToggleStar.mutate` to unpin themselves. Other
+   * consumers ignore this prop and keep their existing toggleFavorite
+   * behaviour.
+   */
+  onStarClick?: () => void;
 }
 
 export interface SidebarSection {
@@ -482,7 +493,13 @@ function renderMenuItem(
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleFavorite(item.path);
+            // Per-item override (HomeSidebar "Pinned") takes precedence
+            // over the built-in path-based favorites toggle.
+            if (item.onStarClick) {
+              item.onStarClick();
+            } else {
+              toggleFavorite(item.path);
+            }
           }}
           className={cn(
             "w-5 h-5 flex items-center justify-center rounded transition-opacity",

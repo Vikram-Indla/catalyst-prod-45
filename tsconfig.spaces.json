@@ -3,6 +3,17 @@
   "include": [
     "src/spaces/**/*",
     "src/components/projecthub/AllProjectsTable.tsx",
+    "src/components/projecthub/AllProjectsToolbar.tsx",
+    "src/components/projecthub/MemberStack.tsx",
+    "src/components/catalyst-detail-views/epic/CatalystViewEpic.tsx",
+    "src/components/catalyst-detail-views/feature/CatalystViewFeature.tsx",
+    "src/components/catalyst-detail-views/task/CatalystViewTask.tsx",
+    "src/modules/project-work-hub/components/dialogs/StoryDetailModal.tsx",
+    "src/components/layout/ProjectHubSidebar.tsx",
+    "src/components/layout/CatalystShell.tsx",
+    "src/hooks/useRecentProjectItems.ts",
+    "src/hooks/useProjectHub.ts",
+    "src/hooks/home/useStarredItems.ts",
     "src/pages/project-hub/AllProjectsPage.tsx"
   ]
 }

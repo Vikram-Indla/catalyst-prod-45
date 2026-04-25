@@ -1,10 +1,11 @@
 /**
  * CatalystViewTask — Task detail overlay.
  */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
+import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
@@ -20,6 +21,28 @@ export default function CatalystViewTask({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+
+  // Sidebar Recents tracking — top-level tasks only.
+  // Subtask exclusion (Apr 2026 owner directive): a task with a `parent_key`
+  // is a subtask and is intentionally NOT recorded in user_recent_items.
+  const trackRecent = useTrackRecentItem();
+  const recordedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isOpen || !issue?.id || !issue?.summary) return;
+    if (recordedRef.current === issue.id) return;
+    // Subtask guard — never record subtasks per CLAUDE.md §7A directive.
+    if ((issue as any).parent_key || (issue as any).parent_id) return;
+    recordedRef.current = issue.id;
+    trackRecent.mutate({
+      entityType: 'task',
+      entityId: issue.id,
+      entityKey: issue.issue_key ?? undefined,
+      displaySummary: issue.summary,
+      projectId: projectId ?? undefined,
+      projectName: issue.project_name ?? undefined,
+      navPath: `/project-hub/${issue.project_key ?? projectKey ?? ''}/issue/${issue.issue_key ?? issue.id}`,
+    });
+  }, [isOpen, issue?.id, issue?.summary, issue?.issue_key, issue?.project_key, issue?.project_name, projectId, projectKey, trackRecent]);
 
   const leftContent = (
     <>

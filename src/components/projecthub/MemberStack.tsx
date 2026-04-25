@@ -1,43 +1,19 @@
 import { useMemo } from 'react';
-import { CircleUser } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Tooltip } from '@/components/ads';
+import AvatarGroup from '@atlaskit/avatar-group';
 
 interface MemberStackProps {
   memberIds: string[] | null;
   memberCount: number;
   max?: number;
+  /** Optional click handler on the overflow "+N" chip — opens the manage popup. */
+  onMoreClick?: (event: React.MouseEvent | React.KeyboardEvent) => void;
+  /** Optional click handler on individual avatars. */
+  onAvatarClick?: (event: React.MouseEvent | React.KeyboardEvent, memberId: string) => void;
 }
 
-function getMemberGradient(name: string): [string, string] {
-  const c = (name || '?')[0].toUpperCase();
-  const map: Record<string, [string, string]> = {
-    A: ['#2563EB', '#1D4ED8'], B: ['#2563EB', '#1D4ED8'],
-    C: ['#7C3AED', '#6D28D9'], D: ['#7C3AED', '#6D28D9'],
-    E: ['#0D9488', '#0F766E'], F: ['#0D9488', '#0F766E'],
-    G: ['#D97706', '#B45309'], H: ['#D97706', '#B45309'],
-    I: ['#2563EB', '#1D4ED8'], J: ['#2563EB', '#1D4ED8'],
-    K: ['#1D4ED8', '#1E3A8A'], L: ['#1D4ED8', '#1E3A8A'],
-    M: ['#F59E0B', '#D97706'], N: ['#F59E0B', '#D97706'],
-    O: ['#DC2626', '#B91C1C'], P: ['#DC2626', '#B91C1C'],
-    Q: ['#16A34A', '#15803D'], R: ['#16A34A', '#15803D'],
-    S: ['#0284C7', '#0369A1'], T: ['#0284C7', '#0369A1'],
-    U: ['#0D9488', '#115E59'], V: ['#0D9488', '#115E59'],
-    W: ['#0284C7', '#075985'], X: ['#0284C7', '#075985'],
-    Y: ['#7C3AED', '#5B21B6'], Z: ['#7C3AED', '#5B21B6'],
-  };
-  return map[c] || ['#2563EB', '#1D4ED8'];
-}
-
-function getInitials(name: string): string {
-  if (!name || name.length < 2) return '?';
-  const parts = name.trim().split(/\s+/);
-  if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-  return parts[0].substring(0, 2).toUpperCase();
-}
-
-// Global profile cache
+// Global profile cache — kept for hot-path avatar lookups across rows.
 const profileCache = new Map<string, { full_name: string; avatar_url: string | null }>();
 
 export function useMemberProfiles(allMemberIds: string[]) {
@@ -74,60 +50,43 @@ export function useMemberProfiles(allMemberIds: string[]) {
   });
 }
 
-export function MemberStack({ memberIds, memberCount, max = 3 }: MemberStackProps) {
+export function MemberStack({
+  memberIds,
+  memberCount,
+  max = 4,
+  onMoreClick,
+  onAvatarClick,
+}: MemberStackProps) {
   const ids = memberIds ?? [];
-  const shown = ids.slice(0, max);
-  const overflow = memberCount - shown.length;
 
   if (memberCount === 0) {
-    return <span className="text-[10px] text-slate-400 dark:text-[#555]">—</span>;
+    return <span style={{ fontSize: 13, color: 'var(--ds-text-subtlest, #758195)' }}>—</span>;
   }
 
+  // Map member IDs into Atlaskit AvatarGroup data shape.
+  // Atlaskit handles the overlap, ring, overflow chip, and tooltips natively.
+  const data = ids.map((id) => {
+    const profile = profileCache.get(id);
+    return {
+      key: id,
+      name: profile?.full_name || 'Unknown',
+      src: profile?.avatar_url || undefined,
+      // appearance / presence / status omitted — Atlaskit defaults are correct.
+    };
+  });
+
   return (
-    <div className="flex items-center">
-      {shown.map((id, i) => {
-        const profile = profileCache.get(id);
-        const name = profile?.full_name || '';
-        const avatarUrl = profile?.avatar_url;
-        const initials = name ? getInitials(name) : '?';
-        const [from, to] = getMemberGradient(name || id);
-        return (
-          <Tooltip key={id} content={name || 'Unknown'} position="top" delay={200}>
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={name || 'Unknown'}
-                className="h-[26px] w-[26px] shrink-0 rounded-full border-[1.5px] border-background object-cover"
-                style={{ marginLeft: i > 0 ? -8 : 0, zIndex: max - i }}
-              />
-            ) : (
-              <div
-                className="flex h-[26px] w-[26px] shrink-0 cursor-default items-center justify-center rounded-full border-[1.5px] border-background"
-                style={{
-                  background: `linear-gradient(135deg, ${from}, ${to})`,
-                  marginLeft: i > 0 ? -8 : 0,
-                  zIndex: max - i,
-                }}
-              >
-                <CircleUser size={18} color="#FFFFFF" strokeWidth={1.5} />
-              </div>
-            )}
-          </Tooltip>
-        );
-      })}
-      {overflow > 0 && (
-        <div
-          className="flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-background text-[9px] font-semibold"
-          style={{
-            background: '#2E2E2E',
-            color: '#A1A1A1',
-            marginLeft: -8,
-            zIndex: 0,
-          }}
-        >
-          +{overflow}
-        </div>
-      )}
-    </div>
+    <AvatarGroup
+      appearance="stack"
+      size="medium"
+      maxCount={max}
+      data={data}
+      onAvatarClick={
+        onAvatarClick
+          ? (event, _avatar, index) => onAvatarClick(event, ids[index] ?? '')
+          : undefined
+      }
+      onMoreClick={onMoreClick}
+    />
   );
 }
