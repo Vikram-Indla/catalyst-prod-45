@@ -274,8 +274,12 @@ export default function StoryDetailModal({
         jira_updated_at: cat.updated_at,
         parent_key: parentKey,
         acceptance_criteria: acExt,
-        labels: cat.tags ?? null,
-        fix_versions: null,
+        // Catalyst stores user-facing labels in `labels` (text[]); legacy
+        // `tags` is preserved for back-compat but UI reads from labels.
+        labels: ((cat as any).labels && (cat as any).labels.length > 0)
+          ? (cat as any).labels
+          : ((cat as any).tags ?? null),
+        fix_versions: (cat as any).fix_versions ?? null,
         // Marker so downstream code can detect source without re-querying.
         __catalyst_source: true,
       } as unknown as PhIssue;
