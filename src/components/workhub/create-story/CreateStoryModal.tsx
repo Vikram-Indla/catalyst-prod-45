@@ -1220,12 +1220,20 @@ export function CreateStoryModal({
                         </Box>
                       }
                     >
-                      {/* Identical pattern to StoryDetailModal — no appearance override */}
+                      {/* Identical pattern to StoryDetailModal — chromeless in Create modal */}
                       <EpicDescriptionEditor
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Add a description..."
+                        appearance="chromeless"
                         onSave={(adfJson: string) => {
+                          try {
+                            const parsed = JSON.parse(adfJson);
+                            updateField('descriptionAdf', parsed);
+                            updateField('description', JSON.stringify(parsed));
+                          } catch { /* noop */ }
+                        }}
+                        onChange={(adfJson: string) => {
                           try {
                             const parsed = JSON.parse(adfJson);
                             updateField('descriptionAdf', parsed);
