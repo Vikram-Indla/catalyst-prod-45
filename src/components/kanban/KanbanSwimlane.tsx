@@ -32,7 +32,7 @@ function StatusLozenge({ status, category, tk }: { status: string; category: str
       background: bg, color: fg,
       fontSize: 11, fontWeight: 700, letterSpacing: '0.03em',
       textTransform: 'uppercase', whiteSpace: 'nowrap',
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--ds-font-family-body)',
     }}>
       {status}
     </span>
@@ -115,7 +115,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
           border: 'none',
           borderBottom: `1px solid ${tk.border}`,
           cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
           minHeight: 44,
         }}
         onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
@@ -124,7 +124,7 @@ export function SwimlaneRow({ group, mode, issuesById, avatarsByName, onCardClic
         {open ? <ChevronDown size={16} color={tk.textMuted} /> : <ChevronRight size={16} color={tk.textMuted} />}
         {icon()}
         {mode === 'epic' && group.groupKey !== 'NO_EPIC' && (
-          <span style={{ fontSize: 13, fontWeight: 600, color: tk.textSecondary, fontFamily: "'JetBrains Mono', monospace" }}>{group.groupKey}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, color: tk.textSecondary, fontFamily: 'var(--ds-font-family-monospaced)' }}>{group.groupKey}</span>
         )}
         <span style={{ fontSize: 14, fontWeight: 500, color: tk.textPrimary }}>{group.groupLabel}</span>
         <span style={{ fontSize: 12, color: tk.textMuted, marginLeft: -2 }}>({group.issueIds.length})</span>

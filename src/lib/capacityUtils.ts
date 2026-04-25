@@ -100,7 +100,7 @@ export function getInitials(name: string): string {
 export const MOCK_PROJECTS: CapacityProject[] = [
   { id: 'ai-data', name: 'AI & Data', shortName: 'AI & Data', color: GOLDEN_HOUR.expert, status: 'Active' },
   { id: 'innovation', name: 'Innovation Platform', shortName: 'Innovation', color: GOLDEN_HOUR.advanced, status: 'Active' },
-  { id: 'intl', name: 'International Relations', shortName: 'International', color: GOLDEN_HOUR.intermediate, status: 'Active' },
+  { id: 'intl', name: 'var(--ds-font-family-body)', shortName: 'var(--ds-font-family-body)', color: GOLDEN_HOUR.intermediate, status: 'Active' },
   { id: 'mim', name: 'MIM Website', shortName: 'MIM', color: GOLDEN_HOUR.beginner, status: 'Active' },
   { id: 'senaei-core', name: 'Senaei BAU Core', shortName: 'Senaei Core', color: GOLDEN_HOUR.expert, status: 'Active' },
   { id: 'senaei-ss', name: 'Senaei BAU-SS', shortName: 'Senaei SS', color: GOLDEN_HOUR.advanced, status: 'Active' },
@@ -520,7 +520,7 @@ export const MOCK_VACANCIES: Vacancy[] = [
     id: 'vacancy-2',
     projectId: 'proj-2',
     skill: 'QA Tester',
-    proficiencyLevel: 'Intermediate',
+    proficiencyLevel: 'var(--ds-font-family-body)',
     percentageNeeded: 50,
     location: 'Any',
     startWeek: 51,

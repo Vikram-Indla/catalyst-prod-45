@@ -35,7 +35,7 @@ export default function WorkflowAdminPage() {
             <GitBranch size={18} className="text-[#EDEDED]" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-[#EDEDED] dark:text-[#EDEDED] font-['Sora']">
+            <h1 className="text-lg font-semibold text-[#EDEDED] dark:text-[#EDEDED] font-heading">
               Workflows
             </h1>
             <p className="text-xs text-[#878787] dark:text-[#878787]">

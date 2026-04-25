@@ -89,7 +89,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
           `global-pages.home.common.ui.item-list.list`. */}
       <span
         style={{
-          font: `500 14px/20px "Inter", system-ui, sans-serif`,
+          font: `500 14px/20px var(--ds-font-family-body)`,
           letterSpacing: 'normal',
           color: text.subtlest,
           textTransform: 'none',
@@ -101,7 +101,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
           distinguish it from the label, no weight jump needed. */}
       <span
         style={{
-          font: `400 12px/16px "Inter", system-ui, sans-serif`,
+          font: `400 12px/16px var(--ds-font-family-body)`,
           color: text.subtle,
           backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
           paddingInline: 6,

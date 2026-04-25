@@ -79,11 +79,11 @@ const ADS = {
    don't pull in @atlaskit/primitives Text here because the grouped table
    is hand-rolled; the font shorthand encodes the same metrics. */
 const ADS_FONT = {
-  body:      `400 14px/20px "Inter", system-ui, sans-serif`,
-  bodyBold:  `600 14px/20px "Inter", system-ui, sans-serif`,
-  bodySmall: `400 12px/16px "Inter", system-ui, sans-serif`,
-  label:     `600 11px/16px "Inter", system-ui, sans-serif`, // uppercase section label
-  mono:      `700 13px/20px "JetBrains Mono", monospace`,
+  body:      `400 14px/20px var(--ds-font-family-body)`,
+  bodyBold:  `600 14px/20px var(--ds-font-family-body)`,
+  bodySmall: `400 12px/16px var(--ds-font-family-body)`,
+  label:     `600 11px/16px var(--ds-font-family-body)`, // uppercase section label
+  mono:      `700 13px/20px var(--ds-font-family-monospaced)`,
 };
 
 /* ═══════════════════════════════════════
@@ -182,7 +182,7 @@ function StatusLozenge({ status }: { status: StatusType }) {
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
       background: bg, color: fg, whiteSpace: 'nowrap',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--ds-font-family-body)',
     }}>
       {status}
     </span>
@@ -271,7 +271,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
             background: ADS.surfaceSunken,
             borderBottom: `1px solid ${ADS.border}`,
             borderLeft: `3px solid ${accentColor}`,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         >
           {isOpen
@@ -421,7 +421,7 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
           borderRadius: 20, padding: '3px 10px',
           fontSize: 11, fontWeight: 700,
           background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color,
-          cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+          cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
           letterSpacing: '0.04em',
         }}
       >
@@ -631,7 +631,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
   }, [filtered]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Toolbar — /design-critique callout ①: 20px paddingInline lifts the
           visual crunch; the subtle neutral border comes from the ADS token. */}
       <div style={{
@@ -902,7 +902,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
       <span style={{
         fontSize: 16, fontWeight: 700, color: numericColor,
         fontVariantNumeric: 'tabular-nums',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
       }}>
         {value}
       </span>
@@ -919,7 +919,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
 
 const thStyle: React.CSSProperties = {
   padding: '10px 12px',
-  font: `600 11px/16px "Inter", system-ui, sans-serif`,
+  font: `600 11px/16px var(--ds-font-family-body)`,
   textTransform: 'uppercase',
   letterSpacing: '0.05em',
   color: ADS.textSubtle,

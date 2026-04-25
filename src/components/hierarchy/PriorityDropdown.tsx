@@ -62,7 +62,7 @@ export function PriorityDropdown({ currentPriority, onSelect, onClose }: Priorit
             style={{
               height: 50, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
               cursor: 'pointer', background: isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : undefined,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F8FAFC')}
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : '')}

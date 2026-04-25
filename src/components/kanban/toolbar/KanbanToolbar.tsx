@@ -67,7 +67,7 @@ function BoardMenuItem({
       style={{
         padding: '10px 16px', background: 'transparent', border: 'none',
         cursor: 'pointer', fontSize: 14, color: '#172B4D', fontWeight: 450,
-        textAlign: 'left', fontFamily: "'Inter', sans-serif",
+        textAlign: 'left', fontFamily: 'var(--ds-font-family-body)',
         transition: 'background 80ms ease',
       }}
       onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
@@ -204,7 +204,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
             border: `1px solid ${tk.border}`, borderRadius: 3,
             fontSize: 14, fontWeight: 500,
             color: tk.textPrimary, background: tk.surfaceBg,
-            outline: 'none', fontFamily: "'Inter', sans-serif",
+            outline: 'none', fontFamily: 'var(--ds-font-family-body)',
             transition: 'border-color 150ms ease',
           }}
           onFocus={e => e.currentTarget.style.borderColor = tk.selectedAccent}
@@ -256,7 +256,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
           style={{
             fontSize: 12, color: tk.selectedAccent, background: 'none',
             border: 'none', cursor: 'pointer', fontWeight: 500,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         >
           Clear ({activeFilterCount})
@@ -265,7 +265,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
 
       <div className="flex-1" />
 
-      <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>
+      <span style={{ fontSize: 12, color: tk.textMuted, fontFamily: 'var(--ds-font-family-monospaced)' }}>
         {totalIssues} issues
       </span>
 
@@ -294,7 +294,7 @@ export function KanbanToolbar<TGroupBy extends string = string>({
               border: `1px solid ${tk.border}`, borderRadius: 10,
               boxShadow: '0 8px 24px rgba(0,0,0,0.18), 0 0 1px rgba(0,0,0,0.12)',
               zIndex: 50,
-              padding: '6px 0', fontFamily: "'Inter', sans-serif",
+              padding: '6px 0', fontFamily: 'var(--ds-font-family-body)',
             }}
             onClick={e => e.stopPropagation()}
           >

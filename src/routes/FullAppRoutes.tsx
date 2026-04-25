@@ -662,8 +662,8 @@ export default function FullAppRoutes() {
         <Route path="/capacity" element={<S><CapacityPlanningPage /></S>} />
         <Route path="/risks" element={<S><RisksGridPage /></S>} />
         <Route path="/risk-roam-report" element={<S><RiskRoamReportPage /></S>} />
-        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
-        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/release-train-calendar" element={<div className="p-8"><div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>Release Calendar</div><p className="text-muted-foreground">Coming soon</p></div>} />
+        <Route path="/program-backlog" element={<div className="p-8"><div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px' }}>Program Backlog</div><p className="text-muted-foreground">Coming soon</p></div>} />
 
         <Route path="/projects" element={<S><ProjectDirectory /></S>} />
         <Route path="/projects/:projectKey" element={<Navigate to={`/projects`} replace />} />

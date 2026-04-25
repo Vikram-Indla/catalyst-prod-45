@@ -57,7 +57,7 @@ function WikiAdminContent() {
         {/* Title row */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
           <h1 style={{
-            fontFamily: 'Sora, sans-serif', fontSize: 22, fontWeight: 700,
+            fontFamily: 'var(--ds-font-family-heading)', fontSize: 22, fontWeight: 700,
             color: 'var(--cp-text-primary, #0F172A)', margin: 0,
           }}>
             Wiki Admin Dashboard
@@ -69,7 +69,7 @@ function WikiAdminContent() {
               padding: '7px 16px', borderRadius: 4,
               background: 'var(--cp-primary-60, #2563EB)', color: '#fff',
               border: 'none', cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 600,
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 600,
             }}
           >
             <Upload style={{ width: 14, height: 14 }} />
@@ -103,7 +103,7 @@ function WikiAdminContent() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 6,
                   padding: '8px 16px 10px',
-                  fontSize: 13, fontFamily: 'Inter, sans-serif',
+                  fontSize: 13, fontFamily: 'var(--ds-font-family-body)',
                   fontWeight: isActive ? 600 : 450,
                   color: isActive ? 'var(--cp-primary-60, #2563EB)' : 'var(--cp-text-tertiary, #64748B)',
                   background: 'transparent', border: 'none',

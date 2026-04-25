@@ -19,7 +19,7 @@ export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyD
 
   if (!priorityTest) {
     return (
-      <div className="flex-1 p-5 bg-card border border-border rounded-lg font-['Inter']">
+      <div className="flex-1 p-5 bg-card border border-border rounded-lg font-body">
         <div className="flex items-center gap-2 mb-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
             <Sparkles className="w-4 h-4 text-white" />
@@ -36,7 +36,7 @@ export function AIStartMyDay({ recommendation, onStartTest, onSkip }: AIStartMyD
   const scoreColor = getScoreColor(priorityTest.priorityScore);
 
   return (
-    <div className="flex-1 p-5 bg-card border border-border rounded-lg font-['Inter']">
+    <div className="flex-1 p-5 bg-card border border-border rounded-lg font-body">
       <div className="flex items-center gap-2 mb-3.5">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
           <Sparkles className="w-4 h-4 text-white" />

@@ -76,7 +76,7 @@ export function ReleaseCard({ release, onClick }: ReleaseCardProps) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{
-            fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
+            fontFamily: 'var(--ds-font-family-heading)',
             fontSize: 18, fontWeight: 700,
             color: 'var(--fg-1)',
           }}>

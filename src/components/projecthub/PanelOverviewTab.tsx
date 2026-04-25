@@ -41,7 +41,7 @@ export function PanelOverviewTab({ project, members }: Props) {
           {details.map(d => (
             <div key={d.label} className="flex items-center justify-between" style={{ padding: '6px 0', borderBottom: '1px solid var(--cp-bd-zone)' }}>
               <span style={{ fontSize: 12, color: 'var(--fg-3)' }}>{d.label}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', fontFamily: d.label === 'Key' || d.label === 'Progress' ? "'JetBrains Mono', monospace" : 'inherit' }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-1)', fontFamily: d.label === 'Key' || d.label === 'Progress' ? 'var(--ds-font-family-monospaced)' : 'inherit' }}>
                 {d.value}
               </span>
             </div>
@@ -60,7 +60,7 @@ export function PanelOverviewTab({ project, members }: Props) {
                 <div className="flex-1 rounded-full overflow-hidden" style={{ height: 8, background: 'var(--cp-bd-zone)' }}>
                   <div className="rounded-full" style={{ width: `${r.pct}%`, height: '100%', background: 'var(--cp-blue)', minWidth: r.pct > 0 ? 4 : 0 }} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', fontFamily: "'JetBrains Mono', monospace", minWidth: 20, textAlign: 'right' }}>
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-monospaced)', minWidth: 20, textAlign: 'right' }}>
                   {r.count}
                 </span>
               </div>

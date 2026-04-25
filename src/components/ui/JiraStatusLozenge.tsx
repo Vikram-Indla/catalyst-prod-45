@@ -62,7 +62,7 @@ export function JiraStatusLozenge({ status, interactive = false, onStatusChange 
         color: config.text,
         fontSize: '11px',
         fontWeight: 700,
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         textTransform: 'uppercase',
         letterSpacing: '0.03em',
         whiteSpace: 'nowrap',

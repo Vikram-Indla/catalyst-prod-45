@@ -77,7 +77,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
       >
         <h2
           style={{
-            font: `600 16px/20px "Inter", system-ui, sans-serif`,
+            font: `600 16px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#292A2E'),
             margin: 0,
           }}
@@ -91,7 +91,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#292A2E'),
             padding: 4,
             textDecoration: 'underline',
@@ -175,7 +175,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
           style={{
             // Jira parity: flat weight 400. Primary color provides the
             // hierarchy against the 400-subtle subtitle beneath.
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -192,7 +192,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
             "Recommended projects" and the "View all projects" link. */}
         <div
           style={{
-            font: `400 12px/16px "Inter", system-ui, sans-serif`,
+            font: `400 12px/16px var(--ds-font-family-body)`,
             color: token('color.text.subtlest', '#626F86'),
             marginTop: 2,
             overflow: 'hidden',

@@ -50,7 +50,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
               borderRadius: '4px',
               fontSize: '11px',
               fontWeight: 500,
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--ds-font-family-monospaced)',
               backgroundColor: 'rgba(59,130,246,0.1)',
               color: 'var(--cp-blue)',
             }}
@@ -107,7 +107,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
             style={{
               fontSize: '11px',
               color: '#71717a',
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--ds-font-family-monospaced)',
               fontVariantNumeric: 'tabular-nums',
             }}
           >

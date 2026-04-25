@@ -55,7 +55,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
       style={{ borderTop: '1px solid var(--bd-subtle, #292929)', backgroundColor: 'var(--bg-app)' }}
     >
       {/* Left: count */}
-      <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
+      <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
         Showing <b style={{ color: 'var(--fg-1)' }}>{start}–{end}</b> of <b style={{ color: 'var(--fg-1)' }}>{totalCount.toLocaleString()}</b>
       </span>
 
@@ -109,7 +109,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
         <button
           onClick={() => setSizeOpen(!sizeOpen)}
           className="inline-flex items-center gap-1 px-2.5 h-8 text-[12px] rounded border hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-          style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-monospaced)' }}
           aria-haspopup="listbox"
           aria-expanded={sizeOpen}
         >
@@ -127,7 +127,7 @@ export function AllWorkPagination({ currentPage, totalPages, totalCount, pageSiz
                 key={s}
                 onClick={() => { onPageSizeChange(s); setSizeOpen(false); }}
                 className="w-full flex items-center justify-between px-3 py-1.5 text-[12px] hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms]"
-                style={{ color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-monospaced)' }}
                 role="option"
                 aria-selected={s === pageSize}
               >

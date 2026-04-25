@@ -427,10 +427,10 @@ export default function TestHubDocsPage() {
         justifyContent: 'space-between',
       }}>
         <div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h1 style={{ fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'var(--ds-font-family-body)' }}>
             📘 TestHub Functional Flow Guide
           </h1>
-          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '4px 0 0', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '4px 0 0', fontFamily: 'var(--ds-font-family-body)' }}>
             Complete dependency map, step-by-step testing flow, database schema, and business rules
           </p>
         </div>
@@ -448,7 +448,7 @@ export default function TestHubDocsPage() {
             fontSize: 14,
             fontWeight: 600,
             cursor: 'pointer',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         >
           <Download size={16} />
@@ -466,7 +466,7 @@ export default function TestHubDocsPage() {
           padding: 24,
           marginBottom: 24,
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', fontFamily: 'Inter, sans-serif' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 16px', fontFamily: 'var(--ds-font-family-body)' }}>
             Dependency Flow (Follow This Order)
           </h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
@@ -488,7 +488,7 @@ export default function TestHubDocsPage() {
                   borderRadius: 8,
                   fontSize: 13,
                   fontWeight: 600,
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--ds-font-family-body)',
                   whiteSpace: 'nowrap',
                 }}>
                   {item.label}
@@ -542,10 +542,10 @@ export default function TestHubDocsPage() {
                     <Icon size={18} style={{ color: section.color }} />
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontSize: 15, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--ds-font-family-body)' }}>
                       {section.title}
                     </div>
-                    <div style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                    <div style={{ fontSize: 13, color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--ds-font-family-body)', marginTop: 2 }}>
                       {section.summary}
                     </div>
                   </div>
@@ -556,7 +556,7 @@ export default function TestHubDocsPage() {
                     padding: '0 20px 20px',
                     fontSize: 14,
                     color: isDark ? '#A1A1A1' : '#334155',
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'var(--ds-font-family-body)',
                     lineHeight: 1.7,
                   }}>
                     <div style={{
@@ -564,7 +564,7 @@ export default function TestHubDocsPage() {
                       borderRadius: 8,
                       padding: 16,
                       whiteSpace: 'pre-wrap',
-                      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                      fontFamily: 'var(--ds-font-family-monospaced)',
                       fontSize: 12,
                       lineHeight: 1.6,
                       overflowX: 'auto',
@@ -591,10 +591,10 @@ export default function TestHubDocsPage() {
           justifyContent: 'space-between',
         }}>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--ds-font-family-body)' }}>
               Download the full guide as Markdown
             </div>
-            <div style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif', marginTop: 4 }}>
+            <div style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'var(--ds-font-family-body)', marginTop: 4 }}>
               Open in any Markdown editor (VS Code, Obsidian, Notion) for the best reading experience
             </div>
           </div>
@@ -612,7 +612,7 @@ export default function TestHubDocsPage() {
               fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
             }}
           >
             <Download size={16} />

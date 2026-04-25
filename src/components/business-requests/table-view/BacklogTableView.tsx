@@ -368,7 +368,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         return <TypeCell type="Business Request" />;
       case 'rank':
         return (
-          <span style={{ fontFamily: "'JetBrains Mono', 'SF Mono', monospace", fontSize: 12, fontWeight: 500, color: 'var(--fg-1)' }}> {/* V12 */}
+          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 500, color: 'var(--fg-1)' }}> {/* V12 */}
             {row.rank ?? '—'}
           </span>
         );
@@ -455,7 +455,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
           }}
         >
           <div className="flex items-center gap-3">
-            <span style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, fontWeight: 500, color: 'var(--fg-3)' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)' }}>
               <strong style={{ fontWeight: 650, color: 'var(--fg-1)' }}>{totalItems}</strong> {totalItems === 1 ? 'request' : 'requests'}
               {totalItems > pageSize && (
                 <span className="ml-1">
@@ -513,7 +513,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                         key={column.key}
                         style={{
                           padding: isCheckbox ? '10px 4px' : '10px 12px', /* V12 */
-                          fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
+                          fontFamily: 'var(--ds-font-family-body)', /* V12 */
                           fontSize: 11, /* V12 */
                           fontWeight: 650, /* V12 */
                           textTransform: 'uppercase' as const, /* V12 */
@@ -642,7 +642,7 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
                                     key={column.key}
                                     style={{
                                       padding: column.key === 'checkbox' ? '8px 4px' : '8px 12px', /* V12 */
-                                      fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
+                                      fontFamily: 'var(--ds-font-family-body)', /* V12 */
                                       fontSize: 13, /* V12 */
                                       fontWeight: 400, /* V12 */
                                       color: 'var(--fg-1)', /* V12 */

@@ -46,22 +46,22 @@ type BscStyle = { label: string; bg: string; text: string; border: string };
 export const BSC_CONFIG: Record<string, BscStyle> = {
   'Financial':        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
   'Customer':         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
-  'Internal Process': { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
+  'Internal Process': { label: 'var(--ds-font-family-body)', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
   'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
   financial:        { label: 'Financial',        bg: 'rgba(254,243,199,0.3)', text: '#92400E', border: '#FDE68A' },
   customer:         { label: 'Customer',         bg: 'rgba(219,234,254,0.3)', text: '#1E40AF', border: '#BFDBFE' },
-  internal_process: { label: 'Internal Process', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
+  internal_process: { label: 'var(--ds-font-family-body)', bg: 'rgba(204,251,241,0.3)', text: '#115E59', border: '#99F6E4' },
   learning_growth:  { label: 'Learning & Growth',bg: 'rgba(237,233,254,0.3)', text: '#5B21B6', border: '#DDD6FE' },
 };
 
 export const BSC_CONFIG_DARK: Record<string, BscStyle> = {
   'Financial':        { label: 'Financial',        bg: 'rgba(251,191,36,0.12)',  text: '#FBBF24', border: 'rgba(251,191,36,0.25)' },
   'Customer':         { label: 'Customer',         bg: 'rgba(96,165,250,0.12)',  text: '#93C5FD', border: 'rgba(96,165,250,0.25)' },
-  'Internal Process': { label: 'Internal Process', bg: 'rgba(45,212,191,0.12)',  text: '#5EEAD4', border: 'rgba(45,212,191,0.25)' },
+  'Internal Process': { label: 'var(--ds-font-family-body)', bg: 'rgba(45,212,191,0.12)',  text: '#5EEAD4', border: 'rgba(45,212,191,0.25)' },
   'Learning & Growth':{ label: 'Learning & Growth',bg: 'rgba(167,139,250,0.12)', text: '#C4B5FD', border: 'rgba(167,139,250,0.25)' },
   financial:        { label: 'Financial',        bg: 'rgba(251,191,36,0.12)',  text: '#FBBF24', border: 'rgba(251,191,36,0.25)' },
   customer:         { label: 'Customer',         bg: 'rgba(96,165,250,0.12)',  text: '#93C5FD', border: 'rgba(96,165,250,0.25)' },
-  internal_process: { label: 'Internal Process', bg: 'rgba(45,212,191,0.12)',  text: '#5EEAD4', border: 'rgba(45,212,191,0.25)' },
+  internal_process: { label: 'var(--ds-font-family-body)', bg: 'rgba(45,212,191,0.12)',  text: '#5EEAD4', border: 'rgba(45,212,191,0.25)' },
   learning_growth:  { label: 'Learning & Growth',bg: 'rgba(167,139,250,0.12)', text: '#C4B5FD', border: 'rgba(167,139,250,0.25)' },
 };
 
@@ -74,7 +74,7 @@ export function getBscConfig(key: string, isDark: boolean): BscStyle | null {
 export const BSC_FILTER_OPTIONS = [
   { key: 'Financial', label: 'Financial' },
   { key: 'Customer', label: 'Customer' },
-  { key: 'Internal Process', label: 'Internal Process' },
+  { key: 'var(--ds-font-family-body)', label: 'var(--ds-font-family-body)' },
   { key: 'Learning & Growth', label: 'Learning & Growth' },
 ];
 

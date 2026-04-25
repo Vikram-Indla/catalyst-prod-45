@@ -178,7 +178,7 @@ export function AllWorkTable({
                 color: 'var(--fg-3)',
                 cursor: col.sortable ? 'pointer' : 'default',
                 padding: '0 8px',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               {col.label}
@@ -290,7 +290,7 @@ const TableRow = memo(function TableRow({
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
         <span
           className="text-[13px] truncate"
-          style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 650, color: 'var(--cp-blue)' }}
+          style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontWeight: 650, color: 'var(--cp-blue)' }}
         >
           {item.issue_key}
         </span>
@@ -298,7 +298,7 @@ const TableRow = memo(function TableRow({
 
       {/* Summary */}
       <div className="flex items-center gap-1 px-2 min-w-0">
-        <span className="text-[14px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 400, fontFamily: 'Inter, sans-serif' }}>
+        <span className="text-[14px] truncate" style={{ color: 'var(--fg-1)', fontWeight: 400, fontFamily: 'var(--ds-font-family-body)' }}>
           {item.summary}
         </span>
         <div className="opacity-0 group-hover:opacity-100 flex items-center gap-0.5 shrink-0 ml-auto transition-opacity duration-[80ms]">
@@ -323,7 +323,7 @@ const TableRow = memo(function TableRow({
       </div>
 
       {/* Project */}
-      <div className="px-2 truncate text-[13px]" style={{ color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
+      <div className="px-2 truncate text-[13px]" style={{ color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
         {item.project_key || '—'}
       </div>
 
@@ -343,7 +343,7 @@ const TableRow = memo(function TableRow({
       </div>
 
       {/* Updated */}
-      <div className="px-2 text-[12px] truncate" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>
+      <div className="px-2 text-[12px] truncate" style={{ color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
         {formatRelative(item.jira_updated_at)}
       </div>
 
@@ -358,7 +358,7 @@ const TableRow = memo(function TableRow({
             >
               {item.assignee_display_name.charAt(0).toUpperCase()}
             </div>
-            <span className="text-[13px] truncate" style={{ color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
+            <span className="text-[13px] truncate" style={{ color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
               {item.assignee_display_name}
             </span>
           </>

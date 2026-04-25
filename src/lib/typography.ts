@@ -38,7 +38,7 @@
  */
 import { token } from '@atlaskit/tokens';
 
-const FONT_STACK = '"Inter", system-ui, -apple-system, "Segoe UI", sans-serif';
+const FONT_STACK = 'var(--ds-font-family-body)';
 
 export const type = {
   /** Display heading — page titles ("For you", hub names). 20/24/500. */

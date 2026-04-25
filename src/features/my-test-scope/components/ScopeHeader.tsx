@@ -19,24 +19,24 @@ export function ScopeHeader({ userName, summary, onExport, onExecuteAll }: Scope
   return (
     <div className="h-16 px-6 bg-card border-b border-border flex items-center justify-between shrink-0">
       <div>
-        <h1 className="font-['Sora'] text-lg font-bold text-foreground tracking-tight m-0 leading-tight">
+        <h1 className="font-heading text-lg font-bold text-foreground tracking-tight m-0 leading-tight">
           My Test Scope
         </h1>
-        <p className="font-['Inter'] text-[13px] text-muted-foreground mt-0.5 leading-tight">
+        <p className="font-body text-[13px] text-muted-foreground mt-0.5 leading-tight">
           {summary.totalTests} tests &bull; {summary.linkedDefectsCount} defects &bull; {summary.activeIncidentsCount} incidents
         </p>
       </div>
       <div className="flex items-center gap-2">
         <button
           onClick={onExport}
-          className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-foreground bg-card border border-border rounded-md cursor-pointer font-['Inter'] hover:bg-muted transition-colors"
+          className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-foreground bg-card border border-border rounded-md cursor-pointer font-body hover:bg-muted transition-colors"
         >
           <Download size={13} /> Export
         </button>
         <button
           onClick={onExecuteAll}
           disabled={summary.notRunTests === 0}
-          className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-primary-foreground bg-primary border border-primary rounded-md cursor-pointer font-['Inter'] disabled:opacity-50 hover:opacity-90 transition-opacity"
+          className="inline-flex items-center gap-1 h-8 px-3 text-[13px] font-medium text-primary-foreground bg-primary border border-primary rounded-md cursor-pointer font-body disabled:opacity-50 hover:opacity-90 transition-opacity"
         >
           <Play size={13} /> Execute All
         </button>

@@ -254,7 +254,7 @@ export default function ResourceListingPage() {
   };
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: t.pageBg }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: t.pageBg }}>
       {/* ═══ Canonical Header ═══ */}
       <CatalystPageHeader
         title="Resources"

@@ -82,7 +82,7 @@
   --ws-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
   
   /* Typography */
-  --ws-font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --ws-font-family: var(--ds-font-family-body);
   --ws-text-xs: 0.6875rem;   /* 11px */
   --ws-text-sm: 0.75rem;     /* 12px */
   --ws-text-base: 0.8125rem; /* 13px */

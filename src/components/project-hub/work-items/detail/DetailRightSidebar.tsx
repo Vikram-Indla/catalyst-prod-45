@@ -197,7 +197,7 @@ export function DetailRightSidebar({ item, statuses, onUpdate, onInvalidate }: S
 
         <SidebarField label="Due Date">
           <div className="flex items-center gap-1">
-            <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? 'var(--sem-danger)' : 'var(--fg-2)' }}>
+            <span className="text-[13px]" style={{ fontFamily: 'var(--ds-font-family-monospaced)', color: item.due_date && new Date(item.due_date) < new Date() ? 'var(--sem-danger)' : 'var(--fg-2)' }}>
               {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
             </span>
             {item.due_date && new Date(item.due_date) < new Date() && (

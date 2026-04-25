@@ -42,9 +42,9 @@ export function WikiAdminHealthTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {Object.entries(grouped).map(([cat, items]) => (
         <div key={cat}>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>{cat}</div>
+          <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 13, fontWeight: 600, color: 'var(--cp-text-primary, #0F172A)', marginBottom: 6 }}>{cat}</div>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'hidden' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Metric', 'Value', 'Threshold', 'Status'].map(h => (
@@ -59,8 +59,8 @@ export function WikiAdminHealthTab() {
                     onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <td style={{ padding: '8px 12px' }}>{c.metric ?? '—'}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{c.value ?? '—'}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{c.threshold ?? '—'}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11 }}>{c.value ?? '—'}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11 }}>{c.threshold ?? '—'}</td>
                     <td style={{ padding: '8px 12px' }}><HealthLoz status={c.status} /></td>
                   </tr>
                 ))}

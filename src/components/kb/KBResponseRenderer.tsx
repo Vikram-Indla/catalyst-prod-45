@@ -15,8 +15,8 @@ interface KBResponseRendererProps {
 const ISSUE_HEADERS = ['issues & risks', 'issues', 'risks', 'blockers'];
 
 const F = {
-  inter: "'Inter', -apple-system, sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  inter: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 /* ── V12 Status Lozenge Detection ── */

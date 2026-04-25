@@ -38,7 +38,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
 
   return (
     <div>
-      <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
+      <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'var(--ds-font-family-body)' }}>
         {label} {required && <span style={{ color: 'var(--sem-danger)' }}>*</span>}
       </label>
       <div className="relative" ref={ref}>
@@ -49,7 +49,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
           style={{
             borderColor: open ? 'var(--cp-blue)' : 'var(--bd-default, #2E2E2E)',
             color: value ? 'var(--fg-1)' : 'var(--fg-3)',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
           }}
           aria-haspopup="listbox"
           aria-expanded={open}
@@ -77,7 +77,7 @@ function CustomSelect({ label, required, value, options, onChange, placeholder, 
                   type="button"
                   onClick={() => { onChange(opt); setOpen(false); }}
                   className="w-full flex items-center justify-between px-3 py-1.5 text-[13px] hover:bg-[var(--hover, #1F1F1F)] text-left transition-colors duration-[80ms]"
-                  style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+                  style={{ color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}
                   role="option"
                   aria-selected={opt === value}
                 >
@@ -149,7 +149,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
-          <h2 className="text-[16px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>Create Work Item</h2>
+          <h2 className="text-[16px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>Create Work Item</h2>
           <button onClick={onClose} className="p-1 rounded hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]" aria-label="Close modal">
             <X className="w-5 h-5" style={{ color: '#6b6e76' }} />
           </button>
@@ -159,10 +159,10 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
         <div className="px-6 py-5 space-y-4">
           {/* Project */}
           <div>
-            <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>Project</label>
+            <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'var(--ds-font-family-body)' }}>Project</label>
             <div className="flex items-center gap-2 px-3 py-2 rounded-md border" style={{ borderColor: 'var(--bd-default, #2E2E2E)', backgroundColor: 'var(--hover, #1F1F1F)' }}>
               <div className="w-5 h-5 rounded flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: 'var(--sem-success)' }}>B</div>
-              <span className="text-[13px]" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>Senaei BAU</span>
+              <span className="text-[13px]" style={{ color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>Senaei BAU</span>
             </div>
           </div>
 
@@ -186,7 +186,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
 
           {/* Summary */}
           <div>
-            <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>
+            <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'var(--ds-font-family-body)' }}>
               Summary <span style={{ color: 'var(--sem-danger)' }}>*</span>
             </label>
             <input
@@ -195,28 +195,28 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               onChange={e => setSummary(e.target.value)}
               placeholder="What needs to be done?"
               className="w-full px-3 py-2 rounded-md border text-[13px] transition-colors duration-[80ms] focus:border-[#2563EB] focus:outline-none"
-              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}
               autoFocus
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'Inter, sans-serif' }}>Description</label>
+            <label className="text-[11px] uppercase font-semibold block mb-1" style={{ color: 'var(--fg-2)', letterSpacing: '0.05em', fontFamily: 'var(--ds-font-family-body)' }}>Description</label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Add more details..."
               rows={3}
               className="w-full px-3 py-2 rounded-md border text-[13px] resize-none transition-colors duration-[80ms] focus:border-[#2563EB] focus:outline-none"
-              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--bd-default, #2E2E2E)', color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}
             />
           </div>
         </div>
 
         {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderTop: '1px solid var(--bd-subtle, #292929)' }}>
-          <label className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}>
+          <label className="flex items-center gap-2 text-[12px] cursor-pointer" style={{ color: '#6b6e76', fontFamily: 'var(--ds-font-family-body)' }}>
             <input
               type="checkbox"
               checked={createAnother}
@@ -229,7 +229,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
             <button
               onClick={onClose}
               className="px-4 py-2 text-[13px] rounded-md hover:bg-[var(--hover, #1F1F1F)] transition-colors duration-[80ms] focus-visible:outline-2 focus-visible:outline-[#2563EB]"
-              style={{ color: '#6b6e76', fontFamily: 'Inter, sans-serif' }}
+              style={{ color: '#6b6e76', fontFamily: 'var(--ds-font-family-body)' }}
             >
               Cancel
             </button>
@@ -237,7 +237,7 @@ export function AllWorkCreateModal({ onClose, onCreated }: Props) {
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitting}
               className="px-4 py-2 text-[13px] font-medium rounded-md text-white disabled:opacity-50 transition-colors duration-[80ms] hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
-              style={{ backgroundColor: 'var(--cp-blue)', fontFamily: 'Inter, sans-serif' }}
+              style={{ backgroundColor: 'var(--cp-blue)', fontFamily: 'var(--ds-font-family-body)' }}
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Create'}
             </button>

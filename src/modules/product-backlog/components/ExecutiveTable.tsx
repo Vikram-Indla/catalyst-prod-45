@@ -46,7 +46,7 @@ const PRIORITY_OPTIONS = [
 const PLATFORMS = [
   { value: 'innovation', label: 'Innovation Platform' },
   { value: 'senaei', label: 'Senaei Platform' },
-  { value: 'internal', label: 'Internal System' },
+  { value: 'internal', label: 'var(--ds-font-family-body)' },
   { value: 'web', label: 'Web Portal' },
   { value: 'mobile', label: 'Mobile App' },
 ];

@@ -43,7 +43,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         }}>
           <span style={{
             fontSize: 11, color: isOver ? 'var(--cp-blue)' : 'var(--fg-4)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}>Drop issues here</span>
         </div>
       )}
@@ -62,7 +62,7 @@ export default function KanbanColumn({ column, cards, maxWip, onCardClick }: Pro
         display: 'flex', alignItems: 'center', gap: 4,
         padding: '6px 8px', marginTop: 6,
         border: 'none', background: 'transparent', cursor: 'pointer',
-        fontSize: 12, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif",
+        fontSize: 12, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-body)',
         borderRadius: 4, transition: 'background 80ms',
       }}
         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(15,23,42,0.04)'; }}

@@ -250,7 +250,7 @@ export function SidebarBase({
             <span
               className="truncate"
               style={{
-                fontFamily: "'Sora', sans-serif",
+                fontFamily: 'var(--ds-font-family-heading)',
                 fontSize: '14px',
                 fontWeight: 700,
                 color: hubLabel,
@@ -274,7 +274,7 @@ export function SidebarBase({
               <div style={{ padding: '16px 12px 4px' }}>
                 <span
                   style={{
-                    fontFamily: "'Sora', sans-serif",
+                    fontFamily: 'var(--ds-font-family-heading)',
                     color: sectionLabel,
                     fontSize: '11px',
                     fontWeight: 700,
@@ -314,7 +314,7 @@ export function SidebarBase({
                     >
                       <span
                         style={{
-                          fontFamily: "'Sora', sans-serif",
+                          fontFamily: 'var(--ds-font-family-heading)',
                           color: sectionLabel,
                           fontSize: '11px',
                           fontWeight: 700,
@@ -391,7 +391,7 @@ function renderMenuItem(
         fontSize: '14px',
         fontWeight: active ? 600 : 500,
         color: active ? tk.activeText : tk.itemText,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
         outline: 'none',
         justifyContent: expanded ? 'flex-start' : 'center',
         background: active ? tk.activeBg : 'transparent',
@@ -509,7 +509,7 @@ function renderMenuItem(
             borderRadius: '12px',
             letterSpacing: '0.3px',
             textTransform: 'uppercase',
-            fontFamily: item.textBadge === 'AI' ? "'Sora', sans-serif" : "'Inter', sans-serif",
+            fontFamily: item.textBadge === 'AI' ? 'var(--ds-font-family-heading)' : 'var(--ds-font-family-body)',
             background: item.textBadge === 'AI' 
               ? 'rgba(124, 58, 237, 0.06)'
               : item.textBadgeVariant === 'new' 

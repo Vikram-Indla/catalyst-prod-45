@@ -153,7 +153,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <JiraIssueTypeIcon type={issue.issueType} size={16} />
-            <span style={{ fontSize: 15, fontWeight: 600, color: textP, fontFamily: "'Sora', sans-serif" }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: textP, fontFamily: 'var(--ds-font-family-heading)' }}>
               Move {issue.issueKey}
             </span>
           </div>
@@ -199,7 +199,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 10,
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
                   fontSize: 13, color: textP, background: tk.inputBg,
-                  outline: 'none', fontFamily: "'Inter', sans-serif",
+                  outline: 'none', fontFamily: 'var(--ds-font-family-body)',
                   boxSizing: 'border-box',
                 }}
               />
@@ -219,12 +219,12 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
                       width: '100%', padding: '8px 12px', border: 'none',
                       background: isSelected ? tk.dropHighlight : 'transparent',
                       cursor: 'pointer', fontSize: 13, color: textP,
-                      fontFamily: "'Inter', sans-serif", textAlign: 'left',
+                      fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
                     }}
                     onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tk.surfaceHover; }}
                     onMouseLeave={e => { e.currentTarget.style.background = isSelected ? tk.dropHighlight : 'transparent'; }}
                   >
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: textM, fontWeight: 600, flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: textM, fontWeight: 600, flexShrink: 0 }}>
                       {p.key}
                     </span>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
@@ -260,7 +260,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
                   width: '100%', height: 32, padding: '0 10px',
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
                   fontSize: 13, color: textP, background: tk.inputBg,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--ds-font-family-body)',
                 }}
               >
                 {targetStatuses.map(s => (
@@ -291,7 +291,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
             style={{
               height: 32, padding: '0 16px', border: `1px solid ${border}`,
               borderRadius: 4, background: 'transparent', cursor: 'pointer',
-              fontSize: 13, color: textS, fontFamily: "'Inter', sans-serif",
+              fontSize: 13, color: textS, fontFamily: 'var(--ds-font-family-body)',
             }}
           >
             Cancel
@@ -304,7 +304,7 @@ export function MoveWorkItemModal({ issue, currentProjectKey, tk, onClose, onMov
               borderRadius: 4, background: selectedProject ? '#2563EB' : tk.chipBg,
               cursor: selectedProject ? 'pointer' : 'not-allowed',
               fontSize: 13, color: '#FFFFFF', fontWeight: 600,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 6,
             }}

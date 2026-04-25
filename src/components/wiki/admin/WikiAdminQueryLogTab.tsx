@@ -34,7 +34,7 @@ export function WikiAdminQueryLogTab() {
           placeholder="Search queries..."
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-          style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'Inter, sans-serif', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, #0F172A)' }}
+          style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, #0F172A)' }}
         />
       </div>
 
@@ -47,7 +47,7 @@ export function WikiAdminQueryLogTab() {
       ) : (
         <>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Query', 'Language', 'Method', 'Confidence', 'Time (ms)', 'Cache', 'Timestamp'].map(h => (
@@ -64,10 +64,10 @@ export function WikiAdminQueryLogTab() {
                     <td style={{ padding: '8px 12px', maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={r.query_text}>{r.query_text ?? '—'}</td>
                     <td style={{ padding: '8px 12px', fontSize: 11 }}>{r.language ?? '—'}</td>
                     <td style={{ padding: '8px 12px', fontSize: 11 }}>{r.retrieval_method ?? '—'}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.confidence != null ? `${Math.round(r.confidence * 100)}%` : '—'}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.response_time_ms ?? '—'}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11 }}>{r.confidence != null ? `${Math.round(r.confidence * 100)}%` : '—'}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11 }}>{r.response_time_ms ?? '—'}</td>
                     <td style={{ padding: '8px 12px', fontSize: 11 }}>{r.cache_hit ? '✓' : '✕'}</td>
-                    <td style={{ padding: '8px 12px', fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{r.created_at ? format(new Date(r.created_at), 'MMM d HH:mm') : '—'}</td>
+                    <td style={{ padding: '8px 12px', fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11 }}>{r.created_at ? format(new Date(r.created_at), 'MMM d HH:mm') : '—'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -75,7 +75,7 @@ export function WikiAdminQueryLogTab() {
           </div>
 
           {totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
               <span style={{ color: 'var(--cp-text-tertiary, #64748B)', marginInlineEnd: 8 }}>{total} queries</span>
               <PagBtn disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft style={{ width: 14, height: 14 }} /></PagBtn>
               <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Page {page + 1} of {totalPages}</span>

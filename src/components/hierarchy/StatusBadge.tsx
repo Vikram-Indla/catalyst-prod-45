@@ -124,7 +124,7 @@ export function StatusBadge({ status, onClick, mini = false }: StatusBadgeProps)
         color: style.color,
         border: 'none',
         cursor: onClick ? 'pointer' : 'default',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 11,
         fontWeight: 700,
         letterSpacing: '0.03em',

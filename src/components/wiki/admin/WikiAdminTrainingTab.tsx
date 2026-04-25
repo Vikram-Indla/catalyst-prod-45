@@ -50,13 +50,13 @@ export function WikiAdminTrainingTab() {
             placeholder="Search questions..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(0); }}
-            style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'Inter, sans-serif', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, #0F172A)' }}
+            style={{ border: 'none', outline: 'none', background: 'transparent', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, width: '100%', color: 'var(--cp-text-primary, #0F172A)' }}
           />
         </div>
         <button onClick={() => setShowAdd(!showAdd)} style={{
           display: 'flex', alignItems: 'center', gap: 4, padding: '6px 12px', borderRadius: 4,
           background: 'var(--cp-primary-60, #2563EB)', color: '#fff', border: 'none', cursor: 'pointer',
-          fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600, outline: 'none',
+          fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 600, outline: 'none',
         }}
           onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
           onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
@@ -76,7 +76,7 @@ export function WikiAdminTrainingTab() {
       ) : rows.length > 0 && (
         <>
           <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
               <thead>
                 <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
                   {['Question', 'Module', 'Has Answer', 'Actions'].map(h => (
@@ -112,7 +112,7 @@ export function WikiAdminTrainingTab() {
           </div>
 
           {totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'flex-end', fontFamily: 'var(--ds-font-family-body)', fontSize: 12 }}>
               <span style={{ color: 'var(--cp-text-tertiary, #64748B)', marginInlineEnd: 8 }}>{total} questions</span>
               <PagBtn disabled={page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft style={{ width: 14, height: 14 }} /></PagBtn>
               <span style={{ color: 'var(--cp-text-tertiary, #64748B)' }}>Page {page + 1} of {totalPages}</span>
@@ -154,25 +154,25 @@ function AddQuestionForm({ onClose }: { onClose: () => void }) {
       display: 'flex', flexDirection: 'column', gap: 8,
     }}>
       <input placeholder="Question *" value={question} onChange={(e) => setQuestion(e.target.value)}
-        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'Inter, sans-serif', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', outline: 'none' }}
+        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', outline: 'none' }}
         onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       />
       <textarea placeholder="Answer (optional)" value={answer} onChange={(e) => setAnswer(e.target.value)} rows={2}
-        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'Inter, sans-serif', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', resize: 'vertical', outline: 'none' }}
+        style={{ padding: '6px 10px', borderRadius: 4, border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, background: 'var(--cp-bg-page, #fff)', color: 'var(--cp-text-primary, #0F172A)', resize: 'vertical', outline: 'none' }}
         onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 2px var(--cp-primary-60, #2563EB)'; }}
         onBlur={(e) => { e.currentTarget.style.boxShadow = 'none'; }}
       />
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={() => addQ.mutate()} disabled={!question.trim()} style={{
           padding: '6px 14px', borderRadius: 4, background: 'var(--cp-primary-60, #2563EB)', color: '#fff',
-          border: 'none', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 600,
+          border: 'none', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 600,
           opacity: !question.trim() ? 0.5 : 1, outline: 'none',
         }}>Save</button>
         <button onClick={onClose} style={{
           padding: '6px 14px', borderRadius: 4, background: 'transparent',
           border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', cursor: 'pointer',
-          fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--cp-text-secondary, #334155)', outline: 'none',
+          fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: 'var(--cp-text-secondary, #334155)', outline: 'none',
         }}>Cancel</button>
       </div>
     </div>

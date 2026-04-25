@@ -146,7 +146,7 @@ export default function AuditTrailPage() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100vh',
-      background: '#F8FAFC', fontFamily: 'Inter, sans-serif',
+      background: '#F8FAFC', fontFamily: 'var(--ds-font-family-body)',
     }}>
       {/* PAGE HEADER */}
       <div style={{
@@ -160,14 +160,14 @@ export default function AuditTrailPage() {
             style={{
               display: 'flex', alignItems: 'center', gap: 2,
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: 13, color: '#475569', fontFamily: 'Inter, sans-serif',
+              fontSize: 13, color: '#475569', fontFamily: 'var(--ds-font-family-body)',
               marginBottom: 4,
             }}
           >
             <ChevronLeft size={14} color="#475569" />
             Back to Cleanup
           </button>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>
             Audit Trail
           </div>
           <div style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
@@ -227,7 +227,7 @@ export default function AuditTrailPage() {
             style={{
               height: 36, fontSize: 13, border: '1px solid #E2E8F0',
               borderRadius: 6, padding: '0 10px', background: '#ffffff',
-              color: '#0F172A', fontFamily: 'Inter, sans-serif',
+              color: '#0F172A', fontFamily: 'var(--ds-font-family-body)',
             }}
           />
           <span style={{ fontSize: 13, color: '#64748B' }}>To</span>
@@ -238,7 +238,7 @@ export default function AuditTrailPage() {
             style={{
               height: 36, fontSize: 13, border: '1px solid #E2E8F0',
               borderRadius: 6, padding: '0 10px', background: '#ffffff',
-              color: '#0F172A', fontFamily: 'Inter, sans-serif',
+              color: '#0F172A', fontFamily: 'var(--ds-font-family-body)',
             }}
           />
         </div>
@@ -266,7 +266,7 @@ export default function AuditTrailPage() {
         ].map(cell => (
           <div key={cell.label}>
             <div style={{
-              fontFamily: 'JetBrains Mono, monospace', fontSize: 20,
+              fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 20,
               fontWeight: 600, color: '#0F172A',
             }}>
               {cell.value}
@@ -294,7 +294,7 @@ export default function AuditTrailPage() {
                   <th key={h} style={{
                     padding: '10px 12px', fontSize: 11, fontWeight: 500,
                     textTransform: 'uppercase', letterSpacing: '0.05em',
-                    color: '#94A3B8', textAlign: 'left', fontFamily: 'Inter, sans-serif',
+                    color: '#94A3B8', textAlign: 'left', fontFamily: 'var(--ds-font-family-body)',
                     whiteSpace: 'nowrap',
                   }}>
                     {h}
@@ -327,7 +327,7 @@ export default function AuditTrailPage() {
                     {/* ITEM */}
                     <td style={{ padding: '8px 12px', minWidth: 200, verticalAlign: 'top' }}>
                       <div style={{
-                        fontFamily: 'JetBrains Mono, monospace',
+                        fontFamily: 'var(--ds-font-family-monospaced)',
                         fontSize: 12, fontWeight: 500, color: '#2563EB',
                       }}>
                         {entry.item_key}
@@ -367,7 +367,7 @@ export default function AuditTrailPage() {
                     {/* CLOSED */}
                     <td style={{ padding: '8px 12px', verticalAlign: 'top' }}>
                       <div style={{
-                        fontFamily: 'JetBrains Mono, monospace',
+                        fontFamily: 'var(--ds-font-family-monospaced)',
                         fontSize: 13, color: '#64748B',
                       }}>
                         {relativeTime(entry.closed_at)}

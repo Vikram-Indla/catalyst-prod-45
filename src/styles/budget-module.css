@@ -89,8 +89,8 @@
   /* ============================================
      V8 TYPOGRAPHY
      ============================================ */
-  --budget-font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --budget-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --budget-font-ui: var(--ds-font-family-body);
+  --budget-font-mono: var(--ds-font-family-monospaced);
 
   /* ============================================
      V8 BORDER RADIUS

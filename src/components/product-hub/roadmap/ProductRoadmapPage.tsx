@@ -216,7 +216,7 @@ export function ProductRoadmapPage() {
             <>
               <button
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
+                style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: 'var(--ds-font-family-body)' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#292929' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
@@ -225,7 +225,7 @@ export function ProductRoadmapPage() {
               <button
                 onClick={toggleFullscreen}
                 className="inline-flex items-center gap-1.5 h-9 px-3 text-sm font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
-                style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: "'Inter', system-ui, sans-serif" }}
+                style={{ border: `1px solid ${surface.border}`, borderRadius: 6, color: ink[2], transition: 'background-color 0.15s ease', fontFamily: 'var(--ds-font-family-body)' }}
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = isDark ? '#292929' : surface.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >

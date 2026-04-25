@@ -120,7 +120,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               const isPeak = val === rhythmData.max && val > 0;
               return (
                 <div key={d} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: "'JetBrains Mono', monospace", color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
+                  <span style={{ fontSize: isPeak ? 12 : 12, fontWeight: isPeak ? 600 : 400, fontFamily: 'var(--ds-font-family-monospaced)', color: isPeak ? '#1D4ED8' : '#374151' }}>{val}</span>
                   <div style={{
                     width: '100%', maxWidth: 40, height: barH, borderRadius: 4,
                     backgroundColor: isPeak ? '#1D4ED8' : 'var(--cp-blue)',
@@ -158,7 +158,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               onMouseLeave={e => { if (tile.onClick) e.currentTarget.style.background = '#FFFFFF'; }}
             >
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginBottom: 6 }}>{tile.label}</div>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: (tile as any).valueColor || INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 4 }}>{tile.sub}</div>
             </div>
           ))}
@@ -187,7 +187,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
               onMouseLeave={e => { if (row.onClick) e.currentTarget.style.background = 'transparent'; }}
             >
               <span style={{ fontSize: 12, color: INK2 }}>{row.label}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{row.value}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'var(--ds-font-family-monospaced)', color: INK1 }}>{row.value}</span>
             </div>
           ))}
         </div>
@@ -206,7 +206,7 @@ export function BehaviouralTab({ workItems, showFilteredList, weekStart, weekEnd
             <div key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color, display: 'inline-block', flexShrink: 0 }} />
               <span style={{ fontSize: 12, color: INK2 }}>{s.hub === 'incident' ? 'IncidentHub' : s.hub === 'bau' || s.hub === 'BAU' ? 'BAU' : s.hub}</span>
-              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", color: INK1 }}>{s.count}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, fontFamily: 'var(--ds-font-family-monospaced)', color: INK1 }}>{s.count}</span>
             </div>
           ))}
         </div>

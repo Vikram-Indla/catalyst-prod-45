@@ -919,8 +919,8 @@ export default function KanbanBoardPage() {
                       borderRadius: '6px 6px 0 0',
                     }}>
                       <span style={{ width: 8, height: 8, borderRadius: '50%', background: categoryDot, flexShrink: 0 }} />
-                      <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: "'Inter', sans-serif" }}>{col.name}</span>
-                      <span style={{ fontSize: 12, fontWeight: 500, color: tk.textPrimary, lineHeight: '16px', fontFamily: "'Inter', sans-serif" }}>{count}</span>
+                      <span style={{ fontSize: 12, fontWeight: 500, textTransform: 'uppercase', color: tk.textMuted, flex: 1, lineHeight: '16px', fontFamily: 'var(--ds-font-family-body)' }}>{col.name}</span>
+                      <span style={{ fontSize: 12, fontWeight: 500, color: tk.textPrimary, lineHeight: '16px', fontFamily: 'var(--ds-font-family-body)' }}>{count}</span>
                     </div>
                   );
                 })}

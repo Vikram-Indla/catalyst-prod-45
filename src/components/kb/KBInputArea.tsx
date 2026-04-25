@@ -143,7 +143,7 @@ export function KBInputArea({
             fontWeight: 400,
             color: 'var(--cp-text-primary, var(--fg-1))',
             direction: isRTL ? 'rtl' : 'ltr',
-            fontFamily: "var(--cp-font-body, 'Inter', system-ui, sans-serif)",
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         />
 

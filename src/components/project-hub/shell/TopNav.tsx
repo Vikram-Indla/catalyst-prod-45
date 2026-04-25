@@ -30,7 +30,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
         height: 48,
         paddingLeft: 16,
         paddingRight: 16,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       {/* Logo — Catalyst™ */}
@@ -43,9 +43,9 @@ export function TopNav({ onCreateClick }: TopNavProps) {
           className="flex items-center justify-center rounded-full flex-shrink-0 bg-[var(--cp-blue)]"
           style={{ width: 28, height: 28 }}
         >
-          <span style={{ color: 'var(--bg-app)', fontSize: 13, fontWeight: 800, fontFamily: "'Sora', sans-serif" }}>C</span>
+          <span style={{ color: 'var(--bg-app)', fontSize: 13, fontWeight: 800, fontFamily: 'var(--ds-font-family-heading)' }}>C</span>
         </div>
-        <span className="text-[var(--fg-1)] dark:text-[#EDEDED]" style={{ fontFamily: "'Sora', sans-serif", fontSize: 15, fontWeight: 700 }}>
+        <span className="text-[var(--fg-1)] dark:text-[#EDEDED]" style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 15, fontWeight: 700 }}>
           atalyst
           <span className="text-[var(--fg-4)] dark:text-[#7D7D7D]" style={{ fontSize: 9, verticalAlign: 'super', fontWeight: 500 }}>™</span>
         </span>
@@ -68,7 +68,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
                 fontSize: 13,
                 fontWeight: isActive ? 600 : 500,
                 color: isActive ? 'var(--cp-blue)' : (isDark ? '#A1A1A1' : 'var(--fg-2)'),
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
                 background: 'transparent',
                 border: 'none',
                 borderBottom: isActive ? '2px solid var(--cp-blue)' : '2px solid transparent',
@@ -99,7 +99,7 @@ export function TopNav({ onCreateClick }: TopNavProps) {
             fontSize: 13,
             fontWeight: 600,
             cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         >
           <Plus size={16} strokeWidth={2.5} />

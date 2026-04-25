@@ -151,7 +151,7 @@ function TabButton({
         // 13.33px / line-height normal / weight 400 — matches Jira's
         // "Atlassian Sans 13.33px 400" on the tab text, routed through
         // Catalyst's Inter.
-        font: `400 13.33px/normal "Inter", system-ui, sans-serif`,
+        font: `400 13.33px/normal var(--ds-font-family-body)`,
         color: token('color.text', '#292A2E'),
         whiteSpace: 'nowrap',
         outline: 'none',
@@ -195,7 +195,7 @@ function TabButton({
             color: isAgeingBadge
               ? token('color.text.danger', '#AE2E24')
               : token('color.text.subtle', '#505258'),
-            font: `600 11px/14px "Inter", system-ui, sans-serif`,
+            font: `600 11px/14px var(--ds-font-family-body)`,
           }}
         >
           {count > 99 ? '99+' : count}

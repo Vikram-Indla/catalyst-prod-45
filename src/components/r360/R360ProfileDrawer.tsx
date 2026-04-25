@@ -392,7 +392,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
 
   if (resError) {
     return (
-      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, fontFamily: 'var(--ds-font-family-body)' }}>
         <RefreshCw size={20} color={INK4} />
         <span style={{ fontSize: 13, color: INK2 }}>Failed to load — retry</span>
         <button onClick={onClose} style={{ fontSize: 12, color: BRAND, background: 'none', border: 'none', cursor: 'pointer' }}>Close</button>
@@ -403,7 +403,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
   const currentPanel = panelStack.length > 0 ? panelStack[panelStack.length - 1] : null;
 
   return (
-    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: "'Inter', system-ui, sans-serif", position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'var(--ds-font-family-body)', position: 'relative' }}>
 
       {/* ━━ A. TOPBAR ━━ */}
       <div style={{
@@ -416,7 +416,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             background: BRAND, color: 'var(--bg-app)',
-            fontFamily: "'Inter', system-ui, sans-serif", fontSize: 12, fontWeight: 600,
+            fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 600,
             padding: '5px 12px', borderRadius: 6, border: 'none', cursor: 'pointer',
             transition: 'background 100ms',
           }}
@@ -460,18 +460,18 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
               width: 52, height: 52, borderRadius: '50%', flexShrink: 0,
               background: 'linear-gradient(135deg, var(--fg-2), var(--fg-2))',
               display: resource?.avatar_url ? 'none' : 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--bg-app)', fontFamily: "'Sora', sans-serif", fontSize: 17, fontWeight: 700,
+              color: 'var(--bg-app)', fontFamily: 'var(--ds-font-family-heading)', fontSize: 17, fontWeight: 700,
             }}>
               {getInitials(resourceName || '?')}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 700, color: INK1 }}>{resourceName || '—'}</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: INK4, flexWrap: 'wrap', marginTop: 2 }}>
                 <span>{resourceRole || '—'}</span>
                 {deptName && <><span>·</span><span>{deptName}</span></>}
                 {resourceRid && <><span>·</span><span style={{
                   background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE', borderRadius: 4,
-                  padding: '2px 7px', fontFamily: "'JetBrains Mono', monospace",
+                  padding: '2px 7px', fontFamily: 'var(--ds-font-family-monospaced)',
                   fontSize: 11, fontWeight: 700, color: BRAND,
                 }}>{resourceRid}</span></>}
               </div>
@@ -501,7 +501,7 @@ const R360ProfileDrawer = memo(function R360ProfileDrawer({ resourceId, onClose 
           const isActive = activeTab === t.key;
           return (
             <button key={t.key} onClick={() => handleTabChange(t.key)} style={{
-              fontFamily: "'Inter', system-ui, sans-serif", fontSize: 12, fontWeight: isActive ? 600 : 500,
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: isActive ? 600 : 500,
               color: isActive ? BRAND : INK4, padding: '0 14px', height: 38,
               border: 'none', borderBottom: `2px solid ${isActive ? BRAND : 'transparent'}`,
               background: 'transparent', cursor: 'pointer',

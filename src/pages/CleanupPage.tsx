@@ -128,7 +128,7 @@ function StatusLozenge({ value }: { value: string }) {
         display: 'inline-block', height: 20, lineHeight: '20px',
         fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
         letterSpacing: '0.03em', borderRadius: 3, padding: '0 6px',
-        background: bg, color, fontFamily: 'Inter, sans-serif',
+        background: bg, color, fontFamily: 'var(--ds-font-family-body)',
         whiteSpace: 'nowrap', maxWidth: 120, overflow: 'hidden',
         textOverflow: 'ellipsis',
       }}
@@ -543,7 +543,7 @@ export default function CleanupPage() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100vh',
-      background: '#F8FAFC', fontFamily: 'Inter, sans-serif',
+      background: '#F8FAFC', fontFamily: 'var(--ds-font-family-body)',
     }}>
       {/* ═══ PAGE HEADER ═══ */}
       <div style={{
@@ -552,12 +552,12 @@ export default function CleanupPage() {
         flexShrink: 0,
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
-          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>
+          <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 700, color: '#0F172A' }}>
             AI Cleanup
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: '#64748B' }}>Last scan: today 02:00 AST</span>
+          <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: '#64748B' }}>Last scan: today 02:00 AST</span>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 4,
             fontSize: 11, fontWeight: 500, padding: '2px 8px', borderRadius: 20,
@@ -602,7 +602,7 @@ export default function CleanupPage() {
               onClick={() => setActiveTab(tab.key)}
               style={{
                 padding: '10px 24px', border: 'none', cursor: 'pointer',
-                background: 'transparent', fontFamily: 'Inter, sans-serif',
+                background: 'transparent', fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 13, fontWeight: activeTab === tab.key ? 700 : 500,
                 color: activeTab === tab.key ? '#0F172A' : '#64748B',
                 borderBottom: activeTab === tab.key ? '2px solid #2563EB' : '2px solid transparent',
@@ -625,7 +625,7 @@ export default function CleanupPage() {
                 style={{
                   display: 'flex', alignItems: 'center', gap: 4,
                   height: 32, padding: '0 12px', border: 'none', cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
+                  fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500,
                   background: viewMode === v.key ? '#0F172A' : '#ffffff',
                   color: viewMode === v.key ? '#ffffff' : '#64748B',
                   transition: 'background 100ms, color 100ms',
@@ -655,7 +655,7 @@ export default function CleanupPage() {
             ].map(cell => (
               <div key={cell.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                   fontFamily: 'JetBrains Mono, monospace', fontSize: 24,
+                   fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 24,
                    fontWeight: 600, color: '#0F172A',
                  }}>
                   {cell.value}
@@ -679,7 +679,7 @@ export default function CleanupPage() {
                   justifyContent: 'center', marginTop: 64, gap: 12,
                 }}>
                   <CheckCircle size={48} color="#10B981" strokeWidth={1.5} />
-                  <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
+                  <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 700, color: '#065F46' }}>
                     Governance: GREEN
                   </span>
                   <span style={{ fontSize: 13, color: '#64748B' }}>
@@ -710,7 +710,7 @@ export default function CleanupPage() {
                            width: '100%', display: 'flex', alignItems: 'center', gap: 8,
                            height: 48, padding: '0 16px',
                            background: '#F8FAFC', borderBottom: '1px solid #E2E8F0',
-                           fontFamily: 'Inter, sans-serif',
+                           fontFamily: 'var(--ds-font-family-body)',
                          }}
                        >
                          <button
@@ -718,7 +718,7 @@ export default function CleanupPage() {
                            style={{
                              display: 'flex', alignItems: 'center', gap: 8, flex: 1,
                              background: 'none', border: 'none', cursor: 'pointer',
-                             fontFamily: 'Inter, sans-serif', textAlign: 'left',
+                             fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
                              height: '100%',
                            }}
                          >
@@ -782,7 +782,7 @@ export default function CleanupPage() {
                               />
                             )}
                             <span style={{
-                              fontFamily: 'JetBrains Mono, monospace',
+                              fontFamily: 'var(--ds-font-family-monospaced)',
                               fontSize: 12, fontWeight: 500, color: '#2563EB',
                             }}>
                               {item.issue_key}
@@ -811,7 +811,7 @@ export default function CleanupPage() {
                               </div>
                             )}
                             <span style={{
-                              fontFamily: 'JetBrains Mono, monospace',
+                              fontFamily: 'var(--ds-font-family-monospaced)',
                               fontSize: 13, fontWeight: 600, color: daysColor(item.days_stale),
                             }}>
                               {item.days_stale}d
@@ -1041,7 +1041,7 @@ export default function CleanupPage() {
                             fontSize: 11, fontWeight: 700, color: '#64748B',
                             textTransform: 'uppercase', letterSpacing: '0.06em',
                             textAlign: (col.align || 'left') as any, whiteSpace: 'nowrap',
-                            verticalAlign: 'middle', fontFamily: 'Inter, sans-serif',
+                            verticalAlign: 'middle', fontFamily: 'var(--ds-font-family-body)',
                           }}>
                             {col.label}
                           </th>
@@ -1089,7 +1089,7 @@ export default function CleanupPage() {
                               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                                 <JiraIssueTypeIcon issueType={item.issue_type} size={16} />
                                 <span style={{
-                                  fontFamily: "'JetBrains Mono', monospace", fontSize: 12,
+                                  fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12,
                                   fontWeight: 600, color: '#2563EB',
                                 }}>
                                   {item.issue_key}
@@ -1222,7 +1222,7 @@ export default function CleanupPage() {
                             {/* Days */}
                             <td style={{
                               padding: '8px 12px', width: 60, textAlign: 'right',
-                              fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600,
+                              fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 600,
                               color: daysColor(item.days_stale),
                             }}>
                               {item.days_stale}d
@@ -1322,7 +1322,7 @@ export default function CleanupPage() {
                   <th key={h} style={{
                     padding: '10px 12px', fontSize: 11, fontWeight: 700,
                     textTransform: 'uppercase', letterSpacing: '0.04em',
-                    color: '#64748B', textAlign: 'left', fontFamily: 'Inter, sans-serif',
+                    color: '#64748B', textAlign: 'left', fontFamily: 'var(--ds-font-family-body)',
                   }}>
                     {h}
                   </th>
@@ -1348,7 +1348,7 @@ export default function CleanupPage() {
                   <tr key={entry.id} style={{ borderBottom: '0.75px solid #F1F5F9', height: 36 }}>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
-                        fontFamily: 'JetBrains Mono, monospace',
+                        fontFamily: 'var(--ds-font-family-monospaced)',
                         fontSize: 13, fontWeight: 500, color: '#2563EB',
                       }}>
                         {entry.item_key}
@@ -1361,13 +1361,13 @@ export default function CleanupPage() {
                       {catLabel}
                     </td>
                     <td style={{ padding: '8px 12px' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, color: '#334155' }}>
+                      <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13, color: '#334155' }}>
                         {entry.closed_at ? relativeTime(entry.closed_at) : '\u2014'}
                       </span>
                     </td>
                     <td style={{ padding: '8px 12px' }}>
                       <span style={{
-                        fontFamily: 'JetBrains Mono, monospace', fontSize: 13,
+                        fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13,
                         color: deadlinePassed || alreadyRestored ? '#94A3B8' : '#065F46',
                       }}>
                         {alreadyRestored ? 'Restored' : deadlinePassed ? 'Window expired' : `Expires in ${daysUntilDeadline}d`}
@@ -1408,7 +1408,7 @@ export default function CleanupPage() {
           {/* HEADER */}
           <div style={{ padding: '24px 24px 0' }}>
             <h2 style={{
-              fontFamily: 'Sora, sans-serif', fontSize: 20, fontWeight: 700,
+              fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 700,
               color: '#0F172A', margin: 0,
             }}>
               Force close {selected.size} item{selected.size !== 1 ? 's' : ''}?

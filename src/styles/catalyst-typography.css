@@ -24,7 +24,8 @@ html[data-theme~="typography:typography"] {
   --ds-font-metric-small: normal 700 1rem/1.25rem "Inter", sans-serif !important;
 
   --ds-font-family-body: "Inter", ui-sans-serif, system-ui, sans-serif !important;
-  --ds-font-family-heading: "Inter", ui-sans-serif, system-ui, sans-serif !important;
+  --ds-font-family-heading: "Sora", ui-sans-serif, system-ui, sans-serif !important;
+  --ds-font-family-monospaced: "JetBrains Mono", ui-monospace, monospace !important;
 
   --ds-font-weight-bold: 700 !important;
 }

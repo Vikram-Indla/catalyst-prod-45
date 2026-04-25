@@ -57,7 +57,7 @@ export function UtilizationBar({
       {showLabel && (
         <span
           style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: compact ? 12 : 14,
             fontWeight: 700,
             color,

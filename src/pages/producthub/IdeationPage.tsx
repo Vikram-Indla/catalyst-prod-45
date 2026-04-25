@@ -147,7 +147,7 @@ export default function IdeationPage() {
               background: isDark ? 'transparent' : '#FFFFFF', color: dk.t2, border: `1px solid ${dk.border}`,
               borderRadius: '6px', padding: '7px 14px', fontSize: '13px', fontWeight: 500,
               cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px',
-              fontFamily: "'Inter', system-ui, sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
             }}>
               <Download size={14} /> Export
             </button>
@@ -157,7 +157,7 @@ export default function IdeationPage() {
                 background: '#2563EB', color: '#FFFFFF', border: 'none',
                 borderRadius: '6px', padding: '8px 16px', fontSize: '13px', fontWeight: 600,
                 cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px',
-                fontFamily: "'Inter', system-ui, sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               <Plus size={14} /> New Idea
@@ -176,7 +176,7 @@ export default function IdeationPage() {
           <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>
             TOTAL IDEAS
           </div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.t1 }}>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--ds-font-family-heading)', color: dk.t1 }}>
             {stats.total}
           </span>
         </div>
@@ -187,7 +187,7 @@ export default function IdeationPage() {
             CONVERTED
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.greenText }}>
+            <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--ds-font-family-heading)', color: dk.greenText }}>
               {stats.converted}
             </span>
             <span style={{ fontSize: '11px', color: dk.t3 }}>→ Initiatives</span>
@@ -211,7 +211,7 @@ export default function IdeationPage() {
                     borderRadius: '4px', fontSize: '11px', fontWeight: 700,
                     background: qb.bg, color: qb.text,
                   }}>{q}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: dk.t1 }}>
+                  <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: '16px', fontWeight: 700, color: dk.t1 }}>
                     {count}
                   </span>
                 </div>
@@ -220,7 +220,7 @@ export default function IdeationPage() {
             <div style={{ width: '1px', height: '20px', background: dk.border }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontSize: '11px', color: dk.t3, fontWeight: 500 }}>Unassigned</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '16px', fontWeight: 700, color: dk.t3 }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: '16px', fontWeight: 700, color: dk.t3 }}>
                 {stats.unassigned}
               </span>
             </div>
@@ -402,7 +402,7 @@ function IdeationListView({ ideas, selectedRows, toggleRow, toggleAll, onOpenDet
                 <input type="checkbox" checked={selectedRows.has(idea.key)} onChange={() => toggleRow(idea.key)} style={{ cursor: 'pointer', accentColor: '#2563EB' }} />
               </td>
               <td style={{ padding: '8px 12px' }}>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
+                <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: '13px', fontWeight: 600, color: dk.blueKey, cursor: 'pointer' }}
                   onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                   onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                 >
@@ -495,7 +495,7 @@ function ImpactCell({ score }: { score: number }) {
   const textColor = score >= 4 ? '#16A34A' : score >= 3 ? '#2563EB' : score >= 2 ? '#64748B' : '#94A3B8';
   return (
     <span style={{
-      fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 500,
+      fontFamily: 'var(--ds-font-family-monospaced)', fontSize: '13px', fontWeight: 500,
       color: textColor,
     }}>
       {score.toFixed(2)}

@@ -147,7 +147,7 @@ export function TicketBreadcrumbs({
           display: inline-flex;
           align-items: center;
           gap: 4px;
-          font-family: 'Inter', sans-serif;
+          font-family: var(--ds-font-family-body);
           font-size: 13px;
           font-weight: 500;
           line-height: 1;

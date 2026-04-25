@@ -100,7 +100,7 @@ export function PriorityIndicator({
       <PriorityBars priority={p} isDark={isDark} barWidth={barWidth} barHeight={barHeight} />
       {showLabel && (
         <span style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize,
           fontWeight: 600,
           color: isDark ? cfg.textColorDark : cfg.textColor,

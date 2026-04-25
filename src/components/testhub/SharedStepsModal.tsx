@@ -120,14 +120,14 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
           {/* Header */}
           <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-              <h3 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
+              <h3 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
                 Shared Steps Library
               </h3>
               <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <X style={{ width: 18, height: 18 }} />
               </button>
             </div>
-            <p style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: 'var(--fg-3)', margin: 0 }}>
               Insert reusable test steps
             </p>
           </div>
@@ -147,7 +147,7 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
                   paddingLeft: 40,
                   paddingRight: 12,
                   fontSize: 14,
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--ds-font-family-body)',
                   border: '1.5px solid var(--divider)',
                   borderRadius: 8,
                   outline: 'none',
@@ -183,15 +183,15 @@ export function SharedStepsModal({ isOpen, onClose, onInsert }: SharedStepsModal
                     onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--divider)')}
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 }}>
-                      <h4 style={{ fontFamily: 'Inter', fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
+                      <h4 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>
                         {step.name}
                       </h4>
-                      <span style={{ fontFamily: 'Inter', fontSize: 12, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: 'var(--fg-4)', whiteSpace: 'nowrap' }}>
                         Used {step.usage_count}x
                       </span>
                     </div>
                     <p style={{
-                      fontFamily: 'Inter',
+                      fontFamily: 'var(--ds-font-family-body)',
                       fontSize: 13,
                       color: 'var(--fg-3)',
                       margin: '0 0 12px 0',

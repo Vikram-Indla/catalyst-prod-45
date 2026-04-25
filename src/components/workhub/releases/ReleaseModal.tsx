@@ -111,7 +111,7 @@ export function ReleaseModal({ isOpen, onClose, release }: ReleaseModalProps) {
         }}>
           <h2 style={{
             fontSize: 18, fontWeight: 700, margin: 0,
-            fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
+            fontFamily: 'var(--ds-font-family-heading)',
             color: 'var(--fg-1)',
           }}>
             {isEdit ? 'Edit Release' : 'Create Release'}
@@ -225,7 +225,7 @@ const inputStyle: React.CSSProperties = {
   padding: '8px 12px',
   borderRadius: 'var(--wh-radius-md, 6px)',
   border: '1px solid var(--divider)',
-  fontSize: 14, fontFamily: 'Inter, system-ui, sans-serif',
+  fontSize: 14, fontFamily: 'var(--ds-font-family-body)',
   color: 'var(--fg-1)',
   background: 'var(--cp-float)',
   outline: 'none',

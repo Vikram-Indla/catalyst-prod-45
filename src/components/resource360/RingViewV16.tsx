@@ -21,9 +21,9 @@ const T = {
   accent: 'var(--cp-blue)',
   todo: '#1E293B', progress: 'var(--cp-blue)', done: '#0E8A5F',
   danger: 'var(--sem-danger)', warning: 'var(--sem-warning)', success: 'var(--sem-success)',
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
-  sora: "'Sora', 'Inter', sans-serif",
-  inter: "'Inter', sans-serif",
+  mono: 'var(--ds-font-family-monospaced)',
+  sora: 'var(--ds-font-family-heading)',
+  inter: 'var(--ds-font-family-body)',
 };
 
 type StatusCat = 'todo' | 'progress' | 'done';

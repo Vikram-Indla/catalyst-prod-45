@@ -68,8 +68,8 @@
   --r360-radius-xl: 14px;
 
   /* ─── TYPOGRAPHY — CRISPER ─── */
-  --r360-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --r360-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --r360-font: var(--ds-font-family-body);
+  --r360-font-mono: var(--ds-font-family-monospaced);
 
   /* Apply canvas */
   background: var(--r360-bg);

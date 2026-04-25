@@ -9,7 +9,7 @@ const T = {
   todo: '#E23636', progress: 'var(--cp-blue)', done: '#0E8A5F',
   pendingHighlight: '#FFF3E0',
   shadow: '0 2px 8px rgba(0,0,0,.12)',
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 interface ChronologyViewProps {
@@ -79,7 +79,7 @@ const ChronologyView: React.FC<ChronologyViewProps> = ({ resourceId, onItemClick
   const pendingCount = items.filter((i: any) => getStatusCategory(i.status_category || i.status) !== 'done').length;
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', height: '100%', display: 'flex', flexDirection: 'column' }}>
 
       {/* ═══ FILTER BAR ═══ */}
       <div style={{ padding: '10px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>

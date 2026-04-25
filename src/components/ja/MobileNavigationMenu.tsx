@@ -112,7 +112,7 @@ export function MobileNavigationMenu() {
                     color: isActive
                       ? (isDark ? '#FFFFFF' : '#2563EB')
                       : (isDark ? '#EDEDED' : '#1E293B'),
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--ds-font-family-body)',
                     textAlign: 'left',
                     transition: 'background 0.1s',
                     borderLeft: isActive ? '3px solid #3B82F6' : '3px solid transparent',

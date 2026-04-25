@@ -20,7 +20,7 @@ export function TypeDistributionChart({ data }: Props) {
       padding: 24, minHeight: 340,
     }}>
       <h3 style={{
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 16, fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>
@@ -30,14 +30,14 @@ export function TypeDistributionChart({ data }: Props) {
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: 'Inter' }} />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: 'var(--ds-font-family-body)' }} />
           <YAxis tick={{ fontSize: 12 }} />
           <Tooltip content={<ChartTooltip />} />
           <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={48}>
             {data.map((entry, i) => (
               <Cell key={i} fill={TYPE_CHART_COLORS[entry.name] || '#475569'} />
             ))}
-            <LabelList dataKey="value" position="top" style={{ fontSize: 12, fontWeight: 600, fontFamily: 'Inter', fill: 'var(--fg-3)' }} />
+            <LabelList dataKey="value" position="top" style={{ fontSize: 12, fontWeight: 600, fontFamily: 'var(--ds-font-family-body)', fill: 'var(--fg-3)' }} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

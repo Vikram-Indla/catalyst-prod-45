@@ -21,7 +21,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
       borderRadius: 4,
       padding: '10px 12px',
       marginTop: 8,
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--ds-font-family-body)',
       fontSize: 13,
       color: isDark ? '#EDEDED' : '#0F172A',
       lineHeight: '18px',
@@ -34,7 +34,7 @@ export default function CommentPreview({ text, attachmentFilename }: CommentPrev
           onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
           style={{
             background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginLeft: 4,
-            color: '#2563EB', fontSize: 12, fontFamily: 'Inter, sans-serif', fontWeight: 500,
+            color: '#2563EB', fontSize: 12, fontFamily: 'var(--ds-font-family-body)', fontWeight: 500,
           }}
         >
           Show more

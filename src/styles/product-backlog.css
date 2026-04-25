@@ -51,9 +51,9 @@
   --cp-input-border-hover: rgba(15, 23, 42, 0.22);
   --cp-input-border-focus: #2563EB;
 
-  --cp-font-heading: 'Sora', -apple-system, system-ui, sans-serif;
-  --cp-font-body: 'Inter', -apple-system, system-ui, sans-serif;
-  --cp-font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --cp-font-heading: var(--ds-font-family-heading);
+  --cp-font-body: var(--ds-font-family-body);
+  --cp-font-mono: var(--ds-font-family-monospaced);
 
   --cp-radius-sm: 3px;
   --cp-radius-md: 4px;

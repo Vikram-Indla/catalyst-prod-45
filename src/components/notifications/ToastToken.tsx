@@ -74,14 +74,14 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
           width: 36, height: 50, borderRadius: '50%', flexShrink: 0,
           background: isSystemAssign ? '#6B7280' : getAvatarColor(actorId),
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#FFFFFF', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 700,
+          color: '#FFFFFF', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 700,
         }}>
           {isSystemAssign ? <UserCheck size={18} color="#FFFFFF" /> : getUserInitials(actorName)}
         </div>
 
         {/* Body */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, #0F172A)', lineHeight: '18px' }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500, color: 'var(--fg-1, #0F172A)', lineHeight: '18px' }}>
             <span style={{ fontWeight: 650 }}>{actorName}</span>{' '}
             {getActionVerb(n.notification_type)}
           </div>
@@ -89,13 +89,13 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
             <WorkItemIcon type={n.entity_icon_type} />
             {/* m-06: entity title truncation increased to 260px */}
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-1, #0F172A)',
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: 'var(--fg-1, #0F172A)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               maxWidth: 260,
             }}>
               {n.entity_title}
             </span>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#2563EB', fontWeight: 500, flexShrink: 0 }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: '#2563EB', fontWeight: 500, flexShrink: 0 }}>
               {n.entity_key}
             </span>
           </div>
@@ -110,7 +110,7 @@ export default function ToastToken({ toast: t, onDismiss, onPause, onResume }: T
                   style={{
                     padding: '4px 10px', borderRadius: 4,
                     border: '0.5px solid rgba(15,23,42,.12)', background: 'transparent',
-                    cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
+                    cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500,
                     color: '#475569',
                     minHeight: 44, // responsive: min tap target
                   }}

@@ -19,7 +19,7 @@
 }
 
 #r360-root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   -webkit-font-smoothing: antialiased !important;
   background: #F8FAFC !important;
   min-height: 100vh !important;
@@ -140,7 +140,7 @@
   font-size: 12px !important;
   font-weight: 500 !important;
   color: #64748B !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-variant-numeric: tabular-nums !important;
 }
 
@@ -247,7 +247,7 @@
   font-size: 11px !important;
   font-weight: 600 !important;
   color: #334155 !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-variant-numeric: tabular-nums !important;
 }
 
@@ -516,7 +516,7 @@
 
 /* Item key mono */
 #r360-root .r3-item-key {
-  font-family: 'JetBrains Mono', 'SF Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 11.5px !important;
   font-weight: 600 !important;
   color: #2563EB !important;
@@ -576,7 +576,7 @@
   align-items: center !important;
   justify-content: center !important;
   color: #FFFFFF !important;
-  font-family: 'Sora', sans-serif !important;
+  font-family: var(--ds-font-family-heading) !important;
   font-size: 24px !important;
   font-weight: 800 !important;
 }
@@ -632,7 +632,7 @@
   border-radius: 12px !important;
   padding: 2px 8px !important;
   color: #334155 !important;
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   white-space: nowrap !important;
   z-index: 6 !important;
 }
@@ -867,7 +867,7 @@
   justify-content: center !important;
   font-size: 14px !important;
   font-weight: 700 !important;
-  font-family: 'Sora', sans-serif !important;
+  font-family: var(--ds-font-family-heading) !important;
 }
 #r360-root .r3-completed-circle.empty {
   background: transparent !important;
@@ -955,7 +955,7 @@
 
 /* Age badge */
 #r360-root .r3-age-badge {
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 10px !important;
   font-weight: 600 !important;
   padding: 1px 6px !important;
@@ -1052,7 +1052,7 @@
 }
 
 #r360-root .drawer-key {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 14px !important; font-weight: 600 !important;
   color: var(--cp-primary, #2563EB) !important;
 }
@@ -1113,7 +1113,7 @@
 
 #r360-root .drawer-title {
   padding: 16px 20px !important;
-  font-family: var(--font-heading, 'Sora', sans-serif) !important;
+  font-family: var(--ds-font-family-heading) !important;
   font-size: 15px !important; font-weight: 700 !important;
   color: var(--cp-ink, #0F172A) !important; line-height: 1.45 !important;
   border-bottom: 0.75px solid rgba(15,23,42,0.08) !important;
@@ -1216,7 +1216,7 @@
 }
 
 #r360-root .hier-key {
-  font-family: var(--font-mono, 'JetBrains Mono', monospace) !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 12px !important; font-weight: 600 !important;
   color: var(--cp-primary, #2563EB) !important;
 }

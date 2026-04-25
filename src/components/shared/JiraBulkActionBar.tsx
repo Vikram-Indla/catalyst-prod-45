@@ -120,7 +120,7 @@ export function JiraBulkActionBar({
         style={{
           backgroundColor: '#44546F',
           boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           height: 44,
         }}
         role="toolbar"

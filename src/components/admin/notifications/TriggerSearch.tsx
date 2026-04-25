@@ -202,11 +202,11 @@ export const TriggerSearch = memo(function TriggerSearch({
       <div className="flex items-center justify-between">
         <span className="text-xs text-[#94A3B8]">
           Showing{' '}
-          <span className="font-medium font-['JetBrains_Mono'] text-[#475569]">{filteredCount}</span>{' '}
+          <span className="font-medium font-mono text-[#475569]">{filteredCount}</span>{' '}
           of{' '}
-          <span className="font-medium font-['JetBrains_Mono'] text-[#475569]">{totalCount}</span>{' '}
+          <span className="font-medium font-mono text-[#475569]">{totalCount}</span>{' '}
           triggers across{' '}
-          <span className="font-medium font-['JetBrains_Mono'] text-[#475569]">{groupCount}</span>{' '}
+          <span className="font-medium font-mono text-[#475569]">{groupCount}</span>{' '}
           categories
         </span>
 

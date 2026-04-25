@@ -168,7 +168,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
   const inputStyle = (hasError?: boolean): React.CSSProperties => ({
     width: '100%', height: 40, padding: '8px 12px',
     border: `1.5px solid ${hasError ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8,
-    fontSize: 14, color: 'var(--fg-1)', fontFamily: 'Inter',
+    fontSize: 14, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)',
   });
 
   return (
@@ -186,10 +186,10 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexShrink: 0,
         }}>
           <div>
-            <h2 style={{ fontFamily: 'Inter', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>
               {mode === 'edit' ? 'Edit Shared Step' : 'Create Shared Step'}
             </h2>
-            <p style={{ fontFamily: 'Inter', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0' }}>
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0' }}>
               {mode === 'edit' ? 'Update this shared step' : 'Create a reusable test step for your test cases'}
             </p>
           </div>
@@ -242,7 +242,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
               style={{
                 width: '100%', minHeight: 100, padding: '10px 12px',
                 border: `1.5px solid ${errors.action ? 'var(--sem-danger)' : 'var(--divider)'}`, borderRadius: 8,
-                fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'Inter',
+                fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'var(--ds-font-family-body)',
               }} />
             {errors.action && <ErrorText text={errors.action} />}
             {action && (
@@ -266,7 +266,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
               style={{
                 width: '100%', minHeight: 80, padding: '10px 12px',
                 border: '1.5px solid var(--divider)', borderRadius: 8,
-                fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'Inter',
+                fontSize: 14, color: 'var(--fg-1)', resize: 'vertical', fontFamily: 'var(--ds-font-family-body)',
               }} />
           </div>
 
@@ -284,7 +284,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
               <button type="button" onClick={addVariable} style={{
                 height: 32, padding: '8px 12px', border: '1px solid var(--divider)', borderRadius: 6,
                 backgroundColor: 'var(--cp-float)', color: 'var(--cp-blue)', fontSize: 13, fontWeight: 500,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Inter',
+                cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--ds-font-family-body)',
               }}>
                 <Plus size={14} /> Add Variable
               </button>
@@ -295,7 +295,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
             {variables.length === 0 ? (
               <div style={{
                 padding: 16, backgroundColor: 'var(--bg-1)', borderRadius: 8,
-                textAlign: 'center', color: 'var(--fg-4)', fontSize: 13, fontFamily: 'Inter',
+                textAlign: 'center', color: 'var(--fg-4)', fontSize: 13, fontFamily: 'var(--ds-font-family-body)',
               }}>
                 No variables defined. Variables are auto-detected from {'{{variable}}'} in action text.
               </div>
@@ -307,7 +307,7 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
                     padding: 12, backgroundColor: 'var(--bg-1)', borderRadius: 8,
                   }}>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontSize: 11, color: 'var(--fg-3)', display: 'block', marginBottom: 4, fontFamily: 'Inter' }}>
+                      <label style={{ fontSize: 11, color: 'var(--fg-3)', display: 'block', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
                         Variable Name
                       </label>
                       <input type="text" value={v.name} onChange={(e) => updateVariable(i, 'name', e.target.value)}
@@ -319,14 +319,14 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
                         }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <label style={{ fontSize: 11, color: 'var(--fg-3)', display: 'block', marginBottom: 4, fontFamily: 'Inter' }}>
+                      <label style={{ fontSize: 11, color: 'var(--fg-3)', display: 'block', marginBottom: 4, fontFamily: 'var(--ds-font-family-body)' }}>
                         Default Value
                       </label>
                       <input type="text" value={v.default} onChange={(e) => updateVariable(i, 'default', e.target.value)}
                         placeholder="Optional default"
                         style={{
                           width: '100%', height: 50, padding: '0 10px',
-                          border: '1.5px solid var(--divider)', borderRadius: 6, fontSize: 13, fontFamily: 'Inter',
+                          border: '1.5px solid var(--divider)', borderRadius: 6, fontSize: 13, fontFamily: 'var(--ds-font-family-body)',
                         }} />
                     </div>
                     <button type="button" onClick={() => removeVariable(i)} style={{
@@ -351,14 +351,14 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
           <button onClick={onClose} disabled={isSubmitting} style={{
             height: 40, padding: '0 20px', backgroundColor: 'var(--cp-float)',
             border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14, fontWeight: 500,
-            color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'Inter',
+            color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
           }}>Cancel</button>
           <button onClick={handleSubmit} disabled={isSubmitting} style={{
             height: 40, padding: '0 20px',
             background: 'linear-gradient(135deg, var(--cp-blue) 0%, var(--cp-primary-70) 100%)',
             border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600,
             color: '#FFFFFF', cursor: isSubmitting ? 'wait' : 'pointer',
-            opacity: isSubmitting ? 0.7 : 1, fontFamily: 'Inter',
+            opacity: isSubmitting ? 0.7 : 1, fontFamily: 'var(--ds-font-family-body)',
           }}>
             {isSubmitting ? (mode === 'edit' ? 'Saving...' : 'Creating...') : (mode === 'edit' ? 'Save Changes' : 'Create Shared Step')}
           </button>
@@ -369,12 +369,12 @@ export function CreateSharedStepModal({ isOpen, onClose, onSuccess, categories, 
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6, fontFamily: 'Inter',
+  display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 6, fontFamily: 'var(--ds-font-family-body)',
 };
 
 function ErrorText({ text }: { text: string }) {
   return (
-    <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'Inter' }}>
+    <p style={{ fontSize: 12, color: 'var(--sem-danger)', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 4, fontFamily: 'var(--ds-font-family-body)' }}>
       <AlertCircle size={12} /> {text}
     </p>
   );

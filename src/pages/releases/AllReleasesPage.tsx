@@ -1114,7 +1114,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
         />
       </td>
       <td style={{ ...cellStyle, minWidth: '280px' }}>
-        <span style={{ display: 'inline-block', padding: '2px 6px', background: '#f1f5f9', color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: "'JetBrains Mono', monospace", marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
+        <span style={{ display: 'inline-block', padding: '2px 6px', background: '#f1f5f9', color: '#94a3b8', border: '1px solid #e2e8f0', borderRadius: '4px', fontSize: '11px', fontWeight: 500, fontFamily: 'var(--ds-font-family-monospaced)', marginRight: '6px', verticalAlign: 'middle' }}>{r.version}</span>
         <span style={{ fontSize: '14px', fontWeight: 500, color: '#0f172a' }}>{r.name}</span>
       </td>
       <td style={{ ...cellStyle, width: '100px' }}><StatusPill status={r.status} /></td>
@@ -1123,7 +1123,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
           <div style={{ width: '64px', height: '6px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
             <div style={{ width: `${r.progress}%`, height: '100%', background: r.progress <= 30 ? '#ef4444' : r.progress <= 60 ? '#d97706' : '#0d9488', borderRadius: '4px' }} />
           </div>
-          <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.progress}%</span>
+          <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b', fontFamily: 'var(--ds-font-family-monospaced)' }}>{r.progress}%</span>
         </div>
       </td>
       <td style={cellStyle}>
@@ -1136,10 +1136,10 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
               </>
             )}
           </div>
-          <span style={{ fontSize: '13px', fontWeight: testRatio < 0.8 ? 600 : 400, color: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>{r.testsPass}/{r.testsTotal}</span>
+          <span style={{ fontSize: '13px', fontWeight: testRatio < 0.8 ? 600 : 400, color: '#64748b', fontFamily: 'var(--ds-font-family-monospaced)' }}>{r.testsPass}/{r.testsTotal}</span>
         </div>
       </td>
-      <td style={{ ...cellStyle, width: '72px', fontSize: '14px', fontWeight: 600, color: r.defects >= 20 ? '#ef4444' : r.defects >= 10 ? '#d97706' : r.defects > 0 ? '#10b981' : '#94a3b8', fontFamily: "'JetBrains Mono', monospace" }}>
+      <td style={{ ...cellStyle, width: '72px', fontSize: '14px', fontWeight: 600, color: r.defects >= 20 ? '#ef4444' : r.defects >= 10 ? '#d97706' : r.defects > 0 ? '#10b981' : '#94a3b8', fontFamily: 'var(--ds-font-family-monospaced)' }}>
         {r.defects > 0 ? r.defects : '—'}
       </td>
       <td style={{ ...cellStyle, width: '100px' }}>
@@ -1148,7 +1148,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
             <div style={{ width: '48px', height: '4px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
               <div style={{ width: `${r.coverage}%`, height: '100%', background: covColor, borderRadius: '4px' }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 500, color: covColor, fontFamily: "'JetBrains Mono', monospace" }}>{r.coverage}%</span>
+            <span style={{ fontSize: '13px', fontWeight: 500, color: covColor, fontFamily: 'var(--ds-font-family-monospaced)' }}>{r.coverage}%</span>
           </div>
         ) : (
           <span style={{ fontSize: '13px', color: '#94a3b8' }}>—</span>
@@ -1164,7 +1164,7 @@ function ReleaseRow({ release: r, index = 0, selected, onToggle, onClick, onNavi
         {r.status === 'released' ? (
           <span style={{ fontSize: '11px', fontWeight: 500, color: '#059669', textTransform: 'uppercase' as const, letterSpacing: '0.03em' }}>Released</span>
         ) : (
-          <span style={{ fontSize: '13px', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? '#ef4444' : r.daysRemaining <= 14 ? '#d97706' : '#64748b', fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: '13px', fontWeight: r.daysRemaining <= 7 ? 600 : 500, color: r.daysRemaining <= 7 ? '#ef4444' : r.daysRemaining <= 14 ? '#d97706' : '#64748b', fontFamily: 'var(--ds-font-family-monospaced)' }}>
             {r.overdue ? `-${r.daysRemaining}d` : `${r.daysRemaining}d`}
           </span>
         )}

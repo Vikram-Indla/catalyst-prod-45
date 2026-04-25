@@ -74,7 +74,7 @@ const TOKENS = `
   --srd-purple:#2563EB;
   --srd-ai:#2563EB; --srd-ai-d:#1E40AF; --srd-ai-bg:#EFF6FF; --srd-ai-bdr:#93C5FD;
   --srd-r:4px; --srd-r2:6px; --srd-r3:8px; --srd-r4:12px; --srd-pill:9999px;
-  font-family:'Inter',system-ui,sans-serif; color:var(--srd-ink);
+  font-family:var(--ds-font-family-body); color:var(--srd-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
 }
 
@@ -149,8 +149,8 @@ const TOKENS = `
 `;
 
 /* ─── helpers ─── */
-const S = (sz: number, wt = 700): React.CSSProperties => ({ fontFamily: "'Sora',sans-serif", fontSize: sz, fontWeight: wt });
-const M = (sz = 11): React.CSSProperties => ({ fontFamily: "'JetBrains Mono',monospace", fontSize: sz });
+const S = (sz: number, wt = 700): React.CSSProperties => ({ fontFamily: 'var(--ds-font-family-heading)', fontSize: sz, fontWeight: wt });
+const M = (sz = 11): React.CSSProperties => ({ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: sz });
 const F = (g = 8): React.CSSProperties => ({ display: 'flex', alignItems: 'center', gap: g });
 const Dot = (c: string, s = 8): React.CSSProperties => ({ width: s, height: s, borderRadius: '50%', background: c, flexShrink: 0 });
 const Pill = (bg: string, c: string): React.CSSProperties => ({ ...M(11), fontWeight: 700, padding: '3px 10px', borderRadius: 'var(--srd-pill)', background: bg, color: c, whiteSpace: 'nowrap' });
@@ -253,11 +253,11 @@ export default function StrategyRoomDashboard({
         </div>
         <div className="srd-hdr-actions" style={F(8)}>
           {onDownloadBrief && (
-            <button className="srd-btn" onClick={onDownloadBrief} style={{ height: 32, padding: '0 14px', fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 500, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-bdr)', background: 'var(--srd-bg)', color: 'var(--srd-ink-3)', transition: 'all .15s' }}>
+            <button className="srd-btn" onClick={onDownloadBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-bdr)', background: 'var(--srd-bg)', color: 'var(--srd-ink-3)', transition: 'all .15s' }}>
               <Ico d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />Download Brief
             </button>
           )}
-          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: '#fff', transition: 'all .15s' }}>
+          <button className="srd-btn-p" onClick={onOpenBrief} style={{ height: 32, padding: '0 14px', fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 600, borderRadius: 'var(--srd-r2)', cursor: 'pointer', ...F(6), border: '1px solid var(--srd-blue)', background: 'var(--srd-blue)', color: '#fff', transition: 'all .15s' }}>
             <Ico d="M13 2L3 14h9l-1 8 10-12h-9l1-8" />AI Intelligence
           </button>
           <button className="srd-btn" style={{ width: 32, height: 32, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid transparent', borderRadius: 'var(--srd-r2)', cursor: 'pointer', background: 'none', color: 'var(--srd-ink-2)' }}>
@@ -277,7 +277,7 @@ export default function StrategyRoomDashboard({
                 value={visionDraft}
                 onChange={e => setVisionDraft(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter') saveVision(); if (e.key === 'Escape') cancelEditVision(); }}
-                style={{ flex: 1, fontWeight: 500, color: 'var(--srd-ink-2)', fontSize: 13, fontFamily: "'Inter',sans-serif", background: 'var(--srd-bg)', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r)', padding: '4px 10px', outline: 'none' }}
+                style={{ flex: 1, fontWeight: 500, color: 'var(--srd-ink-2)', fontSize: 13, fontFamily: 'var(--ds-font-family-body)', background: 'var(--srd-bg)', border: '1px solid var(--srd-blue-bdr)', borderRadius: 'var(--srd-r)', padding: '4px 10px', outline: 'none' }}
               />
               <button onClick={saveVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-blue)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={14} /></button>
               <button onClick={cancelEditVision} style={{ width: 26, height: 26, borderRadius: 'var(--srd-r)', background: 'var(--srd-bg)', color: 'var(--srd-ink-m)', border: '1px solid var(--srd-bdr)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={14} /></button>

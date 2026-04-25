@@ -91,7 +91,7 @@ export function CapacityTable({ resources }: Props) {
     >
       <div style={{ padding: '20px 24px 12px' }}>
         <h3 style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: 16, fontWeight: 600,
           color: 'var(--fg-1)',
         }}>
@@ -100,7 +100,7 @@ export function CapacityTable({ resources }: Props) {
       </div>
 
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--ds-font-family-body)' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--divider)' }}>
               {COLUMNS.map(col => {

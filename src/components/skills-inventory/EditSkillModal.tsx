@@ -28,7 +28,7 @@ interface EditSkillModalProps {
 
 const proficiencyOptions = [
   { level: 'Beginner', label: 'Beginner', color: 'var(--sem-danger)' },
-  { level: 'Intermediate', label: 'Intermediate', color: 'var(--sem-warning)' },
+  { level: 'var(--ds-font-family-body)', label: 'var(--ds-font-family-body)', color: 'var(--sem-warning)' },
   { level: 'Advanced', label: 'Advanced', color: 'var(--sem-info)' },
   { level: 'Expert', label: 'Expert', color: 'var(--health-green)' },
 ];
@@ -36,7 +36,7 @@ const proficiencyOptions = [
 export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditSkillModalProps) {
   const [formData, setFormData] = useState({
     skillName: '',
-    proficiency: 'Intermediate',
+    proficiency: 'var(--ds-font-family-body)',
     notes: ''
   });
   const [isSaving, setIsSaving] = useState(false);

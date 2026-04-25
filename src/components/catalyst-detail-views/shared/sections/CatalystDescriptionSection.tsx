@@ -134,8 +134,8 @@ if (typeof document !== 'undefined' && !document.getElementById(STYLE_ID)) {
     .cv-desc-body th, .cv-desc-body td,
     .adf-description-content th, .adf-description-content td { border: 1px solid #DFE1E6; padding: 8px 12px; font-size: 14px; vertical-align: top; }
     .cv-desc-body blockquote, .adf-description-content blockquote { border-left: 2px solid #DFE1E6; padding: 8px 12px; margin: 8px 0; color: #5E6C84; }
-    .cv-desc-body pre, .adf-description-content pre { background: #F4F5F7; padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: 'JetBrains Mono', monospace; }
-    .cv-desc-body code, .adf-description-content code { background: #F4F5F7; padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+    .cv-desc-body pre, .adf-description-content pre { background: #F4F5F7; padding: 12px; border-radius: 4px; font-size: 13px; overflow-x: auto; margin: 4px 0 8px; font-family: var(--ds-font-family-monospaced); }
+    .cv-desc-body code, .adf-description-content code { background: #F4F5F7; padding: 2px 4px; border-radius: 3px; font-size: 12px; font-family: var(--ds-font-family-monospaced); }
     .cv-desc-body pre code, .adf-description-content pre code { background: none; padding: 0; }
     .cv-desc-body p, .adf-description-content p { margin: 0 0 8px; font-weight: 400; }
     .cv-desc-body a, .adf-description-content a { color: #0052CC; text-decoration: none; }

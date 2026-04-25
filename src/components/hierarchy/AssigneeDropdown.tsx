@@ -60,7 +60,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
           placeholder="Search people..."
           style={{
             flex: 1, border: 'none', outline: 'none', fontSize: 12,
-            fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)', background: 'transparent',
+            fontFamily: 'var(--ds-font-family-body)', color: 'var(--fg-1)', background: 'transparent',
           }}
         />
       </div>
@@ -70,7 +70,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
         onClick={() => { onSelect(null); onClose(); }}
         style={{
           height: 50, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
-          cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
         }}
         onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
         onMouseLeave={(e) => (e.currentTarget.style.background = '')}
@@ -92,7 +92,7 @@ export function AssigneeDropdown({ currentAssignee, availableAssignees, onSelect
               style={{
                 height: 40, padding: '8px 12px', display: 'flex', alignItems: 'center', gap: 8,
                 cursor: 'pointer', background: isCurrent ? 'var(--bg-1)' : undefined,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
               }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? 'var(--bg-1, #F8FAFC)' : '')}

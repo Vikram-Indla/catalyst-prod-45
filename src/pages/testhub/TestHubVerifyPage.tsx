@@ -232,7 +232,7 @@ export default function TestHubVerifyPage() {
         subtitle="20 automated integrity checks — runs on page load"
       >
         {lastRun && (
-          <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: 13, color: '#94A3B8', fontFamily: 'var(--ds-font-family-body)' }}>
             Last run: {lastRun}
           </span>
         )}
@@ -292,7 +292,7 @@ export default function TestHubVerifyPage() {
 
         {/* Results table */}
         <div style={{ border: '0.75px solid var(--bd-default, #E2E8F0)', borderRadius: 6, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--ds-font-family-body)' }}>
             <thead>
               <tr style={{ backgroundColor: 'var(--bg-1, #F8FAFC)' }}>
                 {['GROUP', 'CHECK', 'EXPECTED', 'ACTUAL', 'STATUS'].map(h => (
@@ -330,13 +330,13 @@ export default function TestHubVerifyPage() {
                         {ci === 0 ? group : ''}
                       </td>
                       <td style={{ padding: '8px 12px', fontSize: 13, color: '#1E293B' }}>
-                        <span style={{ color: '#94A3B8', fontFamily: 'JetBrains Mono, monospace', fontSize: 11, marginRight: 8 }}>{check.id}</span>
+                        <span style={{ color: '#94A3B8', fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11, marginRight: 8 }}>{check.id}</span>
                         {check.label}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#64748B', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                         {check.expected}
                       </td>
-                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#1E293B', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <td style={{ padding: '8px 12px', fontSize: 12, color: '#1E293B', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                         {check.actual ?? '—'}
                       </td>
                       <td style={{ padding: '8px 12px' }}>
@@ -394,7 +394,7 @@ export default function TestHubVerifyPage() {
             borderRadius: 6,
             fontSize: 14,
             fontWeight: 600,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             ...(failCount > 0
               ? { backgroundColor: '#FFEBE6', border: '1px solid #BF2600', color: '#BF2600' }
               : warnCount > 0
@@ -488,7 +488,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
     <>
       {/* Divider + header */}
       <div style={{ borderTop: '0.75px solid var(--bd-default, #E2E8F0)', marginTop: 32, paddingTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ fontSize: 16, fontWeight: 600, color: '#1E293B', fontFamily: 'Inter, sans-serif' }}>
+        <span style={{ fontSize: 16, fontWeight: 600, color: '#1E293B', fontFamily: 'var(--ds-font-family-body)' }}>
           Module health scores
         </span>
         <button
@@ -541,7 +541,7 @@ function ModuleHealthSection({ checks, loadingCount }: { checks: VCheck[]; loadi
                   {['A1', 'A2', 'A3'].map(id => {
                     const c = checks.find(x => x.id === id);
                     return (
-                      <div key={id} style={{ fontSize: 11, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <div key={id} style={{ fontSize: 11, color: '#64748B', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                         {c?.label}: {c?.actual ?? '—'}
                       </div>
                     );

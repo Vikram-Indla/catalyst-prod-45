@@ -9,7 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import CreateDriveModal from './CreateDriveModal';
 
-const MONO = "'JetBrains Mono', monospace";
+const MONO = 'var(--ds-font-family-monospaced)';
 
 interface Drive {
   id: string;
@@ -78,7 +78,7 @@ export default function IdeationDrivesView() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: "'Sora', 'Inter', sans-serif" }}>Ideas Themes</h2>
+            <h2 style={{ fontSize: '22px', fontWeight: 800, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.5px', margin: 0, fontFamily: 'var(--ds-font-family-heading)' }}>Ideas Themes</h2>
             <span style={{
               background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px',
               padding: '1px 7px', fontSize: '11px', fontWeight: 600,

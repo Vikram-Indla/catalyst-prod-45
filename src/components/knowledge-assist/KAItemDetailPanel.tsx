@@ -20,9 +20,9 @@ const T = {
 };
 
 const F = {
-  inter: "'Inter', -apple-system, sans-serif",
-  sora: "'Sora', sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  inter: 'var(--ds-font-family-body)',
+  sora: 'var(--ds-font-family-heading)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 interface ItemData {

@@ -198,7 +198,7 @@ export function ThemeToolbar(props: Props) {
             cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
             transition: 'all 200ms ease',
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}

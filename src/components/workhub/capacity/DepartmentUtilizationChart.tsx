@@ -44,7 +44,7 @@ export function DepartmentUtilizationChart({ departments }: Props) {
     >
       <h3
         style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: 16,
           fontWeight: 600,
           color: 'var(--fg-1)',
@@ -60,7 +60,7 @@ export function DepartmentUtilizationChart({ departments }: Props) {
           <XAxis type="number" domain={[0, 120]} tickFormatter={v => `${v}%`} />
           <YAxis
             type="category" dataKey="department" width={110}
-            tick={{ fontSize: 13, fontFamily: 'Inter' }}
+            tick={{ fontSize: 13, fontFamily: 'var(--ds-font-family-body)' }}
           />
           <Tooltip content={<DeptTooltip />} />
           <ReferenceLine x={80} stroke="#ef4444" strokeDasharray="4 4" />

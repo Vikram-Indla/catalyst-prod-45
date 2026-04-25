@@ -30,7 +30,7 @@ const TOKENS = `
   --sri-teal-t:#0A8277;
   --sri-red:#DC2626; --sri-red-t:#D92525; --sri-red-bg:#FEF2F2;
   --sri-r:4px; --sri-r2:6px; --sri-r3:8px; --sri-r4:12px; --sri-pill:9999px;
-  font-family:'Inter',system-ui,sans-serif; color:var(--sri-ink);
+  font-family:var(--ds-font-family-body); color:var(--sri-ink);
   -webkit-font-smoothing:antialiased; line-height:1.5;
 }
 
@@ -80,8 +80,8 @@ const TOKENS = `
 `;
 
 /* ─── style helpers ─── */
-const S = (sz: number, wt = 700): React.CSSProperties => ({ fontFamily: "'Sora',sans-serif", fontSize: sz, fontWeight: wt });
-const M = (sz = 11): React.CSSProperties => ({ fontFamily: "'JetBrains Mono',monospace", fontSize: sz });
+const S = (sz: number, wt = 700): React.CSSProperties => ({ fontFamily: 'var(--ds-font-family-heading)', fontSize: sz, fontWeight: wt });
+const M = (sz = 11): React.CSSProperties => ({ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: sz });
 const F = (g = 8): React.CSSProperties => ({ display: "flex", alignItems: "center", gap: g });
 const D = (c: string, s = 8): React.CSSProperties => ({ width: s, height: s, borderRadius: "50%", background: c, flexShrink: 0 });
 const BT = (h = 8): React.CSSProperties => ({ height: h, background: "var(--sri-bg-3)", borderRadius: "var(--sri-pill)", overflow: "hidden" });
@@ -230,16 +230,16 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
             {/* FIX #26 — Generate button ghost style */}
             {isAdminUser && (
               <button onClick={handleGenerate} disabled={generateMutation.isPending || metricsLoading}
-                style={{ height: 32, padding: "0 14px", fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid transparent", background: "none", color: "var(--sri-ink-3)" }}>
+                style={{ height: 32, padding: "0 14px", fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid transparent", background: "none", color: "var(--sri-ink-3)" }}>
                 <RefreshCw size={14} className={generateMutation.isPending ? 'animate-spin' : ''} />
                 Generate
               </button>
             )}
-            <button onClick={handleDownload} style={{ height: 32, padding: "0 14px", fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>
+            <button onClick={handleDownload} style={{ height: 32, padding: "0 14px", fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
               Download
             </button>
-            <button onClick={onClose} style={{ height: 32, padding: "0 14px", fontFamily: "'Inter',sans-serif", fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>✕ Close</button>
+            <button onClick={onClose} style={{ height: 32, padding: "0 14px", fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "1px solid var(--sri-bdr)", background: "var(--sri-bg)", color: "var(--sri-ink-3)" }}>✕ Close</button>
           </div>
         </header>
 
@@ -391,7 +391,7 @@ export function AIExecutiveBrief({ open, onClose, onDownload }: Props) {
               {/* FIX #16 — export text: no underline */}
               <div style={{ ...F(8) as React.CSSProperties, justifyContent: "space-between", padding: "12px 20px", borderTop: "1px solid var(--sri-bdr)", background: "var(--sri-ai-bg)" }}>
                 <span style={{ fontSize: 13, fontWeight: 500, color: "var(--sri-ai-d)", textDecoration: "none" }}>Ready to act? → Export Decision Pack</span>
-                <button style={{ height: 30, padding: "0 14px", fontFamily: "'Inter',sans-serif", fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "#fff" }}>
+                <button style={{ height: 30, padding: "0 14px", fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 600, borderRadius: "var(--sri-r2)", cursor: "pointer", ...F(6), border: "none", background: "var(--sri-ai-d)", color: "#fff" }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg>
                   Export
                 </button>

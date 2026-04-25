@@ -115,7 +115,7 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
                 borderBottom: idx < timelineItems.length - 1 ? '0.75px solid var(--divider)' : 'none',
               }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
-                <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, flexShrink: 0 }}>{item.item_key}</span>
+                <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
                 <span style={{
                   flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
                   textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
@@ -156,7 +156,7 @@ export function WeeklyStoryTab({ workItems, openCount, showFilteredList, weekSta
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: INK1 }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 4 }}>{tile.label}</div>
             </div>
           ))}

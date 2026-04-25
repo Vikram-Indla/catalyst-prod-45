@@ -216,7 +216,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
           style={{
             width: '100%', padding: '10px 12px', border: '1px solid #DFE1E6',
             borderRadius: 4, fontSize: 14, outline: 'none', resize: 'vertical',
-            minHeight: 80, fontFamily: 'Inter, sans-serif', color: '#172B4D',
+            minHeight: 80, fontFamily: 'var(--ds-font-family-body)', color: '#172B4D',
             lineHeight: '1.5',
           }}
         />

@@ -475,7 +475,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       case 'key':
         return (
           <td key={colKey} style={{ width: columnWidths.key }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
               {story.story_key || '—'}
             </span>
           </td>
@@ -639,7 +639,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       header: 'KEY',
       sortingFn: (a, b) => (a.original.story_key || '').localeCompare(b.original.story_key || ''),
       cell: ({ row }) => (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
+        <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>
           {row.original.story_key || '—'}
         </span>
       ),
@@ -794,7 +794,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
-        fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif",
+        fontSize: 13, color: '#64748B', fontFamily: 'var(--ds-font-family-body)',
       }}>
         <span style={{ fontWeight: 500 }}>
           {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
@@ -835,7 +835,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                     color: page === p ? '#2563EB' : '#475569',
                     fontWeight: page === p ? 600 : 400,
                     fontSize: 13, cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--ds-font-family-body)',
                   }}
                 >
                   {p}
@@ -1037,7 +1037,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 12px', borderTop: '0.75px solid #E2E8F0',
-            fontSize: 13, color: '#64748B', fontFamily: "'Inter', sans-serif",
+            fontSize: 13, color: '#64748B', fontFamily: 'var(--ds-font-family-body)',
           }}>
             <span style={{ fontWeight: 500 }}>
               {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, totalFiltered)} of {totalFiltered}
@@ -1078,7 +1078,7 @@ export default function StoryBacklogPage({ projectId: propProjectId, projectKey 
                         color: page === p ? '#2563EB' : '#475569',
                         fontWeight: page === p ? 600 : 400,
                         fontSize: 13, cursor: 'pointer',
-                        fontFamily: "'Inter', sans-serif",
+                        fontFamily: 'var(--ds-font-family-body)',
                       }}
                     >
                       {p}

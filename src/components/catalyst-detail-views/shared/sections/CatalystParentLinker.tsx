@@ -179,7 +179,7 @@ function BusinessRequestParentPicker({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <IssueIcon type="Business Request" size={16} />
           <span
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+            style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
             onClick={() => onOpenItem?.(currentParent.id)}
           >{currentParent.request_key}</span>
           <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
@@ -244,7 +244,7 @@ function renderBrGroup(
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
           >
             <IssueIcon type="Business Request" size={14} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.request_key || '—'}</span>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.request_key || '—'}</span>
             <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.title}</span>
             <StatusLozenge status={item.process_step} category={statusCat} />
             {isSelected && <Check size={16} color="#0052CC" />}
@@ -357,7 +357,7 @@ function SingleParentPicker({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <IssueIcon type={currentParent.issue_type} size={16} />
           <span
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+            style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
             onClick={() => onOpenItem?.(currentParent.id)}
           >{currentParent.issue_key}</span>
           <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
@@ -373,7 +373,7 @@ function SingleParentPicker({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <IssueIcon type="Feature" size={16} />
           <span
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+            style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
             onClick={() => onOpenItem?.(rawParentKey!)}
           >{rawParentKey}</span>
           {parentFetched && (
@@ -532,7 +532,7 @@ function MultiLinkPicker({
               <div key={link.id} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <IssueIcon type={link.issue_type} size={16} />
                 <span
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+                  style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
                   onClick={() => onOpenItem?.(link.id)}
                 >{link.issue_key}</span>
                 <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
@@ -601,7 +601,7 @@ function renderGroup(
             onMouseLeave={e => { e.currentTarget.style.background = isSelected ? '#DEEBFF' : 'transparent'; }}
           >
             <IssueIcon type={item.issue_type} size={14} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
             <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
             {isSelected && <Check size={14} color="#0052CC" />}
@@ -643,7 +643,7 @@ function renderGroupMulti(
               {isLinked && <Check size={10} color="#FFF" strokeWidth={3} />}
             </div>
             <IssueIcon type={item.issue_type} size={14} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#5E6C84', flexShrink: 0 }}>{item.issue_key}</span>
             <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.summary}</span>
             <StatusLozenge status={item.status} category={item.status_category} />
           </div>

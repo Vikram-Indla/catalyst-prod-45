@@ -48,7 +48,7 @@ export function Skeleton({ h = 20, w = '100%', r = 4 }: { h?: number; w?: string
 export function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div style={{
-      fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, fontWeight: 500,
+      fontFamily: 'var(--ds-font-family-body)', fontSize: 11, fontWeight: 500,
       textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 12,
     }}>{children}</div>
   );
@@ -71,7 +71,7 @@ export function R360StatusLozenge({ status }: { status: string }) {
       letterSpacing: '0.03em', textTransform: 'uppercase' as const,
       padding: '0 6px', height: '20px', borderRadius: '4px',
       lineHeight: '20px', whiteSpace: 'nowrap' as const,
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--ds-font-family-body)',
     }}>
       {(status || '').toUpperCase()}
     </span>
@@ -143,7 +143,7 @@ export function FilteredListPanel({
               <span style={{ width: 20, flexShrink: 0, display: 'flex', justifyContent: 'center' }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
               </span>
-              <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, flexShrink: 0 }}>{item.item_key}</span>
+              <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK4, flexShrink: 0 }}>{item.item_key}</span>
               <span style={{
                 flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,
@@ -197,7 +197,7 @@ export function ItemDetailPanel({
           <ChevronLeft size={16} color={INK4} />
           <span style={{ fontSize: 13, color: INK2 }}>{backLabel}</span>
         </button>
-        <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{itemKey}</span>
+        <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK4 }}>{itemKey}</span>
       </div>
       {/* Body */}
       <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
@@ -218,7 +218,7 @@ export function ItemDetailPanel({
             {/* Type + Key */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <JiraIssueTypeIcon type={detail.type || 'Task'} size={16} />
-              <span style={{ fontSize: 13, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{detail.key}</span>
+              <span style={{ fontSize: 13, fontFamily: 'var(--ds-font-family-monospaced)', color: INK4 }}>{detail.key}</span>
             </div>
 
             {/* Title */}
@@ -258,7 +258,7 @@ export function ItemDetailPanel({
               <div style={{ border: '1px solid var(--divider)', borderRadius: 8, padding: '10px 14px' }}>
                 <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: INK4, marginBottom: 6 }}>PARENT</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4 }}>{detail.parentKey}</span>
+                  <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK4 }}>{detail.parentKey}</span>
                   <span style={{ fontSize: 13, color: INK2 }}>{detail.parentName || '—'}</span>
                 </div>
               </div>

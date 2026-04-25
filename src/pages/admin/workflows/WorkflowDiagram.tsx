@@ -34,7 +34,7 @@ export function WorkflowDiagram({ statuses, transitions, schemeName }: Props) {
     <div className="p-6 space-y-6">
       {/* Scheme name */}
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-sm font-semibold text-[#EDEDED] font-['Sora']">{schemeName}</span>
+        <span className="text-sm font-semibold text-[#EDEDED] font-heading">{schemeName}</span>
         <span className="text-[11px] text-[#878787]">
           {statuses.length} statuses · {transitions.length} transitions
         </span>

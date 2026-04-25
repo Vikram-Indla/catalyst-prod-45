@@ -124,7 +124,7 @@ export const baselineTokens: DesignToken[] = [
   // Chart Palette (Blue + Teal)
   { name: 'Expert (Blue)', cssVar: '--palette-expert', value: '#2563eb', category: tokenCategories[8] },
   { name: 'Advanced (Teal)', cssVar: '--palette-advanced', value: '#0d9488', category: tokenCategories[8] },
-  { name: 'Intermediate (Blue Light)', cssVar: '--palette-intermediate', value: '#60a5fa', category: tokenCategories[8] },
+  { name: 'var(--ds-font-family-body)', cssVar: '--palette-intermediate', value: '#60a5fa', category: tokenCategories[8] },
   { name: 'Beginner (Gray)', cssVar: '--palette-beginner', value: '#9ca3af', category: tokenCategories[8] },
   { name: 'None (Grey)', cssVar: '--palette-none', value: '#c8ccd0', category: tokenCategories[8] },
 ];

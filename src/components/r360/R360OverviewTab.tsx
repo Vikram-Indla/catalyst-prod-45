@@ -104,7 +104,7 @@ export function OverviewTab({
             >
               <ChevronLeft size={16} color={INK4} />
             </button>
-            <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
+            <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
             <button
               onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
               disabled={weekOffset >= 0}
@@ -129,7 +129,7 @@ export function OverviewTab({
               onMouseEnter={e => clickableTileHover(e, true)}
               onMouseLeave={e => clickableTileHover(e, false)}
             >
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: loadColour }}>{openCount}</div>
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: loadColour }}>{openCount}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>TOTAL OPEN</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>vs role avg {roleAvg}</div>
             </div>
@@ -145,7 +145,7 @@ export function OverviewTab({
               onMouseLeave={e => clickableTileHover(e, false)}
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: closedColour }}>{closedThisWeek}</span>
+                <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: closedColour }}>{closedThisWeek}</span>
                 {closedTrend && <span style={{ fontSize: 14, fontWeight: 700, color: closedTrendColor }}>{closedTrend}</span>}
               </div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>CLOSED THIS WEEK</div>
@@ -158,7 +158,7 @@ export function OverviewTab({
               onMouseEnter={e => clickableTileHover(e, true)}
               onMouseLeave={e => clickableTileHover(e, false)}
             >
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: INK1 }}>{inReview}</div>
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: INK1 }}>{inReview}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>IN REVIEW</div>
               <div style={{ fontSize: 11, fontWeight: 400, color: INK4, marginTop: 2 }}>{inReview === 0 ? 'None pending' : `${inReview} awaiting`}</div>
             </div>
@@ -168,7 +168,7 @@ export function OverviewTab({
                 {pickupHours > 0 ? (
                   <>
                     <span style={{
-                      fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650,
+                      fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650,
                       color: pickupHours > 38 ? DANGER : SUCCESS,
                     }}>
                       {pickupHours < 24 ? pickupHours : Math.round(pickupHours / 24)}
@@ -178,7 +178,7 @@ export function OverviewTab({
                     </span>
                   </>
                 ) : (
-                  <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: MUTED }}>—</span>
+                  <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: MUTED }}>—</span>
                 )}
               </div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>PICKUP SPEED</div>
@@ -200,9 +200,9 @@ export function OverviewTab({
             <circle cx={55} cy={55} r={44} fill="none" stroke={loadColour} strokeWidth={9}
               strokeDasharray={`${Math.min((openCount / 11) * 276.5, 276.5)} ${276.5 - Math.min((openCount / 11) * 276.5, 276.5)}`}
               strokeDashoffset={-69} strokeLinecap="round" />
-            <text x={55} y={52} textAnchor="middle" fontFamily="'Sora', sans-serif" fontSize={22} fontWeight={700} fill={loadColour}>{openCount}</text>
-            <text x={55} y={67} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fontWeight={700} fill={MUTED}>OPEN</text>
-            <text x={55} y={82} textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize={11} fill="#CBD5E1">avg {roleAvg}</text>
+            <text x={55} y={52} textAnchor="middle" fontFamily="var(--ds-font-family-heading)" fontSize={22} fontWeight={700} fill={loadColour}>{openCount}</text>
+            <text x={55} y={67} textAnchor="middle" fontFamily="var(--ds-font-family-body)" fontSize={11} fontWeight={700} fill={MUTED}>OPEN</text>
+            <text x={55} y={82} textAnchor="middle" fontFamily="var(--ds-font-family-body)" fontSize={11} fill="#CBD5E1">avg {roleAvg}</text>
           </svg>
 
           {/* Stat rows — CLICKABLE */}
@@ -219,7 +219,7 @@ export function OverviewTab({
               onMouseLeave={e => clickableRowHover(e, false)}
             >
               <span style={{ fontSize: 12, color: INK2 }}>In progress right now</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: concurrentColour, fontFamily: "'JetBrains Mono', monospace" }}>{concurrent} concurrent</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: concurrentColour, fontFamily: 'var(--ds-font-family-monospaced)' }}>{concurrent} concurrent</span>
             </div>
             {/* Closed this week row */}
             <div
@@ -237,7 +237,7 @@ export function OverviewTab({
               onMouseLeave={e => clickableRowHover(e, false)}
             >
               <span style={{ fontSize: 12, color: INK2 }}>Closed this week</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: INK1, fontFamily: "'JetBrains Mono', monospace" }}>{closedOfTouched} of {totalTouched} touched</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: INK1, fontFamily: 'var(--ds-font-family-monospaced)' }}>{closedOfTouched} of {totalTouched} touched</span>
             </div>
             {/* Avg cycle time row — not clickable */}
             <div style={{
@@ -246,7 +246,7 @@ export function OverviewTab({
               boxShadow: '0 1px 2px rgba(15,23,42,0.06)',
             }}>
               <span style={{ fontSize: 12, color: INK2 }}>Avg cycle time</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: (avgDays === 0 || avgDays == null) ? MUTED : cycleColour, fontFamily: "'JetBrains Mono', monospace" }}>{(avgDays === 0 || avgDays == null) ? '—' : `${avgDays}d per item`}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: (avgDays === 0 || avgDays == null) ? MUTED : cycleColour, fontFamily: 'var(--ds-font-family-monospaced)' }}>{(avgDays === 0 || avgDays == null) ? '—' : `${avgDays}d per item`}</span>
             </div>
             {/* Oldest open item — SINGLE ITEM CLICK */}
             <div
@@ -261,7 +261,7 @@ export function OverviewTab({
               onMouseLeave={e => { if (oldestKey !== '—') clickableRowHover(e, false); }}
             >
               <span style={{ fontSize: 12, color: INK2 }}>Oldest open item</span>
-              <span style={{ fontSize: 12, fontWeight: 600, color: oldestColour, fontFamily: "'JetBrains Mono', monospace" }}>{oldestAgeDays}d · {oldestKey}</span>
+              <span style={{ fontSize: 12, fontWeight: 600, color: oldestColour, fontFamily: 'var(--ds-font-family-monospaced)' }}>{oldestAgeDays}d · {oldestKey}</span>
             </div>
           </div>
         </div>
@@ -318,11 +318,11 @@ export function OverviewTab({
                   <g key={i}>
                     <circle cx={x} cy={y} r={isCurrentW ? 4 : 2.5} fill={isCurrentW ? WARNING : SUCCESS} />
                     <text x={x} y={y - 8} textAnchor="middle" fontSize={11}
-                      fontFamily="'Inter', sans-serif"
+                      fontFamily="var(--ds-font-family-body)"
                       fontWeight={isPeak || isCurrentW ? 700 : 400}
                       fill={isCurrentW ? WARNING : isPeak ? SUCCESS : MUTED}
                     >{t.closedCount}</text>
-                    <text x={x} y={72} textAnchor="middle" fontSize={10} fill={MUTED} fontFamily="'Inter', sans-serif">{t.weekLabel}</text>
+                    <text x={x} y={72} textAnchor="middle" fontSize={10} fill={MUTED} fontFamily="var(--ds-font-family-body)">{t.weekLabel}</text>
                   </g>
                 );
               })}
@@ -361,7 +361,7 @@ export function OverviewTab({
                     transition: 'width 300ms ease',
                   }} />
                 </div>
-                <span style={{ fontSize: 11, fontWeight: 650, fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums', color: INK2, width: 28, textAlign: 'right' as const }}>{row.count}</span>
+                <span style={{ fontSize: 11, fontWeight: 650, fontFamily: 'var(--ds-font-family-monospaced)', fontVariantNumeric: 'tabular-nums', color: INK2, width: 28, textAlign: 'right' as const }}>{row.count}</span>
               </div>
             );
           })}
@@ -428,7 +428,7 @@ export function OverviewTab({
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-app)'; }}
             >
-              <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 28, fontWeight: 650, color: tile.color }}>{tile.value}</div>
               <div style={{ fontSize: 11, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.05em', color: MUTED, marginTop: 2 }}>{tile.label}</div>
             </div>
           ))}
@@ -463,7 +463,7 @@ export function OverviewTab({
                 <span style={{ fontSize: 11, color: INK4 }}>{hub.open} open</span>
                 <span style={{ fontSize: 11, color: INK4 }}>{hub.closed} closed</span>
                 <span style={{
-                  fontSize: 11, fontWeight: 650, fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: 11, fontWeight: 650, fontFamily: 'var(--ds-font-family-monospaced)',
                   color: hub.closurePct >= 50 ? SUCCESS : hub.closurePct > 0 ? WARNING : MUTED,
                 }}>{hub.closurePct}%</span>
               </div>

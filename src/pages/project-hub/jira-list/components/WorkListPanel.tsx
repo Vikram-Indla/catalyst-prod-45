@@ -65,7 +65,7 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
         <button style={{
           height: 32, padding: '0 10px', border: '1px solid #DFE1E6',
           background: 'transparent', borderRadius: 6, cursor: 'pointer',
-          fontSize: 13, fontFamily: 'Inter, sans-serif', display: 'inline-flex',
+          fontSize: 13, fontFamily: 'var(--ds-font-family-body)', display: 'inline-flex',
           alignItems: 'center', gap: 4, color: '#44546F', flexShrink: 0,
         }}>
           <Filter size={14} />

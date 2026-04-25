@@ -262,7 +262,7 @@ export function CatalystTable({
                         <Checkbox checked={isSelected} onCheckedChange={(v) => handleSelectItem(item.id, !!v)} />
                       </div>
                       <JiraIssueTypeIcon issueType={item.issueType} size={16} />
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+                      <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
                       {(item.attachmentCount ?? 0) > 0 && (
                         <Paperclip size={12} style={{ color: '#94A3B8', transform: 'rotate(-45deg)' }} />
                       )}
@@ -363,7 +363,7 @@ export function CatalystTable({
               {(item.attachmentCount ?? 0) > 0 && (
                 <span title="Attachments"><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>
               )}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
             </div>
           </td>
         );

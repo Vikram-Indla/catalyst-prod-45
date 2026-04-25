@@ -849,7 +849,7 @@ export default function StoryDetailModal({
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
                   </button>
-                  <span style={{ fontSize: 11, color: '#42526E', fontFamily: "'JetBrains Mono', monospace", minWidth: 44, textAlign: 'center' }}>
+                  <span style={{ fontSize: 11, color: '#42526E', fontFamily: 'var(--ds-font-family-monospaced)', minWidth: 44, textAlign: 'center' }}>
                     {currentNavIndex + 1} / {navigationItems.length}
                   </span>
                   <button onClick={navNext} disabled={!canNavNext} style={{
@@ -1097,7 +1097,7 @@ export default function StoryDetailModal({
                           <Sparkles size={13} style={{ color: '#2563EB' }} />
                           <span style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>AI Improve Story Requirements</span>
                         </div>
-                        <span style={{ fontSize: 10, color: '#1D4ED8', background: '#EFF6FF', padding: '1px 6px', borderRadius: 3, fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
+                        <span style={{ fontSize: 10, color: '#1D4ED8', background: '#EFF6FF', padding: '1px 6px', borderRadius: 3, fontFamily: 'var(--ds-font-family-monospaced)', fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
                         <button onClick={() => { setAiPanelOpen(false); setAiOutput(null); setAiError(null); }}
                           style={{ width: 22, height: 22, borderRadius: 3, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B778C' }}
                         ><X size={13} /></button>

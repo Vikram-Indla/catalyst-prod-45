@@ -140,7 +140,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           }} />
         </div>
         <span style={{
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: 'var(--ds-font-family-monospaced)',
           fontSize: 11,
           fontWeight: 500,
           color: '#71717A',

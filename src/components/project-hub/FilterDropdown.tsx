@@ -56,7 +56,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
           fontSize: 13,
           fontWeight: 500,
           cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         <Filter size={14} strokeWidth={2} />
@@ -80,7 +80,7 @@ export function FilterDropdown({ filters, onChange }: FilterDropdownProps) {
             borderWidth: 1,
             borderStyle: 'solid',
             boxShadow: dark ? '0 2px 8px rgba(0,0,0,0.4)' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         >
           <div className="max-h-[400px] overflow-y-auto">
@@ -168,7 +168,7 @@ function FilterSection({
             key={opt}
             onClick={() => onToggle(opt)}
             className={`flex items-center gap-2 w-full py-1.5 cursor-pointer rounded px-2 transition-colors ${dark ? 'hover:bg-[#1F1F1F]' : 'hover:bg-[#F4F5F7]'}`}
-            style={{ fontSize: 12, color: dark ? '#EDEDED' : '#42526E', background: 'transparent', border: 'none', fontFamily: "'Inter', sans-serif", textAlign: 'left' }}
+            style={{ fontSize: 12, color: dark ? '#EDEDED' : '#42526E', background: 'transparent', border: 'none', fontFamily: 'var(--ds-font-family-body)', textAlign: 'left' }}
           >
             <div
               className="flex items-center justify-center rounded flex-shrink-0"

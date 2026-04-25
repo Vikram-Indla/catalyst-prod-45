@@ -149,7 +149,7 @@ export function IntegrationTab() {
               className="relative bg-white dark:bg-[#1A1A1A] border border-[var(--bd-default, #E2E8F0)] dark:border-[#292929] rounded-md p-4"
             >
               <Icon size={16} className={`absolute top-4 right-4 ${card.iconClass}`} />
-              <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700 }} className="text-[var(--fg-1)] dark:text-white">
+              <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 24, fontWeight: 700 }} className="text-[var(--fg-1)] dark:text-white">
                 {card.value}
               </div>
               <div style={{ fontSize: 12 }} className="text-[var(--fg-3)] dark:text-gray-400 mt-1">

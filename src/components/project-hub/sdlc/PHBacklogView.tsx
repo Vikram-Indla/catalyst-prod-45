@@ -110,7 +110,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
         {loading ? (
           <div className="p-4"><SkeletonTable rows={8} /></div>
         ) : Object.keys(groups).length === 0 ? (
-          <div className="flex items-center justify-center" style={{ padding: 60, color: 'var(--fg-4)', fontSize: 13, fontFamily: "'Inter', sans-serif" }}>
+          <div className="flex items-center justify-center" style={{ padding: 60, color: 'var(--fg-4)', fontSize: 13, fontFamily: 'var(--ds-font-family-body)' }}>
             No items in this release
           </div>
         ) : (
@@ -134,7 +134,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                   {isCollapsed
                     ? <ChevronRight size={14} color="var(--fg-3)" />
                     : <ChevronDown size={14} color="var(--fg-3)" />}
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>
                     {getReleaseName(groupId)}
                   </span>
                   <span
@@ -143,7 +143,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                       width: 20, height: 20,
                       fontSize: 10, fontWeight: 600,
                       color: 'var(--fg-3)',
-                      fontFamily: "'JetBrains Mono', monospace",
+                      fontFamily: 'var(--ds-font-family-monospaced)',
                     }}
                   >
                     {groupIssues.length}
@@ -176,7 +176,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             borderBottom: '1px solid var(--cp-bd-zone)',
                             borderLeft: `3px solid ${accentColor}`,
                             background: isHovered ? 'rgba(37,99,235,.03)' : undefined,
-                            fontFamily: "'Inter', sans-serif",
+                            fontFamily: 'var(--ds-font-family-body)',
                             transition: 'background 120ms ease',
                           }}
                           onClick={() => onSelectIssue(issue)}
@@ -193,7 +193,7 @@ export function PHBacklogView({ issues, releases, loading, onSelectIssue }: Prop
                             }}
                           />
                           <PHIssueTypeIcon type={issue.type} size={16} />
-                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                             {getDisplayKey(issue)}
                           </span>
                           <PHSourceTag source={issue.source} />
@@ -243,12 +243,12 @@ function SidebarButton({ label, count, progress, isActive, onClick }: {
         color: isActive ? 'var(--cp-blue)' : 'var(--fg-2)',
         border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
         cursor: 'pointer',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       <div className="flex items-center justify-between mb-1">
         <span>{label}</span>
-        <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
           {count}
         </span>
       </div>

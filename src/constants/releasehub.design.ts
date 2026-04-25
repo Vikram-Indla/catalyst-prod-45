@@ -36,9 +36,9 @@ export const RH = {
   ink4: '#94A3B8',
 
   // Fonts
-  fontDisplay: "'Sora', system-ui, sans-serif",
-  fontBody: "'Inter', system-ui, sans-serif",
-  fontMono: "'JetBrains Mono', monospace",
+  fontDisplay: 'var(--ds-font-family-heading)',
+  fontBody: 'var(--ds-font-family-body)',
+  fontMono: 'var(--ds-font-family-monospaced)',
 
   // Layout
   navH: 48,

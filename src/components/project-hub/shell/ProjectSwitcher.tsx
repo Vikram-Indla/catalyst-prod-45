@@ -53,7 +53,7 @@ export function ProjectSwitcher({ projects, currentKey, isOpen, onClose, onSelec
         width: 280,
         borderRadius: 8,
         boxShadow: isDark ? '0 8px 24px rgba(0,0,0,0.60)' : '0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05)',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       {/* Search */}

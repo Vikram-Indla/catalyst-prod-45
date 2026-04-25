@@ -77,14 +77,14 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         <JiraIssueTypeIcon type={card.type} size={16} />
         <span style={{
           fontSize: 11, fontWeight: 500,
-          fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)',
+          fontFamily: 'var(--ds-font-family-monospaced)', color: 'var(--fg-3)',
         }}>{card.key || '—'}</span>
         {/* Source badge */}
         <span style={{
           fontSize: 11, fontWeight: 600, padding: '1px 5px', borderRadius: 4,
           background: source === 'JIRA' ? '#E3F0FF' : 'var(--cp-bd-zone)',
           color: source === 'JIRA' ? '#0052CC' : 'var(--fg-3)',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
           lineHeight: 1.4,
         }}>{source}</span>
         <div style={{ flex: 1 }} />
@@ -92,7 +92,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
         {overdueDays && (
           <span style={{
             fontSize: 10.5, fontWeight: 600, color: 'var(--sem-danger)',
-            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+            fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
           }}>{overdueDays}d overdue</span>
         )}
         <button style={{
@@ -108,7 +108,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
       {/* Title */}
       <div style={{
         fontSize: 12.5, fontWeight: 500, lineHeight: 1.45,
-        color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif",
+        color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)',
         display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
         overflow: 'hidden', marginBottom: card.epic ? 6 : 0,
       }}>
@@ -129,7 +129,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
           }} />
           <span style={{
             fontSize: 10.5, fontWeight: 500, color: '#2563EB',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
           }}>{card.epic.title}</span>
         </div>
@@ -156,7 +156,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               height: 18, minWidth: 22, padding: '0 5px', borderRadius: 4,
               background: '#F0FDF4', border: '0.75px solid #DCFCE7',
               fontSize: 10.5, fontWeight: 650, color: 'var(--sem-success)',
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--ds-font-family-monospaced)',
             }}>{card.storyPoints}</span>
           )}
         </div>
@@ -168,7 +168,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               display: 'inline-flex', alignItems: 'center', height: 18,
               padding: '0 6px', borderRadius: 4, maxWidth: 88,
               background: 'var(--cp-bd-zone)', border: '0.75px solid var(--divider)',
-              fontSize: 10.5, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)',
+              fontSize: 10.5, fontFamily: 'var(--ds-font-family-monospaced)', color: 'var(--fg-3)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>{card.release.name}</span>
           )}
@@ -179,7 +179,7 @@ export default function KanbanCardComponent({ card, onCardClick }: Props) {
               background: hashColor(card.assignee.id),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 9, fontWeight: 700, color: '#FFFFFF',
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: 'var(--ds-font-family-heading)',
             }} title={card.assignee.displayName}>
               {card.assignee.initials}
             </div>

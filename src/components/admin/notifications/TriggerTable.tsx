@@ -118,7 +118,7 @@ function CategoryAccordion({
             <ChevronRight className="h-4 w-4 text-[#475569] flex-shrink-0" />
           )}
 
-          <span className="text-sm font-semibold text-[#0F172A] font-['Inter']">
+          <span className="text-sm font-semibold text-[#0F172A] font-body">
             {group.label}
           </span>
 
@@ -151,7 +151,7 @@ function CategoryAccordion({
               style={{ width: `${group.totalCount > 0 ? (group.enabledCount / group.totalCount) * 100 : 0}%` }}
             />
           </div>
-          <span className="text-[10px] text-[#94A3B8] w-8 text-right font-['JetBrains_Mono']">
+          <span className="text-[10px] text-[#94A3B8] w-8 text-right font-mono">
             {group.totalCount > 0 ? Math.round((group.enabledCount / group.totalCount) * 100) : 0}%
           </span>
         </div>

@@ -101,7 +101,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 40, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
-    borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
+    borderRadius: 6, outline: 'none', fontFamily: 'var(--ds-font-family-body)',
     transition: 'border-color 150ms ease, box-shadow 150ms ease',
   };
 
@@ -116,7 +116,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
 
   const labelStyle: React.CSSProperties = {
     fontSize: 13, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 6,
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: 'var(--ds-font-family-body)',
   };
 
   return (
@@ -140,7 +140,7 @@ export function GeneralTab({ project, onSaved }: GeneralTabProps) {
                 <input
                   value={project.key} readOnly
                   className="bg-[var(--cp-bd-zone)] dark:bg-[#1A1A1A]"
-                  style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em', paddingRight: 36 }}
+                  style={{ ...inputStyle, color: 'var(--fg-3)', cursor: 'not-allowed', fontFamily: 'var(--ds-font-family-monospaced)', letterSpacing: '0.05em', paddingRight: 36 }}
                 />
                 <Lock size={14} color="var(--fg-4)" className="absolute right-3 top-1/2 -translate-y-1/2" />
               </div>

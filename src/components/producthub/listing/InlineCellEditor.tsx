@@ -38,7 +38,7 @@ const editorStyles: React.CSSProperties = {
   borderRadius: 4,
   boxShadow: '0 0 0 3px rgba(37,99,235,0.15)',
   outline: 'none',
-  fontFamily: 'Inter, system-ui, sans-serif',
+  fontFamily: 'var(--ds-font-family-body)',
   fontSize: 13,
   color: '#18181b',
   background: '#ffffff',

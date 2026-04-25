@@ -96,7 +96,7 @@ export function AdvancedFilterPanel({
     border: '1px solid var(--divider)',
     padding: '0 10px',
     fontSize: 13,
-    fontFamily: 'Inter, system-ui, sans-serif',
+    fontFamily: 'var(--ds-font-family-body)',
     color: 'var(--fg-1)',
     backgroundColor: 'var(--cp-float)',
     minWidth: 140,
@@ -117,7 +117,7 @@ export function AdvancedFilterPanel({
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4" style={{ color: 'var(--cp-blue)' }} />
-          <span className="text-sm font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, system-ui, sans-serif' }}>
+          <span className="text-sm font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>
             Advanced Filters
           </span>
         </div>

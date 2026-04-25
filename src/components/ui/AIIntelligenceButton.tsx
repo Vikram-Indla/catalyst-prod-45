@@ -43,7 +43,7 @@ export function AIIntelligenceButton({
         alignItems: 'center',
         gap: 6,
         transition: 'all 200ms ease',
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
       onMouseEnter={e => {
         e.currentTarget.style.transform = 'scale(1.03)';

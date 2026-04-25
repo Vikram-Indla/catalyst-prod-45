@@ -23,7 +23,7 @@ export function ThemeHealthChart({ themes }: Props) {
       padding: 24,
     }}>
       <h3 style={{
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 16, fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>
@@ -51,7 +51,7 @@ export function ThemeHealthChart({ themes }: Props) {
                   backgroundColor: theme.color, flexShrink: 0,
                 }} />
                 <span style={{
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--ds-font-family-body)',
                   fontSize: 14, fontWeight: 600,
                   color: 'var(--fg-1)',
                 }}>
@@ -60,14 +60,14 @@ export function ThemeHealthChart({ themes }: Props) {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--ds-font-family-body)',
                   fontSize: 13, fontWeight: 700,
                   color: 'var(--fg-1)',
                 }}>
                   {theme.completion_percent}%
                 </span>
                 <span style={{
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--ds-font-family-body)',
                   fontSize: 12,
                   color: 'var(--fg-4)',
                 }}>

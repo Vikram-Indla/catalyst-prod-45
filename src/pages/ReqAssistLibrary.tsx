@@ -239,10 +239,10 @@ export default function ReqAssistLibrary() {
       {/* ── ZONE 1: PAGE HEADER ── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', padding: '24px 28px 0' }}>
         <div>
-          <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: 0 }}>
             Req Assist™
           </h1>
-          <p style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#878787' : '#64748B', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#878787' : '#64748B', margin: '2px 0 0', fontFamily: 'var(--ds-font-family-body)' }}>
             BRD library — sourced from Jira, enriched by AI, indexed for AI-powered search
           </p>
         </div>
@@ -254,7 +254,7 @@ export default function ReqAssistLibrary() {
               padding: '0 14px', height: 50, fontSize: 13, fontWeight: 500,
               border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.18)'}`, borderRadius: 6,
               background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
               transition: 'background 80ms ease',
             }}
             onMouseEnter={e => (e.currentTarget.style.background = isDark ? '#1F1F1F' : 'rgba(15,23,42,0.04)')}
@@ -271,7 +271,7 @@ export default function ReqAssistLibrary() {
               background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
               color: '#FFFFFF', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
               transition: 'box-shadow 150ms ease',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%)'; e.currentTarget.style.boxShadow = '0 2px 6px rgba(37,99,235,0.45)'; }}
@@ -303,13 +303,13 @@ export default function ReqAssistLibrary() {
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`, borderRadius: 8,
           }}>
             <FileText size={32} color="#94A3B8" style={{ marginBottom: 12 }} />
-            <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 6px', fontFamily: "'Sora', sans-serif" }}>No documents yet</p>
-            <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', fontFamily: "'Inter', sans-serif" }}>Import from Jira or generate a BRD from text to get started.</p>
+            <p style={{ fontSize: 16, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 6px', fontFamily: 'var(--ds-font-family-heading)' }}>No documents yet</p>
+            <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', fontFamily: 'var(--ds-font-family-body)' }}>Import from Jira or generate a BRD from text to get started.</p>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => setImportOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '0 14px', height: 50,
                 fontSize: 13, fontWeight: 500, border: 'none', borderRadius: 6,
-                background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                background: '#2563EB', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
               }}>
                 <Download size={14} /> Import from Jira
               </button>
@@ -342,7 +342,7 @@ export default function ReqAssistLibrary() {
                 display: 'flex', alignItems: 'center', gap: 8,
                 padding: '8px 28px', fontSize: 12, color: isDark ? '#878787' : '#64748B',
                 background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
               }}>
                 Showing {documents?.length ?? 0} of {totalCount} documents
                 <span style={{ color: isDark ? '#878787' : '#94A3B8' }}>·</span>
@@ -352,7 +352,7 @@ export default function ReqAssistLibrary() {
                   style={{
                     border: 'none', background: 'transparent', cursor: 'pointer',
                     fontSize: 12, color: '#2563EB', fontWeight: 500, padding: 0,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--ds-font-family-body)',
                   }}
                 >
                   Clear filter ×
@@ -380,7 +380,7 @@ export default function ReqAssistLibrary() {
                       textTransform: 'uppercase', letterSpacing: '0.06em',
                       textAlign: 'left', width: col.w || undefined,
                       background: isDark ? '#0A0A0A' : '#F8FAFC',
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--ds-font-family-body)',
                     }}>
                       {col.label}
                     </th>
@@ -423,7 +423,7 @@ export default function ReqAssistLibrary() {
                               {/* Parent line */}
                               <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M3.5 2L6.5 5L3.5 8" stroke="#CBD5E1" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8' }}>
+                                <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, fontWeight: 500, color: isDark ? '#878787' : '#94A3B8' }}>
                                   {parentKeys[doc.id]}
                                 </span>
                               </div>
@@ -431,14 +431,14 @@ export default function ReqAssistLibrary() {
                               <div style={{ paddingLeft: 8 }}>
                                 {doc.jira_ticket_url ? (
                                   <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                                    style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}
+                                    style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 600, color: '#2563EB', textDecoration: 'none' }}
                                     onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                                     onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                                   >
                                     {doc.jira_ticket_key}
                                   </a>
                                 ) : (
-                                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                                  <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                                     {doc.jira_ticket_key}
                                   </span>
                                 )}
@@ -449,14 +449,14 @@ export default function ReqAssistLibrary() {
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                               {doc.jira_ticket_url ? (
                                 <a href={doc.jira_ticket_url} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()}
-                                  style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none' }}
+                                  style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 500, color: '#2563EB', textDecoration: 'none' }}
                                   onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                                   onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                                 >
                                   {doc.jira_ticket_key}
                                 </a>
                               ) : (
-                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
+                                <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 500, color: '#2563EB' }}>
                                   {doc.jira_ticket_key}
                                 </span>
                               )}
@@ -468,7 +468,7 @@ export default function ReqAssistLibrary() {
                         <td style={{ padding: '8px 12px', overflow: 'hidden', maxWidth: 0 }}>
                           <span title={doc.title} style={{
                             display: 'block', fontSize: 13, fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A',
-                            fontFamily: "'Inter', sans-serif",
+                            fontFamily: 'var(--ds-font-family-body)',
                             overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                             maxWidth: 320,
                           }}>
@@ -481,7 +481,7 @@ export default function ReqAssistLibrary() {
                             const domain = doc.domain || deriveDomainFromKey(doc.jira_ticket_key);
                             return domain ? (
                               <span style={{
-                                fontSize: 12, color: isDark ? '#A1A1A1' : '#475569', fontFamily: "'Inter', sans-serif",
+                                fontSize: 12, color: isDark ? '#A1A1A1' : '#475569', fontFamily: 'var(--ds-font-family-body)',
                                 whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                                 display: 'block', maxWidth: 110,
                               }} title={domain}>
@@ -491,7 +491,7 @@ export default function ReqAssistLibrary() {
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
                                 background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4,
-                                fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: "'Inter', sans-serif",
+                                fontSize: 11, color: isDark ? '#878787' : '#94A3B8', fontFamily: 'var(--ds-font-family-body)',
                               }}>Uncategorised</span>
                             );
                           })()}
@@ -513,7 +513,7 @@ export default function ReqAssistLibrary() {
                                 padding: '3px 6px', borderRadius: 4,
                                 background: 'transparent', border: 'none', cursor: 'pointer',
                                 fontSize: 12, color: '#2563EB', fontWeight: 500,
-                                fontFamily: "'Inter', sans-serif",
+                                fontFamily: 'var(--ds-font-family-body)',
                               }}
                               onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                               onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
@@ -543,7 +543,7 @@ export default function ReqAssistLibrary() {
                         </td>
                         {/* Imported */}
                         <td style={{ padding: '8px 12px', overflow: 'hidden' }}>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
+                          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: isDark ? '#878787' : '#64748B' }}>
                             {doc.pulled_at ? formatImported(doc.pulled_at) : '—'}
                           </span>
                         </td>
@@ -564,11 +564,11 @@ export default function ReqAssistLibrary() {
                   <tr>
                     <td colSpan={8} style={{ padding: '48px 0', textAlign: 'center' }}>
                       <FileSearch size={24} color="#94A3B8" style={{ margin: '0 auto 8px', display: 'block' }} />
-                      <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                      <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
                         No documents match "{search || 'your search term'}"
                       </p>
                       <button onClick={() => { setSearch(''); setTab('all'); }}
-                        style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                        style={{ fontSize: 12, color: '#2563EB', fontWeight: 600, background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}>
                         Clear search
                       </button>
                     </td>
@@ -585,7 +585,7 @@ export default function ReqAssistLibrary() {
                 background: isDark ? '#0A0A0A' : '#FAFAFA',
                 borderTop: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.08)'}`,
               }}>
-                <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--ds-font-family-body)' }}>
                   Showing {documents.length} of {totalCount} documents
                 </span>
                 <button
@@ -594,7 +594,7 @@ export default function ReqAssistLibrary() {
                     display: 'inline-flex', alignItems: 'center', gap: 4,
                     fontSize: 12, fontWeight: 500, color: '#2563EB',
                     background: 'transparent', border: 'none', cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--ds-font-family-body)',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                   onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
@@ -637,9 +637,9 @@ export default function ReqAssistLibrary() {
             position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
             width: 420, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 8, zIndex: 90,
             padding: 24, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.10)'}`,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}>
-            <h3 style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-heading)' }}>
               Epics Already Exist
             </h3>
             <p style={{ fontSize: 14, color: isDark ? '#878787' : '#64748B', margin: '0 0 20px', lineHeight: 1.5 }}>
@@ -815,7 +815,7 @@ function StatusBadge({ status, epicCount, pipelineStage }: { status: string; epi
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', whiteSpace: 'nowrap',
       background: bg, color: color,
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--ds-font-family-body)',
     }}>
       {label}
     </span>
@@ -847,7 +847,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: '0.75px solid #BFDBFE',
             background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#1D4ED8', cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+            fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
             transition: 'background 80ms ease',
           }}
           onMouseEnter={e => { e.currentTarget.style.background = '#DBEAFE'; e.currentTarget.style.borderColor = '#93C5FD'; }}
@@ -860,7 +860,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           width: 18, height: 18, borderRadius: 8,
           background: '#2563EB', color: '#FFFFFF',
           fontSize: 11, fontWeight: 700,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}>{epicCount}</span>
       </div>
     );
@@ -876,7 +876,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.03em', whiteSpace: 'nowrap',
           background: '#1B7F37', color: '#FFFFFF',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}>AI INDEXED</span>
         <button
           onClick={(e) => { e.stopPropagation(); onSelect('view'); }}
@@ -885,7 +885,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
             height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
             borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
             background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
-            fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+            fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
           }}
         >
           <Eye size={12} /> View
@@ -904,7 +904,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: 'none', cursor: 'pointer',
           background: '#2563EB', color: '#FFFFFF',
-          fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+          fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
         }}
       >
         <Zap size={12} /> Index to KA
@@ -922,7 +922,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
           height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
           borderRadius: 6, border: '0.75px solid #DC2626',
           background: 'transparent', color: '#DC2626', cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+          fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
         }}
       >
         <RotateCcw size={12} /> Retry
@@ -938,7 +938,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: 'none', cursor: 'not-allowed',
         background: isDark ? '#2E2E2E' : '#E2E8F0', color: isDark ? '#878787' : '#94A3B8',
-        fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+        fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
       }}>
         Generate
       </button>
@@ -954,7 +954,7 @@ function ActionsCell({ doc, epicCount, onSyncKb, onSelect, onViewDrafts }: {
         height: 28, padding: '0 10px', fontSize: 12, fontWeight: 500,
         borderRadius: 6, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.15)'}`,
         background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', cursor: 'pointer',
-        fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+        fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
         transition: 'all 80ms ease',
       }}
       onMouseEnter={e => {
@@ -990,7 +990,7 @@ function TicketTypeBadge({ type }: { type: string | null | undefined }) {
       padding: '0 5px', height: 18, borderRadius: 4,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
       background: s.bg, color: s.color,
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--ds-font-family-body)',
     }}>{s.label}</span>
   );
 }

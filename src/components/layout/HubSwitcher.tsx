@@ -108,7 +108,7 @@ export function HubSwitcher() {
           width: 320,
           background: '#FFFFFF',
           borderRadius: 6,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           padding: 0,
           maxHeight: 'none',
           overflow: 'visible',

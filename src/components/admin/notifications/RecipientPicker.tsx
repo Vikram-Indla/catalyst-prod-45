@@ -149,7 +149,7 @@ export function RecipientPicker({ trigger, open, onClose, onSave }: RecipientPic
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-[520px] max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold font-['Sora'] flex items-center gap-2">
+          <DialogTitle className="text-lg font-semibold font-heading flex items-center gap-2">
             <Users className="h-5 w-5 text-[#2563EB]" />
             Recipients
           </DialogTitle>

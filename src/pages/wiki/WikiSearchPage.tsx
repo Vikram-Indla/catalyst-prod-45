@@ -99,7 +99,7 @@ export default function WikiSearchPage() {
   const borderColor = isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)';
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
       <div style={{ maxWidth: 840, marginInline: 'auto', padding: '24px 28px 48px' }}>
         {/* Breadcrumb */}
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20 }}>
@@ -126,7 +126,7 @@ export default function WikiSearchPage() {
             aria-label="Search wiki"
             autoFocus
             style={{
-              flex: 1, fontSize: 15, fontFamily: 'Inter, sans-serif',
+              flex: 1, fontSize: 15, fontFamily: 'var(--ds-font-family-body)',
               background: 'transparent', border: 'none', outline: 'none',
               color: isDark ? '#EDEDED' : '#0F172A',
             }}
@@ -241,7 +241,7 @@ export default function WikiSearchPage() {
                       {aiSources.map((s: any, i: number) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{
-                            fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : '#94A3B8',
+                            fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 10, color: isDark ? '#878787' : '#94A3B8',
                             minWidth: 20, textAlign: 'right' as const,
                           }}>[{i + 1}]</span>
                           <span
@@ -255,7 +255,7 @@ export default function WikiSearchPage() {
                           >{s.title || s.source_key || 'Source'}</span>
                           {s.similarity != null && (
                             <span style={{
-                              fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600,
+                              fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 10, fontWeight: 600,
                               padding: '1px 5px', borderRadius: 4,
                               background: confBg(Math.round(s.similarity * 100)),
                               color: confColor(Math.round(s.similarity * 100)),
@@ -329,7 +329,7 @@ export default function WikiSearchPage() {
                         )}
                         {conf > 0 && (
                           <span style={{
-                            fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 600,
+                            fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 10, fontWeight: 600,
                             padding: '1px 5px', borderRadius: 4,
                             background: confBg(conf), color: confColor(conf),
                           }}>{conf}%</span>
@@ -384,7 +384,7 @@ export default function WikiSearchPage() {
                         color: page === 0 ? (isDark ? '#292929' : '#CBD5E1') : (isDark ? '#A1A1A1' : '#334155'), cursor: page === 0 ? 'default' : 'pointer',
                       }}
                     >← Previous</button>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>
+                    <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>
                       {page + 1} / {totalPages}
                     </span>
                     <button

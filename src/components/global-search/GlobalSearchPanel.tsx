@@ -215,7 +215,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
           {content}
         </div>
         {right && (
-          <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), fontFamily: 'Inter, system-ui, sans-serif', flexShrink: 0 }}>
+          <div style={{ fontSize: 12, color: token('color.text.subtle', '#626F86'), fontFamily: 'var(--ds-font-family-body)', flexShrink: 0 }}>
             {right}
           </div>
         )}
@@ -241,7 +241,7 @@ export function GlobalSearchPanel({ query, onQueryChange, onClose }: GlobalSearc
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       {/* ── Filter chips row ─────────────────────────────────────────────── */}

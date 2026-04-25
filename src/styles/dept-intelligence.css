@@ -31,9 +31,9 @@
   --di-danger-bg: #FEF2F2;
   --di-purple: #7C3AED;
   --di-purple-bg: #F5F3FF;
-  --di-font-heading: 'Sora', system-ui, sans-serif;
-  --di-font-body: 'Inter', system-ui, sans-serif;
-  --di-font-mono: 'JetBrains Mono', monospace;
+  --di-font-heading: var(--ds-font-family-heading);
+  --di-font-body: var(--ds-font-family-body);
+  --di-font-mono: var(--ds-font-family-monospaced);
   --di-r-sm: 4px;
   --di-r-md: 6px;
   --di-r-lg: 8px;

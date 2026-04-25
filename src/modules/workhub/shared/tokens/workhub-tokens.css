@@ -32,9 +32,9 @@
   --wh-pur-bg: #EFF6FF;
 
   /* Typography */
-  --wh-fh: 'Sora', sans-serif;
-  --wh-fn: 'Inter', sans-serif;
-  --wh-mo: 'JetBrains Mono', monospace;
+  --wh-fh: var(--ds-font-family-heading);
+  --wh-fn: var(--ds-font-family-body);
+  --wh-mo: var(--ds-font-family-monospaced);
 
   /* Sizing */
   --wh-hdr: 46px;

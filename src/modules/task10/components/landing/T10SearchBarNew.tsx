@@ -81,7 +81,7 @@ export function T10SearchBarNew({ onSearch }: T10SearchBarNewProps) {
             height: '100%',
             padding: 0,
             margin: 0,
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: '14px',
             color: '#1e293b',
             backgroundColor: 'transparent',

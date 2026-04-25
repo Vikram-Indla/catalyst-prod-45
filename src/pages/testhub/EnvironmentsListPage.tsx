@@ -224,7 +224,7 @@ export default function EnvironmentsListPage() {
           />
         </div>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -237,7 +237,7 @@ export default function EnvironmentsListPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <SelectTrigger className="h-[50px] w-[160px] border-[#E2E8F0] rounded text-[13px]" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>

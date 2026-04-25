@@ -8,7 +8,7 @@ const T = {
   text3: '#3D3D56', text4: '#6B6B80', border: '#D9D2C9',
   todo: '#E23636', progress: '#2563EB', done: '#0E8A5F',
   shadow: '0 2px 8px rgba(0,0,0,.12)',
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 interface Props {
@@ -38,7 +38,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
   ];
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Search bar */}
       <div style={{ padding: '10px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         <input

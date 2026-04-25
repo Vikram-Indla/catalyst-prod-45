@@ -82,9 +82,9 @@ export const SURFACE_DARK = {
 
 // ── Typography — Catalyst spec: Sora (headings) + Inter (body) + JetBrains Mono (data) ──
 export const FONT = {
-  heading: "'Sora', 'Plus Jakarta Sans', sans-serif",
-  body: "Inter, 'Plus Jakarta Sans', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  heading: 'var(--ds-font-family-heading)',
+  body: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 // ── Layout (AUDIT #23: 36px rows) ──

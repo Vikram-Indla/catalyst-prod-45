@@ -182,7 +182,7 @@ export function MyTestScopeDashboard({ userName = 'Tester' }: MyTestScopeDashboa
   const allComplete = data.summary.totalTests > 0 && data.summary.notRunTests === 0 && data.summary.failedTests === 0 && data.summary.blockedTests === 0;
 
   return (
-    <div className="flex flex-col h-full bg-muted/50 font-['Inter']">
+    <div className="flex flex-col h-full bg-muted/50 font-body">
       <ScopeHeader
         userName={userName}
         summary={data.summary}

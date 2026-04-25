@@ -22,7 +22,7 @@ import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
 
-const MONO_STACK = '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
+const MONO_STACK = 'var(--ds-font-family-monospaced), SFMono-Regular, Menlo, monospace';
 
 function statusCategoryFor(status?: string | null): 'default' | 'inProgress' | 'success' {
   const s = (status ?? '').toLowerCase();

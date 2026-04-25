@@ -249,12 +249,12 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
             borderBottom: '1px solid #EBECF0',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, color: '#42526E' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 500, color: '#42526E' }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, fontWeight: 500, color: '#42526E' }}>
                 {program?.name ?? 'Program'}
               </span>
               <span style={{ color: '#C1C7D0' }}>/</span>
               <IssueIcon type="Epic" size={16} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
                 {epic?.epic_key ?? '—'}
               </span>
             </div>
@@ -262,7 +262,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
               <button onClick={handleShare} style={{
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
                 borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
+                transition: 'background 0.15s', fontFamily: 'var(--ds-font-family-body)',
               }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}
@@ -551,7 +551,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
               {/* Points */}
               <div style={DR}>
                 <span style={DL}>Story Points</span>
-                <span style={{ ...DV, fontFamily: "'JetBrains Mono', monospace", fontSize: 13 }}>
+                <span style={{ ...DV, fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13 }}>
                   {epic?.points_estimate ?? '—'}
                 </span>
               </div>
@@ -563,15 +563,15 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
 
               <div style={DR}>
                 <span style={DL}>Start Date</span>
-                <span style={{ ...DV, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#42526E' }}>{fmtDate(epic?.start_date)}</span>
+                <span style={{ ...DV, fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#42526E' }}>{fmtDate(epic?.start_date)}</span>
               </div>
               <div style={DR}>
                 <span style={DL}>End Date</span>
-                <span style={{ ...DV, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#42526E' }}>{fmtDate(epic?.end_date)}</span>
+                <span style={{ ...DV, fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#42526E' }}>{fmtDate(epic?.end_date)}</span>
               </div>
               <div style={DR}>
                 <span style={DL}>Target</span>
-                <span style={{ ...DV, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#42526E' }}>{fmtDate(epic?.target_completion_date)}</span>
+                <span style={{ ...DV, fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#42526E' }}>{fmtDate(epic?.target_completion_date)}</span>
               </div>
 
               {/* Timestamps */}
@@ -602,7 +602,7 @@ export function EpicDetailModal({ isOpen, onClose, epicId, onEpicChange }: EpicD
             width: 480, background: '#FFFFFF', borderRadius: 8, padding: 24,
             boxShadow: '0 8px 32px rgba(9,30,66,0.25)',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>Delete epic?</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#172B4D', marginBottom: 8, fontFamily: 'var(--ds-font-family-heading)' }}>Delete epic?</h3>
             <p style={{ fontSize: 14, color: '#42526E', marginBottom: 20, lineHeight: 1.5 }}>
               This will soft-delete <strong>{epic?.epic_key}</strong> — "{epic?.name}". This action can be undone by an administrator.
             </p>

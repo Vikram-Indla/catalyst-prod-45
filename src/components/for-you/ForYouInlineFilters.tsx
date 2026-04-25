@@ -136,7 +136,7 @@ function FilterDropdown({ label, value, options, onChange, variant = 'default', 
               autoFocus
               style={{
                 flex: 1, border: 'none', background: 'transparent', outline: 'none',
-                fontSize: 13, color: 'var(--cp-t1)', fontFamily: "'Inter', system-ui",
+                fontSize: 13, color: 'var(--cp-t1)', fontFamily: 'var(--ds-font-family-body)',
               }}
             />
           </div>

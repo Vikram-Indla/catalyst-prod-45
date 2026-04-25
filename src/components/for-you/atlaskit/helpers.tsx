@@ -102,7 +102,7 @@ export function GroupHeading({ bucket }: { bucket: Recency }) {
   return (
     <div
       style={{
-        font: `500 14px/20px "Inter", system-ui, sans-serif`,
+        font: `500 14px/20px var(--ds-font-family-body)`,
         letterSpacing: 'normal',
         color: text.subtlest,
         textTransform: 'none',
@@ -148,7 +148,7 @@ export function ForYouEmptyState({
                 border: 'none',
                 borderRadius: 3,
                 cursor: 'pointer',
-                font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                font: `500 14px/20px var(--ds-font-family-body)`,
               }}
             >
               {primaryActionText}

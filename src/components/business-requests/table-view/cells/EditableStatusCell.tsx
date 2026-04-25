@@ -92,7 +92,7 @@ export function EditableStatusCell({ status, requestId, onSave, disabled = false
         height: 20, /* V12 */
         padding: '0 6px', /* V12 */
         borderRadius: 4, /* V12 */
-        fontFamily: "'Inter', -apple-system, system-ui, sans-serif", /* V12 */
+        fontFamily: 'var(--ds-font-family-body)', /* V12 */
         fontSize: 11, /* V12 */
         fontWeight: 700, /* V12 */
         textTransform: 'uppercase' as const, /* V12 */

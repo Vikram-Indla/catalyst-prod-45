@@ -59,7 +59,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 16,
       padding: '20px 24px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)',
-      flexShrink: 0, fontFamily: "'Inter', sans-serif",
+      flexShrink: 0, fontFamily: 'var(--ds-font-family-body)',
     }}>
       {/* Avatar */}
       <div style={{
@@ -73,7 +73,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
             onError={e => { (e.target as HTMLImageElement).style.display = 'none'; (e.target as HTMLImageElement).nextElementSibling?.removeAttribute('style'); }} />
         ) : null}
         <span style={{
-          fontFamily: "'Sora', sans-serif", fontSize: 20, fontWeight: 800, color: '#FFFFFF',
+          fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 800, color: '#FFFFFF',
           ...(summary.avatar_url ? { display: 'none' } : {}),
         }}>{initials}</span>
       </div>
@@ -81,7 +81,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
       {/* Name + subtitle */}
       <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
         <span style={{
-          fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 800,
+          fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 800,
           color: 'var(--fg-1)', lineHeight: 1.2,
         }}>{summary.name}</span>
         <span style={{ fontSize: 13, color: 'var(--fg-3)', lineHeight: 1.3, fontWeight: 500 }}>
@@ -98,7 +98,7 @@ export function Resource360Banner({ summary, isLoading, items = [] }: Props) {
             border: '1px solid var(--divider)',
           }}>
             <div style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: 22, fontWeight: 700,
+              fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 22, fontWeight: 700,
               color: k.color, lineHeight: 1.2, fontVariantNumeric: 'tabular-nums',
             }}>{k.value}</div>
             <div style={{

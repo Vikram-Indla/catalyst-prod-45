@@ -58,7 +58,7 @@ const QUICK_FILTER_CONFIG = [
 const PROFICIENCY_LEVELS = [
   { label: 'Expert', colorClass: 'bg-health-green' },
   { label: 'Advanced', colorClass: 'bg-info' },
-  { label: 'Intermediate', colorClass: 'bg-warning' },
+  { label: 'var(--ds-font-family-body)', colorClass: 'bg-warning' },
   { label: 'Beginner', colorClass: 'bg-destructive' },
   { label: 'No Skill', colorClass: 'bg-muted-foreground' },
 ];

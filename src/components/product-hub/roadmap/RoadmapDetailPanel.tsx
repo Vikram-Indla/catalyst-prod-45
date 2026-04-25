@@ -200,7 +200,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
               <div className="flex items-center gap-2 mb-1">
                 <span
                   className="shrink-0 px-1.5 py-0.5 rounded-sm text-[11px] font-medium bg-blue-50 text-blue-700 dark:bg-blue-950/30 dark:text-blue-400"
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}
+                  style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontVariantNumeric: 'tabular-nums' }}
                 >
                   {item.initiativeKey}
                 </span>

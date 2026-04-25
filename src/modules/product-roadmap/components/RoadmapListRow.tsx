@@ -99,7 +99,7 @@ export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, is
       <div className="flex-1 min-w-0 pl-1">
         <div className="flex items-center gap-1.5">
           {/* ID */}
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, fontWeight: 700, color: typeColor, letterSpacing: '0.02em' }} className="flex-shrink-0">
+          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 10, fontWeight: 700, color: typeColor, letterSpacing: '0.02em' }} className="flex-shrink-0">
             {item.request_key}
           </span>
           {/* P0 badge */}

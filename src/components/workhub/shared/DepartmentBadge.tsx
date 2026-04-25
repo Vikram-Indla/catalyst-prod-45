@@ -35,7 +35,7 @@ export function DepartmentBadge({ department }: DepartmentBadgeProps) {
         fontSize: 11,
         fontWeight: 500,
         textTransform: 'uppercase',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         letterSpacing: '0.02em',
         lineHeight: '18px',
       }}

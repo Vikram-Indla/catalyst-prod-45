@@ -94,13 +94,13 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
       {/* Row 1: Icon + Key + Summary */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon type={item.issue_type} size={16} />
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
+        <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 650, color: 'var(--cp-blue)', flexShrink: 0 }}>
           {item.issue_key}
         </span>
         <span style={{
           fontSize: 13, fontWeight: 500, color: 'var(--fg-1)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
         }}>
           {item.summary}
         </span>
@@ -113,7 +113,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
         {item.assignee_display_name && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <MiniAvatar name={item.assignee_display_name} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}>
               {item.assignee_display_name}
             </span>
           </div>
@@ -123,7 +123,7 @@ function SubTaskCard({ item, onClick }: { item: AllWorkItem; onClick: () => void
           <PriorityIndicator priority={item.priority} fontSize={12} />
         </div>
 
-        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontSize: 11, fontWeight: 500, color: 'var(--fg-3)', marginLeft: 'auto', fontFamily: 'var(--ds-font-family-monospaced)' }}>
           {formatRel(item.jira_updated_at)}
         </span>
       </div>
@@ -144,7 +144,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '48px 0', gap: 8 }}>
         <Loader2 size={16} color="#71717A" style={{ animation: 'spin 1s linear infinite' }} />
-        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Loading sub-tasks…</span>
+        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>Loading sub-tasks…</span>
       </div>
     );
   }
@@ -156,7 +156,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         padding: '48px 24px', textAlign: 'center', gap: 8,
       }}>
         <ListTree size={28} color="#A1A1AA" strokeWidth={1.5} />
-        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
+        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
           No sub-tasks found for this item.
         </span>
       </div>
@@ -177,7 +177,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
         padding: '10px 14px', backgroundColor: '#FAFAFA', borderRadius: 8, border: '1px solid #E4E4E7',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>
             {total} sub-task{total !== 1 ? 's' : ''}
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -191,7 +191,7 @@ export function SubTasksTab({ parentKey, onSubTaskClick }: SubTasksTabProps) {
                   display: 'inline-block', padding: '1px 6px', borderRadius: 4,
                   backgroundColor: s.bg, color: s.color, fontSize: 11, fontWeight: 700,
                 }}>{s.count}</span>
-                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>{s.label}</span>
+                <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>{s.label}</span>
               </span>
             ))}
           </div>

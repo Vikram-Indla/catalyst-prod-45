@@ -217,13 +217,13 @@ export function CatalystViewBase({
   const hoverBtn: React.CSSProperties = {
     background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
     borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500, display: 'flex', alignItems: 'center',
-    gap: 6, transition: 'background 0.15s', fontFamily: "'Inter', sans-serif",
+    gap: 6, transition: 'background 0.15s', fontFamily: 'var(--ds-font-family-body)',
   };
 
   const menuItemStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
     background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer',
-    fontFamily: 'Inter, sans-serif', textAlign: 'left',
+    fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
   };
 
   /* ── Navigation (full-page back) ─────────── */

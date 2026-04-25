@@ -37,7 +37,7 @@ export default function StatusLozenge({ label, type }: StatusLozengeProps) {
       letterSpacing: '0.03em',
       lineHeight: '20px',
       whiteSpace: 'nowrap',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--ds-font-family-body)',
     }}>
       {label}
     </span>

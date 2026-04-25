@@ -46,7 +46,7 @@ export default function ProjectSettingsPageNew() {
 
   if (isLoading) {
     return (
-      <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="ph-content-wrapper" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
         <div className="ph-inner-content">
           <div style={{ marginBottom: 20 }}>
             <div className="ph-skeleton rounded" style={{ height: 20, width: 200, marginBottom: 12 }} />
@@ -60,7 +60,7 @@ export default function ProjectSettingsPageNew() {
   }
 
   return (
-    <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="ph-content-wrapper" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
       <div className="ph-inner-content">
         <div className="flex items-center gap-1.5 mb-5">
           <span className="cursor-pointer hover:underline" style={{ fontSize: 13, color: '#64748B' }} onClick={() => navigate('/project-hub/projects')}>ProjectHub</span>

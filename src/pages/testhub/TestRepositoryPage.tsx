@@ -697,7 +697,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsImportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
@@ -711,7 +711,7 @@ export function TestRepositoryPage() {
               onClick={() => setIsExportModalOpen(true)}
               style={{
                 height: 40, padding: '0 16px', backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
-                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                border: isDark ? '1.5px solid #2E2E2E' : '1.5px solid #E2E8F0', borderRadius: 8, fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
               }}
@@ -726,7 +726,7 @@ export function TestRepositoryPage() {
               style={{
                 height: 40, padding: '0 16px',
                 background: 'linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%)',
-                border: 'none', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                border: 'none', borderRadius: 8, fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(124, 58, 237, 0.25)', transition: 'all 0.15s',
@@ -742,7 +742,7 @@ export function TestRepositoryPage() {
               style={{
                 height: 40, padding: '0 20px',
                 background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                border: 'none', borderRadius: 8, fontFamily: 'Inter, sans-serif',
+                border: 'none', borderRadius: 8, fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 14, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', gap: 8,
                 boxShadow: '0 2px 8px rgba(37,99,235,0.18)', transition: 'all 0.15s',
@@ -794,7 +794,7 @@ export function TestRepositoryPage() {
                 gap: 16,
               }}>
                 <span style={{
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--ds-font-family-body)',
                   fontSize: 14,
                   fontWeight: 600,
                   color: '#2563EB',
@@ -816,7 +816,7 @@ export function TestRepositoryPage() {
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'var(--ds-font-family-body)',
                       fontSize: 13,
                       fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#334155',
@@ -842,7 +842,7 @@ export function TestRepositoryPage() {
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
                       borderRadius: 6,
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'var(--ds-font-family-body)',
                       fontSize: 13,
                       fontWeight: 500,
                       color: isDark ? '#A1A1A1' : '#334155',
@@ -863,7 +863,7 @@ export function TestRepositoryPage() {
                         height: 32, padding: '8px 12px',
                         backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                         border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-                        borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                        borderRadius: 6, fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500,
                         color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}
@@ -882,7 +882,7 @@ export function TestRepositoryPage() {
                           <button key={u.id} onClick={() => handleBulkAssign(u.id)} style={{
                             width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
                             fontSize: 13, color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer', textAlign: 'left',
-                            borderRadius: 6, fontFamily: 'Inter',
+                            borderRadius: 6, fontFamily: 'var(--ds-font-family-body)',
                           }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F8FAFC'}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -902,7 +902,7 @@ export function TestRepositoryPage() {
                         height: 32, padding: '8px 12px',
                         backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                         border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-                        borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                        borderRadius: 6, fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500,
                         color: isDark ? '#A1A1A1' : '#334155', cursor: 'pointer',
                         display: 'flex', alignItems: 'center', gap: 6,
                       }}
@@ -921,7 +921,7 @@ export function TestRepositoryPage() {
                           <button key={l.id} onClick={() => handleBulkTag(l.id)} style={{
                             width: '100%', padding: '8px 12px', border: 'none', backgroundColor: 'transparent',
                             fontSize: 13, color: isDark ? '#EDEDED' : '#334155', cursor: 'pointer', textAlign: 'left',
-                            borderRadius: 6, fontFamily: 'Inter',
+                            borderRadius: 6, fontFamily: 'var(--ds-font-family-body)',
                           }}
                             onMouseEnter={e => e.currentTarget.style.backgroundColor = isDark ? '#1F1F1F' : '#F8FAFC'}
                             onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -939,7 +939,7 @@ export function TestRepositoryPage() {
                       height: 32, padding: '8px 12px',
                       backgroundColor: isDark ? '#1A1A1A' : '#FFFFFF',
                       border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
-                      borderRadius: 6, fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 500,
+                      borderRadius: 6, fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 500,
                       color: '#DC2626', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 6,
                     }}
@@ -966,7 +966,7 @@ export function TestRepositoryPage() {
                     background: 'transparent',
                     border: 'none',
                     borderRadius: 6,
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'var(--ds-font-family-body)',
                     fontSize: 13,
                     fontWeight: 500,
                     color: '#64748B',

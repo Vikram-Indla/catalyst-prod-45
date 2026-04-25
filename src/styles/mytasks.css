@@ -144,7 +144,7 @@
   padding: var(--mytasks-page-padding);
   background-color: var(--mytasks-bg-page);
   min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--ds-font-family-body);
 }
 
 

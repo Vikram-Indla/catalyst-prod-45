@@ -107,7 +107,7 @@ export default function IssueFullPage() {
     return (
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        height: '100%', minHeight: 400, fontFamily: 'Inter, sans-serif', color: '#5E6C84',
+        height: '100%', minHeight: 400, fontFamily: 'var(--ds-font-family-body)', color: '#5E6C84',
       }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
           <Loader2 size={32} className="animate-spin" style={{ color: '#2563EB' }} />
@@ -121,7 +121,7 @@ export default function IssueFullPage() {
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        height: '100%', minHeight: 400, fontFamily: 'Inter, sans-serif', gap: 12,
+        height: '100%', minHeight: 400, fontFamily: 'var(--ds-font-family-body)', gap: 12,
       }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>
           {notFound ? 'Issue not found' : 'Error loading issue'}
@@ -134,7 +134,7 @@ export default function IssueFullPage() {
           style={{
             marginTop: 8, padding: '8px 16px', background: '#2563EB', color: '#FFFFFF',
             border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
           }}
         >
           Close

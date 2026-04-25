@@ -125,7 +125,7 @@ export default function AllWork() {
   const hasActiveFilters = !!(filters.types?.length || filters.statuses?.length || filters.priorities?.length);
 
   return (
-    <div className="flex flex-col h-full overflow-hidden" style={{ fontFamily: "Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+    <div className="flex flex-col h-full overflow-hidden" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
       <AllWorkHeader
         activeTab={activeTab}
         onTabChange={setActiveTab}

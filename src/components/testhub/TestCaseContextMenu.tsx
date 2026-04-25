@@ -39,7 +39,7 @@ function ContextMenuItem({ icon: Icon, children, onClick, danger }: MenuItemProp
         border: 'none',
         borderRadius: 6,
         backgroundColor: 'transparent',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 13,
         color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
         cursor: 'pointer',

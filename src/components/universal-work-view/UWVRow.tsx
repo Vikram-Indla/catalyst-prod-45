@@ -79,7 +79,7 @@ function KeyLink({ keyText, onClick }: { keyText: string; onClick: () => void })
         fontSize: 13,
         fontWeight: 600,
         color: 'var(--cp-blue)',
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: 'var(--ds-font-family-monospaced)',
         textDecoration: hover ? 'underline' : 'none',
         background: hover ? '#E9F2FF' : 'transparent',
         padding: '1px 4px',
@@ -227,7 +227,7 @@ function renderCell(
           style={{
             color: '#42526E',
             fontSize: 13,
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: 'var(--ds-font-family-monospaced)',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -316,7 +316,7 @@ function renderCell(
           style={{
             color: '#42526E',
             fontSize: 12,
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: 'var(--ds-font-family-monospaced)',
             maxWidth: 260,
             overflow: 'hidden',
             textOverflow: 'ellipsis',

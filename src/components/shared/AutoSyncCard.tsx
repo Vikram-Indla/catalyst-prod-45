@@ -165,7 +165,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Timer size={15} style={{ color: 'var(--wh-tx3)' }} />
           <span style={{
-            fontFamily: "var(--wh-fh, 'Inter')",
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 14,
             fontWeight: 700,
             color: 'var(--wh-tx)',
@@ -278,11 +278,11 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                 <div style={{
                   fontSize: 13, fontWeight: 600,
                   color: edit.enabled ? 'var(--wh-tx)' : 'var(--wh-tx4)',
-                  fontFamily: "var(--wh-fh, 'Inter')",
+                  fontFamily: 'var(--ds-font-family-body)',
                 }}>
                   {s.schedule_label}
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: "var(--wh-fn, 'Inter')", marginTop: 1 }}>
+                <div style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--ds-font-family-body)', marginTop: 1 }}>
                   {s.timezone_label}
                   {s.last_triggered_at && ` · Last run: ${formatTimeAgo(s.last_triggered_at)}`}
                 </div>
@@ -321,7 +321,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
                     <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
                   ))}
                 </select>
-                <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: "var(--wh-fn, 'Inter')", marginLeft: 4 }}>
+                <span style={{ fontSize: 10, color: 'var(--wh-tx4)', fontFamily: 'var(--ds-font-family-body)', marginLeft: 4 }}>
                   UTC
                 </span>
               </div>
@@ -333,7 +333,7 @@ export function AutoSyncCard({ scheduleKeys, lastSyncTable, lastSyncColumn, titl
       {/* Help text */}
       <div style={{
         marginTop: 14, fontSize: 10, color: 'var(--wh-tx4)',
-        fontFamily: "var(--wh-fn, 'Inter')", lineHeight: 1.5,
+        fontFamily: 'var(--ds-font-family-body)', lineHeight: 1.5,
       }}>
         Enable a schedule and set the time (UTC). Saudi Arabia is UTC+3.
         For example, 23:00 UTC = 2:00 AM Saudi time.

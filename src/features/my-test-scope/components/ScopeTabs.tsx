@@ -27,7 +27,7 @@ const TABS: { value: TestScopeTab; label: string; icon: React.ComponentType<{ cl
 
 export function ScopeTabs({ activeTab, onTabChange, counts }: ScopeTabsProps) {
   return (
-    <div className="flex items-center border-b border-border bg-card px-6 shrink-0 font-['Inter']">
+    <div className="flex items-center border-b border-border bg-card px-6 shrink-0 font-body">
       {TABS.map((tab) => {
         const isActive = activeTab === tab.value;
         const count = tab.countKey ? counts[tab.countKey] : undefined;

@@ -43,9 +43,9 @@ export function ExportDialog({ open, onClose, projects }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="sm:max-w-[400px]" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <DialogContent className="sm:max-w-[400px]" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
         <DialogHeader>
-          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontSize: 18 }}>Export Projects</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18 }}>Export Projects</DialogTitle>
         </DialogHeader>
         <p className="text-[#64748B] dark:text-[#878787]" style={{ fontSize: 13, marginTop: -4, marginBottom: 12 }}>
           Export {projects.length} project{projects.length !== 1 ? 's' : ''} matching current filters.

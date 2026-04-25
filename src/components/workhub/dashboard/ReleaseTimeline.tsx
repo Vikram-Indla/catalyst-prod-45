@@ -85,7 +85,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: 18,
           fontWeight: 600,
           color: 'var(--fg-1)',
@@ -96,7 +96,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
         <button
           onClick={() => navigate('/projecthub/calendar')}
           style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 13,
             color: 'var(--cp-blue)',
             background: 'none',
@@ -126,7 +126,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           {months.map((m, i) => (
             <div key={i} style={{
               flex: `0 0 ${100 / (totalMonths + 1)}%`,
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 11,
               fontWeight: 600,
               color: 'var(--fg-4)',
@@ -192,7 +192,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                 {/* Label */}
                 <div style={{ width: 120, flexShrink: 0, paddingRight: 12 }}>
                   <div style={{
-                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontFamily: 'var(--ds-font-family-body)',
                     fontSize: 13,
                     fontWeight: 600,
                     color: 'var(--fg-1)',
@@ -203,7 +203,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
                     {release.name}
                   </div>
                   <div style={{
-                    fontFamily: 'Inter, system-ui, sans-serif',
+                    fontFamily: 'var(--ds-font-family-body)',
                     fontSize: 11,
                     color: 'var(--fg-4)',
                     whiteSpace: 'nowrap',
@@ -288,7 +288,7 @@ export function ReleaseTimeline({ releases }: ReleaseTimelineProps) {
           borderRadius: 8,
           padding: '8px 12px',
           fontSize: 12,
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           zIndex: 1000,
           whiteSpace: 'nowrap',
           pointerEvents: 'none',

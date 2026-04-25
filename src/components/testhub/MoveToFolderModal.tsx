@@ -143,8 +143,8 @@ export function MoveToFolderModal({
         {/* Header */}
         <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--divider)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontFamily: 'Inter, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Move to Folder</h2>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0 0' }}>
+            <h2 style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: 0 }}>Move to Folder</h2>
+            <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: 'var(--fg-3)', margin: '4px 0 0 0' }}>
               {testCaseIds.length} test case{testCaseIds.length > 1 ? 's' : ''} selected
             </p>
           </div>

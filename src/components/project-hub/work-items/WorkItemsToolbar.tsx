@@ -83,7 +83,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               value={search}
               onChange={e => onSearchChange(e.target.value)}
               className="h-[30px] w-[160px] pl-8 pr-7 text-[11px] rounded-md border focus:outline-none focus:ring-1 focus:ring-[#2563EB] placeholder:text-[#94A3B8]"
-              style={{ borderColor: 'var(--divider)', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--divider)', fontFamily: 'var(--ds-font-family-body)' }}
             />
             {search && (
               <button
@@ -134,7 +134,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
               style={{
                 borderColor: hasActiveFilters ? 'var(--cp-blue)' : 'var(--divider)',
                 color: hasActiveFilters ? 'var(--cp-blue)' : 'var(--fg-2)',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               <Filter size={13} />
@@ -165,7 +165,7 @@ export function WorkItemsToolbar(props: WorkItemsToolbarProps) {
             <button
               onClick={() => setGroupOpen(!groupOpen)}
               className="h-[30px] px-2.5 flex items-center gap-1.5 text-[11px] font-medium rounded-md border hover:bg-[#F1F5F9] transition-colors"
-              style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'Inter, sans-serif' }}
+              style={{ borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)' }}
             >
               Group: {GROUP_OPTIONS.find(o => o.value === groupBy)?.label}
               <ChevronDown size={11} />

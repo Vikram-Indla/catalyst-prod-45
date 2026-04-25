@@ -292,7 +292,7 @@ export default function TestHubDashboardPage() {
     <div style={{
       height: 'calc(100vh - 44px)',
       display: 'flex', flexDirection: 'column', overflow: 'hidden',
-      background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: 'Inter, system-ui, sans-serif',
+      background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: 'var(--ds-font-family-body)',
     }}>
 
       {/* ═══ PAGE HEADER — 52px ═══ */}
@@ -405,7 +405,7 @@ export default function TestHubDashboardPage() {
                          alignItems: 'center', height: 50, padding: '0 16px',
                          cursor: 'pointer', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`,
                        }}>
-                       <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                       <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                          {cycle.cycle_key}
                        </span>
                        <span style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -480,7 +480,7 @@ export default function TestHubDashboardPage() {
                            alignItems: 'center', height: 50, padding: '0 16px',
                            cursor: 'pointer', borderBottom: `1px solid ${isDark ? '#292929' : '#F1F5F9'}`,
                          }}>
-                         <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                         <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                            {test.case_key}
                          </span>
                          <span style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -611,7 +611,7 @@ export default function TestHubDashboardPage() {
                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, marginTop: 6, flexShrink: 0 }} />
                            <div style={{ flex: 1, minWidth: 0 }}>
                              <div style={{ fontSize: 13, fontWeight: 400, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: 1.43 }}>
-                               <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
+                               <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>{a.case_key}</span>
                                {' '}<span style={{ fontWeight: 600 }}>{verb}</span> in {a.cycle_key}
                              </div>
                              <div style={{ fontSize: 11, fontWeight: 400, color: isDark ? '#878787' : '#64748B' }}>

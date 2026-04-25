@@ -7,7 +7,7 @@ import type { Idea } from './ideation-data';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 
-const MONO = "'JetBrains Mono', monospace";
+const MONO = 'var(--ds-font-family-monospaced)';
 
 interface Props {
   ideas: Idea[];

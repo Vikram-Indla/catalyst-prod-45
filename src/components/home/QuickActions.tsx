@@ -3,7 +3,7 @@
  */
 import React from 'react';
 
-const F = { inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif" };
+const F = { inter: 'var(--ds-font-family-body)' };
 
 export function QuickActions({ presets, onSelect }: {
   presets: Array<{ label: string; query: string }>;

@@ -19,7 +19,7 @@ export function ProjectDistributionChart({ data }: Props) {
       padding: 24, minHeight: 340,
     }}>
       <h3 style={{
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 16, fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>

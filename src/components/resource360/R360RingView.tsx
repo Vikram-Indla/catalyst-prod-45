@@ -185,7 +185,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             transform: 'translate(-50%, -50%)', zIndex: 4, pointerEvents: 'none',
             fontSize: '11px', fontWeight: 600, color: 'var(--fg-2)', background: 'var(--bg-1)',
             padding: '2px 8px', borderRadius: '12px', border: '1px solid var(--divider)',
-            whiteSpace: 'nowrap', fontFamily: "'Inter', system-ui, sans-serif",
+            whiteSpace: 'nowrap', fontFamily: 'var(--ds-font-family-body)',
             fontVariantNumeric: 'tabular-nums',
           }}>
             {ageLabel(item.age_days ?? 0)}
@@ -224,7 +224,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
             position: 'absolute', left: `${pos.x}%`, top: `${pos.y}%`, width: '195px',
             background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: '8px',
             padding: '10px 12px 10px 15px', cursor: 'pointer', zIndex: 3,
-            boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: "'Inter', system-ui, sans-serif",
+            boxShadow: '0 1px 3px rgba(15,23,42,.05)', fontFamily: 'var(--ds-font-family-body)',
             transition: 'border-color .15s, box-shadow .15s',
           }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--fg-4)'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(15,23,42,.08)'; }}
@@ -239,7 +239,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
               <span style={{ fontSize: '10.5px', fontWeight: 500, color: 'var(--fg-3)', textTransform: 'capitalize' }}>{item.priority || '—'}</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', 'SF Mono', monospace" }}>{item.item_key}</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--ds-font-family-monospaced)' }}>{item.item_key}</span>
               {item.project_key && (
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFFFFF', background: projColor }}>{item.project_key}</span>
               )}
@@ -362,7 +362,7 @@ export const R360RingView: React.FC<Props> = ({ member, items, doneCount, onItem
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
                         <span style={{
                           fontSize: '11.5px', fontWeight: 600, color: 'var(--sem-success)',
-                          fontFamily: "'JetBrains Mono', monospace",
+                          fontFamily: 'var(--ds-font-family-monospaced)',
                         }}>
                           {item.item_key}
                         </span>

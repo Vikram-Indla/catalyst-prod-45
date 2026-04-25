@@ -50,7 +50,7 @@ export default function WikiVerificationPage() {
   }, [qc]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
@@ -59,7 +59,7 @@ export default function WikiVerificationPage() {
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
         <div>
-          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, margin: 0 }}>Verification Queue</h1>
+          <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 700, margin: 0 }}>Verification Queue</h1>
           <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginTop: 4 }}>
             Articles requiring review and verification. Articles not updated in &gt;90 days are auto-flagged.
           </p>
@@ -79,7 +79,7 @@ export default function WikiVerificationPage() {
         <div style={{
           display: 'grid', gridTemplateColumns: '1fr 100px 120px 80px 100px 180px',
           background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '0 16px', height: 50, alignItems: 'center',
-          fontFamily: 'Sora, sans-serif', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
+          fontFamily: 'var(--ds-font-family-heading)', fontSize: 10, fontWeight: 600, textTransform: 'uppercase' as const,
           color: isDark ? '#878787' : '#64748B', letterSpacing: '0.05em', borderBottom: `0.75px solid ${border}`,
         }}>
           <span>Article</span><span>Domain</span><span>Author</span><span>Fresh.</span><span>Updated</span><span>Actions</span>
@@ -113,10 +113,10 @@ export default function WikiVerificationPage() {
                 <span style={{ fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.domain_code}</span>
                 <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{a.author_name || '—'}</span>
                 <span style={{
-                  fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 500,
+                  fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11, fontWeight: 500,
                   color: stale ? '#D97706' : fresh >= 80 ? '#16A34A' : '#64748B',
                 }}>{fresh}%</span>
-                <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>
+                <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>
                   {new Date(a.updated_at).toLocaleDateString()}
                 </span>
                 <div style={{ display: 'flex', gap: 6 }}>

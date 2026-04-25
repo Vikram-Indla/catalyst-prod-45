@@ -61,23 +61,23 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-1)' }}>
       {error && (
-        <div style={{ background: '#FEF2F2', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: "'Inter', sans-serif", borderBottom: '1px solid #FECACA' }}>
+        <div style={{ background: '#FEF2F2', color: 'var(--sem-danger)', padding: '8px 24px', fontSize: 12, fontFamily: 'var(--ds-font-family-body)', borderBottom: '1px solid #FECACA' }}>
           ⚠ Board query error: {(error as Error).message} | projectId: {projectId}
         </div>
       )}
       {/* Header */}
       <div style={{ background: 'var(--bg-app)', borderBottom: '0.75px solid rgba(15,23,42,0.08)', flexShrink: 0 }}>
         <div style={{ padding: '16px 24px 0' }}>
-          <div style={{ fontSize: 12, fontFamily: "'Inter', sans-serif", color: 'var(--fg-3)', marginBottom: 6 }}>
+          <div style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-body)', color: 'var(--fg-3)', marginBottom: 6 }}>
             ProjectHub › Boards
           </div>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
             <div>
-              <h1 style={{ fontSize: 17, fontFamily: "'Sora', sans-serif", fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
-              <p style={{ fontSize: 12.5, color: 'var(--fg-3)', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+              <h1 style={{ fontSize: 17, fontFamily: 'var(--ds-font-family-heading)', fontWeight: 700, color: 'var(--fg-1)', letterSpacing: '-0.4px', margin: 0 }}>Boards</h1>
+              <p style={{ fontSize: 12.5, color: 'var(--fg-3)', margin: '2px 0 0', fontFamily: 'var(--ds-font-family-body)' }}>
                 {boards.length} board{boards.length !== 1 ? 's' : ''} in this project
               </p>
-              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: '2px 0 0', fontFamily: "'Inter', sans-serif" }}>
+              <p style={{ fontSize: 11, color: 'var(--fg-4)', margin: '2px 0 0', fontFamily: 'var(--ds-font-family-body)' }}>
                 Debug: projectId = {projectId}
               </p>
             </div>
@@ -99,7 +99,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
                 placeholder="Search boards…"
                 style={{
                   border: 'none', outline: 'none', background: 'transparent', flex: 1,
-                  fontSize: 12.5, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
+                  fontSize: 12.5, fontFamily: 'var(--ds-font-family-body)', color: 'var(--fg-1)',
                   appearance: 'none' as any,
                 }}
               />
@@ -108,7 +108,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
               background: 'transparent', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 6, cursor: 'pointer', fontSize: 12.5, fontWeight: 500,
-              color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
+              color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)',
             }}>
               <SlidersHorizontal size={14} /> Filter
             </button>
@@ -116,7 +116,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
               display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 14px',
               background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
               cursor: 'pointer', fontSize: 12.5, fontWeight: 600, color: '#FFFFFF',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
             }}>
               <Plus size={14} strokeWidth={2.5} /> Create Board
             </button>
@@ -130,7 +130,7 @@ export default function BoardManagerPage({ projectIdOverride, basePath }: BoardM
                   border: 'none', background: 'transparent', cursor: 'pointer',
                   fontSize: 12.5, fontWeight: active ? 600 : 500,
                   color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--ds-font-family-body)',
                   borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
                   marginBottom: -1,
                 }}>
@@ -226,7 +226,7 @@ function SectionLabel({ label }: { label: string }) {
       <span style={{
         fontSize: 11.5, fontWeight: 650, textTransform: 'uppercase' as const,
         letterSpacing: '0.05em', color: 'var(--fg-4)',
-        fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap',
+        fontFamily: 'var(--ds-font-family-body)', whiteSpace: 'nowrap',
       }}>{label}</span>
       <span style={{ flex: 1, height: 0.75, background: 'rgba(15,23,42,0.08)' }} />
     </div>
@@ -265,11 +265,11 @@ function NewBoardCard({ onClick }: { onClick: () => void }) {
       <span style={{
         fontSize: 12.5, fontWeight: 500, marginTop: 8,
         color: hover ? 'var(--cp-blue)' : 'var(--fg-4)',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}>Create New Board</span>
       <span style={{
         fontSize: 11.5, color: 'var(--fg-4)', marginTop: 4,
-        maxWidth: 220, textAlign: 'center', fontFamily: "'Inter', sans-serif",
+        maxWidth: 220, textAlign: 'center', fontFamily: 'var(--ds-font-family-body)',
       }}>Add a kanban board to organize and track work items</span>
     </button>
   );

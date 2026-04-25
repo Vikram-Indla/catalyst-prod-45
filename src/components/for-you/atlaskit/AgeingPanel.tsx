@@ -146,7 +146,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
     >
       <span
         style={{
-          font: `500 14px/20px "Inter", system-ui, sans-serif`,
+          font: `500 14px/20px var(--ds-font-family-body)`,
           letterSpacing: 'normal',
           color: text.subtlest,
           textTransform: 'none',
@@ -156,7 +156,7 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
       </span>
       <span
         style={{
-          font: `400 12px/16px "Inter", system-ui, sans-serif`,
+          font: `400 12px/16px var(--ds-font-family-body)`,
           color: text.subtle,
           backgroundColor: token('elevation.surface.sunken', '#F7F8F9'),
           paddingInline: 6,
@@ -230,7 +230,7 @@ export default function AgeingPanel() {
     return (
       <div style={{ padding: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
         <Spinner size="small" />
-        <span style={{ color: token('color.text.subtle', '#626F86'), font: `400 14px/20px "Inter", system-ui, sans-serif` }}>
+        <span style={{ color: token('color.text.subtle', '#626F86'), font: `400 14px/20px var(--ds-font-family-body)` }}>
           Loading ageing items…
         </span>
       </div>

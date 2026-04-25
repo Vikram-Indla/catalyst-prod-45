@@ -38,7 +38,7 @@ export function StatusLozenge({ name, category, size = 'sm' }: StatusLozengeProp
         whiteSpace: 'nowrap' as const,
         background: s.bg,
         color: s.color,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       {name}

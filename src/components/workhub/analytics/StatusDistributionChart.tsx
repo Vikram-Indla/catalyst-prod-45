@@ -22,7 +22,7 @@ export function StatusDistributionChart({ data }: Props) {
       padding: 24, minHeight: 340,
     }}>
       <h3 style={{
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 16, fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 16,
       }}>
@@ -44,7 +44,7 @@ export function StatusDistributionChart({ data }: Props) {
             <Tooltip content={<ChartTooltip />} />
             <Legend
               verticalAlign="bottom" height={36}
-              formatter={(value: string) => <span style={{ fontSize: 12, fontFamily: 'Inter' }}>{value}</span>}
+              formatter={(value: string) => <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-body)' }}>{value}</span>}
             />
           </PieChart>
         </ResponsiveContainer>
@@ -56,10 +56,10 @@ export function StatusDistributionChart({ data }: Props) {
           transform: 'translate(-50%, -50%)',
           textAlign: 'center', pointerEvents: 'none',
         }}>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 24, fontWeight: 700, color: 'var(--fg-1)' }}>
             {total}
           </div>
-          <div style={{ fontFamily: 'Inter, system-ui, sans-serif', fontSize: 11, color: 'var(--fg-4)' }}>
+          <div style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: 'var(--fg-4)' }}>
             items
           </div>
         </div>

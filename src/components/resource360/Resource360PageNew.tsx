@@ -72,7 +72,7 @@ export default function Resource360PageNew() {
 
   if (!resourceId) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 40, marginBottom: 8 }}>👤</p>
           <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-2)' }}>No resource selected</p>
@@ -85,7 +85,7 @@ export default function Resource360PageNew() {
   const isInitialLoad = (itemsLoading || summaryLoading) && !items.length && !summary;
   if (isInitialLoad) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', fontFamily: 'var(--ds-font-family-body)' }}>
         <div style={{ height: 66, display: 'flex', alignItems: 'center', gap: 14, padding: '0 20px', background: 'var(--bg-app)', borderBottom: '1px solid var(--divider)' }}>
           <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--divider)' }} />
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -101,7 +101,7 @@ export default function Resource360PageNew() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, height: '100%', overflow: 'hidden', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, height: '100%', overflow: 'hidden', fontFamily: 'var(--ds-font-family-body)' }}>
       {/* §3 Banner — DEF-01: only Open + Stale KPIs */}
       <Resource360Banner summary={summary ?? null} isLoading={summaryLoading} items={items} />
 
@@ -123,7 +123,7 @@ export default function Resource360PageNew() {
                 color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
                 background: 'transparent', border: 'none',
                 borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
-                cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)',
               }}
             >{tab.label}</button>
           );
@@ -135,7 +135,7 @@ export default function Resource360PageNew() {
           height: 28, fontSize: 12, border: '1px solid var(--divider)',
           borderRadius: 6, padding: '0 8px', marginRight: 8,
           background: 'var(--bg-app)', color: 'var(--fg-1)',
-          fontFamily: "'Inter', sans-serif", cursor: 'pointer',
+          fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer',
         }}>
           <option>Q1-2026</option>
           <option>Q4-2025</option>
@@ -152,7 +152,7 @@ export default function Resource360PageNew() {
             letterSpacing: '0.3px', cursor: 'pointer',
             display: 'inline-flex', alignItems: 'center', gap: 6,
             transition: 'all 200ms ease',
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
           }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
           onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}

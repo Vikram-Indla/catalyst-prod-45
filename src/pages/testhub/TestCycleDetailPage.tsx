@@ -122,7 +122,7 @@ const CycleDefectsPanel = ({ cycleId, isDark }: { cycleId?: string; isDark: bool
             return (
               <tr key={d.id} style={{ height: 36, maxHeight: 36, borderBottom: `0.75px solid ${isDark ? '#292929' : '#F1F5F9'}` }}>
                 <td style={{ padding: '0 12px' }}>
-                  <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer' }}>{d.defect_key}</span>
+                  <span onClick={() => navigate(`/testhub/defects/${d.id}`)} style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer' }}>{d.defect_key}</span>
                 </td>
                 <td style={{ padding: '0 12px', fontSize: 14, color: isDark ? '#EDEDED' : '#334155' }}>{d.title}</td>
                 <td style={{ padding: '0 12px' }}>

@@ -88,7 +88,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
           borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         {/* Header */}
@@ -120,7 +120,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 border: 'none',
                 borderBottom: `2px solid ${activeTab === t.key ? 'var(--cp-blue)' : 'transparent'}`,
                 cursor: 'pointer',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
                 transition: 'color 120ms ease',
               }}
             >
@@ -157,7 +157,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                         );
                       })}
                     </div>
-                    <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
+                    <span style={{ fontSize: 10, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                       WIP {col.wip_limit || '∞'}
                     </span>
                     <button
@@ -215,7 +215,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 <div className="rounded-lg bg-white border p-3" style={{ borderColor: 'var(--divider)', borderLeft: '3px solid var(--cp-blue)' }}>
                   <div className="flex items-center gap-1 mb-1">
                     {cardFields.type && <span className="rounded inline-flex items-center justify-center bg-[var(--cp-blue)]" style={{ width: 14, height: 14, fontSize: 8, color: '#fff' }}>✓</span>}
-                    {cardFields.key && <span style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-3)' }}>PROJ-123</span>}
+                    {cardFields.key && <span style={{ fontSize: 10, fontFamily: 'var(--ds-font-family-monospaced)', color: 'var(--fg-3)' }}>PROJ-123</span>}
                     {cardFields.source && <span className="bg-[var(--cp-blue-wash)]" style={{ fontSize: 7, padding: '0 3px', borderRadius: 4, color: 'var(--cp-blue)', fontWeight: 700 }}>JIRA</span>}
                   </div>
                   {cardFields.overdue && <div style={{ fontSize: 9, color: 'var(--sem-warning)' }}>⚠ 3d overdue</div>}
@@ -260,7 +260,7 @@ export function PHConfigPanel({ board, open, onClose, onSave }: Props) {
                 style={{
                   border: '1px solid var(--divider)',
                   fontSize: 12,
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: 'var(--ds-font-family-monospaced)',
                   resize: 'vertical',
                   minHeight: 80,
                   color: 'var(--fg-2)',

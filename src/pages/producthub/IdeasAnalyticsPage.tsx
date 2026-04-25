@@ -8,7 +8,7 @@ import { QUARTER_BADGE } from './ideation/ideation-data';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 
-const MONO = "'JetBrains Mono', monospace";
+const MONO = 'var(--ds-font-family-monospaced)';
 const LIFECYCLE_ORDER = ['Draft', 'Submitted', 'Under Review', 'Approved', 'Converted to Initiative'];
 
 const STATUS_BAR_COLORS: Record<string, string> = {
@@ -46,7 +46,7 @@ export default function IdeasAnalyticsPage() {
     return (
       <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
         <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Analytics</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--ds-font-family-heading)' }}>Ideas Analytics</h1>
         </div>
         <div style={{ padding: '60px', textAlign: 'center', color: dk.t3 }}>Loading analytics...</div>
       </div>
@@ -96,7 +96,7 @@ export default function IdeasAnalyticsPage() {
     <div className="flex flex-col h-full" style={{ background: dk.pageBg }}>
       <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Analytics</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--ds-font-family-heading)' }}>Ideas Analytics</h1>
           <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Comprehensive insights across the ideation pipeline</p>
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function IdeasAnalyticsPage() {
         {/* Row 1 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion Funnel</div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--ds-font-family-heading)' }}>Conversion Funnel</div>
             {funnelData.map(s => {
               const label = s.status === 'Converted to Initiative' ? 'Converted' : s.status;
               const isConv = s.status === 'Converted to Initiative';
@@ -135,7 +135,7 @@ export default function IdeasAnalyticsPage() {
           </div>
 
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Quarter Distribution</div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--ds-font-family-heading)' }}>Quarter Distribution</div>
             {stats.byQuarter.length === 0 ? (
               <div style={{ color: dk.t3, fontSize: '13px' }}>No ideas assigned to quarters</div>
             ) : stats.byQuarter.map(q => (
@@ -152,7 +152,7 @@ export default function IdeasAnalyticsPage() {
         {/* Row 2 */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion by Theme</div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--ds-font-family-heading)' }}>Conversion by Theme</div>
             {convByTheme.length === 0 ? (
               <div style={{ color: dk.t3, fontSize: '13px' }}>No conversion data</div>
             ) : convByTheme.map(t => (
@@ -168,7 +168,7 @@ export default function IdeasAnalyticsPage() {
           </div>
 
           <div style={{ background: containerBg, border: containerBorder, borderRadius: '6px', padding: '20px' }}>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: "'Sora', sans-serif" }}>Conversion by Quarter</div>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: dk.t1, marginBottom: '16px', fontFamily: 'var(--ds-font-family-heading)' }}>Conversion by Quarter</div>
             {convByQuarter.map(q => (
               <div key={q.quarter} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
                 <span style={{ width: '40px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: 20, borderRadius: 4, fontSize: '10px', fontWeight: 700, background: QUARTER_BADGE[q.quarter]?.bg || '#E2E8F0', color: QUARTER_BADGE[q.quarter]?.text || '#94A3B8' }}>{q.quarter}</span>
@@ -188,7 +188,7 @@ function StatCard({ label, value, subtitle, color, isDark, dk }: { label: string
   return (
     <div style={{ background: isDark ? '#0A0A0A' : '#FFFFFF', border: `1px solid ${isDark ? '#454545' : dk.border}`, borderRadius: '6px', padding: '20px' }}>
       <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '8px' }}>{label}</div>
-      <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: "'JetBrains Mono', monospace", color, letterSpacing: '-0.5px' }}>{value}</span>
+      <span style={{ fontSize: '32px', fontWeight: 800, fontFamily: 'var(--ds-font-family-monospaced)', color, letterSpacing: '-0.5px' }}>{value}</span>
       <div style={{ fontSize: '12px', color: dk.t3, marginTop: '4px' }}>{subtitle}</div>
     </div>
   );

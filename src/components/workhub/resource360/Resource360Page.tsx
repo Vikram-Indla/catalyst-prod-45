@@ -90,7 +90,7 @@ export function Resource360Page() {
     background: active ? 'var(--cp-blue)' : 'var(--bg-1)',
     color: active ? 'var(--bg-app)' : 'var(--fg-3)',
     transition: 'background 150ms, color 150ms',
-    fontFamily: 'Inter, system-ui, sans-serif',
+    fontFamily: 'var(--ds-font-family-body)',
   });
 
   const isLoading = loadingPeople || loadingDepts;
@@ -104,7 +104,7 @@ export function Resource360Page() {
   }
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
       <CommandCenterHeader
         title="Resource 360"

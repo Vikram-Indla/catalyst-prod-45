@@ -312,7 +312,7 @@ export function T10EnterpriseSidePanel({
           zIndex: 9999,
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         {/* ═══════════════════════════════════════════════════════════════════

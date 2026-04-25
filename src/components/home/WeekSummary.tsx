@@ -5,8 +5,8 @@ import React from 'react';
 import type { WeekSummary as WeekSummaryType } from './hooks/useWeekSummary';
 
 const F = {
-  inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  inter: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 const PROJECT_COLORS: Record<string, string> = {

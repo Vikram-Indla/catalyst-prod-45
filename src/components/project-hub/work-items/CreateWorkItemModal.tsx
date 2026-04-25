@@ -236,7 +236,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
   return (
     <div
       className="fixed inset-0 z-[9998] flex items-center justify-center"
-      style={{ fontFamily: 'Inter, sans-serif' }}
+      style={{ fontFamily: 'var(--ds-font-family-body)' }}
       onClick={handleClose}
     >
       {/* Backdrop */}
@@ -251,7 +251,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3.5" style={{ borderBottom: '1px solid var(--cp-bd-zone)' }}>
           <div className="flex items-center gap-2">
-            <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif' }}>
+            <span className="text-[14px] font-semibold" style={{ color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>
               Create Work Item
             </span>
             <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--cp-bd-zone)]" style={{ color: 'var(--fg-3)' }}>
@@ -309,7 +309,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
               onChange={e => setTitle(e.target.value)}
               placeholder="What needs to be done?"
               className="w-full rounded-md border px-3 text-[14px] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB] transition-shadow"
-              style={{ height: 40, borderColor: 'var(--divider)', color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+              style={{ height: 40, borderColor: 'var(--divider)', color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleSubmit(); }}
             />
           </div>
@@ -466,7 +466,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                   value={dueDate}
                   onChange={e => setDueDate(e.target.value)}
                   className="w-full rounded-md border pl-8 pr-2.5 text-[12px] font-medium focus:outline-none focus:ring-2 focus:ring-[#2563EB] transition-shadow"
-                  style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'JetBrains Mono, monospace' }}
+                  style={{ height: 50, borderColor: 'var(--divider)', color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-monospaced)' }}
                 />
               </div>
             </div>
@@ -554,7 +554,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, projectKey, onCr
                       style={{ color: 'var(--fg-2)' }}
                       onClick={() => { setParentId(p.id); setParentOpen(false); setParentSearch(''); }}
                     >
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)', fontSize: 10 }}>
+                      <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', color: 'var(--fg-3)', fontSize: 10 }}>
                         {p.item_key}
                       </span>
                       <span className="truncate">{p.title || p.summary}</span>

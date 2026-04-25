@@ -98,7 +98,7 @@ export function WorkItemOverflowMenu({
     borderRadius: 8,
     boxShadow: '0 4px 16px rgba(0,0,0,0.24)',
     padding: '4px 0',
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: 'var(--ds-font-family-body)',
   };
 
   return (
@@ -257,7 +257,7 @@ function MenuItem({ icon, label, onClick, tk, hasSubmenu, destructive }: {
         width: '100%', padding: '7px 12px', border: 'none',
         background: 'transparent', cursor: 'pointer',
         fontSize: 13, color: destructive ? '#E5493A' : tk.textPrimary,
-        fontFamily: "'Inter', sans-serif", textAlign: 'left',
+        fontFamily: 'var(--ds-font-family-body)', textAlign: 'left',
       }}
       onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}

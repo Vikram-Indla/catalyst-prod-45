@@ -40,7 +40,7 @@ export function InitiativeTypeSelect({ value, onChange, disabled }: InitiativeTy
           boxShadow: open ? '0 0 0 3px rgba(37,99,235,0.1)' : 'none',
           color: selected ? '#09090B' : '#71717A',
           fontWeight: 500,
-          fontFamily: "'Inter',-apple-system,system-ui,sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         <span>{selected?.label || 'Select type'}</span>

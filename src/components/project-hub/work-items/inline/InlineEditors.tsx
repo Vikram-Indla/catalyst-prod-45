@@ -70,7 +70,7 @@ export function InlineSummaryEditor({ value, onSave, onCancel }: {
       onKeyDown={e => { if (e.key === 'Enter') save(); if (e.key === 'Escape') onCancel(); }}
       onBlur={save}
       className="w-full text-[12px] font-medium px-1 py-0.5 rounded outline-none bg-[var(--cp-float)]"
-      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)' }}
+      style={{ border: '2px solid var(--cp-blue)', fontFamily: 'var(--ds-font-family-body)', color: 'var(--fg-1)' }}
     />
   );
 }

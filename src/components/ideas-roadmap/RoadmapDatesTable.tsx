@@ -17,7 +17,7 @@ const QUARTER_STYLES: Record<string, { bg: string; color: string }> = {
 };
 
 const headerStyle: React.CSSProperties = {
-  fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: "'Inter', sans-serif",
+  fontSize: 11, fontWeight: 700, color: '#64748B', fontFamily: 'var(--ds-font-family-body)',
   textTransform: 'uppercase', letterSpacing: '0.07em',
   background: 'var(--bg-1, #F8FAFC)', height: 50, padding: '8px 12px',
   borderBottom: '2px solid var(--bd-default, #E2E8F0)', position: 'sticky', top: 0, zIndex: 2,
@@ -40,7 +40,7 @@ const isConverted = (status: string) => status.toLowerCase() === 'converted';
 export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, mutatingIds }: RoadmapDatesTableProps) {
   return (
     <div style={{ flex: 1, overflow: 'auto', padding: '0 16px 16px' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--ds-font-family-body)' }}>
         <thead>
           <tr>
             <th style={{ ...headerStyle, width: 100 }}>IDEA</th>
@@ -71,7 +71,7 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
               >
                 <td style={cellStyle}>
                   <span style={{
-                    fontSize: 10, fontFamily: "'JetBrains Mono', monospace",
+                    fontSize: 10, fontFamily: 'var(--ds-font-family-monospaced)',
                     color: 'var(--fg-4)', textTransform: 'uppercase',
                   }}>{idea.ideaKey}</span>
                 </td>
@@ -97,14 +97,14 @@ export function RoadmapDatesTable({ ideas, onSelectIdea, onToggleCommitted, muta
                       fontSize: 10, fontWeight: 700, height: 20, display: 'inline-flex',
                       alignItems: 'center', padding: '0 8px', borderRadius: 4,
                       background: qStyle.bg, color: qStyle.color,
-                      fontFamily: "'Inter', sans-serif", textTransform: 'uppercase',
+                      fontFamily: 'var(--ds-font-family-body)', textTransform: 'uppercase',
                     }}>{idea.quarter}</span>
                   ) : <span style={{ color: '#CBD5E1' }}>—</span>}
                 </td>
                 {MILESTONE_CONFIGS.map(m => (
                   <td key={m.key} style={cellStyle}>
                     <span style={{
-                      fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+                      fontSize: 11, fontFamily: 'var(--ds-font-family-monospaced)',
                       color: idea.milestones[m.key] ? 'var(--fg-2)' : '#CBD5E1',
                       fontVariantNumeric: 'tabular-nums',
                     }}>{formatDate(idea.milestones[m.key])}</span>

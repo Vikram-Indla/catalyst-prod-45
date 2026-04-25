@@ -83,7 +83,7 @@ export function makeKeyCell(getKey: (row: any) => string | null) {
           display: 'inline-block',
           padding: '2px 6px',
           margin: '-2px -6px',
-          fontFamily: '"JetBrains Mono", "SF Mono", Monaco, monospace',
+          fontFamily: 'var(--ds-font-family-monospaced)',
           fontWeight: 600,
           color: token('color.link', '#0C66E4'),
           fontSize: 13,

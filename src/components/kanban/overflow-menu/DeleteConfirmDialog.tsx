@@ -44,7 +44,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
         style={{
           width: 420, background: tk.surfaceBg, borderRadius: 8,
           border: `1px solid ${tk.border}`, boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-          padding: 24, fontFamily: "'Inter', sans-serif",
+          padding: 24, fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>
@@ -73,7 +73,7 @@ export function DeleteConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Props
             style={{
               width: '100%', padding: '6px 10px', fontSize: 13, borderRadius: 4,
               border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
-              color: tk.textPrimary, outline: 'none', fontFamily: "'JetBrains Mono', monospace",
+              color: tk.textPrimary, outline: 'none', fontFamily: 'var(--ds-font-family-monospaced)',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = '#D32F2F'; }}
             onBlur={e => { e.currentTarget.style.borderColor = tk.inputBorder; }}

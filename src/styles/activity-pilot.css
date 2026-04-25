@@ -186,7 +186,7 @@
   border: 1px solid #DFE1E6;
   border-radius: 3px;
   background: #F4F5F7;
-  font: 700 11px/16px 'JetBrains Mono', monospace;
+  font: 700 11px/16px var(--ds-font-family-monospaced);
   color: #172B4D;
 }
 

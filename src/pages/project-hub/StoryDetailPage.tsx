@@ -114,7 +114,7 @@ export default function StoryDetailPage() {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'Inter, sans-serif', color: '#5E6C84' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--ds-font-family-body)', color: '#5E6C84' }}>
         Loading…
       </div>
     );
@@ -122,17 +122,17 @@ export default function StoryDetailPage() {
 
   if (!issue) {
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'Inter, sans-serif', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', fontFamily: 'var(--ds-font-family-body)', gap: 12 }}>
         <span style={{ fontSize: 16, fontWeight: 600, color: '#344054' }}>Work item not found</span>
         <span style={{ fontSize: 13, color: '#5E6C84' }}>itemId {itemId} could not be found or has been deleted.</span>
         {debugInfo && (
-          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: "'JetBrains Mono', monospace", maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
+          <span style={{ fontSize: 11, color: '#DE350B', fontFamily: 'var(--ds-font-family-monospaced)', maxWidth: 600, textAlign: 'center', padding: '8px 12px', background: '#FFF5F5', border: '1px solid #FFCDD2', borderRadius: 4 }}>
             {debugInfo}
           </span>
         )}
         <button
           onClick={handleClose}
-          style={{ marginTop: 8, padding: '8px 16px', background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+          style={{ marginTop: 8, padding: '8px 16px', background: '#2563EB', color: '#FFFFFF', border: 'none', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
         >
           Back to backlog
         </button>

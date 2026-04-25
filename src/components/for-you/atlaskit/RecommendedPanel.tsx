@@ -301,7 +301,7 @@ function FeedSection({
         <PurpleCategoryTile />
         <h4
           style={{
-            font: `600 16px/20px "Inter", system-ui, sans-serif`,
+            font: `600 16px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#172B4D'),
             margin: 0,
             letterSpacing: '-0.003em',
@@ -312,7 +312,7 @@ function FeedSection({
       </div>
       <p
         style={{
-          font: `400 14px/20px "Inter", system-ui, sans-serif`,
+          font: `400 14px/20px var(--ds-font-family-body)`,
           color: token('color.text.subtle', '#44546F'),
           margin: 0,
           marginBlockEnd: 4,
@@ -467,7 +467,7 @@ function FeedCard({
           style={{
             all: 'unset',
             cursor: 'pointer',
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#292A2E'),
             textAlign: 'start',
             wordBreak: 'break-word',
@@ -480,7 +480,7 @@ function FeedCard({
             (Jira parity: flat weight, color-only hierarchy). */}
         <div
           style={{
-            font: `400 12px/16px "Inter", system-ui, sans-serif`,
+            font: `400 12px/16px var(--ds-font-family-body)`,
             color: token('color.text.subtle', '#44546F'),
             display: 'flex',
             alignItems: 'center',
@@ -499,7 +499,7 @@ function FeedCard({
         {/* Comment body — full text with @-chips rendered inline. */}
         <div
           style={{
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#172B4D'),
             whiteSpace: 'pre-wrap',
             wordBreak: 'break-word',
@@ -660,7 +660,7 @@ function ReplyComposer({
                   cursor: 'pointer',
                   padding: '4px 10px',
                   borderRadius: 3,
-                  font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                  font: `500 14px/20px var(--ds-font-family-body)`,
                   color: token('color.text.subtle', '#44546F'),
                 }}
               >
@@ -676,7 +676,7 @@ function ReplyComposer({
                   cursor: canSubmit ? 'pointer' : 'not-allowed',
                   padding: '4px 12px',
                   borderRadius: 3,
-                  font: `500 14px/20px "Inter", system-ui, sans-serif`,
+                  font: `500 14px/20px var(--ds-font-family-body)`,
                   color: canSubmit
                     ? token('color.text.inverse', '#FFFFFF')
                     : token('color.text.disabled', '#B3B9C4'),
@@ -736,7 +736,7 @@ function SuggestReplyTile({ onSuggest }: { onSuggest: () => void }) {
           gap: 6,
           padding: '2px 12px',
           borderRadius: 3,
-          font: `500 14px/20px "Inter", system-ui, sans-serif`,
+          font: `500 14px/20px var(--ds-font-family-body)`,
           color: token('color.text.subtle', '#505258'),
           background: 'transparent',
           border: 'none',
@@ -913,7 +913,7 @@ function ReactionChip({
         <span
           aria-hidden="true"
           style={{
-            fontFamily: '"Inter", system-ui, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 12,
             fontWeight: 400,
             color: isActive
@@ -1086,7 +1086,7 @@ function MentionChip({ label }: { label: string }) {
         borderRadius: 20,
         background: 'rgba(5, 21, 36, 0.06)',
         color: token('color.text.subtle', '#505258'),
-        font: `400 14px/24px "Inter", system-ui, sans-serif`,
+        font: `400 14px/24px var(--ds-font-family-body)`,
         whiteSpace: 'nowrap',
       }}
     >

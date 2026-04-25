@@ -129,7 +129,7 @@ export default function IdeationMatrixView({ onOpenDetail }: Props) {
                   border: '2px solid white', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '10px', fontWeight: 800, color: '#FFFFFF',
-                  fontFamily: "'JetBrains Mono', 'SF Mono', monospace",
+                  fontFamily: 'var(--ds-font-family-monospaced)',
                   textShadow: '0 1px 2px rgba(0,0,0,0.3)',
                   boxShadow: hoveredDot === dot.key ? '0 4px 14px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)',
                   transform: hoveredDot === dot.key ? 'scale(1.3)' : 'scale(1)',

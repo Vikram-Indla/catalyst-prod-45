@@ -102,7 +102,7 @@ export function SyncCTALabel() {
 function StatBox({ value, label, valueColor, icon }: { value: number | string; label: string; valueColor?: string; icon?: React.ReactNode }) {
   return (
     <div className="text-center py-3 px-2 bg-slate-50/80 dark:bg-white/[0.03] rounded-lg border border-slate-100 dark:border-white/[0.06]">
-      <div className={cn("text-xl font-[700] text-slate-900 dark:text-white tabular-nums font-['Sora',sans-serif]", valueColor)}>
+      <div className={cn("text-xl font-[700] text-slate-900 dark:text-white tabular-nums font-heading", valueColor)}>
         {value}
       </div>
       <div className="text-[10px] font-medium uppercase tracking-[0.04em] text-slate-400 dark:text-slate-500 mt-0.5">{label}</div>

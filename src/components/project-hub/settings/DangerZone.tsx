@@ -38,7 +38,7 @@ export function DangerZone({ projectId, projectName }: DangerZoneProps) {
         className="ph-card"
         style={{ borderLeft: '4px solid var(--sem-danger)' }}
       >
-        <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--sem-danger)', fontFamily: "'Sora', sans-serif", paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
+        <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--sem-danger)', fontFamily: 'var(--ds-font-family-heading)', paddingBottom: 12, marginBottom: 16, borderBottom: '1px solid var(--cp-bd-zone)' }}>
           Danger Zone
         </h3>
         <p style={{ fontSize: 13, color: 'var(--fg-3)', maxWidth: 520 }}>

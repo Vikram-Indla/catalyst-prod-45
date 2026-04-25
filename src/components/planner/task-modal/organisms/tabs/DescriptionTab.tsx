@@ -52,7 +52,7 @@ export const DescriptionTab: React.FC<DescriptionTabProps> = ({
           padding: '16px 18px',
           border: `1px solid ${isFocused ? COLORS.borderFocus : COLORS.borderDefault}`,
           borderRadius: '12px',
-          fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: '14px',
           lineHeight: 1.6,
           color: COLORS.textPrimary,

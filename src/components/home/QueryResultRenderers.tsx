@@ -5,9 +5,9 @@ import React from 'react';
 import type { QueryResult } from './PersonalizedQueryProcessor';
 
 const F = {
-  inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
-  sora: "'Sora', sans-serif",
+  inter: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
+  sora: 'var(--ds-font-family-heading)',
 };
 
 const PROJECT_COLORS: Record<string, string> = {

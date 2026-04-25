@@ -47,9 +47,9 @@
   --wh-text-inverse: #ffffff;
 
   /* ── TYPOGRAPHY ── */
-  --wh-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --wh-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  --wh-font-display: 'Sora', var(--wh-font-sans);
+  --wh-font-sans: var(--ds-font-family-body);
+  --wh-font-mono: var(--ds-font-family-monospaced);
+  --wh-font-display: var(--ds-font-family-heading);
 
   /* ── SPACING ── */
   --wh-space-xs: 4px;

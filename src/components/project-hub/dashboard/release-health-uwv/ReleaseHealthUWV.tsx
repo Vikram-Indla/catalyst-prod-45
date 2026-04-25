@@ -36,7 +36,7 @@ interface Props {
 
 const FONT_STACK =
   '"Atlassian Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-const MONO_STACK = '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
+const MONO_STACK = 'var(--ds-font-family-monospaced), SFMono-Regular, Menlo, monospace';
 
 function fmtDate(iso?: string | null): string {
   if (!iso) return '—';
@@ -394,7 +394,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
         <div>
           <div
             style={{
-              fontFamily: '"Sora", ' + FONT_STACK,
+              fontFamily: 'var(--ds-font-family-heading)' + FONT_STACK,
               fontSize: 16,
               fontWeight: 650,
               color: '#172B4D',

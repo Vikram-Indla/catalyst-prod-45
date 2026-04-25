@@ -26,10 +26,10 @@ export function RoadmapToolbar({
       padding: '0 24px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)',
     }}>
       <div>
-        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
+        <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>
           Ideas Roadmap
         </div>
-        <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: -1 }}>
+        <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', marginTop: -1 }}>
           FY 2026 delivery pipeline
         </div>
       </div>
@@ -37,7 +37,7 @@ export function RoadmapToolbar({
       <div style={{ flex: 1 }} />
 
       {/* Stat pills — EC-04: grey when 0 committed */}
-      <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ display: 'flex', gap: 6, fontSize: 12, fontWeight: 600, fontFamily: 'var(--ds-font-family-body)' }}>
         <span style={{
           background: hasCommitted ? '#F0FDFA' : 'var(--bg-1)',
           color: hasCommitted ? 'var(--sem-success)' : 'var(--fg-4)',
@@ -60,7 +60,7 @@ export function RoadmapToolbar({
             onClick={() => onViewChange(v)}
             style={{
               padding: '4px 14px', fontSize: 12, fontWeight: 600, border: 'none', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif", outline: 'none', transition: 'all 150ms',
+              fontFamily: 'var(--ds-font-family-body)', outline: 'none', transition: 'all 150ms',
               background: view === v ? 'var(--bg-app)' : 'transparent',
               color: view === v ? '#1E293B' : 'var(--fg-3)',
               boxShadow: view === v ? '0 1px 2px rgba(0,0,0,.06)' : 'none',
@@ -78,7 +78,7 @@ export function RoadmapToolbar({
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '4px 10px', borderRadius: 100, border: '1px solid var(--divider)',
           background: committedOnly ? '#F0FDFA' : 'var(--bg-app)', cursor: 'pointer',
-          fontSize: 12, fontWeight: 600, fontFamily: "'Inter', sans-serif",
+          fontSize: 12, fontWeight: 600, fontFamily: 'var(--ds-font-family-body)',
           color: committedOnly ? 'var(--sem-success)' : 'var(--fg-3)', transition: 'all 150ms',
         }}
       >
@@ -116,7 +116,7 @@ export function RoadmapToolbar({
       <button onClick={onExport} style={{
         height: 32, padding: '8px 12px', borderRadius: 6, border: 'none',
         background: '#1E293B', color: 'var(--bg-app)', fontSize: 12, fontWeight: 600,
-        fontFamily: "'Inter', sans-serif", cursor: 'pointer', transition: 'all 150ms',
+        fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer', transition: 'all 150ms',
       }}>
         Export PPTX
       </button>

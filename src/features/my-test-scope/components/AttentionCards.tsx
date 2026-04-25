@@ -30,7 +30,7 @@ export function AttentionCards({ summary, onCardClick }: AttentionCardsProps) {
   ];
 
   return (
-    <div className="flex items-center gap-2 px-6 py-2.5 border-b border-border overflow-x-auto bg-card font-['Inter']">
+    <div className="flex items-center gap-2 px-6 py-2.5 border-b border-border overflow-x-auto bg-card font-body">
       {cards.map((card) => (
         <button
           key={card.id}

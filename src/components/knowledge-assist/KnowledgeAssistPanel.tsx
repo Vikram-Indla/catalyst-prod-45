@@ -9,8 +9,8 @@ import { processPersonalizedQuery, type QueryResult } from '../home/Personalized
 type ViewState = 'land' | 'chat';
 
 const F = {
-  inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
-  sora: "'Sora', sans-serif",
+  inter: 'var(--ds-font-family-body)',
+  sora: 'var(--ds-font-family-heading)',
 };
 
 export function KnowledgeAssistPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {

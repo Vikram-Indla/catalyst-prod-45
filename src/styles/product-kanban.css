@@ -13,9 +13,9 @@
   --pk-primary: #2563EB;
   --pk-primary-hover: #1D4ED8;
   --pk-primary-bg: #EFF6FF;
-  --pk-font-heading: 'Sora', system-ui, sans-serif;
-  --pk-font-body: 'Inter', system-ui, sans-serif;
-  --pk-font-mono: 'JetBrains Mono', monospace;
+  --pk-font-heading: var(--ds-font-family-heading);
+  --pk-font-body: var(--ds-font-family-body);
+  --pk-font-mono: var(--ds-font-family-monospaced);
   --pk-r-sm: 4px;
   --pk-r-md: 6px;
   --pk-r-lg: 8px;

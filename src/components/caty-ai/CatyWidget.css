@@ -4,7 +4,7 @@
 /* BASE FONT SETTINGS */
 .caty-widget,
 .caty-widget * {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
 }
@@ -19,7 +19,7 @@
 .caty-data-badge,
 [class*="percent"],
 [class*="util"] {
-  font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -74,8 +74,8 @@
   --caty-shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
   
   /* Typography */
-  --caty-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --caty-font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --caty-font-sans: var(--ds-font-family-body);
+  --caty-font-mono: var(--ds-font-family-monospaced);
   
   /* Radii */
   --caty-radius-sm: 6px;
@@ -160,7 +160,7 @@
 }
 
 .caty-header-title {
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 1.25rem !important;
   font-weight: 800 !important;
   color: #0f172a !important;
@@ -172,7 +172,7 @@
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.8125rem !important;
   font-weight: 400 !important;
   color: #64748b !important;

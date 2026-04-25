@@ -67,7 +67,7 @@ export function TestHubSection({ storyId }: { storyId: string }) {
             color: activeTab === tab.key ? '#2563EB' : '#6B778C',
             borderBottom: `2px solid ${activeTab === tab.key ? '#2563EB' : 'transparent'}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, transition: 'color .12s, border-color .12s',
-            fontFamily: 'var(--cp-font-ui, Inter, system-ui, sans-serif)',
+            fontFamily: 'var(--ds-font-family-body)',
           }}>
             {tab.label}
             <span style={{ fontSize: 10, fontWeight: 700, padding: '1px 5px', borderRadius: 8, background: activeTab === tab.key ? '#DEEBFF' : '#DFE1E6', color: activeTab === tab.key ? '#0747A6' : '#42526E' }}>{tab.count}</span>

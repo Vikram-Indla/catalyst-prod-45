@@ -7,7 +7,7 @@
 
 /* Base Container */
 .t10-detail-page {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--ds-font-family-body);
   background: #f8fafc;
   min-height: 100vh;
 }

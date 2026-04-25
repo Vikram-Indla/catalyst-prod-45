@@ -5,8 +5,8 @@ import React from 'react';
 import type { AttentionItem } from './hooks/useAttentionItems';
 
 const F = {
-  inter: "-apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif",
-  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  inter: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 const URGENCY_STYLES: Record<string, { bg: string; text: string; border: string; dot: string }> = {

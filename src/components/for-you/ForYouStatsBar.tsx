@@ -42,17 +42,17 @@ export function ForYouStatsBar({ hubCounts, projectCount, reporterCount }: ForYo
             background: HUB_DOT_COLORS[hub] || '#71717A',
             flexShrink: 0, alignSelf: 'center',
           }} />
-          <span style={{ fontFamily: "'Sora', system-ui", fontSize: 16, fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>
+          <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 16, fontWeight: 700, color: 'var(--fg-1)' }}>{count}</span>
           <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>{hub}</span>
         </div>
       ))}
       <span style={{ color: 'var(--fg-4)' }}>|</span>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
+        <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{projectCount}</span>
         <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>projects</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-        <span style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
+        <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 700, color: 'var(--fg-1)' }}>{reporterCount}</span>
         <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-3)' }}>reporters</span>
       </div>
     </div>

@@ -153,7 +153,7 @@ export function CloneTestCaseModal({
     padding: '8px 12px',
     border: '1.5px solid var(--divider)',
     borderRadius: 8,
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'var(--ds-font-family-body)',
     fontSize: 14,
     color: 'var(--fg-1)',
     outline: 'none',
@@ -216,14 +216,14 @@ export function CloneTestCaseModal({
         }}>
           <div>
             <h2 style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 18,
               fontWeight: 700,
               color: 'var(--fg-1)',
               margin: 0,
             }}>Clone Test Case</h2>
             <p style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 14,
               color: 'var(--fg-3)',
               margin: '4px 0 0 0',
@@ -254,7 +254,7 @@ export function CloneTestCaseModal({
           <div>
             <label style={{
               display: 'block',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 13,
               fontWeight: 600,
               color: 'var(--fg-1)',
@@ -292,7 +292,7 @@ export function CloneTestCaseModal({
                   </svg>
                 )}
               </div>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)' }}>Include test steps</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: 'var(--fg-1)' }}>Include test steps</span>
             </label>
 
             <label 
@@ -310,7 +310,7 @@ export function CloneTestCaseModal({
                   </svg>
                 )}
               </div>
-              <span style={{ fontFamily: 'Inter', fontSize: 14, color: 'var(--fg-1)' }}>Include attachments</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, color: 'var(--fg-1)' }}>Include attachments</span>
             </label>
           </div>
         </div>
@@ -331,7 +331,7 @@ export function CloneTestCaseModal({
               backgroundColor: 'var(--cp-float)',
               border: '1.5px solid var(--divider)',
               borderRadius: 8,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 14,
               fontWeight: 500,
               color: 'var(--fg-2)',
@@ -347,7 +347,7 @@ export function CloneTestCaseModal({
               background: !newTitle.trim() || isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none',
               borderRadius: 8,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 14,
               fontWeight: 600,
               color: '#FFFFFF',

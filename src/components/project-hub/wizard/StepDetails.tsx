@@ -125,7 +125,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
     border: '1px solid var(--divider)',
     borderRadius: 6,
     outline: 'none',
-    fontFamily: "'Inter', sans-serif",
+    fontFamily: 'var(--ds-font-family-body)',
   };
 
   const inputClassName = 'bg-[var(--cp-float)]';
@@ -166,7 +166,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
             className={inputClassName}
             style={{
               ...inputStyle,
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--ds-font-family-monospaced)',
               letterSpacing: '0.05em',
               paddingRight: 36,
             }}
@@ -327,7 +327,7 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
               className={inputClassName}
               style={{
                 ...inputStyle,
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: 'var(--ds-font-family-monospaced)',
                 letterSpacing: '0.05em',
                 textTransform: 'uppercase',
               }}

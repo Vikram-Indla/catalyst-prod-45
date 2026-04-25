@@ -184,7 +184,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
         width: 36, height: 36, borderRadius: '50%', background: bg,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 13, fontWeight: 650, color: '#FFFFFF',
-        fontFamily: 'Inter, sans-serif', flexShrink: 0,
+        fontFamily: 'var(--ds-font-family-body)', flexShrink: 0,
       }}>
         {initials}
       </div>
@@ -237,7 +237,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           {/* Action text + timestamp + unread dot */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 13, color: T.text1, lineHeight: '18px',
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: T.text1, lineHeight: '18px',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0,
             }}>
               {/* M-03/M-04: consistent action text */}
@@ -245,7 +245,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
             </span>
             {/* M-05: timestamp + unread indicator cluster (right-aligned) */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-              <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ fontSize: 11, color: '#94A3B8', fontWeight: 400, whiteSpace: 'nowrap', fontFamily: 'var(--ds-font-family-body)' }}>
                 {formatTimestamp(notification.created_at)}
               </span>
               {/* C-01: unread dot OR mark-read button — inline, no overlap */}
@@ -279,7 +279,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               <WorkItemIcon type={notification.entity_icon_type || notification.entity_type} />
             </span>
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 13,
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 13,
               color: isDeleted ? T.text3 : T.text1,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               fontStyle: isDeleted ? 'italic' : 'normal',
@@ -292,7 +292,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
             {/* M-06: entity key link — muted blue */}
             <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 500,
+              fontFamily: 'var(--ds-font-family-body)', fontSize: 12, fontWeight: 500,
               color: isDeleted ? T.text3 : '#3B82F6',
               textDecoration: isDeleted ? 'line-through' : 'none',
               cursor: 'pointer',
@@ -314,7 +314,7 @@ function NotificationItemInner({ notification, actorProfile, onMarkRead, onClick
               background: 'rgba(217,119,6,.08)', borderRadius: 4, padding: '6px 10px',
             }}>
               <Clock size={14} color="#D97706" />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: isDark ? '#FCD34D' : '#92400E' }}>
+              <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: isDark ? '#FCD34D' : '#92400E' }}>
                 Due in {daysUntilDue} day{daysUntilDue !== 1 ? 's' : ''} — {notification.metadata.due_date}
               </span>
             </div>

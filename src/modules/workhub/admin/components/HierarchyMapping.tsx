@@ -83,14 +83,14 @@ export function HierarchyMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading hierarchy config...</div>
+    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'var(--ds-font-family-body)' }}>Loading hierarchy config...</div>
   }
 
   return (
-    <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ maxWidth: 900, fontFamily: 'var(--ds-font-family-body)' }}>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Hierarchy Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -117,7 +117,7 @@ export function HierarchyMapping() {
         padding: 20, marginBottom: 16, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Hierarchy Levels
           </h2>
           <span style={{
@@ -160,14 +160,14 @@ export function HierarchyMapping() {
         background: 'var(--bg-app, #fff)', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 8,
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 16px' }}>
+        <h2 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 16px' }}>
           Type Mapping
         </h2>
 
         {levels.map(l => (
           <div key={l.name} style={{ marginBottom: 16 }}>
             <label style={{
-              fontFamily: 'Sora, sans-serif', fontSize: 11, textTransform: 'uppercase',
+              fontFamily: 'var(--ds-font-family-heading)', fontSize: 11, textTransform: 'uppercase',
               color: '#64748B', letterSpacing: '.3px', fontWeight: 600, display: 'block', marginBottom: 6,
             }}>
               Level: {l.name}

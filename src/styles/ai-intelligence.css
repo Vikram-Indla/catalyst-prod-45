@@ -27,9 +27,9 @@
   --rai-purple: #7C3AED;
   --rai-purple-bg: #F5F3FF;
 
-  --rai-font-heading: 'Sora', system-ui, sans-serif;
-  --rai-font-body: 'Inter', system-ui, sans-serif;
-  --rai-font-mono: 'JetBrains Mono', monospace;
+  --rai-font-heading: var(--ds-font-family-heading);
+  --rai-font-body: var(--ds-font-family-body);
+  --rai-font-mono: var(--ds-font-family-monospaced);
   --rai-font-ar: 'IBM Plex Sans Arabic', 'Noto Naskh Arabic', system-ui, sans-serif;
 
   font-family: var(--rai-font-body);

@@ -88,7 +88,7 @@ export default function ProjectListView({ projectKey, projectId }: Props) {
               onClose={() => { setActiveItemId(null); setViewMode('list'); }}
             />
           ) : (
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6E76', fontSize: 14, fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B6E76', fontSize: 14, fontFamily: 'var(--ds-font-family-body)' }}>
               Select an item to view details
             </div>
           )}

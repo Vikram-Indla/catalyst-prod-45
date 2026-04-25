@@ -196,7 +196,7 @@ function DynamicRow({ item, columns, onDelete, onCopyLink, onStatusUpdate, onCli
         <button
           onClick={e => { e.stopPropagation(); onClickKey(item.id); }}
           style={{
-            background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'JetBrains Mono', monospace",
+            background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--ds-font-family-monospaced)',
             fontSize: 12, fontWeight: 500, color: '#2563EB', padding: 0, flexShrink: 0,
             textDecoration: 'none',
           }}

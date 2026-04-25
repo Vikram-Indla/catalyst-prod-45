@@ -48,7 +48,7 @@ export default function CatalystViewSubtask({
           style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#F4F5F7', borderRadius: 6, marginBottom: 16, cursor: 'pointer', transition: 'background 0.12s' }}
           onMouseEnter={e => (e.currentTarget.style.background = '#EBECF0')} onMouseLeave={e => (e.currentTarget.style.background = '#F4F5F7')}>
           <IssueIcon type={parentIssue.issue_type} size={14} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#5E6C84' }}>{parentIssue.issue_key}</span>
+          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: '#5E6C84' }}>{parentIssue.issue_key}</span>
           <span style={{ fontSize: 13, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{parentIssue.summary}</span>
           <StatusLozenge status={parentIssue.status} category={parentIssue.status_category} />
         </div>

@@ -42,9 +42,9 @@
   --idp-danger-text: #D92525;
 
   /* TYPOGRAPHY */
-  --idp-font-heading: 'Sora', -apple-system, 'Segoe UI', system-ui, sans-serif;
-  --idp-font-body: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
-  --idp-font-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', 'Liberation Mono', monospace;
+  --idp-font-heading: var(--ds-font-family-heading);
+  --idp-font-body: var(--ds-font-family-body);
+  --idp-font-mono: var(--ds-font-family-monospaced);
 
   /* RADIUS */
   --idp-r-sm: 4px;

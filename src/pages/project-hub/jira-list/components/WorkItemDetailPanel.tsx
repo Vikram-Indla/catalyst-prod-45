@@ -202,7 +202,7 @@ function CenterBody({ item, childItems, childrenLoading }: {
                     }}>
                       {pctDone > 0 && <div style={{ width: `${pctDone}%`, background: '#5B7F24', borderRadius: '999px 0 0 999px' }} />}
                     </div>
-                    <span style={{ fontSize: 12, color: '#626F86', fontFamily: "'JetBrains Mono', monospace" }}>
+                    <span style={{ fontSize: 12, color: '#626F86', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                       {pctDone}% Done
                     </span>
                   </div>
@@ -213,7 +213,7 @@ function CenterBody({ item, childItems, childrenLoading }: {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
                       <tr>
-                        <th style={{ textAlign: 'left', padding: '8px 8px', fontSize: 12, fontWeight: 700, color: '#44546F', borderBottom: '2px solid #DFE1E6', fontFamily: 'Inter, sans-serif' }}>
+                        <th style={{ textAlign: 'left', padding: '8px 8px', fontSize: 12, fontWeight: 700, color: '#44546F', borderBottom: '2px solid #DFE1E6', fontFamily: 'var(--ds-font-family-body)' }}>
                           Work
                         </th>
                       </tr>
@@ -235,7 +235,7 @@ function CenterBody({ item, childItems, childrenLoading }: {
                               <WorkItemTypeIcon type={child.type} size={16} />
                               <a href="#" onClick={e => e.preventDefault()} style={{
                                 color: '#0C66E4', textDecoration: 'none', fontWeight: 600, fontSize: 13,
-                                fontFamily: "'JetBrains Mono', monospace",
+                                fontFamily: 'var(--ds-font-family-monospaced)',
                               }}>
                                 {child.jiraKey}
                               </a>
@@ -300,7 +300,7 @@ function RightDetails({ item }: { item: WorkItem }) {
             display: 'inline-flex', alignItems: 'center', gap: 4,
             height: 32, padding: '0 10px', border: '1px solid #DFE1E6', borderRadius: 4,
             background: '#FFFFFF', cursor: 'pointer', fontSize: 13, fontWeight: 600,
-            color: '#172B4D', fontFamily: 'Inter, sans-serif',
+            color: '#172B4D', fontFamily: 'var(--ds-font-family-body)',
           }}>
             <svg width="14" height="14" viewBox="0 0 16 16" fill="#7C3AED"><circle cx="4" cy="4" r="1.5"/><circle cx="8" cy="4" r="1.5"/><circle cx="12" cy="4" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="8" cy="8" r="1.5"/></svg>
             Improve Epic
@@ -393,7 +393,7 @@ function RightDetails({ item }: { item: WorkItem }) {
         {/* Audit trail */}
         <div style={{
           marginTop: 12, color: '#626F86', fontSize: 12, lineHeight: 1.8,
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: 'var(--ds-font-family-monospaced)',
         }}>
           Created {new Date(item.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at {new Date(item.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}<br />
           Updated {new Date(item.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} at {new Date(item.updatedAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}

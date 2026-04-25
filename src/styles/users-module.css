@@ -94,8 +94,8 @@
   /* ═══════════════════════════════════════════════════════════
      FONT STACKS (V8)
      ═══════════════════════════════════════════════════════════ */
-  --ct-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --ct-font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+  --ct-font-sans: var(--ds-font-family-body);
+  --ct-font-mono: var(--ds-font-family-monospaced);
 
   /* ═══════════════════════════════════════════════════════════
      SPACING (V8 9-LEVEL SCALE)

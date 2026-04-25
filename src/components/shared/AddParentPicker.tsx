@@ -264,7 +264,7 @@ export function AddParentPicker({
           >
             <JiraIssueTypeIcon type={effectiveType} size={16} />
             <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", marginRight: 6 }}>{parentKey}</span>
+              <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', marginRight: 6 }}>{parentKey}</span>
               {effectiveSummary}
             </span>
           </button>
@@ -284,7 +284,7 @@ export function AddParentPicker({
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <JiraIssueTypeIcon type={iconType} size={16} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{parentKey}</span>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)' }}>{parentKey}</span>
           </button>
         );
       }
@@ -318,7 +318,7 @@ export function AddParentPicker({
           onMouseLeave={e => { e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'none'; }}
         >
           <JiraIssueTypeIcon type={iconType} size={14} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{parentKey}</span>
+          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)' }}>{parentKey}</span>
         </button>
       );
     }
@@ -337,7 +337,7 @@ export function AddParentPicker({
           background: 'transparent', border: '1px solid transparent', borderRadius: 4, cursor: 'pointer',
           height: 28, padding: '0 8px', display: 'inline-flex', alignItems: 'center', gap: 6,
           fontSize: 14, fontWeight: 500, color: '#44546F',
-          fontFamily: "'Inter', sans-serif", lineHeight: 1,
+          fontFamily: 'var(--ds-font-family-body)', lineHeight: 1,
           transition: 'background 150ms, border-color 150ms, color 150ms',
         }}
         onMouseEnter={e => { e.currentTarget.style.background = '#F1F2F4'; e.currentTarget.style.color = '#172B4D'; }}

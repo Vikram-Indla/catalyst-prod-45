@@ -157,7 +157,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             // Jira parity: flat weight 400, saturated primary color does
             // the contrast. Bolding row titles made prior builds read as
             // jittery/faded against Jira's dense scan pattern.
-            font: `400 14px/20px "Inter", system-ui, sans-serif`,
+            font: `400 14px/20px var(--ds-font-family-body)`,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -173,7 +173,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
               // Jira renders the key inline in the same Inter stack at
               // the meta-row size — NOT a monospace pill. Matches the
               // 12/16/400 subtle meta pattern from the Recommended card.
-              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              font: `400 12px/16px var(--ds-font-family-body)`,
               color: token('color.text.subtle', '#44546F'),
               letterSpacing: 0,
             }}
@@ -187,7 +187,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <Tooltip content={item.project}>
               <span
                 style={{
-                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                  font: `400 12px/16px var(--ds-font-family-body)`,
                   color: token('color.text.subtle', '#505258'),
                   maxWidth: 180,
                   overflow: 'hidden',
@@ -204,7 +204,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
           )}
           <span
             style={{
-              font: `400 12px/16px "Inter", system-ui, sans-serif`,
+              font: `400 12px/16px var(--ds-font-family-body)`,
               color: token('color.text.subtle', '#626F86'),
             }}
           >
@@ -219,7 +219,7 @@ function ForYouRowImpl({ item, alwaysShowStar = false, onSelect, onToggleStar, h
             <Tooltip content={suggestion}>
               <span
                 style={{
-                  font: `400 12px/16px "Inter", system-ui, sans-serif`,
+                  font: `400 12px/16px var(--ds-font-family-body)`,
                   color: token('color.text.subtle', '#626F86'),
                   maxWidth: 260,
                   overflow: 'hidden',

@@ -252,7 +252,7 @@ export default function WorkItemsListPage() {
   }, [items]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', background: 'var(--bg-app, #FFFFFF)', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', background: 'var(--bg-app, #FFFFFF)', minHeight: '100%' }}>
       {/* Sync Banner — conflictCount from real DB */}
       {!bannerDismissed && (
         <SyncBanner
@@ -284,7 +284,7 @@ export default function WorkItemsListPage() {
               height: 30, padding: '0 10px', borderRadius: 4,
               border: '0.75px solid var(--bd-default, #E2E8F0)', background: 'none',
               fontSize: 11, fontWeight: 500, color: '#475569',
-              fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+              fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer',
             }}
           >
             <History size={13} />

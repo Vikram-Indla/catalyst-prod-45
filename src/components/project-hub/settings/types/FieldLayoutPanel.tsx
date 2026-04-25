@@ -38,7 +38,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
       }}
     >
       <div className="flex items-center justify-between mb-4">
-        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
+        <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>
           {typeName} — Field Layout
         </h4>
         <button
@@ -74,7 +74,7 @@ export function FieldLayoutPanel({ typeId, typeName, onClose }: FieldLayoutPanel
                 <span className="flex-1 truncate" style={{ fontSize: 14, fontWeight: 500, color: 'var(--fg-1)' }}>
                   {field.field_name}
                 </span>
-                <span style={{ width: 120, fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace" }}>
+                <span style={{ width: 120, fontSize: 12, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                   {field.field_type}
                 </span>
                 <span style={{ width: 100 }}>

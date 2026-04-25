@@ -51,7 +51,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
   // Empty state
   if (filtered.length === 0) {
     return (
-      <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ padding: '48px 20px', textAlign: 'center', fontFamily: 'var(--ds-font-family-body)' }}>
         <div style={{ fontSize: 32, marginBottom: 8 }}>📋</div>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', marginBottom: 4 }}>
           {roleFilter !== 'all' ? 'No items match role filter' : 'No work items'}
@@ -64,7 +64,7 @@ const ListView: React.FC<ListViewProps> = ({ items, roleFilter, onItemClick }) =
   }
 
   return (
-    <div style={{ padding: '0 20px 20px', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ padding: '0 20px 20px', fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ border: '1px solid var(--divider)', borderRadius: 8, overflow: 'hidden' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>

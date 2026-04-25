@@ -181,7 +181,7 @@ export function AdvancedFilterPanel({ projectKey, filters, onChange, onClose, tk
         width: 400, background: '#FFFFFF',
         border: '1px solid #DDDEE1', borderRadius: 10,
         boxShadow: '0 12px 36px rgba(9,30,66,0.15), 0 2px 8px rgba(9,30,66,0.08)',
-        zIndex: 60, fontFamily: "'Inter', sans-serif",
+        zIndex: 60, fontFamily: 'var(--ds-font-family-body)',
         maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
       }}
       onClick={e => e.stopPropagation()}
@@ -342,7 +342,7 @@ function MultiSelectFilterSection({
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: 8,
                   border: '1px solid #DDDEE1', borderRadius: 4,
                   fontSize: 13, color: '#172B4D', background: '#FAFBFC',
-                  outline: 'none', fontFamily: "'Inter', sans-serif",
+                  outline: 'none', fontFamily: 'var(--ds-font-family-body)',
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
                 onBlur={e => (e.currentTarget.style.borderColor = '#DDDEE1')}
@@ -482,7 +482,7 @@ function DatePickerBtn({
           height: 28, padding: '0 8px', borderRadius: 4,
           border: `1px solid ${tk.inputBorder}`, background: tk.inputBg,
           cursor: 'pointer', fontSize: 11, color: value ? tk.textPrimary : tk.textMuted,
-          fontFamily: "'Inter', sans-serif", flex: 1, minWidth: 0,
+          fontFamily: 'var(--ds-font-family-body)', flex: 1, minWidth: 0,
         }}>
           <CalendarIcon size={12} />
           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

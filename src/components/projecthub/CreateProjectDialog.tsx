@@ -136,7 +136,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 50, padding: '8px 12px',
     border: `1.5px solid ${border}`, borderRadius: 6,
-    fontSize: 14, fontFamily: "'Inter', sans-serif",
+    fontSize: 14, fontFamily: 'var(--ds-font-family-body)',
     color: textPrimary, outline: 'none', background: inputBg,
   };
 
@@ -178,7 +178,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <div>
-            <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 600, color: textPrimary, display: 'block' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 600, color: textPrimary, display: 'block' }}>
               Create new project
             </span>
             <span style={{ fontSize: 13, color: textSecondary, marginTop: 2, display: 'block' }}>
@@ -223,7 +223,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               placeholder="e.g. DTI" maxLength={6}
               style={{
                 ...inputStyle, textTransform: 'uppercase',
-                fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em',
+                fontFamily: 'var(--ds-font-family-monospaced)', letterSpacing: '0.05em',
                 borderColor: (errors.key || isDuplicate) ? '#DC2626' : border,
               }}
               onFocus={e => { if (!errors.key && !isDuplicate) focusIn(e); }}
@@ -334,7 +334,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
               style={{
                 width: '100%', minHeight: 80, padding: 12,
                 border: `1.5px solid ${border}`, borderRadius: 6,
-                fontSize: 14, fontFamily: "'Inter', sans-serif", color: textPrimary,
+                fontSize: 14, fontFamily: 'var(--ds-font-family-body)', color: textPrimary,
                 resize: 'vertical', outline: 'none', background: inputBg,
               }}
               onFocus={focusIn} onBlur={focusOut}
@@ -364,7 +364,7 @@ export function CreateProjectDialog({ open, onClose }: Props) {
                   placeholder="e.g. DTI"
                   style={{
                     ...inputStyle, textTransform: 'uppercase',
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: 'var(--ds-font-family-monospaced)',
                     borderColor: errors.jiraKey ? '#DC2626' : border,
                   }}
                   onFocus={focusIn} onBlur={focusOut}

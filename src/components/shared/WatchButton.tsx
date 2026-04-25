@@ -81,7 +81,7 @@ export default function WatchButton({ issueId, size = "sm", showCount = false, c
       {showCount && (
         <span
           style={{
-            fontFamily: "JetBrains Mono, monospace",
+            fontFamily: 'var(--ds-font-family-monospaced)',
             fontSize: 10,
             color: "#94A3B8",
             minWidth: 12,

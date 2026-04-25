@@ -93,7 +93,7 @@ export function WeekStripCollapsible({
             >{f.label}</span>
           );
         })}
-        <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: isDark ? '#878787' : '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{weekItems.length} items</span>
+        <span style={{ marginLeft: 'auto', fontSize: '12.5px', color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--ds-font-family-monospaced)' }}>{weekItems.length} items</span>
       </div>
 
       {/* Collapsible Week Strip */}

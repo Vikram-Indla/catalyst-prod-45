@@ -400,7 +400,7 @@ export const RELEASE_MODULE_FEATURE_TREE: FeatureNode = {
         },
         {
           id: 'cal-interactions',
-          name: 'Calendar Interactions',
+          name: 'var(--ds-font-family-body)',
           type: 'feature',
           children: [
             { id: 'cal-drag-drop', name: 'Drag to Reschedule', type: 'action' },
@@ -838,7 +838,7 @@ export const RELEASE_MODULE_FEATURE_TREE: FeatureNode = {
         },
         {
           id: 'exec-runner',
-          name: 'Test Runner Interface',
+          name: 'var(--ds-font-family-body)',
           type: 'feature',
           children: [
             {
@@ -1083,7 +1083,7 @@ export const RELEASE_MODULE_FEATURE_TREE: FeatureNode = {
       children: [
         {
           id: 'ai-chat',
-          name: 'AI Chat Interface',
+          name: 'var(--ds-font-family-body)',
           type: 'feature',
           children: [
             { id: 'ai-input', name: 'Query Input', type: 'component' },

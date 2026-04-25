@@ -6,9 +6,9 @@ import { ChevronRight, Bell, Layers, Tag, FileText, X, Plus } from 'lucide-react
 import { useTheme } from '@/hooks/useTheme';
 
 const F = {
-  sora: "'Sora', sans-serif",
-  inter: "'Inter', system-ui, sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  sora: 'var(--ds-font-family-heading)',
+  inter: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 const DOMAINS = [
@@ -215,7 +215,7 @@ function SectionLabel({ icon, label, isDark }: { icon: React.ReactNode; label: s
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
       {icon}
-      <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{label}</span>
     </div>
   );
 }

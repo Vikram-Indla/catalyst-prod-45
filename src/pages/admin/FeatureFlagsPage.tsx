@@ -134,14 +134,14 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
         <div className="min-w-0">
           <div
             className="truncate"
-            style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}
+            style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}
             title={flag.module_name}
           >
             {flag.module_name}
           </div>
           <div
             className="truncate"
-            style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, color: isDark ? '#878787' : '#71717A', maxWidth: 280 }}
+            style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: isDark ? '#878787' : '#71717A', maxWidth: 280 }}
             title={description}
           >
             {description}
@@ -159,7 +159,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             background: catStyle.bg,
             color: catStyle.text,
             border: `1px solid ${catStyle.border}`,
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.03em',
@@ -181,7 +181,7 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
             padding: '0 6px',
             background: statusStyle.bg,
             color: statusStyle.text,
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 11,
             fontWeight: 700,
             letterSpacing: '0.03em',
@@ -210,12 +210,12 @@ const FlagRow = memo(function FlagRow({ flag, isSelected, isPending, onToggle, o
 
       {/* Updated */}
       <div className="px-3 min-w-0">
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: isDark ? '#A1A1A1' : '#334155', fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: isDark ? '#A1A1A1' : '#334155', fontVariantNumeric: 'tabular-nums' }}>
           {new Date(flag.updated_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
         </div>
         <div
           className="truncate"
-          style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 11, color: isDark ? '#878787' : '#94A3B8', maxWidth: 120 }}
+          style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: isDark ? '#878787' : '#94A3B8', maxWidth: 120 }}
           title={updatedByName}
         >
           {updatedByName}
@@ -274,7 +274,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
         <ChevronDown size={16} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
       )}
       <span style={{
-        fontFamily: "'Inter', system-ui, sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 11,
         fontWeight: 600,
         letterSpacing: '0.06em',
@@ -285,7 +285,7 @@ const GroupHeaderRow = memo(function GroupHeaderRow({ category, count, isCollaps
       </span>
       <span
         style={{
-          fontFamily: "'Inter', system-ui, sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: 11,
           fontWeight: 500,
           color: isDark ? '#878787' : '#64748B',
@@ -449,10 +449,10 @@ export default function FeatureFlagsPage() {
     return (
       <div className={`flex-1 flex flex-col items-center justify-center py-20 gap-3 ${isDark ? "bg-[#0A0A0A]" : "bg-white"}`}>
         <AlertCircle className="w-12 h-12" style={{ color: '#DC2626' }} />
-        <p style={{ fontFamily: "'Inter', system-ui", fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+        <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
           Failed to load feature flags
         </p>
-        <p style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: isDark ? '#878787' : '#71717A' }}>
+        <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: isDark ? '#878787' : '#71717A' }}>
           {(error as Error).message}
         </p>
         <Button
@@ -478,11 +478,11 @@ export default function FeatureFlagsPage() {
         <div>
           <div className="flex items-center gap-2">
             <Flag size={20} style={{ color: '#2563EB' }} />
-            <h1 style={{ fontFamily: "'Sora', system-ui", fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.025em', margin: 0 }}>
+            <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 20, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', letterSpacing: '-0.025em', margin: 0 }}>
               Feature Flags
             </h1>
           </div>
-          <p style={{ fontFamily: "'Inter', system-ui, sans-serif", fontSize: 13, color: isDark ? '#878787' : '#71717A', marginTop: 4 }}>
+          <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, color: isDark ? '#878787' : '#71717A', marginTop: 4 }}>
             Control module visibility and incremental rollout across the platform
           </p>
         </div>
@@ -513,14 +513,14 @@ export default function FeatureFlagsPage() {
         >
           {/* Left: count */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', fontVariantNumeric: 'tabular-nums' }}>
               {stats.enabled}
             </span>
             <span style={{ fontSize: 14, color: isDark ? '#878787' : '#94A3B8' }}>/</span>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: isDark ? '#878787' : '#94A3B8', fontVariantNumeric: 'tabular-nums' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 14, color: isDark ? '#878787' : '#94A3B8', fontVariantNumeric: 'tabular-nums' }}>
               {stats.total}
             </span>
-            <span style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: isDark ? '#878787' : '#71717A', marginLeft: 2 }}>modules enabled</span>
+            <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: isDark ? '#878787' : '#71717A', marginLeft: 2 }}>modules enabled</span>
           </div>
 
           {/* Divider */}
@@ -538,7 +538,7 @@ export default function FeatureFlagsPage() {
                 }}
               />
             </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: isDark ? '#878787' : '#71717A', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 11, color: isDark ? '#878787' : '#71717A', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>
               {stats.total > 0 ? ((stats.enabled / stats.total) * 100).toFixed(1) : '0.0'}%
             </span>
           </div>
@@ -557,7 +557,7 @@ export default function FeatureFlagsPage() {
                 padding: '0 14px',
                 borderRadius: 6,
                 background: '#16A34A',
-                fontFamily: "'Inter', system-ui",
+                fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: allEnabled ? 'not-allowed' : 'pointer',
@@ -580,7 +580,7 @@ export default function FeatureFlagsPage() {
                 background: 'transparent',
                 border: '0.75px solid #DC2626',
                 color: '#DC2626',
-                fontFamily: "'Inter', system-ui",
+                fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 13,
                 fontWeight: 500,
                 cursor: noneEnabled ? 'not-allowed' : 'pointer',
@@ -605,7 +605,7 @@ export default function FeatureFlagsPage() {
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-8 focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2"
-            style={{ fontFamily: "'Inter', system-ui", fontSize: 13, borderRadius: 4, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}` }}
+            style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 13, borderRadius: 4, border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}` }}
             aria-label="Search feature flags"
           />
         </div>
@@ -620,7 +620,7 @@ export default function FeatureFlagsPage() {
               style={{
                 padding: '8px 12px',
                 height: 50,
-                fontFamily: "'Inter', system-ui",
+                fontFamily: 'var(--ds-font-family-body)',
                 fontSize: 12,
                 fontWeight: filterMode === mode ? 650 : 500,
                 background: filterMode === mode ? 'rgba(37,99,235,0.08)' : 'transparent',
@@ -642,7 +642,7 @@ export default function FeatureFlagsPage() {
           style={{
             height: 50,
             padding: '8px 12px',
-            fontFamily: "'Inter', system-ui",
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 12,
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.14)'}`,
             borderRadius: 4,
@@ -657,7 +657,7 @@ export default function FeatureFlagsPage() {
         {/* Bulk actions for selected */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-2 ml-auto animate-fade-in">
-            <span style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: isDark ? '#878787' : '#71717A' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: isDark ? '#878787' : '#71717A' }}>
               {selectedIds.size} selected
             </span>
             <Button
@@ -699,7 +699,7 @@ export default function FeatureFlagsPage() {
             height: 40,
             background: isDark ? '#1A1A1A' : '#F1F5F9',
             borderBottom: `0.75px solid ${isDark ? '#292929' : 'rgba(15,23,42,0.06)'}`,
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.06em',
@@ -745,17 +745,17 @@ export default function FeatureFlagsPage() {
             {flags?.length === 0 ? (
               <>
                 <Settings size={48} style={{ color: 'rgba(15,23,42,0.15)' }} />
-                <p style={{ fontFamily: "'Inter', system-ui", fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
                   No modules configured
                 </p>
-                <p style={{ fontFamily: "'Inter', system-ui", fontSize: 12, color: isDark ? '#878787' : '#71717A' }}>
+                <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 12, color: isDark ? '#878787' : '#71717A' }}>
                   Contact your administrator to set up feature flags.
                 </p>
               </>
             ) : (
               <>
                 <Flag size={48} style={{ color: 'rgba(15,23,42,0.15)' }} />
-                <p style={{ fontFamily: "'Inter', system-ui", fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                <p style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>
                   No modules match your filters
                 </p>
                 {hasActiveFilters && (
@@ -794,14 +794,14 @@ export default function FeatureFlagsPage() {
       </div>
 
       {/* ── Footer ─────────────────────────────────────── */}
-      <div className="mt-4 flex items-center gap-4" style={{ fontFamily: "'Inter', system-ui", fontSize: 11, color: isDark ? '#878787' : '#71717A' }}>
+      <div className="mt-4 flex items-center gap-4" style={{ fontFamily: 'var(--ds-font-family-body)', fontSize: 11, color: isDark ? '#878787' : '#71717A' }}>
         <span>
           Showing{' '}
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontVariantNumeric: 'tabular-nums' }}>
             {filteredFlags.length}
           </span>{' '}
           of{' '}
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}>
+          <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontVariantNumeric: 'tabular-nums' }}>
             {flags?.length ?? 0}
           </span>{' '}
           modules

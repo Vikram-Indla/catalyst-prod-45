@@ -18,7 +18,7 @@ export function AnalyticsPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ color: 'var(--fg-4)', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading analytics…</div>
+        <div style={{ color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-body)' }}>Loading analytics…</div>
       </div>
     );
   }

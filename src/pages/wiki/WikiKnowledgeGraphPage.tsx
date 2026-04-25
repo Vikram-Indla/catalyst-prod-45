@@ -156,14 +156,14 @@ export default function WikiKnowledgeGraphPage() {
   }, [articles, relations, navigate]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'var(--ds-font-family-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ padding: '20px 40px 0' }}>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
           <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
           <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />
           <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>Knowledge Graph</span>
         </nav>
-        <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
+        <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 700, margin: '0 0 8px' }}>Knowledge Graph</h1>
         <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 12 }}>
           Visualize article relationships. Node size = view count. Click to open article.
         </p>

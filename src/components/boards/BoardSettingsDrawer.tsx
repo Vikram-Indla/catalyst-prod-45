@@ -109,11 +109,11 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
             <h2 style={{
-              fontSize: 14, fontFamily: "'Sora', sans-serif", fontWeight: 700,
+              fontSize: 14, fontFamily: 'var(--ds-font-family-heading)', fontWeight: 700,
               color: 'var(--fg-1)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>Settings</h2>
             {isDirty && (
-              <span style={{ fontSize: 11.5, color: 'var(--sem-warning)', fontFamily: "'Inter', sans-serif", flexShrink: 0 }}>
+              <span style={{ fontSize: 11.5, color: 'var(--sem-warning)', fontFamily: 'var(--ds-font-family-body)', flexShrink: 0 }}>
                 • Unsaved
               </span>
             )}
@@ -136,7 +136,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                 padding: '8px 10px', border: 'none', background: 'transparent',
                 cursor: 'pointer', fontSize: 11.5, fontWeight: active ? 600 : 500,
                 color: active ? 'var(--cp-blue)' : 'var(--fg-3)',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
                 borderBottom: active ? '2px solid var(--cp-blue)' : '2px solid transparent',
                 marginBottom: -1,
               }}>{t.label}</button>
@@ -181,10 +181,10 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       <RadioCircle selected={visibility === opt.value} />
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>{opt.label}</span>
+                          <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{opt.label}</span>
                           {opt.warning && <AlertTriangle size={12} color="#D97706" />}
                         </div>
-                        <div style={{ fontSize: 10.5, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>{opt.desc}</div>
+                        <div style={{ fontSize: 10.5, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', marginTop: 1 }}>{opt.desc}</div>
                       </div>
                     </button>
                   ))}
@@ -197,13 +197,13 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     display: 'flex', alignItems: 'center', gap: 6, height: 30, padding: '8px 12px',
                     background: '#FEF2F2', border: '0.75px solid var(--sem-danger)',
                     borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
-                    color: 'var(--sem-danger)', fontFamily: "'Inter', sans-serif",
+                    color: 'var(--sem-danger)', fontFamily: 'var(--ds-font-family-body)',
                   }}>
                     <Trash2 size={13} /> Delete Board
                   </button>
                 ) : (
                   <div style={{ padding: 10, background: '#FEF2F2', borderRadius: 6, border: '0.75px solid var(--sem-danger)' }}>
-                    <p style={{ fontSize: 11.5, color: 'var(--sem-danger)', margin: '0 0 8px', fontFamily: "'Inter', sans-serif" }}>
+                    <p style={{ fontSize: 11.5, color: 'var(--sem-danger)', margin: '0 0 8px', fontFamily: 'var(--ds-font-family-body)' }}>
                       Type <strong>{board.name}</strong> to confirm:
                     </p>
                     <input value={deleteConfirm} onChange={e => setDeleteConfirm(e.target.value)}
@@ -214,7 +214,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                       background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
                       color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
                       fontSize: 11.5, fontWeight: 600, cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--ds-font-family-body)',
                     }}>{deleteBoard.isPending ? 'Deleting…' : 'Delete'}</button>
                   </div>
                 )}
@@ -235,7 +235,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                     <GripVertical size={13} color="#94A3B8" style={{ cursor: 'grab', flexShrink: 0 }} />
                     <span style={{
                       fontSize: 12, fontWeight: 500, color: 'var(--fg-1)',
-                      fontFamily: "'Inter', sans-serif", flex: 1, minWidth: 0,
+                      fontFamily: 'var(--ds-font-family-body)', flex: 1, minWidth: 0,
                       overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                     }}>{col.name}</span>
                     {col.isBacklog && <Badge bg="rgba(37,99,235,0.06)" color="#2563EB">Backlog</Badge>}
@@ -259,7 +259,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   display: 'flex', alignItems: 'center', gap: 4, height: 50, padding: '0 10px',
                   border: '0.75px dashed rgba(15,23,42,0.12)',
                   borderRadius: 6, background: 'transparent', cursor: newColName.trim() ? 'pointer' : 'not-allowed',
-                  fontSize: 11.5, color: '#94A3B8', fontFamily: "'Inter', sans-serif",
+                  fontSize: 11.5, color: '#94A3B8', fontFamily: 'var(--ds-font-family-body)',
                 }}>
                   <Plus size={13} /> Add
                 </button>
@@ -280,8 +280,8 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
                   }}>
                     <RadioCircle selected={swimlane === opt.value} />
                     <div>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>{opt.label}</div>
-                      <div style={{ fontSize: 10.5, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>{opt.desc}</div>
+                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-body)' }}>{opt.label}</div>
+                      <div style={{ fontSize: 10.5, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', marginTop: 1 }}>{opt.desc}</div>
                     </div>
                   </button>
                 ))}
@@ -291,14 +291,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
 
           {tab === 'access' && (
             <>
-              <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginBottom: 12 }}>
+              <div style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', marginBottom: 12 }}>
                 Manage who has access to this board and their roles.
               </div>
               <button style={{
                 display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
                 background: 'var(--cp-blue)', border: 'none', borderRadius: 6,
                 cursor: 'pointer', fontSize: 11.5, fontWeight: 600, color: '#FFFFFF',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
               }}>
                 <Plus size={13} /> Add Member
               </button>
@@ -315,14 +315,14 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
             height: 30, padding: '8px 12px', borderRadius: 6,
             border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)',
             fontSize: 11.5, fontWeight: 500, color: '#334155',
-            fontFamily: "'Inter', sans-serif", cursor: 'pointer',
+            fontFamily: 'var(--ds-font-family-body)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleSave} disabled={!isDirty || updateBoard.isPending} style={{
             height: 30, padding: '0 14px', borderRadius: 6, border: 'none',
             background: isDirty ? 'var(--cp-blue)' : 'var(--divider)',
             fontSize: 11.5, fontWeight: 600,
             color: isDirty ? '#FFFFFF' : 'var(--fg-4)',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             cursor: isDirty ? 'pointer' : 'not-allowed',
           }}>{updateBoard.isPending ? 'Saving…' : 'Save'}</button>
         </div>
@@ -334,7 +334,7 @@ export default function BoardSettingsDrawer({ board, onClose }: Props) {
 const inputStyle: React.CSSProperties = {
   width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
   border: '0.75px solid rgba(15,23,42,0.12)', borderRadius: 6,
-  fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
+  fontSize: 13, fontFamily: 'var(--ds-font-family-body)', color: 'var(--fg-1)',
   outline: 'none', background: 'var(--bg-app)',
 };
 
@@ -344,7 +344,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
       <div style={{
         fontSize: 11, fontWeight: 650, textTransform: 'uppercase' as const,
         letterSpacing: '0.05em', color: 'var(--fg-4)',
-        fontFamily: "'Inter', sans-serif", marginBottom: 8,
+        fontFamily: 'var(--ds-font-family-body)', marginBottom: 8,
       }}>{label}</div>
       {children}
     </div>
@@ -355,7 +355,7 @@ function FieldLabel({ children, style: s }: { children: React.ReactNode; style?:
   return (
     <label style={{
       display: 'block', fontSize: 11.5, fontWeight: 600,
-      color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
+      color: 'var(--fg-2)', fontFamily: 'var(--ds-font-family-body)',
       marginBottom: 6, ...s,
     }}>{children}</label>
   );
@@ -380,7 +380,7 @@ function Badge({ children, bg, color }: { children: React.ReactNode; bg: string;
     <span style={{
       display: 'inline-flex', height: 16, padding: '0 5px', borderRadius: 4,
       fontSize: 10, fontWeight: 600, background: bg, color,
-      fontFamily: "'Inter', sans-serif", alignItems: 'center', flexShrink: 0,
+      fontFamily: 'var(--ds-font-family-body)', alignItems: 'center', flexShrink: 0,
     }}>{children}</span>
   );
 }

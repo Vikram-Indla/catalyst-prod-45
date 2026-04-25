@@ -632,7 +632,7 @@ export default function CommandCenterPage() {
         title="Command Center"
         actions={
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: 'var(--text-3, hsl(var(--muted-foreground)))' }}>
+            <span style={{ fontFamily: 'var(--ds-font-family-monospaced)', fontSize: 12, color: 'var(--text-3, hsl(var(--muted-foreground)))' }}>
               Last updated: {getTimeAgo()}
             </span>
             <Button variant="ghost" size="sm" onClick={handleRefresh} disabled={isRefreshing} aria-label="Refresh data">

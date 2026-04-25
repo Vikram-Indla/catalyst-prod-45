@@ -95,7 +95,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
           >
             <ChevronLeft size={16} color={INK4} />
           </button>
-          <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
+          <span style={{ fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK2, whiteSpace: 'nowrap' as const }}>{weekLabel}</span>
           <button
             onClick={() => setWeekOffset(o => Math.min(o + 1, 0))}
             disabled={weekOffset >= 0}
@@ -146,7 +146,7 @@ export function WorkItemsTab({ workItems, weekStart, weekEnd, weekLabel, weekOff
               <span style={{ width: 40, display: 'flex', justifyContent: 'center' }}>
                 <JiraIssueTypeIcon type={item.work_item_type || 'Task'} size={16} />
               </span>
-              <span style={{ width: 100, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: INK4, paddingLeft: 8 }}>{item.item_key}</span>
+              <span style={{ width: 100, fontSize: 12, fontFamily: 'var(--ds-font-family-monospaced)', color: INK4, paddingLeft: 8 }}>{item.item_key}</span>
               <span style={{
                 flex: 1, fontSize: 13, color: INK2, overflow: 'hidden',
                 textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const,

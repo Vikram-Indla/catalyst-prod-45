@@ -131,7 +131,7 @@ export const PROFICIENCY_LEVELS: Record<SkillProficiencyLevel, {
     description: 'Limited experience, needs guidance'
   },
   intermediate: {
-    label: 'Intermediate',
+    label: 'var(--ds-font-family-body)',
     label_ar: 'متوسط',
     value: 3,
     color: 'var(--warning-fg)',

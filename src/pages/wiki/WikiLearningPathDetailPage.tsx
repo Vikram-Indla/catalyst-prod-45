@@ -6,9 +6,9 @@ import { ChevronRight, GraduationCap, CheckCircle2, Circle, Clock, FileText } fr
 import { useTheme } from '@/hooks/useTheme';
 
 const F = {
-  sora: "'Sora', sans-serif",
-  inter: "'Inter', system-ui, sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  sora: 'var(--ds-font-family-heading)',
+  inter: 'var(--ds-font-family-body)',
+  mono: 'var(--ds-font-family-monospaced)',
 };
 
 const DIFF_COLORS: Record<string, string> = { beginner: '#16A34A', intermediate: '#2563EB', advanced: '#D97706' };

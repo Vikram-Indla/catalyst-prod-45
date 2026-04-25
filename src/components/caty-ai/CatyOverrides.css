@@ -10,7 +10,7 @@
 .caty-widget,
 .caty-widget *,
 [class*="caty-"] {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   -webkit-font-smoothing: antialiased !important;
   box-sizing: border-box !important;
 }
@@ -102,7 +102,7 @@ header.caty-header-fixed,
 .caty-header-fixed .caty-header-title,
 .caty-header-text .caty-header-title,
 .caty-header-title {
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 1.25rem !important;
   font-weight: 800 !important;
   color: #0f172a !important;
@@ -119,7 +119,7 @@ header.caty-header-fixed,
   display: flex !important;
   align-items: center !important;
   gap: 8px !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.8125rem !important;
   font-weight: 400 !important;
   color: #64748b !important;
@@ -309,7 +309,7 @@ button.caty-department-pill,
   background: #ffffff !important;
   border: 2px solid #e2e8f0 !important;
   border-radius: 20px !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   color: #475569 !important;
@@ -434,7 +434,7 @@ button.caty-department-pill,
 }
 
 .caty-metric-value {
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 1.75rem !important;
   font-weight: 700 !important;
   color: #2563eb !important;
@@ -646,7 +646,7 @@ button.caty-department-pill,
 }
 
 .caty-tag.util {
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   background: #f1f5f9 !important;
   color: #475569 !important;
 }
@@ -785,7 +785,7 @@ button.caty-department-pill,
 }
 
 .caty-team-count {
-  font-family: 'JetBrains Mono', monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 1rem !important;
   font-weight: 700 !important;
   color: #2563eb !important;
@@ -976,7 +976,7 @@ button.caty-department-pill,
   border: none !important;
   border-radius: 50% !important;
   color: white !important;
-  font-family: 'Inter', sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   cursor: pointer !important;
@@ -1144,7 +1144,7 @@ button.caty-fab {
 }
 
 .caty-viewport__stat-value {
-  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+  font-family: var(--ds-font-family-monospaced) !important;
   font-size: 1.625rem !important;
   font-weight: 700 !important;
   line-height: 1 !important;
@@ -1164,7 +1164,7 @@ button.caty-fab {
 }
 
 .caty-viewport__stat-label {
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.625rem !important;
   font-weight: 600 !important;
   color: #64748b !important;
@@ -1212,7 +1212,7 @@ button.caty-fab {
 }
 
 .caty-viewport__section-title {
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.75rem !important;
   font-weight: 600 !important;
   color: #475569 !important;
@@ -1221,7 +1221,7 @@ button.caty-fab {
 }
 
 .caty-viewport__section-count {
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.6875rem !important;
   font-weight: 600 !important;
   color: #94a3b8 !important;
@@ -1308,7 +1308,7 @@ button.caty-fab {
 }
 
 .caty-viewport__probe-text {
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.8125rem !important;
   font-weight: 500 !important;
   color: #334155 !important;
@@ -1331,7 +1331,7 @@ button.caty-fab {
 
 /* Tags */
 .caty-viewport__tag {
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: var(--ds-font-family-body) !important;
   font-size: 0.6875rem !important;
   font-weight: 500 !important;
   padding: 4px 10px !important;

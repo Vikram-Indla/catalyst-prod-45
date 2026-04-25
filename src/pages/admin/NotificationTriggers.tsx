@@ -137,7 +137,7 @@ export default function NotificationTriggers() {
       {/* ── Page Header ──────────────────────────────────────────── */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#0F172A] font-['Sora'] tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-semibold text-[#0F172A] font-heading tracking-tight flex items-center gap-2">
             <Bell className="h-6 w-6 text-[#2563EB]" />
             Notification Triggers
           </h1>
@@ -424,7 +424,7 @@ function StatsCard({
   return (
     <Card>
       <CardContent className="p-3 text-center">
-        <p className={`text-xl font-semibold font-['JetBrains_Mono'] ${colors[variant]}`}>{value}</p>
+        <p className={`text-xl font-semibold font-mono ${colors[variant]}`}>{value}</p>
         <p className="text-[10px] uppercase tracking-wider text-[#94A3B8] mt-0.5">{label}</p>
       </CardContent>
     </Card>

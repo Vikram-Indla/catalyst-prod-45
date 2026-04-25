@@ -32,7 +32,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: 18,
           fontWeight: 600,
           color: 'var(--fg-1)',
@@ -43,7 +43,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         <button
           onClick={() => navigate('/projecthub/workitems')}
           style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 13,
             color: 'var(--cp-blue)',
             background: 'none',
@@ -74,7 +74,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
         display: 'flex',
         gap: 8,
         marginTop: 10,
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--ds-font-family-body)',
         fontSize: 13,
         color: 'var(--fg-3)',
         flexWrap: 'wrap',
@@ -109,7 +109,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           <button
             onClick={() => navigate('/projecthub/themes')}
             style={{
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 13,
               color: 'var(--fg-3)',
               background: 'none',
@@ -125,7 +125,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
           <button
             onClick={() => navigate('/projecthub/resource360')}
             style={{
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 13,
               color: 'var(--fg-3)',
               background: 'none',
@@ -139,7 +139,7 @@ export function CompletionOverview({ kpis }: CompletionOverviewProps) {
             Resources: <strong style={{ color: 'var(--fg-1)' }}>{kpis.total_resources}</strong>
           </button>
           <span style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--ds-font-family-body)',
             fontSize: 13,
             color: kpis.blocked_items > 0 ? 'var(--sem-danger)' : 'var(--fg-3)',
           }}>

@@ -31,8 +31,8 @@ export function ProgressGauge({ summary }: ProgressGaugeProps) {
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-[28px] font-bold text-foreground font-['Inter']">{passRate}%</span>
-          <span className="text-xs text-muted-foreground font-['Inter']">{passedTests}/{totalTests}</span>
+          <span className="text-[28px] font-bold text-foreground font-body">{passRate}%</span>
+          <span className="text-xs text-muted-foreground font-body">{passedTests}/{totalTests}</span>
         </div>
       </div>
 
@@ -56,9 +56,9 @@ function StatusItem({ icon: Icon, count, label, color }: {
     <div className="flex flex-col items-center">
       <div className="flex items-center gap-1">
         <Icon style={{ width: 14, height: 14, color }} />
-        <span className="font-semibold text-foreground text-sm font-['Inter']">{count}</span>
+        <span className="font-semibold text-foreground text-sm font-body">{count}</span>
       </div>
-      <span className="text-[11px] text-muted-foreground font-['Inter']">{label}</span>
+      <span className="text-[11px] text-muted-foreground font-body">{label}</span>
     </div>
   );
 }

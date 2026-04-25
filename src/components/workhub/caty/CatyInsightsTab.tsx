@@ -101,7 +101,7 @@ export function CatyInsightsTab() {
           >
             <span
               className="text-lg font-bold"
-              style={{ color: 'var(--wh-text-primary)', fontFamily: 'Sora' }}
+              style={{ color: 'var(--wh-text-primary)', fontFamily: 'var(--ds-font-family-heading)' }}
             >
               {summary.totalItems}
             </span>
@@ -123,7 +123,7 @@ export function CatyInsightsTab() {
           >
             <span
               className="text-lg font-bold"
-              style={{ color: 'var(--wh-text-primary)', fontFamily: 'Sora' }}
+              style={{ color: 'var(--wh-text-primary)', fontFamily: 'var(--ds-font-family-heading)' }}
             >
               {summary.activeReleases}
             </span>
@@ -147,7 +147,7 @@ export function CatyInsightsTab() {
               className="text-lg font-bold"
               style={{
                 color: summary.dueThisWeek > 0 ? '#d97706' : 'var(--wh-text-primary)',
-                fontFamily: 'Sora',
+                fontFamily: 'var(--ds-font-family-heading)',
               }}
             >
               {summary.dueThisWeek}

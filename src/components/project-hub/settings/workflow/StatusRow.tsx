@@ -86,7 +86,7 @@ export function StatusRow({ id, name, color, category, isDefault, itemCount, onE
       {/* Item count */}
       <span
         className="flex-shrink-0 text-right"
-        style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'JetBrains Mono', monospace", minWidth: 24 }}
+        style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-monospaced)', minWidth: 24 }}
       >
         {itemCount}
       </span>

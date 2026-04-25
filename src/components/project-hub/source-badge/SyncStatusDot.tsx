@@ -86,7 +86,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
             <span
               style={{
                 fontSize: 11,
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--ds-font-family-body)',
                 color: labelColor,
                 fontWeight,
                 whiteSpace: 'nowrap',
@@ -106,7 +106,7 @@ export function SyncStatusDot({ status, lastSyncedAt }: SyncStatusDotProps) {
               padding: '4px 8px',
               borderRadius: 4,
               fontSize: 11,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--ds-font-family-body)',
               zIndex: 100,
               boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             }}

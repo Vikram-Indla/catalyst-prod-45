@@ -41,18 +41,18 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
 
   return (
     <Sheet open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <SheetContent side="right" className="p-0 w-[540px] max-w-full flex flex-col [&>button:first-child]:hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <SheetContent side="right" className="p-0 w-[540px] max-w-full flex flex-col [&>button:first-child]:hidden" style={{ fontFamily: 'var(--ds-font-family-body)' }}>
         {/* Header */}
         <div style={{ borderBottom: '1px solid var(--divider)', padding: '16px 20px' }}>
           <div className="flex items-center gap-3 mb-3">
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
               <ArrowLeft size={18} color="var(--fg-3)" />
             </button>
-            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: '#FFF', fontSize: 13, fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", borderRadius: 8 }}>
+            <div className="flex items-center justify-center rounded-md" style={{ width: 36, height: 50, background: bg, color: '#FFF', fontSize: 13, fontWeight: 700, fontFamily: 'var(--ds-font-family-monospaced)', borderRadius: 8 }}>
               {project.project_key}
             </div>
             <div className="flex-1 min-w-0">
-              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>{project.name}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>{project.name}</div>
               <div style={{ fontSize: 12, color: 'var(--fg-3)' }}>{project.department || 'No department'} · {project.project_key}</div>
             </div>
             <button onClick={onToggleFav} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -78,7 +78,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
               { label: 'Tasks', val: project.total_tasks },
             ].map(i => (
               <div key={i.label} className="text-center rounded" style={{ padding: '6px 0', background: 'var(--bg-1)' }}>
-                <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'JetBrains Mono', monospace" }}>{i.val}</div>
+                <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-monospaced)' }}>{i.val}</div>
                 <div style={{ fontSize: 10, color: 'var(--fg-4)' }}>{i.label}</div>
               </div>
             ))}

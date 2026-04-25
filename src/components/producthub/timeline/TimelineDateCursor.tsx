@@ -31,7 +31,7 @@ export const TimelineDateCursor: React.FC<TimelineDateCursorProps> = ({ x, date,
         style={{
           fontSize: 10,
           fontWeight: 500,
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: 'var(--ds-font-family-monospaced)',
           fontVariantNumeric: 'tabular-nums',
           lineHeight: 1.2,
           whiteSpace: 'nowrap',

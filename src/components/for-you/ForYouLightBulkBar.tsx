@@ -23,7 +23,7 @@ export function ForYouLightBulkBar({
     height: 32, padding: '0 14px',
     backgroundColor: 'transparent', border: 'none', borderRadius: 8,
     cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--cp-t2)',
-    transition: 'background 0.1s', fontFamily: "'Inter', system-ui",
+    transition: 'background 0.1s', fontFamily: 'var(--ds-font-family-body)',
   };
 
   return (

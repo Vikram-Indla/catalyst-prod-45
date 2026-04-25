@@ -23,7 +23,7 @@ const PROFICIENCY_COLORS: Record<number, string> = {
 const PROFICIENCY_LABELS: Record<number, string> = {
   1: 'None',
   2: 'Beginner',
-  3: 'Intermediate',
+  3: 'var(--ds-font-family-body)',
   4: 'Advanced',
   5: 'Expert',
 };
@@ -100,7 +100,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
   const legendItems = [
     { level: 5, label: 'Expert (5)', color: PROFICIENCY_COLORS[5] },
     { level: 4, label: 'Advanced (4)', color: PROFICIENCY_COLORS[4] },
-    { level: 3, label: 'Intermediate (3)', color: PROFICIENCY_COLORS[3] },
+    { level: 3, label: 'var(--ds-font-family-body)', color: PROFICIENCY_COLORS[3] },
     { level: 2, label: 'Beginner (2)', color: PROFICIENCY_COLORS[2] },
     { level: 1, label: 'None (1)', color: PROFICIENCY_COLORS[1] },
   ];

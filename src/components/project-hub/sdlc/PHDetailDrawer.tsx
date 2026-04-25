@@ -54,7 +54,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
           borderLeft: '1px solid var(--divider)',
           boxShadow: '-8px 0 30px rgba(15,23,42,.1)',
           animation: 'phSlideInRight 200ms ease',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         {/* Header */}
@@ -63,7 +63,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
           style={{ height: 52, borderBottom: '1px solid var(--divider)' }}
         >
           <PHIssueTypeIcon type={issue.type} size={18} />
-          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--cp-blue)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
             {getDisplayKey(issue)}
           </span>
           <PHSourceTag source={issue.source} />
@@ -123,7 +123,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       <PHIssueTypeIcon type={child.type} size={14} />
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--ds-font-family-monospaced)' }}>
                         {child.key}
                       </span>
                       <span className="truncate flex-1" style={{ fontSize: 12, color: 'var(--fg-2)' }}>
@@ -187,7 +187,7 @@ export function PHDetailDrawer({ issue, children: childIssues, releases, open, o
             <AsideField label="Due Date">
               <span style={{
                 fontSize: 12,
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: 'var(--ds-font-family-monospaced)',
                 color: (issue.overdue_days ?? 0) > 0 ? 'var(--sem-danger)' : 'var(--fg-2)',
                 fontWeight: 500,
               }}>

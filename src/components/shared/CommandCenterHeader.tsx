@@ -71,7 +71,7 @@ export function CommandCenterHeader({
           <h1
             className="m-0"
             style={{
-              fontFamily: "'Sora', var(--font-heading, sans-serif)",
+              fontFamily: 'var(--ds-font-family-heading)',
               fontSize: 24,
               fontWeight: 700,
               letterSpacing: '-0.02em',
@@ -84,7 +84,7 @@ export function CommandCenterHeader({
           {count && (
             <span
               style={{
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: 'var(--ds-font-family-monospaced)',
                 fontSize: 13,
                 fontWeight: 500,
                 color: 'var(--catalyst-text-secondary, var(--text-3, hsl(var(--muted-foreground))))',
@@ -98,7 +98,7 @@ export function CommandCenterHeader({
           <p
             className="dark:text-[#A1A1A1]"
             style={{
-              fontFamily: "'Inter', var(--font-body, sans-serif)",
+              fontFamily: 'var(--ds-font-family-body)',
               fontSize: 14,
               color: 'var(--catalyst-text-secondary, var(--text-2, hsl(var(--muted-foreground))))',
               margin: '4px 0 0',
@@ -114,7 +114,7 @@ export function CommandCenterHeader({
         {timestamp && (
           <span
             style={{
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--ds-font-family-monospaced)',
               fontSize: 12,
               color: 'var(--text-3, hsl(var(--muted-foreground)))',
               cursor: 'default',

@@ -203,7 +203,7 @@ export function UnifiedSidebar({
               <span 
                 className="truncate"
                 style={{ 
-                  fontFamily: "'Sora', sans-serif",
+                  fontFamily: 'var(--ds-font-family-heading)',
                   fontSize: '0.92rem',
                   fontWeight: 700,
                   color: 'var(--text-1, #0f172a)',
@@ -287,7 +287,7 @@ export function UnifiedSidebar({
                   color: active ? 'var(--cp-blue)' : 'var(--text-2)',
                   fontWeight: active ? 600 : 500,
                   fontSize: '0.84rem',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--ds-font-family-body)',
                   outline: 'none',
                   lineHeight: 1,
                 }}

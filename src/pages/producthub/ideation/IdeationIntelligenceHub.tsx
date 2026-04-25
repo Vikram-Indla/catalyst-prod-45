@@ -22,7 +22,7 @@ const C = {
   gapBg: '#fef2f2', gapText: '#991b1b', gapBody: '#7f1d1d', gapBorder: '#ef4444',
 } as const;
 
-const MONO = "'JetBrains Mono', monospace";
+const MONO = 'var(--ds-font-family-monospaced)';
 
 function computeThemes(ideas: Idea[]) {
   const map: Record<string, number> = {};

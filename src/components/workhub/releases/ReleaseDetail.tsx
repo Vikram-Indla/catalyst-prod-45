@@ -105,7 +105,7 @@ export function ReleaseDetail() {
           </div>
           <h1 style={{
             fontSize: 24, fontWeight: 700, margin: 0,
-            fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
+            fontFamily: 'var(--ds-font-family-heading)',
             color: 'var(--fg-1)',
           }}>
             {release.versionName}
@@ -175,7 +175,7 @@ export function ReleaseDetail() {
               </div>
               <span style={{
                 fontSize: 20, fontWeight: 700, color: kpi.color,
-                fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
+                fontFamily: 'var(--ds-font-family-heading)',
               }}>
                 {kpi.value}
               </span>

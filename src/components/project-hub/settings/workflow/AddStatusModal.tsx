@@ -34,9 +34,9 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-white dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: "'Inter', sans-serif" }}>
+      <div className="bg-white dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, fontFamily: 'var(--ds-font-family-body)' }}>
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-[var(--fg-1)] dark:text-[#EDEDED]" style={{ fontSize: 16, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>Add Status</h3>
+          <h3 className="text-[var(--fg-1)] dark:text-[#EDEDED]" style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--ds-font-family-heading)' }}>Add Status</h3>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] dark:hover:bg-[#1F1F1F] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
             <X size={16} className="text-[#64748B] dark:text-[#878787]" />
           </button>
@@ -47,7 +47,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
             <label className="text-[var(--fg-2)] dark:text-[#A1A1A1]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Status Name <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <input value={name} onChange={e => setName(e.target.value)} placeholder="e.g. In Review"
               className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] text-[#0F172A] dark:text-[#EDEDED] placeholder:text-[#94A3B8] dark:placeholder:text-[#7D7D7D]"
-              style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif" }}
+              style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', fontFamily: 'var(--ds-font-family-body)' }}
             />
           </div>
 
@@ -55,7 +55,7 @@ export function AddStatusModal({ open, onClose, onSubmit, loading }: AddStatusMo
             <label className="text-[var(--fg-2)] dark:text-[#A1A1A1]" style={{ fontSize: 12, fontWeight: 500, display: 'block', marginBottom: 4 }}>Category <span style={{ color: 'var(--sem-danger)' }}>*</span></label>
             <select value={category} onChange={e => setCategory(e.target.value)}
               className="w-full bg-white dark:bg-transparent border border-[var(--bd-default, #E2E8F0)] dark:border-[#2E2E2E] text-[#0F172A] dark:text-[#EDEDED]"
-              style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}
+              style={{ height: 40, padding: '8px 12px', fontSize: 13, borderRadius: 6, outline: 'none', cursor: 'pointer', fontFamily: 'var(--ds-font-family-body)' }}
             >
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>

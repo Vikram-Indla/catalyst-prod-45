@@ -29,13 +29,13 @@ export function ArchiveConfirmModal({ open, projectName, onClose, onConfirm, loa
         style={{
           width: 440, borderRadius: 12, padding: '24px',
           boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
         }}
       >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>
               Archive Project
             </h3>
           </div>

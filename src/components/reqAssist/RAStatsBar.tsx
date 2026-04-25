@@ -112,7 +112,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             <span style={bigNumberStyle}>{totalDocuments}</span>
           )}
           <span style={labelStyle}>JIRA TICKETS IMPORTED</span>
-          <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>SEN · MDT · SIMP</span>
+          <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>SEN · MDT · SIMP</span>
         </div>
 
         {/* Card 2: BRDs Processed */}
@@ -124,15 +124,15 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           </div>
           {isLoading ? <Skeleton /> : (
             <div style={{ marginTop: 8 }}>
-              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>{brdStats.ready}</span>
-              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-4)', fontFamily: "'Sora', sans-serif" }}> / {brdStats.total}</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>{brdStats.ready}</span>
+              <span style={{ fontSize: 28, fontWeight: 700, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-heading)' }}> / {brdStats.total}</span>
             </div>
           )}
           <span style={labelStyle}>BRDS PROCESSED</span>
           <div style={{ width: '100%', height: 4, background: '#E5E7EB', borderRadius: 4, marginTop: 8 }}>
             <div style={{ width: `${brdPct}%`, height: 4, borderRadius: 4, background: 'linear-gradient(90deg, #16A34A, #22C55E)', transition: 'width 400ms ease' }} />
           </div>
-          <span style={{ fontSize: 11, color: 'var(--sem-success)', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>Pipeline stage: Complete</span>
+          <span style={{ fontSize: 11, color: 'var(--sem-success)', fontFamily: 'var(--ds-font-family-body)', marginTop: 4 }}>Pipeline stage: Complete</span>
         </div>
 
         {/* Card 3: Epics Generated — D01/D03: blue icon, not purple */}
@@ -146,7 +146,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             <span style={bigNumberStyle}>{epicStats.total}</span>
           )}
           <span style={labelStyle}>EPICS GENERATED</span>
-          <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
+          <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>
             {epicStats.draft} draft · {epicStats.reviewed} reviewed · {epicStats.published} published
           </span>
         </div>
@@ -163,9 +163,9 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           )}
           <span style={labelStyle}>PUBLISHED TO PROJECTS</span>
           {epicStats.published === 0 ? (
-            <span style={{ fontSize: 11, color: 'var(--fg-4)', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>None published yet</span>
+            <span style={{ fontSize: 11, color: 'var(--fg-4)', fontStyle: 'italic', fontFamily: 'var(--ds-font-family-body)' }}>None published yet</span>
           ) : (
-            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Epics live in ProjectHub</span>
+            <span style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)' }}>Epics live in ProjectHub</span>
           )}
         </div>
       </div>
@@ -184,7 +184,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
               background: '#F1F5F9', border: '0.75px solid rgba(15,23,42,0.12)',
               borderRadius: 12, padding: '2px 10px',
               fontSize: 11, fontWeight: 500, color: 'var(--fg-3)',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
             }}>
               <span style={{
                 width: 4, height: 4, borderRadius: '50%', flexShrink: 0,
@@ -197,11 +197,11 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
           </div>
           {isLoading ? <Skeleton /> : (
             <div style={{ marginTop: 8 }}>
-              <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>{wikihubSynced}</span>
-              <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--fg-4)', fontFamily: "'Sora', sans-serif" }}> / {brdStats.total} docs</span>
+              <span style={{ fontSize: 24, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--ds-font-family-heading)' }}>{wikihubSynced}</span>
+              <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--fg-4)', fontFamily: 'var(--ds-font-family-heading)' }}> / {brdStats.total} docs</span>
             </div>
           )}
-          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 4 }}>
+          <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--ds-font-family-body)', marginTop: 4 }}>
             Searchable via Knowledge Assistant
           </span>
           <div style={{ width: '100%', height: 4, background: 'var(--cp-primary-5)', borderRadius: 4, marginTop: 8 }}>
@@ -219,14 +219,14 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
             <span style={{
               fontSize: 11, fontWeight: 600, color: 'var(--fg-3)',
               textTransform: 'uppercase', letterSpacing: '0.06em',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--ds-font-family-body)',
             }}>
               LIVE ACTIVITY
             </span>
           </div>
 
           {activityEvents.length === 0 ? (
-            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic', fontFamily: "'Inter', sans-serif" }}>
+            <div style={{ fontSize: 12, color: 'var(--fg-4)', fontStyle: 'italic', fontFamily: 'var(--ds-font-family-body)' }}>
               No activity yet in this session
             </div>
           ) : (
@@ -235,7 +235,7 @@ export default function RAStatsBar({ totalDocuments, wikihubSynced, loading }: S
                 <div key={evt.id} style={{
                   display: 'flex', alignItems: 'center', gap: 10,
                   height: 32, fontSize: 12, color: 'var(--fg-2)',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--ds-font-family-body)',
                   borderTop: idx > 0 ? '0.75px solid rgba(15,23,42,0.06)' : 'none',
                   animation: idx === 0 ? 'ra-slide-up 200ms ease-out' : undefined,
                 }}>
@@ -289,7 +289,7 @@ const cardStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   transition: 'box-shadow 150ms ease',
-  fontFamily: "'Inter', sans-serif",
+  fontFamily: 'var(--ds-font-family-body)',
 };
 
 const iconContainerStyle: React.CSSProperties = {
@@ -300,11 +300,11 @@ const iconContainerStyle: React.CSSProperties = {
 
 const bigNumberStyle: React.CSSProperties = {
   fontSize: 28, fontWeight: 700, color: 'var(--fg-1)',
-  fontFamily: "'Sora', sans-serif", marginTop: 8,
+  fontFamily: 'var(--ds-font-family-heading)', marginTop: 8,
 };
 
 const labelStyle: React.CSSProperties = {
   fontSize: 12, fontWeight: 500, color: 'var(--fg-3)',
   textTransform: 'uppercase', letterSpacing: '0.06em',
-  fontFamily: "'Inter', sans-serif", marginTop: 2,
+  fontFamily: 'var(--ds-font-family-body)', marginTop: 2,
 };

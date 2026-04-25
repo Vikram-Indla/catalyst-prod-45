@@ -29,7 +29,7 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
       {/* Icon + Name + Key */}
       <div className="flex items-center gap-3 mb-3">
         <div
-          className="flex items-center justify-center rounded flex-shrink-0 h-8 text-white font-bold font-['Sora',sans-serif]"
+          className="flex items-center justify-center rounded flex-shrink-0 h-8 text-white font-bold font-heading"
           style={{
             width: 36,
             backgroundColor: project.color || '#2563EB',
@@ -41,10 +41,10 @@ export function ProjectCard({ project, isStarred, onToggleStar }: ProjectCardPro
           {project.key}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold font-['Sora',sans-serif] text-[#0F172A] dark:text-[#EDEDED]">
+          <div className="truncate text-sm font-semibold font-heading text-[#0F172A] dark:text-[#EDEDED]">
             {project.name}
           </div>
-          <span className="text-[11px] font-medium font-['JetBrains_Mono',monospace] text-[#6B778C] dark:text-[#878787]">
+          <span className="text-[11px] font-medium font-mono text-[#6B778C] dark:text-[#878787]">
             {project.key}
           </span>
         </div>

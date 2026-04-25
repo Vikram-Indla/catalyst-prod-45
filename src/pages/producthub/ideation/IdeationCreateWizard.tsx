@@ -47,7 +47,7 @@ const DEPARTMENTS = [
 
 const SOURCES = [
   { key: 'Ministry Directive', label: 'Ministry Directive' },
-  { key: 'Internal', label: 'Internal' },
+  { key: 'var(--ds-font-family-body)', label: 'var(--ds-font-family-body)' },
   { key: 'Stakeholder', label: 'Stakeholder' },
   { key: 'Customer Feedback', label: 'Customer Feedback' },
   { key: 'Research', label: 'Research' },

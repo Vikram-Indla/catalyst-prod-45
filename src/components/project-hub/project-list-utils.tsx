@@ -49,7 +49,7 @@ export function StatusBadge({ status }: { status: string }) {
         whiteSpace: 'nowrap',
         backgroundColor: s.bg,
         color: s.color,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       {label}
@@ -85,7 +85,7 @@ export function HealthBadge({ health }: { health: string | null }) {
         padding: '0 6px',
         backgroundColor: s.bg,
         color: s.color,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--ds-font-family-body)',
       }}
     >
       <span
@@ -132,7 +132,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             fontSize: 10,
             fontWeight: 600,
             border: '2px solid #FFFFFF',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             zIndex: show - i,
             position: 'relative',
             boxShadow: '0 0 0 1px rgba(0,0,0,0.06)',
@@ -154,7 +154,7 @@ export function AvatarStack({ names }: { names: string[] }) {
             fontSize: 10,
             fontWeight: 700,
             border: '2px solid #FFFFFF',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--ds-font-family-body)',
             boxShadow: '0 0 0 1px rgba(0,0,0,0.06)',
           }}
         >

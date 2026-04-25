@@ -61,7 +61,7 @@ export function InitiativeMetrics({ score }: { score?: number | null }) {
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
       <div>
         <div style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: '10px',
           fontWeight: 600,
           color: '#71717A',
@@ -74,7 +74,7 @@ export function InitiativeMetrics({ score }: { score?: number | null }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <InitiativeScoreBars score={score} />
           <span style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: 'var(--ds-font-family-monospaced)',
             fontSize: '12px',
             fontWeight: 500,
             color: s > 0 ? '#18181B' : '#71717A',
@@ -85,7 +85,7 @@ export function InitiativeMetrics({ score }: { score?: number | null }) {
       </div>
       <div>
         <div style={{
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--ds-font-family-body)',
           fontSize: '10px',
           fontWeight: 600,
           color: '#71717A',

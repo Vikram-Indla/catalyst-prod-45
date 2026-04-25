@@ -104,7 +104,7 @@ export function StepWorkflow({ data, onChange }: StepWorkflowProps) {
                 border: '1px solid var(--divider)',
                 borderRadius: 6,
                 color: 'var(--fg-1)',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--ds-font-family-body)',
               }}
             >
               <option value="">Select a project...</option>

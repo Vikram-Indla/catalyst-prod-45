@@ -9,7 +9,7 @@ import { useIdeaThemeSummary, useIdeasHub } from '@/hooks/useIdeasHub';
 import { useTheme } from '@/hooks/useTheme';
 import { DK, LK } from '@/utils/dark-mode-styles';
 
-const MONO = "'JetBrains Mono', monospace";
+const MONO = 'var(--ds-font-family-monospaced)';
 
 const THEME_ICONS: Record<string, React.ElementType> = {
   'Provide Services for SBC': Building2, 'Digital Maturity 2026': Target, 'Marketplace': Globe, 'UX': Zap,
@@ -43,7 +43,7 @@ export default function IdeasThemePage() {
       <div style={{ padding: '20px 28px 16px', borderBottom: `1px solid ${dk.border}` }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: "'Sora', sans-serif" }}>Ideas Theme</h1>
+            <h1 style={{ fontSize: '24px', fontWeight: 700, color: dk.t1, margin: 0, fontFamily: 'var(--ds-font-family-heading)' }}>Ideas Theme</h1>
             <p style={{ fontSize: '13px', color: dk.t3, margin: '4px 0 0' }}>Strategic themes grouping related ideas — sourced from backlog THEME field</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: dk.t3, fontSize: '12px' }}>
@@ -57,15 +57,15 @@ export default function IdeasThemePage() {
       <div style={{ background: dk.pageBg, borderBottom: `1px solid ${dk.border}`, display: 'flex', padding: '14px 28px', gap: '32px' }}>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>TOTAL THEMES</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.t1 }}>{themes.length}</span>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--ds-font-family-heading)', color: dk.t1 }}>{themes.length}</span>
         </div>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>IDEAS WITH THEME</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.blue }}>{ideasWithTheme}</span>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--ds-font-family-heading)', color: dk.blue }}>{ideasWithTheme}</span>
         </div>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: dk.t3, marginBottom: '4px' }}>CONVERTED</div>
-          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: "'Sora', sans-serif", color: dk.greenText }}>{convertedCount}</span>
+          <span style={{ fontSize: '24px', fontWeight: 800, fontFamily: 'var(--ds-font-family-heading)', color: dk.greenText }}>{convertedCount}</span>
         </div>
       </div>
 
@@ -112,7 +112,7 @@ export default function IdeasThemePage() {
 
                   <div style={{
                     fontSize: '14px', fontWeight: 650, color: dk.t1, marginBottom: '4px',
-                    lineHeight: 1.4, fontFamily: "'Sora', sans-serif",
+                    lineHeight: 1.4, fontFamily: 'var(--ds-font-family-heading)',
                     direction: arabic ? 'rtl' : 'ltr', textAlign: arabic ? 'right' : 'left',
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}>{theme.theme}</div>

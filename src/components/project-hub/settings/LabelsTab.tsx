@@ -61,7 +61,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
   const inputStyle: React.CSSProperties = {
     height: 50, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
-    borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
+    borderRadius: 6, outline: 'none', fontFamily: 'var(--ds-font-family-body)',
     flex: 1, minWidth: 0,
     transition: 'border-color 150ms, box-shadow 150ms',
   };
@@ -77,7 +77,7 @@ export function LabelsTab({ projectId }: LabelsTabProps) {
       ) : labels.length === 0 ? (
         <div className="flex flex-col items-center py-8" style={{ color: 'var(--divider)' }}>
           <Tag size={32} strokeWidth={1.25} />
-          <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No labels yet</p>
+          <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', marginTop: 12, fontFamily: 'var(--ds-font-family-heading)' }}>No labels yet</p>
           <p style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
             Labels help categorize and filter work items.
           </p>

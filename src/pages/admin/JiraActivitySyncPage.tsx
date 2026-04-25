@@ -264,7 +264,7 @@ export default function JiraActivitySyncPage() {
         gap: 16,
       }}>
         <h1 style={{
-          fontSize: 20, fontWeight: 700, fontFamily: 'Sora, sans-serif',
+          fontSize: 20, fontWeight: 700, fontFamily: 'var(--ds-font-family-heading)',
           color: 'var(--cp-t1, #0F172A)', margin: 0, whiteSpace: 'nowrap',
         }}>
           Jira Activity Sync
@@ -383,7 +383,7 @@ export default function JiraActivitySyncPage() {
                     {/* Key */}
                     <td style={{ padding: '6px 12px' }}>
                       <span style={{
-                        fontSize: 12, fontWeight: 600, fontFamily: 'JetBrains Mono, monospace',
+                        fontSize: 12, fontWeight: 600, fontFamily: 'var(--ds-font-family-monospaced)',
                         color: 'var(--cp-blue, #2563EB)',
                       }}>
                         {item.work_item_key}

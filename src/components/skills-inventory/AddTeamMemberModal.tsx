@@ -37,7 +37,7 @@ export const STANDARD_ROLES = [
 
 const proficiencyOptions = [
   { level: 'Beginner', label: 'Beginner', color: 'var(--sem-danger)' },
-  { level: 'Intermediate', label: 'Intermediate', color: 'var(--sem-warning)' },
+  { level: 'var(--ds-font-family-body)', label: 'var(--ds-font-family-body)', color: 'var(--sem-warning)' },
   { level: 'Advanced', label: 'Advanced', color: 'var(--sem-info)' },
   { level: 'Expert', label: 'Expert', color: 'var(--health-green)' },
 ];
@@ -69,13 +69,13 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
     notes: ''
   });
   const [skills, setSkills] = useState<SkillEntry[]>([
-    { id: '1', skill: '', proficiency: 'Intermediate' }
+    { id: '1', skill: '', proficiency: 'var(--ds-font-family-body)' }
   ]);
   const [isSaving, setIsSaving] = useState(false);
   const [customSkillInput, setCustomSkillInput] = useState('');
 
   const handleAddSkill = () => {
-    setSkills([...skills, { id: Date.now().toString(), skill: '', proficiency: 'Intermediate' }]);
+    setSkills([...skills, { id: Date.now().toString(), skill: '', proficiency: 'var(--ds-font-family-body)' }]);
   };
 
   const handleRemoveSkill = (id: string) => {
@@ -99,7 +99,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
     if (emptySlot) {
       handleSkillChange(emptySlot.id, 'skill', skillName);
     } else {
-      setSkills([...skills, { id: Date.now().toString(), skill: skillName, proficiency: 'Intermediate' }]);
+      setSkills([...skills, { id: Date.now().toString(), skill: skillName, proficiency: 'var(--ds-font-family-body)' }]);
     }
   };
 
@@ -133,7 +133,7 @@ export function AddTeamMemberModal({ open, onClose, onSave, projects }: AddTeamM
 
   const handleClose = () => {
     setFormData({ name: '', role: '', project: '', notes: '' });
-    setSkills([{ id: '1', skill: '', proficiency: 'Intermediate' }]);
+    setSkills([{ id: '1', skill: '', proficiency: 'var(--ds-font-family-body)' }]);
     setCustomSkillInput('');
     onClose();
   };

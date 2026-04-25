@@ -82,7 +82,7 @@ export default function ProductionEventsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 style={{
-            fontFamily: "'Sora', sans-serif", fontSize: 24, fontWeight: 650,
+            fontFamily: 'var(--ds-font-family-heading)', fontSize: 24, fontWeight: 650,
             lineHeight: 1.2, color: RH.ink1,
           }}>
             Production Events

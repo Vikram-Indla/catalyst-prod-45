@@ -38,7 +38,7 @@ export function SchedulingRules() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'var(--ds-font-family-body)' }}>Loading...</div>
   }
 
   const Toggle = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
@@ -70,9 +70,9 @@ export function SchedulingRules() {
   ]
 
   return (
-    <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ maxWidth: 900, fontFamily: 'var(--ds-font-family-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Scheduling Rules
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -83,7 +83,7 @@ export function SchedulingRules() {
       {/* Card 1: Date Precedence */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Date Precedence
           </h2>
           <span style={{
@@ -122,7 +122,7 @@ export function SchedulingRules() {
 
       {/* Card 2: Multi-FixVersion Strategy */}
       <div style={cardStyle}>
-        <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
+        <h2 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: '0 0 14px' }}>
           Multi-FixVersion Strategy
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -147,7 +147,7 @@ export function SchedulingRules() {
       {/* Card 3: Version Name Parser */}
       <div style={cardStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--ds-font-family-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Version Name Parser
           </h2>
           <span style={{
@@ -170,11 +170,11 @@ export function SchedulingRules() {
                 When a FixVersion has no releaseDate, Catalyst attempts to extract a date from the version name:
               </p>
               <div style={{ marginTop: 8, fontSize: 11, color: '#92400E', lineHeight: 2 }}>
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
+                <code style={{ fontFamily: 'var(--ds-font-family-monospaced)', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 02</code>
                 {' → 2026-02-28  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
+                <code style={{ fontFamily: 'var(--ds-font-family-monospaced)', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>2026 Q1</code>
                 {' → 2026-03-31  '}
-                <code style={{ fontFamily: 'JetBrains Mono, monospace', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
+                <code style={{ fontFamily: 'var(--ds-font-family-monospaced)', background: '#F1F5F9', padding: '1px 5px', borderRadius: 2 }}>Release 3.0</code>
                 {' → '}
                 <span style={{ color: '#EF4444', fontWeight: 600 }}>Cannot parse</span>
               </div>
