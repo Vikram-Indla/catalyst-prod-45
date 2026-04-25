@@ -1173,7 +1173,10 @@ export function CreateStoryModal({
                         const { data, error } = await q;
                         if (error) return [];
                         return (data ?? []).map((d: any) => ({
-                          value: d.id,
+                          // Use issue_key as the value — parent_id FK is self-referential
+                          // to catalyst_issues, but Epics live only in ph_issues. We store
+                          // the relationship via ph_issue_links keyed on issue_key.
+                          value: d.issue_key,
                           label: d.summary,
                           sublabel: d.issue_key,
                           icon: <JiraIssueTypeIcon type="Epic" size={14} />,
