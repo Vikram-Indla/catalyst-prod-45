@@ -1,0 +1,859 @@
+// @ts-nocheck
+/**
+ * GadgetSettingsPanel — Layer 2 (per-gadget) filters.
+ *
+ * Five universal multi-selects (Status / Release / Assignee / Item Type /
+ * Priority) + a gadget-specific tail (at-risk threshold, max rows, severity,
+ * environment, group-by — depending on gadget).
+ *
+ * NO date field — date is page-level (FP-008). The panel header shows the
+ * current page-level date label as read-only info.
+ *
+ * State:
+ *   - Local draft state. "Apply" persists via useGadgetSettings (localStorage).
+ *   - "Clear all" resets local draft to defaults.
+ *   - "Cancel" discards draft, closes panel.
+ */
+import { useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { X, Info, ChevronDown, Check } from 'lucide-react';
+
+import { supabase } from '@/integrations/supabase/client';
+import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
+import {
+  DEFAULT_GADGET_SETTINGS,
+  type GadgetSettings,
+  type GadgetType,
+} from '@/hooks/useGadgetSettings';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+
+interface Props {
+  gadgetType: GadgetType;
+  projectKey: string;
+  projectId: string;
+  initialSettings: GadgetSettings;
+  onClose: () => void;
+  onApply: (s: GadgetSettings) => void;
+  onClearAll: () => void;
+}
+
+// ─── Status groups ──────────────────────────────────────────────────────────
+
+const STATUS_GROUPS = [
+  {
+    label: 'To do',
+    dot: '#7A869A',
+    statuses: ['BACKLOG', 'TO DO', 'IN REQUIREMENTS', 'IN DESIGN', 'READY FOR DEV', 'TECH VALIDATION', 'PORTFOLIO REVIEW'],
+  },
+  {
+    label: 'In progress',
+    dot: '#0052CC',
+    statuses: ['IN DEVELOPMENT', 'IN PROGRESS', 'IN REVIEW', 'IN QA', 'IN ENTITY INT.', 'IN UAT', 'IN BETA', 'INTERNAL QA', 'END TO END'],
+  },
+  {
+    label: 'Paused',
+    dot: '#FFAB00',
+    statuses: ['ON HOLD', 'BLOCKED', 'AWAITING INFO', 'HOLD'],
+  },
+  {
+    label: 'Done',
+    dot: '#36B37E',
+    statuses: ['PRODUCTION READY', 'BETA READY', 'IN PRODUCTION', 'DONE', 'CLOSED'],
+  },
+];
+
+const PRIORITY_OPTIONS = [
+  { value: 'Highest', label: 'Highest', icon: '↑↑', color: '#DE350B' },
+  { value: 'High', label: 'High', icon: '↑', color: '#FF8B00' },
+  { value: 'Medium', label: 'Medium', icon: '—', color: '#FFAB00' },
+  { value: 'Low', label: 'Low', icon: '↓', color: '#0065FF' },
+  { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: '#7A869A' },
+];
+
+const ITEM_TYPES = [
+  { value: 'Epic', label: 'Epic' },
+  { value: 'Story', label: 'Story' },
+  { value: 'Bug', label: 'Bug' },
+  { value: 'Task', label: 'Task' },
+  { value: 'Sub-task', label: 'Sub-task' },
+];
+
+// ─── Component ──────────────────────────────────────────────────────────────
+
+export default function GadgetSettingsPanel({
+  gadgetType,
+  projectKey,
+  projectId,
+  initialSettings,
+  onClose,
+  onApply,
+  onClearAll,
+}: Props) {
+  const { filter } = useDashboardFilter();
+  const [draft, setDraft] = useState<GadgetSettings>(initialSettings);
+
+  // Releases (active)
+  const { data: releases = [] } = useQuery({
+    queryKey: ['gadget-panel-releases'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('rh_releases' as any)
+        .select('id, name, status')
+        .or('release_date.gte.2026-01-01,release_date.is.null')
+        .not('status', 'in', '(released,archived,done,cancelled)')
+        .order('release_date', { ascending: true });
+      return (data ?? []) as any[];
+    },
+    staleTime: 60_000,
+  });
+
+  // Assignees from ph_issues for this project
+  const { data: assignees = [] } = useQuery({
+    queryKey: ['gadget-panel-assignees', projectKey],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues' as any)
+        .select('assignee_user_id, assignee_display_name')
+        .eq('project_key', projectKey)
+        .not('assignee_user_id', 'is', null)
+        .limit(1000);
+      const map = new Map<string, { id: string; name: string }>();
+      (data ?? []).forEach((r: any) => {
+        if (r.assignee_user_id && !map.has(r.assignee_user_id)) {
+          map.set(r.assignee_user_id, {
+            id: r.assignee_user_id,
+            name: r.assignee_display_name ?? '—',
+          });
+        }
+      });
+      return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+    },
+    enabled: !!projectKey,
+    staleTime: 60_000,
+  });
+
+  const setField = <K extends keyof GadgetSettings>(key: K, value: GadgetSettings[K]) => {
+    setDraft((d) => ({ ...d, [key]: value }));
+  };
+
+  const setSpecific = (key: string, value: any) => {
+    setDraft((d) => ({ ...d, gadgetSpecific: { ...d.gadgetSpecific, [key]: value } }));
+  };
+
+  return (
+    <div style={{ fontSize: 13, color: '#172B4D' }}>
+      {/* HEADER */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '12px 14px 8px',
+          borderBottom: '1px solid #F1F2F4',
+        }}
+      >
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#172B4D' }}>Gadget settings</div>
+          <div style={{ fontSize: 11, color: '#6B778C', marginTop: 2 }}>
+            Showing {filter.label}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          style={{
+            background: 'transparent',
+            border: 0,
+            cursor: 'pointer',
+            color: '#6B778C',
+            padding: 4,
+            borderRadius: 3,
+          }}
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      {/* INFO */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 6,
+          padding: '8px 14px',
+          fontSize: 11,
+          color: '#5E6C84',
+          background: '#F4F5F7',
+        }}
+      >
+        <Info size={12} style={{ marginTop: 1, color: '#0065FF' }} />
+        <span>Date range is set at dashboard level.</span>
+      </div>
+
+      {/* FIELDS */}
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 420, overflowY: 'auto' }}>
+        <Field label="Status">
+          <MultiSelectStatus
+            value={draft.statusFilter}
+            onChange={(v) => setField('statusFilter', v)}
+          />
+        </Field>
+
+        <Field label="Release">
+          <MultiSelectGeneric
+            placeholder="All releases"
+            value={draft.releaseFilter}
+            onChange={(v) => setField('releaseFilter', v)}
+            options={releases.map((r: any) => ({ value: r.name, label: r.name }))}
+          />
+        </Field>
+
+        <Field label="Assignee">
+          <MultiSelectGeneric
+            placeholder="All assignees"
+            value={draft.assigneeFilter}
+            onChange={(v) => setField('assigneeFilter', v)}
+            options={assignees.map((a: any) => ({ value: a.id, label: a.name }))}
+          />
+        </Field>
+
+        <Field label="Item type">
+          <MultiSelectGeneric
+            placeholder="All item types"
+            value={draft.itemTypeFilter}
+            onChange={(v) => setField('itemTypeFilter', v)}
+            options={ITEM_TYPES.map((t) => ({
+              value: t.value,
+              label: t.label,
+              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/-/g, '_')} size={12} />,
+            }))}
+          />
+        </Field>
+
+        <Field label="Priority">
+          <MultiSelectGeneric
+            placeholder="All priorities"
+            value={draft.priorityFilter}
+            onChange={(v) => setField('priorityFilter', v)}
+            options={PRIORITY_OPTIONS.map((p) => ({
+              value: p.value,
+              label: p.label,
+              icon: <span style={{ color: p.color, fontWeight: 700 }}>{p.icon}</span>,
+            }))}
+          />
+        </Field>
+
+        {/* Gadget-specific tail */}
+        <GadgetSpecific
+          gadgetType={gadgetType}
+          settings={draft.gadgetSpecific}
+          onChange={setSpecific}
+        />
+      </div>
+
+      {/* FOOTER */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '10px 14px',
+          borderTop: '1px solid #F1F2F4',
+          background: '#FAFBFC',
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => {
+            setDraft(DEFAULT_GADGET_SETTINGS);
+            onClearAll();
+          }}
+          style={{
+            background: 'transparent',
+            border: 0,
+            color: '#0052CC',
+            cursor: 'pointer',
+            fontSize: 12,
+            padding: 4,
+          }}
+        >
+          Clear all
+        </button>
+        <div style={{ display: 'flex', gap: 6 }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              height: 28,
+              padding: '0 10px',
+              border: '1px solid #DFE1E6',
+              borderRadius: 3,
+              background: '#FFFFFF',
+              fontSize: 12,
+              cursor: 'pointer',
+              color: '#42526E',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={() => onApply(draft)}
+            style={{
+              height: 28,
+              padding: '0 12px',
+              border: 0,
+              borderRadius: 3,
+              background: '#0052CC',
+              color: '#FFFFFF',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <span
+        style={{
+          fontSize: 10,
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          color: '#7A869A',
+          letterSpacing: '0.04em',
+        }}
+      >
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
+
+interface OptionT {
+  value: string;
+  label: string;
+  icon?: React.ReactNode;
+}
+
+function MultiSelectGeneric({
+  value,
+  onChange,
+  options,
+  placeholder,
+}: {
+  value: string[];
+  onChange: (v: string[]) => void;
+  options: OptionT[];
+  placeholder: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = useMemo(() => new Set(value), [value]);
+  const labelMap = useMemo(() => new Map(options.map((o) => [o.value, o.label])), [options]);
+
+  const toggle = (v: string) => {
+    if (selected.has(v)) onChange(value.filter((x) => x !== v));
+    else onChange([...value, v]);
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          minHeight: 32,
+          width: '100%',
+          padding: '4px 6px',
+          border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+          background: '#FAFBFC',
+          borderRadius: 3,
+          textAlign: 'left',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          flexWrap: 'wrap',
+        }}
+      >
+        {value.length === 0 ? (
+          <span style={{ color: '#7A869A', fontSize: 12 }}>{placeholder}</span>
+        ) : (
+          value.map((v) => (
+            <span
+              key={v}
+              style={{
+                background: '#EBECF0',
+                color: '#42526E',
+                fontSize: 11,
+                padding: '0 6px',
+                height: 20,
+                borderRadius: 2,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              {labelMap.get(v) ?? v}
+              <span
+                role="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange(value.filter((x) => x !== v));
+                }}
+                style={{ cursor: 'pointer', color: '#6B778C' }}
+              >
+                ×
+              </span>
+            </span>
+          ))
+        )}
+        <ChevronDown size={12} style={{ marginLeft: 'auto', color: '#7A869A' }} />
+      </button>
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            zIndex: 50,
+            background: '#FFFFFF',
+            border: '1px solid #DFE1E6',
+            borderRadius: 4,
+            boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+            maxHeight: 224,
+            overflowY: 'auto',
+          }}
+        >
+          {options.length === 0 && (
+            <div style={{ padding: 10, fontSize: 12, color: '#7A869A' }}>No options</div>
+          )}
+          {options.map((opt) => {
+            const sel = selected.has(opt.value);
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => toggle(opt.value)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  width: '100%',
+                  padding: '6px 10px',
+                  background: sel ? '#EAF0FB' : 'transparent',
+                  border: 0,
+                  cursor: 'pointer',
+                  fontSize: 12,
+                  textAlign: 'left',
+                  color: '#172B4D',
+                }}
+                onMouseEnter={(e) => {
+                  if (!sel) e.currentTarget.style.background = '#F4F5F7';
+                }}
+                onMouseLeave={(e) => {
+                  if (!sel) e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                <span
+                  style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: 3,
+                    border: '1px solid #B3BAC5',
+                    background: sel ? '#0052CC' : '#FFFFFF',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  {sel && <Check size={10} color="#FFFFFF" />}
+                </span>
+                {opt.icon}
+                <span style={{ flex: 1 }}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MultiSelectStatus({
+  value,
+  onChange,
+}: {
+  value: string[];
+  onChange: (v: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = useMemo(() => new Set(value), [value]);
+
+  const toggle = (s: string) => {
+    if (selected.has(s)) onChange(value.filter((x) => x !== s));
+    else onChange([...value, s]);
+  };
+
+  const selectGroup = (statuses: string[]) => {
+    const all = new Set([...value, ...statuses]);
+    onChange(Array.from(all));
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        style={{
+          minHeight: 32,
+          width: '100%',
+          padding: '4px 6px',
+          border: open ? '2px solid #4C9AFF' : '1px solid #DFE1E6',
+          background: '#FAFBFC',
+          borderRadius: 3,
+          textAlign: 'left',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          flexWrap: 'wrap',
+        }}
+      >
+        {value.length === 0 ? (
+          <span style={{ color: '#7A869A', fontSize: 12 }}>All statuses</span>
+        ) : (
+          value.map((v) => {
+            const grp = STATUS_GROUPS.find((g) => g.statuses.includes(v));
+            const palette =
+              grp?.label === 'Done'
+                ? { bg: '#E3FCEF', fg: '#006644' }
+                : grp?.label === 'In progress'
+                ? { bg: '#DEEBFF', fg: '#0747A6' }
+                : grp?.label === 'Paused'
+                ? { bg: '#FFF0B3', fg: '#974F0C' }
+                : { bg: '#DFE1E6', fg: '#42526E' };
+            return (
+              <span
+                key={v}
+                style={{
+                  background: palette.bg,
+                  color: palette.fg,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.03em',
+                  padding: '0 6px',
+                  height: 20,
+                  borderRadius: 2,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                }}
+              >
+                {v}
+                <span
+                  role="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onChange(value.filter((x) => x !== v));
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ×
+                </span>
+              </span>
+            );
+          })
+        )}
+        <ChevronDown size={12} style={{ marginLeft: 'auto', color: '#7A869A' }} />
+      </button>
+      {open && (
+        <div
+          style={{
+            position: 'absolute',
+            top: 'calc(100% + 4px)',
+            left: 0,
+            right: 0,
+            zIndex: 50,
+            background: '#FFFFFF',
+            border: '1px solid #DFE1E6',
+            borderRadius: 4,
+            boxShadow: '0 8px 24px rgba(9,30,66,.18)',
+            maxHeight: 280,
+            overflowY: 'auto',
+          }}
+        >
+          {STATUS_GROUPS.map((grp) => (
+            <div key={grp.label}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '6px 10px 4px',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  color: '#7A869A',
+                  background: '#FAFBFC',
+                }}
+              >
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: '50%', background: grp.dot }} />
+                  {grp.label}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectGroup(grp.statuses);
+                  }}
+                  style={{
+                    background: 'transparent',
+                    border: 0,
+                    color: '#0052CC',
+                    cursor: 'pointer',
+                    fontSize: 10,
+                    fontWeight: 600,
+                  }}
+                >
+                  Select all
+                </button>
+              </div>
+              {grp.statuses.map((s) => {
+                const sel = selected.has(s);
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => toggle(s)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                      padding: '6px 10px',
+                      background: sel ? '#EAF0FB' : 'transparent',
+                      border: 0,
+                      cursor: 'pointer',
+                      fontSize: 12,
+                      textAlign: 'left',
+                      color: '#172B4D',
+                    }}
+                  >
+                    <span
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: 3,
+                        border: '1px solid #B3BAC5',
+                        background: sel ? '#0052CC' : '#FFFFFF',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {sel && <Check size={10} color="#FFFFFF" />}
+                    </span>
+                    <span style={{ flex: 1 }}>{s}</span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Gadget-specific tail ────────────────────────────────────────────────────
+
+function GadgetSpecific({
+  gadgetType,
+  settings,
+  onChange,
+}: {
+  gadgetType: GadgetType;
+  settings: Record<string, any>;
+  onChange: (k: string, v: any) => void;
+}) {
+  if (gadgetType === 'workload' || gadgetType === 'activity') return null;
+
+  const wrapper: React.CSSProperties = {
+    background: '#F4F5F7',
+    borderRadius: 4,
+    padding: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 6,
+  };
+  const lbl: React.CSSProperties = {
+    fontSize: 10,
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    color: '#7A869A',
+    letterSpacing: '0.04em',
+  };
+
+  if (gadgetType === 'demand') {
+    const v = settings.atRiskDays ?? 7;
+    return (
+      <div style={wrapper}>
+        <span style={lbl}>At-risk threshold</span>
+        <input
+          type="range"
+          min={1}
+          max={14}
+          step={1}
+          value={v}
+          onChange={(e) => onChange('atRiskDays', Number(e.currentTarget.value))}
+        />
+        <span style={{ fontSize: 11, color: '#5E6C84' }}>
+          Flag items with {v} day{v === 1 ? '' : 's'} or fewer remaining
+        </span>
+      </div>
+    );
+  }
+
+  if (gadgetType === 'release') {
+    const v = settings.maxRows ?? 6;
+    return (
+      <div style={wrapper}>
+        <span style={lbl}>Rows shown in gadget</span>
+        <input
+          type="range"
+          min={3}
+          max={10}
+          step={1}
+          value={v}
+          onChange={(e) => onChange('maxRows', Number(e.currentTarget.value))}
+        />
+        <span style={{ fontSize: 11, color: '#5E6C84' }}>Show {v} releases</span>
+      </div>
+    );
+  }
+
+  if (gadgetType === 'incidents') {
+    const opts = ['P1 Critical', 'P2 High', 'P3 Medium', 'P4 Low'];
+    const sel = new Set<string>(settings.severity ?? []);
+    return (
+      <div style={wrapper}>
+        <span style={lbl}>Severity</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {opts.map((o) => {
+            const on = sel.has(o);
+            return (
+              <button
+                key={o}
+                type="button"
+                onClick={() => {
+                  const next = new Set(sel);
+                  if (on) next.delete(o);
+                  else next.add(o);
+                  onChange('severity', Array.from(next));
+                }}
+                style={{
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  borderRadius: 3,
+                  border: '1px solid #DFE1E6',
+                  background: on ? '#0052CC' : '#FFFFFF',
+                  color: on ? '#FFFFFF' : '#42526E',
+                  cursor: 'pointer',
+                }}
+              >
+                {o}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gadgetType === 'qa') {
+    const opts = ['Production', 'Staging', 'Development'];
+    const sel = new Set<string>(settings.environment ?? []);
+    return (
+      <div style={wrapper}>
+        <span style={lbl}>Environment</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {opts.map((o) => {
+            const on = sel.has(o);
+            return (
+              <button
+                key={o}
+                type="button"
+                onClick={() => {
+                  const next = new Set(sel);
+                  if (on) next.delete(o);
+                  else next.add(o);
+                  onChange('environment', Array.from(next));
+                }}
+                style={{
+                  padding: '2px 8px',
+                  fontSize: 11,
+                  borderRadius: 3,
+                  border: '1px solid #DFE1E6',
+                  background: on ? '#0052CC' : '#FFFFFF',
+                  color: on ? '#FFFFFF' : '#42526E',
+                  cursor: 'pointer',
+                }}
+              >
+                {o}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (gadgetType === 'items' || gadgetType === 'overdue' || gadgetType === 'onhold') {
+    const v = settings.groupBy ?? 'None';
+    const opts = ['None', 'Assignee', 'Status', 'Priority', 'Item type'];
+    return (
+      <div style={wrapper}>
+        <span style={lbl}>Group by</span>
+        <select
+          value={v}
+          onChange={(e) => onChange('groupBy', e.currentTarget.value)}
+          style={{
+            height: 28,
+            border: '1px solid #DFE1E6',
+            borderRadius: 3,
+            padding: '0 8px',
+            fontSize: 12,
+            background: '#FFFFFF',
+            color: '#172B4D',
+          }}
+        >
+          {opts.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  return null;
+}
