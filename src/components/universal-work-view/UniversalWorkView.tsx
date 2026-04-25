@@ -167,6 +167,41 @@ export function UniversalWorkView({ params, onClose }: Props) {
         onGroupByChange={setGroupBy}
       />
 
+      {filterChips.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderBottom: '1px solid #E2E8F0',
+            background: '#F8FAFC',
+            fontSize: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ color: '#64748B', fontWeight: 600 }}>Filtered:</span>
+          {filterChips.map((c) => (
+            <span
+              key={c.label}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '2px 8px',
+                background: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: 3,
+                color: '#0F172A',
+              }}
+            >
+              <span style={{ color: '#64748B' }}>{c.label}:</span>
+              <span style={{ fontWeight: 500 }}>{c.value}</span>
+            </span>
+          ))}
+        </div>
+      )}
+
       {isLoading ? (
         <div
           style={{
