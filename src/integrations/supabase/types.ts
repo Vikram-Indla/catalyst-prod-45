@@ -1528,11 +1528,135 @@ export type Database = {
         }
         Relationships: []
       }
+      catalyst_activity_log: {
+        Row: {
+          action: string
+          created_at: string
+          field_name: string | null
+          id: string
+          metadata: Json | null
+          new_value: string | null
+          old_value: string | null
+          user_id: string | null
+          work_item_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          field_name?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string | null
+          work_item_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          field_name?: string | null
+          id?: string
+          metadata?: Json | null
+          new_value?: string | null
+          old_value?: string | null
+          user_id?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalyst_activity_log_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalyst_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number
+          id: string
+          mime_type: string
+          storage_path: string
+          uploaded_by: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size: number
+          id?: string
+          mime_type: string
+          storage_path: string
+          uploaded_by?: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          id?: string
+          mime_type?: string
+          storage_path?: string
+          uploaded_by?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalyst_attachments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      catalyst_comments: {
+        Row: {
+          author_id: string
+          body: string
+          body_adf: Json | null
+          created_at: string
+          id: string
+          updated_at: string
+          work_item_id: string
+        }
+        Insert: {
+          author_id?: string
+          body: string
+          body_adf?: Json | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          work_item_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          body_adf?: Json | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "catalyst_comments_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "catalyst_issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       catalyst_issues: {
         Row: {
           assignee_id: string | null
           closure_method: string | null
           created_at: string | null
+          deleted_at: string | null
           description: string | null
           description_adf_raw: Json | null
           force_close_reason: string | null
@@ -1562,6 +1686,7 @@ export type Database = {
           assignee_id?: string | null
           closure_method?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           description_adf_raw?: Json | null
           force_close_reason?: string | null
@@ -1591,6 +1716,7 @@ export type Database = {
           assignee_id?: string | null
           closure_method?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           description_adf_raw?: Json | null
           force_close_reason?: string | null
@@ -23627,6 +23753,7 @@ export type Database = {
           assigned_to: string | null
           created_at: string | null
           id: string
+          issue_key: string | null
           key: string
           priority: string
           project_id: string
@@ -23641,6 +23768,7 @@ export type Database = {
           assigned_to?: string | null
           created_at?: string | null
           id?: string
+          issue_key?: string | null
           key: string
           priority: string
           project_id: string
@@ -23655,6 +23783,7 @@ export type Database = {
           assigned_to?: string | null
           created_at?: string | null
           id?: string
+          issue_key?: string | null
           key?: string
           priority?: string
           project_id?: string
@@ -74142,6 +74271,10 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_ai_brief_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_member_of_catalyst_issue: {
+        Args: { _issue_id: string }
+        Returns: boolean
+      }
       is_ph_project_admin: {
         Args: { _project_id: string; _user_id: string }
         Returns: boolean
