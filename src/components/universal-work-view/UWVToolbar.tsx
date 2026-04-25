@@ -26,7 +26,6 @@ import type { UWVColumn, UWVItem, UWVPrefs } from './uwv.types';
 
 interface Props {
   title: string;
-  subtitle?: string;
   filteredCount: number;
   totalCount: number;
   searchText: string;
@@ -84,7 +83,6 @@ function MoreIcon({ label }: { label?: string }) {
 
 export function UWVToolbar({
   title,
-  subtitle,
   filteredCount,
   totalCount,
   searchText,
@@ -228,11 +226,6 @@ export function UWVToolbar({
         >
           {title}
         </span>
-        {subtitle && (
-          <span style={{ fontSize: 11, color: '#7A869A', marginLeft: 8 }}>
-            {subtitle}
-          </span>
-        )}
         <span
           style={{
             fontSize: 12,
