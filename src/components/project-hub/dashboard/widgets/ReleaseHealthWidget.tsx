@@ -119,6 +119,7 @@ export default function ReleaseHealthWidget({
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}
+      onExpand={openAll}
       footer={footer}
       headerBadges={headerExtras}
     >

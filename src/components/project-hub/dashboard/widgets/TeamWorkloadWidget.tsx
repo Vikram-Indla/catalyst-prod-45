@@ -37,6 +37,19 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
   const maxCount = Math.max(1, ...(workload ?? []).map((w) => w.total));
   const { openUWV } = useUWV();
 
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub'],
+    dataType: 'all',
+    title: `Team Workload · ${projectKey}`,
+    scope: 'all',
+    statusFilter: ['todo', 'in_progress'],
+    dateFrom: null,
+    dateTo: null,
+    dateLabel: 'All open work',
+    releaseFilter: settings.releaseFilter,
+  });
+
   return (
     <WidgetWrapper
       title="Team Workload"
@@ -44,6 +57,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={2}
+      onExpand={handleExpand}
       headerBadges={<WidgetGearButton gadgetType="workload" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (

@@ -125,6 +125,21 @@ export default function ItemsByStatusWidget({
 
   const { openUWV } = useUWV();
 
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub'],
+    dataType: 'all',
+    title: `Items by Status · ${projectKey}`,
+    scope: settings.dateFrom ? 'custom' : 'all',
+    dateFrom: settings.dateFrom ?? null,
+    dateTo: settings.dateTo ?? null,
+    dateLabel: settings.dateLabel,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
+    releaseFilter: settings.releaseFilter,
+  });
+
   function saveChartType(t: ChartType) {
     save({ ...settings, gadgetSpecific: { ...settings.gadgetSpecific, chartType: t } });
   }
@@ -144,6 +159,7 @@ export default function ItemsByStatusWidget({
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}
+      onExpand={handleExpand}
       headerBadges={
         <>
           <Lozenge appearance="default">{String(total)}</Lozenge>

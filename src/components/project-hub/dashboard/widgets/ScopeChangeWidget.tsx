@@ -69,6 +69,21 @@ export default function ScopeChangeWidget({
   const { settings } = useGadgetSettings('scope', projectKey);
   const { openUWV }  = useUWV();
 
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub', 'releasehub'],
+    dataType: 'all',
+    title: `Scope Change · ${projectKey}`,
+    scope: 'all',
+    dateFrom: settings.dateFrom ?? null,
+    dateTo: settings.dateTo ?? null,
+    dateLabel: settings.dateLabel,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
+    releaseFilter: settings.releaseFilter,
+  });
+
   // Resolve config (with defaults from spec)
   const maxReleases     = settings.gadgetSpecific?.maxReleases     ?? 8;
   const thresholdHigh   = settings.gadgetSpecific?.thresholdHigh   ?? 80;
@@ -120,6 +135,7 @@ export default function ScopeChangeWidget({
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}
+      onExpand={handleExpand}
       headerBadges={
         <WidgetGearButton gadgetType="scope" projectKey={projectKey} projectId={projectId} />
       }

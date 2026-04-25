@@ -1578,6 +1578,15 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       onToggleCollapse={onToggleCollapse}
       span={2}
       flushBody
+      onExpand={() =>
+        openUWV({
+          project: projectKey,
+          hubSource: ['projecthub'],
+          dataType: 'epics',
+          title: `Demand Fulfilment · ${projectKey}`,
+          scope: 'all',
+        })
+      }
       headerBadges={
         <span
           onClick={(e) => e.stopPropagation()}

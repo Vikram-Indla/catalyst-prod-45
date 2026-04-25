@@ -29,6 +29,7 @@ import {
 } from '@/components/ads';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '—';
@@ -95,6 +96,18 @@ export default function RecentActivityWidget({
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
   });
+  const { openUWV } = useUWV();
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub'],
+    dataType: 'all',
+    title: `Recent Activity · ${projectKey}`,
+    scope: 'all',
+    dateFrom: settings.dateFrom ?? null,
+    dateTo: settings.dateTo ?? null,
+    dateLabel: settings.dateLabel,
+    assigneeFilter: settings.assigneeFilter,
+  });
 
   return (
     <WidgetWrapper
@@ -102,6 +115,7 @@ export default function RecentActivityWidget({
       subtitle="Latest changes"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
+      onExpand={handleExpand}
       headerBadges={
         <WidgetGearButton
           gadgetType="activity"
