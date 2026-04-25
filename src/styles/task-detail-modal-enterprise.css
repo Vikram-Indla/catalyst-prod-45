@@ -75,7 +75,9 @@
 }
   
   /* Typography */
-  --tm-font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  --tm-font-sans:    var(--cp-font-body);
+  --tm-font-heading: var(--cp-font-heading);
+  --tm-font-mono:    var(--cp-font-mono);
   
   /* Spacing */
   --tm-space-1: 4px;
