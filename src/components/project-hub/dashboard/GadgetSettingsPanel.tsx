@@ -87,13 +87,9 @@ const PRIORITY_OPTIONS = [
   { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: '#7A869A' },
 ];
 
-const ITEM_TYPES = [
-  { value: 'Epic', label: 'Epic' },
-  { value: 'Story', label: 'Story' },
-  { value: 'Bug', label: 'Bug' },
-  { value: 'Task', label: 'Task' },
-  { value: 'Sub-task', label: 'Sub-task' },
-];
+// ITEM_TYPES are fetched dynamically from ph_issues per project (see useQuery
+// in component body). Keeps filter values aligned with actual DB values and
+// scoped to the current project to prevent cross-project bleed-through.
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
