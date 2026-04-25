@@ -294,10 +294,11 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       if (!pKey) return [];
 
       const canonicalId = await getCanonicalProjectId(projectId!, pKey);
-      // 🛡️ 2026 GUARDRAIL: releases with target_date in 2026 (rh_releases is source of truth).
+
+      // ── 1. Releases (2026 guardrail) ──────────────────────────────────────
       const { data: releases, error: releasesError } = await supabase
         .from('rh_releases')
-        .select('id, name, jira_key, created_at, target_date')
+        .select('id, name, jira_key, target_date')
         .eq('project_id', canonicalId)
         .neq('status', 'done')
         .gte('target_date', YEAR_2026_START.slice(0, 10))
@@ -305,39 +306,70 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       if (releasesError) throw releasesError;
       if (!releases?.length) return [];
 
-      // Fetch ph_versions to get the real start_date from Jira.
-      // rh_releases has no start_date column — ph_versions.start_date is the
-      // authoritative sprint/release start date synced from Jira's version API
-      // (wh-jira-bulk-sync maps v.startDate → ph_versions.start_date).
+      // ── 2. Start dates from ph_versions ───────────────────────────────────
+      // ph_versions.start_date is the authoritative Jira sprint/version start
+      // date (synced via wh-jira-bulk-sync v.startDate). rh_releases has no
+      // start_date column. Fallback: target_date - 14 days (standard sprint).
       const { data: phVersions } = await supabase
         .from('ph_versions' as any)
         .select('jira_id, name, start_date')
         .eq('project_key', pKey);
 
-      // Build lookup maps: prefer jira_key → jira_id match, fall back to name match.
       const versionByJiraId = new Map<string, string | null>();
-      const versionByName = new Map<string, string | null>();
+      const versionByName  = new Map<string, string | null>();
       for (const v of phVersions ?? []) {
         if (v.jira_id) versionByJiraId.set(v.jira_id, v.start_date ?? null);
-        if (v.name) versionByName.set(v.name, v.start_date ?? null);
+        if (v.name)    versionByName.set(v.name,    v.start_date ?? null);
       }
 
-      // 🛡️ 2026 GUARDRAIL on issues
+      // ── 3. Issues with fix_versions ───────────────────────────────────────
       const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
-        .select('fix_versions, jira_created_at')
+        .select('id, fix_versions, jira_created_at')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .or(or2026('jira_created_at', 'jira_updated_at'));
       if (issuesError) throw issuesError;
 
+      // ── 4. ph_activity_log — fix_version assignment events ────────────────
+      // Covers both:
+      //   • Catalyst-native edits  → field_name = 'fix_versions'  (written by
+      //     IssueContentView / StoryDetailModal since Apr 2026 wiring)
+      //   • Jira-mirrored history  → field_name = 'Fix Version'   (mirrored
+      //     from jira_sync_changelog by wh-jira-bulk-sync)
+      // This is the single Catalyst-native source of truth going forward;
+      // jira_sync_changelog is NOT queried directly (Jira decommission ready).
+      const issueIds = (issues ?? []).map(i => i.id).filter(Boolean);
+      const activityByItemId = new Map<string, { new_value: string; created_at: string }[]>();
+
+      if (issueIds.length > 0) {
+        // Batch in chunks of 500 to stay within Supabase .in() limits
+        for (let i = 0; i < issueIds.length; i += 500) {
+          const chunk = issueIds.slice(i, i + 500);
+          const { data: actRows } = await supabase
+            .from('ph_activity_log')
+            .select('work_item_id, new_value, created_at')
+            .in('work_item_id', chunk)
+            .in('field_name', ['fix_versions', 'Fix Version'])
+            .not('new_value', 'is', null);
+
+          for (const row of actRows ?? []) {
+            if (!activityByItemId.has(row.work_item_id)) {
+              activityByItemId.set(row.work_item_id, []);
+            }
+            activityByItemId.get(row.work_item_id)!.push({
+              new_value: row.new_value,
+              created_at: row.created_at,
+            });
+          }
+        }
+      }
+
+      // ── 5. Compute per-release scope change ───────────────────────────────
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
       for (const rel of releases) {
-        // Resolve the release start date:
-        //   1. ph_versions.start_date via jira_key → jira_id (most accurate)
-        //   2. ph_versions.start_date via name match (fallback for manually-created releases)
-        //   3. target_date - 14 days (last-resort proxy when Jira start date is absent)
+        // Resolve start_date: jira_key match → name match → target_date proxy
         const startDateStr: string | null =
           (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ??
           versionByName.get(rel.name) ??
@@ -347,14 +379,13 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
         if (startDateStr) {
           startDate = new Date(startDateStr);
         } else if (rel.target_date) {
-          // Proxy: assume a standard 2-week sprint ending at target_date
           startDate = new Date(rel.target_date);
           startDate.setDate(startDate.getDate() - 14);
         } else {
-          continue; // No usable start reference — skip this release
+          continue;
         }
 
-        let totalItems = 0;
+        let totalItems    = 0;
         let addedAfterStart = 0;
 
         for (const issue of issues ?? []) {
@@ -365,8 +396,31 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
           );
           if (!belongsToRelease) continue;
           totalItems++;
-          if (issue.jira_created_at && new Date(issue.jira_created_at) > startDate) {
-            addedAfterStart++;
+
+          const actEntries = activityByItemId.get(issue.id) ?? [];
+
+          // Does any activity log entry show this release being assigned after start?
+          const hasActivityForThisRelease = actEntries.some(e =>
+            e.new_value?.split(',').map(s => s.trim()).includes(rel.name) ||
+            e.new_value === rel.name
+          );
+
+          if (hasActivityForThisRelease) {
+            // Use activity log as the authoritative signal
+            const assignedAfterStart = actEntries.some(e => {
+              const releaseInEntry =
+                e.new_value?.split(',').map(s => s.trim()).includes(rel.name) ||
+                e.new_value === rel.name;
+              return releaseInEntry && new Date(e.created_at) > startDate;
+            });
+            if (assignedAfterStart) addedAfterStart++;
+          } else {
+            // No activity log entry yet — fall back to jira_created_at proxy.
+            // This covers issues predating the activity-log wiring (pre Apr 2026)
+            // and will self-correct as new edits are logged going forward.
+            if (issue.jira_created_at && new Date(issue.jira_created_at) > startDate) {
+              addedAfterStart++;
+            }
           }
         }
 

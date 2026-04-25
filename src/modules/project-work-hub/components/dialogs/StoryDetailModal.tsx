@@ -626,8 +626,21 @@ export default function StoryDetailModal({
     }
     // Save as array of {name} objects to match Jira JSONB format
     const jsonValue = updated.map(n => ({ name: n }));
-    supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', itemId).then(() => {
+    supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', itemId).then(async () => {
+      // Log to ph_activity_log — Catalyst-native, Jira-decommission-ready.
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('ph_activity_log').insert({
+          work_item_id: itemId,
+          user_id: user.id,
+          action: 'updated',
+          field_name: 'fix_versions',
+          old_value: current.join(', ') || null,
+          new_value: updated.join(', ') || null,
+        });
+      }
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-dashboard-scope-change'] });
     });
   }, [fixVersionNames, itemId, queryClient]);
 

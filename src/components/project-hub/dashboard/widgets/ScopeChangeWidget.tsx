@@ -133,7 +133,7 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
               fontFamily: 'var(--cp-font-mono)',
             }}
           >
-            jira_created_at &gt; ph_versions.start_date
+            ph_activity_log(field=fix_versions, new_value∋ release) &gt; release.start_date
           </div>
         </div>
       )}

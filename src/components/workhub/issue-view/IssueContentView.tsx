@@ -281,9 +281,22 @@ export function IssueContentView({
     }
     if (item?.id) {
       supabase.from('ph_issues').update({ fix_versions: updated } as any).eq('id', item.id)
-        .then(({ error }) => {
+        .then(async ({ error }) => {
           if (error) { toast.error('Failed to update fix version'); return; }
           toast.success('Fix version updated');
+          // Log to ph_activity_log so history panel and scope-change gadget
+          // have Catalyst-native data (Jira-decommission-ready).
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            await supabase.from('ph_activity_log').insert({
+              work_item_id: item.id,
+              user_id: user.id,
+              action: 'updated',
+              field_name: 'fix_versions',
+              old_value: current.join(', ') || null,
+              new_value: updated.join(', ') || null,
+            });
+          }
           queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
           queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
         });
