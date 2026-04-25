@@ -214,24 +214,151 @@ export default function GadgetSettingsPanel({
         </button>
       </div>
 
-      {/* INFO */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: 6,
-          padding: '8px 14px',
-          fontSize: 11,
-          color: '#5E6C84',
-          background: '#F4F5F7',
-        }}
-      >
-        <Info size={12} style={{ marginTop: 1, color: '#0065FF' }} />
-        <span>Date range is set at dashboard level.</span>
-      </div>
-
       {/* FIELDS */}
-      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 420, overflowY: 'auto' }}>
+      <div style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto' }}>
+        {/* ── DATE RANGE — first field ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <label style={{ fontSize: 11, fontWeight: 600, color: '#6B778C',
+                          display: 'flex', alignItems: 'center', gap: 6 }}>
+            Date range
+            <span style={{ fontSize: 9, fontWeight: 700, background: '#DEEBFF',
+                           color: '#0052CC', padding: '0 5px', borderRadius: 2 }}>
+              NEW
+            </span>
+          </label>
+          <button
+            type="button"
+            onClick={() => toggleField('date')}
+            style={{
+              display: 'flex', alignItems: 'center', minHeight: 36,
+              border: openField === 'date' ? '2px solid #4C9AFF' : '2px solid #DFE1E6',
+              boxShadow: openField === 'date' ? '0 0 0 2px rgba(76,154,255,.25)' : 'none',
+              borderRadius: 3, background: openField === 'date' ? '#fff' : '#FAFBFC',
+              padding: '0 8px', cursor: 'pointer', width: '100%', gap: 8,
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="2" width="14" height="13" rx="2"
+                stroke={openField === 'date' ? '#0052CC' : '#7A869A'} strokeWidth="1.5"/>
+              <path d="M1 6h14M5 1v2M11 1v2"
+                stroke={openField === 'date' ? '#0052CC' : '#7A869A'}
+                strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            <span style={{ flex: 1, textAlign: 'left', fontSize: 13,
+                           color: draft.datePreset === 'all' ? '#7A869A' : '#172B4D',
+                           fontWeight: draft.datePreset === 'all' ? 400 : 500 }}>
+              {draft.dateLabel || 'Select period'}
+            </span>
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+              <path d={openField === 'date' ? 'M2 8l4-4 4 4' : 'M2 4l4 4 4-4'}
+                stroke="#7A869A" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </button>
+
+          {openField === 'date' && (
+            <div style={{ background: '#fff', border: '1px solid #DFE1E6',
+                          borderRadius: 3, boxShadow: '0 6px 16px rgba(9,30,66,.15)',
+                          overflow: 'hidden' }}>
+              {/* This period group */}
+              <div style={{ borderBottom: '1px solid #EBECF0' }}>
+                {(['thisQuarter', 'thisYear'] as DatePreset[]).map((p) => {
+                  const r = resolvePreset(p);
+                  const active = draft.datePreset === p;
+                  return (
+                    <button key={p} type="button" onClick={() => {
+                      const resolved = resolvePreset(p);
+                      setDraft((d) => ({ ...d, datePreset: p, ...resolved }));
+                      toggleField('date');
+                    }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                               padding: '8px 12px', width: '100%', border: 0, textAlign: 'left',
+                               background: active ? '#EAF0FB' : 'transparent', cursor: 'pointer',
+                               borderLeft: active ? '3px solid #0052CC' : '3px solid transparent' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <span style={{ fontSize: 13, color: active ? '#0052CC' : '#172B4D',
+                                       fontWeight: active ? 500 : 400 }}>
+                          {p === 'thisQuarter' ? 'This quarter' : 'This year'}
+                        </span>
+                        <span style={{ fontSize: 11, color: '#7A869A' }}>
+                          {r.dateLabel.split('·')[1]?.trim()}
+                        </span>
+                      </div>
+                      {active && <span style={{ color: '#0052CC', fontWeight: 700 }}>✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Quarters group */}
+              <div style={{ borderBottom: '1px solid #EBECF0' }}>
+                <div style={{ padding: '7px 12px 3px', fontSize: 10, fontWeight: 700,
+                              color: '#7A869A', textTransform: 'uppercase', letterSpacing: '.05em',
+                              display: 'flex', alignItems: 'center', gap: 6 }}>
+                  Quarters
+                  <span style={{ background: '#EAF0FB', color: '#0052CC', fontSize: 10,
+                                 fontWeight: 600, padding: '0 6px', borderRadius: 10 }}>2026</span>
+                </div>
+                {(['Q1', 'Q2', 'Q3', 'Q4'] as DatePreset[]).map((q) => {
+                  const r = resolvePreset(q);
+                  const active = draft.datePreset === q;
+                  const [, range] = r.dateLabel.split('·');
+                  return (
+                    <button key={q} type="button" onClick={() => {
+                      setDraft((d) => ({ ...d, datePreset: q, ...resolvePreset(q) }));
+                      toggleField('date');
+                    }}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                               padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
+                               background: active ? '#EAF0FB' : 'transparent', cursor: 'pointer',
+                               borderLeft: active ? '3px solid #0052CC' : '3px solid transparent' }}>
+                      <span style={{ fontSize: 13, color: active ? '#0052CC' : '#172B4D',
+                                     fontWeight: active ? 500 : 400 }}>{q} 2026</span>
+                      <span style={{ fontSize: 11, color: active ? '#0052CC' : '#7A869A' }}>
+                        {range?.trim()}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* All active */}
+              <div>
+                <button type="button" onClick={() => {
+                  setDraft((d) => ({ ...d, datePreset: 'all', ...resolvePreset('all') }));
+                  toggleField('date');
+                }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                           padding: '7px 12px', width: '100%', border: 0, textAlign: 'left',
+                           background: draft.datePreset === 'all' ? '#EAF0FB' : 'transparent',
+                           cursor: 'pointer',
+                           borderLeft: draft.datePreset === 'all' ? '3px solid #0052CC' : '3px solid transparent' }}>
+                  <span style={{ fontSize: 13, color: draft.datePreset === 'all' ? '#0052CC' : '#172B4D' }}>
+                    All active
+                  </span>
+                  <span style={{ fontSize: 11, color: '#7A869A' }}>No date filter</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          <label style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '6px 8px',
+                          background: '#F4F5F7', borderRadius: 3, cursor: 'pointer' }}>
+            <input type="checkbox" checked={applyToAll}
+              onChange={(e) => setApplyToAll(e.target.checked)}
+              style={{ width: 13, height: 13, accentColor: '#0052CC', cursor: 'pointer' }}/>
+            <span style={{ fontSize: 11, color: '#42526E' }}>
+              Apply this date to <strong style={{ color: '#172B4D' }}>all gadgets</strong> on this dashboard
+            </span>
+          </label>
+
+          <span style={{ fontSize: 10, color: '#7A869A', fontFamily: 'monospace',
+                         background: '#F4F5F7', padding: '2px 6px', borderRadius: 3 }}>
+            filters on: {GADGET_DATE_FIELD[gadgetType]}
+          </span>
+        </div>
+
+        <div style={{ height: '0.5px', background: '#EBECF0' }} />
+
         <Field label="Status">
           <MultiSelectStatus
             value={draft.statusFilter}
