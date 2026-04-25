@@ -16,6 +16,7 @@
  */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
+import WidgetGearButton from '../WidgetGearButton';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
