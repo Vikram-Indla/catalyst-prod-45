@@ -178,6 +178,26 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
 
           if (statusFilter.length > 0) q = q.in('status', statusFilter);
 
+          // Gadget-forwarded filters (Layer 2). All AND-combined.
+          if (params.statusFilter && params.statusFilter.length > 0) {
+            q = q.in('status', params.statusFilter);
+          }
+          if (params.assigneeFilter && params.assigneeFilter.length > 0) {
+            q = q.in('assignee_display_name', params.assigneeFilter);
+          }
+          if (params.itemTypeFilter && params.itemTypeFilter.length > 0) {
+            q = q.in('issue_type', params.itemTypeFilter);
+          }
+          if (params.priorityFilter && params.priorityFilter.length > 0) {
+            q = q.in('priority', params.priorityFilter);
+          }
+          if (params.releaseFilter && params.releaseFilter.length > 0) {
+            const orClause = params.releaseFilter
+              .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+              .join(',');
+            q = q.or(orClause);
+          }
+
           if (params.issueTypes && params.issueTypes.length > 0) {
             q = q.in('issue_type', params.issueTypes);
           }
