@@ -512,7 +512,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       // Group epics under their MDT.
       const epicsByInitiative = new Map<string, EpicRow[]>();
       links.forEach((l: any) => {
-        const epicKey = epicByIdToKey.get(l.issue_id);
+        const epicKey = epicByIdToKey.get(l.epic_id);
         if (!epicKey) return;
         const epic = epicByKey.get(epicKey);
         if (!epic) return;
