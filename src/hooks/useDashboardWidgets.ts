@@ -436,13 +436,23 @@ export function useDashboardReleaseHealth(projectId: string | null | undefined) 
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // rh_releases.project_id references the canonical `projects` table, not
+      // `ph_projects`. The dashboard resolves projectId from ph_projects first
+      // (different UUID), so we must re-resolve to the canonical projects.id
+      // via the project key — otherwise the .eq() silently returns zero rows
+      // and hides every 2026 SENAI BAU release behind "No active releases".
+      const { data: canonicalProject } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('key', pKey)
+        .maybeSingle();
+      const canonicalProjectId = canonicalProject?.id ?? projectId!;
+
       // Source of truth for releases is rh_releases (ReleaseHub).
-      // The legacy 'releases' table is empty for this project; querying it
-      // hid all 2026 SENAI BAU releases behind a "No active releases" empty state.
       const { data: releases, error: relHealthRelError } = await supabase
         .from('rh_releases')
         .select('id, name, status, target_date')
-        .eq('project_id', projectId!)
+        .eq('project_id', canonicalProjectId)
         .neq('status', 'done')
         .order('target_date', { ascending: true });
       if (relHealthRelError) throw relHealthRelError;
