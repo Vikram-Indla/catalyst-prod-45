@@ -1,5 +1,10 @@
 /**
  * DefectsSection — extracted from StoryDetailModal
+ *
+ * Phase 5 (Apr 2026): source-aware create. When the parent story is a
+ * Catalyst-native item, new defects land in catalyst_issues with parent_key
+ * set. When the parent is Jira-synced, new defects land in ph_issues for
+ * back-compat with the Jira write-back pipeline.
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { CornerDownLeft, Loader2, Plus } from 'lucide-react';
@@ -11,8 +16,20 @@ import { DEFAULT_COLUMNS } from './constants';
 import { nextPos } from './helpers';
 import { SectionBlock, IssueRow, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
 import { ConfirmDialog } from './ConfirmDialog';
+import { createChildIssue, type WorkItemSource } from '../../../lib/workItemRepo';
+import { toast } from 'sonner';
 
-export function DefectsSection({ storyKey, projectKey }: { storyKey: string; projectKey: string }) {
+export function DefectsSection({
+  storyKey,
+  projectKey,
+  parentSource = 'jira',
+  parentProjectId = null,
+}: {
+  storyKey: string;
+  projectKey: string;
+  parentSource?: WorkItemSource;
+  parentProjectId?: string | null;
+}) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
@@ -60,20 +77,34 @@ export function DefectsSection({ storyKey, projectKey }: { storyKey: string; pro
 
   const createMutation = useMutation({
     mutationFn: async (summary: string) => {
-      const tempKey = `${projectKey}-DEF-${Date.now()}`;
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: tempKey, summary: summary.trim(), issue_type: 'Defect',
-        parent_key: storyKey, project_key: projectKey, status: 'To Do',
-        status_category: 'todo', priority: 'High', position: nextPos(defects),
-        reporter_account_id: user?.id, source: 'catalyst',
+      await createChildIssue({
+        parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
+        summary,
+        issueType: 'Defect',
+        projectKey,
+        projectId: parentProjectId,
+        reporterId: user?.id ?? null,
+        priority: 'High',
+        position: nextPos(defects),
       });
-      if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['defects', storyKey] }); setDraftSummary(''); setTimeout(() => createRef.current?.focus(), 50); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['defects', storyKey] });
+      setDraftSummary('');
+      setTimeout(() => createRef.current?.focus(), 50);
+    },
+    onError: (err) => toast.error('Failed to log defect', { description: (err as Error).message }),
   });
 
+  // Source-aware soft-delete: try ph_issues first; if no row, try catalyst_issues.
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', id); if (error) throw error; },
+    mutationFn: async (id: string) => {
+      const ts = new Date().toISOString();
+      const phRes = await supabase.from('ph_issues').update({ deleted_at: ts }).eq('id', id).select('id');
+      if (phRes.data && phRes.data.length > 0) return;
+      const catRes = await supabase.from('catalyst_issues').update({ deleted_at: ts }).eq('id', id).select('id');
+      if (catRes.error) throw catRes.error;
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['defects', storyKey] }),
   });
 
