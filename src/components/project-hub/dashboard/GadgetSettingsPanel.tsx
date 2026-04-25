@@ -106,6 +106,7 @@ export default function GadgetSettingsPanel({
 }: Props) {
   const { filter } = useDashboardFilter();
   const [draft, setDraft] = useState<GadgetSettings>(initialSettings);
+  const [applyToAll, setApplyToAll] = useState(false);
   const [openField, setOpenField] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
