@@ -15,7 +15,9 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardTeamWorkload } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
-import { EmptyState, Avatar } from '@/components/ads';
+import { EmptyState } from '@/components/ads';
+import UserAvatar from '@/components/shared/UserAvatar';
+import { useUWV } from '@/components/universal-work-view/UWVContext';
 import WidgetGearButton from '../WidgetGearButton';
 
 const WORKLOAD_FILL = 'rgba(37, 99, 235, 0.20)';
@@ -33,6 +35,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
     priorityFilter: settings.priorityFilter,
   });
   const maxCount = Math.max(1, ...(workload ?? []).map((w) => w.total));
+  const { openUWV } = useUWV();
 
   return (
     <WidgetWrapper
@@ -67,15 +70,55 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
           {workload.map((w) => (
             <div
               key={w.assignee}
+              role="button"
+              tabIndex={0}
+              onClick={() =>
+                openUWV({
+                  project: projectKey,
+                  hubSource: ['projecthub'],
+                  dataType: 'epics',
+                  title: `Open work · ${w.assignee}`,
+                  scope: 'all',
+                  // Drill-down: this assignee's open items, exclude closed/done.
+                  assigneeFilter: [w.assignee],
+                  statusFilter: ['todo', 'in_progress'],
+                  dateFrom: settings.dateFrom ?? null,
+                  dateTo: settings.dateTo ?? null,
+                  dateLabel: settings.dateLabel,
+                  releaseFilter: settings.releaseFilter,
+                  itemTypeFilter: settings.itemTypeFilter,
+                  priorityFilter: settings.priorityFilter,
+                })
+              }
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  (e.currentTarget as HTMLDivElement).click();
+                }
+              }}
               className="flex items-center gap-3"
-              style={{ height: 36 }}
+              style={{
+                height: 36,
+                cursor: 'pointer',
+                paddingInline: 4,
+                borderRadius: 4,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = token(
+                  'color.background.neutral.subtle.hovered',
+                  '#F1F2F4',
+                );
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+              }}
             >
               {/* Avatar + name */}
               <div
                 className="flex items-center gap-2"
                 style={{ minWidth: 160, maxWidth: 160 }}
               >
-                <Avatar size="small" name={w.assignee} />
+                <UserAvatar size="small" name={w.assignee} />
                 <span
                   className="truncate"
                   style={{ fontSize: 13, color: token('color.text', '#172B4D') }}

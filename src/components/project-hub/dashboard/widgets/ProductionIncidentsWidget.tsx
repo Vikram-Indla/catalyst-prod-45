@@ -5,7 +5,7 @@
  * Rewritten Apr 19, 2026 per docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 5.
  *   - Hand-rolled <table> → <DynamicTable>
  *   - Bespoke status pills → <StatusLozenge> via toStatusCategory()
- *   - Hand-rolled avatars → <Avatar size="xsmall">
+ *   - Hand-rolled avatars → <UserAvatar size="xsmall">
  *   - Bespoke empty state → <EmptyState>
  *
  * Apr 19, 2026 (Commit B.2a): Priority column dropped — reclaimed 8% of row
@@ -25,13 +25,13 @@ import {
   DynamicTable,
   Lozenge,
   StatusLozenge,
-  Avatar,
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import RelativeTime from '@/components/shared/RelativeTime';
+import UserAvatar from '@/components/shared/UserAvatar';
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('incidents', projectKey);
@@ -160,7 +160,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           key: 'assignee',
           content: assigneeName ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <Avatar
+              <UserAvatar
                 size="xsmall"
                 name={assigneeName}
                 src={inc.assignee_avatar_url}

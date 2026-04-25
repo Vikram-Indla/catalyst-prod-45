@@ -23,12 +23,12 @@ import { token } from '@atlaskit/tokens';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import Tooltip from '@atlaskit/tooltip';
 import {
-  Avatar,
   EmptyState,
   StatusLozenge,
   toStatusCategory,
 } from '@/components/ads';
 import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import UserAvatar from '@/components/shared/UserAvatar';
 
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '—';
@@ -144,7 +144,7 @@ export default function RecentActivityWidget({
               <Box key={item.id} xcss={isLast ? rowLastStyles : rowStyles}>
                 <Inline space="space.150" alignBlock="start" spread="space-between">
                   <Inline space="space.150" alignBlock="start" grow="fill">
-                    <Avatar size="small" name={actor} src={avatarSrc} />
+                    <UserAvatar size="small" name={actor} src={avatarSrc} />
                     <Stack space="space.050" grow="fill">
                       <Inline space="space.075" alignBlock="center">
                         <Box
