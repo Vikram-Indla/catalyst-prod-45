@@ -81,10 +81,13 @@ export function useProjectReleases(projectId: string) {
       if (!projectId) return [];
       const { data, error } = await supabase
         .from('ph_releases' as any)
-        .select('id, name')
+        .select('id, name, status')
         .eq('project_id', projectId)
         .order('name');
-      if (error) return [];
+      if (error) {
+        console.error('[useProjectReleases] Supabase error:', error.message, (error as any).code);
+        return [];
+      }
       return (data as any[]) ?? [];
     },
     enabled: !!projectId,
