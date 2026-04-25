@@ -421,8 +421,8 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       for (const rel of releases as Array<{ id: string; name: string; jira_key: string | null; target_date: string | null }>) {
         // Resolve start_date: jira_key match → name match → target_date proxy
         const startDateStr: string | null =
-          (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ??
-          versionByName.get(rel.name) ??
+          (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ||
+          versionByName.get(rel.name) ||
           null;
 
         let startDate: Date;
