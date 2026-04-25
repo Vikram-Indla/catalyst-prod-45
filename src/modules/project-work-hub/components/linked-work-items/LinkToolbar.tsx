@@ -87,18 +87,41 @@ export function LinkToolbar({
   const { data: defaultOptions = [] } = useQuery<PickerOption[]>({
     queryKey: ['lwi:default-options'],
     queryFn: async () => {
-      const { data } = await supabase
-        .from('ph_issues')
-        .select('issue_key, summary, issue_type')
-        .is('jira_removed_at', null)
-        .order('jira_updated_at', { ascending: false })
-        .limit(8);
-      return (data ?? []).map((r: any) => ({
+      const [phRes, catRes] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('issue_key, summary, issue_type, jira_updated_at')
+          .is('jira_removed_at', null)
+          .order('jira_updated_at', { ascending: false })
+          .limit(8),
+        supabase
+          .from('catalyst_issues')
+          .select('issue_key, title, issue_type, updated_at')
+          .order('updated_at', { ascending: false })
+          .limit(8),
+      ]);
+      const ph = (phRes.data ?? []).map((r: any) => ({
         value: r.issue_key,
         label: `${r.issue_key} ${r.summary}`,
         summary: r.summary,
         issue_type: r.issue_type,
+        _ts: r.jira_updated_at,
       }));
+      const seen = new Set(ph.map((o) => o.value));
+      const cat = (catRes.data ?? [])
+        .filter((r: any) => r.issue_key && !seen.has(r.issue_key))
+        .map((r: any) => ({
+          value: r.issue_key,
+          label: `${r.issue_key} ${r.title}`,
+          summary: r.title,
+          issue_type: r.issue_type,
+          _ts: r.updated_at,
+        }));
+      const merged = [...ph, ...cat]
+        .sort((a, b) => (b._ts ?? '').localeCompare(a._ts ?? ''))
+        .slice(0, 8)
+        .map(({ _ts, ...rest }) => rest as PickerOption);
+      return merged;
     },
     staleTime: 60_000,
   });
@@ -116,19 +139,35 @@ export function LinkToolbar({
     if (!q) {
       return defaultOptions.filter(filterRow);
     }
-    const { data } = await supabase
-      .from('ph_issues')
-      .select('issue_key, summary, issue_type')
-      .or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`)
-      .is('jira_removed_at', null)
-      .limit(10);
-    const options: PickerOption[] = (data ?? []).map((r: any) => ({
+    const [phRes, catRes] = await Promise.all([
+      supabase
+        .from('ph_issues')
+        .select('issue_key, summary, issue_type')
+        .or(`issue_key.ilike.${q}%,summary.ilike.%${q}%`)
+        .is('jira_removed_at', null)
+        .limit(10),
+      supabase
+        .from('catalyst_issues')
+        .select('issue_key, title, issue_type')
+        .or(`issue_key.ilike.${q}%,title.ilike.%${q}%`)
+        .limit(10),
+    ]);
+    const ph: PickerOption[] = (phRes.data ?? []).map((r: any) => ({
       value: r.issue_key,
       label: `${r.issue_key} ${r.summary}`,
       summary: r.summary,
       issue_type: r.issue_type,
     }));
-    return options.filter(filterRow);
+    const seen = new Set(ph.map((o) => o.value));
+    const cat: PickerOption[] = (catRes.data ?? [])
+      .filter((r: any) => r.issue_key && !seen.has(r.issue_key))
+      .map((r: any) => ({
+        value: r.issue_key,
+        label: `${r.issue_key} ${r.title}`,
+        summary: r.title,
+        issue_type: r.issue_type,
+      }));
+    return [...ph, ...cat].filter(filterRow).slice(0, 15);
   };
 
   const canSubmit = selected.length > 0 && !isPending;
