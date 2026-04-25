@@ -81,6 +81,13 @@ interface SubtasksPanelProps {
   parentSummary?: string;
   /** Optional explicit title override. Defaults to panelTitleFor(parentIssueType). */
   title?: string;
+  /**
+   * Phase 5 (Apr 2026): when the parent story is a Catalyst-native item,
+   * subtasks are created in catalyst_issues with parent_key set. When the
+   * parent is Jira-synced, subtasks land in ph_issues for write-back parity.
+   */
+  parentSource?: 'jira' | 'catalyst';
+  parentProjectId?: string | null;
 }
 
 // ─── Type selector for inline create ────────────────────
