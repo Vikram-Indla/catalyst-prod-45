@@ -111,7 +111,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               >
                 {item.summary}
               </span>
-              <StatusLozenge status="todo">ON HOLD</StatusLozenge>
+              <StatusLozenge status="todo">{(item.status ?? 'ON HOLD').toUpperCase()}</StatusLozenge>
             </div>
           ))}
         </div>
