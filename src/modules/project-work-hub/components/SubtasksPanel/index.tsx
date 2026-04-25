@@ -56,6 +56,7 @@ import Modal, {
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import DynamicTable from '@atlaskit/dynamic-table';
+import { createChildIssue } from '../../lib/workItemRepo';
 import './SubtasksPanel.css';
 
 type VisibleColumn = 'type' | 'key' | 'summary' | 'priority' | 'assignee' | 'status' | 'fixVersions';
@@ -81,6 +82,13 @@ interface SubtasksPanelProps {
   parentSummary?: string;
   /** Optional explicit title override. Defaults to panelTitleFor(parentIssueType). */
   title?: string;
+  /**
+   * Phase 5 (Apr 2026): when the parent story is a Catalyst-native item,
+   * subtasks are created in catalyst_issues with parent_key set. When the
+   * parent is Jira-synced, subtasks land in ph_issues for write-back parity.
+   */
+  parentSource?: 'jira' | 'catalyst';
+  parentProjectId?: string | null;
 }
 
 // ─── Type selector for inline create ────────────────────
@@ -260,6 +268,7 @@ function InlineSummaryEditor({
 // ─── Main component ─────────────────────────────────────
 export function SubtasksPanel({
   storyKey, storyId, projectKey, onSubtaskClick, parentIssueType, parentSummary, title,
+  parentSource = 'jira', parentProjectId = null,
 }: SubtasksPanelProps) {
   useAtlaskitThemeSync();
   const queryClient = useQueryClient();
@@ -327,14 +336,43 @@ export function SubtasksPanel({
   const { data: children = [], isLoading } = useQuery({
     queryKey: ['childIssues', storyKey],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,fix_versions,jira_created_at')
-        .eq('parent_key', storyKey)
-        .is('deleted_at', null)
-        .order('position', { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as SubtaskRow[];
+      // Phase 5 (Apr 2026): union catalyst_issues alongside ph_issues so
+      // Catalyst-native subtasks render in the same list as Jira-synced ones.
+      const [phRes, catRes] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,fix_versions,jira_created_at')
+          .eq('parent_key', storyKey)
+          .is('deleted_at', null)
+          .order('position', { ascending: true }),
+        supabase
+          .from('catalyst_issues')
+          .select('id,issue_key,title,status,status_category,issue_type,assignee_id,priority,fix_versions,created_at,parent_key,deleted_at')
+          .eq('parent_key', storyKey)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: true }),
+      ]);
+      if (phRes.error) throw phRes.error;
+      const ph = (phRes.data ?? []) as SubtaskRow[];
+      const seen = new Set(ph.map((r) => r.issue_key));
+      const cat: SubtaskRow[] = (catRes.data ?? [])
+        .filter((r: any) => r.issue_key && !seen.has(r.issue_key))
+        .map((r: any) => ({
+          id: r.id,
+          issue_key: r.issue_key,
+          summary: r.title,
+          status: r.status,
+          status_category: (r.status_category as any) ?? (r.status === 'Done' ? 'done' : r.status === 'In Progress' ? 'in_progress' : 'todo'),
+          issue_type: r.issue_type,
+          assignee_account_id: r.assignee_id ?? null,
+          assignee_display_name: null,
+          priority: r.priority,
+          position: null,
+          deleted_at: null,
+          fix_versions: r.fix_versions ?? null,
+          jira_created_at: r.created_at,
+        } as SubtaskRow));
+      return [...ph, ...cat];
     },
     enabled: !!storyKey,
   });
@@ -405,21 +443,19 @@ export function SubtasksPanel({
       if (!parsed.success) {
         throw new Error(parsed.error.issues.map((i) => i.message).join('; '));
       }
-      const tempKey = `${projectKey}-NEW-${Date.now()}`;
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: tempKey,
+      // Phase 5 (Apr 2026): source-aware insert. Catalyst-parent → catalyst_issues
+      // with parent_key set; Jira-parent → ph_issues (legacy write-back path).
+      // generateIssueKey queries BOTH tables → no Jira collisions.
+      await createChildIssue({
+        parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
         summary: parsed.data.summary,
-        issue_type: parsed.data.issue_type,
-        parent_key: parsed.data.parent_key,
-        project_key: parsed.data.project_key,
-        status: 'To Do',
-        status_category: 'todo',
+        issueType: parsed.data.issue_type,
+        projectKey: parsed.data.project_key,
+        projectId: parentProjectId,
+        reporterId: user?.id ?? null,
         priority: parsed.data.priority,
         position: nextPos(children),
-        reporter_account_id: user?.id,
-        source: 'catalyst',
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });

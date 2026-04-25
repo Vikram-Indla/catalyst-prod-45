@@ -193,24 +193,11 @@ export function useParentCandidates(projectId: string) {
   });
 }
 
-// Generate next issue key for a project
-async function generateIssueKey(projectKey: string): Promise<string> {
-  // Find the max issue number for this project key
-  const { data } = await supabase
-    .from('catalyst_issues')
-    .select('issue_key')
-    .like('issue_key', `${projectKey}-%`)
-    .order('issue_key', { ascending: false })
-    .limit(100);
-
-  let maxNum = 0;
-  (data ?? []).forEach((row: any) => {
-    const m = row.issue_key.match(new RegExp(`^${projectKey}-(\\d+)$`));
-    if (m) maxNum = Math.max(maxNum, parseInt(m[1], 10));
-  });
-
-  return `${projectKey}-${maxNum + 1}`;
-}
+// Phase 5 (Apr 2026): unified key generator queries BOTH ph_issues
+// AND catalyst_issues so Catalyst-native creates never collide with
+// Jira-synced keys in the same project. Single source of truth lives
+// at src/modules/project-work-hub/lib/generateIssueKey.ts.
+import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
 
 export function useCreateStoryMutation() {
   const queryClient = useQueryClient();

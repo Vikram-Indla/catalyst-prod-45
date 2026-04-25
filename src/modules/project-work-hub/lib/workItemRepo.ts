@@ -240,3 +240,109 @@ export async function deleteAttachmentRow(resolved: ResolvedSource, attachmentId
   const { error } = await supabase.from(table).delete().eq('id', attachmentId);
   if (error) throw error;
 }
+
+// ─── Child item creation (Phase 5) ──────────────────────────────────
+//
+// Children of a Catalyst-native parent (catalyst_issues row) are created in
+// catalyst_issues with parent_key set. Children of a Jira-synced parent
+// (ph_issues row) continue to be created in ph_issues for back-compat with
+// the existing Jira write-back pipeline.
+//
+// Caller passes the parent's ResolvedSource. The helper picks the table,
+// allocates a sequential issue_key via generateIssueKey (queries BOTH
+// tables → no Jira collisions), and inserts the row with sensible defaults.
+
+import { generateIssueKey } from './generateIssueKey';
+
+export interface CreateChildInput {
+  parent: ResolvedSource;
+  /** Required: human summary / title */
+  summary: string;
+  /** e.g. 'Sub-task' | 'Bug' | 'QA Bug' | 'Defect' | 'Production Incident' */
+  issueType: string;
+  /** Project key (e.g. 'BAU') for sequential key generation */
+  projectKey: string;
+  /** Catalyst inserts require project_id (uuid). Pass parent's project_id. */
+  projectId?: string | null;
+  /** Reporter — auth.user id (or Atlassian account_id for Jira children) */
+  reporterId?: string | null;
+  priority?: string;
+  status?: string;
+  statusCategory?: 'todo' | 'in_progress' | 'done';
+  /** Optional ordering hint (used by ph_issues only) */
+  position?: number | null;
+}
+
+export interface CreatedChild {
+  id: string;
+  issue_key: string;
+  source: WorkItemSource;
+}
+
+export async function createChildIssue(input: CreateChildInput): Promise<CreatedChild> {
+  const {
+    parent,
+    summary,
+    issueType,
+    projectKey,
+    projectId,
+    reporterId,
+    priority = 'Medium',
+    status = 'To Do',
+    statusCategory = 'todo',
+    position = null,
+  } = input;
+
+  if (!summary?.trim()) throw new Error('createChildIssue: summary is required');
+  if (!projectKey) throw new Error('createChildIssue: projectKey is required');
+  if (!parent.issueKey) throw new Error('createChildIssue: parent.issueKey is required');
+
+  const issueKey = await generateIssueKey(projectKey);
+
+  if (parent.source === 'jira') {
+    // Jira-parent children stay in ph_issues (Phase 5 Q2 contract).
+    const { data, error } = await supabase
+      .from('ph_issues')
+      .insert({
+        issue_key: issueKey,
+        summary: summary.trim(),
+        issue_type: issueType,
+        parent_key: parent.issueKey,
+        project_key: projectKey,
+        status,
+        status_category: statusCategory,
+        priority,
+        position,
+        reporter_account_id: reporterId,
+        source: 'catalyst',
+      } as any)
+      .select('id, issue_key')
+      .single();
+    if (error) throw error;
+    return { id: data!.id as string, issue_key: data!.issue_key as string, source: 'jira' };
+  }
+
+  // Catalyst-parent children → catalyst_issues with parent_key set.
+  if (!projectId) {
+    throw new Error('createChildIssue: projectId is required for Catalyst children');
+  }
+  const { data, error } = await supabase
+    .from('catalyst_issues')
+    .insert({
+      project_id: projectId,
+      issue_key: issueKey,
+      title: summary.trim(),
+      issue_type: issueType,
+      status,
+      status_category: statusCategory,
+      priority,
+      reporter_id: reporterId,
+      parent_key: parent.issueKey,
+      last_modified_by_system: 'catalyst',
+      sync_enabled: false,
+    } as any)
+    .select('id, issue_key')
+    .single();
+  if (error) throw error;
+  return { id: data!.id as string, issue_key: data!.issue_key as string, source: 'catalyst' };
+}

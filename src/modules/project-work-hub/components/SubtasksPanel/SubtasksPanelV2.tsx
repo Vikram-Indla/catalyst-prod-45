@@ -63,6 +63,16 @@ interface SubtasksPanelV2Props {
   projectKey: string;
   onSubtaskClick?: (subtaskId: string) => void;
   readOnly?: boolean;
+  /** Optional Jira-parity context (passed by StoryDetailModal). */
+  parentIssueType?: string;
+  parentSummary?: string;
+  /**
+   * Phase 5 (Apr 2026): when the parent story is a Catalyst-native item,
+   * subtasks are created in catalyst_issues with parent_key set. When the
+   * parent is Jira-synced, subtasks land in ph_issues for write-back parity.
+   */
+  parentSource?: 'jira' | 'catalyst';
+  parentProjectId?: string | null;
 }
 
 const TYPE_OPTIONS = CANONICAL_WORK_ITEM_OPTIONS;

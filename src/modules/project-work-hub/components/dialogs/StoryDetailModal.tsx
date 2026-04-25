@@ -1597,10 +1597,10 @@ export default function StoryDetailModal({
                   {/* 7. V2 COLLAPSIBLE SECTIONS */}
                   {issue && (
                     <>
-                      <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} parentIssueType={issue.issue_type || 'Story'} parentSummary={issue.summary || ''} />
+                      <SubtasksPanel storyKey={issue.issue_key} storyId={issue.id} projectKey={issue.project_key} parentIssueType={issue.issue_type || 'Story'} parentSummary={issue.summary || ''} parentSource={workItemSource} parentProjectId={projectId ?? null} />
                       <LinkedWorkItemsSection issueId={issue.id} issueKey={issue.issue_key} projectKey={issue.project_key} />
-                      <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} />
-                      <IncidentsSection storyKey={issue.issue_key} />
+                      <DefectsSection storyKey={issue.issue_key} projectKey={issue.project_key} parentSource={workItemSource} parentProjectId={projectId ?? null} />
+                      <IncidentsSection storyKey={issue.issue_key} projectKey={issue.project_key} parentSource={workItemSource} parentProjectId={projectId ?? null} />
                       <TestHubSection storyId={issue.id} />
                     </>
                   )}
