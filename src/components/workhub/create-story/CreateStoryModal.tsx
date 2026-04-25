@@ -1110,6 +1110,7 @@ export function CreateStoryModal({
                 <StatusChip
                   status={form.status}
                   workType={workType}
+                  options={resolvedStatusOptions}
                   onChange={(s) => updateField('status', s)}
                 />
                 <p style={{
