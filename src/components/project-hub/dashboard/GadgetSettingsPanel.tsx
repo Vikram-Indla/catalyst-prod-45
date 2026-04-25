@@ -14,7 +14,7 @@
  *   - "Clear all" resets local draft to defaults.
  *   - "Cancel" discards draft, closes panel.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X, Info, ChevronDown, Check } from 'lucide-react';
 
@@ -91,6 +91,28 @@ export default function GadgetSettingsPanel({
 }: Props) {
   const { filter } = useDashboardFilter();
   const [draft, setDraft] = useState<GadgetSettings>(initialSettings);
+  const [openField, setOpenField] = useState<string | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenField(null);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpenField(null);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, []);
+
+  const toggleField = (name: string) =>
+    setOpenField((f) => (f === name ? null : name));
 
   // Releases (active)
   const { data: releases = [] } = useQuery({
@@ -141,7 +163,7 @@ export default function GadgetSettingsPanel({
   };
 
   return (
-    <div style={{ fontSize: 13, color: '#172B4D' }}>
+    <div ref={wrapperRef} style={{ fontSize: 13, color: '#172B4D' }}>
       {/* HEADER */}
       <div
         style={{
@@ -197,6 +219,8 @@ export default function GadgetSettingsPanel({
           <MultiSelectStatus
             value={draft.statusFilter}
             onChange={(v) => setField('statusFilter', v)}
+            isOpen={openField === 'status'}
+            onToggle={() => toggleField('status')}
           />
         </Field>
 
@@ -206,6 +230,8 @@ export default function GadgetSettingsPanel({
             value={draft.releaseFilter}
             onChange={(v) => setField('releaseFilter', v)}
             options={releases.map((r: any) => ({ value: r.name, label: r.name }))}
+            isOpen={openField === 'release'}
+            onToggle={() => toggleField('release')}
           />
         </Field>
 
@@ -215,6 +241,8 @@ export default function GadgetSettingsPanel({
             value={draft.assigneeFilter}
             onChange={(v) => setField('assigneeFilter', v)}
             options={assignees.map((a: any) => ({ value: a.id, label: a.name }))}
+            isOpen={openField === 'assignee'}
+            onToggle={() => toggleField('assignee')}
           />
         </Field>
 
@@ -228,6 +256,8 @@ export default function GadgetSettingsPanel({
               label: t.label,
               icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/-/g, '_')} size={12} />,
             }))}
+            isOpen={openField === 'itemType'}
+            onToggle={() => toggleField('itemType')}
           />
         </Field>
 
@@ -241,6 +271,8 @@ export default function GadgetSettingsPanel({
               label: p.label,
               icon: <span style={{ color: p.color, fontWeight: 700 }}>{p.icon}</span>,
             }))}
+            isOpen={openField === 'priority'}
+            onToggle={() => toggleField('priority')}
           />
         </Field>
 
@@ -352,13 +384,17 @@ function MultiSelectGeneric({
   onChange,
   options,
   placeholder,
+  isOpen,
+  onToggle,
 }: {
   value: string[];
   onChange: (v: string[]) => void;
   options: OptionT[];
   placeholder: string;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const open = isOpen;
   const selected = useMemo(() => new Set(value), [value]);
   const labelMap = useMemo(() => new Map(options.map((o) => [o.value, o.label])), [options]);
 
@@ -371,7 +407,7 @@ function MultiSelectGeneric({
     <div style={{ position: 'relative' }}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={onToggle}
         style={{
           minHeight: 32,
           width: '100%',
@@ -496,11 +532,15 @@ function MultiSelectGeneric({
 function MultiSelectStatus({
   value,
   onChange,
+  isOpen,
+  onToggle,
 }: {
   value: string[];
   onChange: (v: string[]) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const open = isOpen;
   const selected = useMemo(() => new Set(value), [value]);
 
   const toggle = (s: string) => {
@@ -517,7 +557,7 @@ function MultiSelectStatus({
     <div style={{ position: 'relative' }}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={onToggle}
         style={{
           minHeight: 32,
           width: '100%',
