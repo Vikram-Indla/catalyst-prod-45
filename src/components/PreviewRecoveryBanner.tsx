@@ -86,7 +86,7 @@ export function PreviewRecoveryBanner() {
         padding: "10px 16px",
         background: "#7C2D12",
         color: "#FFF7ED",
-        fontFamily: "Inter, system-ui, sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         fontSize: 13,
         fontWeight: 600,
         boxShadow: "0 2px 12px rgba(0,0,0,0.35)",

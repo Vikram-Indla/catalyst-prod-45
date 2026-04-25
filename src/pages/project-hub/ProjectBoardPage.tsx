@@ -111,7 +111,7 @@ export default function ProjectBoardPage() {
   const hasActiveFilters = !!(filterType || filterStatus || filterPriority || filterSource);
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", padding: '20px 24px 16px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', padding: '20px 24px 16px' }}>
       {/* ─── PAGE HEADER ─── */}
       <CatalystPageHeader title={projectName} />
 
@@ -140,7 +140,7 @@ export default function ProjectBoardPage() {
               <div
                 style={{
                   fontSize: 22, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A',
-                  fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.1,
+                  fontFamily: 'var(--cp-font-mono)', lineHeight: 1.1,
                 }}
               >
                 {s.value}
@@ -170,7 +170,7 @@ export default function ProjectBoardPage() {
                 style={{
                   padding: '6px 14px', fontSize: 12,
                   fontWeight: isActive ? 600 : 500,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6, cursor: 'pointer', border: 'none',
                   background: isActive ? (isDark ? '#1A1A1A' : '#FFFFFF') : 'transparent',
                   color: isActive ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
@@ -199,7 +199,7 @@ export default function ProjectBoardPage() {
               fontSize: 12, fontWeight: 500,
               border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
               background: isDark ? '#1A1A1A' : '#fff', color: isDark ? '#EDEDED' : '#0F172A',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           />
         </div>
@@ -215,7 +215,7 @@ export default function ProjectBoardPage() {
             border: hasActiveFilters ? '1px solid #BFDBFE' : (isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0'),
             background: hasActiveFilters ? (isDark ? 'rgba(37,99,235,0.15)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#fff'),
             color: hasActiveFilters ? '#2563EB' : (isDark ? '#A1A1A1' : '#64748B'),
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
             transition: 'all 150ms ease',
           }}
         >
@@ -244,7 +244,7 @@ export default function ProjectBoardPage() {
               borderRadius: 6, cursor: 'pointer',
               border: isDark ? '1px solid #2E2E2E' : '1px solid #E2E8F0',
               background: isDark ? '#1A1A1A' : '#fff', color: isDark ? '#A1A1A1' : '#64748B',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             <Settings size={13} />

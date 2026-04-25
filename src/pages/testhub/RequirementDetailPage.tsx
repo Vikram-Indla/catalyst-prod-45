@@ -115,7 +115,7 @@ const RequirementDefectsPanel = ({ requirementId }: { requirementId?: string }) 
             return (
               <tr key={d.id} style={{ height: 36, backgroundColor: '#1A1A1A', borderBottom: '0.75px solid #2E2E2E' }}>
                 <td style={{ padding: '8px 12px' }}>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                     {d.defect_key}
                   </span>
                 </td>

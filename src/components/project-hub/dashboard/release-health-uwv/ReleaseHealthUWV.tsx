@@ -394,7 +394,7 @@ export function ReleaseHealthUWV({ projectId, projectKey, onClose }: Props) {
         <div>
           <div
             style={{
-              fontFamily: '"Sora", ' + FONT_STACK,
+              fontFamily: 'var(--cp-font-heading)' + FONT_STACK,
               fontSize: 16,
               fontWeight: 650,
               color: '#172B4D',

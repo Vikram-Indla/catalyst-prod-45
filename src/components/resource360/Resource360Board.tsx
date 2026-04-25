@@ -38,7 +38,7 @@ export function Resource360Board({ items, onItemClick }: Props) {
   ];
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif", height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Search bar */}
       <div style={{ padding: '10px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         <input

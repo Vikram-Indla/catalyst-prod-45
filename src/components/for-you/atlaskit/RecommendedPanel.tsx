@@ -913,7 +913,7 @@ function ReactionChip({
         <span
           aria-hidden="true"
           style={{
-            fontFamily: '"Inter", system-ui, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             fontSize: 12,
             fontWeight: 400,
             color: isActive

@@ -115,7 +115,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
   const showParentBreadcrumb = !!item?.parent_id && !!item?.parent_key && !isEpic;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 200, fontFamily: 'Inter, sans-serif' }} onClick={onClose}>
+    <div className="fixed inset-0 flex items-center justify-center" style={{ zIndex: 200, fontFamily: 'var(--cp-font-body)' }} onClick={onClose}>
       <div className="absolute inset-0 bg-[rgba(9,30,66,0.54)]" />
       <div
         className="relative flex flex-col bg-[var(--cp-float)]"
@@ -126,7 +126,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
         <div className="flex items-center justify-between px-6 shrink-0" style={{ borderBottom: '1px solid var(--divider)', height: 52 }}>
           <div className="flex items-center gap-2.5 min-w-0">
             <span style={{ color: typeColor }}>{TYPE_ICONS[item?.type_name ?? ''] || <CheckSquare size={18} />}</span>
-            <span className="text-[13px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item?.item_key ?? '…'}</span>
+            <span className="text-[13px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{item?.item_key ?? '…'}</span>
             {item?.is_flagged && <Flag size={13} style={{ color: 'var(--sem-danger)' }} />}
           </div>
           <div className="flex items-center gap-0.5">
@@ -151,11 +151,11 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                   <input autoFocus value={titleDraft} onChange={e => setTitleDraft(e.target.value)} onBlur={handleSaveTitle}
                     onKeyDown={e => { if (e.key === 'Enter') handleSaveTitle(); if (e.key === 'Escape') setEditingTitle(false); }}
                     className="w-full text-[22px] font-semibold px-1 py-0.5 rounded"
-                    style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg-1)', lineHeight: '30px', border: '2px solid var(--cp-blue)', outline: 'none' }}
+                    style={{ fontFamily: 'var(--cp-font-heading)', color: 'var(--fg-1)', lineHeight: '30px', border: '2px solid var(--cp-blue)', outline: 'none' }}
                   />
                 ) : (
                   <h2 className="text-[22px] font-semibold cursor-text rounded px-1 py-0.5 border-2 border-transparent hover:border-[var(--bd-default, #E2E8F0)] transition-colors"
-                    style={{ fontFamily: 'Sora, sans-serif', color: 'var(--fg-1)', lineHeight: '30px' }}
+                    style={{ fontFamily: 'var(--cp-font-heading)', color: 'var(--fg-1)', lineHeight: '30px' }}
                     onClick={() => { setTitleDraft(item.title); setEditingTitle(true); }}
                   >{item.title}</h2>
                 )}
@@ -166,7 +166,7 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
                 <div className="mb-4">
                   <button className="flex items-center gap-2 px-3 py-2 rounded-md w-full text-left transition-colors bg-[var(--bg-1)]" style={{ border: '1px solid var(--divider)' }} onClick={() => onNavigate?.(item.parent_id!)}>
                     <span style={{ color: item.parent_type_color || 'var(--fg-4)' }}>{TYPE_ICONS[item.parent_type_name ?? ''] || <CheckSquare size={14} />}</span>
-                    <span className="text-[11px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{item.parent_key}</span>
+                    <span className="text-[11px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{item.parent_key}</span>
                     <span className="text-[13px] font-medium truncate" style={{ color: 'var(--fg-1)' }}>{item.parent_title}</span>
                     {item.parent_status_name && <StatusLozenge name={item.parent_status_name} category={item.parent_status_category || 'todo'} />}
                   </button>
@@ -177,12 +177,12 @@ export function WorkItemDetailModal({ open, itemId, projectId, projectKey, onClo
               <CollapsibleSection title="Key Details" defaultOpen={true}>
                 <div className="grid gap-y-3 gap-x-4" style={{ gridTemplateColumns: '110px 1fr' }}>
                   <FieldLabel>Start Date</FieldLabel>
-                  <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.start_date ? 'var(--fg-2)' : 'var(--fg-4)' }}>
+                  <span className="text-[13px]" style={{ fontFamily: 'var(--cp-font-mono)', color: item.start_date ? 'var(--fg-2)' : 'var(--fg-4)' }}>
                     {item.start_date ? new Date(item.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'None'}
                   </span>
                   <FieldLabel>Due Date</FieldLabel>
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px]" style={{ fontFamily: 'JetBrains Mono, monospace', color: item.due_date && new Date(item.due_date) < new Date() ? 'var(--sem-danger)' : 'var(--fg-2)' }}>
+                    <span className="text-[13px]" style={{ fontFamily: 'var(--cp-font-mono)', color: item.due_date && new Date(item.due_date) < new Date() ? 'var(--sem-danger)' : 'var(--fg-2)' }}>
                       {item.due_date ? new Date(item.due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : <span style={{ color: 'var(--fg-4)' }}>None</span>}
                     </span>
                     {item.due_date && new Date(item.due_date) < new Date() && (
@@ -301,7 +301,7 @@ function SubtaskRow({ child, statuses, onStatusChange, onClick }: { child: Child
     <div className="grid gap-2 px-2 py-2 hover:bg-[var(--bg-1)] rounded cursor-pointer transition-colors" style={{ gridTemplateColumns: '1fr 80px 100px 90px', fontSize: 13 }} onClick={onClick}>
       <div className="flex items-center gap-2 min-w-0">
         <span className="w-2 h-2 rounded-sm shrink-0" style={{ backgroundColor: TYPE_COLORS[child.type_name] || child.type_color }} />
-        <span className="text-[10px] shrink-0" style={{ fontFamily: 'JetBrains Mono, monospace', color: 'var(--fg-3)' }}>{child.item_key}</span>
+        <span className="text-[10px] shrink-0" style={{ fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-3)' }}>{child.item_key}</span>
         <span className="truncate font-medium" style={{ color: 'var(--fg-1)' }}>{child.title}</span>
       </div>
       <span className="text-[12px]" style={{ color: 'var(--fg-2)' }}>{child.priority}</span>

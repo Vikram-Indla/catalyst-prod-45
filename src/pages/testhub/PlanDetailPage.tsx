@@ -88,7 +88,7 @@ const PlanDefectsPanel = ({ planId }: { planId?: string }) => {
                   <td className="px-4 py-0">
                     <span
                       onClick={() => navigate(`/testhub/defects/${d.id}`)}
-                      style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer' }}
+                      style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer' }}
                     >
                       {d.defect_key}
                     </span>

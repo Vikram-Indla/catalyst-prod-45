@@ -39,7 +39,7 @@ export function TopNav() {
           background: 'var(--fg-1)',
           display: 'flex', alignItems: 'center',
           padding: '0 16px', gap: 0,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
       >
         {/* Logo */}
@@ -79,7 +79,7 @@ export function TopNav() {
                   fontWeight: active ? 600 : 400,
                   color: active ? (tab.label === 'Wiki' ? '#3B82F6' : '#60A5FA') : 'rgba(255,255,255,0.55)',
                   background: 'none', border: 'none', cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   transition: 'color 100ms',
                   position: 'relative',
                 }}
@@ -113,7 +113,7 @@ export function TopNav() {
             cursor: 'pointer',
             fontSize: 12,
             fontWeight: 600,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
             background: kbOpen ? 'rgba(37,99,235,0.2)' : '#2E2E2E',
             color: kbOpen ? '#60A5FA' : 'rgba(255,255,255,0.65)',
             transition: 'all 150ms',

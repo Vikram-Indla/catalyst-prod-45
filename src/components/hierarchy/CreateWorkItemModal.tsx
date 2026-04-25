@@ -58,7 +58,7 @@ function CustomSelect({
   return (
     <div ref={ref} style={{ position: 'relative' }}>
       <button type="button" onClick={() => setOpen((p) => !p)}
-        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", color: selected ? '#0F172A' : '#94A3B8', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
+        style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: 'var(--cp-font-body)', color: selected ? '#0F172A' : '#94A3B8', background: 'var(--cp-float)', border: '1.5px solid var(--divider)', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', textAlign: 'left' }}>
         <span>{selected ? (renderOption ? renderOption(selected) : selected.label) : placeholder}</span>
         <ChevronDown size={14} color="var(--fg-3)" />
       </button>
@@ -66,7 +66,7 @@ function CustomSelect({
         <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, marginTop: 4, background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, zIndex: 100, maxHeight: 200, overflowY: 'auto' }}>
           {options.map((opt) => (
             <div key={opt.value} onClick={() => { onChange(opt.value); setOpen(false); }}
-              style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', background: opt.value === value ? 'var(--cp-primary-5)' : undefined, fontFamily: "'Inter', sans-serif" }}
+              style={{ padding: '8px 12px', fontSize: 13, cursor: 'pointer', background: opt.value === value ? 'var(--cp-primary-5)' : undefined, fontFamily: 'var(--cp-font-body)' }}
               onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--bg-1)')}
               onMouseLeave={(e) => (e.currentTarget.style.background = opt.value === value ? '#EFF6FF' : '')}>
               {renderOption ? renderOption(opt) : opt.label}
@@ -144,7 +144,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)' }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
-      <div style={{ width: '100%', maxWidth: 520, background: 'var(--cp-float)', borderRadius: 8, border: '1px solid var(--divider)', fontFamily: "'Inter', sans-serif", maxHeight: '90vh', overflow: 'auto' }}>
+      <div style={{ width: '100%', maxWidth: 520, background: 'var(--cp-float)', borderRadius: 8, border: '1px solid var(--divider)', fontFamily: 'var(--cp-font-body)', maxHeight: '90vh', overflow: 'auto' }}>
         {/* STEP 1 — Type Selection */}
         {step === 1 && (
           <>
@@ -208,7 +208,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
                   Title <span style={{ color: 'var(--sem-danger)' }}>*</span>
                 </label>
                 <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={placeholder} autoFocus
-                  style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', boxSizing: 'border-box', transition: 'border-color 150ms, box-shadow 150ms' }}
+                  style={{ width: '100%', height: 50, padding: '8px 12px', fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', boxSizing: 'border-box', transition: 'border-color 150ms, box-shadow 150ms' }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }} />
               </div>
@@ -226,7 +226,7 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
               <div>
                 <label style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', display: 'block', marginBottom: 6 }}>Description</label>
                 <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="Add a description..."
-                  style={{ width: '100%', padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
                   onFocus={(e) => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
                   onBlur={(e) => { e.currentTarget.style.borderColor = 'var(--divider)'; e.currentTarget.style.boxShadow = 'none'; }} />
               </div>
@@ -234,12 +234,12 @@ export function CreateWorkItemModal({ open, onClose, projectId, parentItem }: Cr
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: '12px 20px', background: '#FAFAFA', borderTop: '1px solid var(--divider)', borderRadius: '0 0 8px 8px' }}>
               {!parentItem && (
-                <button onClick={() => setStep(1)} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer', fontFamily: "'Inter', sans-serif" }}>
+                <button onClick={() => setStep(1)} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, color: 'var(--fg-2)', background: 'var(--cp-float)', border: '1px solid var(--divider)', borderRadius: 6, cursor: 'pointer', fontFamily: 'var(--cp-font-body)' }}>
                   Back
                 </button>
               )}
               <button onClick={handleCreate} disabled={!title.trim() || createMutation.isPending}
-                style={{ height: 32, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: !title.trim() ? 'var(--fg-4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: !title.trim() ? 'not-allowed' : 'pointer', fontFamily: "'Inter', sans-serif", opacity: createMutation.isPending ? 0.7 : 1 }}>
+                style={{ height: 32, padding: '0 16px', fontSize: 13, fontWeight: 600, color: '#FFFFFF', background: !title.trim() ? 'var(--fg-4)' : 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: !title.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--cp-font-body)', opacity: createMutation.isPending ? 0.7 : 1 }}>
                 {createMutation.isPending ? 'Creating…' : 'Create'}
               </button>
             </div>

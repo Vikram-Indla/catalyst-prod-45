@@ -168,7 +168,7 @@ function AccordionSection({
             transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
           }}
         />
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', flex: 1 }}>{label}</span>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1)', flex: 1 }}>{label}</span>
         {count != null && count > 0 && (
           <span style={{
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
@@ -246,7 +246,7 @@ function AddLinkModal({
     <div onClick={onClose} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}>
       <div onClick={e => e.stopPropagation()} style={{ width: 480, maxWidth: '95vw', maxHeight: '80vh', backgroundColor: 'var(--cp-float)', borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--divider)' }}>
-          <h3 style={{ fontFamily: "'Inter', sans-serif", fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Add Link</h3>
+          <h3 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 16, fontWeight: 600, color: 'var(--fg-1)', margin: 0 }}>Add Link</h3>
           <button onClick={onClose} style={{ width: 32, height: 32, border: 'none', backgroundColor: 'transparent', color: 'var(--fg-4)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <X style={{ width: 18, height: 18 }} />
           </button>
@@ -277,7 +277,7 @@ function AddLinkModal({
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder={`Search ${config.label.toLowerCase()}s...`}
-              style={{ width: '100%', height: 40, padding: '8px 12px 8px 36px', fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)' }}
+              style={{ width: '100%', height: 40, padding: '8px 12px 8px 36px', fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)' }}
             />
           </div>
         </div>
@@ -300,7 +300,7 @@ function AddLinkModal({
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
                   <Icon style={{ width: 16, height: 16, color: 'var(--fg-4)', flexShrink: 0 }} />
                   <div style={{ minWidth: 0, flex: 1 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)' }}>{item.key}</span>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)' }}>{item.key}</span>
                     {item.name !== item.key && (
                       <p style={{ fontSize: 13, color: 'var(--fg-2)', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
                     )}
@@ -358,7 +358,7 @@ function LinkAccordionSection({
           }}
         />
         <Icon style={{ width: 14, height: 14, color: 'var(--fg-3)', flexShrink: 0 }} />
-        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', flex: 1 }}>{label}</span>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', flex: 1 }}>{label}</span>
         <span style={{
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
           height: 20, minWidth: 20, padding: '0 6px', borderRadius: 3,
@@ -390,11 +390,11 @@ function LinkAccordionSection({
               onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
               onMouseLeave={e => (e.currentTarget.style.background = '')}
             >
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 500, color: 'var(--cp-blue)' }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 500, color: 'var(--cp-blue)' }}>
                 {link.linked_item_key}
               </span>
               <span style={{
-                flex: 1, fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, color: 'var(--fg-1)',
+                flex: 1, fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 400, color: 'var(--fg-1)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>
                 {link.linked_item_title}
@@ -978,7 +978,7 @@ export function ViewTestCaseModal({
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 1000,
         animation: 'sdm-overlay-in 200ms ease',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       <div
@@ -1003,10 +1003,10 @@ export function ViewTestCaseModal({
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
             <ClipboardList style={{ width: 18, height: 18, color: 'var(--cp-blue)', flexShrink: 0 }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: '#5E6C84', fontWeight: 500 }}>
+              <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: '#5E6C84', fontWeight: 500 }}>
                 {testCase.case_key}
               </span>
-              <span style={{ fontSize: 13, fontFamily: "'Inter', sans-serif", color: '#172B4D', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 13, fontFamily: 'var(--cp-font-body)', color: '#172B4D', fontWeight: 500, maxWidth: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {testCase.title}
               </span>
             </div>
@@ -1103,7 +1103,7 @@ export function ViewTestCaseModal({
                           cursor: 'pointer', border: active ? 'none' : '1px solid #E2E8F0',
                           background: active ? '#2563EB' : 'transparent',
                           color: active ? '#FFFFFF' : '#475569',
-                          fontFamily: "'Inter', sans-serif",
+                          fontFamily: 'var(--cp-font-body)',
                         }}>
                           {labels[fmt]}
                         </button>
@@ -1124,7 +1124,7 @@ export function ViewTestCaseModal({
                               onChange={e => setLocalGherkinFeature(e.target.value)}
                               onBlur={handleGherkinSave}
                               placeholder="Feature: ..."
-                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div>
@@ -1134,7 +1134,7 @@ export function ViewTestCaseModal({
                               onChange={e => setLocalGherkinScenario(e.target.value)}
                               onBlur={handleGherkinSave}
                               placeholder="Scenario: ..."
-                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                         </div>
@@ -1144,7 +1144,7 @@ export function ViewTestCaseModal({
                       {gherkinScenarios.map((sc, idx) => (
                         <div key={sc.id} className="group" style={{ padding: 12, border: '1.5px solid #E2E8F0', borderRadius: 8, background: '#FAFBFC', position: 'relative' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', fontFamily: "'Inter', sans-serif" }}>Scenario {idx + 1}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', fontFamily: 'var(--cp-font-body)' }}>Scenario {idx + 1}</span>
                             <button
                               onClick={() => handleDeleteGherkinScenario(sc.id)}
                               className="opacity-0 group-hover:opacity-100"
@@ -1160,7 +1160,7 @@ export function ViewTestCaseModal({
                               onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, feature: v } : s)); }}
                               onBlur={() => handleGherkinScenarioBlur(sc.id, sc.feature, sc.scenario)}
                               placeholder="Feature: ..."
-                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div>
@@ -1170,7 +1170,7 @@ export function ViewTestCaseModal({
                               onChange={e => { const v = e.target.value; setGherkinScenarios(prev => prev.map(s => s.id === sc.id ? { ...s, scenario: v } : s)); }}
                               onBlur={() => handleGherkinScenarioBlur(sc.id, sc.feature, sc.scenario)}
                               placeholder="Scenario: ..."
-                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                         </div>
@@ -1185,7 +1185,7 @@ export function ViewTestCaseModal({
                               value={newGherkinFeature}
                               onChange={e => setNewGherkinFeature(e.target.value)}
                               placeholder="Feature: ..."
-                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 60, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div style={{ marginBottom: 10 }}>
@@ -1194,7 +1194,7 @@ export function ViewTestCaseModal({
                               value={newGherkinScenario}
                               onChange={e => setNewGherkinScenario(e.target.value)}
                               placeholder="Scenario: ..."
-                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: "'JetBrains Mono', monospace", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                              style={{ width: '100%', minHeight: 80, padding: 10, fontSize: 13, fontFamily: 'var(--cp-font-mono)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                             />
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
@@ -1206,7 +1206,7 @@ export function ViewTestCaseModal({
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingGherkin(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Scenario
                           </button>
@@ -1222,7 +1222,7 @@ export function ViewTestCaseModal({
                       {freeTextBlocks.map((block, idx) => (
                         <div key={block.id} className="group" style={{ position: 'relative' }}>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', fontFamily: "'Inter', sans-serif" }}>Text Block {idx + 1}</span>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: '#475569', fontFamily: 'var(--cp-font-body)' }}>Text Block {idx + 1}</span>
                             <button
                               onClick={() => handleDeleteFreeTextBlock(block.id)}
                               className="opacity-0 group-hover:opacity-100"
@@ -1236,7 +1236,7 @@ export function ViewTestCaseModal({
                             onChange={e => { const v = e.target.value; setFreeTextBlocks(prev => prev.map(b => b.id === block.id ? { ...b, text: v } : b)); }}
                             onBlur={() => handleFreeTextBlockBlur(block.id, block.text)}
                             placeholder="Describe the test in free text..."
-                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
+                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none' }}
                           />
                         </div>
                       ))}
@@ -1248,7 +1248,7 @@ export function ViewTestCaseModal({
                             value={newFreeText}
                             onChange={e => setNewFreeText(e.target.value)}
                             placeholder="Describe the test in free text..."
-                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: "'Inter', sans-serif", border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none', marginBottom: 10 }}
+                            style={{ width: '100%', minHeight: 120, padding: 12, fontSize: 14, fontFamily: 'var(--cp-font-body)', border: '1.5px solid #E2E8F0', borderRadius: 4, resize: 'vertical', boxSizing: 'border-box', outline: 'none', marginBottom: 10 }}
                           />
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingFreeText(false); setNewFreeText(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid #E2E8F0', borderRadius: 6, background: 'transparent', color: '#475569', cursor: 'pointer' }}>Cancel</button>
@@ -1259,7 +1259,7 @@ export function ViewTestCaseModal({
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                           <button
                             onClick={() => setAddingFreeText(true)}
-                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
+                            style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
                             <Plus style={{ width: 14, height: 14 }} />
                             Add Test Step
                           </button>
@@ -1292,12 +1292,12 @@ export function ViewTestCaseModal({
                               <div>
                                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action</span>
                                 <textarea value={editStepAction} onChange={e => setEditStepAction(e.target.value)} autoFocus rows={2}
-                                  style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid #2563EB', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                                  style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: 'var(--cp-font-body)', border: '1.5px solid #2563EB', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
                               </div>
                               <div>
                                 <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
                                 <textarea value={editStepExpected} onChange={e => setEditStepExpected(e.target.value)} rows={2}
-                                  style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                                  style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
                               </div>
                               <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                                 <button onClick={() => setEditingStepId(null)} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
@@ -1342,12 +1342,12 @@ export function ViewTestCaseModal({
                           <div style={{ marginBottom: 8 }}>
                             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Action *</span>
                             <textarea value={newStepAction} onChange={e => setNewStepAction(e.target.value)} autoFocus rows={2} placeholder="Describe the action..."
-                              style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                              style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
                           </div>
                           <div style={{ marginBottom: 10 }}>
                             <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--fg-3)', textTransform: 'uppercase' as const, letterSpacing: '0.04em' }}>Expected Result</span>
                             <textarea value={newStepExpected} onChange={e => setNewStepExpected(e.target.value)} rows={2} placeholder="Expected outcome..."
-                              style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: "'Inter', sans-serif", border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
+                              style={{ width: '100%', padding: '6px 8px', fontSize: 14, lineHeight: 1.5, fontFamily: 'var(--cp-font-body)', border: '1.5px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'vertical', boxSizing: 'border-box', background: 'var(--cp-float)', color: 'var(--fg-1)', marginTop: 4 }} />
                           </div>
                           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
                             <button onClick={() => { setAddingStep(false); setNewStepAction(''); setNewStepExpected(''); }} style={{ height: 30, padding: '0 12px', fontSize: 12, fontWeight: 500, border: '1px solid var(--divider)', borderRadius: 6, background: 'transparent', color: 'var(--fg-3)', cursor: 'pointer' }}>Cancel</button>
@@ -1361,7 +1361,7 @@ export function ViewTestCaseModal({
                           <div style={{ position: 'relative' }} data-add-step-menu>
                             <button
                               onClick={() => setIsAddStepMenuOpen(p => !p)}
-                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}>
+                              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 32, padding: '0 12px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid #E2E8F0', background: '#FFFFFF', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}>
                               <Plus style={{ width: 14, height: 14 }} />
                               Add Step
                             </button>
@@ -1369,7 +1369,7 @@ export function ViewTestCaseModal({
                               <div style={{ position: 'absolute', right: 0, top: 36, background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: 6, boxShadow: '0 4px 16px rgba(9,30,66,0.15)', zIndex: 100, minWidth: 180, overflow: 'hidden' }}>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setAddingStep(true); }}
-                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}
                                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                 >
@@ -1377,7 +1377,7 @@ export function ViewTestCaseModal({
                                 </button>
                                 <button
                                   onClick={() => { setIsAddStepMenuOpen(false); setIsSharedStepsModalOpen(true); }}
-                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: "'Inter', sans-serif" }}
+                                  style={{ width: '100%', textAlign: 'left', padding: '10px 14px', fontSize: 13, background: 'transparent', border: 'none', cursor: 'pointer', color: '#172B4D', fontFamily: 'var(--cp-font-body)' }}
                                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
                                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                                 >
@@ -1851,7 +1851,7 @@ function PortalPeoplePicker({ members, selectedId, onSelect }: {
           autoFocus
           style={{
             width: '100%', height: 32, padding: '0 8px', fontSize: 13,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
             border: '1px solid var(--divider)', borderRadius: 6,
             outline: 'none', boxSizing: 'border-box',
             background: 'var(--cp-float, #FFFFFF)', color: 'var(--fg-1)',

@@ -259,7 +259,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
           display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0,
         }}>
           <span style={{
-            fontFamily: "'JetBrains Mono', monospace", fontSize: '13px', fontWeight: 700,
+            fontFamily: 'var(--cp-font-mono)', fontSize: '13px', fontWeight: 700,
             color: dk.blueKey, background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', padding: '3px 10px', borderRadius: '4px',
           }}>
             {rawIdea.idea_key}
@@ -478,7 +478,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                 style={{
                   width: '100%', borderRadius: '4px', border: `1px solid ${isDark ? '#454545' : 'rgba(15,23,42,0.14)'}`,
                   padding: '8px 12px', fontSize: '13px', color: dk.t1, resize: 'vertical',
-                  fontFamily: "'Inter', sans-serif", outline: 'none', background: isDark ? 'transparent' : '#FFFFFF',
+                  fontFamily: 'var(--cp-font-body)', outline: 'none', background: isDark ? 'transparent' : '#FFFFFF',
                 }}
               />
             ) : (
@@ -495,7 +495,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '20px' }}>
               <span style={{
-                fontSize: '32px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace",
+                fontSize: '32px', fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
                 color: impactScore > 0 ? dk.t1 : dk.t3,
               }}>
                 {impactScore.toFixed(2)}
@@ -546,7 +546,7 @@ export default function IdeationDetailPanel({ ideaKey, onClose, onConvert }: Pro
                   </div>
                 </div>
                 <span style={{
-                  fontFamily: "'JetBrains Mono', monospace", fontSize: '14px', fontWeight: 650,
+                  fontFamily: 'var(--cp-font-mono)', fontSize: '14px', fontWeight: 650,
                   color: dim.score > 0 ? dk.t1 : dk.t3,
                   minWidth: '30px', textAlign: 'right',
                 }}>
@@ -653,7 +653,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
                     }}>{initials}</div>
                     <span style={{ fontSize: '13px', fontWeight: 600, color: dk.t1 }}>{name}</span>
                   </div>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', color: dk.t3 }}>{timeAgo}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '12px', color: dk.t3 }}>{timeAgo}</span>
                 </div>
                 <div style={{ fontSize: '14px', color: dk.t2, lineHeight: 1.5 }}>
                   {c.body || c.comment_text || ''}
@@ -673,7 +673,7 @@ function CommentsSection({ ideaId }: { ideaId: string | null }) {
           style={{
             flex: 1, minHeight: '50px', maxHeight: '120px', resize: 'vertical',
             border: `1px solid ${dk.border}`, borderRadius: '6px', padding: '8px 12px',
-            fontSize: '14px', fontFamily: 'Inter, sans-serif', outline: 'none', color: dk.t1,
+            fontSize: '14px', fontFamily: 'var(--cp-font-body)', outline: 'none', color: dk.t1,
             background: isDark ? 'transparent' : '#FFFFFF',
           }}
         />

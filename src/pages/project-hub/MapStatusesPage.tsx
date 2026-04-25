@@ -64,7 +64,7 @@ function StatusPill({
       </div>
       <span style={{
         fontSize: 11, fontWeight: 600, color: tk.textMuted,
-        fontFamily: "'JetBrains Mono', monospace", flexShrink: 0,
+        fontFamily: 'var(--cp-font-mono)', flexShrink: 0,
       }}>
         {count}
       </span>
@@ -166,7 +166,7 @@ function ColumnCard({
                 letterSpacing: '0.04em', color: tk.textPrimary,
                 background: tk.inputBg, border: `1px solid ${tk.selectedAccent}`,
                 borderRadius: 3, padding: '2px 6px', outline: 'none',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}
             />
             <button onClick={commitRename} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
@@ -181,7 +181,7 @@ function ColumnCard({
             <span style={{
               fontSize: 12, fontWeight: 700, textTransform: 'uppercase',
               letterSpacing: '0.04em', color: tk.textPrimary,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {column.name}
@@ -262,7 +262,7 @@ function BucketPanel({
         <span style={{
           fontSize: 12, fontWeight: 700, textTransform: 'uppercase',
           letterSpacing: '0.04em', color: tk.textPrimary,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}>
           {title}
         </span>
@@ -314,7 +314,7 @@ function AddColumnBtn({ tk, onAdd }: { tk: any; onAdd: (name: string) => void })
           border: `1px dashed ${tk.border}`, background: 'transparent',
           color: tk.textSecondary, fontSize: 12, fontWeight: 600,
           cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
       >
         <Plus size={14} /> Add column
@@ -335,7 +335,7 @@ function AddColumnBtn({ tk, onAdd }: { tk: any; onAdd: (name: string) => void })
           width: 160, height: 32, fontSize: 12, padding: '0 8px',
           border: `1px solid ${tk.selectedAccent}`, borderRadius: 4,
           background: tk.inputBg, color: tk.textPrimary, outline: 'none',
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
       />
       <button onClick={submit} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
@@ -365,10 +365,10 @@ function DeleteConfirm({
         borderRadius: 8, padding: 24, width: 360,
         boxShadow: tk.cardDragShadow,
       }}>
-        <div style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
+        <div style={{ fontSize: 14, fontWeight: 600, color: tk.textPrimary, marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>
           Delete column
         </div>
-        <div style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 16, fontFamily: "'Inter', sans-serif" }}>
+        <div style={{ fontSize: 13, color: tk.textSecondary, marginBottom: 16, fontFamily: 'var(--cp-font-body)' }}>
           Are you sure you want to delete <strong>{columnName}</strong>? Mapped statuses will be moved to Unmapped.
         </div>
         <div className="flex items-center justify-end gap-2">
@@ -378,7 +378,7 @@ function DeleteConfirm({
               height: 32, padding: '0 12px', borderRadius: 6,
               border: `1px solid ${tk.border}`, background: 'transparent',
               color: tk.textSecondary, fontSize: 13, cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             Cancel
@@ -389,7 +389,7 @@ function DeleteConfirm({
               height: 32, padding: '0 12px', borderRadius: 6,
               border: 'none', background: '#E5493A', color: '#fff',
               fontSize: 13, fontWeight: 600, cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             Delete
@@ -567,7 +567,7 @@ export default function MapStatusesPage() {
             className="flex items-center gap-1"
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              color: tk.textSecondary, fontSize: 13, fontFamily: "'Inter', sans-serif",
+              color: tk.textSecondary, fontSize: 13, fontFamily: 'var(--cp-font-body)',
             }}
           >
             <ArrowLeft size={16} />
@@ -576,7 +576,7 @@ export default function MapStatusesPage() {
           <div style={{ width: 1, height: 20, background: tk.border }} />
           <span style={{
             fontSize: 15, fontWeight: 600, color: tk.textPrimary,
-            fontFamily: "'Sora', sans-serif",
+            fontFamily: 'var(--cp-font-heading)',
           }}>
             Map statuses
           </span>
@@ -601,7 +601,7 @@ export default function MapStatusesPage() {
               border: `1px solid ${tk.border}`, background: 'transparent',
               color: hasChanges ? tk.textSecondary : tk.textDisabled,
               fontSize: 13, fontWeight: 500, cursor: hasChanges ? 'pointer' : 'default',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               opacity: hasChanges ? 1 : 0.5,
             }}
           >
@@ -615,7 +615,7 @@ export default function MapStatusesPage() {
               border: 'none', background: hasChanges ? '#2563EB' : tk.chipBg,
               color: hasChanges ? '#FFFFFF' : tk.textDisabled,
               fontSize: 13, fontWeight: 600, cursor: hasChanges ? 'pointer' : 'default',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             {saving ? 'Saving…' : 'Save'}

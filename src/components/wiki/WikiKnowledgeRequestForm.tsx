@@ -72,7 +72,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
   const inputStyle: React.CSSProperties = {
     width: '100%', fontSize: 12, padding: '8px 12px', borderRadius: 6,
     border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.10)',
-    outline: 'none', fontFamily: 'Inter, sans-serif',
+    outline: 'none', fontFamily: 'var(--cp-font-body)',
     transition: 'border-color 150ms',
     background: 'transparent',
     color: isDark ? '#EDEDED' : undefined,
@@ -80,7 +80,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
 
   const labelStyle: React.CSSProperties = {
     fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : 'var(--fg-2)', marginBottom: 4, display: 'block',
-    fontFamily: 'Sora, sans-serif',
+    fontFamily: 'var(--cp-font-heading)',
   };
 
   return (
@@ -94,7 +94,7 @@ export function WikiKnowledgeRequestForm({ open, onClose }: Props) {
       }}>
         {/* Header */}
         <div style={{ padding: '20px 24px 16px', borderBottom: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(0,0,0,0.06)', display: 'flex', alignItems: 'center' }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? '#EDEDED' : undefined }}>New Knowledge Request</h2>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, margin: 0, flex: 1, color: isDark ? '#EDEDED' : undefined }}>New Knowledge Request</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
             <X size={16} style={{ color: isDark ? '#878787' : 'var(--fg-3)' }} />
           </button>

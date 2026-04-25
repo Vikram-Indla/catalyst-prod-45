@@ -282,7 +282,7 @@ function TriageCard({ badge, ideaKey, title, body, aiSuggestion, primary, second
           <span style={{ width: '4px', height: '4px', borderRadius: '50%', background: dotColor, flexShrink: 0 }} />
           {badge}
         </span>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '12px', fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B' }}>{ideaKey}</span>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '12px', fontWeight: 600, color: isDark ? '#A1A1A1' : '#64748B' }}>{ideaKey}</span>
       </div>
       <div style={{ fontSize: '14px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', marginTop: '8px', lineHeight: 1.4 }}>{title}</div>
       <div style={{ fontSize: '13px', fontWeight: 400, color: isDark ? '#A1A1A1' : '#64748B', lineHeight: 1.5, marginTop: '4px' }}>{body}</div>

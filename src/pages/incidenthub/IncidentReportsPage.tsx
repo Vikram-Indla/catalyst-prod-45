@@ -35,7 +35,7 @@ export default function IncidentReportsPage() {
           <div className="flex items-center justify-center rounded-md" style={{ width: 32, height: 32, backgroundColor: '#EFF6FF' }}>
             <FileText size={18} style={{ color: '#2563EB' }} />
           </div>
-          <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Incident Reports</h1>
+          <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>Incident Reports</h1>
         </div>
 
         {/* Tab Bar */}
@@ -47,7 +47,7 @@ export default function IncidentReportsPage() {
               onClick={() => setActiveTab(i)}
               className="px-3 py-2"
               style={{
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
                 color: activeTab === i ? '#2563EB' : '#64748B',
@@ -64,29 +64,29 @@ export default function IncidentReportsPage() {
           <div>
             <div className="grid grid-cols-3 gap-3 mb-6">
               <div className="p-3" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Total Breaches</div>
-                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: '#DC2626' }}>{breachedCount}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Total Breaches</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: '#DC2626' }}>{breachedCount}</div>
               </div>
               <div className="p-3" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Breach Rate</div>
-                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: '#D97706' }}>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Breach Rate</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: '#D97706' }}>
                   {incidents?.length ? `${Math.round((breachedCount / incidents.length) * 100)}%` : '0%'}
                 </div>
               </div>
               <div className="p-3" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Avg Age (days)</div>
-                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{avgAge}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B', marginBottom: 4 }}>Avg Age (days)</div>
+                <div style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 22, fontWeight: 700, color: 'var(--fg-1, #0F172A)' }}>{avgAge}</div>
               </div>
             </div>
             <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9' }}>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] SLA Breach trend over time</p>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#64748B' }}>[Chart] SLA Breach trend over time</p>
             </div>
           </div>
         )}
 
         {activeTab === 1 && (
           <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9' }}>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Incident aging distribution by severity</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#64748B' }}>[Chart] Incident aging distribution by severity</p>
           </div>
         )}
 
@@ -101,8 +101,8 @@ export default function IncidentReportsPage() {
               ].map(s => (
                 <div key={s.label} className="flex items-center gap-2 p-3 flex-1" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6 }}>
                   <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: s.color }} />
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{s.label}</span>
-                  <span className="ml-auto" style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 16, fontWeight: 700, color: s.color }}>{s.count}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B' }}>{s.label}</span>
+                  <span className="ml-auto" style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 16, fontWeight: 700, color: s.color }}>{s.count}</span>
                 </div>
               ))}
             </div>
@@ -111,7 +111,7 @@ export default function IncidentReportsPage() {
 
         {activeTab === 3 && (
           <div className="p-8 flex items-center justify-center" style={{ border: `1px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`, borderRadius: 6, backgroundColor: isDark ? '#1A1A1A' : '#F1F5F9' }}>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#64748B' }}>[Chart] Severity vs Priority heatmap</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#64748B' }}>[Chart] Severity vs Priority heatmap</p>
           </div>
         )}
       </div>

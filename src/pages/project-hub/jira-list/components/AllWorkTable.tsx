@@ -141,7 +141,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
   }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: 'var(--cp-font-body)' }}>
       {/* ── Toolbar ── */}
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
@@ -169,7 +169,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               color: T.textPrimary,
               background: T.white,
               outline: 'none',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
             }}
           />
         </div>
@@ -187,7 +187,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
             color: T.textPrimary,
             background: T.white,
             cursor: 'pointer',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             appearance: 'none',
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2344546F'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
@@ -210,7 +210,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               fontSize: 11, fontWeight: 600,
               color: sortBy === 'updated' ? '#2563EB' : T.textSecondary,
               background: sortBy === 'updated' ? 'rgba(37,99,235,0.06)' : T.white,
-              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
             Updated {sortBy === 'updated' ? (sortDir === 'DESC' ? '↓' : '↑') : ''}
@@ -224,7 +224,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
               fontSize: 11, fontWeight: 600,
               color: sortBy === 'created' ? '#2563EB' : T.textSecondary,
               background: sortBy === 'created' ? 'rgba(37,99,235,0.06)' : T.white,
-              cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
           >
             Created {sortBy === 'created' ? (sortDir === 'DESC' ? '↓' : '↑') : ''}
@@ -272,7 +272,7 @@ export function AllWorkTable({ items, isLoading, onOpenItem, pageTitle = 'All Wo
                 {/* Key */}
                 <td style={tdStyle}>
                   <span style={{
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: 'var(--cp-font-mono)',
                     fontSize: 13, fontWeight: 500,
                     color: T.keyColor,
                   }}>
@@ -398,7 +398,7 @@ const thStyle: React.CSSProperties = {
   textTransform: 'uppercase',
   letterSpacing: '0.04em',
   color: '#44546F',
-  fontFamily: 'Inter, sans-serif',
+  fontFamily: 'var(--cp-font-body)',
   whiteSpace: 'nowrap',
   textAlign: 'left',
   position: 'sticky',
@@ -410,7 +410,7 @@ const thStyle: React.CSSProperties = {
 const tdStyle: React.CSSProperties = {
   padding: '0 12px',
   fontSize: 13,
-  fontFamily: 'Inter, sans-serif',
+  fontFamily: 'var(--cp-font-body)',
   verticalAlign: 'middle',
 };
 
@@ -433,7 +433,7 @@ function PaginationBtn({ children, disabled, active, onClick }: {
         color: disabled ? '#C1C7CD' : active ? '#2563EB' : '#44546F',
         background: active ? 'rgba(37,99,235,0.06)' : '#FFFFFF',
         cursor: disabled ? 'default' : 'pointer',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         opacity: disabled ? 0.5 : 1,
       }}
     >

@@ -169,7 +169,7 @@ export function AssignTesterModal({
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%', height: 50, border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 6,
-                padding: '0 32px 0 36px', fontFamily: 'Inter, sans-serif', fontSize: 14,
+                padding: '0 32px 0 36px', fontFamily: 'var(--cp-font-body)', fontSize: 14,
                 color: '#334155', backgroundColor: 'transparent', outline: 'none',
                 boxSizing: 'border-box',
               }}

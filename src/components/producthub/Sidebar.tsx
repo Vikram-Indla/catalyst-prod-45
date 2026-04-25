@@ -31,7 +31,7 @@ export function Sidebar() {
         background: 'var(--bg-app)',
         borderRight: '1px solid var(--divider)',
         display: 'flex', flexDirection: 'column',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* Header */}
@@ -61,7 +61,7 @@ export function Sidebar() {
                 border: 'none', cursor: 'pointer',
                 position: 'relative',
                 textAlign: 'left', width: '100%',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
                 transition: 'background 100ms, color 100ms',
               }}
               onMouseEnter={e => {

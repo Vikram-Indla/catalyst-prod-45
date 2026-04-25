@@ -82,12 +82,12 @@ export function RoadmapSidePanel({
 
   const labelStyle: React.CSSProperties = {
     fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase',
-    letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif",
+    letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)',
   };
 
   const fieldRowStyle: React.CSSProperties = {
     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-    height: 32, fontSize: 13, color: '#0F172A', fontFamily: "'Inter', sans-serif",
+    height: 32, fontSize: 13, color: '#0F172A', fontFamily: 'var(--cp-font-body)',
   };
 
   return (
@@ -106,7 +106,7 @@ export function RoadmapSidePanel({
         background: 'var(--bg-app)', boxShadow: '-4px 0 24px rgba(0,0,0,.12)',
         transform: visible ? 'translateX(0)' : 'translateX(100%)',
         transition: 'transform 200ms ease',
-        display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif",
+        display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
       }}>
         {/* Header — sticky */}
         <div style={{
@@ -122,11 +122,11 @@ export function RoadmapSidePanel({
             <X size={14} color="#64748B" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <span style={{ fontSize: 12, fontFamily: "'JetBrains Mono', monospace", color: 'var(--fg-4)' }}>
+            <span style={{ fontSize: 12, fontFamily: 'var(--cp-font-mono)', color: 'var(--fg-4)' }}>
               {idea.ideaKey}
             </span>
             <div style={{
-              fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif",
+              fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {idea.title}
@@ -165,7 +165,7 @@ export function RoadmapSidePanel({
                   return (
                     <button key={q} onClick={() => onQuarterChange(idea, q)} style={{
                       flex: 1, height: 32, borderRadius: 6, cursor: 'pointer',
-                      fontSize: 12, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+                      fontSize: 12, fontWeight: 700, fontFamily: 'var(--cp-font-body)',
                       border: active ? 'none' : '1px solid var(--divider)',
                       background: active ? qs.bg : 'var(--bg-app)',
                       color: active ? qs.color : 'var(--fg-3)',
@@ -196,7 +196,7 @@ export function RoadmapSidePanel({
                   width: '100%', height: 50, borderRadius: 6, border: 'none',
                   background: 'var(--sem-success)', color: 'var(--bg-app)', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
+                  fontSize: 13, fontWeight: 650, fontFamily: 'var(--cp-font-body)',
                   transition: 'all 150ms',
                 }}
               >
@@ -227,7 +227,7 @@ export function RoadmapSidePanel({
                     onChange={e => setMilestones(prev => ({ ...prev, [m.key]: e.target.value || null }))}
                     style={{
                       flex: 1, height: 50, border: '1px solid var(--divider)', borderRadius: 4,
-                      padding: '0 10px', fontSize: 12, fontFamily: "'Inter', sans-serif",
+                      padding: '0 10px', fontSize: 12, fontFamily: 'var(--cp-font-body)',
                       color: milestones[m.key] ? 'var(--fg-2)' : 'var(--fg-4)', outline: 'none',
                       transition: 'border-color 150ms',
                     }}
@@ -296,7 +296,7 @@ export function RoadmapSidePanel({
               flex: 1, height: 50, borderRadius: 6, border: 'none',
               background: isSaving ? 'var(--fg-4)' : 'var(--cp-blue)', color: 'var(--bg-app)',
               cursor: isSaving ? 'default' : 'pointer',
-              fontSize: 13, fontWeight: 650, fontFamily: "'Inter', sans-serif",
+              fontSize: 13, fontWeight: 650, fontFamily: 'var(--cp-font-body)',
               transition: 'background 150ms',
             }}
           >

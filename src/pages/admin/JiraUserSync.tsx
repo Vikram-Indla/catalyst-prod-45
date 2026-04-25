@@ -248,7 +248,7 @@ const JiraUserSync: React.FC = () => {
           <div className="flex items-start justify-between pb-3">
             <div>
               <h1 className="jira-text-primary"
-                style={{ fontFamily: "'Sora', sans-serif", fontSize: '17px', fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3, color: isDark ? '#EDEDED' : '#0F172A' }}>
+                style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '17px', fontWeight: 700, letterSpacing: '-0.3px', margin: 0, lineHeight: 1.3, color: isDark ? '#EDEDED' : '#0F172A' }}>
                 Jira User Sync
               </h1>
               <p className="jira-text-secondary"
@@ -301,12 +301,12 @@ const JiraUserSync: React.FC = () => {
               <div className="flex items-center gap-[5px] mb-[4px]">
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: card.dot, flexShrink: 0 }} />
                 <span className="jira-stat-label"
-                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: "'Inter', sans-serif", color: isDark ? '#878787' : '#64748B' }}>
+                  style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.03em', fontFamily: 'var(--cp-font-body)', color: isDark ? '#878787' : '#64748B' }}>
                   {card.label}
                 </span>
               </div>
               <div className="jira-stat-value"
-                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1, fontFamily: "'Sora', sans-serif", color: isDark ? '#EDEDED' : '#0F172A' }}>
+                style={{ fontSize: '28px', fontWeight: 650, lineHeight: 1.1, fontFamily: 'var(--cp-font-heading)', color: isDark ? '#EDEDED' : '#0F172A' }}>
                 {getStatValue(card.key)}
               </div>
               <div className="jira-stat-sub"
@@ -491,7 +491,7 @@ const JiraUserSync: React.FC = () => {
                       >
                         <span className="jira-chip"
                           style={{
-                            fontSize: '10px', fontWeight: 700, fontFamily: "'JetBrains Mono', monospace", padding: '1px 5px', borderRadius: '4px',
+                            fontSize: '10px', fontWeight: 700, fontFamily: 'var(--cp-font-mono)', padding: '1px 5px', borderRadius: '4px',
                             background: isDark ? '#2E2E2E' : '#F1F5F9',
                             color: isDark ? '#A1A1A1' : '#374151',
                           }}>
@@ -670,7 +670,7 @@ const JiraUserSync: React.FC = () => {
                             <span className="jira-text-primary" style={{ fontSize: '12px', fontWeight: 500, textDecoration: isInactive ? 'line-through' : 'none', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: isDark ? '#EDEDED' : '#0F172A' }}>{user.display_name}</span>
                             {isCatalystOnly && <span className="jira-local-marker" style={{ fontSize: '9px', fontWeight: 600, whiteSpace: 'nowrap', color: isDark ? '#C4B5FD' : '#7C3AED' }}>◆ Local</span>}
                           </div>
-                          <div className="jira-text-label" style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: isDark ? '#878787' : '#6B7280' }}>
+                          <div className="jira-text-label" style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: isDark ? '#878787' : '#6B7280' }}>
                             {displayEmail(user.email)}
                           </div>
                         </div>
@@ -729,16 +729,16 @@ const JiraUserSync: React.FC = () => {
                       ) : (
                         <div className="flex items-center gap-1">
                           <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-                          <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap', color: isDark ? '#A1A1A1' : '#64748B' }}>{formatSyncDate(user.last_synced_at)}</span>
+                          <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap', color: isDark ? '#A1A1A1' : '#64748B' }}>{formatSyncDate(user.last_synced_at)}</span>
                         </div>
                       )}
                     </td>
 
                     {/* Last Jira Login */}
-                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_jira_login_at)}</td>
+                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_jira_login_at)}</td>
 
                     {/* Last in Catalyst */}
-                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_catalyst_login_at)}</td>
+                    <td style={{ padding: '8px 12px', fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: isDark ? '#A1A1A1' : '#64748B' }}>{relativeTime(user.last_catalyst_login_at)}</td>
 
                     {/* Status lozenge */}
                     <td style={{ padding: '8px 12px' }}>

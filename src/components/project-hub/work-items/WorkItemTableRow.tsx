@@ -148,7 +148,7 @@ export function WorkItemTableRow({
         return (
           <td key={col.key} style={{ width: 70, padding: '0 4px' }}>
             <span style={{
-              fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
+              fontSize: 10, fontFamily: 'var(--cp-font-mono)',
               color: isDone ? 'var(--fg-4)' : 'var(--fg-3)',
               textDecoration: isDone ? 'line-through' : 'none',
               whiteSpace: 'nowrap',
@@ -169,7 +169,7 @@ export function WorkItemTableRow({
             ) : (
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="truncate" style={{
-                  fontSize: 12, fontWeight: 500, fontFamily: 'Inter, sans-serif',
+                  fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   color: isDone ? 'var(--fg-4)' : 'var(--fg-1)',
                   textDecoration: isDone ? 'line-through' : 'none',
                 }} title={item.title || item.summary}>
@@ -224,7 +224,7 @@ export function WorkItemTableRow({
                 backgroundColor: 'var(--cp-bg-sunken, var(--cp-bd-zone))',
                 border: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
                 fontSize: 10.5, fontWeight: 500, color: 'var(--cp-text-secondary, var(--fg-2))',
-                fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap',
+                fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap',
               }}>
                 {releaseLabel}
               </span>
@@ -240,7 +240,7 @@ export function WorkItemTableRow({
               {item.assignee_name ? (
                 <div className="flex items-center gap-1.5 min-w-0">
                   <AssigneeAvatar name={item.assignee_name} />
-                  <span className="truncate" style={{ fontSize: 11, fontFamily: 'Inter, sans-serif', color: 'var(--fg-2)' }}>
+                  <span className="truncate" style={{ fontSize: 11, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
                     {item.assignee_name}
                   </span>
                 </div>
@@ -263,7 +263,7 @@ export function WorkItemTableRow({
                 <div className="flex items-center gap-1">
                   <Calendar size={11} style={{ color: overdue ? 'var(--sem-danger)' : 'var(--fg-4)' }} />
                   <span style={{
-                    fontSize: 10, fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: 10, fontFamily: 'var(--cp-font-mono)',
                     color: overdue ? 'var(--sem-danger)' : 'var(--fg-3)', fontWeight: overdue ? 600 : 400,
                   }}>{formatDue(item.due_date)}</span>
                 </div>
@@ -283,7 +283,7 @@ export function WorkItemTableRow({
           <td key={col.key} style={{ width: 84, padding: '0 4px' }} onClick={e => handleCellClick('priority', e)}>
             <div ref={priorityRef} className="flex items-center gap-1 cursor-pointer">
               <PriorityIcon priority={item.priority} />
-              <span style={{ fontSize: 10, fontFamily: 'Inter, sans-serif', color: 'var(--fg-2)' }}>
+              <span style={{ fontSize: 10, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-2)' }}>
                 {priorityLabel(item.priority)}
               </span>
             </div>

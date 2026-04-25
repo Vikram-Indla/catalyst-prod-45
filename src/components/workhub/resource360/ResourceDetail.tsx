@@ -170,7 +170,7 @@ export function ResourceDetail() {
     background: active ? 'var(--cp-blue)' : 'var(--bg-1)',
     color: active ? 'var(--bg-app)' : 'var(--fg-3)',
     transition: 'background 150ms, color 150ms',
-    fontFamily: 'Inter, system-ui, sans-serif',
+    fontFamily: 'var(--cp-font-body)',
   });
 
   if (loadingUtil || !utilData) {
@@ -185,7 +185,7 @@ export function ResourceDetail() {
   const isOverdue = (d: string | null, status: string) => d && status !== 'Done' && new Date(d) < new Date();
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>
         {/* Breadcrumb */}
         <button
@@ -194,7 +194,7 @@ export function ResourceDetail() {
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: 'none', border: 'none', cursor: 'pointer',
             fontSize: 13, color: 'var(--cp-blue)',
-            fontFamily: 'Inter, system-ui, sans-serif', marginBottom: 16,
+            fontFamily: 'var(--cp-font-body)', marginBottom: 16,
             padding: 0,
           }}
         >
@@ -211,7 +211,7 @@ export function ResourceDetail() {
           <AvatarChip name={r.name} color={r.color} size={48} avatarUrl={r.avatar_url} />
           <div>
             <h1 style={{
-              fontFamily: 'Sora, sans-serif', fontSize: 24, fontWeight: 700,
+              fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700,
               color: 'var(--fg-1)', margin: 0,
             }}>
               {r.name}
@@ -284,7 +284,7 @@ export function ResourceDetail() {
         {/* Work Items Table */}
         <div style={{ marginBottom: 24 }}>
           <h2 style={{
-            fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 600,
+            fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 600,
             color: 'var(--fg-1)', marginBottom: 12,
           }}>
             Jira Issues ({filtered.length})

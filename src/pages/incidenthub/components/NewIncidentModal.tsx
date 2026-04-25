@@ -65,7 +65,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-          <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700 }}>
+          <DialogTitle className="flex items-center gap-2" style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>
             <div className="flex items-center justify-center rounded" style={{ width: 28, height: 28, backgroundColor: '#FEE2E2' }}>
               <AlertTriangle size={14} style={{ color: '#DC2626' }} />
             </div>
@@ -75,17 +75,17 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
 
         <div className="px-6 py-4 space-y-4">
           <div>
-            <Label style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650 }}>Title *</Label>
+            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650 }}>Title *</Label>
             <Input
               value={title}
               onChange={e => setTitle(e.target.value)}
               placeholder="Brief description of the incident"
-              style={{ borderRadius: 4, fontFamily: 'Inter, sans-serif', fontSize: 13, marginTop: 4 }}
+              style={{ borderRadius: 4, fontFamily: 'var(--cp-font-body)', fontSize: 13, marginTop: 4 }}
             />
           </div>
 
           <div>
-            <Label style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, marginBottom: 8 }}>Severity *</Label>
+            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, marginBottom: 8 }}>Severity *</Label>
             <div className="grid grid-cols-4 gap-2 mt-1">
               {SEVERITIES.map(sev => {
                 const s = SEV_STYLES[sev];
@@ -99,7 +99,7 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
                       borderRadius: 4,
                       border: `1.5px solid ${selected ? (isDark ? s.darkText : s.text) : (isDark ? s.darkBorder : s.border)}`,
                       backgroundColor: selected ? (isDark ? s.darkBg : s.bg) : (isDark ? '#1A1A1A' : '#FFFFFF'),
-                      fontFamily: 'JetBrains Mono, monospace',
+                      fontFamily: 'var(--cp-font-mono)',
                       fontSize: 12,
                       fontWeight: 700,
                       color: isDark ? s.darkText : s.text,
@@ -113,12 +113,12 @@ export function NewIncidentModal({ open, onClose }: NewIncidentModalProps) {
           </div>
 
           <div>
-            <Label style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650 }}>Description</Label>
+            <Label style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650 }}>Description</Label>
             <Textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               placeholder="Detailed description of the incident..."
-              style={{ borderRadius: 4, fontFamily: 'Inter, sans-serif', fontSize: 13, marginTop: 4, minHeight: 80 }}
+              style={{ borderRadius: 4, fontFamily: 'var(--cp-font-body)', fontSize: 13, marginTop: 4, minHeight: 80 }}
             />
           </div>
         </div>

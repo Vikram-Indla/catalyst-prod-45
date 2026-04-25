@@ -175,7 +175,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                       {/* Body */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                          <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                           {item.project_key && (
                             <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFF', background: projColor }}>{item.project_key}</span>
                           )}
@@ -189,7 +189,7 @@ export const R360ChronologyView: React.FC<Props> = ({ items, onItemClick, member
                         {item.parent_key && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--fg-2)', marginTop: '3px', fontWeight: 500 }}>
                             ↳
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', fontWeight: 600, color: 'var(--fg-3)' }}>{item.parent_key}</span>
+                            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', fontWeight: 600, color: 'var(--fg-3)' }}>{item.parent_key}</span>
                             <span>{item.parent_title && item.parent_title.length > 40 ? item.parent_title.slice(0, 40) + '…' : item.parent_title}</span>
                           </div>
                         )}

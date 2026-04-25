@@ -126,7 +126,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                   flex: 1, border: 'none', outline: 'none',
                   fontSize: 14, fontWeight: 500, color: '#172B4D',
                   background: 'transparent',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}
               />
             </div>
@@ -140,7 +140,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '10px 12px', border: 'none', cursor: 'pointer',
                   background: currentAssignee === null ? '#F4F5F7' : '#FFFFFF',
-                  textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                  textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = currentAssignee === null ? '#F4F5F7' : '#FFFFFF'; }}
@@ -165,7 +165,7 @@ export const AssigneePickerPopover = memo(function AssigneePickerPopover({
                       width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                       padding: '10px 12px', border: 'none', cursor: 'pointer',
                       background: isActive ? '#F4F5F7' : '#FFFFFF',
-                      textAlign: 'left', fontFamily: "'Inter', sans-serif",
+                      textAlign: 'left', fontFamily: 'var(--cp-font-body)',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = isActive ? '#F4F5F7' : '#FFFFFF'; }}

@@ -41,7 +41,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
         fontSize: 11.5,
         fontWeight: 500,
         color: 'var(--cp-text-tertiary, var(--fg-4))',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
       }}>
         Source:
       </span>
@@ -58,7 +58,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
               borderRadius: 13,
               fontSize: 11.5,
               fontWeight: 500,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               border: `0.75px solid ${isActive ? pill.activeBorder : 'var(--cp-border-default, rgba(15,23,42,0.12))'}`,
               backgroundColor: isActive ? pill.activeBg : 'var(--cp-float)',
               color: isActive ? pill.activeText : 'var(--cp-text-secondary, var(--fg-2))',
@@ -92,7 +92,7 @@ export function SourceFilterPills({ value, onChange, catalystCount, jiraCount }:
             )}
             {pill.label}
             <span style={{
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'var(--cp-font-mono)',
               fontSize: 10.5,
               opacity: 0.8,
             }}>

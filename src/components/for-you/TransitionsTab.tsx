@@ -285,7 +285,7 @@ function SummaryCard({ label, value, sub, color }: { label: string; value: strin
   return (
     <div style={{ flex: 1, padding: '12px 14px', background: T.surface, borderRadius: 8, border: `1px solid ${T.border}`, borderTop: `3px solid ${color}` }}>
       <div style={{ fontSize: 10, fontWeight: 700, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: T.ink, fontFamily: "'JetBrains Mono', monospace", marginTop: 4 }}>{value}</div>
+      <div style={{ fontSize: 20, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-mono)', marginTop: 4 }}>{value}</div>
       <div style={{ fontSize: 11, fontWeight: 500, color: T.inkMuted, marginTop: 2 }}>{sub}</div>
     </div>
   );
@@ -368,7 +368,7 @@ function StepCard({ step, index }: { step: TransitionStep; index: number }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '3px 10px', borderRadius: 6, background: T.surfaceTertiary, border: `1px solid ${T.border}` }}>
             <Clock size={11} color={T.inkMuted} />
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.ink }}>{step.durationLabel}{step.isCurrent ? '+' : ''}</span>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: T.ink }}>{step.durationLabel}{step.isCurrent ? '+' : ''}</span>
             <span style={{ fontSize: 10, fontWeight: 600, color: T.inkMuted }}>({step.percentOfCycle}%)</span>
           </div>
         </div>
@@ -387,8 +387,8 @@ function StepCard({ step, index }: { step: TransitionStep; index: number }) {
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
-            <span style={{ fontSize: 11, fontWeight: 500, color: T.inkTertiary, fontFamily: "'JetBrains Mono', monospace" }}>{formatDateTime(step.enteredAt)}</span>
-            <span style={{ fontSize: 11, fontWeight: 500, color: T.inkMuted, fontFamily: "'JetBrains Mono', monospace" }}>→ {step.exitedAt ? formatDateTime(step.exitedAt) : 'In progress…'}</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: T.inkTertiary, fontFamily: 'var(--cp-font-mono)' }}>{formatDateTime(step.enteredAt)}</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: T.inkMuted, fontFamily: 'var(--cp-font-mono)' }}>→ {step.exitedAt ? formatDateTime(step.exitedAt) : 'In progress…'}</span>
           </div>
         </div>
 
@@ -448,7 +448,7 @@ function PersonAccountability({ steps }: { steps: TransitionStep[] }) {
       <div style={{ marginBottom: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <Users size={14} color={T.inkTertiary} />
-          <span style={{ fontSize: 14, fontWeight: 700, color: T.ink, fontFamily: "'Sora', system-ui" }}>Person Accountability</span>
+          <span style={{ fontSize: 14, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)' }}>Person Accountability</span>
         </div>
         <div style={{ fontSize: 11, color: T.inkMuted, marginTop: 2 }}>Time ownership breakdown</div>
       </div>
@@ -465,7 +465,7 @@ function PersonAccountability({ steps }: { steps: TransitionStep[] }) {
                   <div style={{ fontSize: 11, color: T.inkMuted }}>{person.statusCount} transition{person.statusCount !== 1 ? 's' : ''}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, fontFamily: "'JetBrains Mono', monospace" }}>{formatDuration(person.totalMs)}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-mono)' }}>{formatDuration(person.totalMs)}</div>
                   <div style={{ fontSize: 11, fontWeight: 600, color: T.primary }}>{pct}%</div>
                 </div>
               </div>
@@ -602,7 +602,7 @@ export function TransitionsTab({ issueKey }: TransitionsTabProps) {
       {/* Jira sync bar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 20, padding: '8px 12px', background: T.surfaceTertiary, borderRadius: 6, border: `1px solid ${T.border}` }}>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T.inkMuted} strokeWidth="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
-        <span style={{ fontSize: 10, fontWeight: 700, color: T.inkMuted, fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.06em' }}>JIRA SYNC</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: T.inkMuted, fontFamily: 'var(--cp-font-mono)', letterSpacing: '0.06em' }}>JIRA SYNC</span>
         <span style={{ fontSize: 10, color: T.inkMuted }}>· Source of truth: Jira</span>
       </div>
 

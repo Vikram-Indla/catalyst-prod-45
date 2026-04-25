@@ -224,7 +224,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           flexDirection: 'column',
           transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
           transition: 'transform 300ms cubic-bezier(0.32, 0.72, 0, 1)',
-          fontFamily: "var(--cp-font-body, 'Inter', system-ui, sans-serif)",
+          fontFamily: "var(--cp-font-body)",
         }}
       >
         {/* ── Header (64px) ── */}
@@ -235,7 +235,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--cp-primary-60, var(--cp-blue))', animation: 'kb-status-pulse 3s infinite' }} />
-            <span style={{ fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, var(--fg-1))', letterSpacing: 'var(--cp-tracking-tight, -0.02em)', fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>Intelligence</span>
+            <span style={{ fontSize: 'var(--cp-type-body, 14px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, var(--fg-1))', letterSpacing: 'var(--cp-tracking-tight, -0.02em)', fontFamily: 'var(--cp-font-heading)' }}>Intelligence</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <button
@@ -290,7 +290,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           {/* Welcome state */}
           {messages.length === 0 && (
             <div style={{ textAlign: 'center', paddingTop: 48, flex: 1 }}>
-              <p style={{ fontSize: 'var(--cp-type-heading-sm, 20px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, var(--fg-1))', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)' }}>
+              <p style={{ fontSize: 'var(--cp-type-heading-sm, 20px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-text-primary, var(--fg-1))', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                 {getGreeting()}, {firstName}
               </p>
               <p style={{ fontSize: 'var(--cp-type-body, 14px)', color: 'var(--cp-text-tertiary, var(--fg-3))', marginTop: 8, fontWeight: 'var(--cp-weight-regular, 400)' }}>
@@ -305,7 +305,7 @@ export function KBPanel({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               }}>
                 <p style={{
                   fontSize: 'var(--cp-type-caption, 11px)', fontWeight: 'var(--cp-weight-bold, 650)', color: 'var(--cp-primary-60, var(--cp-blue))', letterSpacing: '1.5px',
-                  textTransform: 'uppercase', margin: 0, fontFamily: 'var(--cp-font-heading, Sora, sans-serif)',
+                  textTransform: 'uppercase', margin: 0, fontFamily: 'var(--cp-font-heading)',
                 }}>INTELLIGENCE BRIEFING</p>
                 <div style={{ width: 24, height: 1.5, background: 'var(--cp-primary-60, var(--cp-blue))', margin: '8px 0 12px', borderRadius: 1 }} />
                 <p style={{

@@ -197,7 +197,7 @@ export default function ProjectListPage() {
   const hasFilters = search || activeTab !== 'all' || filters.statuses.length + filters.healths.length > 0;
 
   return (
-    <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="ph-content-wrapper" style={{ fontFamily: 'var(--cp-font-body)' }}>
       <div className="ph-inner-content">
         <CatalystPageHeader title="All Projects" />
 
@@ -225,7 +225,7 @@ export default function ProjectListPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center" style={{ padding: '80px 40px', background: T.cardBg, border: `1px solid ${T.border}`, borderRadius: 8 }}>
             <FolderKanban size={48} style={{ color: T.t4 }} strokeWidth={1.25} />
-            <h3 style={{ fontSize: 18, fontWeight: 600, color: T.t1, marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: T.t1, marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>
               {hasFilters ? 'No projects match your filters' : 'No projects yet'}
             </h3>
             <p style={{ fontSize: 14, color: T.t2, marginTop: 4, textAlign: 'center', maxWidth: 360 }}>
@@ -296,7 +296,7 @@ export default function ProjectListPage() {
               border: `1px solid ${T.border}`,
               borderRadius: 8,
               boxShadow: isDark ? 'none' : '0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1)',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               padding: '4px 0',
             }}
             onClick={e => e.stopPropagation()}

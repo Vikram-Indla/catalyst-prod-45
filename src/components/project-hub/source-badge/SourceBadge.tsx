@@ -27,7 +27,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
         color: isJira ? 'var(--src-jira-text)' : 'var(--src-catalyst-text)',
         fontSize: 10,
         fontWeight: 700,
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
         lineHeight: '18px',
@@ -47,7 +47,7 @@ export function SourceBadge({ source }: SourceBadgeProps) {
             fontSize: 7,
             fontWeight: 700,
             lineHeight: '10px',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           C

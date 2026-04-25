@@ -171,7 +171,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
           {epic ? (
             <>
               <JiraIssueTypeIcon type="epic" size={20} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{epic.issue_key}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)' }}>{epic.issue_key}</span>
               <span style={{ fontSize: 13, color: '#64748B' }}>· Epic</span>
             </>
           ) : <div style={{ height: 20, width: 120, borderRadius: 4, background: 'var(--bd-default, #E2E8F0)' }} />}
@@ -228,10 +228,10 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                 <input value={titleValue} onChange={e => setTitleValue(e.target.value)}
                   onBlur={() => { handleUpdate('summary', titleValue); setEditingTitle(false); }}
                   onKeyDown={e => { if (e.key === 'Enter') { handleUpdate('summary', titleValue); setEditingTitle(false); } if (e.key === 'Escape') setEditingTitle(false); }}
-                  autoFocus style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: "'Sora', sans-serif", marginBottom: 8 }}
+                  autoFocus style={{ width: '100%', fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', border: '1.5px solid #2563EB', borderRadius: 4, padding: '4px 8px', outline: 'none', fontFamily: 'var(--cp-font-heading)', marginBottom: 8 }}
                 />
               ) : (
-                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: "'Sora', sans-serif", lineHeight: 1.3 }}>
+                <h2 onClick={() => setEditingTitle(true)} style={{ fontSize: 20, fontWeight: 650, color: 'var(--fg-1, #0F172A)', margin: '0 0 8px', cursor: 'text', fontFamily: 'var(--cp-font-heading)', lineHeight: 1.3 }}>
                   {epic.summary || <span style={{ fontStyle: 'italic', color: '#94A3B8' }}>Click to add a title...</span>}
                 </h2>
               )}
@@ -254,7 +254,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       <textarea value={descValue} onChange={e => setDescValue(e.target.value)}
                         onBlur={() => { handleUpdate('description_text', descValue); setEditingDesc(false); }}
                         autoFocus rows={4}
-                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1, #0F172A)', fontFamily: 'Inter, sans-serif', outline: 'none', resize: 'vertical', minHeight: 80 }}
+                        style={{ width: '100%', border: '1.5px solid #2563EB', borderRadius: 4, padding: 8, fontSize: 14, color: 'var(--fg-1, #0F172A)', fontFamily: 'var(--cp-font-body)', outline: 'none', resize: 'vertical', minHeight: 80 }}
                       />
                     ) : (
                       <div onClick={() => setEditingDesc(true)} style={{
@@ -285,7 +285,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       {epic.reporter_display_name ? <span style={DETAIL_VALUE}>{epic.reporter_display_name}</span> : <span style={{ fontSize: 14, color: '#94A3B8', fontStyle: 'italic' }}>— Set reporter</span>}
                     </DetailRow>
                     <DetailRow label="Due Date">
-                      <span style={{ ...DETAIL_VALUE, fontFamily: "'JetBrains Mono', monospace", fontSize: 13, color: epic.due_date ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
+                      <span style={{ ...DETAIL_VALUE, fontFamily: 'var(--cp-font-mono)', fontSize: 13, color: epic.due_date ? 'var(--fg-1, #0F172A)' : '#94A3B8' }}>
                         {epic.due_date ? format(new Date(epic.due_date), 'MMM d, yyyy') : '— Set date'}
                       </span>
                     </DetailRow>
@@ -295,12 +295,12 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       </span>
                     </DetailRow>
                     <DetailRow label="Created">
-                      <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 12, color: '#334155', fontFamily: 'var(--cp-font-mono)' }}>
                         {epic.jira_created_at ? format(new Date(epic.jira_created_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
                     <DetailRow label="Updated">
-                      <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span style={{ fontSize: 12, color: '#334155', fontFamily: 'var(--cp-font-mono)' }}>
                         {epic.jira_updated_at ? format(new Date(epic.jira_updated_at), 'MMM d, yyyy, hh:mm a') : '—'}
                       </span>
                     </DetailRow>
@@ -312,7 +312,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Jira Issue</span>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
+                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, padding: '2px 8px', borderRadius: 4, background: '#F1F5F9', color: '#1E293B' }}>{jiraSyncData.jira_key}</span>
                         </div>
                         {jiraSyncData.jira_sync_status && (
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -327,7 +327,7 @@ export const EpicDetailDrawer: React.FC<EpicDetailDrawerProps> = ({ isOpen, onCl
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <span style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600, color: '#6B7280' }}>Last Synced</span>
-                          <span style={{ fontSize: 12, color: '#334155', fontFamily: "'JetBrains Mono', monospace" }}>
+                          <span style={{ fontSize: 12, color: '#334155', fontFamily: 'var(--cp-font-mono)' }}>
                             {jiraSyncData.jira_pushed_at ? format(new Date(jiraSyncData.jira_pushed_at), 'MMM d, yyyy, hh:mm a') : '—'}
                           </span>
                         </div>
@@ -403,7 +403,7 @@ function HistoryPane({ changelog, isLoading, getStatusColors }: { changelog: any
                     <span style={{ fontSize: 12, color: '#94A3B8' }}>→</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center', height: 18, padding: '0 5px', borderRadius: 4, fontSize: 10, fontWeight: 700, textTransform: 'uppercase', background: toColors.bg, color: toColors.text }}>{toColors.label}</span>
                   </div>
-                  {entry.jira_created_at && <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: "'JetBrains Mono', monospace" }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
+                  {entry.jira_created_at && <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 2, fontFamily: 'var(--cp-font-mono)' }}>{format(new Date(entry.jira_created_at), 'MMM d, yyyy, hh:mm a')}</div>}
                 </div>
               </div>
             );

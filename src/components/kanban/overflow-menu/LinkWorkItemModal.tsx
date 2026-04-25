@@ -169,7 +169,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <LinkIcon size={16} color={textM} />
-            <span style={{ fontSize: 15, fontWeight: 600, color: textP, fontFamily: "'Sora', sans-serif" }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: textP, fontFamily: 'var(--cp-font-heading)' }}>
               Link {issue.issueKey}
             </span>
           </div>
@@ -193,7 +193,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                   border: `1px solid ${tk.inputBorder}`, borderRadius: 4,
                   fontSize: 13, color: textP, background: tk.inputBg,
                   cursor: 'pointer', display: 'flex', alignItems: 'center',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}
               >
                 <span style={{ flex: 1, textAlign: 'left' }}>{linkType}</span>
@@ -214,7 +214,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                         width: '100%', height: 32, padding: '0 12px', border: 'none',
                         background: lt === linkType ? tk.dropHighlight : 'transparent',
                         cursor: 'pointer', fontSize: 13, color: textP, textAlign: 'left',
-                        fontFamily: "'Inter', sans-serif",
+                        fontFamily: 'var(--cp-font-body)',
                       }}
                       onMouseEnter={e => { if (lt !== linkType) e.currentTarget.style.background = tk.surfaceHover; }}
                       onMouseLeave={e => { e.currentTarget.style.background = lt === linkType ? tk.dropHighlight : 'transparent'; }}
@@ -264,7 +264,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                 style={{
                   flex: 1, minWidth: 100, height: 28, border: 'none',
                   fontSize: 13, color: textP, background: 'transparent',
-                  outline: 'none', fontFamily: "'Inter', sans-serif",
+                  outline: 'none', fontFamily: 'var(--cp-font-body)',
                 }}
               />
               {isFetching && <Loader2 size={14} color={textM} className="animate-spin" />}
@@ -286,13 +286,13 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
                       background: 'transparent', cursor: 'pointer',
                       display: 'flex', alignItems: 'center', gap: 8,
                       fontSize: 13, color: textP, textAlign: 'left',
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--cp-font-body)',
                     }}
                     onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
                     <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={14} />
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: textM, flexShrink: 0 }}>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: textM, flexShrink: 0 }}>
                       {r.issue_key}
                     </span>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
@@ -328,7 +328,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
             style={{
               height: 32, padding: '0 16px', border: `1px solid ${border}`,
               borderRadius: 4, background: 'transparent', cursor: 'pointer',
-              fontSize: 13, color: tk.textSecondary, fontFamily: "'Inter', sans-serif",
+              fontSize: 13, color: tk.textSecondary, fontFamily: 'var(--cp-font-body)',
             }}
           >
             Cancel
@@ -341,7 +341,7 @@ export function LinkWorkItemModal({ issue, tk, onClose, onLinked }: LinkWorkItem
               borderRadius: 4, background: selected.length > 0 ? '#2563EB' : tk.chipBg,
               cursor: selected.length > 0 ? 'pointer' : 'not-allowed',
               fontSize: 13, color: '#FFFFFF', fontWeight: 600,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               opacity: saving ? 0.7 : 1,
               display: 'flex', alignItems: 'center', gap: 6,
             }}

@@ -132,7 +132,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
         padding: '8px 20px', background: 'var(--r360-surface, #FFFFFF)',
         borderBottom: '1px solid var(--r360-border, #C5BDB3)',
         position: 'sticky', top: 48, zIndex: 80,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* View Tabs */}
@@ -223,7 +223,7 @@ const Toolbar: React.FC<ToolbarProps> = ({
           letterSpacing: '0.3px', cursor: 'pointer',
           display: 'inline-flex', alignItems: 'center', gap: 6,
           transition: 'all 200ms ease',
-          fontFamily: "'Inter', system-ui, sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
         onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 0 0 6px rgba(37,99,235,0.15)'; }}
         onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = ''; }}

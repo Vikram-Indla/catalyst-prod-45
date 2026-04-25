@@ -240,7 +240,7 @@ export function WorkItemsTable({
         borderTopLeftRadius: selectedIds.size > 0 ? 0 : undefined,
         borderTopRightRadius: selectedIds.size > 0 ? 0 : undefined,
       }}>
-        <table className="w-full border-collapse table-fixed" style={{ fontFamily: 'Inter, sans-serif' }}>
+        <table className="w-full border-collapse table-fixed" style={{ fontFamily: 'var(--cp-font-body)' }}>
           <thead>
             <tr style={{ height: 34 }} className="sticky top-0 z-10 bg-[var(--bg-1)]">
               {visibleCols.map(col => {
@@ -252,7 +252,7 @@ export function WorkItemsTable({
                     style={{
                       width: col.width ?? undefined,
                       fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', letterSpacing: '0.06em',
-                      textTransform: 'uppercase', fontFamily: 'Inter, sans-serif',
+                      textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)',
                       borderBottom: '1px solid var(--divider)',
                       cursor: col.sortable ? 'pointer' : 'default',
                     }}

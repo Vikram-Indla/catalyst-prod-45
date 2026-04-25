@@ -113,7 +113,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
           <span
             style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               lineHeight: '20px',
               color: text1,
@@ -134,7 +134,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
             <span
               style={{
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 14,
                 color: text3,
                 whiteSpace: 'nowrap',
@@ -191,7 +191,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           </div>
           <span
             style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               lineHeight: '20px',
               color: text1,
@@ -207,7 +207,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
         <Box xcss={metaRowXcss}>
           <span
             style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 400,
               color: linkClr,
@@ -220,7 +220,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
           {/* Plain grey status text — sentence case, matching Jira */}
           <span
             style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 400,
               color: text2,
@@ -247,7 +247,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <p
                 style={{
                   margin: 0,
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
                   lineHeight: '20px',
                   color: text1,
@@ -263,7 +263,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <p
                 style={{
                   margin: 0,
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
                   lineHeight: '20px',
                   color: text3,
@@ -302,7 +302,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
                         ? (isDark ? '#292929' : 'rgba(37,99,235,0.06)')
                         : 'transparent',
                       cursor: 'pointer',
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'var(--cp-font-body)',
                       fontSize: 11,
                       color: text2,
                       lineHeight: '16px',
@@ -354,7 +354,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <button
                 type="button"
                 style={{
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 12,
                   fontWeight: 500,
                   color: linkClr,
@@ -372,7 +372,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
               <button
                 type="button"
                 style={{
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 12,
                   fontWeight: 500,
                   color: linkClr,
@@ -401,7 +401,7 @@ export default function DirectNotificationRow({ notification, isRead, onMarkRead
             <Avatar name={aggregation.actor.displayName} size="xsmall" appearance="circle" src={aggregation.actor.avatarUrl ?? undefined} />
             <span
               style={{
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 14,
                 fontWeight: 400,
                 color: linkClr,

@@ -41,7 +41,7 @@ export function StatusCell({ status }: StatusCellProps) {
         height: 20,
         padding: '0 6px',
         borderRadius: 4,
-        fontFamily: "'Inter', -apple-system, system-ui, sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         fontSize: 11,
         fontWeight: 700,
         textTransform: 'uppercase',

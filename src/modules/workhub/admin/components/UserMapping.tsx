@@ -208,7 +208,7 @@ export function UserMapping() {
   }, [profiles, catalystToJira])
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   const cardBg = '#fff'
@@ -218,10 +218,10 @@ export function UserMapping() {
   const availableJiraUsers = jiraUsers.filter(j => !Object.values(localMappings).includes(j.id) || !localMappings[j.id])
 
   return (
-    <div style={{ maxWidth: 1200, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ maxWidth: 1200, fontFamily: 'var(--cp-font-body)' }}>
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           User Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -267,7 +267,7 @@ export function UserMapping() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 16 }}>⚠️</span>
-              <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 700, color: '#92400E' }}>
+              <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 700, color: '#92400E' }}>
                 {unmappedCount} Unmapped Catalyst Resource{unmappedCount !== 1 ? 's' : ''}
               </span>
               {departmentFilter !== 'all' && (
@@ -396,7 +396,7 @@ export function UserMapping() {
               <tr style={{ background: 'var(--bg-1, #F8FAFC)', position: 'sticky', top: 0, zIndex: 2 }}>
                 {['#', 'CATALYST RESOURCE', 'DEPT', 'JIRA ACCOUNT (MAPPED)', 'SUGGESTED MATCH', 'ACTION'].map(h => (
                   <th key={h} style={{
-                    fontFamily: 'Sora, sans-serif', fontSize: 9, textTransform: 'uppercase',
+                    fontFamily: 'var(--cp-font-heading)', fontSize: 9, textTransform: 'uppercase',
                     color: '#94A3B8', padding: '10px 12px', textAlign: 'left', fontWeight: 600,
                     letterSpacing: '.4px', borderBottom: `1px solid ${borderColor}`,
                   }}>
@@ -466,7 +466,7 @@ export function UserMapping() {
                             <div style={{ fontWeight: 600, color: 'var(--fg-1, #0F172A)', fontSize: 11 }}>
                               {existingJiraMapping.jira_display_name}
                             </div>
-                            <div style={{ fontSize: 9, color: '#64748B', fontFamily: 'JetBrains Mono, monospace' }}>
+                            <div style={{ fontSize: 9, color: '#64748B', fontFamily: 'var(--cp-font-mono)' }}>
                               {existingJiraMapping.jira_account_id.slice(0, 16)}…
                             </div>
                           </div>

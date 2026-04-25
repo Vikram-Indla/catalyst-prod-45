@@ -30,7 +30,7 @@ export function ResourceCard({ resource, onClick }: ResourceCardProps) {
         padding: 20,
         cursor: 'pointer',
         transition: 'box-shadow 150ms ease, border-color 150ms ease',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
       }}
       className="wh-resource-card"
     >

@@ -117,7 +117,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
               width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
               fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
-              outline: 'none', fontFamily: "'Inter', sans-serif",
+              outline: 'none', fontFamily: 'var(--cp-font-body)',
               boxSizing: 'border-box',
             }}
           />
@@ -135,7 +135,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
               width: '100%', padding: '7px 12px', border: 'none',
               background: 'transparent', cursor: 'pointer',
               fontSize: 12, color: tk.selectedAccent, fontWeight: 500,
-              fontFamily: "'Inter', sans-serif", textAlign: 'left',
+              fontFamily: 'var(--cp-font-body)', textAlign: 'left',
             }}
             onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
@@ -157,7 +157,7 @@ export function LabelEditorPanel({ issueId, issueKey, currentLabels, tk, onClose
                 width: '100%', padding: '6px 12px', border: 'none',
                 background: isAssigned ? tk.dropHighlight : 'transparent',
                 cursor: 'pointer', fontSize: 12,
-                color: tk.textPrimary, fontFamily: "'Inter', sans-serif",
+                color: tk.textPrimary, fontFamily: 'var(--cp-font-body)',
                 textAlign: 'left',
               }}
               onMouseEnter={e => { if (!isAssigned) e.currentTarget.style.background = tk.surfaceHover; }}

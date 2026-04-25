@@ -306,7 +306,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   padding: '2px 8px', textDecoration: 'none', cursor: doc.jira_ticket_url ? 'pointer' : 'default',
                 }}
               >
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)' }}>
+                <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)' }}>
                   {doc.jira_ticket_key}
                 </span>
                 {doc.jira_ticket_url && <ExternalLink size={11} color="var(--cp-blue)" />}
@@ -322,13 +322,13 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             </button>
           </div>
           <h3 style={{
-            fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: '10px 0 0', fontFamily: "'Sora', sans-serif",
+            fontSize: 18, fontWeight: 700, color: 'var(--fg-1)', margin: '10px 0 0', fontFamily: 'var(--cp-font-heading)',
             lineHeight: 1.3,
             display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden',
           }}>{doc.title}</h3>
           {/* HL-01: Parent hierarchy breadcrumb */}
           {brdData.parentJiraKey && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--fg-4)', marginTop: 2, fontFamily: "'Inter', sans-serif" }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--fg-4)', marginTop: 2, fontFamily: 'var(--cp-font-body)' }}>
               <span
                 style={{ color: 'var(--cp-blue)', cursor: 'pointer' }}
                 onClick={() => {
@@ -345,10 +345,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             <span style={{
               display: 'inline-flex', alignItems: 'center', padding: '0 6px', borderRadius: 4, height: 20,
               lineHeight: '20px', fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
-              background: lozenge.bg, color: lozenge.color, fontFamily: "'Inter', sans-serif",
+              background: lozenge.bg, color: lozenge.color, fontFamily: 'var(--cp-font-body)',
             }}>{lozenge.label}</span>
             <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#CBD5E1', flexShrink: 0 }} />
-            <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
+            <span style={{ fontSize: 12, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
               Imported {formatTimestamp(doc.created_at)}
             </span>
           </div>
@@ -359,7 +359,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
           <div style={{
             margin: '0 20px', marginTop: 12, padding: '8px 12px', borderRadius: 6,
             background: isDark ? 'rgba(217,119,6,0.10)' : '#FFFBEB', border: isDark ? '0.75px solid rgba(217,119,6,0.25)' : '0.75px solid #FDE68A',
-            fontSize: 12, color: isDark ? '#FBBF24' : '#92400E', fontFamily: "'Inter', sans-serif",
+            fontSize: 12, color: isDark ? '#FBBF24' : '#92400E', fontFamily: 'var(--cp-font-body)',
             display: 'flex', alignItems: 'center', gap: 6,
           }}>
             ⚠ No BRD content found — attach PDF for accurate epic generation
@@ -406,7 +406,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 padding: '5px 12px', height: 28, borderRadius: 6,
                 border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#1A1A1A' : 'var(--bg-app)',
                 fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: reimporting ? 'not-allowed' : 'pointer',
-                fontFamily: "'Inter', sans-serif", opacity: reimporting ? 0.6 : 1,
+                fontFamily: 'var(--cp-font-body)', opacity: reimporting ? 0.6 : 1,
               }}
             >
               {reimporting ? <Loader2 size={13} color="var(--fg-4)" style={{ animation: 'spin 1s linear infinite' }} /> : <RefreshCw size={13} color="var(--fg-4)" />}
@@ -441,7 +441,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                         )}
                       </div>
                       <span style={{
-                        fontSize: 11, textAlign: 'center', whiteSpace: 'nowrap', fontFamily: "'Inter', sans-serif",
+                        fontSize: 11, textAlign: 'center', whiteSpace: 'nowrap', fontFamily: 'var(--cp-font-body)',
                         fontWeight: step.state === 'active' ? 600 : step.state === 'complete' ? 500 : 400,
                         color: step.state === 'complete' ? 'var(--sem-success)' : step.state === 'active' ? 'var(--cp-blue)' : 'var(--fg-4)',
                       }}>{step.label}</span>
@@ -476,7 +476,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     display: 'inline-flex', alignItems: 'center', gap: 4,
                     background: 'var(--cp-primary-5)', border: isDark ? '0.75px solid rgba(37,99,235,0.30)' : '0.75px solid #BFDBFE', borderRadius: 4,
                     padding: '1px 8px', textDecoration: 'none',
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
+                    fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
                     cursor: doc.jira_ticket_url ? 'pointer' : 'default',
                   }}
                 >
@@ -484,7 +484,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </a>
               </MetaRow>
               <MetaRow label="Title">
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>{doc.title}</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>{doc.title}</span>
               </MetaRow>
               {description && (
                 <MetaRow label="Description">
@@ -492,7 +492,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     <div style={{
                       background: isDark ? '#1A1A1A' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
                       padding: '10px 12px', fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6,
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--cp-font-body)',
                       maxHeight: descExpanded ? 'none' : 100, overflow: 'hidden',
                       display: descExpanded ? 'block' : '-webkit-box',
                       WebkitLineClamp: descExpanded ? undefined : 4,
@@ -503,7 +503,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     {descTruncated && (
                       <button onClick={() => setDescExpanded(!descExpanded)} style={{
                         border: 'none', background: 'transparent', cursor: 'pointer', padding: '4px 0',
-                        fontSize: 11, fontWeight: 500, color: 'var(--cp-blue)', fontFamily: "'Inter', sans-serif",
+                        fontSize: 11, fontWeight: 500, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-body)',
                       }}>
                         {descExpanded ? 'Show less' : 'Show more'}
                       </button>
@@ -512,18 +512,18 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 </MetaRow>
               )}
               <MetaRow label="Imported">
-                <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
                   {formatTimestamp(doc.created_at)}
                 </span>
               </MetaRow>
               {/* D07: Domain populated */}
               <MetaRow label="Domain">
-                <span style={{ fontSize: 13, color: domain ? 'var(--fg-2)' : 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 13, color: domain ? 'var(--fg-2)' : 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
                   {domain || (
                     <span style={{
                       display: 'inline-flex', alignItems: 'center', padding: '1px 6px',
                       background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, fontSize: 11, color: 'var(--fg-4)',
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--cp-font-body)',
                     }}>Uncategorised</span>
                   )}
                 </span>
@@ -540,7 +540,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       }}
                       style={{
                         fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'transparent',
-                        border: 'none', cursor: 'pointer', padding: 0, fontFamily: "'Inter', sans-serif",
+                        border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'var(--cp-font-body)',
                         display: 'inline-flex', alignItems: 'center', gap: 4, textDecoration: 'none',
                       }}
                       onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
@@ -550,7 +550,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                       {(doc as any).pdf_filename || 'source.pdf'}
                     </button>
                     {(doc as any).pdf_attached_at && (
-                      <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
+                      <span style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
                         Attached {formatTimestamp((doc as any).pdf_attached_at)}
                       </span>
                     )}
@@ -560,7 +560,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     <button onClick={() => fileInputRef.current?.click()} disabled={uploadingPdf} style={{
                       fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', background: 'transparent',
                       border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid #CBD5E1', borderRadius: 6, cursor: 'pointer', padding: '4px 10px',
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--cp-font-body)',
                       display: 'inline-flex', alignItems: 'center', gap: 4,
                     }}>
                       {uploadingPdf ? <Loader2 size={14} color="var(--fg-4)" style={{ animation: 'spin 1s linear infinite' }} /> : <FileUp size={14} color="var(--fg-4)" />}
@@ -591,10 +591,10 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 }}>
                   <FileText size={18} color="var(--sem-danger)" />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                       {doc.jira_ticket_key}.pdf
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
+                    <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
                       {doc.page_count ? `${doc.page_count} pages` : 'PDF'} · {doc.language === 'ar' ? 'AR' : 'EN'}
                     </div>
                   </div>
@@ -602,7 +602,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                     height: 26, padding: '0 10px', borderRadius: 6,
                     border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#1A1A1A' : 'var(--bg-app)',
                     fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                   }}>View</button>
                   <a href={doc.pdf_url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', color: 'var(--fg-3)' }}>
                     <ArrowDownToLine size={14} />
@@ -611,8 +611,8 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '16px 0', gap: 4 }}>
                   <Paperclip size={18} color={isDark ? '#292929' : '#CBD5E1'} />
-                  <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>No attachments found</span>
-                  <span style={{ fontSize: 11, color: isDark ? '#878787' : '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Attachments are imported automatically from Jira</span>
+                  <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>No attachments found</span>
+                  <span style={{ fontSize: 11, color: isDark ? '#878787' : '#CBD5E1', fontFamily: 'var(--cp-font-body)' }}>Attachments are imported automatically from Jira</span>
                 </div>
               )}
             </div>
@@ -634,7 +634,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   <div style={{
                     background: isDark ? '#1A1A1A' : 'var(--bg-1)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', borderRadius: 6,
                     padding: '12px 14px', fontSize: 13, color: 'var(--fg-2)', lineHeight: 1.6,
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                     maxHeight: contentExpanded ? 'none' : 120, overflow: 'hidden',
                   }}>
                     {contentExpanded ? brdData.raw_text : brdData.raw_text.slice(0, 400) + (brdData.raw_text.length > 400 ? '…' : '')}
@@ -642,7 +642,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   {brdData.raw_text.length > 400 && (
                     <button onClick={() => setContentExpanded(!contentExpanded)} style={{
                       border: 'none', background: 'transparent', cursor: 'pointer',
-                      fontSize: 12, color: 'var(--cp-blue)', fontWeight: 500, padding: '4px 0', fontFamily: "'Inter', sans-serif",
+                      fontSize: 12, color: 'var(--cp-blue)', fontWeight: 500, padding: '4px 0', fontFamily: 'var(--cp-font-body)',
                     }}>
                       {contentExpanded ? 'Show less' : 'Show full content'}
                     </button>
@@ -651,8 +651,8 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 6 }}>
                   <FileText size={20} color={isDark ? '#292929' : '#CBD5E1'} />
-                  <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>Content not yet extracted</span>
-                  <span style={{ fontSize: 12, color: isDark ? '#878787' : '#CBD5E1', fontFamily: "'Inter', sans-serif" }}>Upload a PDF or extract from Jira attachments</span>
+                  <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>Content not yet extracted</span>
+                  <span style={{ fontSize: 12, color: isDark ? '#878787' : '#CBD5E1', fontFamily: 'var(--cp-font-body)' }}>Upload a PDF or extract from Jira attachments</span>
                 </div>
               )}
             </div>
@@ -668,19 +668,19 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: 'var(--cp-primary-5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <Zap size={15} color="var(--cp-blue)" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", flexShrink: 0, minWidth: 40 }}>Epics</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)', flexShrink: 0, minWidth: 40 }}>Epics</span>
                 {epicCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: 'var(--cp-primary-5)', border: '0.75px solid #BFDBFE',
                     fontSize: 11, fontWeight: 700, color: '#1D4ED8',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(epicCount, 'epic', 'epics')} generated</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: isDark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-4)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
-                    fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    fontSize: 11, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   }}>None yet</span>
                 )}
                 <button
@@ -694,7 +694,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   }}
                   style={{
                     marginLeft: 'auto', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0,
-                    fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                     color: 'var(--cp-blue)', whiteSpace: 'nowrap',
                   }}
                 >
@@ -707,19 +707,19 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: isDark ? 'rgba(13,148,136,0.12)' : '#F0FDFA', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <BookOpen size={16} color="#0D9488" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", flexShrink: 0, minWidth: 80 }}>Wiki Chunks</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)', flexShrink: 0, minWidth: 80 }}>Wiki Chunks</span>
                 {wikiCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: isDark ? 'rgba(13,148,136,0.12)' : '#F0FDFA', border: isDark ? '0.75px solid rgba(13,148,136,0.25)' : '0.75px solid #99F6E4',
                     fontSize: 11, fontWeight: 700, color: '#0F766E',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(wikiCount, 'chunk', 'chunks')} indexed</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: isDark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-4)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
-                    fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    fontSize: 11, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   }}>Not indexed</span>
                 )}
                 <button
@@ -733,7 +733,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   }}
                   style={{
                     marginLeft: 'auto', border: 'none', background: 'transparent', cursor: syncing ? 'default' : 'pointer', padding: 0,
-                    fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                     color: 'var(--cp-blue)', whiteSpace: 'nowrap',
                     opacity: syncing ? 0.6 : 1,
                     display: 'inline-flex', alignItems: 'center', gap: 4,
@@ -758,19 +758,19 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ width: 28, height: 28, borderRadius: 6, background: isDark ? '#1A1A1A' : '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <FlaskConical size={15} color="var(--fg-3)" />
                 </div>
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0, minWidth: 70 }}>UAT Scenarios</span>
+                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: 70 }}>UAT Scenarios</span>
                 {uatCount > 0 ? (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: isDark ? 'rgba(22,163,74,0.12)' : '#F0FDF4', border: isDark ? '0.75px solid rgba(22,163,74,0.25)' : '0.75px solid #BBF7D0',
                     fontSize: 11, fontWeight: 700, color: 'var(--sem-success)',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                   }}>{pluralise(uatCount, 'scenario', 'scenarios')}</span>
                 ) : (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', padding: '2px 10px', borderRadius: 12,
                     background: isDark ? '#1A1A1A' : '#F1F5F9', color: 'var(--fg-4)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
-                    fontSize: 11, fontWeight: 500, fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap', flexShrink: 0,
+                    fontSize: 11, fontWeight: 500, fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap', flexShrink: 0,
                   }}>Not generated</span>
                 )}
                 <button
@@ -785,7 +785,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                   style={{
                     marginLeft: 'auto', border: uatCount > 0 ? 'none' : '0.75px solid #2563EB',
                     background: 'transparent', cursor: generatingUat ? 'default' : 'pointer', padding: uatCount > 0 ? 0 : '0 10px',
-                    fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                    fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                     color: 'var(--cp-blue)', whiteSpace: 'nowrap', height: uatCount > 0 ? 'auto' : 28,
                     borderRadius: 6, display: 'inline-flex', alignItems: 'center', gap: 4,
                     opacity: generatingUat ? 0.6 : 1,
@@ -809,11 +809,11 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                 <div style={{ padding: '8px 0 0 40px' }}>
                   {uatScenarios.length === 0 ? (
                     <div style={{ padding: '12px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
-                      <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>No UAT scenarios generated yet</span>
+                      <span style={{ fontSize: 13, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>No UAT scenarios generated yet</span>
                       <button onClick={handleGenerateUAT} disabled={generatingUat} style={{
                         border: '0.75px solid #2563EB', background: 'transparent', borderRadius: 6,
                         padding: '4px 12px', fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)',
-                        cursor: generatingUat ? 'default' : 'pointer', fontFamily: "'Inter', sans-serif",
+                        cursor: generatingUat ? 'default' : 'pointer', fontFamily: 'var(--cp-font-body)',
                         display: 'inline-flex', alignItems: 'center', gap: 4,
                       }}>
                         {generatingUat ? <><Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Generating...</> : 'Generate UAT →'}
@@ -833,17 +833,17 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
                           padding: '8px 12px',
                         }}>
                           <span style={{
-                            fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: 'var(--fg-4)', flexShrink: 0,
+                            fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: 'var(--fg-4)', flexShrink: 0,
                           }}>{s.scenario_key}</span>
                           <span style={{
-                            fontSize: 13, color: isDark ? '#EDEDED' : '#1E293B', fontFamily: "'Inter', sans-serif",
+                            fontSize: 13, color: isDark ? '#EDEDED' : '#1E293B', fontFamily: 'var(--cp-font-body)',
                             flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                           }}>{s.title}</span>
                           <span style={{
                             display: 'inline-flex', alignItems: 'center', padding: '0 6px', borderRadius: 4, height: 20,
                             fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const,
                             background: uatStatusStyle.bg, color: uatStatusStyle.color,
-                            fontFamily: "'Inter', sans-serif", flexShrink: 0,
+                            fontFamily: 'var(--cp-font-body)', flexShrink: 0,
                           }}>{(s.status || 'pending').toUpperCase()}</span>
                         </div>
                       );
@@ -862,7 +862,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             <button onClick={() => onGenerate('epics')} style={{
               width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
               border: 'none', background: 'var(--cp-blue)', color: '#FFFFFF', cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif", boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
+              fontFamily: 'var(--cp-font-body)', boxShadow: '0 1px 3px rgba(37,99,235,0.35)',
             }}>
               Generate Epics for this BRD
             </button>
@@ -870,7 +870,7 @@ export default function RAJiraSidePanel({ doc, onClose, onOpenPdf, onGenerate, o
             <button onClick={() => { if (brdData.id && onViewDrafts) { onClose(); onViewDrafts(brdData.id); } }} style={{
               width: '100%', height: 40, fontSize: 14, fontWeight: 600, borderRadius: 6,
               border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#1A1A1A' : 'var(--bg-app)', color: 'var(--fg-2)',
-              cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+              cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}>
               View All Epics →
             </button>
@@ -900,7 +900,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
     <span style={{
       fontSize: 11, fontWeight: 600, color: 'var(--fg-4)',
       textTransform: 'uppercase', letterSpacing: '0.06em',
-      display: 'block', fontFamily: "'Inter', sans-serif",
+      display: 'block', fontFamily: 'var(--cp-font-body)',
       marginBottom: 0,
     }}>{children}</span>
   );
@@ -909,7 +909,7 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 function MetaRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start' }}>
-      <span style={{ width: 100, fontSize: 12, color: 'var(--fg-4)', flexShrink: 0, fontFamily: "'Inter', sans-serif", paddingTop: 2 }}>{label}</span>
+      <span style={{ width: 100, fontSize: 12, color: 'var(--fg-4)', flexShrink: 0, fontFamily: 'var(--cp-font-body)', paddingTop: 2 }}>{label}</span>
       <div style={{ flex: 1 }}>{children}</div>
     </div>
   );
@@ -929,7 +929,7 @@ function TicketTypeBadgeDrawer({ type }: { type: string | null }) {
     <span style={{
       display: 'inline-flex', alignItems: 'center', padding: '0 5px', borderRadius: 4, height: 18,
       fontSize: 10, fontWeight: 700, textTransform: 'uppercase',
-      background: s.bg, color: s.color, fontFamily: "'Inter', sans-serif",
+      background: s.bg, color: s.color, fontFamily: 'var(--cp-font-body)',
     }}>{s.label}</span>
   );
 }

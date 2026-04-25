@@ -90,9 +90,9 @@ export function AddMemberDialog({ open, onClose, projectId, existingMemberIds }:
 
   return (
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
-      <DialogContent className="sm:max-w-[520px] p-0" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <DialogContent className="sm:max-w-[520px] p-0" style={{ fontFamily: 'var(--cp-font-body)' }}>
         <DialogHeader className="px-5 pt-5 pb-0">
-          <DialogTitle style={{ fontFamily: "'Sora', sans-serif", fontSize: 16 }}>Add Team Member</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16 }}>Add Team Member</DialogTitle>
         </DialogHeader>
 
         <div className="px-5 pb-2">

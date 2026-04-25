@@ -165,7 +165,7 @@ export default function ClaimDrillInPanel({ resourceName, claimText, weekStart, 
         boxShadow: '-8px 0 24px rgba(0,0,0,0.08)',
         zIndex: 601,
         display: 'flex', flexDirection: 'column',
-        fontFamily: "'Inter', -apple-system, sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         animation: 'slideInRight 0.2s ease-out',
       }}>
         {/* Header */}

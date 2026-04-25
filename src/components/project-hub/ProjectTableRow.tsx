@@ -58,7 +58,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
               fontSize: project.key.length > 2 ? 9 : 10,
               fontWeight: 700,
               borderRadius: 4,
-              fontFamily: "'Sora', sans-serif",
+              fontFamily: 'var(--cp-font-heading)',
               letterSpacing: project.key.length > 2 ? '-0.02em' : undefined,
             }}
           >
@@ -70,7 +70,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
           <span
             style={{
               fontSize: 11,
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--cp-font-mono)',
               fontWeight: 500,
               color: isDark ? '#878787' : '#6B778C',
             }}
@@ -95,7 +95,7 @@ export function ProjectTableRow({ project, isStarred, onToggleStar, onContextMen
         <span
           style={{
             fontSize: 12,
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: 'var(--cp-font-mono)',
             fontWeight: 500,
             color: isDark ? '#A1A1A1' : '#42526E',
           }}
