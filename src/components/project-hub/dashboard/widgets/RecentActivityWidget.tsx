@@ -32,6 +32,11 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
   const { data: items, isLoading } = useDashboardRecentActivity(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
+    statusFilter: settings.statusFilter,
+    releaseFilter: settings.releaseFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
   });
 
   return (
