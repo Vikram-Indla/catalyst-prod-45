@@ -70,6 +70,10 @@ export default function ReleaseHealthWidget({
   const { openUWV } = useUWV();
 
   const count = releases?.length ?? 0;
+  const totalItems = (releases ?? []).reduce(
+    (sum: number, r: any) => sum + (Number(r.total) || 0),
+    0,
+  );
 
   const openAll = () =>
     openUWV({
@@ -77,6 +81,11 @@ export default function ReleaseHealthWidget({
       hubSource: ['projecthub'],
       dataType: 'epics',
       title: `Release Health · ${projectKey}`,
+      // Pass the names of the currently visible releases as a fix_versions filter
+      // so UWV shows only items linked to those releases
+      fixVersions: (releases ?? []).map((r: any) => r.name).filter(Boolean),
+      // Count shown in UWV title should match gadget count
+      subtitle: `${count} release${count === 1 ? '' : 's'} · ${totalItems} items`,
     });
 
   const headerExtras = (
