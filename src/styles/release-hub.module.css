@@ -5,9 +5,9 @@
 
 .releaseHub {
   /* Typography */
-  --rh-font-heading: 'Sora', system-ui, sans-serif;
-  --rh-font-body: 'Inter', system-ui, sans-serif;
-  --rh-font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --rh-font-heading: var(--cp-font-heading);
+  --rh-font-body:    var(--cp-font-body);
+  --rh-font-mono:    var(--cp-font-mono);
 
   /* Type Scale */
   --rh-type-page-title: 24px;
