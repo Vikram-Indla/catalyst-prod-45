@@ -367,7 +367,7 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
 
       const versionByJiraId = new Map<string, string | null>();
       const versionByName  = new Map<string, string | null>();
-      for (const v of phVersions ?? []) {
+      for (const v of (phVersions ?? []) as unknown as Array<{ jira_id: string | null; name: string | null; start_date: string | null }>) {
         if (v.jira_id) versionByJiraId.set(v.jira_id, v.start_date ?? null);
         if (v.name)    versionByName.set(v.name,    v.start_date ?? null);
       }
@@ -418,11 +418,11 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       // ── 5. Compute per-release scope change ───────────────────────────────
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
-      for (const rel of releases) {
+      for (const rel of releases as Array<{ id: string; name: string; jira_key: string | null; target_date: string | null }>) {
         // Resolve start_date: jira_key match → name match → target_date proxy
         const startDateStr: string | null =
-          (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ??
-          versionByName.get(rel.name) ??
+          (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ||
+          versionByName.get(rel.name) ||
           null;
 
         let startDate: Date;
