@@ -418,7 +418,7 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       // ── 5. Compute per-release scope change ───────────────────────────────
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
-      for (const rel of releases) {
+      for (const rel of releases as Array<{ id: string; name: string; jira_key: string | null; target_date: string | null }>) {
         // Resolve start_date: jira_key match → name match → target_date proxy
         const startDateStr: string | null =
           (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ??
