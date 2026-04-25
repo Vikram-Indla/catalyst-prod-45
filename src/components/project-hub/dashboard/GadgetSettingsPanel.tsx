@@ -114,17 +114,18 @@ export default function GadgetSettingsPanel({
   const toggleField = (name: string) =>
     setOpenField((f) => (f === name ? null : name));
 
-  // Releases (active)
+  // Releases (portfolio-wide — no project filter, no status filter)
   const { data: releases = [] } = useQuery({
     queryKey: ['gadget-panel-releases'],
     queryFn: async () => {
-      const { data } = await supabase
+      const res = await supabase
         .from('rh_releases' as any)
         .select('id, name, status')
         .or('release_date.gte.2026-01-01,release_date.is.null')
-        .not('status', 'in', '(released,archived,done,cancelled)')
-        .order('release_date', { ascending: true });
-      return (data ?? []) as any[];
+        .order('release_date', { ascending: true })
+        .limit(50);
+      console.log('[GadgetSettingsPanel] rh_releases response:', res);
+      return (res.data ?? []) as any[];
     },
     staleTime: 60_000,
   });
