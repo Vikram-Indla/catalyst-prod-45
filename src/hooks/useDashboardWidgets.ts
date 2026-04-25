@@ -396,9 +396,14 @@ export function useDashboardIncidents(
 }
 
 // ─── QA Defects (cross-hub from tm_defects) ───
-export function useDashboardDefects(projectId: string | null | undefined, projectKey?: string | null) {
+export function useDashboardDefects(
+  projectId: string | null | undefined,
+  projectKey?: string | null,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-defects', projectId, projectKey],
+    queryKey: ['ph-dashboard-defects', projectId, projectKey, dateFrom, dateTo],
     queryFn: async () => {
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
