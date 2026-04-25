@@ -362,12 +362,27 @@ export default function GadgetSettingsPanel({
         <div style={{ height: '0.5px', background: '#EBECF0' }} />
 
         <Field label="Status">
-          <MultiSelectStatus
-            value={draft.statusFilter}
-            onChange={(v) => setField('statusFilter', v)}
-            isOpen={openField === 'status'}
-            onToggle={() => toggleField('status')}
-          />
+          {gadgetType === 'items' ? (
+            <div
+              title="Not applicable — this gadget displays all statuses by design"
+              style={{
+                display: 'flex', alignItems: 'center', minHeight: 36,
+                border: '2px solid #DFE1E6', borderRadius: 3,
+                background: '#F4F5F7', padding: '0 10px',
+                cursor: 'not-allowed', opacity: 0.6,
+                fontSize: 13, color: '#7A869A', fontStyle: 'italic',
+              }}
+            >
+              All statuses (by design)
+            </div>
+          ) : (
+            <MultiSelectStatus
+              value={draft.statusFilter}
+              onChange={(v) => setField('statusFilter', v)}
+              isOpen={openField === 'status'}
+              onToggle={() => toggleField('status')}
+            />
+          )}
         </Field>
 
         <Field label="Release">

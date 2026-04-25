@@ -169,11 +169,15 @@ export function useDashboardStatusCounts(
   const {
     dateFrom = null,
     dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [],
     blockedStatuses = ['on hold', 'blocked', 'awaiting info', 'impediment'],
   } = filters;
 
   return useQuery({
-    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo, blockedStatuses],
+    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter,
+      blockedStatuses],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return {
@@ -190,6 +194,11 @@ export function useDashboardStatusCounts(
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo)   q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      // Apply Release / Assignee / Item Type / Priority / Status filters
+      // from the gadget settings panel (Layer 2). Same helper used by all
+      // other dashboard hooks for consistency.
+      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;

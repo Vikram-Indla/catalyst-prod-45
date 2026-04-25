@@ -82,9 +82,16 @@ export default function ItemsByStatusWidget({
     settings.gadgetSpecific?.blockedStatuses ??
     ['on hold', 'blocked', 'awaiting info', 'impediment'];
 
+  // Note: statusFilter is intentionally NOT forwarded — this widget *is* the
+  // status segmentation. A user-selected status would zero out other buckets.
+  // (The Status field is disabled in GadgetSettingsPanel for gadgetType='items'.)
   const { data: counts, isLoading } = useDashboardStatusCounts(projectId, {
-    dateFrom: settings.dateFrom,
-    dateTo:   settings.dateTo,
+    dateFrom:       settings.dateFrom,
+    dateTo:         settings.dateTo,
+    releaseFilter:  settings.releaseFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
     blockedStatuses,
   });
   const {
