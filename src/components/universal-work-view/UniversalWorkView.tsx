@@ -12,6 +12,7 @@ import { useUWVData } from './useUWVData';
 import { useUWVPrefs } from './useUWVPrefs';
 import { classifyType, type UWVGroupBy } from './uwv.utils';
 import type { UWVParams, UWVSort } from './uwv.types';
+import { ReleaseHealthUWV } from '@/components/project-hub/dashboard/release-health-uwv/ReleaseHealthUWV';
 
 interface Props {
   params: UWVParams;
@@ -19,6 +20,17 @@ interface Props {
 }
 
 export function UniversalWorkView({ params, onClose }: Props) {
+  // Dashboard "Release Health" → dedicated 2-level overlay (does not reuse UWVTable).
+  if (params.dataType === 'releases' && params.hubSource?.includes('releasehub')) {
+    return (
+      <ReleaseHealthUWV
+        projectId={(params as any).projectId ?? params.project}
+        projectKey={params.project}
+        onClose={onClose}
+      />
+    );
+  }
+
   const [statusFilter, setStatusFilter] = useState<string[]>(params.status ?? []);
   const [assigneeFilter, setAssigneeFilter] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
