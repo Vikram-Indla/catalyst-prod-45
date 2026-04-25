@@ -496,9 +496,10 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
 }
 
 /* ── Row ── */
-function AttachmentRow({ attachment, canDelete, onPreview, onDelete }: {
+function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
   attachment: PhAttachment;
   canDelete: boolean;
+  bucket: string;
   onPreview: () => void;
   onDelete: () => void;
 }) {
@@ -511,7 +512,7 @@ function AttachmentRow({ attachment, canDelete, onPreview, onDelete }: {
   // Sign URL for thumbnail (image) and download
   useEffect(() => {
     let cancelled = false;
-    supabase.storage.from(BUCKET).createSignedUrl(attachment.storage_path, 600).then(({ data }) => {
+    supabase.storage.from(bucket).createSignedUrl(attachment.storage_path, 600).then(({ data }) => {
       if (cancelled) return;
       const url = data?.signedUrl ?? null;
       setDownloadUrl(url);
