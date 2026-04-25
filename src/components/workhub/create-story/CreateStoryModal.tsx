@@ -727,7 +727,14 @@ export function CreateStoryModal({
   const { form, updateField, reset } = useCreateStoryForm(projectId);
   const { data: projects = [] } = useProjects();
   const { data: members = [] } = useTeamMembers();
-  const { data: releases = [] } = useProjectReleases(form.projectId);
+  const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
+
+  // Debug — remove after verification
+  useEffect(() => {
+    if (form.projectId) {
+      console.log('[CreateModal] releases for project', form.projectId, ':', releases, 'error:', releasesError);
+    }
+  }, [releases, form.projectId, releasesError]);
   const createMutation = useCreateStoryMutation();
 
   const [workType, setWorkType] = useState<string>('Story');

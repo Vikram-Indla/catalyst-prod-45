@@ -81,10 +81,13 @@ export function useProjectReleases(projectId: string) {
       if (!projectId) return [];
       const { data, error } = await supabase
         .from('ph_releases' as any)
-        .select('id, name')
+        .select('id, name, status')
         .eq('project_id', projectId)
         .order('name');
-      if (error) return [];
+      if (error) {
+        console.error('[useProjectReleases] Supabase error:', error.message, (error as any).code);
+        return [];
+      }
       return (data as any[]) ?? [];
     },
     enabled: !!projectId,
@@ -158,7 +161,7 @@ export function useCreateStoryMutation() {
           priority: form.priority,
           assignee_id: uuid(form.assigneeId),
           reporter_id: uuid(form.reporterId),
-          release_id: uuid(form.releaseId),
+          release_id: form.releaseId && form.releaseId.trim() !== '' ? form.releaseId : null,
           parent_id: uuid(form.parentId),          // was dead — now wired
           labels: form.labels.length > 0 ? form.labels : [],  // was dead — now wired
           tags: form.tags.length > 0 ? form.tags : [],
