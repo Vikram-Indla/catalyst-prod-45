@@ -161,6 +161,21 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
             .is('jira_removed_at', null)
             .is('deleted_at', null);
 
+          // dataType-specific filters — must match the dashboard gadget logic
+          // so that "View all" in the gadget surfaces the same set of items.
+          if (params.dataType === 'overdue') {
+            const today = new Date().toISOString().split('T')[0];
+            q = q
+              .lt('effective_due_date', today)
+              .neq('status_category', 'Done')
+              .not('effective_due_date', 'is', null);
+          }
+          if (params.dataType === 'onhold') {
+            q = q.or(
+              'status.ilike.%hold%,status.ilike.%block%,status.ilike.%awaiting%,status.ilike.%impediment%',
+            );
+          }
+
           if (statusFilter.length > 0) q = q.in('status', statusFilter);
 
           if (params.issueTypes && params.issueTypes.length > 0) {
