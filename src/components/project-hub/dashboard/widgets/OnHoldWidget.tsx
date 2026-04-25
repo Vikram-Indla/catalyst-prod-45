@@ -17,7 +17,11 @@ import { EmptyState, StatusLozenge } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: items, isLoading } = useDashboardOnHoldItems(projectId);
+  const { settings } = useGadgetSettings('onhold', projectKey);
+  const { data: items, isLoading } = useDashboardOnHoldItems(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const count = items?.length ?? 0;
   const { openUWV } = useUWV();
 
