@@ -547,7 +547,7 @@ export function SubtasksPanel({
   const handleViewInSearch = () => {
     const pk = projectKey || storyKey.split('-')[0];
     if (!pk) return;
-    window.location.href = `/project-hub/${pk}/hierarchy/allwork?parent=${encodeURIComponent(storyKey)}`;
+    window.location.href = `/project-hub/${pk}/allwork?issue=${encodeURIComponent(storyKey)}`;
   };
 
   // ─── Rank reorder (Atlaskit DynamicTable) ───────

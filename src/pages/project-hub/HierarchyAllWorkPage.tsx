@@ -1,6 +1,9 @@
 /**
- * HierarchyAllWorkPage — 3-column issue view at /project-hub/:key/hierarchy/allwork
- * Header pattern from StoryBacklogPage (title + subtitle)
+ * HierarchyAllWorkPage — 3-column issue view (DEPRECATED 2026-04-25).
+ * Previously mounted at /project-hub/:key/hierarchy/allwork. That route now
+ * redirects to /project-hub/:key/allwork (ProjectAllWorkView, Jira-parity).
+ * Module retained for transitional reference until removal.
+ * Header pattern from StoryBacklogPage (title + subtitle).
  */
 import { useParams } from 'react-router-dom';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';

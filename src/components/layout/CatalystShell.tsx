@@ -215,7 +215,7 @@ function CatalystShellContent() {
 
   // Check if on ProjectHub V5 route (/project-hub/*)
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
-  const isProjectHubAllWorkRoute = location.pathname.includes('/hierarchy/allwork');
+  const isProjectHubAllWorkRoute = /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
 
   // Check if on full-screen issue view (/issue/:issueKey)
   const isIssueFullPageRoute = location.pathname.startsWith('/issue/');
