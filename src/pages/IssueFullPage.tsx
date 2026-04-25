@@ -70,18 +70,37 @@ export default function IssueFullPage() {
           return;
         }
 
-        if (!data) {
-          setNotFound(true);
+        if (data) {
+          setIssue({
+            id: data.id,
+            issue_type: data.issue_type,
+            project_key: data.project_key,
+            summary: data.summary,
+          });
           setLoading(false);
           return;
         }
 
-        setIssue({
-          id: data.id,
-          issue_type: data.issue_type,
-          project_key: data.project_key,
-          summary: data.summary,
-        });
+        // Fallback: catalyst_issues (in-app created items)
+        const catRes = await (supabase as any)
+          .from('catalyst_issues')
+          .select('id, issue_type, issue_key, title, project_id, projects(key)')
+          .eq('issue_key', issueKey)
+          .maybeSingle();
+        if (cancelled) return;
+        const catRow = catRes.data;
+        if (catRow) {
+          setIssue({
+            id: catRow.id,
+            issue_type: catRow.issue_type,
+            project_key: catRow.projects?.key ?? '',
+            summary: catRow.title,
+          });
+          setLoading(false);
+          return;
+        }
+
+        setNotFound(true);
         setLoading(false);
       } catch (err: any) {
         if (!cancelled) {
