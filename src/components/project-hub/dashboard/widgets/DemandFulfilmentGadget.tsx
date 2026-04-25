@@ -62,6 +62,8 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 // CatalystOwnerAvatar removed — DemandRowItem uses Atlaskit Avatar size="xsmall" directly
 import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
+import WidgetGearButton from '../WidgetGearButton';
+import { useGadgetSettings as usePanelGadgetSettings } from '@/hooks/useGadgetSettings';
 import type { WidgetProps } from '../widget-registry';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 
@@ -1433,10 +1435,17 @@ function DemandRowItem({
 // Main gadget
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+export default function DemandFulfilmentGadget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const navigate = useNavigate();
   const { openUWV } = useUWV();
-  const { settings, save } = useGadgetSettings();
+  const { settings: legacySettings, save } = useGadgetSettings();
+  // Per-gadget panel settings (Layer 2) — at-risk threshold now lives here.
+  const { settings: panelSettings } = usePanelGadgetSettings('demand', projectKey);
+  const atRiskDays = Number(panelSettings.gadgetSpecific?.atRiskDays ?? legacySettings.rag_threshold ?? 7);
+  const settings = useMemo(
+    () => ({ ...legacySettings, rag_threshold: atRiskDays }),
+    [legacySettings, atRiskDays],
+  );
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
@@ -1574,65 +1583,11 @@ export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggle
           onClick={(e) => e.stopPropagation()}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}
         >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: token('space.050', '4px'),
-              font: token('font.body.small'),
-              color: token('color.text.subtle'),
-              background: token('color.background.neutral'),
-              borderRadius: token('border.radius.100', '4px'),
-              padding: `${token('space.050', '4px')} ${token('space.100', '8px')}`,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <CalendarIcon label="" color="currentColor" />
-            {periodBadge}
-          </span>
-          <span ref={gearRef} style={{ display: 'inline-flex' }}>
-            <IconButton
-              icon={SettingsIcon}
-              label="Configure demand gadget"
-              appearance="subtle"
-              spacing="compact"
-              isTooltipDisabled={false}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSettingsOpen((prev) => !prev);
-              }}
-            />
-          </span>
-          {settingsOpen && (() => {
-            const rect = gearRef.current?.getBoundingClientRect();
-            return ReactDOM.createPortal(
-              <div
-                id="demand-settings-popup"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  position: 'fixed',
-                  top: (rect?.bottom ?? 0) + 4,
-                  right: window.innerWidth - (rect?.right ?? 0),
-                  zIndex: 510,
-                  background: token('elevation.surface.overlay', '#FFFFFF'),
-                  borderRadius: token('border.radius.100', '4px'),
-                  boxShadow: '0 4px 8px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
-                  minWidth: 300,
-                }}
-              >
-                <SettingsPopupBody
-                  initial={settings}
-                  projectKey={projectKey}
-                  onCancel={() => setSettingsOpen(false)}
-                  onApply={async (next) => {
-                    await save(next);
-                    setSettingsOpen(false);
-                  }}
-                />
-              </div>,
-              document.body,
-            );
-          })()}
+          <WidgetGearButton
+            gadgetType="demand"
+            projectKey={projectKey}
+            projectId={projectId}
+          />
         </span>
       }
     >
