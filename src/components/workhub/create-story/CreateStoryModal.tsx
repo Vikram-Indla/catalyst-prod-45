@@ -1250,7 +1250,7 @@ export function CreateStoryModal({
                         workItemId="__create__"
                         initialContent={form.descriptionAdf ?? null}
                         placeholder="Add a description..."
-                        appearance="chromeless"
+                        appearance="full-page"
                         onSave={(adfJson: string) => {
                           try {
                             const parsed = JSON.parse(adfJson);
