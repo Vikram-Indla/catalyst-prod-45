@@ -179,7 +179,7 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', gap: 12, background: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: "'Inter', sans-serif",
+        justifyContent: 'center', gap: 12, background: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
       }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: '#DC2626' }}>Failed to load roadmap</div>
         <button
@@ -187,7 +187,7 @@ export default function IdeasRoadmapPage() {
           style={{
             height: 50, padding: '0 16px', borderRadius: 6, border: 'none',
             background: '#2563EB', color: '#FFFFFF', fontSize: 13, fontWeight: 600,
-            cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           }}
         >
           Try again
@@ -201,7 +201,7 @@ export default function IdeasRoadmapPage() {
     return (
       <div style={{
         height: '100%', display: 'flex', flexDirection: 'column',
-        background: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: "'Inter', sans-serif",
+        background: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
       }}>
         <RoadmapToolbar view={view} onViewChange={setView} committedOnly={committedOnly}
           onCommittedOnlyChange={setCommittedOnly} totalCount={0} committedCount={0}
@@ -229,7 +229,7 @@ export default function IdeasRoadmapPage() {
   return (
     <div style={{
       height: '100%', display: 'flex', flexDirection: 'column',
-      background: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: "'Inter', sans-serif",
+      background: isDark ? '#0A0A0A' : '#FFFFFF', fontFamily: 'var(--cp-font-body)',
     }}>
       <RoadmapToolbar
         view={view} onViewChange={setView}

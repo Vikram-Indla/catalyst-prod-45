@@ -71,7 +71,7 @@ export function HierarchyContextMenu({
     position: 'fixed', zIndex: 99999,
     width: 220, background: 'var(--cp-float)', border: '1px solid var(--divider)',
     borderRadius: 6, boxShadow: '0 4px 16px rgba(0,0,0,0.10)',
-    fontFamily: "'Inter', sans-serif", paddingBlock: 4,
+    fontFamily: 'var(--cp-font-body)', paddingBlock: 4,
   };
 
   const itemStyle: React.CSSProperties = {

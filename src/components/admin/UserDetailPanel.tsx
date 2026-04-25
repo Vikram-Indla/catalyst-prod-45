@@ -59,10 +59,10 @@ const mkFieldRow = (isDark: boolean): React.CSSProperties => ({
 
 const mkFieldKey = (isDark: boolean): React.CSSProperties => ({ fontSize: '11px', color: isDark ? '#A1A1A1' : '#64748B' });
 const mkFieldVal = (isDark: boolean): React.CSSProperties => ({ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', textAlign: 'right' as const });
-const monoSmall: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontSize: '10px' };
+const monoSmall: React.CSSProperties = { fontFamily: 'var(--cp-font-mono)', fontSize: '10px' };
 const Code: React.FC<{ children: React.ReactNode; isDark?: boolean }> = ({ children, isDark = false }) => (
   <code style={{
-    fontFamily: "'JetBrains Mono', monospace", fontSize: '10px',
+    fontFamily: 'var(--cp-font-mono)', fontSize: '10px',
     background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
     color: isDark ? '#93C5FD' : '#2563EB',
   }}>{children}</code>
@@ -197,7 +197,7 @@ const ProjectsTab: React.FC<{ perms: any[]; isDark?: boolean }> = ({ perms, isDa
                     </td>
                     <td style={{ padding: '6px 9px' }}>
                       <span className="jus-project-key-chip" style={{
-                        fontFamily: "'JetBrains Mono', monospace", fontSize: '9px',
+                        fontFamily: 'var(--cp-font-mono)', fontSize: '9px',
                         color: isDark ? '#A1A1A1' : '#64748B',
                         background: isDark ? '#1A1A1A' : '#F1F5F9', padding: '1px 4px', borderRadius: '4px',
                       }}>{p.project_key}</span>
@@ -363,7 +363,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
           </div>
           {/* Name block */}
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "'Sora', sans-serif", fontSize: '15px', fontWeight: 700, color: T.text1, letterSpacing: '-0.2px' }}>
+            <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: '15px', fontWeight: 700, color: T.text1, letterSpacing: '-0.2px' }}>
               {user.display_name}
             </div>
             <div style={{ fontSize: '11px', color: T.text2, marginTop: '2px' }}>
@@ -504,7 +504,7 @@ const UserDetailPanel: React.FC<Props> = ({ userId, onClose, isDark = false }) =
                 display: 'flex', gap: '8px', alignItems: 'center', marginTop: '5px',
               }}>
                 <span style={{
-                  flex: 1, fontFamily: showPwd ? "'JetBrains Mono', monospace" : 'inherit',
+                  flex: 1, fontFamily: showPwd ? 'var(--cp-font-mono)' : 'inherit',
                   fontSize: showPwd ? '11px' : '14px', letterSpacing: showPwd ? '0' : '3px',
                   color: T.text1,
                 }}>

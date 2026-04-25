@@ -20,7 +20,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           fontSize: 18,
           fontWeight: 600,
           color: 'var(--fg-1)',
@@ -31,7 +31,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
         <button
           onClick={() => navigate('/projecthub/themes')}
           style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             fontSize: 13,
             color: 'var(--cp-blue)',
             background: 'none',
@@ -49,7 +49,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
 
       {active.length === 0 ? (
         <p style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           fontSize: 13,
           color: 'var(--fg-4)',
         }}>
@@ -90,7 +90,7 @@ export function ThemeProgressSection({ themes }: ThemeProgressSectionProps) {
               {/* Info */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
                   fontWeight: 600,
                   color: 'var(--fg-1)',

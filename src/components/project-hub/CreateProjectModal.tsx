@@ -118,12 +118,12 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
           width: 640,
           maxHeight: '90vh',
           borderRadius: 12,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5 pb-0">
-          <h2 className="text-[var(--fg-1)] dark:text-[#EDEDED]" style={{ fontSize: 18, fontWeight: 700, fontFamily: "'Sora', sans-serif" }}>
+          <h2 className="text-[var(--fg-1)] dark:text-[#EDEDED]" style={{ fontSize: 18, fontWeight: 700, fontFamily: 'var(--cp-font-heading)' }}>
             Create New Project
           </h2>
           <button

@@ -94,8 +94,8 @@
   /* ═══════════════════════════════════════════════════════════
      FONT STACKS (V8)
      ═══════════════════════════════════════════════════════════ */
-  --ct-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --ct-font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+  --usr-font-sans: var(--cp-font-body);
+  --usr-font-mono: var(--cp-font-mono);
 
   /* ═══════════════════════════════════════════════════════════
      SPACING (V8 9-LEVEL SCALE)
@@ -121,7 +121,7 @@
   --ct-radius-full: 50%;
 
   /* Apply base styles */
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   background: var(--ct-bg-page);
   color: var(--ct-text-body);
   font-size: var(--ct-text-base);
@@ -291,7 +291,7 @@
   gap: var(--ct-space-2);
   height: 36px;
   padding: 0 var(--ct-space-4);
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-base);
   font-weight: 500;
   line-height: 1;
@@ -523,7 +523,7 @@
   width: 100%;
   height: 36px;
   padding: 0 var(--ct-space-3) 0 40px;
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-base);
   color: var(--ct-text-body);
   border: 1px solid var(--ct-border);
@@ -573,7 +573,7 @@
   height: 36px;
   padding: 0 var(--ct-space-3);
   min-width: 180px;
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-base);
   font-weight: 500;
   color: var(--ct-text-secondary);
@@ -693,7 +693,7 @@
   gap: 6px;
   height: 30px;
   padding: 0 var(--ct-space-3);
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-sm);
   font-weight: 500;
   background: rgba(255, 255, 255, 0.15);
@@ -811,7 +811,7 @@
    12. RID CELL (Monospace, Muted)
    ================================================================ */
 .ct-cell-rid {
-  font-family: var(--ct-font-mono);
+  font-family: var(--usr-font-mono);
   font-size: var(--ct-text-base);
   font-weight: 600;
   color: var(--ct-text-muted);
@@ -897,7 +897,7 @@
    15. ID BADGES (DID, AID, VID)
    ================================================================ */
 .ct-id-badge {
-  font-family: var(--ct-font-mono);
+  font-family: var(--usr-font-mono);
   font-size: var(--ct-text-xs);
   font-weight: 500;
   color: var(--ct-primary);
@@ -912,7 +912,7 @@
    16. DATE CELL (V8 Monospace)
    ================================================================ */
 .ct-date-cell {
-  font-family: var(--ct-font-mono);
+  font-family: var(--usr-font-mono);
   font-size: var(--ct-text-base);
   font-weight: 500;
   color: var(--ct-text-tertiary);
@@ -1033,7 +1033,7 @@
   justify-content: center;
   border: 1px solid var(--ct-border);
   border-radius: var(--ct-radius-md);
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-sm);
   font-weight: 500;
   background: var(--ct-bg-surface);
@@ -1077,7 +1077,7 @@
 .ct-inline-select {
   width: 100%;
   padding: 6px 10px;
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-base);
   color: var(--ct-text-body);
   border: 2px solid var(--ct-primary);
@@ -1254,7 +1254,7 @@
   width: 100%;
   height: 40px;
   padding: 0 14px;
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-md);
   color: var(--ct-text-body);
   background: var(--ct-bg-surface);
@@ -1290,7 +1290,7 @@
   height: 40px;
   padding: 0 14px;
   padding-right: 40px;
-  font-family: var(--ct-font-sans);
+  font-family: var(--usr-font-sans);
   font-size: var(--ct-text-md);
   color: var(--ct-text-body);
   background: var(--ct-bg-surface);

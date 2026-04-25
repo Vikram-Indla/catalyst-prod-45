@@ -47,7 +47,7 @@ export function SettingsTabs({ active, onChange }: SettingsTabsProps) {
               borderBottomStyle: 'solid',
               borderBottomColor: isActive ? 'var(--cp-blue)' : 'transparent',
               cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               whiteSpace: 'nowrap',
             }}
           >

@@ -80,7 +80,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           <MessageCircle size={14} style={{ color: '#FFFFFF' }} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
+          <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 700, color: 'var(--fg-1)' }}>Ask Catalyst</div>
           <div style={{ fontSize: 10, color: 'var(--fg-3)' }}>Knowledge assistant</div>
         </div>
         <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, borderRadius: 4, color: 'var(--fg-3)' }}
@@ -128,7 +128,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
                   >
                     <span style={{ fontWeight: 600 }}>📄 {s.title}</span>
                     {s.confidence != null && (
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 9, color: 'var(--fg-3)' }}>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 9, color: 'var(--fg-3)' }}>
                         {Math.round((s.confidence ?? 0) * 100)}%
                       </span>
                     )}
@@ -151,7 +151,7 @@ export function WikiChatPanel({ open, onClose }: { open: boolean; onClose: () =>
           placeholder="Ask a question..."
           style={{
             flex: 1, height: 50, padding: '8px 12px', borderRadius: 8, fontSize: 12.5,
-            border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'Inter, sans-serif',
+            border: `0.75px solid ${border}`, outline: 'none', fontFamily: 'var(--cp-font-body)',
             background: isDark ? '#0A0A0A' : 'var(--bg-1)', color: isDark ? '#EDEDED' : undefined,
           }}
           onFocus={e => { e.currentTarget.style.borderColor = 'var(--cp-blue)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.08)'; }}

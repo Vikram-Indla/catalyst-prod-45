@@ -152,7 +152,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
                 color: '#626F86',
                 fontSize: 11,
                 fontWeight: 600,
-                fontFamily: 'Inter, system-ui, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
               }}
               aria-hidden
             >

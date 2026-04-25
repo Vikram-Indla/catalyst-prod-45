@@ -158,7 +158,7 @@ export function T10ListCardNew({ list, onRename, onDelete }: T10ListCardNewProps
               gap: '8px',
               height: '50px',
               padding: '0 16px',
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: '14px',
               fontWeight: 500,
               color: '#ffffff',

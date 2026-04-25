@@ -107,7 +107,7 @@ export function StepBasics({
               elemAfterInput={
                 <span
                   style={{
-                    fontFamily: 'JetBrains Mono, monospace',
+                    fontFamily: 'var(--cp-font-mono)',
                     fontSize: 11,
                     paddingRight: 8,
                     color: token('color.text.subtlest'),

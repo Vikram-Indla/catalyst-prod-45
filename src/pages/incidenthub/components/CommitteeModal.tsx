@@ -30,7 +30,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[760px]" style={{ borderRadius: 8, padding: 0 }}>
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-          <DialogTitle style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700 }}>Escalation Committee</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>Escalation Committee</DialogTitle>
         </DialogHeader>
 
         {/* Tabs */}
@@ -42,7 +42,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
               onClick={() => setActiveTab(i)}
               className="px-3 py-2"
               style={{
-                fontFamily: 'Inter, sans-serif', fontSize: 12,
+                fontFamily: 'var(--cp-font-body)', fontSize: 12,
                 fontWeight: activeTab === i ? 650 : 400,
                 color: activeTab === i ? '#2563EB' : '#64748B',
                 borderBottom: activeTab === i ? '2px solid #2563EB' : '2px solid transparent',
@@ -57,7 +57,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           {activeTab === 0 && (
             <div className="space-y-3">
               {members.length === 0 && (
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
+                <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#94A3B8' }}>No committee members assigned.</p>
               )}
               {members.map((m: any) => {
                 const vote = m.vote;
@@ -69,7 +69,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, #0F172A)' }}>
+                        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: 'var(--fg-1, #0F172A)' }}>
                           {m.user?.full_name || 'Member'}
                         </span>
                         {m.role === 'chair' && (
@@ -79,7 +79,7 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
                           <span className="px-1.5" style={{ fontSize: 9, fontWeight: 700, backgroundColor: isDark ? 'rgba(239,68,68,0.12)' : '#FEE2E2', color: isDark ? '#FCA5A5' : '#991B1B', borderRadius: 3 }}>VETO</span>
                         )}
                       </div>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{m.role || 'Member'}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B' }}>{m.role || 'Member'}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       {['approved', 'rejected', 'pending'].map(v => (
@@ -110,11 +110,11 @@ export function CommitteeModal({ open, onClose, committee, incidentId }: Committ
           )}
 
           {activeTab === 1 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Approver management coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#94A3B8' }}>Approver management coming soon.</p>
           )}
 
           {activeTab === 2 && (
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: '#94A3B8' }}>Activity log coming soon.</p>
+            <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: '#94A3B8' }}>Activity log coming soon.</p>
           )}
         </div>
 

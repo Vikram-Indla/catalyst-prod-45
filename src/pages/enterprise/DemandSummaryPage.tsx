@@ -333,7 +333,7 @@ export default function DemandSummaryPage() {
     : [{ key: 'Week', label: 'Week' }, { key: 'Month', label: 'Month' }, { key: 'Quarter', label: 'Quarter' }, { key: 'Year', label: 'Year' }];
 
   return (
-    <div className={cn("min-h-screen bg-background", isArabic && "rtl", isDark && "bg-[#0A0A0A]")} style={{ fontFamily: "'Inter', sans-serif" }} dir={isArabic ? 'rtl' : 'ltr'}>
+    <div className={cn("min-h-screen bg-background", isArabic && "rtl", isDark && "bg-[#0A0A0A]")} style={{ fontFamily: 'var(--cp-font-body)' }} dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
       <header className={cn("h-[72px] bg-card border-b border-border sticky top-0 z-50 flex-shrink-0", isDark && "bg-[#1A1A1A] border-[#2E2E2E]")}>
         <div className="h-full px-4 sm:px-6 flex items-center">

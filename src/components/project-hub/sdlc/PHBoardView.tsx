@@ -40,7 +40,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   padding: '5px 14px',
                   fontSize: 12,
                   fontWeight: isActive ? 600 : 500,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   borderRadius: 6,
                   border: isActive ? '1px solid var(--cp-primary-20)' : '1px solid transparent',
                   color: isActive ? 'var(--cp-blue)' : 'var(--fg-3)',
@@ -92,7 +92,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                     fontSize: 11,
                     fontWeight: 700,
                     color: isOnHold ? 'var(--sem-warning)' : 'var(--fg-3)',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                     letterSpacing: '0.06em',
                   }}
                 >
@@ -104,7 +104,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                     width: 20, height: 20,
                     fontSize: 10,
                     fontWeight: 700,
-                    fontFamily: "'JetBrains Mono', monospace",
+                    fontFamily: 'var(--cp-font-mono)',
                     color: wipExceeded ? 'var(--sem-danger)' : 'var(--fg-3)',
                     boxShadow: '0 1px 2px rgba(0,0,0,.06)',
                   }}
@@ -168,7 +168,7 @@ export function PHBoardView({ issues, boards, loading, onSelectIssue, onUpdateIs
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-3)'; e.currentTarget.style.color = 'var(--fg-3)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--fg-4)'; }}
@@ -266,7 +266,7 @@ function BoardCard({
               fontSize: 11,
               fontWeight: 600,
               color: 'var(--fg-3)',
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: 'var(--cp-font-mono)',
             }}
           >
             {getDisplayKey(issue)}
@@ -297,7 +297,7 @@ function BoardCard({
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical' as const,
             overflow: 'hidden',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           {issue.title}

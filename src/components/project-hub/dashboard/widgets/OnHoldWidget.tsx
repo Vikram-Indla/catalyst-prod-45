@@ -10,13 +10,18 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
+import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: items, isLoading } = useDashboardOnHoldItems(projectId);
+  const { settings } = useGadgetSettings('onhold', projectKey);
+  const { data: items, isLoading } = useDashboardOnHoldItems(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const count = items?.length ?? 0;
   const { openUWV } = useUWV();
 

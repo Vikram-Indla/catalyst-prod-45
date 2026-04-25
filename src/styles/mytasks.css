@@ -24,7 +24,7 @@
   /* Task ID — SECONDARY (visible but subtle) */
   --mytasks-id-font-size: 12px;
   --mytasks-id-font-weight: 400;
-  --mytasks-id-font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  --mytasks-id-font-family: var(--cp-font-mono);
   --mytasks-id-color: #64748b;       /* slate-500 — visible, not dead */
   --mytasks-id-color-overdue: #b91c1c;  /* red-700 */
   
@@ -144,7 +144,7 @@
   padding: var(--mytasks-page-padding);
   background-color: var(--mytasks-bg-page);
   min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--cp-font-body);
 }
 
 

@@ -71,13 +71,13 @@ export function StatusMapping() {
   }
 
   if (isLoading) {
-    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'Inter, sans-serif' }}>Loading...</div>
+    return <div style={{ padding: 40, color: '#64748B', fontFamily: 'var(--cp-font-body)' }}>Loading...</div>
   }
 
   return (
-    <div style={{ maxWidth: 900, fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ maxWidth: 900, fontFamily: 'var(--cp-font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
           Status Mapping
         </h1>
         <p style={{ fontSize: 13, color: '#64748B', marginTop: 4 }}>
@@ -90,7 +90,7 @@ export function StatusMapping() {
         padding: 20, boxShadow: '0 1px 2px rgba(0,0,0,.05)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
-          <h2 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: 'var(--fg-1, #0F172A)', margin: 0 }}>
             Category Mapping
           </h2>
           <span style={{
@@ -149,7 +149,7 @@ export function StatusMapping() {
                       display: 'inline-flex', alignItems: 'center', gap: 6,
                       padding: '4px 10px', borderRadius: 4,
                       background: 'var(--bg-1, #F8FAFC)', border: '1px solid var(--bd-default, #E2E8F0)',
-                      fontSize: 12, fontFamily: 'JetBrains Mono, monospace',
+                      fontSize: 12, fontFamily: 'var(--cp-font-mono)',
                       color: '#334155', fontWeight: 500, cursor: 'grab',
                     }}
                   >
@@ -183,7 +183,7 @@ export function StatusMapping() {
                     autoFocus
                     style={{
                       padding: '5px 10px', border: '1px solid var(--bd-default, #E2E8F0)', borderRadius: 4,
-                      fontSize: 12, fontFamily: 'JetBrains Mono, monospace', width: 200,
+                      fontSize: 12, fontFamily: 'var(--cp-font-mono)', width: 200,
                     }}
                   />
                   <button onClick={() => handleAddStatus(category)} style={{

@@ -67,7 +67,7 @@ export function ThemeCard({ theme, onClick }: ThemeCardProps) {
 
       {/* Name */}
       <div style={{
-        fontFamily: 'var(--wh-font-sans, Inter, sans-serif)',
+        fontFamily: 'var(--cp-font-body)',
         fontSize: 16, fontWeight: 600,
         color: 'var(--fg-1)',
       }}>

@@ -27,7 +27,7 @@
   font-weight: 500;
   line-height: 20px;
   color: rgb(23, 43, 77);
-  font-family: 'Inter', ui-sans-serif, sans-serif;
+  font-family: var(--cp-font-body);
   transition: background-color 0.1s, border-color 0.1s;
 }
 .jf-trigger-btn:hover { background-color: rgba(9, 30, 66, 0.08); }

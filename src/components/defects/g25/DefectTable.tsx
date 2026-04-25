@@ -173,7 +173,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
           {currentParentKey ? (
             <div className="flex items-center gap-1.5">
               <WorkItemIcon type={currentParent?.type || 'task'} size={14} />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: '#2563EB' }}>
                 {currentParentKey}
               </span>
             </div>
@@ -235,7 +235,7 @@ function ParentPickerCell({ defectId, currentParentKey, projectKey }: { defectId
               >
                 <div className="flex items-center gap-2">
                   <WorkItemIcon type={opt.type} size={16} />
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 500, color: '#42526E' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: '#42526E' }}>
                     {opt.key}
                   </span>
                 </div>
@@ -423,7 +423,7 @@ export function DefectTable({ defects, selectedIds, onSelectionChange, onDelete,
           <td key={colKey} style={{ width: columnWidths.key }}>
             <div className="flex items-center gap-1">
               {attCount > 0 && <span title="Attachments"><Paperclip size={12} style={{ color: '#94A3B8', flexShrink: 0, transform: 'rotate(-45deg)' }} /></span>}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{keyText}</span>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 600, color: '#2563EB' }}>{keyText}</span>
               {isJira && <JiraBadge />}
               {isJira && d.external_url && (
                 <button className="opacity-0 group-hover:opacity-100 transition-opacity duration-150" style={{ marginLeft: 2, padding: 2, borderRadius: 3, border: 'none', background: 'transparent', cursor: 'pointer' }} title="Open in Jira" onClick={e => { e.stopPropagation(); window.open(d.external_url!, '_blank'); }}>

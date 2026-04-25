@@ -153,7 +153,7 @@ export default function AllProjectsPage() {
   const isSearchNoResults = !isLoading && !!filters.search && filtered.length === 0 && projects.length > 0;
 
   return (
-    <div className="flex flex-col h-full font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
+    <div className="flex flex-col h-full bg-white dark:!bg-[#0A0A0A] font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
       <CatalystPageHeader
         title="All Projects"
         actions={
@@ -181,7 +181,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#0A0A0A] text-foreground">
+      <div className="flex-1 overflow-auto px-6 py-3 bg-white dark:!bg-[#0A0A0A] text-foreground">
         {/* Toolbar */}
         <div className="mb-2.5">
           <AllProjectsToolbar
@@ -214,7 +214,7 @@ export default function AllProjectsPage() {
             <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
               <FolderOpen className="w-8 h-8 text-slate-400 dark:text-slate-500" />
             </div>
-            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-200 mb-1" style={{ fontFamily: "'Sora', sans-serif" }}>No projects yet</h3>
+            <h3 className="font-semibold text-lg text-slate-800 dark:text-slate-200 mb-1" style={{ fontFamily: 'var(--cp-font-heading)' }}>No projects yet</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md">
               Connect Jira to sync your projects, or create one manually to get started.
             </p>
@@ -248,7 +248,7 @@ export default function AllProjectsPage() {
         ) : filtered.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 px-10 py-20 text-center bg-white dark:!bg-[#0A0A0A]">
             <FolderKanban size={48} className="text-slate-300 dark:text-slate-600" strokeWidth={1.25} />
-            <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
+            <h3 className="mt-4 text-lg font-semibold text-foreground" style={{ fontFamily: 'var(--cp-font-heading)' }}>
               No projects match your filters
             </h3>
             <p className="mt-1 max-w-[360px] text-[13px] text-muted-foreground">

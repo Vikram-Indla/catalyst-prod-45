@@ -38,7 +38,7 @@ export function KeyCell({ epic }: { epic: BacklogEpic }) {
   return (
     <span
       className="truncate font-mono text-[13px] font-medium text-[#2563EB] hover:underline dark:text-[#60A5FA]"
-      style={{ fontFamily: "'JetBrains Mono', monospace" }}
+      style={{ fontFamily: 'var(--cp-font-mono)' }}
     >
       {epic.epic_key ?? '—'}
     </span>
@@ -128,7 +128,7 @@ export function DateCell({ value }: { value: string | null | undefined }) {
   return (
     <span
       className="truncate text-[12px] text-muted-foreground"
-      style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: 'tabular-nums' }}
+      style={{ fontFamily: 'var(--cp-font-mono)', fontVariantNumeric: 'tabular-nums' }}
     >
       {formatDueDate(value ?? null)}
     </span>
@@ -143,7 +143,7 @@ export function DueDateCell({ value, status }: { value: string | null | undefine
       className="truncate text-[12px]"
       style={{
         color: overdue ? '#DC2626' : undefined,
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: 'var(--cp-font-mono)',
         fontVariantNumeric: 'tabular-nums',
       }}
     >

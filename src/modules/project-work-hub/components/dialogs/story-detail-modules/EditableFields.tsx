@@ -698,7 +698,7 @@ export function ParentFieldPicker({ storyKey, parentKey, projectKey, onParentCha
                     {/* Line 1: icon + key */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
                       <EpicIconInline />
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: '#6B778C', fontSize: 12 }}>{result.issue_key}</span>
                     </div>
                     {/* Line 2: summary */}
                     <div style={{ fontSize: 14, color: '#172B4D', paddingLeft: 22, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

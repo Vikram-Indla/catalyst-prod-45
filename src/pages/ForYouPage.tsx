@@ -321,7 +321,7 @@ export default function ForYouPage() {
   ];
 
   return (
-    <div className="fy-page" style={{ fontFamily: "'Inter', system-ui", minHeight: 0, flex: 1, background: 'var(--cp-bg)', color: 'var(--cp-t1)' }}>
+    <div className="fy-page" style={{ fontFamily: 'var(--cp-font-body)', minHeight: 0, flex: 1, background: 'var(--cp-bg)', color: 'var(--cp-t1)' }}>
       <main style={{ width: '100%', maxWidth: '100%', padding: mainPadding, boxSizing: 'border-box' }}>
         <ForYouHeader />
 

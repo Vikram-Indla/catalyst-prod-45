@@ -99,7 +99,7 @@ export default function WikiAnalyticsPage() {
   const border = isDark ? '#2E2E2E' : 'rgba(0,0,0,0.06)';
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: isDark ? '#878787' : '#94A3B8' }} />

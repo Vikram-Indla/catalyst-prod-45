@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Sora:wght@400;500;600;700;800&display=swap');
-
 [data-module="product-kanban"] {
   --pk-ink: #09090B;
   --pk-ink-secondary: #18181B;
@@ -13,9 +11,9 @@
   --pk-primary: #2563EB;
   --pk-primary-hover: #1D4ED8;
   --pk-primary-bg: #EFF6FF;
-  --pk-font-heading: 'Sora', system-ui, sans-serif;
-  --pk-font-body: 'Inter', system-ui, sans-serif;
-  --pk-font-mono: 'JetBrains Mono', monospace;
+  --pk-font-heading: var(--cp-font-heading);
+  --pk-font-body:    var(--cp-font-body);
+  --pk-font-mono:    var(--cp-font-mono);
   --pk-r-sm: 4px;
   --pk-r-md: 6px;
   --pk-r-lg: 8px;

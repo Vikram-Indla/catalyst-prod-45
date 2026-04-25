@@ -30,7 +30,7 @@ export function CapacityPage() {
   if (isLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 400 }}>
-        <div style={{ color: 'var(--fg-4)', fontFamily: 'Inter, system-ui, sans-serif' }}>Loading capacity data…</div>
+        <div style={{ color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>Loading capacity data…</div>
       </div>
     );
   }
@@ -70,13 +70,13 @@ export function CapacityPage() {
               </div>
               <div>
                 <div style={{
-                  fontFamily: 'Sora, sans-serif', fontSize: 22, fontWeight: 700,
+                  fontFamily: 'var(--cp-font-heading)', fontSize: 22, fontWeight: 700,
                   color: kpi.color, lineHeight: 1.1,
                 }}>
                   {kpi.value}{kpi.suffix}
                 </div>
                 <div style={{
-                  fontFamily: 'Inter, system-ui, sans-serif', fontSize: 12,
+                  fontFamily: 'var(--cp-font-body)', fontSize: 12,
                   color: 'var(--fg-4)', marginTop: 2,
                 }}>
                   {kpi.label}

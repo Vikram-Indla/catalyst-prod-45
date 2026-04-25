@@ -613,7 +613,7 @@ export default function InitiativeListingPage() {
   }, [isNative, invalidateAll]);
 
   return (
-    <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div data-module="product-backlog" className="flex flex-col h-full" style={{ fontFamily: 'var(--cp-font-body)' }}>
       {/* ── Page Header (Canonical) ── */}
       <CatalystPageHeader title="Product Backlog" />
 

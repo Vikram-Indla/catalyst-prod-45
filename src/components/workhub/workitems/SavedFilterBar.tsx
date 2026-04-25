@@ -54,7 +54,7 @@ export function SavedFilterBar({ currentFilters, activeFilterId, onApplyFilter, 
       className="flex items-center gap-2 py-2 overflow-x-auto"
       style={{
         borderBottom: '1px solid var(--bg-1)',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         scrollbarWidth: 'none',
       }}
     >

@@ -46,7 +46,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
         background: 'var(--sem-warning-bg)',
         borderBottom: '0.75px solid #FDE68A',
         padding: '8px 28px',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         fontSize: 12,
         color: 'var(--sem-warning-fg)',
         opacity: fading ? 0 : 1,
@@ -72,7 +72,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
             padding: '0 10px',
             fontSize: 12,
             fontWeight: 500,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             cursor: 'pointer',
           }}
         >
@@ -89,7 +89,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
             padding: '0 10px',
             fontSize: 12,
             fontWeight: 500,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             cursor: 'pointer',
           }}
         >
@@ -103,7 +103,7 @@ export function SyncBanner({ conflictCount, lastSyncedAt, onReviewConflicts, onS
             color: 'var(--sem-warning-fg)',
             fontSize: 12,
             fontWeight: 500,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             cursor: 'pointer',
             padding: '0 4px',
           }}

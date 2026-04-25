@@ -229,7 +229,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 480, background: 'var(--cp-float)', borderRadius: 8, zIndex: 70,
         padding: 28, border: '0.75px solid var(--divider)',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}>
 
         {/* ── SUCCESS STATE ── */}
@@ -242,7 +242,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <CheckCircle2 size={40} color="var(--sem-success)" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                 Epics Generated Successfully
               </h3>
               <p style={{ fontSize: 14, color: 'var(--fg-3)', margin: 0, textAlign: 'center' }}>
@@ -311,7 +311,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
               }}>
                 <XCircle size={32} color="var(--sem-danger)" />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+              <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                 Generation Failed
               </h3>
             </div>
@@ -372,7 +372,7 @@ export default function RAEpicGenerationModal({ doc, onClose, onViewDrafts }: Pr
                 <div className="ra-epic-spinner-lg" />
               </div>
               <div>
-                <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: "'Sora', sans-serif" }}>
+                <h3 style={{ fontSize: 18, fontWeight: 650, color: 'var(--fg-1)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
                   Generating Epic Statements
                 </h3>
                 <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '2px 0 0' }}>

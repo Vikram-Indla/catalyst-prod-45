@@ -47,7 +47,7 @@ const chipBase: React.CSSProperties = {
   color: '#172B4D',
   fontSize: 14,
   fontWeight: 500,
-  fontFamily: 'Inter, system-ui, sans-serif',
+  fontFamily: 'var(--cp-font-body)',
   cursor: 'pointer',
   lineHeight: 1,
   whiteSpace: 'nowrap',
@@ -160,7 +160,7 @@ export function FilterDropdown({
                     style={{
                       fontSize: 14,
                       color: '#172B4D',
-                      fontFamily: 'Inter, system-ui, sans-serif',
+                      fontFamily: 'var(--cp-font-body)',
                     }}
                   >
                     {opt.name}
@@ -175,7 +175,7 @@ export function FilterDropdown({
                   padding: '12px 16px',
                   fontSize: 13,
                   color: '#626F86',
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                 }}
               >
                 No matches
@@ -193,7 +193,7 @@ export function FilterDropdown({
               borderTop: '1px solid #F1F2F4',
               fontSize: 14,
               color: '#172B4D',
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             Clear filter

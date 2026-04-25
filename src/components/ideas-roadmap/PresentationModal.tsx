@@ -28,7 +28,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 9999, background: 'var(--fg-1)',
-      display: 'flex', flexDirection: 'column', fontFamily: "'Inter', sans-serif",
+      display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
     }}>
       {/* Top bar */}
       <div style={{
@@ -94,7 +94,7 @@ export function PresentationModal({ ideas, onClose }: Props) {
             border: 'none', color: '#fff', cursor: 'pointer', opacity: slide === TOTAL_SLIDES - 1 ? 0.3 : 1,
             fontSize: 14,
           }}>→</button>
-        <span style={{ color: 'var(--fg-3)', fontSize: 11, marginLeft: 8, fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ color: 'var(--fg-3)', fontSize: 11, marginLeft: 8, fontFamily: 'var(--cp-font-mono)' }}>
           {slide + 1} / {TOTAL_SLIDES}
         </span>
       </div>
@@ -120,10 +120,10 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
         <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 16 }}>
           Ministry of Industry & Mineral Resources
         </div>
-        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--bg-app)', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 8 }}>
+        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)', lineHeight: 1.1, marginBottom: 8 }}>
           MIM Digital
         </div>
-        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--sem-success)', fontFamily: "'Sora', sans-serif", lineHeight: 1.1, marginBottom: 24 }}>
+        <div style={{ fontSize: 48, fontWeight: 800, color: 'var(--sem-success)', fontFamily: 'var(--cp-font-heading)', lineHeight: 1.1, marginBottom: 24 }}>
           Transformation Roadmap
         </div>
         <div style={{ width: 40, height: 4, background: 'var(--sem-success)', borderRadius: 4, marginBottom: 24 }} />
@@ -137,7 +137,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               borderRadius: 8, padding: '16px 20px', minWidth: 140,
             }}>
               <div style={{ fontSize: 9, fontWeight: 700, color: 'var(--fg-3)', letterSpacing: '0.1em', marginBottom: 6 }}>{s.label}</div>
-              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bg-app)', fontFamily: "'Sora', sans-serif" }}>{s.value}</div>
+              <div style={{ fontSize: 32, fontWeight: 800, color: 'var(--bg-app)', fontFamily: 'var(--cp-font-heading)' }}>{s.value}</div>
               <div style={{ fontSize: 11, color: 'var(--fg-4)', marginTop: 2 }}>{s.sub}</div>
             </div>
           ))}
@@ -156,7 +156,7 @@ function CoverSlide({ committed, ideas }: { committed: RoadmapIdea[]; ideas: Roa
               borderRadius: 8, padding: '16px 20px', borderTop: `3px solid ${qColors[i]}`, minWidth: 140,
             }}>
               <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--fg-4)', marginBottom: 8 }}>{q} {Q_LABELS[q]}</div>
-              <div style={{ fontSize: 36, fontWeight: 800, color: qColors[i], fontFamily: "'Sora', sans-serif" }}>{qs[q]}</div>
+              <div style={{ fontSize: 36, fontWeight: 800, color: qColors[i], fontFamily: 'var(--cp-font-heading)' }}>{qs[q]}</div>
               <div style={{ fontSize: 11, color: 'var(--fg-3)', marginTop: 2 }}>committed ideas</div>
             </div>
           ))}
@@ -205,7 +205,7 @@ function QuarterSlide({ quarter, ideas, color }: { quarter: string; ideas: Roadm
             borderBottom: '1px solid #1F1F1F',
           }}>
             <div style={{ width: 240, paddingRight: 16 }}>
-              <div style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>{idea.ideaKey}</div>
+              <div style={{ fontSize: 10, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>{idea.ideaKey}</div>
               <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--divider)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
             </div>
             <div style={{ flex: 1, display: 'flex', position: 'relative', height: '100%', alignItems: 'center' }}>

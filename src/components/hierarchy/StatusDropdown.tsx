@@ -59,7 +59,7 @@ export function StatusDropdown({ currentStatus, availableStatuses, onSelect, onC
               gap: 8,
               cursor: 'pointer',
               background: isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : undefined,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = isDark ? '#1A1A1A' : '#F8FAFC')}
             onMouseLeave={(e) => (e.currentTarget.style.background = isCurrent ? (isDark ? '#1A1A1A' : '#F8FAFC') : '')}

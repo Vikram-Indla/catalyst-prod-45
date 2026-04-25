@@ -76,7 +76,7 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
   const inputStyle: React.CSSProperties = {
     height: 50, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
-    borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
+    borderRadius: 6, outline: 'none', fontFamily: 'var(--cp-font-body)',
     flex: 1, minWidth: 0,
   };
 
@@ -116,9 +116,9 @@ export function CopyWorkflowSection({ projectId, onCopied }: CopyWorkflowSection
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
           onClick={e => { if (e.target === e.currentTarget) setConfirmOpen(false); }}
         >
-          <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
+          <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: 'var(--cp-font-body)' }}>
             <div className="flex items-center justify-between mb-4">
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Copy Workflow</h3>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>Copy Workflow</h3>
               <button onClick={() => setConfirmOpen(false)} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
                 <X size={16} color="var(--fg-3)" />
               </button>

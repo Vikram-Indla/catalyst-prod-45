@@ -17,8 +17,8 @@ export default function EmptyState({ variant }: EmptyStateProps) {
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: isDark ? '#0F2A1A' : '#E3FCEF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <CheckCircle size={24} color={isDark ? '#86EFAC' : '#006644'} />
         </div>
-        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: text1 }}>All caught up!</span>
-        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: text3 }}>You're on top of everything.</span>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 600, color: text1 }}>All caught up!</span>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: text3 }}>You're on top of everything.</span>
       </div>
     );
   }
@@ -29,8 +29,8 @@ export default function EmptyState({ variant }: EmptyStateProps) {
         <div style={{ width: 48, height: 48, borderRadius: '50%', background: iconBgMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Eye size={24} color={text3} />
         </div>
-        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: text1 }}>No watched items yet</span>
-        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: text3, textAlign: 'center', maxWidth: 280 }}>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 600, color: text1 }}>No watched items yet</span>
+        <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: text3, textAlign: 'center', maxWidth: 280 }}>
           Start watching items from any hub to get updates here.
         </span>
       </div>
@@ -42,8 +42,8 @@ export default function EmptyState({ variant }: EmptyStateProps) {
       <div style={{ width: 48, height: 48, borderRadius: '50%', background: iconBgMuted, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Bell size={24} color={text3} />
       </div>
-      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 14, fontWeight: 600, color: text1 }}>No notifications yet</span>
-      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: text3, textAlign: 'center', maxWidth: 280 }}>
+      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 14, fontWeight: 600, color: text1 }}>No notifications yet</span>
+      <span style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: text3, textAlign: 'center', maxWidth: 280 }}>
         When people assign or mention you, you'll see it here.
       </span>
     </div>

@@ -295,7 +295,7 @@ export function FolderPanel({
               paddingLeft: 32,
               paddingRight: 12,
               fontSize: 13,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               color: 'var(--fg-1)',
               backgroundColor: 'var(--bg-1)',
               border: '1px solid var(--divider)',

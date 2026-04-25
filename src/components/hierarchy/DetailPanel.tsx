@@ -75,10 +75,10 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
   const dk = useIsDark();
   return (
     <div style={{ padding: '8px 20px', borderBottom: `1px solid ${dk ? '#292929' : '#F1F5F9'}` }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
         {label}
       </div>
-      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
         {children}
       </div>
     </div>
@@ -98,7 +98,7 @@ function Section({ title, count, defaultOpen = true, children }: { title: string
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%', display: 'flex', alignItems: 'center', gap: 6, padding: '10px 20px',
-          background: 'none', border: 'none', borderBottom: '1px solid var(--divider)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          background: 'none', border: 'none', borderBottom: '1px solid var(--divider)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
         }}
       >
         {open ? <ChevronDown size={14} color="var(--fg-3)" /> : <ChevronRight size={14} color="var(--fg-3)" />}
@@ -150,7 +150,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 200,
         background: 'var(--bg-1)', border: '1px dashed var(--divider)', borderRadius: 8,
-        color: 'var(--fg-3)', fontSize: 13, fontFamily: "'Inter', sans-serif",
+        color: 'var(--fg-3)', fontSize: 13, fontFamily: 'var(--cp-font-body)',
       }}>
         Select a work item to view details
       </div>
@@ -203,7 +203,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
         transition={{ duration: 0.15 }}
         style={{
           background: 'var(--bg-app)', border: '1px solid var(--divider)', borderRadius: 8,
-          position: 'sticky', top: 16, fontFamily: "'Inter', sans-serif",
+          position: 'sticky', top: 16, fontFamily: 'var(--cp-font-body)',
           maxHeight: 'calc(100vh - 200px)', overflowY: 'auto',
         }}
       >
@@ -381,7 +381,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                   style={{
                     height: 50, display: 'flex', alignItems: 'center', gap: 6,
                     padding: '0 20px', borderBottom: `1px solid ${dk ? '#292929' : '#F1F5F9'}`, cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                   }}
                   onMouseEnter={e => (e.currentTarget.style.background = dk ? '#1F1F1F' : 'var(--bg-1, #F8FAFC)')}
                   onMouseLeave={e => (e.currentTarget.style.background = '')}
@@ -411,7 +411,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 onClick={() => onAddChild?.(item)}
                 style={{
                   background: 'none', border: 'none', cursor: 'pointer', padding: 0,
-                  fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif",
+                  fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
                   display: 'flex', alignItems: 'center', gap: 4, borderBottom: '1px dashed var(--divider)',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.color = 'var(--cp-blue)')}
@@ -438,7 +438,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 <button key={tab} style={{
                   background: 'none', border: 'none', borderBottom: i === 0 ? '2px solid var(--cp-blue)' : '2px solid transparent',
                   padding: '4px 0', fontSize: 12, fontWeight: i === 0 ? 600 : 400,
-                  color: i === 0 ? 'var(--cp-blue)' : 'var(--fg-3)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                  color: i === 0 ? 'var(--cp-blue)' : 'var(--fg-3)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                 }}>
                   {tab}
                 </button>
@@ -450,7 +450,7 @@ export function DetailPanel({ item, allItems = [], onClose, onSelectItem, onAddC
                 placeholder="Add a comment..."
                 rows={2}
                 style={{
-                  flex: 1, padding: 8, fontSize: 13, fontFamily: "'Inter', sans-serif",
+                  flex: 1, padding: 8, fontSize: 13, fontFamily: 'var(--cp-font-body)',
                   border: '1px solid var(--divider)', borderRadius: 6, outline: 'none', resize: 'none',
                 }}
               />

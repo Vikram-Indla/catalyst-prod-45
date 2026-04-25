@@ -45,7 +45,7 @@ export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--wh-border-light, #f1f5f9)' }}>
-        <span className="text-sm font-semibold" style={{ color: 'var(--wh-text-primary, #0f172a)', fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <span className="text-sm font-semibold" style={{ color: 'var(--wh-text-primary, #0f172a)', fontFamily: 'var(--cp-font-body)' }}>
           Bulk Operations History
         </span>
         <button onClick={onClose} className="p-1 rounded-md hover:bg-slate-100 transition-colors">
@@ -54,7 +54,7 @@ export function BulkOpsHistory({ onClose }: BulkOpsHistoryProps) {
       </div>
 
       {/* Entries */}
-      <div className="overflow-y-auto flex-1" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <div className="overflow-y-auto flex-1" style={{ fontFamily: 'var(--cp-font-body)' }}>
         {isLoading ? (
           <div className="p-4 text-center text-xs" style={{ color: 'var(--wh-text-tertiary, #94a3b8)' }}>Loading...</div>
         ) : entries.length === 0 ? (

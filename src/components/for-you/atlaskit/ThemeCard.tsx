@@ -403,7 +403,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
             margin: 0,
             cursor: 'pointer',
             textAlign: 'left',
-            fontFamily: token('font.family.code', 'JetBrains Mono, ui-monospace, monospace'),
+            fontFamily: token('font.family.code', 'var(--cp-font-mono)'),
           }}
         >
           {(theme.issueKeys ?? []).slice(0, 3).map((key) => (

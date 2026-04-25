@@ -13,7 +13,7 @@ export function IdCell({ requestKey, onClick }: IdCellProps) {
       onClick={onClick}
       className="transition-colors cursor-pointer whitespace-nowrap"
       style={{
-        fontFamily: "'JetBrains Mono', 'SF Mono', monospace", /* V12 */
+        fontFamily: 'var(--cp-font-mono)', /* V12 */
         fontSize: 12, /* V12 */
         fontWeight: 500, /* V12 */
         fontVariantNumeric: 'tabular-nums', /* V12 */

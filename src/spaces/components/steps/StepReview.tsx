@@ -81,7 +81,7 @@ export function StepReview({ draft }: Props) {
         <Row label="Key">
           <code
             style={{
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'var(--cp-font-mono)',
               fontSize: 13,
               padding: '2px 6px',
               borderRadius: 3,

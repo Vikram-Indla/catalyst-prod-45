@@ -36,7 +36,7 @@ export function BulkActionBar({
   return (
     <div style={{
       height: 48, background: '#1E293B', display: 'flex', alignItems: 'center', gap: 8,
-      padding: '0 16px', fontFamily: "'Inter', sans-serif", position: 'sticky', top: 0, zIndex: 50,
+      padding: '0 16px', fontFamily: 'var(--cp-font-body)', position: 'sticky', top: 0, zIndex: 50,
       borderRadius: '8px 8px 0 0',
     }}>
       <span style={{ fontSize: 13, fontWeight: 600, color: '#FFFFFF' }}>
@@ -122,7 +122,7 @@ function BulkBtn({ icon: Icon, label, onClick, danger }: {
   return (
     <button onClick={onClick} style={{
       height: 30, padding: '0 10px', fontSize: 12, fontWeight: 500,
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--cp-font-body)',
       color: danger ? '#FCA5A5' : 'var(--bd-default, #E2E8F0)',
       background: 'transparent', border: '1px solid #475569', borderRadius: 4,
       cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,

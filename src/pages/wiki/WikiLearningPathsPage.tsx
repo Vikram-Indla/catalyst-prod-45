@@ -10,14 +10,14 @@ export default function WikiLearningPathsPage() {
   const { isDark } = useTheme();
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '24px 40px 48px' }}>
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 24 }}>
         <span onClick={() => navigate('/wiki')} style={{ fontSize: 13, color: '#2563EB', cursor: 'pointer' }}>Wiki</span>
         <ChevronRight size={12} style={{ color: '#94A3B8' }} />
         <span style={{ fontSize: 13, color: '#64748B', fontWeight: 600 }}>Learning Paths</span>
       </nav>
 
-      <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Learning Paths</h1>
+      <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Learning Paths</h1>
       <p style={{ fontSize: 12, color: '#64748B', marginBottom: 24 }}>Curated article tracks for structured learning.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 12 }}>
@@ -36,7 +36,7 @@ export default function WikiLearningPathsPage() {
                   <GraduationCap size={20} style={{ color: '#FFFFFF' }} />
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>{p.title}</div>
+                  <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>{p.title}</div>
                   <span style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: diffColor }}>{p.difficulty}</span>
                 </div>
               </div>

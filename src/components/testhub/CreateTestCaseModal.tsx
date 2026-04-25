@@ -401,7 +401,7 @@ export function CreateTestCaseModal({
     padding: '8px 12px',
     border: '1.5px solid var(--divider)',
     borderRadius: 8,
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'var(--cp-font-body)',
     fontSize: 14,
     color: 'var(--fg-1)',
     outline: 'none',
@@ -433,7 +433,7 @@ export function CreateTestCaseModal({
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'var(--cp-font-body)',
     fontSize: 13,
     fontWeight: 600,
     color: 'var(--fg-1)',
@@ -492,14 +492,14 @@ export function CreateTestCaseModal({
         }}>
           <div>
             <h2 style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 18,
               fontWeight: 700,
               color: 'var(--fg-1)',
               margin: 0,
             }}>{modalTitle}</h2>
             <p style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               color: 'var(--fg-3)',
               margin: '4px 0 0 0',
@@ -577,7 +577,7 @@ export function CreateTestCaseModal({
                 />
                 {errors.title && (
                   <p style={{
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'var(--cp-font-body)',
                     fontSize: 12,
                     color: 'var(--sem-danger)',
                     marginTop: 4,
@@ -814,7 +814,7 @@ export function CreateTestCaseModal({
                   placeholder="Feature: Invoice Validation"
                   value={gherkinFeature}
                   onChange={(e) => setGherkinFeature(e.target.value)}
-                  style={{ ...textareaStyle, minHeight: 60, fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                  style={{ ...textareaStyle, minHeight: 60, fontFamily: 'var(--cp-font-mono)', fontSize: 13 }}
                   onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
                   onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
                 />
@@ -825,7 +825,7 @@ export function CreateTestCaseModal({
                   placeholder={"Scenario: Valid invoice is processed\n  Given an invoice with amount 100 SAR\n  When the invoice is submitted\n  Then the status should be 'Approved'"}
                   value={gherkinScenario}
                   onChange={(e) => setGherkinScenario(e.target.value)}
-                  style={{ ...textareaStyle, minHeight: 160, fontFamily: 'JetBrains Mono, monospace', fontSize: 13 }}
+                  style={{ ...textareaStyle, minHeight: 160, fontFamily: 'var(--cp-font-mono)', fontSize: 13 }}
                   onFocus={(e) => { e.target.style.borderColor = 'var(--cp-blue)'; e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'; }}
                   onBlur={(e) => { e.target.style.borderColor = 'var(--divider)'; e.target.style.boxShadow = 'none'; }}
                 />
@@ -906,7 +906,7 @@ export function CreateTestCaseModal({
               backgroundColor: 'var(--cp-float)',
               border: '1.5px solid var(--divider)',
               borderRadius: 8,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 500,
               color: 'var(--fg-2)',
@@ -931,7 +931,7 @@ export function CreateTestCaseModal({
               background: isSaving ? 'var(--fg-4)' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
               border: 'none',
               borderRadius: 8,
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 14,
               fontWeight: 600,
               color: '#FFFFFF',

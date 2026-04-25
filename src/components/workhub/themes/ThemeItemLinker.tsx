@@ -120,7 +120,7 @@ export function ThemeItemLinker({ themeId, themeName, isOpen, onClose, anchorRef
         border: '1px solid #e2e8f0', borderRadius: 12,
         boxShadow: '0 12px 40px rgba(0,0,0,.15)', zIndex: 9999,
         display: 'flex', flexDirection: 'column',
-        fontFamily: 'var(--wh-font-sans, Inter, sans-serif)',
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* Search */}

@@ -57,7 +57,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
           placeholder="Search by title, Jira ticket, domain..."
           style={{
             flex: 1, border: 'none', outline: 'none', background: 'transparent',
-            fontSize: 13, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif",
+            fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)',
             appearance: 'none' as any,
           }}
         />
@@ -82,7 +82,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
                 background: active ? 'var(--bg-app)' : 'transparent',
                 color: active ? 'var(--fg-1)' : 'var(--fg-3)',
                 boxShadow: active ? '0 1px 3px rgba(15,23,42,0.10)' : 'none',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
                 transition: 'all 120ms ease',
               }}
               onMouseEnter={e => { if (!active) e.currentTarget.style.background = 'rgba(255,255,255,0.6)'; e.currentTarget.style.color = active ? 'var(--fg-1)' : 'var(--fg-2)'; }}
@@ -116,7 +116,7 @@ export default function RASearchToolbar({ tab, onTabChange, search, onSearchChan
             boxShadow: syncingAll ? 'none' : '0 1px 3px rgba(37,99,235,0.35)',
             color: '#FFFFFF',
             cursor: syncingAll ? 'not-allowed' : 'pointer',
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
             whiteSpace: 'nowrap', flexShrink: 0,
             transition: 'box-shadow 150ms ease',
           }}

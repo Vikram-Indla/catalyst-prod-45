@@ -63,7 +63,7 @@ export function BulkMoveModal({ items, selectedKeys, onConfirm, onClose }: BulkM
   return createPortal(
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100000, display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'rgba(0,0,0,0.4)', fontFamily: "'Inter', sans-serif",
+      background: 'rgba(0,0,0,0.4)', fontFamily: 'var(--cp-font-body)',
     }} onClick={onClose}>
       <div style={{
         width: 480, maxHeight: '70vh', background: 'var(--cp-float)', borderRadius: 8,

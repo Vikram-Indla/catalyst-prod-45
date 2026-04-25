@@ -10,6 +10,7 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardRecentActivity } from '@/hooks/useDashboardWidgets';
+import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { EmptyState, StatusLozenge, TruncateCell, toStatusCategory } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
@@ -27,7 +28,11 @@ function timeAgo(dateStr: string | null): string {
 }
 
 export default function RecentActivityWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: items, isLoading } = useDashboardRecentActivity(projectId);
+  const { settings } = useGadgetSettings('activity', projectKey);
+  const { data: items, isLoading } = useDashboardRecentActivity(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
 
   return (
     <WidgetWrapper

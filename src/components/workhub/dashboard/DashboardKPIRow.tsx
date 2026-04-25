@@ -149,7 +149,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
 
             {/* Value */}
             <div style={{
-              fontFamily: 'Sora, Inter, system-ui, sans-serif',
+              fontFamily: 'var(--cp-font-heading)',
               fontSize: 28,
               fontWeight: 700,
               color: valueColor,
@@ -160,7 +160,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
 
             {/* Label */}
             <div style={{
-              fontFamily: 'Inter, system-ui, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 12,
               fontWeight: 500,
               textTransform: 'uppercase' as const,
@@ -174,7 +174,7 @@ export function DashboardKPIRow({ kpis, isLoading }: DashboardKPIRowProps) {
             {/* Subtext */}
             {subtext && (
               <div style={{
-                fontFamily: 'Inter, system-ui, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 11,
                 color: 'var(--fg-3)',
                 marginTop: 2,

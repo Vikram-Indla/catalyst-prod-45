@@ -126,7 +126,7 @@ export function ParentPickerPanel({
               width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
               fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
-              outline: 'none', fontFamily: "'Inter', sans-serif",
+              outline: 'none', fontFamily: 'var(--cp-font-body)',
               boxSizing: 'border-box',
             }}
           />
@@ -142,7 +142,7 @@ export function ParentPickerPanel({
             width: '100%', padding: '8px 12px', border: 'none',
             background: 'transparent', cursor: 'pointer',
             fontSize: 12, color: '#DE350B', fontWeight: 500,
-            fontFamily: "'Inter', sans-serif", textAlign: 'left',
+            fontFamily: 'var(--cp-font-body)', textAlign: 'left',
             borderBottom: `1px solid ${tk.borderSubtle}`,
           }}
           onMouseEnter={e => { e.currentTarget.style.background = tk.surfaceHover; }}
@@ -170,14 +170,14 @@ export function ParentPickerPanel({
                 background: isCurrent ? tk.dropHighlight : 'transparent',
                 cursor: isCurrent ? 'default' : 'pointer',
                 fontSize: 12, color: tk.textPrimary,
-                fontFamily: "'Inter', sans-serif", textAlign: 'left',
+                fontFamily: 'var(--cp-font-body)', textAlign: 'left',
               }}
               onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = tk.surfaceHover; }}
               onMouseLeave={e => { e.currentTarget.style.background = isCurrent ? tk.dropHighlight : 'transparent'; }}
             >
               <JiraIssueTypeIcon type={epic.issue_type ?? 'epic'} size={14} />
               <span style={{
-                fontFamily: "'JetBrains Mono', monospace", fontSize: 11,
+                fontFamily: 'var(--cp-font-mono)', fontSize: 11,
                 color: tk.textMuted, flexShrink: 0,
               }}>{epic.issue_key}</span>
               <span style={{

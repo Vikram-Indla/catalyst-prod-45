@@ -627,7 +627,7 @@ export const T10WeekViewV3 = memo(function T10WeekViewV3() {
   // INLINE STYLES (CSS cascade-proof)
   // ═══════════════════════════════════════════════════════════════════════════════
   const pageStyle: React.CSSProperties = {
-    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+    fontFamily: 'var(--cp-font-body)',
     background: '#f8fafc',
     minHeight: '100vh',
   };

@@ -10,13 +10,18 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardOverdueItems } from '@/hooks/useDashboardWidgets';
+import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
 
 export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: items, isLoading } = useDashboardOverdueItems(projectId);
+  const { settings } = useGadgetSettings('overdue', projectKey);
+  const { data: items, isLoading } = useDashboardOverdueItems(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const count = items?.length ?? 0;
   const { openUWV } = useUWV();
 
@@ -112,7 +117,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
                   flexShrink: 0,
                 }}
               >
-                {Math.ceil((Date.now() - new Date(item.due_date!).getTime()) / 86400000)}d
+                {Math.ceil((Date.now() - new Date((item as any).effective_due_date ?? (item as any).due_date).getTime()) / 86400000)}d
               </span>
             </div>
           ))}

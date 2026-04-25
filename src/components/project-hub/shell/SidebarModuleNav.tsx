@@ -19,7 +19,7 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       style={{
         width: collapsed ? 56 : 220,
         transition: 'width 200ms ease',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         overflow: 'hidden',
       }}
     >
@@ -30,14 +30,14 @@ export function SidebarModuleNav({ collapsed, onToggle }: SidebarModuleNavProps)
       >
         <div
           className="flex items-center justify-center flex-shrink-0"
-          style={{ width: 28, height: 28, backgroundColor: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: "'Sora', sans-serif", borderRadius: 6 }}
+          style={{ width: 28, height: 28, backgroundColor: '#2563EB', color: '#FFFFFF', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-heading)', borderRadius: 6 }}
         >
           PH
         </div>
         {!collapsed && (
           <span
             className="flex-1 truncate text-[#0F172A] dark:text-[#EDEDED]"
-            style={{ fontSize: 13, fontWeight: 600, fontFamily: "'Sora', sans-serif" }}
+            style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-heading)' }}
           >
             ProjectHub
           </span>

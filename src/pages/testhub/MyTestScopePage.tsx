@@ -130,7 +130,7 @@ export default function MyTestScopePage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <UserCheck size={22} style={{ color: '#2563EB' }} />
-          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'Sora, sans-serif' }}>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--fg-1, #0F172A)', margin: 0, fontFamily: 'var(--cp-font-heading)' }}>
             My Test Scope
           </h1>
           <span style={{
@@ -213,7 +213,7 @@ export default function MyTestScopePage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{
                       fontSize: 12, fontWeight: 700, color: '#2563EB',
-                      fontFamily: 'JetBrains Mono, monospace',
+                      fontFamily: 'var(--cp-font-mono)',
                     }}>
                       {first.cycle_key}
                     </span>
@@ -257,7 +257,7 @@ export default function MyTestScopePage() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
                           <span style={{
                             fontSize: 12, fontWeight: 600, color: '#2563EB',
-                            fontFamily: 'JetBrains Mono, monospace', minWidth: 70,
+                            fontFamily: 'var(--cp-font-mono)', minWidth: 70,
                           }}>
                             {item.case_key}
                           </span>

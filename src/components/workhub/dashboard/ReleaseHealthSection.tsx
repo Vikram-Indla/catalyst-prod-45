@@ -20,7 +20,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h2 style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           fontSize: 18,
           fontWeight: 600,
           color: 'var(--fg-1)',
@@ -31,7 +31,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
         <button
           onClick={() => navigate('/projecthub/releases')}
           style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             fontSize: 13,
             color: 'var(--cp-blue)',
             background: 'none',
@@ -49,7 +49,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
 
       {active.length === 0 ? (
         <p style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           fontSize: 13,
           color: 'var(--fg-4)',
         }}>
@@ -80,7 +80,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
               >
                 {/* Name + title */}
                 <div style={{
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 14,
                   fontWeight: 600,
                   color: 'var(--fg-1)',
@@ -139,7 +139,7 @@ export function ReleaseHealthSection({ releases }: ReleaseHealthSectionProps) {
                   display: 'flex',
                   justifyContent: 'space-between',
                   marginTop: 8,
-                  fontFamily: 'Inter, system-ui, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 12,
                   color: 'var(--fg-4)',
                 }}>
