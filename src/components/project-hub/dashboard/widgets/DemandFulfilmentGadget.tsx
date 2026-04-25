@@ -1054,7 +1054,7 @@ function DemandRowItem({
               height: 6,
               flexShrink: 0,
               borderRadius: 3,
-              background: '#DFE1E6',
+              background: token('color.background.accent.gray.subtler', '#DCDFE4'),
               overflow: 'hidden',
             }}
           >
@@ -1102,7 +1102,7 @@ function DemandRowItem({
       {expanded && (
         <div
           style={{
-            background: '#FFFFFF',
+            background: token('elevation.surface', '#FFFFFF'),
             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
             paddingTop: 4,
             paddingBottom: 6,
@@ -1145,7 +1145,7 @@ function DemandRowItem({
                     minHeight: 40,
                     borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                     borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
-                    background: '#FFFFFF',
+                    background: token('elevation.surface', '#FFFFFF'),
                   }}
                 >
                   <span />
@@ -1298,7 +1298,7 @@ function DemandRowItem({
                           width: '100%',
                           height: 6,
                           borderRadius: 3,
-                          background: '#DFE1E6',
+                          background: token('color.background.accent.gray.subtler', '#DCDFE4'),
                           overflow: 'hidden',
                         }}
                       >
@@ -1333,7 +1333,7 @@ function DemandRowItem({
                             minHeight: 40,
                             borderTop: `1px solid ${token('color.border', '#DCDFE4')}`,
                             borderLeft: `3px solid ${token('color.border.brand', '#0C66E4')}`,
-                            background: '#FFFFFF',
+                            background: token('elevation.surface', '#FFFFFF'),
                           }}
                         >
                           <span />

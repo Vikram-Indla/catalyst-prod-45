@@ -19,12 +19,36 @@ import ProgressBar from '@atlaskit/progress-bar';
 import { Lozenge, EmptyState } from '@/components/ads';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 
-/** Status fill triple — kept as hex (Atlaskit has no semantic fill tokens). */
+/**
+ * Status fill triple — Apr 25, 2026 palette swap.
+ *   Old: To Do gray · In Progress blue · Blocked YELLOW (#FFF0B3) · Done green
+ *   New: To Do gray · In Progress blue · Blocked RED (Jira's actual blocked
+ *        category color) · Done green.
+ *
+ * Uses raw `var(--ds-*)` strings instead of `token('color.x')` because this
+ * constant evaluates at module-load time (before AdsThemeProvider wraps the
+ * tree). Atlaskit's `token()` is only safe inside render trees; at module
+ * scope it can throw "token is not defined" when the resolver isn't ready.
+ * The CSS variables resolve at paint time, theme-aware via the provider —
+ * same end result, zero module-init cost.
+ */
 const C = {
-  todo:       { fill: '#DFE1E6', text: '#253858' },
-  inProgress: { fill: '#DEEBFF', text: '#0747A6' },
-  blocked:    { fill: '#FFF0B3', text: '#974F0C' },
-  done:       { fill: '#E3FCEF', text: '#006644' },
+  todo: {
+    fill: 'var(--ds-background-accent-gray-subtler, #DCDFE4)',
+    text: 'var(--ds-text, #172B4D)',
+  },
+  inProgress: {
+    fill: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',
+    text: 'var(--ds-text-accent-blue, #0055CC)',
+  },
+  blocked: {
+    fill: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+    text: 'var(--ds-text-accent-red, #AE2A19)',
+  },
+  done: {
+    fill: 'var(--ds-background-accent-green-subtler, #BAF3DB)',
+    text: 'var(--ds-text-accent-green, #216E4E)',
+  },
 } as const;
 
 type ChartType = 'stacked' | 'hbar' | 'vbar' | 'donut';
@@ -211,7 +235,7 @@ export default function ItemsByStatusWidget({
               <div
                 style={{
                   fontSize: 11, fontWeight: 500,
-                  color: token('color.text.warning', '#974F0C'),
+                  color: token('color.text.danger', '#AE2A19'),
                   marginBottom: 8,
                 }}
               >
@@ -233,7 +257,7 @@ export default function ItemsByStatusWidget({
                       borderBottom: `0.5px solid ${token('color.border', '#F4F5F7')}`,
                     }}
                   >
-                    <Lozenge appearance="moved">{r.label}</Lozenge>
+                    <Lozenge appearance="removed">{r.label}</Lozenge>
                     <span
                       style={{
                         fontSize: 12, fontWeight: 500,

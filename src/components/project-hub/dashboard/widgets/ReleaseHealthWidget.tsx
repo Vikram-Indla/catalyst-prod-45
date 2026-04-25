@@ -99,7 +99,7 @@ export default function ReleaseHealthWidget({
         border: 0,
         cursor: 'pointer',
         fontSize: 12,
-        color: '#0052CC',
+        color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -123,9 +123,9 @@ export default function ReleaseHealthWidget({
     >
       {isLoading ? (
         <div className="animate-pulse space-y-3">
-          <div style={{ height: 14, width: '60%', background: '#F1F2F4', borderRadius: 3 }} />
-          <div style={{ height: 6, background: '#F1F2F4', borderRadius: 3 }} />
-          <div style={{ height: 14, width: '50%', background: '#F1F2F4', borderRadius: 3 }} />
+          <div style={{ height: 14, width: '60%', background: token('color.background.neutral.subtle', '#F1F2F4'), borderRadius: 3 }} />
+          <div style={{ height: 6, background: token('color.background.neutral.subtle', '#F1F2F4'), borderRadius: 3 }} />
+          <div style={{ height: 14, width: '50%', background: token('color.background.neutral.subtle', '#F1F2F4'), borderRadius: 3 }} />
         </div>
       ) : count === 0 ? (
         <EmptyState
@@ -138,7 +138,9 @@ export default function ReleaseHealthWidget({
           {(releases ?? []).slice(0, maxRows).map((rel: any) => {
             const pct = rel.completionPct ?? 0;
             const isDone = pct >= 100;
-            const fill = isDone ? '#006644' : '#0052CC';
+            const fill = isDone
+              ? token('color.background.success.bold', '#1F845A')
+              : token('color.background.brand.bold', '#0C66E4');
             return (
               <div
                 key={rel.id}
@@ -147,7 +149,7 @@ export default function ReleaseHealthWidget({
                   flexDirection: 'column',
                   gap: 4,
                   paddingBottom: 8,
-                  borderBottom: '1px solid #F1F2F4',
+                  borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                 }}
               >
                 <div
@@ -162,7 +164,7 @@ export default function ReleaseHealthWidget({
                     style={{
                       fontSize: 13,
                       fontWeight: 650,
-                      color: '#172B4D',
+                      color: token('color.text', '#172B4D'),
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
@@ -190,7 +192,7 @@ export default function ReleaseHealthWidget({
                       flex: 1,
                       height: 6,
                       borderRadius: 3,
-                      background: '#DFE1E6',
+                      background: token('color.background.accent.gray.subtler', '#DCDFE4'),
                       overflow: 'hidden',
                     }}
                   >
@@ -207,7 +209,7 @@ export default function ReleaseHealthWidget({
                     style={{
                       fontFamily: MONO_STACK,
                       fontSize: 11,
-                      color: '#42526E',
+                      color: token('color.text.subtle', '#505258'),
                       minWidth: 36,
                       textAlign: 'right',
                     }}
@@ -222,7 +224,7 @@ export default function ReleaseHealthWidget({
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     fontSize: 11,
-                    color: '#6B778C',
+                    color: token('color.text.subtlest', '#6B6E76'),
                   }}
                 >
                   <span>

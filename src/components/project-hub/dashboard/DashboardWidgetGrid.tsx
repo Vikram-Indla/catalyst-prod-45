@@ -1,24 +1,125 @@
 /**
- * DashboardWidgetGrid — 3-column grid, 16px gap
- * Handles widget visibility, ordering, and collapse state persistence
+ * DashboardWidgetGrid — 12-column position-driven grid.
+ *
+ * Apr 25, 2026 — context-based edit mode (RCA fix).
+ *   Each widget component (DemandFulfilmentGadget, QADefectsWidget, etc.)
+ *   already wraps itself in <WidgetWrapper>. The grid does NOT add a
+ *   second wrapper — it just sets the grid-cell `gridColumn: span N` and
+ *   broadcasts edit-mode state via context. WidgetWrapper consumes the
+ *   context to render the drag handle / resize buttons / collapse chevron
+ *   on each widget's own header — no double chrome.
+ *
+ * Visible widgets render in ascending `position`. Effective span =
+ *   max(span ?? defaultSpan, minSpan ?? 1), clamped to 12.
+ * `gridAutoFlow: row dense` lets later cards backfill earlier gaps.
  */
-import { useMemo, useEffect, useRef } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { token } from '@atlaskit/tokens';
+import { typedQuery } from '@/integrations/supabase/client';
 import { useAuth } from '@/lib/auth';
-import { WIDGET_REGISTRY } from './widget-registry';
+import { WIDGET_REGISTRY, type WidgetSpan } from './widget-registry';
 
 interface DashboardWidgetGridProps {
   projectId: string;
   projectKey: string;
+  isEditing?: boolean;
+  draftWidgets?: ResolvedWidget[];
+  onReorder?: (sourceId: string, targetId: string, edge: 'before' | 'after') => void;
+  onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
+  onToggleCollapse?: (widgetId: string) => void;
 }
 
-interface WidgetConfig {
+export interface DashboardWidgetConfig {
   widget_id: string;
   visible: boolean;
   position: number;
   collapsed: boolean;
+  span: number | null;
 }
+
+export interface ResolvedWidget {
+  id: string;
+  title: string;
+  subtitle?: string;
+  group: 'delivery' | 'quality' | 'team';
+  defaultSpan: WidgetSpan;
+  minSpan?: WidgetSpan;
+  defaultPosition: number;
+  component: WidgetDef['component'];
+  visible: boolean;
+  position: number;
+  collapsed: boolean;
+  span: number | null;
+}
+type WidgetDef = (typeof WIDGET_REGISTRY)[number];
+
+export function effectiveSpan(w: ResolvedWidget): number {
+  const base = w.span ?? w.defaultSpan;
+  const min = w.minSpan ?? 1;
+  return Math.max(min, Math.min(12, base));
+}
+
+export function resolveWidgets(configs: DashboardWidgetConfig[]): ResolvedWidget[] {
+  const map = new Map(configs.map((c) => [c.widget_id, c]));
+  return WIDGET_REGISTRY.map((def) => {
+    const cfg = map.get(def.id);
+    return {
+      ...def,
+      visible: cfg?.visible ?? true,
+      position: cfg?.position ?? def.defaultPosition,
+      collapsed: cfg?.collapsed ?? false,
+      span: cfg?.span ?? null,
+    } as ResolvedWidget;
+  }).sort((a, b) => a.position - b.position);
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Edit-mode contexts — consumed by WidgetWrapper inside each widget.
+// ────────────────────────────────────────────────────────────────────
+
+interface WidgetIdContextValue {
+  widgetId: string;
+  currentSpan: number;
+  minSpan: number;
+}
+export const WidgetIdContext = createContext<WidgetIdContextValue | null>(null);
+
+interface GridEditContextValue {
+  isEditing: boolean;
+  onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
+  onReorder?: (sourceId: string, targetId: string, edge: 'before' | 'after') => void;
+  onToggleCollapseDraft?: (widgetId: string) => void;
+}
+export const GridEditContext = createContext<GridEditContextValue>({
+  isEditing: false,
+});
+
+export function useWidgetEditState() {
+  const id = useContext(WidgetIdContext);
+  const grid = useContext(GridEditContext);
+  if (!id) return { isEditing: false } as const;
+  return {
+    isEditing: grid.isEditing,
+    widgetId: id.widgetId,
+    currentSpan: id.currentSpan as WidgetSpan,
+    minSpan: id.minSpan,
+    // Bound: "this widget" IS the subject of resize/collapse.
+    onResize: grid.onResize ? (dir: 'wider' | 'narrower') => grid.onResize!(id.widgetId, dir) : undefined,
+    onCollapseDraft: grid.onToggleCollapseDraft
+      ? () => grid.onToggleCollapseDraft!(id.widgetId)
+      : undefined,
+    // Raw (page-level): pragmatic-DnD's dropTarget runs on the TARGET widget,
+    // and the source is whichever widget was dragged. The WidgetWrapper needs
+    // to call onReorder(sourceId, thisWidgetId, edge) — neither argument is
+    // implicit. Expose the unbound version so it can pass both ids itself.
+    reorderRaw: grid.onReorder,
+  };
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Persistence hook — query, init, upsert, bulk upsert, reset.
+// ────────────────────────────────────────────────────────────────────
 
 export function useDashboardWidgetConfig(projectId: string) {
   const { user } = useAuth();
@@ -29,32 +130,33 @@ export function useDashboardWidgetConfig(projectId: string) {
     queryKey: ['dashboard-widget-config', projectId, userId],
     queryFn: async () => {
       if (!userId) return [];
-      const { data, error } = await typedQuery('dashboard_widget_config')
-        .select('widget_id, visible, position, collapsed')
+      const { data, error } = await typedQuery('dashboard_widget_config' as any)
+        .select('widget_id, visible, position, collapsed, span')
         .eq('project_id', projectId)
         .eq('user_id', userId);
       if (error) return [];
-      return (data ?? []) as WidgetConfig[];
+      return ((data ?? []) as unknown) as DashboardWidgetConfig[];
     },
     enabled: !!projectId && !!userId,
     staleTime: 60000,
   });
 
-  // Auto-initialize defaults when no config exists
   const initRef = useRef(false);
   const initMutation = useMutation({
     mutationFn: async () => {
       if (!userId) return;
-      const rows = WIDGET_REGISTRY.map(def => ({
+      const rows = WIDGET_REGISTRY.map((def) => ({
         project_id: projectId,
         user_id: userId,
         widget_id: def.id,
         visible: true,
         position: def.defaultPosition,
         collapsed: false,
+        span: def.defaultSpan,
       }));
-      await typedQuery('dashboard_widget_config')
-        .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
+      await typedQuery('dashboard_widget_config' as any).upsert(rows, {
+        onConflict: 'project_id,user_id,widget_id',
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-widget-config', projectId, userId] });
@@ -69,18 +171,21 @@ export function useDashboardWidgetConfig(projectId: string) {
   }, [isLoading, configs, userId]);
 
   const upsertMutation = useMutation({
-    mutationFn: async (updates: Partial<WidgetConfig> & { widget_id: string }) => {
+    mutationFn: async (updates: Partial<DashboardWidgetConfig> & { widget_id: string }) => {
       if (!userId) return;
-      const { error } = await typedQuery('dashboard_widget_config')
-        .upsert({
+      const { error } = await typedQuery('dashboard_widget_config' as any).upsert(
+        {
           project_id: projectId,
           user_id: userId,
           widget_id: updates.widget_id,
           visible: updates.visible ?? true,
           position: updates.position ?? 0,
           collapsed: updates.collapsed ?? false,
+          span: updates.span ?? null,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'project_id,user_id,widget_id' });
+        },
+        { onConflict: 'project_id,user_id,widget_id' },
+      );
       if (error) throw error;
     },
     onSuccess: () => {
@@ -89,19 +194,21 @@ export function useDashboardWidgetConfig(projectId: string) {
   });
 
   const bulkUpsertMutation = useMutation({
-    mutationFn: async (items: (Partial<WidgetConfig> & { widget_id: string })[]) => {
+    mutationFn: async (items: (Partial<DashboardWidgetConfig> & { widget_id: string })[]) => {
       if (!userId) return;
-      const rows = items.map(item => ({
+      const rows = items.map((item) => ({
         project_id: projectId,
         user_id: userId,
         widget_id: item.widget_id,
         visible: item.visible ?? true,
         position: item.position ?? 0,
         collapsed: item.collapsed ?? false,
+        span: item.span ?? null,
         updated_at: new Date().toISOString(),
       }));
-      const { error } = await typedQuery('dashboard_widget_config')
-        .upsert(rows, { onConflict: 'project_id,user_id,widget_id' });
+      const { error } = await typedQuery('dashboard_widget_config' as any).upsert(rows, {
+        onConflict: 'project_id,user_id,widget_id',
+      });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -109,148 +216,199 @@ export function useDashboardWidgetConfig(projectId: string) {
     },
   });
 
-  const widgets = useMemo(() => {
-    const configMap = new Map((configs ?? []).map(c => [c.widget_id, c]));
-    return WIDGET_REGISTRY.map(def => {
-      const cfg = configMap.get(def.id);
-      return {
-        ...def,
-        visible: cfg?.visible ?? true,
-        position: cfg?.position ?? def.defaultPosition,
-        collapsed: cfg?.collapsed ?? false,
-      };
-    }).sort((a, b) => a.position - b.position);
-  }, [configs]);
-
-  const visibleCount = widgets.filter(w => w.visible).length;
+  const widgets = useMemo(() => resolveWidgets(configs ?? []), [configs]);
+  const visibleCount = widgets.filter((w) => w.visible).length;
 
   return {
     widgets,
     visibleCount,
     isLoading,
     toggleVisibility: (widgetId: string) => {
-      const current = widgets.find(w => w.id === widgetId);
+      const current = widgets.find((w) => w.id === widgetId);
       if (current) {
-        upsertMutation.mutate({ widget_id: widgetId, visible: !current.visible, position: current.position, collapsed: current.collapsed });
+        upsertMutation.mutate({
+          widget_id: widgetId,
+          visible: !current.visible,
+          position: current.position,
+          collapsed: current.collapsed,
+          span: current.span,
+        });
       }
     },
     toggleCollapse: (widgetId: string) => {
-      const current = widgets.find(w => w.id === widgetId);
+      const current = widgets.find((w) => w.id === widgetId);
       if (current) {
-        upsertMutation.mutate({ widget_id: widgetId, visible: current.visible, position: current.position, collapsed: !current.collapsed });
+        upsertMutation.mutate({
+          widget_id: widgetId,
+          visible: current.visible,
+          position: current.position,
+          collapsed: !current.collapsed,
+          span: current.span,
+        });
       }
     },
     resetToDefaults: () => {
       bulkUpsertMutation.mutate(
-        WIDGET_REGISTRY.map(def => ({
+        WIDGET_REGISTRY.map((def) => ({
           widget_id: def.id,
           visible: true,
           position: def.defaultPosition,
           collapsed: false,
-        }))
+          span: def.defaultSpan,
+        })),
       );
     },
     setWidgetVisibility: (widgetId: string, visible: boolean) => {
-      const current = widgets.find(w => w.id === widgetId);
-      upsertMutation.mutate({ widget_id: widgetId, visible, position: current?.position ?? 0, collapsed: current?.collapsed ?? false });
+      const current = widgets.find((w) => w.id === widgetId);
+      upsertMutation.mutate({
+        widget_id: widgetId,
+        visible,
+        position: current?.position ?? 0,
+        collapsed: current?.collapsed ?? false,
+        span: current?.span ?? null,
+      });
+    },
+    persistDraft: async (draft: ResolvedWidget[]) => {
+      await bulkUpsertMutation.mutateAsync(
+        draft.map((w) => ({
+          widget_id: w.id,
+          visible: w.visible,
+          position: w.position,
+          collapsed: w.collapsed,
+          span: w.span ?? w.defaultSpan,
+        })),
+      );
     },
   };
 }
 
-// Fixed grid layout — 3 columns, 16px gap.
-//
-// Spans honor every widget's registry `minSpan`. List widgets (top-10
-// tabular views) claim span=2 so their Title column has room to breathe —
-// span=1 crushes titles into 3–5 wrap lines (caught Apr 19, 2026; see
-// TruncateCell docstring + widget-registry `minSpan` comment).
-//
-// Widgets needing full horizontal breathing room (team-workload's bar
-// chart; recent-activity stream) get span=3 for maximum legibility.
-const GRID_LAYOUT: { widgetIds: string[]; spans: number[] }[] = [
-  { widgetIds: ['milestones', 'release-health'], spans: [2, 1] },
-  { widgetIds: ['items-by-status', 'overdue', 'on-hold'], spans: [1, 1, 1] },
-  { widgetIds: ['prod-incidents', 'scope-change'], spans: [2, 1] },
-  { widgetIds: ['qa-defects', 'time-in-status'], spans: [2, 1] },
-  { widgetIds: ['team-workload'], spans: [3] },
-  { widgetIds: ['recent-activity'], spans: [3] },
-];
+// ────────────────────────────────────────────────────────────────────
+// Render — single 12-col grid. Each cell holds the widget DIRECTLY
+// (no outer WidgetWrapper). Edit-mode chrome surfaces via context
+// inside each widget's own WidgetWrapper.
+// ────────────────────────────────────────────────────────────────────
 
-export default function DashboardWidgetGrid({ projectId, projectKey }: DashboardWidgetGridProps) {
-  const { widgets, toggleCollapse } = useDashboardWidgetConfig(projectId);
+export default function DashboardWidgetGrid({
+  projectId,
+  projectKey,
+  isEditing,
+  draftWidgets,
+  onReorder,
+  onResize,
+  onToggleCollapse,
+}: DashboardWidgetGridProps) {
+  const { widgets: persistedWidgets, toggleCollapse: persistedToggleCollapse } =
+    useDashboardWidgetConfig(projectId);
 
-  const widgetMap = useMemo(() => new Map(widgets.map(w => [w.id, w])), [widgets]);
+  const widgetsToRender = isEditing && draftWidgets ? draftWidgets : persistedWidgets;
+  const visibleWidgets = widgetsToRender.filter((w) => w.visible);
 
-  // Dev-only assertion: GRID_LAYOUT must honor every widget's registry
-  // `minSpan`. If a span violates the minimum, log once so CI catches it in
-  // dev; the span is auto-upgraded at render to prevent crushed titles.
-  // (Production silently upgrades without noise.)
-  if (import.meta.env?.DEV) {
-    GRID_LAYOUT.forEach((row) => {
-      row.widgetIds.forEach((id, colIdx) => {
-        const w = widgetMap.get(id);
-        const min = w?.minSpan ?? 1;
-        const actual = row.spans[colIdx];
-        if (actual < min) {
-          console.warn(
-            `[DashboardWidgetGrid] Widget "${id}" requires minSpan=${min} ` +
-              `but layout assigned span=${actual}. Auto-upgrading at render. ` +
-              `Update GRID_LAYOUT to silence this warning.`,
-          );
-        }
-      });
-    });
-  }
+  const collapseHandler = isEditing ? onToggleCollapse : persistedToggleCollapse;
+
+  const editCtxValue: GridEditContextValue = {
+    isEditing: !!isEditing,
+    onResize,
+    onReorder,
+    onToggleCollapseDraft: isEditing ? onToggleCollapse : undefined,
+  };
 
   return (
-    <div className="flex flex-col min-w-0 w-full max-w-full overflow-hidden" style={{ gap: 16 }}>
-      {GRID_LAYOUT.map((row, rowIdx) => {
-        const visibleInRow = row.widgetIds.filter(id => widgetMap.get(id)?.visible);
-        if (visibleInRow.length === 0) return null;
+    <GridEditContext.Provider value={editCtxValue}>
+      {/* Inline responsive rules via @container queries. The container is
+          the dashboard grid itself, so the breakpoints react to the grid's
+          available width — not the viewport. This makes the dashboard
+          responsive even when embedded inside a side-rail or panel that
+          shrinks the available width without resizing the window.
 
-        return (
-          <div
-            key={rowIdx}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-              gap: 16,
-              width: '100%',
-              minWidth: 0,
-              maxWidth: '100%',
-            }}
-          >
-            {row.widgetIds.map((widgetId, colIdx) => {
-              const w = widgetMap.get(widgetId);
-              if (!w || !w.visible) return null;
-
-              // Auto-upgrade span to honor the widget's minSpan invariant.
-              const layoutSpan = row.spans[colIdx];
-              const minSpan = w.minSpan ?? 1;
-              const effectiveSpan = Math.max(layoutSpan, minSpan);
-
-              const WidgetComponent = w.component;
-              return (
-                <div
-                  key={widgetId}
-                  style={{
-                    gridColumn: `span ${effectiveSpan}`,
-                    minWidth: 0,
-                    maxWidth: '100%',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <WidgetComponent
-                    projectId={projectId}
-                    projectKey={projectKey}
-                    collapsed={w.collapsed}
-                    onToggleCollapse={() => toggleCollapse(widgetId)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        );
-      })}
-    </div>
+          Breakpoints (mirroring Atlassian Jira dashboard responsive grid):
+            ≥ 1280  → 12 columns (default)
+            960–1279 → 8 columns
+            640–959  → 4 columns
+            < 640    → 1 column (every visible widget = full width).
+                       Guarantees AT LEAST one widget visible at the
+                       narrowest breakpoint per the responsive contract.
+          The grid keeps `auto-flow: row dense` so smaller widgets backfill
+          gaps left by larger spans collapsing. */}
+      <style>{`
+        .ph-dashboard-grid {
+          container-type: inline-size;
+          container-name: phgrid;
+        }
+        @container phgrid (max-width: 1279px) {
+          .ph-dashboard-grid > .ph-dashboard-grid-inner {
+            grid-template-columns: repeat(8, minmax(0, 1fr)) !important;
+          }
+          .ph-dashboard-grid > .ph-dashboard-grid-inner > [data-span] {
+            grid-column: span min(var(--ph-span), 8) !important;
+          }
+        }
+        @container phgrid (max-width: 959px) {
+          .ph-dashboard-grid > .ph-dashboard-grid-inner {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+          }
+          .ph-dashboard-grid > .ph-dashboard-grid-inner > [data-span] {
+            grid-column: span min(var(--ph-span), 4) !important;
+          }
+        }
+        @container phgrid (max-width: 639px) {
+          .ph-dashboard-grid > .ph-dashboard-grid-inner {
+            grid-template-columns: 1fr !important;
+          }
+          .ph-dashboard-grid > .ph-dashboard-grid-inner > [data-span] {
+            grid-column: 1 / -1 !important;
+          }
+        }
+      `}</style>
+      <div
+        className="ph-dashboard-grid"
+        style={{ width: '100%', minWidth: 0, maxWidth: '100%' }}
+      >
+      <div
+        className="ph-dashboard-grid-inner"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
+          gap: token('space.300', '24px'),
+          gridAutoFlow: 'row dense',
+          width: '100%',
+          minWidth: 0,
+          maxWidth: '100%',
+        }}
+      >
+        {visibleWidgets.map((w) => {
+          const span = effectiveSpan(w);
+          const WidgetComponent = w.component;
+          return (
+            <div
+              key={w.id}
+              data-span={span}
+              style={{
+                gridColumn: `span ${span}`,
+                ['--ph-span' as any]: String(span),
+                minWidth: 0,
+                maxWidth: '100%',
+                overflow: 'hidden',
+              }}
+            >
+              <WidgetIdContext.Provider
+                value={{
+                  widgetId: w.id,
+                  currentSpan: span,
+                  minSpan: w.minSpan ?? 1,
+                }}
+              >
+                <WidgetComponent
+                  projectId={projectId}
+                  projectKey={projectKey}
+                  collapsed={w.collapsed}
+                  onToggleCollapse={() => collapseHandler?.(w.id)}
+                />
+              </WidgetIdContext.Provider>
+            </div>
+          );
+        })}
+      </div>
+      </div>
+    </GridEditContext.Provider>
   );
 }

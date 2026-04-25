@@ -17,7 +17,7 @@ const tileStyles = {
 const tileLayoutStyles = xcss({
   width: '96px',
   height: '96px',
-  borderRadius: 'border.radius.200',
+  borderRadius: 'border.radius',
   padding: 'space.100',
 });
 

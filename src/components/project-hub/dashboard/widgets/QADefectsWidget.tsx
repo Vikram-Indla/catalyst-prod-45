@@ -29,6 +29,9 @@ import {
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
+import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import PriorityIcon from '@/components/shared/PriorityIcon';
+import RelativeTime from '@/components/shared/RelativeTime';
 
 export default function QADefectsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('qa', projectKey);
@@ -66,7 +69,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
         border: 0,
         cursor: 'pointer',
         fontSize: 12,
-        color: 'var(--cp-blue)',
+        color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -82,12 +85,17 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
   // so each column sizes to its longest cell and the widget body scrolls
   // horizontally when the row is wider than the container. This gives
   // users the full title text (no ellipsis) with comfortable margins.
+  // 6-column layout (Apr 25, 2026): adds Priority + Age. Defects use the
+  // `severity` column from tm_defects which holds the same Atlassian
+  // priority strings (Highest/High/Medium/Low/Lowest) as ph_issues.priority.
   const head = {
     cells: [
-      { key: 'key', content: 'Key', isSortable: true },
-      { key: 'title', content: 'Title', isSortable: false },
-      { key: 'status', content: 'Status', isSortable: true },
+      { key: 'priority', content: 'P',        isSortable: true },
+      { key: 'key',      content: 'Key',      isSortable: true },
+      { key: 'title',    content: 'Title',    isSortable: false },
+      { key: 'status',   content: 'Status',   isSortable: true },
       { key: 'assignee', content: 'Assignee', isSortable: false },
+      { key: 'age',      content: 'Age',      isSortable: true },
     ],
   };
 
@@ -95,21 +103,34 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
     const assigneeName = d.jira_assignee_name || '';
     const displayKey = d.jira_key || d.defect_key;
     const statusLabel = (d.status || 'open').replace(/_/g, ' ');
+    const priorityValue = d.priority ?? d.severity ?? null;
     return {
       key: d.id,
       cells: [
+        {
+          key: 'priority',
+          content: (
+            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <PriorityIcon level={priorityValue} size={14} />
+            </span>
+          ),
+        },
         {
           key: 'key',
           content: (
             <span
               style={{
-                color: token('color.link', '#0052CC'),
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                color: token('color.link', '#0C66E4'),
                 fontWeight: 500,
-                fontFamily: 'var(--cp-font-mono)',
+                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 fontSize: 12,
                 whiteSpace: 'nowrap',
               }}
             >
+              <WorkItemIcon type={normalizeIconType((d as any).issue_type ?? 'bug')} size={14} />
               {displayKey}
             </span>
           ),
@@ -136,7 +157,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               <span
                 style={{
                   fontSize: 12,
-                  color: token('color.text.subtle', '#42526E'),
+                  color: token('color.text.subtle', '#505258'),
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -145,7 +166,21 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               </span>
             </div>
           ) : (
-            <span style={{ color: token('color.text.subtlest', '#6B778C') }}>—</span>
+            <span style={{ color: token('color.text.subtlest', '#6B6E76') }}>—</span>
+          ),
+        },
+        {
+          key: 'age',
+          content: (
+            <RelativeTime
+              iso={d.created_at ?? d.jira_created_at ?? null}
+              style={{
+                fontSize: 11,
+                color: token('color.text.subtle', '#505258'),
+                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                whiteSpace: 'nowrap',
+              }}
+            />
           ),
         },
       ],

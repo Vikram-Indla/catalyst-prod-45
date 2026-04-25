@@ -14,6 +14,7 @@ import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
+import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
 import WidgetGearButton from '../WidgetGearButton';
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
@@ -60,7 +61,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
         border: 0,
         cursor: 'pointer',
         fontSize: 12,
-        color: 'var(--cp-blue)',
+        color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -102,15 +103,18 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               className="flex items-center gap-2 w-full min-w-0"
               style={{
                 height: 36,
-                borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}`,
+                borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                 fontSize: 12,
               }}
             >
+              <span style={{ flexShrink: 0, display: 'inline-flex' }}>
+                <WorkItemIcon type={normalizeIconType((item as any).issue_type)} size={14} />
+              </span>
               <span
                 style={{
-                  color: token('color.link', '#0052CC'),
+                  color: token('color.link', '#0C66E4'),
                   fontWeight: 500,
-                  fontFamily: 'var(--cp-font-mono)',
+                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                   fontSize: 11,
                   flexShrink: 0,
                 }}

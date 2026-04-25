@@ -29,6 +29,9 @@ import {
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
+import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import PriorityIcon from '@/components/shared/PriorityIcon';
+import RelativeTime from '@/components/shared/RelativeTime';
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('incidents', projectKey);
@@ -67,7 +70,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         border: 0,
         cursor: 'pointer',
         fontSize: 12,
-        color: 'var(--cp-blue)',
+        color: token('color.link', '#0C66E4'),
         padding: 0,
         display: 'flex',
         alignItems: 'center',
@@ -83,12 +86,15 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   // so each column sizes to its longest cell and the widget body scrolls
   // horizontally when the row is wider than the container. This gives
   // users the full title text (no ellipsis) with comfortable margins.
+  // 6-column layout (Apr 25, 2026): adds Priority + Started.
   const head = {
     cells: [
-      { key: 'key', content: 'Key', isSortable: true },
-      { key: 'title', content: 'Title', isSortable: false },
-      { key: 'status', content: 'Status', isSortable: true },
-      { key: 'assignee', content: 'Assignee', isSortable: false },
+      { key: 'priority', content: 'P',         isSortable: true },
+      { key: 'key',      content: 'Key',       isSortable: true },
+      { key: 'title',    content: 'Title',     isSortable: false },
+      { key: 'status',   content: 'Status',    isSortable: true },
+      { key: 'assignee', content: 'Assignee',  isSortable: false },
+      { key: 'started',  content: 'Started',   isSortable: true },
     ],
   };
 
@@ -104,17 +110,32 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       key: inc.id,
       cells: [
         {
+          key: 'priority',
+          content: (
+            <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <PriorityIcon level={inc.priority ?? null} size={14} />
+            </span>
+          ),
+        },
+        {
           key: 'key',
           content: (
             <span
               style={{
-                color: token('color.link', '#0052CC'),
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                color: token('color.link', '#0C66E4'),
                 fontWeight: 500,
-                fontFamily: 'var(--cp-font-mono)',
+                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 fontSize: 12,
                 whiteSpace: 'nowrap',
               }}
             >
+              <WorkItemIcon
+                type={normalizeIconType((inc as any).issue_type ?? 'production_incident')}
+                size={14}
+              />
               {inc.issue_key ?? ''}
             </span>
           ),
@@ -147,7 +168,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               <span
                 style={{
                   fontSize: 12,
-                  color: token('color.text.subtle', '#42526E'),
+                  color: token('color.text.subtle', '#505258'),
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -156,7 +177,21 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               </span>
             </div>
           ) : (
-            <span style={{ color: token('color.text.subtlest', '#6B778C') }}>—</span>
+            <span style={{ color: token('color.text.subtlest', '#6B6E76') }}>—</span>
+          ),
+        },
+        {
+          key: 'started',
+          content: (
+            <RelativeTime
+              iso={inc.jira_created_at ?? inc.created_at ?? null}
+              style={{
+                fontSize: 11,
+                color: token('color.text.subtle', '#505258'),
+                fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+                whiteSpace: 'nowrap',
+              }}
+            />
           ),
         },
       ],

@@ -1,12 +1,23 @@
 /**
- * WidgetGearButton — Standardized gear icon for the widget header.
+ * WidgetGearButton — Atlaskit Popup rebuild (Apr 25, 2026).
  *
- * Always visible (FP-009). Shows a small blue dot when filters are active
- * (FP-010). Opens the per-gadget settings panel via popover.
+ * Replaces the shadcn Popover + bespoke <button> + hex palette with
+ * @atlaskit/popup via the Catalyst ADS wrapper, anchored on Atlaskit's
+ * IconButton (32×32 standard hit-target). Indicator dot routed through
+ * the brand-bold token instead of legacy hex `#0052CC`.
+ *
+ * Atlaskit's IconButton from `@atlaskit/button/new` is used directly here
+ * because the Popup trigger callback needs to forward `ref` + aria-*
+ * props onto the anchor; the Catalyst <IconButton> wrapper drops those.
+ *
+ * Always visible (FP-009). Shows a small brand-colored dot when filters
+ * are active (FP-010). Opens the per-gadget settings panel via popup.
  */
 import { useState } from 'react';
 import { Settings } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { token } from '@atlaskit/tokens';
+import { IconButton as AkIconButton } from '@atlaskit/button/new';
+import { Popup } from '@/components/ads';
 import GadgetSettingsPanel from './GadgetSettingsPanel';
 import { useGadgetSettings, type GadgetType } from '@/hooks/useGadgetSettings';
 
@@ -21,57 +32,42 @@ export default function WidgetGearButton({ gadgetType, projectKey, projectId }: 
   const { settings, save, clear, isDefault } = useGadgetSettings(gadgetType, projectKey);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          aria-label="Gadget settings"
-          onClick={(e) => e.stopPropagation()}
-          style={{
-            position: 'relative',
-            background: 'transparent',
-            border: 0,
-            padding: 4,
-            cursor: 'pointer',
-            borderRadius: 3,
-            display: 'flex',
-            alignItems: 'center',
-            color: '#7A869A',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = '#F4F5F7')}
-          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-        >
-          <Settings size={14} />
+    <Popup
+      isOpen={open}
+      onClose={() => setOpen(false)}
+      placement="bottom-end"
+      maxWidth={320}
+      testId="widget-gear-popup"
+      trigger={(triggerProps) => (
+        <span style={{ position: 'relative', display: 'inline-flex' }}>
+          <AkIconButton
+            {...triggerProps}
+            label="Gadget settings"
+            icon={() => <Settings size={14} />}
+            appearance="subtle"
+            isSelected={open}
+            onClick={() => setOpen((o) => !o)}
+            testId="widget-gear-trigger"
+          />
           {!isDefault && (
             <span
               aria-hidden
               style={{
                 position: 'absolute',
-                top: 2,
-                right: 2,
+                top: 4,
+                right: 4,
                 width: 6,
                 height: 6,
                 borderRadius: '50%',
-                background: '#0052CC',
-                border: '1px solid #FFFFFF',
+                background: token('color.background.brand.bold', '#0C66E4'),
+                border: `1px solid ${token('elevation.surface', '#FFFFFF')}`,
+                pointerEvents: 'none',
               }}
             />
           )}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        sideOffset={6}
-        className="p-0"
-        style={{
-          width: 320,
-          background: '#FFFFFF',
-          border: '1px solid #DFE1E6',
-          borderRadius: 4,
-          boxShadow: '0 8px 24px rgba(9,30,66,.18)',
-          padding: 0,
-        }}
-      >
+        </span>
+      )}
+      content={() => (
         <GadgetSettingsPanel
           gadgetType={gadgetType}
           projectKey={projectKey}
@@ -86,7 +82,7 @@ export default function WidgetGearButton({ gadgetType, projectKey, projectId }: 
             clear();
           }}
         />
-      </PopoverContent>
-    </Popover>
+      )}
+    />
   );
 }
