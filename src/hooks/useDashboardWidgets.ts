@@ -468,7 +468,7 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       const scoped = (activity ?? []).filter((a: any) => issueMap.has(a.work_item_id)).slice(0, 20);
 
       // Step C: merge
-      return (activity ?? []).map((a: any) => {
+      return scoped.map((a: any) => {
         const issue = issueMap.get(a.work_item_id);
         return {
           id: a.id,
