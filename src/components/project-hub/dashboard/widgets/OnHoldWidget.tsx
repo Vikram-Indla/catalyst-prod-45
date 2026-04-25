@@ -39,7 +39,9 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
         project: projectKey,
         hubSource: ['projecthub'],
         dataType: 'onhold',
-        title: `On Hold Items · ${projectKey}`,
+        title: `On Hold · ${projectKey}`,
+        dateFrom: settings.dateFrom ?? null,
+        dateTo: settings.dateTo ?? null,
       })}
       style={{
         background: 'transparent',
@@ -109,7 +111,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
               >
                 {item.summary}
               </span>
-              <StatusLozenge status="todo">ON HOLD</StatusLozenge>
+              <StatusLozenge status="todo">{(item.status ?? 'ON HOLD').toUpperCase()}</StatusLozenge>
             </div>
           ))}
         </div>
