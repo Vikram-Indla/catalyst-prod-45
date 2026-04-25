@@ -82,7 +82,6 @@ const keyPressableStyles = xcss({
 // -webkit-line-clamp idiom — token-resolved colour, no literal hex.
 const summaryStyles = xcss({
   display: '-webkit-box',
-  // @ts-expect-error — non-standard but required for line-clamp; safe per ADS guidance.
   WebkitLineClamp: '2',
   WebkitBoxOrient: 'vertical',
   overflow: 'hidden',
