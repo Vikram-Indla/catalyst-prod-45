@@ -26,6 +26,7 @@ import type { UWVColumn, UWVItem, UWVPrefs } from './uwv.types';
 
 interface Props {
   title: string;
+  subtitle?: string;
   filteredCount: number;
   totalCount: number;
   searchText: string;
