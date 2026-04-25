@@ -72,7 +72,7 @@ export const DEFAULT_GADGET_SETTINGS: GadgetSettings = {
 
 const ALL_GADGET_TYPES: GadgetType[] = [
   'demand', 'release', 'incidents', 'qa',
-  'items', 'overdue', 'onhold', 'workload', 'activity',
+  'items', 'overdue', 'onhold', 'workload', 'activity', 'scope',
 ];
 
 export function broadcastDateToAllGadgets(
