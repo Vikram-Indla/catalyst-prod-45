@@ -561,7 +561,11 @@ export default function StoryDetailModal({
       summary: 'title', description: 'description', description_text: 'description',
       description_adf: 'description_adf_raw', labels: 'tags',
       assignee_account_id: 'assignee_id', reporter_account_id: 'reporter_id',
-      status_category: null, fix_versions: null, acceptance_criteria: null, parent_key: null,
+      // Catalyst now has parity columns added in migration 20260425185838
+      status_category: 'status_category',
+      fix_versions: 'fix_versions',
+      acceptance_criteria: 'acceptance_criteria',
+      parent_key: 'parent_key',
     };
     return f in m ? m[f] : f;
   };
