@@ -154,21 +154,48 @@ export function useDashboardWidgetConfig(projectId: string) {
         collapsed: false,
         span: def.defaultSpan,
       }));
-      await typedQuery('dashboard_widget_config' as any).upsert(rows, {
+      const { error } = await typedQuery('dashboard_widget_config' as any).upsert(rows, {
         onConflict: 'project_id,user_id,widget_id',
       });
+      if (error) {
+        // Surface init failures so we don't fall through to a stateless
+        // dashboard silently. Common causes: invalid project_id (UUID
+        // mismatch), FK violation, RLS denial.
+        // eslint-disable-next-line no-console
+        console.error('[DashboardWidgetGrid] init upsert failed:', error, {
+          projectId,
+          userId,
+          rowCount: rows.length,
+        });
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-widget-config', projectId, userId] });
     },
+    onError: (err: any) => {
+      // eslint-disable-next-line no-console
+      console.error('[DashboardWidgetGrid] init mutation error:', err?.message ?? err);
+    },
   });
 
   useEffect(() => {
-    if (!isLoading && configs && configs.length === 0 && userId && !initRef.current) {
+    // Don't fire init while projectId is the page's "none" sentinel —
+    // that string fails Supabase's UUID type cast and produces a 400.
+    const projectIdValid =
+      typeof projectId === 'string' && projectId !== 'none' && projectId.length > 0;
+    if (
+      !isLoading &&
+      configs &&
+      configs.length === 0 &&
+      userId &&
+      projectIdValid &&
+      !initRef.current
+    ) {
       initRef.current = true;
       initMutation.mutate();
     }
-  }, [isLoading, configs, userId]);
+  }, [isLoading, configs, userId, projectId]);
 
   const upsertMutation = useMutation({
     mutationFn: async (updates: Partial<DashboardWidgetConfig> & { widget_id: string }) => {

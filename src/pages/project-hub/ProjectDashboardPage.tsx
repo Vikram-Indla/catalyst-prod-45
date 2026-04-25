@@ -46,28 +46,32 @@ function ProjectDashboardPageInner() {
   const [savedFlag, setSavedFlag] = useState(false);
 
   const { data: project, isLoading } = useQuery({
-    queryKey: ['ph-project-dashboard-v4', key],
+    queryKey: ['ph-project-dashboard-v5', key],
     queryFn: async () => {
       if (!key) return null;
       const upper = key.toUpperCase();
-      const { data: d1 } = await supabase
-        .from('ph_projects')
-        .select('*')
-        .eq('key', upper)
-        .maybeSingle();
-      if (d1) return d1;
-      const { data: d2 } = await supabase
+      // Resolve to canonical `public.projects` row first — the
+      // dashboard_widget_config.project_id FK targets projects(id), so
+      // returning a ph_projects.id (different uuid) would silently fail
+      // the FK on upsert. Prefer projects, fall back to ph_projects.
+      const { data: canonical } = await supabase
         .from('projects')
         .select('*')
         .eq('key', upper)
         .maybeSingle();
-      if (d2) return d2;
-      const { data: d3 } = await supabase
+      if (canonical) return canonical;
+      const { data: canonicalCi } = await supabase
         .from('projects')
         .select('*')
         .ilike('key', upper)
         .maybeSingle();
-      return d3 ?? null;
+      if (canonicalCi) return canonicalCi;
+      const { data: ph } = await supabase
+        .from('ph_projects')
+        .select('*')
+        .eq('key', upper)
+        .maybeSingle();
+      return ph ?? null;
     },
     enabled: !!key,
   });

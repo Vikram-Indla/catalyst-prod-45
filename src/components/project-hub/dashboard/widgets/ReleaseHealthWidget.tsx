@@ -16,6 +16,7 @@
  *   - Empty state via <EmptyState>
  */
 import { AlertTriangle } from 'lucide-react';
+import { token } from '@atlaskit/tokens';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
@@ -233,7 +234,9 @@ export default function ReleaseHealthWidget({
                   {rel.targetDate && (
                     <span
                       style={{
-                        color: rel.atRisk ? '#974F0C' : '#6B778C',
+                        color: rel.atRisk
+                          ? token('color.text.warning', '#A54800')
+                          : token('color.text.subtlest', '#6B6E76'),
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 4,
