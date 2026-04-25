@@ -25,7 +25,6 @@ import {
 import { AttachmentPreviewModal } from './AttachmentPreviewModal';
 import './AttachmentsSection.css';
 
-const BUCKET = 'attachments';
 const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024; // 25MB
 const BLOCKED_EXTS = ['exe', 'bat', 'sh', 'msi', 'cmd', 'com', 'scr'];
 
@@ -40,11 +39,15 @@ export interface PhAttachment {
   created_at: string;
 }
 
+type WorkItemSource = 'jira' | 'catalyst';
+
 interface AttachmentsSectionProps {
   attachments: PhAttachment[];
   itemId: string;
   userId: string;
   projectKey?: string;
+  /** Routes table + storage bucket. Defaults to 'jira' for back-compat. */
+  source?: WorkItemSource;
 }
 
 type SortKey = 'name' | 'size' | 'dateAdded';
