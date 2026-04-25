@@ -759,25 +759,13 @@ index.html @font-face
 ❌ No fallback chains to Inter/Sora/JetBrains Mono — they are retired
 ```
 
-### Known P0 backlog (residual literals — fix on next touch)
+### Known P0 backlog
 
-Files with remaining literal `font-family` values that predate F5 and must be
-bridged when their hub is next worked on:
+✅ **CLEARED Apr 2026** — full codebase sweep completed. Zero literal violations remain.
 
-- `src/styles/product-cards.css` — multiple Sora/Inter/JetBrains literals
-- `src/styles/testhub.css` — multiple Inter literals
-- `src/styles/dept-intelligence.css` — Sora/Inter/JetBrains in token defs
-- `src/styles/ai-intelligence.css` — Sora/Inter/JetBrains in token defs
-- `src/styles/r360.css` — Inter/JetBrains literals
-- `src/styles/workhub.module.css` — Inter/Sora/JetBrains in token defs
-- `src/styles/workstreams.css` — Inter literal
-- `src/styles/activity-pilot.css` — JetBrains Mono literal
-- `src/modules/project-work-hub/**` — JetBrains Mono in JSX inline styles
-- `src/styles/catalyst-typography.css` — `--ds-font-*` override block (Inter)
-- `src/modules/task10/styles/` — Inter in token defs
-
-Do NOT mass-migrate all files at once. Fix opportunistically when those files
-are open for other work, one hub at a time.
+Only intentional exclusions:
+- `src/styles/catalyst-typography.css` — deliberate `--ds-font-*` ADS token override (Inter fallback for ADS surfaces that haven't migrated to Charlie). Do not touch.
+- `src/modules/project-work-hub/components/dialogs/StoryDetailModal.tsx` — `"Atlassian Sans"` in ADF renderer inline styles: intentional Jira parity, documented in code comments.
 
 ---
 
