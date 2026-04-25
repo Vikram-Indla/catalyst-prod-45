@@ -385,23 +385,26 @@ export default function StoryDetailModal({
   });
 
   const { data: activityLog = [] } = useQuery({
-    queryKey: ['ph-activity-log', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
+    queryKey: ['ph-activity-log', itemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!itemId && isOpen && !!issue,
     queryFn: async () => {
-      // 1) Catalyst-native activity (ph_activity_log)
-      const { data: phData } = await supabase.from('ph_activity_log').select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const isCatalyst = !!(issue as any)?.__catalyst_source;
+      const tbl = isCatalyst ? 'catalyst_activity_log' : 'ph_activity_log';
+      // 1) Native activity log (source-aware table)
+      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
       const phRows = phData ?? [];
-      const userIds = [...new Set(phRows.map(e => e.user_id).filter(Boolean))];
+      const userIds = [...new Set(phRows.map((e: any) => e.user_id).filter(Boolean))];
       // §19 chokepoint: select full_name only, resolve avatar locally.
       const { data: profiles } = userIds.length
         ? await supabase.from('profiles').select('id, full_name, email').in('id', userIds)
         : { data: [] as any[] };
       const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, localizeAvatar(p)]));
-      const phMapped = phRows.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
+      const phMapped = phRows.map((e: any) => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
 
       // 2) Jira-synced changelog (jira_sync_changelog) — read-only, keyed by issue_key.
-      // §19 chokepoint: drop author_avatar_url from SELECT, resolve via display_name.
+      // Only relevant for Jira-sourced items.
       let jiraMapped: any[] = [];
-      if (issue?.issue_key) {
+      if (!isCatalyst && issue?.issue_key) {
         const { data: jiraRows } = await supabase
           .from('jira_sync_changelog')
           .select('id, author_display_name, author_account_id, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
