@@ -161,7 +161,7 @@ export function useCreateStoryMutation() {
           priority: form.priority,
           assignee_id: uuid(form.assigneeId),
           reporter_id: uuid(form.reporterId),
-          release_id: uuid(form.releaseId),
+          release_id: form.releaseId && form.releaseId.trim() !== '' ? form.releaseId : null,
           parent_id: uuid(form.parentId),          // was dead — now wired
           labels: form.labels.length > 0 ? form.labels : [],  // was dead — now wired
           tags: form.tags.length > 0 ? form.tags : [],
