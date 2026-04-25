@@ -1,6 +1,6 @@
 # CLAUDE.md — Catalyst Platform Context
 ## Claude Code Persistent Context File
-## Last Updated: April 2026 | Owner: Vikram (Delivery Manager)
+## Last Updated: April 2026 (F5 font lock) | Owner: Vikram (Delivery Manager)
 
 > **READ THIS FILE FIRST — BEFORE TOUCHING ANY CODE.**
 > This file is the authoritative context for all Claude Code work on the Catalyst platform.
@@ -23,11 +23,14 @@ Styling:    Tailwind CSS + shadcn/ui
 Backend:    Supabase (PostgreSQL + Edge Functions + Auth)
 Data:       TanStack Query (React Query)
 Icons:      Lucide React for UI chrome; canonical SVGs for work-item types (see §11)
-Builder:    Lovable AI (Claude Code now assists/replaces for fixes)
+Builder:    Claude Code (primary); Lovable AI retired from active use
 Fonts:      Charlie Display (headings) · Charlie Text (body/UI) · Charlie Code (data)
-            Served via Atlassian DS CDN (@font-face in index.html). Arabic i18n: IBM Plex
-            Sans Arabic + Noto Naskh Arabic (Google Fonts). Any other literal font-family
-            in the codebase outside @font-face is a P0 bug.
+            Served via Atlassian DS CDN (@font-face in index.html).
+            Arabic i18n: IBM Plex Sans Arabic + Noto Naskh Arabic (Google Fonts — kept).
+            ADS typography activated: setGlobalTheme({ typography: 'typography' }) in
+            src/theme/ads/AdsThemeProvider.tsx.
+            F2–F5 migration COMPLETE (Apr 2026) — Inter/Sora/JetBrains Mono fully retired.
+            Any literal font-family outside @font-face is a P0 bug — fix immediately.
 
 Atlassian Design System / Atlaskit:
   Active migration target. Catalyst is being migrated to @atlaskit/* and the
@@ -78,10 +81,12 @@ Home | StrategyHub | ProductHub | ProjectHub | ReleaseHub | TestHub | IncidentHu
 | Hub 5 — TestHub | ✅ SHIPPED | `tm_test_cases` (NOT legacy `test_cases`) |
 | Hub 6 — IncidentHub | ✅ SHIPPED | |
 | Hub 7 — TaskHub | ✅ SHIPPED | |
-| Hub 8 — PlanHub | ✅ SHIPPED | Planner V9, ringfenced `--planner-*` tokens |
+| Hub 8 — PlanHub | ✅ SHIPPED | Planner V9; typography bridge to `--cp-font-*` live (F5/L43) |
 | Hub 9 — WikiHub | ✅ SHIPPED | RAG-powered, 9 domains |
 
-**Active Pipeline:** ECLIPSE v2.0 — NOCTURNE Dark Mode conversion
+**Active Pipelines:**
+- ECLIPSE v2.0 — NOCTURNE Dark Mode conversion (ongoing)
+- Font Migration F2–F5 — ✅ COMPLETE (Apr 2026) — Charlie ADS fonts locked across all hubs
 
 ---
 
@@ -368,6 +373,10 @@ grep -rn ".dark .bg-white" src/
 grep -rn "style={{" src/components/[HubName]/
 grep -rn "background.*#" src/components/[HubName]/
 
+# Before touching any CSS / style prop — font literal audit (P0 ban)
+grep -rn "font-family.*'Inter'\|font-family.*'Sora'\|font-family.*'JetBrains" src/
+# Any hit outside @font-face is a P0 bug — bridge to var(--cp-font-*)
+
 # After a dark mode fix — verify NOCTURNE
 # Expected: rgb(26, 23, 20) computed in browser DevTools
 ```
@@ -495,15 +504,31 @@ BANNED substitutions (zero tolerance):
 ### Pipeline State (Current)
 
 ```
-Active pipeline:   ECLIPSE v2.0 — NOCTURNE Dark Mode
+Active pipeline:   ECLIPSE v2.0 — NOCTURNE Dark Mode (ongoing)
+Completed:         Font Migration F2–F5 (Apr 2026) — Charlie ADS, all hubs bridged
 Quality gate:      GOD-TIER ≥9.5/10
 
-Hub states:
+ECLIPSE NOCTURNE hub states:
   Hub 0 (Nav):         ✅ DONE
   Hub 1 (Strategy):    🟡 Regression pending
   Hub 2 (Product):     🟡 Fix unverified
   Hub 3 (Project):     🔴 Active fix — inline style violations
   Hub 4+ :             ✅ Light mode complete, dark mode TBD
+
+Font pipeline hub states (F4 — ALL ✅ COMPLETE):
+  release-hub.module.css      --rh-font-* → var(--cp-font-*)
+  product-kanban.css          --pk-font-* → var(--cp-font-*)
+  initiative-detail-panel.css --idp-font-* → var(--cp-font-*)
+  task-detail-modal-enterprise.css --tm-font-* → var(--cp-font-*)
+  budget-module.css           --budget-font-* → var(--cp-font-*)
+  capacity-module.css         --ct-font-* → var(--cp-font-*)
+  users-module.css            --usr-font-* → var(--cp-font-*)  [renamed from --ct-*]
+  workhub-tokens.css          --wh-f* → var(--cp-font-*)
+  caty.css                    --caty-font-family → var(--cp-font-body)
+  mytasks.css                 --mytasks-id-font-family → var(--cp-font-mono)
+  roadmap-ringfenced.css      already bridged (no change needed)
+  planhub.css                 --ph-font → var(--cp-font-body)  [F5/G1 sign-off]
+  planner-calendar.css        --pln-cal-font-family → var(--cp-font-body)  [F5/G1]
 ```
 
 ### Forge → Claude Code Handoff Protocol
@@ -550,6 +575,9 @@ FP-007: Status-coloured version badges → neutral gray only
 FP-008: Lucide icons for work item types → use canonical SVGs
 FP-009: HSL values in style props → hex only
 FP-010: Duplicate .dark blocks → consolidate
+FP-011: Literal font-family values outside @font-face → P0 bug; bridge to var(--cp-font-*)
+         Banned literals: 'Inter', 'Sora', 'JetBrains Mono', 'Atlassian Sans',
+         'Playfair Display', 'Plus Jakarta Sans', system font stacks in component CSS
 ```
 
 ---
@@ -611,16 +639,27 @@ Column guards:
 src/
   components/
     [HubName]/          ← hub-scoped components
-    shared/             ← cross-hub reusable
-    ui/                 ← shadcn primitives (never modify)
+    shared/             ← cross-hub reusable (WorkItemIcon, StatusLozenge, etc.)
+    ui/                 ← shadcn primitives (NEVER modify)
   hooks/
     use[Feature].ts     ← TanStack Query hooks
   lib/
     supabase.ts         ← single supabase client
     [hub]-service.ts    ← data layer per hub
+    avatars.ts          ← SOLE avatar resolver (§19 chokepoint)
+  modules/
+    [hub-name]/         ← self-contained hub modules (planner, workhub, product-roadmap…)
+      components/       ← module-local components
+      styles/           ← module-local CSS (ring-fenced token namespaces)
+      pages/            ← module route entries
   pages/
-    [HubName].tsx       ← route entry point
-  index.css             ← global tokens + ECLIPSE dark mode overrides
+    [HubName].tsx       ← top-level route entry point
+  styles/               ← hub-scoped CSS files (ring-fenced --xx-* tokens; see §20)
+    [hub].css           ← one file per hub surface
+  theme/
+    ads/
+      AdsThemeProvider.tsx  ← setGlobalTheme({ colorMode, typography: 'typography' })
+  index.css             ← global --cp-* tokens + ONE .dark ECLIPSE block
 ```
 
 **ECLIPSE section in index.css** — all NOCTURNE overrides live in a clearly marked block:
@@ -674,6 +713,71 @@ Auto-discovered at build time via `import.meta.glob` — no manifest edits neede
 Do NOT force-migrate all sites in a single pass — blast radius outweighs benefit.
 
 **Populating avatars:** `node scripts/download-avatars.mjs` (argv, stdin `-`, or `scripts/avatar-names.txt`).
+
+---
+
+## 20. FONT ARCHITECTURE (F2–F5 LOCKED — Apr 2026)
+
+### Cascade chain
+
+```
+index.html @font-face
+  └─ Charlie Display / Charlie Text / Charlie Code  (Atlassian DS CDN)
+       └─ src/index.css :root
+            --cp-font-heading: 'Charlie Display', system-ui, -apple-system, sans-serif
+            --cp-font-body:    'Charlie Text',    system-ui, -apple-system, sans-serif
+            --cp-font-mono:    'Charlie Code',    ui-monospace, monospace
+              └─ hub namespace tokens (all bridge to --cp-font-*)
+                   └─ component CSS / inline styles (token only — never literal)
+```
+
+### Hub namespace → --cp-font-* bridge map
+
+| File | Token(s) | Bridges to |
+|------|----------|------------|
+| `src/styles/release-hub.module.css` | `--rh-font-heading/body/mono` | `--cp-font-*` |
+| `src/styles/product-kanban.css` | `--pk-font-heading/body/mono` | `--cp-font-*` |
+| `src/styles/initiative-detail-panel.css` | `--idp-font-heading/body/mono` | `--cp-font-*` |
+| `src/styles/task-detail-modal-enterprise.css` | `--tm-font-sans/heading/mono` | `--cp-font-*` |
+| `src/styles/budget-module.css` | `--budget-font-ui/mono` | `--cp-font-*` |
+| `src/styles/capacity-module.css` | `--ct-font-ui/mono` | `--cp-font-*` |
+| `src/styles/users-module.css` | `--usr-font-sans/mono` | `--cp-font-*` |
+| `src/modules/workhub/shared/tokens/workhub-tokens.css` | `--wh-fh/fn/mo` | `--cp-font-*` |
+| `src/styles/caty.css` | `--caty-font-family` | `--cp-font-body` |
+| `src/styles/mytasks.css` | `--mytasks-id-font-family` | `--cp-font-mono` |
+| `src/styles/roadmap-ringfenced.css` | `--roadmap-key-font/kpi-value-font` | `--cp-font-*` |
+| `src/styles/planhub.css` | `--ph-font` | `--cp-font-body` |
+| `src/modules/planner/styles/planner-calendar.css` | `--pln-cal-font-family` | `--cp-font-body` |
+
+### Rules
+
+```
+✅ Always use a hub namespace token or --cp-font-* directly
+✅ New hub CSS files must declare --[prefix]-font-* and bridge immediately
+❌ No literal font-family in any CSS rule or JSX style prop (outside @font-face)
+❌ No Google Fonts loads for latin scripts — only Arabic i18n exempted
+❌ No fallback chains to Inter/Sora/JetBrains Mono — they are retired
+```
+
+### Known P0 backlog (residual literals — fix on next touch)
+
+Files with remaining literal `font-family` values that predate F5 and must be
+bridged when their hub is next worked on:
+
+- `src/styles/product-cards.css` — multiple Sora/Inter/JetBrains literals
+- `src/styles/testhub.css` — multiple Inter literals
+- `src/styles/dept-intelligence.css` — Sora/Inter/JetBrains in token defs
+- `src/styles/ai-intelligence.css` — Sora/Inter/JetBrains in token defs
+- `src/styles/r360.css` — Inter/JetBrains literals
+- `src/styles/workhub.module.css` — Inter/Sora/JetBrains in token defs
+- `src/styles/workstreams.css` — Inter literal
+- `src/styles/activity-pilot.css` — JetBrains Mono literal
+- `src/modules/project-work-hub/**` — JetBrains Mono in JSX inline styles
+- `src/styles/catalyst-typography.css` — `--ds-font-*` override block (Inter)
+- `src/modules/task10/styles/` — Inter in token defs
+
+Do NOT mass-migrate all files at once. Fix opportunistically when those files
+are open for other work, one hub at a time.
 
 ---
 
