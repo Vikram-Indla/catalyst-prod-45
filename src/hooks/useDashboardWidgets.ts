@@ -360,12 +360,16 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
 
+      // 🛡️ 2026 GUARDRAIL — defects created OR updated in 2026
+      const dateOr = `and(created_at.gte.${YEAR_2026_START},created_at.lt.${YEAR_2026_END}),and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+
       // Fetch Jira-synced defects by project key
       if (projectKey) {
         const { data: jiraDefects } = await supabase
           .from('tm_defects')
           .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
           .eq('jira_project_key', projectKey)
+          .or(dateOr)
           .order('created_at', { ascending: false })
           .limit(10);
         if (jiraDefects?.length) allDefects.push(...jiraDefects);
@@ -377,6 +381,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
         .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
         .eq('project_id', projectId!)
         .eq('jira_source', false)
+        .or(dateOr)
         .order('created_at', { ascending: false })
         .limit(10);
       if (nativeDefects?.length) allDefects.push(...nativeDefects);
