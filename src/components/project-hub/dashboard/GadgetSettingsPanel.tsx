@@ -219,6 +219,8 @@ export default function GadgetSettingsPanel({
           <MultiSelectStatus
             value={draft.statusFilter}
             onChange={(v) => setField('statusFilter', v)}
+            isOpen={openField === 'status'}
+            onToggle={() => toggleField('status')}
           />
         </Field>
 
@@ -228,6 +230,8 @@ export default function GadgetSettingsPanel({
             value={draft.releaseFilter}
             onChange={(v) => setField('releaseFilter', v)}
             options={releases.map((r: any) => ({ value: r.name, label: r.name }))}
+            isOpen={openField === 'release'}
+            onToggle={() => toggleField('release')}
           />
         </Field>
 
@@ -237,6 +241,8 @@ export default function GadgetSettingsPanel({
             value={draft.assigneeFilter}
             onChange={(v) => setField('assigneeFilter', v)}
             options={assignees.map((a: any) => ({ value: a.id, label: a.name }))}
+            isOpen={openField === 'assignee'}
+            onToggle={() => toggleField('assignee')}
           />
         </Field>
 
@@ -250,6 +256,8 @@ export default function GadgetSettingsPanel({
               label: t.label,
               icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/-/g, '_')} size={12} />,
             }))}
+            isOpen={openField === 'itemType'}
+            onToggle={() => toggleField('itemType')}
           />
         </Field>
 
@@ -263,6 +271,8 @@ export default function GadgetSettingsPanel({
               label: p.label,
               icon: <span style={{ color: p.color, fontWeight: 700 }}>{p.icon}</span>,
             }))}
+            isOpen={openField === 'priority'}
+            onToggle={() => toggleField('priority')}
           />
         </Field>
 
