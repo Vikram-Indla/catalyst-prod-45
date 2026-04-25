@@ -22,6 +22,8 @@ export interface UWVParams {
   epicKeys?: string[];
   /** Optional data type hint for downstream consumers. */
   dataType?: 'epics' | 'incidents' | 'defects' | 'releases' | 'overdue' | 'onhold' | 'demand';
+  /** Optional explicit ph_projects.id (used by ReleaseHealthUWV for canonical lookup). */
+  projectId?: string;
 }
 
 export type ColumnType =
