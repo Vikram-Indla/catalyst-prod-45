@@ -444,9 +444,12 @@ export default function StoryDetailModal({
   });
 
   const { data: attachments = [] } = useQuery({
-    queryKey: ['ph-attachments', itemId], enabled: !!itemId && isOpen,
+    queryKey: ['ph-attachments', itemId, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!itemId && isOpen && !!issue,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_attachments').select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const isCatalyst = !!(issue as any)?.__catalyst_source;
+      const tbl = isCatalyst ? 'catalyst_attachments' : 'ph_attachments';
+      const { data } = await supabase.from(tbl).select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
       return (data ?? []) as unknown as PhAttachment[];
     },
   });
