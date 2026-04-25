@@ -9,7 +9,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 export type GadgetType =
   | 'demand' | 'release' | 'incidents' | 'qa'
-  | 'items' | 'overdue' | 'onhold' | 'workload' | 'activity';
+  | 'items' | 'overdue' | 'onhold' | 'workload' | 'activity' | 'scope';
 
 export type DatePreset =
   | 'thisQuarter' | 'thisYear'
