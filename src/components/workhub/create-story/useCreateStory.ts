@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface CreateStoryFormData {
   projectId: string;
@@ -200,9 +201,34 @@ export function useCreateStoryMutation() {
 
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      const projectId = variables.form.projectId;
+      // Core invalidations — issue lists
       queryClient.invalidateQueries({ queryKey: ['project-all-work'] });
       queryClient.invalidateQueries({ queryKey: ['issue-view-items'] });
+      // Backlog, sprint, board views
+      queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+      queryClient.invalidateQueries({ queryKey: ['sprint-items'] });
+      queryClient.invalidateQueries({ queryKey: ['board-issues'] });
+      // Sidebar + dashboard counts
+      queryClient.invalidateQueries({ queryKey: ['v_issue_counts'] });
+      queryClient.invalidateQueries({ queryKey: ['project-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
+      // Project-scoped lists (if project is known)
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: ['work-items', projectId] });
+        queryClient.invalidateQueries({ queryKey: ['project-issues', projectId] });
+      }
+      // Parent item — so newly created child appears in parent's children list
+      if (variables.form.parentId) {
+        queryClient.invalidateQueries({ queryKey: ['issue-children', variables.form.parentId] });
+        queryClient.invalidateQueries({ queryKey: ['epic-issues', variables.form.parentId] });
+      }
+    },
+    onError: (error: any) => {
+      const message = error?.message ?? 'Failed to create work item';
+      console.error('[useCreateStory] mutation error:', error);
+      catalystToast.error('Create failed', message);
     },
   });
 }
