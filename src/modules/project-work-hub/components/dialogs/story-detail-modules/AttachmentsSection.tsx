@@ -519,7 +519,7 @@ function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
       if (isImage) setThumbUrl(url);
     });
     return () => { cancelled = true; };
-  }, [attachment.storage_path, isImage]);
+  }, [attachment.storage_path, isImage, bucket]);
 
   return (
     <tr className="att-row">
