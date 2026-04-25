@@ -64,19 +64,39 @@ export default function IssueDetailPage() {
           return;
         }
 
-        if (!data) {
-          setDebugInfo(`Query returned null. issue_key="${issueKey}" not found in ph_issues.`);
+        if (data) {
+          setIssue({
+            id: data.id,
+            issue_type: data.issue_type,
+            project_key: data.project_key,
+            issue_key: data.issue_key,
+          });
+          setDebugInfo('');
           setLoading(false);
           return;
         }
 
-        setIssue({
-          id: data.id,
-          issue_type: data.issue_type,
-          project_key: data.project_key,
-          issue_key: data.issue_key,
-        });
-        setDebugInfo('');
+        // Fallback: catalyst_issues (in-app created items)
+        const catRes = await (supabase as any)
+          .from('catalyst_issues')
+          .select('id, issue_type, issue_key, project_id, projects(key)')
+          .eq('issue_key', issueKey)
+          .maybeSingle();
+        if (cancelled) return;
+        const catRow = catRes.data;
+        if (catRow) {
+          setIssue({
+            id: catRow.id,
+            issue_type: catRow.issue_type,
+            project_key: catRow.projects?.key ?? projectKey ?? '',
+            issue_key: catRow.issue_key,
+          });
+          setDebugInfo('');
+          setLoading(false);
+          return;
+        }
+
+        setDebugInfo(`Query returned null. issue_key="${issueKey}" not found in ph_issues or catalyst_issues.`);
         setLoading(false);
       } catch (err: any) {
         if (!cancelled) {
