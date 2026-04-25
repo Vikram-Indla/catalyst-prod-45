@@ -464,11 +464,14 @@ export function useDashboardIncidents(
 export function useDashboardDefects(
   projectId: string | null | undefined,
   projectKey?: string | null,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-defects', projectId, projectKey, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-defects', projectId, projectKey, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
@@ -484,6 +487,18 @@ export function useDashboardDefects(
         return q;
       };
 
+      // Layer 2 filter mapping for tm_defects (column shape differs from ph_issues):
+      //   statusFilter   → status (text)
+      //   priorityFilter → severity
+      //   assigneeFilter → jira_assignee_name
+      //   itemTypeFilter, releaseFilter → not modeled on tm_defects, ignored
+      const applyLayer2 = (q: any) => {
+        if (statusFilter.length)   q = q.in('status', statusFilter);
+        if (priorityFilter.length) q = q.in('severity', priorityFilter);
+        if (assigneeFilter.length) q = q.in('jira_assignee_name', assigneeFilter);
+        return q;
+      };
+
       // Fetch Jira-synced defects by project key
       if (projectKey) {
         let jq = supabase
@@ -491,6 +506,7 @@ export function useDashboardDefects(
           .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
           .eq('jira_project_key', projectKey);
         jq = applyDate(jq);
+        jq = applyLayer2(jq);
         const { data: jiraDefects } = await jq.order('created_at', { ascending: false }).limit(10);
         if (jiraDefects?.length) allDefects.push(...jiraDefects);
       }
@@ -502,6 +518,7 @@ export function useDashboardDefects(
         .eq('project_id', projectId!)
         .eq('jira_source', false);
       nq = applyDate(nq);
+      nq = applyLayer2(nq);
       const { data: nativeDefects } = await nq.order('created_at', { ascending: false }).limit(10);
       if (nativeDefects?.length) allDefects.push(...nativeDefects);
 
