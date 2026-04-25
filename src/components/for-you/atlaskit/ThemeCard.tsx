@@ -312,7 +312,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
           insetInlineStart: 0,
           width: 4,
           backgroundColor: token(
-            INTENT_RIBBON[theme.intent].name,
+            INTENT_RIBBON[theme.intent].name as Parameters<typeof token>[0],
             INTENT_RIBBON[theme.intent].fallback,
           ),
         }}
