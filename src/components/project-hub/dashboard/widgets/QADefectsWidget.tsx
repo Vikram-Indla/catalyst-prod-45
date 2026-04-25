@@ -31,7 +31,11 @@ import {
 } from '@/components/ads';
 
 export default function QADefectsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: defects, isLoading } = useDashboardDefects(projectId, projectKey);
+  const { settings } = useGadgetSettings('qa', projectKey);
+  const { data: defects, isLoading } = useDashboardDefects(projectId, projectKey, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const { openUWV } = useUWV();
 
   const footer = (
