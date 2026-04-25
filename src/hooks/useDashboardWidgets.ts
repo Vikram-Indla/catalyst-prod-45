@@ -283,8 +283,9 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
       for (const rel of releases) {
-        if (!rel.start_date) continue;
-        const startDate = new Date(rel.start_date);
+        const startRef = (rel as any).created_at;
+        if (!startRef) continue;
+        const startDate = new Date(startRef);
         let totalItems = 0;
         let addedAfterStart = 0;
 
