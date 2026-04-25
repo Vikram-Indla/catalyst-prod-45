@@ -28,7 +28,11 @@ function timeAgo(dateStr: string | null): string {
 }
 
 export default function RecentActivityWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: items, isLoading } = useDashboardRecentActivity(projectId);
+  const { settings } = useGadgetSettings('activity', projectKey);
+  const { data: items, isLoading } = useDashboardRecentActivity(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
 
   return (
     <WidgetWrapper
