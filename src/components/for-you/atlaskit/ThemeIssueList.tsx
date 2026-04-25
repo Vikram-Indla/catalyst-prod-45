@@ -1,41 +1,95 @@
 /**
- * ThemeIssueList — drill-in table inside a ThemeCard.
+ * ThemeIssueList — drill-in list inside a ThemeCard.
  *
- * Fetches the real ph_issues rows for the theme's issueKeys in one .in()
- * query, then renders via @atlaskit/dynamic-table so the row chrome
- * (hover, sort affordances, keyboard focus) matches the rest of
- * Catalyst's widget tables exactly. No bespoke <table> markup.
+ * B6 · DynamicTable was replaced with a stacked Atlaskit list because the
+ * theme card width (~400px when grid-3-up) cannot fit a 3-column table:
+ * the key column wraps "BAU-5061" to two lines, the summary column wraps
+ * Saudi-context lines to 4–5 lines, and the status lozenge column crunches
+ * "READY FOR DEVELOPMENT" so the lozenge text becomes unreadable. A
+ * single-column stack (key+status inline above, summary below) gives the
+ * summary the FULL row width and lets the status sit shoulder-to-shoulder
+ * with the key.
  *
  * Click-through
  * ─────────────
- *   Clicking an issue key routes through useGlobalSearchStore.openDetail —
- *   the same canonical StoryDetailModal entry point For You uses for its
- *   row list. This means drilling in from a theme lands the user in the
- *   identical detail UI as drilling in from Assigned/Recommended,
- *   including the comment composer, attachments, timeline, etc.
+ *   The issue key is an @atlaskit/primitives Pressable that routes through
+ *   useGlobalSearchStore.openDetail — same canonical StoryDetailModal entry
+ *   For You uses for its row list. Drilling in from a theme lands the user
+ *   in the identical detail UI as drilling in from Assigned/Recommended.
  *
  * Status lozenge
  * ──────────────
- *   Uses the Catalyst ADS StatusLozenge (NOT the generic Atlaskit Lozenge
- *   used for theme intent). StatusLozenge enforces the 3-colour guardrail
- *   from CLAUDE.md §5 — "GREY · BLUE · GREEN, nothing else". Status text
- *   is mapped through toStatusCategory so 'In Progress', 'In Review',
- *   'Active' all collapse to BLUE; 'Done', 'Closed', 'Resolved' to GREEN;
- *   everything else grey.
+ *   Uses the Catalyst ADS StatusLozenge (NOT generic Atlaskit Lozenge).
+ *   StatusLozenge enforces the 3-colour guardrail from CLAUDE.md §5
+ *   (GREY · BLUE · GREEN). Status text is mapped through toStatusCategory
+ *   so 'In Progress' / 'In Review' / 'Active' all collapse to BLUE; 'Done'
+ *   / 'Closed' / 'Resolved' to GREEN; everything else GREY.
+ *
+ * Atlaskit-only typography contract
+ * ─────────────────────────────────
+ *   This file imports zero from `@/lib/typography`. Every type spec comes
+ *   from @atlaskit/heading or @atlaskit/primitives Text via tokens. The
+ *   key uses font.family.code via xcss; everything else flows through ADS
+ *   primitives. This is the contract for the entire For You / AI Theme
+ *   surface — no bespoke type scale anywhere.
  */
-import React, { useEffect, useMemo, useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import { Box, Text, xcss } from '@atlaskit/primitives';
+import React, { useEffect, useState } from 'react';
+import { Box, Stack, Inline, Pressable, Text, xcss } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
 import Spinner from '@atlaskit/spinner';
-import { DynamicTable, StatusLozenge, toStatusCategory } from '@/components/ads';
+import { StatusLozenge, toStatusCategory } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
-// ─── A5 · Atlaskit-pure cell tokens ─────────────────────────────────────────
-// Loading + empty wrappers used `paddingBlock: 12` literals and a `type.meta`
-// font; switched to Box + xcss + Text so every value resolves through ADS.
-// `type.*` import dropped from this file — DynamicTable cells now lean on
-// the Atlaskit token chain for typography (size & color from primitives).
+// ─── Row container — divider via tokens ─────────────────────────────────────
+// Each row sits on the raised card surface (NOT sunken — explicit user
+// constraint from the B5 critique). The hairline divider is a single
+// border-block-end rule resolved through color.border so dark-mode picks
+// up the right hex without an override block. The last row's divider is
+// suppressed via the :last-child pseudo so the list flush-fits the card's
+// bottom edge.
+const rowStyles = xcss({
+  paddingBlock: 'space.150',
+  borderBlockEndWidth: 'border.width',
+  borderBlockEndStyle: 'solid',
+  borderBlockEndColor: 'color.border',
+  ':last-child': {
+    borderBlockEndWidth: '0',
+  },
+});
+
+// Pressable wrapping the issue key. We avoid hand-rolled <button> styles —
+// Pressable inherits the ADS focus ring and high-contrast focus mode for
+// free. Monospace font via the Atlaskit code family token; weight medium
+// to keep the key visually anchored as the row's identifier.
+const keyPressableStyles = xcss({
+  color: 'color.link',
+  fontFamily: 'font.family.code',
+  font: 'font.body.small',
+  fontWeight: 'font.weight.medium',
+  paddingBlock: 'space.0',
+  paddingInline: 'space.0',
+  backgroundColor: 'color.background.neutral.subtle',
+  borderRadius: 'border.radius',
+  ':hover': {
+    color: 'color.link.pressed',
+  },
+});
+
+// Summary clamps to 2 lines via line-clamp so theme cards never grow
+// vertically out of their grid track. Atlaskit primitives don't ship a
+// truncate prop on Heading, so this xcss layer adds it via the standard
+// -webkit-line-clamp idiom — token-resolved colour, no literal hex.
+const summaryStyles = xcss({
+  display: '-webkit-box',
+  // @ts-expect-error — non-standard but required for line-clamp; safe per ADS guidance.
+  WebkitLineClamp: '2',
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+  color: 'color.text',
+});
+
+// State wrappers (loading + empty) — keep typography ADS-pure via Text.
 const stateMessageStyles = xcss({
   display: 'flex',
   alignItems: 'center',
@@ -55,16 +109,6 @@ interface IssueRow {
 interface ThemeIssueListProps {
   issueKeys: string[];
 }
-
-// Column widths total 100 (14 + 64 + 22). Saudi-context names + transliterated
-// Arabic summary lines run long, so summary widens at the cost of key + status.
-const HEAD = {
-  cells: [
-    { key: 'key',     content: 'Key',     isSortable: true,  width: 14 },
-    { key: 'summary', content: 'Summary', isSortable: false, width: 64 },
-    { key: 'status',  content: 'Status',  isSortable: true,  width: 22 },
-  ],
-};
 
 export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
   const [rows, setRows] = useState<IssueRow[] | null>(null);
@@ -89,8 +133,8 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
         setRows([]);
       } else {
         // Preserve input order so the row sequence matches what the LLM
-        // returned. DynamicTable's `isSortable` gives the user click-sort
-        // on Key/Status afterwards.
+        // returned — the model groups related issues adjacently and that
+        // adjacency is meaningful signal.
         const byKey = new Map<string, IssueRow>();
         for (const r of (data ?? []) as IssueRow[]) byKey.set(r.issue_key, r);
         setRows(issueKeys.map(k => byKey.get(k)).filter((r): r is IssueRow => Boolean(r)));
@@ -99,55 +143,6 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
     })();
     return () => { cancelled = true; };
   }, [issueKeys]);
-
-  const tableRows = useMemo(() => {
-    return (rows ?? []).map((row) => ({
-      key: row.id,
-      cells: [
-        {
-          key: 'key',
-          content: (
-            <button
-              type="button"
-              onClick={() => useGlobalSearchStore.getState().openDetail({
-                id: row.id,
-                itemType: row.issue_type,
-                projectKey: row.project_key,
-              })}
-              style={{
-                color: token('color.link', '#0C66E4'),
-                background: 'transparent',
-                border: 'none',
-                padding: 0,
-                cursor: 'pointer',
-                fontFamily: token('font.family.code', 'JetBrains Mono, ui-monospace, monospace'),
-                fontSize: 12,
-                fontWeight: 500,
-              }}
-            >
-              {row.issue_key}
-            </button>
-          ),
-        },
-        {
-          key: 'summary',
-          content: (
-            <span style={{ color: token('color.text', '#172B4D') }}>
-              {row.summary}
-            </span>
-          ),
-        },
-        {
-          key: 'status',
-          content: (
-            <StatusLozenge status={toStatusCategory(row.status)}>
-              {row.status || 'To Do'}
-            </StatusLozenge>
-          ),
-        },
-      ],
-    }));
-  }, [rows]);
 
   if (loading) {
     return (
@@ -171,11 +166,45 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
   }
 
   return (
-    <DynamicTable
-      head={HEAD}
-      rows={tableRows}
-      aria-label="Issues in this theme"
-      rowsPerPage={0}
-    />
+    <Stack space="space.0">
+      {rows.map((row) => (
+        <Box key={row.id} xcss={rowStyles}>
+          <Stack space="space.050">
+            {/* Top line: key + status. Inline with spread="space-between"
+                pushes status to the right edge while letting the key sit
+                left — no fixed column that crunches "READY FOR
+                DEVELOPMENT" into illegibility. */}
+            <Inline space="space.100" alignBlock="center" spread="space-between">
+              <Pressable
+                xcss={keyPressableStyles}
+                onClick={() => useGlobalSearchStore.getState().openDetail({
+                  id: row.id,
+                  itemType: row.issue_type,
+                  projectKey: row.project_key,
+                })}
+                aria-label={`Open issue ${row.issue_key}`}
+              >
+                {row.issue_key}
+              </Pressable>
+              <StatusLozenge status={toStatusCategory(row.status)}>
+                {row.status || 'To Do'}
+              </StatusLozenge>
+            </Inline>
+            {/* Bottom line: summary. Heading at xsmall (12/16/600 in ADS) is
+                the right scale here — hierarchically below the
+                AiThemePanel page heading and the ThemeCard heading. The
+                Heading itself accepts no truncation prop, so we wrap the
+                child string in a Box span carrying the line-clamp xcss.
+                Full text remains in `title` so hover/long-press users get
+                the untruncated string. */}
+            <Heading size="xsmall" as="p">
+              <Box as="span" xcss={summaryStyles} title={row.summary}>
+                {row.summary}
+              </Box>
+            </Heading>
+          </Stack>
+        </Box>
+      ))}
+    </Stack>
   );
 }

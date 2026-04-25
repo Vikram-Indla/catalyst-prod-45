@@ -32,6 +32,10 @@ const TestHubSidebar = lazy(() => import('./TestHubSidebar').then(m => ({ defaul
 
 const ProjectHubSidebar = lazy(() => import('./ProjectHubSidebar').then(m => ({ default: m.ProjectHubSidebar })));
 const WikiSidebar = lazy(() => import('./WikiSidebar').then(m => ({ default: m.WikiSidebar })));
+// C1 · Personal command center on / (Home). Replaces the empty 240px rail
+// users were seeing on Home with @atlaskit/side-navigation sections for
+// Pinned, Recent and Jump to. Atlaskit-only — see HomeSidebar.tsx.
+const HomeSidebar = lazy(() => import('./HomeSidebar'));
 
 import { HubSurface } from './HubSurface';
 
@@ -334,7 +338,17 @@ function CatalystShellContent() {
 
   // Determine sidebar based on workspaceType (single source of truth)
   const renderSidebar = () => {
-    // No sidebar for Home or Admin routes
+    // C1 · Home (/) gets the personal command center rail. The previous
+    // implementation fell through the workspaceType switch to `default:
+    // null`, which left the wrapper mounted at 240px wide but empty —
+    // reading as a broken state rather than a deliberate "no nav".
+    // HomeSidebar fills the rail with Pinned / Recent / Jump-to sections,
+    // turning that real estate into the user's own navigation surface.
+    if (location.pathname === '/') {
+      return <HomeSidebar />;
+    }
+
+    // No sidebar for legacy /for-you or Admin routes
     if (location.pathname === '/for-you' || location.pathname.startsWith('/admin')) {
       return null;
     }

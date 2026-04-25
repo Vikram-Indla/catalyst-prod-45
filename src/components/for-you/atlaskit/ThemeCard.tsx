@@ -118,29 +118,30 @@ const cardStyles = xcss({
   },
 });
 
-// ─── B5 · Expanded drill-in surface ─────────────────────────────────────────
-// When the user reveals the issue table, we want the table region to read as
-// a *different* surface from the card body — a "you've drilled in" cue. The
-// ADS pattern for this is the sunken layer (elevation.surface.sunken,
-// hex-equivalent ~#F7F8F9 light / ~#1D2125 dark), one step below the
-// raised card.
+// ─── B5/B6 · Expanded drill-in surface ──────────────────────────────────────
+// Originally B5 used elevation.surface.sunken to signal "you have entered
+// the data layer". User feedback rejected the grey surface as reading like
+// a broken state, so B6 reverts to elevation.surface (matches the card
+// body) and relies on a single top divider for the "you've drilled in"
+// cue. This is the Linear / Jira pattern at this width.
 //
 // Layout
 // ──────
-// Card padding is space.200 (16px). To make the sunken zone extend to the
+// Card padding is space.200 (16px). To make the drill-in extend to the
 // card's left/right/bottom edges (instead of sitting as a smaller inset
 // rectangle inside the padding), we apply negative inline + block-end
-// margins of the same magnitude. Top border is the only divider — the
-// card's own border + bottom radius wrap the rest. `overflow: hidden` on
-// the card itself (set up in B1) keeps the sunken zone clipped to the
-// card's border-radius, so the bottom-left/right corners read clean.
+// margins of the same magnitude. Top border via color.border is the only
+// divider — the card's own border + bottom radius wrap the rest.
+// `overflow: hidden` on the card itself (set up in B1) keeps the drill-in
+// clipped to the card's border-radius, so the bottom-left/right corners
+// read clean.
 const drillInStyles = xcss({
   marginInline: 'space.negative.200',
   marginBlockEnd: 'space.negative.200',
   marginBlockStart: 'space.100',
   paddingInline: 'space.200',
-  paddingBlock: 'space.150',
-  backgroundColor: 'elevation.surface.sunken',
+  paddingBlock: 'space.0',
+  backgroundColor: 'elevation.surface',
   borderTopWidth: 'border.width',
   borderTopStyle: 'solid',
   borderTopColor: 'color.border',
