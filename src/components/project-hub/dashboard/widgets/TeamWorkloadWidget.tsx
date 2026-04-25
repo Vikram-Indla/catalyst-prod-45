@@ -26,6 +26,11 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
   const { data: workload, isLoading } = useDashboardTeamWorkload(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
+    statusFilter: settings.statusFilter,
+    releaseFilter: settings.releaseFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
   });
   const maxCount = Math.max(1, ...(workload ?? []).map((w) => w.total));
 
