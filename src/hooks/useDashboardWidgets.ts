@@ -238,6 +238,9 @@ export function useDashboardOverdueItems(
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
+      const { data, error } = await q
+        .order('effective_due_date', { ascending: true })
+        .limit(50);
       if (error) throw error;
       return data ?? [];
     },
