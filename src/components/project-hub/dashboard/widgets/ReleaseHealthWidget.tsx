@@ -77,6 +77,9 @@ export default function ReleaseHealthWidget({
       hubSource: ['projecthub'],
       dataType: 'epics',
       title: `Release Health · ${projectKey}`,
+      fixVersions: (releases ?? [])
+        .map((r: any) => r.name)
+        .filter(Boolean),
     });
 
   const headerExtras = (
