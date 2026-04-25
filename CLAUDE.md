@@ -25,6 +25,10 @@ Data:       TanStack Query (React Query)
 Icons:      Lucide React for UI chrome; canonical SVGs for work-item types (see §11)
 Builder:    Lovable AI (Claude Code now assists/replaces for fixes)
 Fonts:      Sora (headings) · Inter (body/UI) · JetBrains Mono (data)
+            Token chain (F1 complete): --cp-font-* (index.css :root)
+              → --ds-font-family-* (catalyst-typography.css)
+              → Tailwind fontFamily / FONT_STACK / tokens.ts
+            F2 will swap --cp-font-* values to Charlie Display (no pixel change until then)
 
 Atlassian Design System / Atlaskit:
   Active migration target. Catalyst is being migrated to @atlaskit/* and the
@@ -152,6 +156,24 @@ These are hard-won lessons from the ECLIPSE pipeline. Violating them causes regr
 > **Debug pattern:** If a Supabase query returns empty unexpectedly, check column types first.
 > RCA: BAU-5389 convert-to-subtask parent search returned 0 results for 6 consecutive fix attempts.
 
+**L40 — CRITICAL: ADS Font Chain — Never Bypass the Bridge (F1 complete)**
+> `--ds-font-family-{body,heading,monospaced}` are the tokens @atlaskit/* reads.
+> They delegate to `--cp-font-{body,heading,mono}` in `src/index.css :root` via `catalyst-typography.css`.
+> **Rule:** Never assign a literal font name directly to `--ds-font-family-*`. Always use `var(--cp-font-*)`.
+> To change a font globally, update `--cp-font-*` in the F1 bridge block in `index.css` — nowhere else.
+
+**L41 — Bridge Token Discipline**
+> `--cp-font-*` in `src/index.css :root` is the SINGLE source of truth for font families.
+> Tailwind `fontFamily`, `typography.ts` FONT_STACK constants, and `tokens.ts` all read via the ADS chain.
+> **Rule:** Do NOT set font-family literals in tailwind.config.ts, typography.ts, or tokens.ts.
+> Those files use `var(--ds-font-family-*)` with fallbacks only.
+
+**L42 — F2 Scope Guard (Charlie Display)**
+> F2 swaps `--cp-font-heading` and `--cp-font-body` to Charlie Display.
+> F1 (committed) established the chain without changing rendered pixels.
+> **Rule:** Do NOT change `--cp-font-*` values in any task other than the F2 task brief.
+> Ringfenced: `--ph-font`, `--planner-*`, `src/styles/planhub.css`, `src/modules/planner/styles/*`.
+
 ### ProjectHub Violation Pattern (S7 RCA)
 
 **Root cause:** Multiple `.dark .bg-white { background: ... !important }` blocks in `index.css` create elevation token conflicts.
@@ -231,12 +253,25 @@ Shadow:         NONE (border only, no table shadow)
 ### Typography (Locked)
 
 ```
-Headings:      Sora
-Body/UI:       Inter
-Data/Mono:     JetBrains Mono
+Headings:      Sora           → --cp-font-heading → --ds-font-family-heading
+Body/UI:       Inter          → --cp-font-body    → --ds-font-family-body
+Data/Mono:     JetBrains Mono → --cp-font-mono    → --ds-font-family-monospaced
 Body emphasis: font-weight 650 (NOT 700)
 Display/Hero:  font-weight 700
 Uppercase:     table headers + sidebar section labels ONLY
+
+Token chain (F1):
+  src/index.css :root  →  --cp-font-{body,heading,mono}  (SINGLE source of truth)
+  catalyst-typography.css  →  --ds-font-family-{body,heading,monospaced}: var(--cp-font-*)
+  tailwind.config.ts   →  fontFamily.{sans,body,heading,display,mono}: var(--ds-font-family-*)
+  typography.ts        →  FONT_STACK / FONT_STACK_HEADING / FONT_STACK_MONO: var(--ds-font-family-*)
+  tokens.ts            →  typography.fontFamily.* / fonts.*: var(--ds-font-family-*)
+
+Font weight bridge tokens (index.css :root):
+  --cp-font-weight-regular:  400
+  --cp-font-weight-medium:   500
+  --cp-font-weight-semibold: 650
+  --cp-font-weight-bold:     700
 ```
 
 ---
@@ -292,6 +327,9 @@ These are NON-SEMANTIC structural identifiers. They must NEVER be confused with 
 ❌ HSL in style props or CSS — hex literals always
 ❌ Stacked !important blocks (consolidate to one per selector)
 ❌ Multiple duplicate .dark override blocks in index.css
+❌ Direct font-family literals in tailwind.config.ts, typography.ts, or tokens.ts (use var(--ds-font-family-*) with fallback)
+❌ Assigning a literal font name to --ds-font-family-* (always delegate via var(--cp-font-*))
+❌ Changing --cp-font-* values outside the F2 task brief (L42)
 ```
 
 ---

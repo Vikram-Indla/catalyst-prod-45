@@ -145,9 +145,10 @@ export const radius = {
 // ============================================
 export const typography = {
   fontFamily: {
-    heading: "'Sora', sans-serif",
-    sans: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-    mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
+    heading: 'var(--ds-font-family-heading, "Sora", sans-serif)',
+    sans:    'var(--ds-font-family-body, "Inter", sans-serif)',
+    body:    'var(--ds-font-family-body, "Inter", sans-serif)',
+    mono:    'var(--ds-font-family-monospaced, "JetBrains Mono", monospace)',
   },
   fontSize: {
     xs: '11px',
@@ -408,9 +409,9 @@ export const statusLozenge = {
 // CATALYST FONT STACK (LOCKED)
 // ============================================
 export const fonts = {
-  heading: "'Sora', sans-serif",
-  body: "'Inter', sans-serif",
-  mono: "'JetBrains Mono', monospace",
+  heading: 'var(--ds-font-family-heading, "Sora", sans-serif)',
+  body:    'var(--ds-font-family-body, "Inter", sans-serif)',
+  mono:    'var(--ds-font-family-monospaced, "JetBrains Mono", monospace)',
 } as const;
 
 // ============================================
