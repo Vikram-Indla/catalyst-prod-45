@@ -17,6 +17,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X, Info, ChevronDown, Check } from 'lucide-react';
+import { token } from '@atlaskit/tokens';
+import { Lozenge } from '@/components/ads';
 
 import { supabase } from '@/integrations/supabase/client';
 import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
@@ -40,6 +42,7 @@ const GADGET_DATE_FIELD: Record<GadgetType, string> = {
   onhold:    'ph_issues.jira_updated_at',
   workload:  'ph_issues.jira_created_at',
   activity:  'work_item_activity.occurred_at',
+  scope:     'ph_versions.start_date (target_date − 14d fallback)',
 };
 
 interface Props {
@@ -85,13 +88,9 @@ const PRIORITY_OPTIONS = [
   { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: '#7A869A' },
 ];
 
-const ITEM_TYPES = [
-  { value: 'Epic', label: 'Epic' },
-  { value: 'Story', label: 'Story' },
-  { value: 'Bug', label: 'Bug' },
-  { value: 'Task', label: 'Task' },
-  { value: 'Sub-task', label: 'Sub-task' },
-];
+// ITEM_TYPES are fetched dynamically from ph_issues per project (see useQuery
+// in component body). Keeps filter values aligned with actual DB values and
+// scoped to the current project to prevent cross-project bleed-through.
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -143,6 +142,31 @@ export default function GadgetSettingsPanel({
       console.log('[GadgetSettingsPanel] rh_releases response:', res);
       return (res.data ?? []) as any[];
     },
+    staleTime: 60_000,
+  });
+
+  // Distinct issue types from ph_issues for THIS project (scoped — avoids
+  // bleed-through from other projects in multi-project Jira setups).
+  const { data: itemTypes = [] } = useQuery({
+    queryKey: ['gadget-panel-item-types', projectKey],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues' as any)
+        .select('issue_type')
+        .eq('project_key', projectKey)
+        .not('issue_type', 'is', null)
+        .limit(1000);
+      const counts = new Map<string, number>();
+      (data ?? []).forEach((r: any) => {
+        const t = (r.issue_type ?? '').trim();
+        if (!t) return;
+        counts.set(t, (counts.get(t) ?? 0) + 1);
+      });
+      return Array.from(counts.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([value]) => ({ value, label: value }));
+    },
+    enabled: !!projectKey,
     staleTime: 60_000,
   });
 
@@ -360,12 +384,27 @@ export default function GadgetSettingsPanel({
         <div style={{ height: '0.5px', background: '#EBECF0' }} />
 
         <Field label="Status">
-          <MultiSelectStatus
-            value={draft.statusFilter}
-            onChange={(v) => setField('statusFilter', v)}
-            isOpen={openField === 'status'}
-            onToggle={() => toggleField('status')}
-          />
+          {gadgetType === 'items' ? (
+            <div
+              title="Not applicable — this gadget displays all statuses by design"
+              style={{
+                display: 'flex', alignItems: 'center', minHeight: 36,
+                border: '2px solid #DFE1E6', borderRadius: 3,
+                background: '#F4F5F7', padding: '0 10px',
+                cursor: 'not-allowed', opacity: 0.6,
+                fontSize: 13, color: '#7A869A', fontStyle: 'italic',
+              }}
+            >
+              All statuses (by design)
+            </div>
+          ) : (
+            <MultiSelectStatus
+              value={draft.statusFilter}
+              onChange={(v) => setField('statusFilter', v)}
+              isOpen={openField === 'status'}
+              onToggle={() => toggleField('status')}
+            />
+          )}
         </Field>
 
         <Field label="Release">
@@ -395,10 +434,10 @@ export default function GadgetSettingsPanel({
             placeholder="All item types"
             value={draft.itemTypeFilter}
             onChange={(v) => setField('itemTypeFilter', v)}
-            options={ITEM_TYPES.map((t) => ({
+            options={itemTypes.map((t: any) => ({
               value: t.value,
               label: t.label,
-              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/-/g, '_')} size={12} />,
+              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/[\s-]+/g, '_')} size={12} />,
             }))}
             isOpen={openField === 'itemType'}
             onToggle={() => toggleField('itemType')}
@@ -419,6 +458,98 @@ export default function GadgetSettingsPanel({
             onToggle={() => toggleField('priority')}
           />
         </Field>
+
+        {/* Items-by-status: chart type + blocked statuses */}
+        {gadgetType === 'items' && (
+          <div
+            style={{
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              paddingTop: 14, marginTop: 14,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                letterSpacing: '.5px',
+                color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 8,
+              }}
+            >
+              Chart type
+            </div>
+            <div
+              style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6,
+                marginBottom: 16,
+              }}
+            >
+              {(['stacked', 'hbar', 'vbar', 'donut'] as const).map((t) => {
+                const labels = {
+                  stacked: 'Stacked bar', hbar: 'Horizontal bars',
+                  vbar: 'Vertical bars',  donut: 'Donut',
+                };
+                const active = (draft.gadgetSpecific?.chartType ?? 'stacked') === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        gadgetSpecific: { ...d.gadgetSpecific, chartType: t },
+                      }))
+                    }
+                    style={{
+                      padding: '6px 10px',
+                      fontSize: 12,
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                      border: active ? '1px solid #0052CC' : '1px solid #DFE1E6',
+                      background: active ? '#DEEBFF' : '#F4F5F7',
+                      color: active ? '#0052CC' : '#42526E',
+                      fontWeight: active ? 500 : 400,
+                      textAlign: 'left',
+                    }}
+                  >
+                    {labels[t]}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              style={{
+                fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                letterSpacing: '.5px',
+                color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 6,
+              }}
+            >
+              Blocked statuses
+            </div>
+            <div
+              style={{
+                fontSize: 11, color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 8, lineHeight: 1.5,
+              }}
+            >
+              Items matching these Jira statuses are counted in the Blocked bucket.
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+              {['On Hold', 'Awaiting Info', 'Blocked', 'Impediment'].map((s) => (
+                <Lozenge key={s} appearance="moved">{s}</Lozenge>
+              ))}
+            </div>
+            <div
+              style={{
+                fontSize: 11, color: token('color.text.subtlest', '#97A0AF'),
+                fontStyle: 'italic',
+              }}
+            >
+              Customisation coming in a future release.
+            </div>
+          </div>
+        )}
 
         {/* Gadget-specific tail */}
         <GadgetSpecific
@@ -1047,6 +1178,61 @@ function GadgetSpecific({
             </option>
           ))}
         </select>
+      </div>
+    );
+  }
+
+  if (gadgetType === 'scope') {
+    const maxReleases     = settings.maxReleases     ?? 8;
+    const thresholdHigh   = settings.thresholdHigh   ?? 80;
+    const thresholdMod    = settings.thresholdModerate ?? 30;
+    const showOnlyActive  = settings.showOnlyActive  ?? true;
+
+    const numInput: React.CSSProperties = {
+      height: 28, width: '100%', border: '1px solid #DFE1E6', borderRadius: 3,
+      padding: '0 8px', fontSize: 12, background: '#FFFFFF', color: '#172B4D',
+    };
+
+    return (
+      <div style={{ ...wrapper, gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={lbl}>Max releases to show</span>
+          <input
+            type="number" min={1} max={20} value={maxReleases} style={numInput}
+            onChange={(e) => onChange('maxReleases',
+              Math.max(1, Math.min(20, Number(e.currentTarget.value) || 1)))}
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={lbl}>High creep threshold (%)</span>
+          <input
+            type="number" min={1} max={100} value={thresholdHigh} style={numInput}
+            onChange={(e) => onChange('thresholdHigh',
+              Math.max(1, Math.min(100, Number(e.currentTarget.value) || 1)))}
+          />
+          <span style={{ fontSize: 11, color: '#5E6C84' }}>
+            Above {thresholdHigh}% added → "High creep"
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={lbl}>Moderate creep threshold (%)</span>
+          <input
+            type="number" min={0} max={100} value={thresholdMod} style={numInput}
+            onChange={(e) => onChange('thresholdModerate',
+              Math.max(0, Math.min(100, Number(e.currentTarget.value) || 0)))}
+          />
+          <span style={{ fontSize: 11, color: '#5E6C84' }}>
+            Above {thresholdMod}% added → "Moderate creep"
+          </span>
+        </div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <input
+            type="checkbox" checked={showOnlyActive}
+            onChange={(e) => onChange('showOnlyActive', e.currentTarget.checked)}
+            style={{ width: 13, height: 13, accentColor: '#0052CC', cursor: 'pointer' }}
+          />
+          <span style={{ fontSize: 12, color: '#172B4D' }}>Active releases only</span>
+        </label>
       </div>
     );
   }

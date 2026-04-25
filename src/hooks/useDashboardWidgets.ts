@@ -164,41 +164,70 @@ function applyPhIssuesLayer2Filters(q: any, f: DashboardWidgetFilters): any {
 
 export function useDashboardStatusCounts(
   projectId: string | null | undefined,
-  filters: DashboardWidgetFilters = {},
+  filters: DashboardWidgetFilters & { blockedStatuses?: string[] } = {},
 ) {
-  const { dateFrom = null, dateTo = null,
+  const {
+    dateFrom = null,
+    dateTo = null,
     statusFilter = [], releaseFilter = [], assigneeFilter = [],
-    itemTypeFilter = [], priorityFilter = [] } = filters;
+    itemTypeFilter = [], priorityFilter = [],
+    blockedStatuses = ['on hold', 'blocked', 'awaiting info', 'impediment'],
+  } = filters;
+
   return useQuery({
     queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo,
-      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter,
+      blockedStatuses],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
-      if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
+      if (!pKey) return {
+        todo: 0, inProgress: 0, done: 0, blocked: 0, total: 0,
+        blockedDetail: { onHold: 0, awaitingInfo: 0, blocked: 0 },
+      };
 
       let q = supabase
         .from('ph_issues')
-        .select('status_category')
+        .select('status_category, status')
         .eq('project_key', pKey)
         .is('deleted_at', null);
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
-      if (dateTo) q = q.lte('jira_created_at', dateTo);
-      // Fall back to 2026 guardrail when no date filter applied
+      if (dateTo)   q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
 
+      // Apply Release / Assignee / Item Type / Priority / Status filters
+      // from the gadget settings panel (Layer 2). Same helper used by all
+      // other dashboard hooks for consistency.
       q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
 
-      const counts = { todo: 0, inProgress: 0, done: 0, total: 0 };
+      const counts = {
+        todo: 0, inProgress: 0, done: 0, blocked: 0, total: 0,
+        blockedDetail: { onHold: 0, awaitingInfo: 0, blocked: 0 },
+      };
+
       for (const issue of issues ?? []) {
         counts.total++;
-        const cat = (issue.status_category || '').toLowerCase();
-        if (cat === 'done') counts.done++;
-        else if (cat === 'in progress' || cat === 'in_progress') counts.inProgress++;
-        else counts.todo++;
+        const rawStatus = (issue.status ?? '').toLowerCase();
+        const cat       = (issue.status_category ?? '').toLowerCase();
+
+        // Blocked check fires first — pulls matching items out of todo/inProgress.
+        const isBlocked = blockedStatuses.some((s) => rawStatus.includes(s.toLowerCase()));
+
+        if (isBlocked) {
+          counts.blocked++;
+          if (rawStatus.includes('awaiting'))   counts.blockedDetail.awaitingInfo++;
+          else if (rawStatus.includes('block')) counts.blockedDetail.blocked++;
+          else                                  counts.blockedDetail.onHold++;
+        } else if (cat === 'done') {
+          counts.done++;
+        } else if (cat === 'in progress' || cat === 'in_progress') {
+          counts.inProgress++;
+        } else {
+          counts.todo++;
+        }
       }
       return counts;
     },
@@ -336,30 +365,55 @@ export function useDashboardTeamWorkload(
 }
 
 // ─── Scope Change — per active release ───
-export function useDashboardScopeChange(projectId: string | null | undefined) {
+export interface ScopeChangeRow {
+  releaseId: string;
+  releaseKey: string | null;
+  releaseName: string;
+  startDate: string | null;     // ISO 'YYYY-MM-DD' (resolved or fallback)
+  endDate: string | null;       // ISO 'YYYY-MM-DD'
+  originalCount: number;
+  addedCount: number;
+  totalItems: number;           // legacy alias = original + added
+  addedAfterStart: number;      // legacy alias = addedCount
+  deltaPercent: number;         // legacy alias = scopeChangePct
+}
+
+export function useDashboardScopeChange(
+  projectId: string | null | undefined,
+  filters: DashboardWidgetFilters & { showOnlyActive?: boolean } = {},
+) {
+  const {
+    dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [],
+    showOnlyActive = true,
+  } = filters;
+
   return useQuery({
-    queryKey: ['ph-dashboard-scope-change', projectId],
-    queryFn: async () => {
+    queryKey: ['ph-dashboard-scope-change', projectId,
+      dateFrom, dateTo, statusFilter, releaseFilter, assigneeFilter,
+      itemTypeFilter, priorityFilter, showOnlyActive],
+    queryFn: async (): Promise<ScopeChangeRow[]> => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
       const canonicalId = await getCanonicalProjectId(projectId!, pKey);
 
       // ── 1. Releases (2026 guardrail) ──────────────────────────────────────
-      const { data: releases, error: releasesError } = await supabase
+      let relQ = supabase
         .from('rh_releases')
-        .select('id, name, jira_key, target_date')
+        .select('id, name, jira_key, target_date, status')
         .eq('project_id', canonicalId)
-        .neq('status', 'done')
         .gte('target_date', YEAR_2026_START.slice(0, 10))
         .lt('target_date', YEAR_2026_END.slice(0, 10));
+      if (showOnlyActive) relQ = relQ.neq('status', 'done');
+
+      const { data: releases, error: releasesError } = await relQ;
       if (releasesError) throw releasesError;
       if (!releases?.length) return [];
 
       // ── 2. Start dates from ph_versions ───────────────────────────────────
-      // ph_versions.start_date is the authoritative Jira sprint/version start
-      // date (synced via wh-jira-bulk-sync v.startDate). rh_releases has no
-      // start_date column. Fallback: target_date - 14 days (standard sprint).
+      // Canonical date field for this gadget. Fallback: target_date - 14 days.
       const { data: phVersions } = await supabase
         .from('ph_versions' as any)
         .select('jira_id, name, start_date')
@@ -372,28 +426,26 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
         if (v.name)    versionByName.set(v.name,    v.start_date ?? null);
       }
 
-      // ── 3. Issues with fix_versions ───────────────────────────────────────
-      const { data: issues, error: issuesError } = await supabase
+      // ── 3. Issues with fix_versions (Layer 2 filters applied) ─────────────
+      let issueQ = supabase
         .from('ph_issues')
-        .select('id, fix_versions, jira_created_at')
+        .select('id, fix_versions, jira_created_at, status_category, assignee_display_name, issue_type, priority')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .or(or2026('jira_created_at', 'jira_updated_at'));
+
+      issueQ = applyPhIssuesLayer2Filters(issueQ, {
+        statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter,
+      });
+
+      const { data: issues, error: issuesError } = await issueQ;
       if (issuesError) throw issuesError;
 
       // ── 4. ph_activity_log — fix_version assignment events ────────────────
-      // Covers both:
-      //   • Catalyst-native edits  → field_name = 'fix_versions'  (written by
-      //     IssueContentView / StoryDetailModal since Apr 2026 wiring)
-      //   • Jira-mirrored history  → field_name = 'Fix Version'   (mirrored
-      //     from jira_sync_changelog by wh-jira-bulk-sync)
-      // This is the single Catalyst-native source of truth going forward;
-      // jira_sync_changelog is NOT queried directly (Jira decommission ready).
-      const issueIds = (issues ?? []).map(i => i.id).filter(Boolean);
+      const issueIds = (issues ?? []).map((i: any) => i.id).filter(Boolean);
       const activityByItemId = new Map<string, { new_value: string; created_at: string }[]>();
 
       if (issueIds.length > 0) {
-        // Batch in chunks of 500 to stay within Supabase .in() limits
         for (let i = 0; i < issueIds.length; i += 500) {
           const chunk = issueIds.slice(i, i + 500);
           const { data: actRows } = await supabase
@@ -416,69 +468,83 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       }
 
       // ── 5. Compute per-release scope change ───────────────────────────────
-      const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
+      const dateFromMs = dateFrom ? new Date(dateFrom).getTime() : null;
+      const dateToMs   = dateTo   ? new Date(dateTo).getTime()   : null;
+
+      const results: ScopeChangeRow[] = [];
 
       for (const rel of releases as Array<{ id: string; name: string; jira_key: string | null; target_date: string | null }>) {
-        // Resolve start_date: jira_key match → name match → target_date proxy
-        const startDateStr: string | null =
+        // Resolve start_date: jira_key → name → target_date - 14d
+        let resolvedStartIso: string | null =
           (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ||
           versionByName.get(rel.name) ||
           null;
 
-        let startDate: Date;
-        if (startDateStr) {
-          startDate = new Date(startDateStr);
+        let startDate: Date | null = null;
+        if (resolvedStartIso) {
+          startDate = new Date(resolvedStartIso);
         } else if (rel.target_date) {
           startDate = new Date(rel.target_date);
           startDate.setDate(startDate.getDate() - 14);
+          resolvedStartIso = startDate.toISOString().slice(0, 10);
         } else {
           continue;
         }
 
-        let totalItems    = 0;
-        let addedAfterStart = 0;
+        // Apply page-level date filter against canonical start_date
+        const startMs = startDate.getTime();
+        if (dateFromMs !== null && startMs < dateFromMs) continue;
+        if (dateToMs   !== null && startMs > dateToMs)   continue;
 
-        for (const issue of issues ?? []) {
+        let originalCount = 0;
+        let addedCount    = 0;
+
+        for (const issue of (issues ?? []) as any[]) {
           const fv = issue.fix_versions;
           const issueVersions = Array.isArray(fv) ? fv : [];
           const belongsToRelease = issueVersions.some((v: any) =>
             typeof v === 'string' ? v === rel.name : v?.name === rel.name
           );
           if (!belongsToRelease) continue;
-          totalItems++;
 
           const actEntries = activityByItemId.get(issue.id) ?? [];
-
-          // Does any activity log entry show this release being assigned after start?
           const hasActivityForThisRelease = actEntries.some(e =>
             e.new_value?.split(',').map(s => s.trim()).includes(rel.name) ||
             e.new_value === rel.name
           );
 
+          let assignedAfterStart = false;
           if (hasActivityForThisRelease) {
-            // Use activity log as the authoritative signal
-            const assignedAfterStart = actEntries.some(e => {
+            assignedAfterStart = actEntries.some(e => {
               const releaseInEntry =
                 e.new_value?.split(',').map(s => s.trim()).includes(rel.name) ||
                 e.new_value === rel.name;
-              return releaseInEntry && new Date(e.created_at) > startDate;
+              return releaseInEntry && new Date(e.created_at) > startDate!;
             });
-            if (assignedAfterStart) addedAfterStart++;
-          } else {
-            // No activity log entry yet — fall back to jira_created_at proxy.
-            // This covers issues predating the activity-log wiring (pre Apr 2026)
-            // and will self-correct as new edits are logged going forward.
-            if (issue.jira_created_at && new Date(issue.jira_created_at) > startDate) {
-              addedAfterStart++;
-            }
+          } else if (issue.jira_created_at && new Date(issue.jira_created_at) > startDate) {
+            assignedAfterStart = true;
           }
+
+          if (assignedAfterStart) addedCount++;
+          else                    originalCount++;
         }
 
+        const totalItems = originalCount + addedCount;
+        const deltaPercent = originalCount === 0
+          ? (addedCount > 0 ? 100 : 0)
+          : Math.round((addedCount / originalCount) * 100);
+
         results.push({
+          releaseId:   rel.id,
+          releaseKey:  rel.jira_key,
           releaseName: rel.name || 'Unnamed Release',
+          startDate:   resolvedStartIso,
+          endDate:     rel.target_date,
+          originalCount,
+          addedCount,
           totalItems,
-          addedAfterStart,
-          deltaPercent: totalItems > 0 ? Math.round((addedAfterStart / totalItems) * 100) : 0,
+          addedAfterStart: addedCount,
+          deltaPercent,
         });
       }
 
