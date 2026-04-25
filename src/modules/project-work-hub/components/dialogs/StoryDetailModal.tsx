@@ -582,7 +582,11 @@ export default function StoryDetailModal({
     if (workItemSource !== 'catalyst') return f;
     const m: Record<string, string | null> = {
       summary: 'title', description: 'description', description_text: 'description',
-      description_adf: 'description_adf_raw', labels: 'tags',
+      description_adf: 'description_adf_raw',
+      // Catalyst stores user-facing labels in `labels` (text[]) — parity column
+      // added by migration 20260425185838. Legacy `tags` column is no longer
+      // written by the modal (kept in DB for back-compat reads).
+      labels: 'labels',
       assignee_account_id: 'assignee_id', reporter_account_id: 'reporter_id',
       // Catalyst now has parity columns added in migration 20260425185838
       status_category: 'status_category',
