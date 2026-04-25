@@ -267,6 +267,7 @@ function InlineSummaryEditor({
 // ─── Main component ─────────────────────────────────────
 export function SubtasksPanel({
   storyKey, storyId, projectKey, onSubtaskClick, parentIssueType, parentSummary, title,
+  parentSource = 'jira', parentProjectId = null,
 }: SubtasksPanelProps) {
   useAtlaskitThemeSync();
   const queryClient = useQueryClient();
