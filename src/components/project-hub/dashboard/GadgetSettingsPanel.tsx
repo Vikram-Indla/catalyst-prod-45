@@ -42,6 +42,7 @@ const GADGET_DATE_FIELD: Record<GadgetType, string> = {
   onhold:    'ph_issues.jira_updated_at',
   workload:  'ph_issues.jira_created_at',
   activity:  'work_item_activity.occurred_at',
+  scope:     'ph_versions.start_date (target_date − 14d fallback)',
 };
 
 interface Props {
@@ -1177,6 +1178,61 @@ function GadgetSpecific({
             </option>
           ))}
         </select>
+      </div>
+    );
+  }
+
+  if (gadgetType === 'scope') {
+    const maxReleases     = settings.maxReleases     ?? 8;
+    const thresholdHigh   = settings.thresholdHigh   ?? 80;
+    const thresholdMod    = settings.thresholdModerate ?? 30;
+    const showOnlyActive  = settings.showOnlyActive  ?? true;
+
+    const numInput: React.CSSProperties = {
+      height: 28, width: '100%', border: '1px solid #DFE1E6', borderRadius: 3,
+      padding: '0 8px', fontSize: 12, background: '#FFFFFF', color: '#172B4D',
+    };
+
+    return (
+      <div style={{ ...wrapper, gap: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={lbl}>Max releases to show</span>
+          <input
+            type="number" min={1} max={20} value={maxReleases} style={numInput}
+            onChange={(e) => onChange('maxReleases',
+              Math.max(1, Math.min(20, Number(e.currentTarget.value) || 1)))}
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={lbl}>High creep threshold (%)</span>
+          <input
+            type="number" min={1} max={100} value={thresholdHigh} style={numInput}
+            onChange={(e) => onChange('thresholdHigh',
+              Math.max(1, Math.min(100, Number(e.currentTarget.value) || 1)))}
+          />
+          <span style={{ fontSize: 11, color: '#5E6C84' }}>
+            Above {thresholdHigh}% added → "High creep"
+          </span>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <span style={lbl}>Moderate creep threshold (%)</span>
+          <input
+            type="number" min={0} max={100} value={thresholdMod} style={numInput}
+            onChange={(e) => onChange('thresholdModerate',
+              Math.max(0, Math.min(100, Number(e.currentTarget.value) || 0)))}
+          />
+          <span style={{ fontSize: 11, color: '#5E6C84' }}>
+            Above {thresholdMod}% added → "Moderate creep"
+          </span>
+        </div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <input
+            type="checkbox" checked={showOnlyActive}
+            onChange={(e) => onChange('showOnlyActive', e.currentTarget.checked)}
+            style={{ width: 13, height: 13, accentColor: '#0052CC', cursor: 'pointer' }}
+          />
+          <span style={{ fontSize: 12, color: '#172B4D' }}>Active releases only</span>
+        </label>
       </div>
     );
   }
