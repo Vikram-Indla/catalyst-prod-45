@@ -132,13 +132,46 @@ export function useActiveReleases(projectId: string | null | undefined) {
 // ─── Status Counts (To Do / In Progress / Done) ───
 export interface DashboardDateFilter { dateFrom?: string | null; dateTo?: string | null; }
 
+/**
+ * Layer 2 (per-gadget) filter dimensions persisted by useGadgetSettings.
+ * Every ph_issues-backed widget hook accepts these and AND-combines any
+ * non-empty filter into the underlying Supabase query. Each filter array
+ * also participates in the queryKey so a settings change triggers a refetch.
+ */
+export interface DashboardWidgetFilters extends DashboardDateFilter {
+  statusFilter?: string[];      // matched against ph_issues.status_category
+  releaseFilter?: string[];     // JSONB containment on ph_issues.fix_versions
+  assigneeFilter?: string[];    // matched against ph_issues.assignee_display_name
+  itemTypeFilter?: string[];    // matched against ph_issues.issue_type
+  priorityFilter?: string[];    // matched against ph_issues.priority
+}
+
+/** Apply Layer 2 filters to a ph_issues query builder. Mutates and returns q. */
+function applyPhIssuesLayer2Filters(q: any, f: DashboardWidgetFilters): any {
+  if (f.statusFilter?.length)   q = q.in('status_category', f.statusFilter);
+  if (f.assigneeFilter?.length) q = q.in('assignee_display_name', f.assigneeFilter);
+  if (f.itemTypeFilter?.length) q = q.in('issue_type', f.itemTypeFilter);
+  if (f.priorityFilter?.length) q = q.in('priority', f.priorityFilter);
+  if (f.releaseFilter?.length) {
+    const orClause = f.releaseFilter
+      .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+      .join(',');
+    q = q.or(orClause);
+  }
+  return q;
+}
+
+
 export function useDashboardStatusCounts(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
@@ -153,6 +186,8 @@ export function useDashboardStatusCounts(
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       // Fall back to 2026 guardrail when no date filter applied
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
@@ -175,11 +210,14 @@ export function useDashboardStatusCounts(
 // ─── Overdue Items ───
 export function useDashboardOverdueItems(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-overdue', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-overdue', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -198,6 +236,8 @@ export function useDashboardOverdueItems(
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
 
+      q = applyPhIssuesLayer2Filters(q, filters);
+
       const { data, error } = await q
         .order('effective_due_date', { ascending: true })
         .limit(50);
@@ -212,11 +252,14 @@ export function useDashboardOverdueItems(
 // ─── On Hold Items ───
 export function useDashboardOnHoldItems(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-on-hold', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-on-hold', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -232,6 +275,8 @@ export function useDashboardOnHoldItems(
       if (dateTo) q = q.lte('jira_updated_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
 
+      q = applyPhIssuesLayer2Filters(q, filters);
+
       const { data, error } = await q.limit(50);
       if (error) throw error;
       return data ?? [];
@@ -244,11 +289,14 @@ export function useDashboardOnHoldItems(
 // ─── Team Workload — active releases only ───
 export function useDashboardTeamWorkload(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-team-workload', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-team-workload', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -263,6 +311,8 @@ export function useDashboardTeamWorkload(
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
@@ -443,11 +493,14 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
 export function useDashboardIncidents(
   projectId: string | null | undefined,
   projectKey?: string | null,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId, projectKey, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-incidents', projectId, projectKey, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = projectKey ?? (await getProjectKey(projectId!));
       if (!pKey) return [];
@@ -462,6 +515,18 @@ export function useDashboardIncidents(
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      // Layer 2 filters — note: itemType is fixed to 'Production Incident' for
+      // this widget so itemTypeFilter is intentionally ignored here.
+      if (statusFilter.length)   q = q.in('status_category', statusFilter);
+      if (assigneeFilter.length) q = q.in('assignee_display_name', assigneeFilter);
+      if (priorityFilter.length) q = q.in('priority', priorityFilter);
+      if (releaseFilter.length) {
+        const orClause = releaseFilter
+          .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+          .join(',');
+        q = q.or(orClause);
+      }
 
       const { data, error } = await q
         .order('jira_created_at', { ascending: false })
@@ -487,11 +552,14 @@ export function useDashboardIncidents(
 export function useDashboardDefects(
   projectId: string | null | undefined,
   projectKey?: string | null,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-defects', projectId, projectKey, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-defects', projectId, projectKey, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
@@ -507,6 +575,18 @@ export function useDashboardDefects(
         return q;
       };
 
+      // Layer 2 filter mapping for tm_defects (column shape differs from ph_issues):
+      //   statusFilter   → status (text)
+      //   priorityFilter → severity
+      //   assigneeFilter → jira_assignee_name
+      //   itemTypeFilter, releaseFilter → not modeled on tm_defects, ignored
+      const applyLayer2 = (q: any) => {
+        if (statusFilter.length)   q = q.in('status', statusFilter);
+        if (priorityFilter.length) q = q.in('severity', priorityFilter);
+        if (assigneeFilter.length) q = q.in('jira_assignee_name', assigneeFilter);
+        return q;
+      };
+
       // Fetch Jira-synced defects by project key
       if (projectKey) {
         let jq = supabase
@@ -514,6 +594,7 @@ export function useDashboardDefects(
           .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
           .eq('jira_project_key', projectKey);
         jq = applyDate(jq);
+        jq = applyLayer2(jq);
         const { data: jiraDefects } = await jq.order('created_at', { ascending: false }).limit(10);
         if (jiraDefects?.length) allDefects.push(...jiraDefects);
       }
@@ -525,6 +606,7 @@ export function useDashboardDefects(
         .eq('project_id', projectId!)
         .eq('jira_source', false);
       nq = applyDate(nq);
+      nq = applyLayer2(nq);
       const { data: nativeDefects } = await nq.order('created_at', { ascending: false }).limit(10);
       if (nativeDefects?.length) allDefects.push(...nativeDefects);
 
@@ -575,22 +657,28 @@ export interface DashboardActivityItem {
 
 export function useDashboardRecentActivity(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery<DashboardActivityItem[]>({
-    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL on parent issues (used to scope activity to this project)
-      const { data: issues, error: issuesError } = await supabase
+      // 🛡️ 2026 GUARDRAIL on parent issues (used to scope activity to this project).
+      // Layer 2 filters narrow the parent issue set, which in turn scopes activity rows.
+      let iq = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .or(or2026('jira_created_at', 'jira_updated_at'));
+      iq = applyPhIssuesLayer2Filters(iq, filters);
+      const { data: issues, error: issuesError } = await iq;
       if (issuesError) throw issuesError;
 
       const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
@@ -648,6 +736,10 @@ export interface DashboardReleaseHealthFilters {
   dateFrom?: string | null;
   dateTo?: string | null;
   releaseFilter?: string[];
+  statusFilter?: string[];
+  assigneeFilter?: string[];
+  itemTypeFilter?: string[];
+  priorityFilter?: string[];
   maxRows?: number;
 }
 
@@ -655,9 +747,12 @@ export function useDashboardReleaseHealth(
   projectId: string | null | undefined,
   filters: DashboardReleaseHealthFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null, releaseFilter = [], maxRows } = filters;
+  const { dateFrom = null, dateTo = null, releaseFilter = [],
+    statusFilter = [], assigneeFilter = [], itemTypeFilter = [], priorityFilter = [],
+    maxRows } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-release-health', projectId, dateFrom, dateTo, releaseFilter, maxRows],
+    queryKey: ['ph-dashboard-release-health', projectId, dateFrom, dateTo, releaseFilter,
+      statusFilter, assigneeFilter, itemTypeFilter, priorityFilter, maxRows],
     queryFn: async () => {
       console.log('[ReleaseHealth] filter received:', filters);
       console.log('[ReleaseHealth] dateFrom:', dateFrom, 'dateTo:', dateTo);
@@ -708,13 +803,17 @@ export function useDashboardReleaseHealth(
       const fvOrClause = releaseNames
         .map(n => `fix_versions.cs.${JSON.stringify([{ name: n }])}`)
         .join(',');
-      const { data: issues, error: relHealthIssError } = await supabase
+      let issuesQ = supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .or(fvOrClause)
-        .limit(5000);
+        .or(fvOrClause);
+      if (statusFilter.length)   issuesQ = issuesQ.in('status_category', statusFilter);
+      if (assigneeFilter.length) issuesQ = issuesQ.in('assignee_display_name', assigneeFilter);
+      if (itemTypeFilter.length) issuesQ = issuesQ.in('issue_type', itemTypeFilter);
+      if (priorityFilter.length) issuesQ = issuesQ.in('priority', priorityFilter);
+      const { data: issues, error: relHealthIssError } = await issuesQ.limit(5000);
       if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {

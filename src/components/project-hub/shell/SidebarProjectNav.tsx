@@ -47,7 +47,7 @@ const PLANNING_NAV = [
   { icon: Layers, label: 'Epic Backlog', path: 'epic-backlog' },
   { icon: LayoutList, label: 'Feature Backlog', path: 'feature-backlog' },
   { icon: BookOpen, label: 'Story Backlog', path: 'story-backlog' },
-  { icon: Network, label: 'All Work', path: 'hierarchy/allwork' },
+  { icon: Network, label: 'All Work', path: 'allwork' },
   { icon: Columns3, label: 'Boards', path: 'boards' },
   { icon: GanttChart, label: 'Timeline', path: 'timeline' },
 ];

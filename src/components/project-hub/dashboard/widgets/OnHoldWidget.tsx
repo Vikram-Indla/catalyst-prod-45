@@ -21,6 +21,11 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
   const { data: items, isLoading } = useDashboardOnHoldItems(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
+    statusFilter: settings.statusFilter,
+    releaseFilter: settings.releaseFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
   });
   const count = items?.length ?? 0;
   const { openUWV } = useUWV();

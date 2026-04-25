@@ -207,16 +207,25 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           const skipDateFilter = !!(params.fixVersions && params.fixVersions.length > 0);
 
           // Scope filter — match gadget semantics.
+          // Date column varies by dataType to mirror the originating gadget's filter.
+          const dateCol: string = ({
+            onhold:    'jira_updated_at',
+            overdue:   'effective_due_date',
+            defects:   'created_at',
+            incidents: 'created_at',
+            activity:  'occurred_at',
+          } as Record<string, string>)[params.dataType ?? ''] ?? 'jira_created_at';
+
           if (!skipDateFilter && params.scope === 'quarter' && params.quarter) {
             const r = quarterRange(params.quarter);
             if (r) {
-              q = q.gte('jira_created_at', `${r.start}T00:00:00.000Z`)
-                   .lte('jira_created_at', `${r.end}T23:59:59.999Z`);
+              q = q.gte(dateCol, `${r.start}T00:00:00.000Z`)
+                   .lte(dateCol, `${r.end}T23:59:59.999Z`);
             }
           }
           if (!skipDateFilter && params.scope === 'custom' && params.dateFrom) {
-            q = q.gte('jira_created_at', params.dateFrom);
-            if (params.dateTo) q = q.lte('jira_created_at', params.dateTo);
+            q = q.gte(dateCol, params.dateFrom);
+            if (params.dateTo) q = q.lte(dateCol, params.dateTo);
           }
 
           // fix_versions filter — JSONB containment via PostgREST `cs` operator.

@@ -422,8 +422,8 @@ export function IssueContentView({
             {projectKey && (
               <>
                 <a
-                  href={`/project-hub/${projectKey}/hierarchy/allwork`}
-                  onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/project-hub/${projectKey}/hierarchy/allwork`; }}
+                  href={`/project-hub/${projectKey}/allwork`}
+                  onClick={e => { e.preventDefault(); e.stopPropagation(); window.location.href = `/project-hub/${projectKey}/allwork`; }}
                   style={{ fontSize: 13, fontWeight: 500, color: '#6B778C', textDecoration: 'none', cursor: 'pointer' }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#0052CC'; e.currentTarget.style.textDecoration = 'underline'; }}
                   onMouseLeave={e => { e.currentTarget.style.color = '#6B778C'; e.currentTarget.style.textDecoration = 'none'; }}

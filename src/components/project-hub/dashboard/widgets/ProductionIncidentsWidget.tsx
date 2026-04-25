@@ -35,6 +35,11 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   const { data: incidents, isLoading } = useDashboardIncidents(projectId, projectKey, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
+    statusFilter: settings.statusFilter,
+    releaseFilter: settings.releaseFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
   });
   const { openUWV } = useUWV();
 
