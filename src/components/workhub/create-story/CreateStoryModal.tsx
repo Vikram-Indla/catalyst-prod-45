@@ -742,6 +742,26 @@ export function CreateStoryModal({
 
   const [workType, setWorkType] = useState<string>('Story');
   const [createAnother, setCreateAnother] = useState(false);
+
+  // Dynamic workflow statuses from catalyst_workflow_schemes/_statuses.
+  // Falls back to hardcoded STATUS_OPTIONS_BY_TYPE when DB returns no rows
+  // (e.g. unmapped work types like Feature / API Requirement).
+  const { data: workflowStatuses = [], isLoading: statusesLoading } =
+    useWorkflowStatuses(workType, form.projectId);
+
+  const dbStatusOptions = useMemo(
+    () => workflowStatuses.map((s) => ({ value: s.value, label: s.label })),
+    [workflowStatuses],
+  );
+  const resolvedStatusOptions =
+    dbStatusOptions.length > 0
+      ? dbStatusOptions
+      : (STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS);
+
+  const dbInitialStatus = useMemo(
+    () => workflowStatuses.find((s) => s.is_initial)?.value,
+    [workflowStatuses],
+  );
   const [submitAttempted, setSubmitAttempted] = useState(false);
   // BEH-003: blur-based summary validation — error shows after leaving empty field
   const [summaryBlurred, setSummaryBlurred] = useState(false);
