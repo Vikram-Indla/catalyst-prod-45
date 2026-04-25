@@ -14,6 +14,7 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardStatusCounts } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { EmptyState } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 /** Canonical Catalyst status triple (matches StatusLozenge guardrail). */
 const STATUS_COLORS = {
@@ -33,6 +34,7 @@ export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, 
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}
+      headerBadges={<WidgetGearButton gadgetType="items" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
         <div className="animate-pulse">
