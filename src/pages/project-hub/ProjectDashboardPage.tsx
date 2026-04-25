@@ -69,7 +69,6 @@ function ProjectDashboardPageInner() {
 
   const actions = (
     <>
-      <DashboardDatePicker />
       <Button
         appearance="subtle"
         spacing="compact"
