@@ -210,22 +210,29 @@ export function useDashboardOverdueItems(
 }
 
 // ─── On Hold Items ───
-export function useDashboardOnHoldItems(projectId: string | null | undefined) {
+export function useDashboardOnHoldItems(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-on-hold', projectId],
+    queryKey: ['ph-dashboard-on-hold', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .ilike('status', '%hold%')
-        .or(or2026('jira_created_at', 'jira_updated_at'))
-        .limit(50);
+        .ilike('status', '%hold%');
+
+      if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
+      if (dateTo) q = q.lte('jira_updated_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data, error } = await q.limit(50);
       if (error) throw error;
       return data ?? [];
     },
@@ -235,21 +242,29 @@ export function useDashboardOnHoldItems(projectId: string | null | undefined) {
 }
 
 // ─── Team Workload — active releases only ───
-export function useDashboardTeamWorkload(projectId: string | null | undefined) {
+export function useDashboardTeamWorkload(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-team-workload', projectId],
+    queryKey: ['ph-dashboard-team-workload', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data: issues, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('assignee_display_name, issue_type, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .neq('status_category', 'Done')
-        .or(or2026('jira_created_at', 'jira_updated_at'));
+        .neq('status_category', 'Done');
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data: issues, error } = await q;
       if (error) throw error;
 
       const map = new Map<string, { assignee: string; total: number; stories: number; bugs: number }>();
