@@ -163,7 +163,7 @@ export default function GadgetSettingsPanel({
   };
 
   return (
-    <div style={{ fontSize: 13, color: '#172B4D' }}>
+    <div ref={wrapperRef} style={{ fontSize: 13, color: '#172B4D' }}>
       {/* HEADER */}
       <div
         style={{
