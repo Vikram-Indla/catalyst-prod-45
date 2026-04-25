@@ -755,13 +755,14 @@ export default function StoryDetailModal({
   }, [aiGenerating, aiEdited, aiOutput, doAiGenerate]);
 
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
-    await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
-    // Write-back to Jira
-    await enqueueWriteBack({ phIssueId: itemId, fieldName: 'parent', newValue: newParentKey ?? '' });
-    // Refresh detail + all table views across Catalyst
+    await supabase.from(issueTable).update({ parent_key: newParentKey } as any).eq('id', itemId);
+    if (workItemSource === 'jira') {
+      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'parent', newValue: newParentKey ?? '' });
+    }
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
     queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-  }, [itemId, queryClient]);
+    queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+  }, [itemId, queryClient, issueTable, workItemSource]);
 
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
