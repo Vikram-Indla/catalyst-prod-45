@@ -15,6 +15,7 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardTeamWorkload } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { EmptyState, Avatar } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 const WORKLOAD_FILL = 'rgba(37, 99, 235, 0.20)';
 const WORKLOAD_ACCENT = '#2563EB';
@@ -30,6 +31,7 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={2}
+      headerBadges={<WidgetGearButton gadgetType="workload" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
         <div className="animate-pulse space-y-2">

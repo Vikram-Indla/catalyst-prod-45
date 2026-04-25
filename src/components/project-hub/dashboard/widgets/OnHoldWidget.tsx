@@ -13,13 +13,19 @@ import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: items, isLoading } = useDashboardOnHoldItems(projectId);
   const count = items?.length ?? 0;
   const { openUWV } = useUWV();
 
-  const badge = <StatusLozenge status="todo">{String(count)}</StatusLozenge>;
+  const badge = (
+    <>
+      <StatusLozenge status="todo">{String(count)}</StatusLozenge>
+      <WidgetGearButton gadgetType="onhold" projectKey={projectKey} projectId={projectId} />
+    </>
+  );
 
   const footer = (
     <button

@@ -15,12 +15,15 @@
  *   - Progress fill: #0052CC (in progress) | #006644 (done) | #DFE1E6 (track)
  *   - Empty state via <EmptyState>
  */
-import { Settings as SettingsIcon, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, StatusLozenge } from '@/components/ads';
+import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
+import { useGadgetSettings } from '@/hooks/useGadgetSettings';
+import WidgetGearButton from '../WidgetGearButton';
 
 const MONO_STACK = '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace';
 
@@ -53,7 +56,16 @@ export default function ReleaseHealthWidget({
   collapsed,
   onToggleCollapse,
 }: WidgetProps) {
-  const { data: releases, isLoading } = useDashboardReleaseHealth(projectId);
+  const { filter } = useDashboardFilter();
+  const { settings } = useGadgetSettings('release', projectKey);
+  const maxRows = (settings.gadgetSpecific?.maxRows as number | undefined) ?? 6;
+
+  const { data: releases, isLoading } = useDashboardReleaseHealth(projectId, {
+    dateFrom: filter.dateFrom,
+    dateTo: filter.dateTo,
+    releaseFilter: settings.releaseFilter,
+    maxRows,
+  });
   const { openUWV } = useUWV();
 
   const count = releases?.length ?? 0;
@@ -67,25 +79,7 @@ export default function ReleaseHealthWidget({
     });
 
   const headerExtras = (
-    <button
-      type="button"
-      aria-label="Release Health settings"
-      onClick={(e) => e.stopPropagation()}
-      style={{
-        background: 'transparent',
-        border: 0,
-        padding: 4,
-        cursor: 'pointer',
-        borderRadius: 3,
-        display: 'flex',
-        alignItems: 'center',
-        color: '#42526E',
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.background = '#F4F5F7')}
-      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-    >
-      <SettingsIcon size={14} />
-    </button>
+    <WidgetGearButton gadgetType="release" projectKey={projectKey} projectId={projectId} />
   );
 
   const footer = (
@@ -133,7 +127,7 @@ export default function ReleaseHealthWidget({
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {(releases ?? []).slice(0, 6).map((rel: any) => {
+          {(releases ?? []).slice(0, maxRows).map((rel: any) => {
             const pct = rel.completionPct ?? 0;
             const isDone = pct >= 100;
             const fill = isDone ? '#006644' : '#0052CC';

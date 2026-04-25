@@ -152,6 +152,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       span={2}
       footer={footer}
       flushBody
+      headerBadges={<WidgetGearButton gadgetType="incidents" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
         <div className="p-4 animate-pulse">

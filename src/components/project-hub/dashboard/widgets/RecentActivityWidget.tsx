@@ -12,6 +12,7 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardRecentActivity } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { EmptyState, StatusLozenge, TruncateCell, toStatusCategory } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '—';
@@ -35,6 +36,7 @@ export default function RecentActivityWidget({ projectId, projectKey, collapsed,
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}
+      headerBadges={<WidgetGearButton gadgetType="activity" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
         <div className="animate-pulse space-y-2">
