@@ -669,13 +669,14 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 whiteSpace: 'nowrap',
               }}
             >
-              {col.cell({
-                row,
-                value,
-                isFocused,
-                isSelected,
-                commit: (next) => onCellEdit?.(row, col.id, next),
-              })}
+              <CellRenderer
+                cell={col.cell}
+                row={row}
+                value={value}
+                isFocused={isFocused}
+                isSelected={isSelected}
+                commit={(next) => onCellEdit?.(row, col.id, next)}
+              />
             </div>
           ),
         });
