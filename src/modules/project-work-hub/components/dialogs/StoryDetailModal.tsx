@@ -1496,7 +1496,7 @@ export default function StoryDetailModal({
                                   onSave={(adfJson) => {
                                     const parsed = adfJson ? JSON.parse(adfJson) : null;
                                     setAcceptanceCriteria(adfJson);
-                                    supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                    supabase.from(issueTable).update({ acceptance_criteria: parsed } as any).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
                                     setAcEditMode(false);
                                     setAcUnsaved(false);
                                   }}
