@@ -367,7 +367,7 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
 
       const versionByJiraId = new Map<string, string | null>();
       const versionByName  = new Map<string, string | null>();
-      for (const v of phVersions ?? []) {
+      for (const v of (phVersions ?? []) as Array<{ jira_id: string | null; name: string | null; start_date: string | null }>) {
         if (v.jira_id) versionByJiraId.set(v.jira_id, v.start_date ?? null);
         if (v.name)    versionByName.set(v.name,    v.start_date ?? null);
       }
