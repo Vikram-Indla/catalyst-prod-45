@@ -111,6 +111,22 @@ export function UniversalWorkView({ params, onClose }: Props) {
 
   const title = params.title ?? `${params.project} · Work items`;
 
+  // Build filter summary chips from gadget-forwarded settings.
+  const filterChips = useMemo(() => {
+    const chips: { label: string; value: string }[] = [];
+    if (params.dateLabel && (params.dateFrom || params.dateTo)) {
+      chips.push({ label: 'Date', value: params.dateLabel });
+    } else if (params.dateFrom || params.dateTo) {
+      chips.push({ label: 'Date', value: `${params.dateFrom ?? '…'} – ${params.dateTo ?? '…'}` });
+    }
+    if (params.statusFilter?.length) chips.push({ label: 'Status', value: params.statusFilter.join(', ') });
+    if (params.assigneeFilter?.length) chips.push({ label: 'Assignee', value: params.assigneeFilter.join(', ') });
+    if (params.itemTypeFilter?.length) chips.push({ label: 'Type', value: params.itemTypeFilter.join(', ') });
+    if (params.priorityFilter?.length) chips.push({ label: 'Priority', value: params.priorityFilter.join(', ') });
+    if (params.releaseFilter?.length) chips.push({ label: 'Release', value: params.releaseFilter.join(', ') });
+    return chips;
+  }, [params]);
+
   return (
     <div
       role="dialog"
