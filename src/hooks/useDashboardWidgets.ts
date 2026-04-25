@@ -232,9 +232,9 @@ export function useDashboardOverdueItems(
         .lt('effective_due_date', today)
         .not('effective_due_date', 'is', null);
 
-      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
-      if (dateTo) q = q.lte('jira_created_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+      if (dateFrom) q = q.gte('effective_due_date', dateFrom);
+      if (dateTo) q = q.lte('effective_due_date', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('effective_due_date', 'effective_due_date'));
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
