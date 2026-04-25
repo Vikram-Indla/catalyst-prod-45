@@ -384,13 +384,17 @@ function MultiSelectGeneric({
   onChange,
   options,
   placeholder,
+  isOpen,
+  onToggle,
 }: {
   value: string[];
   onChange: (v: string[]) => void;
   options: OptionT[];
   placeholder: string;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const open = isOpen;
   const selected = useMemo(() => new Set(value), [value]);
   const labelMap = useMemo(() => new Map(options.map((o) => [o.value, o.label])), [options]);
 
@@ -403,7 +407,7 @@ function MultiSelectGeneric({
     <div style={{ position: 'relative' }}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={onToggle}
         style={{
           minHeight: 32,
           width: '100%',
