@@ -24,12 +24,37 @@ export function DefectsSection({ storyKey, projectKey }: { storyKey: string; pro
   const { data: defects = [], isLoading } = useQuery({
     queryKey: ['defects', storyKey],
     queryFn: async () => {
-      const { data, error } = await supabase.from('ph_issues')
-        .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
-        .eq('parent_key', storyKey).in('issue_type', ['QA Bug', 'Defect']).is('deleted_at', null).is('archived_at', null)
-        .order('position', { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as PhIssueRow[];
+      const [phRes, catRes] = await Promise.all([
+        supabase.from('ph_issues')
+          .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
+          .eq('parent_key', storyKey).in('issue_type', ['QA Bug', 'Defect']).is('deleted_at', null).is('archived_at', null)
+          .order('position', { ascending: true }),
+        supabase.from('catalyst_issues')
+          .select('id,issue_key,title,status,issue_type,assignee_id,priority,parent_key,created_at,updated_at')
+          .eq('parent_key', storyKey).in('issue_type', ['QA Bug', 'Defect'])
+          .order('created_at', { ascending: true }),
+      ]);
+      if (phRes.error) throw phRes.error;
+      const ph = (phRes.data ?? []) as PhIssueRow[];
+      const seen = new Set(ph.map((r) => r.issue_key));
+      const cat: PhIssueRow[] = (catRes.data ?? [])
+        .filter((r: any) => r.issue_key && !seen.has(r.issue_key))
+        .map((r: any) => ({
+          id: r.id,
+          issue_key: r.issue_key,
+          summary: r.title,
+          status: r.status,
+          status_category: 'todo',
+          issue_type: r.issue_type,
+          assignee_account_id: r.assignee_id ?? null,
+          assignee_display_name: null,
+          priority: r.priority,
+          position: null,
+          jira_created_at: r.created_at,
+          jira_updated_at: r.updated_at,
+          deleted_at: null,
+        }));
+      return [...ph, ...cat];
     },
   });
 
