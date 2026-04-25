@@ -308,11 +308,11 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment-unlinked', projectKey, settings.include_stories, settings.include_defects],
     queryFn: async (): Promise<UnlinkedEpic[]> => {
-      // Fetch all linked epic ids first
+      // Fetch all linked epic ids first (es_initiative_epics — canonical join table).
       const { data: links } = await (supabase as any)
-        .from('ph_initiative_links')
-        .select('issue_id');
-      const linkedIds = new Set((links ?? []).map((l: any) => l.issue_id));
+        .from('es_initiative_epics')
+        .select('epic_id');
+      const linkedIds = new Set((links ?? []).map((l: any) => l.epic_id));
 
       const { data: epics } = await (supabase as any)
         .from('ph_issues')
