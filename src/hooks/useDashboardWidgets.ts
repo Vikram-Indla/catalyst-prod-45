@@ -263,7 +263,7 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       // 🛡️ 2026 GUARDRAIL: releases with target_date in 2026 (rh_releases is source of truth).
       const { data: releases, error: releasesError } = await supabase
         .from('rh_releases')
-        .select('id, name, start_date, target_date')
+        .select('id, name, created_at, target_date')
         .eq('project_id', canonicalId)
         .neq('status', 'done')
         .gte('target_date', YEAR_2026_START.slice(0, 10))
