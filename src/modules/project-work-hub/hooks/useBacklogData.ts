@@ -70,18 +70,26 @@ export function useEpicBacklog(projectId: string) {
     queryKey: ['backlog-epics', projectId, projectKey],
     queryFn: async (): Promise<BacklogEpic[]> => {
       if (!projectKey) return [];
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at')
-        .eq('project_key', projectKey)
-        .eq('issue_type', 'Epic')
-        .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
-        .is('jira_removed_at', null)
-        .is('archived_at', null)
-        .order('jira_updated_at', { ascending: false });
-      if (error) throw error;
+      const [jiraRes, catRes] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at')
+          .eq('project_key', projectKey)
+          .eq('issue_type', 'Epic')
+          .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+          .is('jira_removed_at', null)
+          .is('archived_at', null)
+          .order('jira_updated_at', { ascending: false }),
+        supabase
+          .from('catalyst_issues')
+          .select('id, issue_key, title, status, priority, assignee_id, created_at, updated_at')
+          .eq('project_id', projectId)
+          .eq('issue_type', 'Epic')
+          .order('created_at', { ascending: false }),
+      ]);
+      if (jiraRes.error) throw jiraRes.error;
 
-      return (data || []).map((row: any) => ({
+      const jiraEpics: BacklogEpic[] = (jiraRes.data || []).map((row: any) => ({
         id: row.id,
         epic_key: row.issue_key,
         name: row.summary,
@@ -102,6 +110,33 @@ export function useEpicBacklog(projectId: string) {
         issue_type: row.issue_type ?? 'Epic',
         comment_count: typeof row.comment_count === 'number' ? row.comment_count : null,
       })) as BacklogEpic[];
+
+      const seen = new Set(jiraEpics.map((e) => e.epic_key).filter(Boolean) as string[]);
+      const catEpics: BacklogEpic[] = (catRes.data || [])
+        .filter((row: any) => !(row.issue_key && seen.has(row.issue_key)))
+        .map((row: any) => ({
+          id: row.id,
+          epic_key: row.issue_key,
+          name: row.title,
+          description: null,
+          status: row.status,
+          assignee_id: row.assignee_id,
+          assignee_name: null,
+          end_date: null,
+          health: null,
+          deleted_at: null,
+          primary_program_id: null,
+          jira_created_at: row.created_at,
+          jira_updated_at: row.updated_at,
+          source: 'catalyst' as const,
+          priority: row.priority ?? null,
+          parent_key: null,
+          parent_summary: null,
+          issue_type: 'Epic',
+          comment_count: null,
+        })) as BacklogEpic[];
+
+      return [...catEpics, ...jiraEpics];
     },
     enabled: !!projectId && !!projectKey,
   });
