@@ -408,30 +408,36 @@ export function useDashboardDefects(
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
 
-      // 🛡️ 2026 GUARDRAIL — defects created OR updated in 2026
-      const dateOr = `and(created_at.gte.${YEAR_2026_START},created_at.lt.${YEAR_2026_END}),and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+      // Per-gadget date filter overrides 2026 guardrail when supplied
+      const applyDate = (q: any) => {
+        if (dateFrom) q = q.gte('created_at', dateFrom);
+        if (dateTo) q = q.lte('created_at', dateTo);
+        if (!dateFrom && !dateTo) {
+          const dateOr = `and(created_at.gte.${YEAR_2026_START},created_at.lt.${YEAR_2026_END}),and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+          q = q.or(dateOr);
+        }
+        return q;
+      };
 
       // Fetch Jira-synced defects by project key
       if (projectKey) {
-        const { data: jiraDefects } = await supabase
+        let jq = supabase
           .from('tm_defects')
           .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
-          .eq('jira_project_key', projectKey)
-          .or(dateOr)
-          .order('created_at', { ascending: false })
-          .limit(10);
+          .eq('jira_project_key', projectKey);
+        jq = applyDate(jq);
+        const { data: jiraDefects } = await jq.order('created_at', { ascending: false }).limit(10);
         if (jiraDefects?.length) allDefects.push(...jiraDefects);
       }
 
       // Also fetch native defects by project_id
-      const { data: nativeDefects } = await supabase
+      let nq = supabase
         .from('tm_defects')
         .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
         .eq('project_id', projectId!)
-        .eq('jira_source', false)
-        .or(dateOr)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        .eq('jira_source', false);
+      nq = applyDate(nq);
+      const { data: nativeDefects } = await nq.order('created_at', { ascending: false }).limit(10);
       if (nativeDefects?.length) allDefects.push(...nativeDefects);
 
       // Dedupe, sort, cap at 10
