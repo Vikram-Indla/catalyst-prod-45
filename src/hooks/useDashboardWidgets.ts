@@ -173,25 +173,33 @@ export function useDashboardStatusCounts(
 }
 
 // ─── Overdue Items ───
-export function useDashboardOverdueItems(projectId: string | null | undefined) {
+export function useDashboardOverdueItems(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-overdue', projectId],
+    queryKey: ['ph-dashboard-overdue', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
       const today = new Date().toISOString().split('T')[0];
-      // 🛡️ 2026 GUARDRAIL
-      const { data, error } = await supabase
+      let q = supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, due_date, assignee_display_name, issue_type')
+        .select('id, issue_key, summary, status, status_category, effective_due_date, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .neq('status_category', 'Done')
-        .lt('due_date', today)
-        .not('due_date', 'is', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'))
-        .order('due_date', { ascending: true })
+        .lt('effective_due_date', today)
+        .not('effective_due_date', 'is', null);
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data, error } = await q
+        .order('effective_due_date', { ascending: true })
         .limit(50);
       if (error) throw error;
       return data ?? [];
