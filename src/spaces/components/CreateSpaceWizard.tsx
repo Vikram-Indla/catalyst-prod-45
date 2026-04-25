@@ -229,25 +229,28 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
             </FormHeader>
 
             {/* Step indicator pills */}
-            <Box paddingBlockEnd="space.200">
-              <Inline space="space.075">
-                {STEPS.map((s, i) => (
-                  <Box
-                    key={s.id}
-                    xcss={undefined}
-                    style={{
-                      flex: 1,
-                      height: 4,
-                      borderRadius: 2,
-                      background:
-                        i <= stepIdx
-                          ? token('color.background.brand.bold')
-                          : token('color.background.neutral'),
-                    }}
-                  />
-                ))}
-              </Inline>
-            </Box>
+            <div
+              style={{
+                display: 'flex',
+                gap: 6,
+                paddingBottom: 16,
+              }}
+            >
+              {STEPS.map((s, i) => (
+                <div
+                  key={s.id}
+                  style={{
+                    flex: 1,
+                    height: 4,
+                    borderRadius: 2,
+                    background:
+                      i <= stepIdx
+                        ? token('color.background.brand.bold')
+                        : token('color.background.neutral'),
+                  }}
+                />
+              ))}
+            </div>
 
             <Stack space="space.150">
               {serverError && (
@@ -259,7 +262,7 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
             </Stack>
 
             <FormFooter>
-              <Inline space="space.100" alignInline="end" grow="fill">
+              <Inline space="space.100" alignInline="end">
                 <Button appearance="subtle" onClick={onCancel} isDisabled={submitting}>
                   Cancel
                 </Button>
@@ -273,18 +276,24 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
                     appearance="primary"
                     onClick={() => { void goNext(); }}
                     isDisabled={submitting}
-                    iconAfter={submitting ? () => <Spinner size="small" /> : undefined}
                   >
-                    Next
+                    {submitting ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <Spinner size="small" /> Next
+                      </span>
+                    ) : 'Next'}
                   </Button>
                 ) : (
                   <Button
                     appearance="primary"
                     onClick={() => { void handleSubmit(); }}
                     isDisabled={submitting}
-                    iconAfter={submitting ? () => <Spinner size="small" /> : undefined}
                   >
-                    {submitting ? 'Creating…' : 'Create project'}
+                    {submitting ? (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <Spinner size="small" /> Creating…
+                      </span>
+                    ) : 'Create project'}
                   </Button>
                 )}
               </Inline>

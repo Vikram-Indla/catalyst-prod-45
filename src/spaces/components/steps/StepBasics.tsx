@@ -8,7 +8,7 @@ import Textfield from '@atlaskit/textfield';
 import TextArea from '@atlaskit/textarea';
 import Select from '@atlaskit/select';
 import { Field, HelperMessage, ErrorMessage } from '@atlaskit/form';
-import { Box, Stack } from '@atlaskit/primitives';
+import { Stack } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import type {
   CreateSpaceDraft,
@@ -105,17 +105,16 @@ export function StepBasics({
                 onChange({ key: normaliseSpaceKeyInput((e.target as HTMLInputElement).value) });
               }}
               elemAfterInput={
-                <Box paddingInlineEnd="space.100" xcss={undefined}>
-                  <span
-                    style={{
-                      fontFamily: 'JetBrains Mono, monospace',
-                      fontSize: 11,
-                      color: token('color.text.subtlest'),
-                    }}
-                  >
-                    {draft.key.length}/{SPACE_KEY_LIMITS.maxLength}
-                  </span>
-                </Box>
+                <span
+                  style={{
+                    fontFamily: 'JetBrains Mono, monospace',
+                    fontSize: 11,
+                    paddingRight: 8,
+                    color: token('color.text.subtlest'),
+                  }}
+                >
+                  {draft.key.length}/{SPACE_KEY_LIMITS.maxLength}
+                </span>
               }
             />
             {errors.key

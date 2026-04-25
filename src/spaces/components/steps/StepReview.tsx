@@ -4,7 +4,7 @@
 // Atlaskit primitives + tokens only.
 // ============================================================================
 
-import { Stack, Box, Inline } from '@atlaskit/primitives';
+import { Stack } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
@@ -22,34 +22,32 @@ interface RowProps {
 
 function Row({ label, children }: RowProps) {
   return (
-    <Box paddingBlock="space.075">
-      <Inline space="space.100" alignBlock="start">
-        <Box xcss={undefined} style={{ width: 140, flexShrink: 0 }}>
-          <span
-            style={{
-              fontSize: 12,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-              color: token('color.text.subtlest'),
-            }}
-          >
-            {label}
-          </span>
-        </Box>
-        <Box xcss={undefined} style={{ flex: 1, minWidth: 0 }}>
-          <span
-            style={{
-              fontSize: 14,
-              color: token('color.text'),
-              wordBreak: 'break-word',
-            }}
-          >
-            {children}
-          </span>
-        </Box>
-      </Inline>
-    </Box>
+    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '6px 0' }}>
+      <div style={{ width: 140, flexShrink: 0 }}>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            color: token('color.text.subtlest'),
+          }}
+        >
+          {label}
+        </span>
+      </div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span
+          style={{
+            fontSize: 14,
+            color: token('color.text'),
+            wordBreak: 'break-word',
+          }}
+        >
+          {children}
+        </span>
+      </div>
+    </div>
   );
 }
 
@@ -62,20 +60,19 @@ export function StepReview({ draft }: Props) {
 
   return (
     <Stack space="space.150">
-      <Box>
+      <div>
         <Heading size="small">Review</Heading>
-        <Box paddingBlockStart="space.050">
+        <div style={{ paddingTop: 4 }}>
           <span style={{ fontSize: 13, color: token('color.text.subtle') }}>
             Confirm the details below, then create the project.
           </span>
-        </Box>
-      </Box>
+        </div>
+      </div>
 
-      <Box
-        padding="space.200"
-        backgroundColor="color.background.neutral.subtle"
-        xcss={undefined}
+      <div
         style={{
+          padding: 16,
+          backgroundColor: token('color.background.neutral.subtle'),
           borderRadius: 6,
           border: `1px solid ${token('color.border')}`,
         }}
@@ -113,7 +110,7 @@ export function StepReview({ draft }: Props) {
             ? <em style={{ color: token('color.text.subtlest') }}>(none)</em>
             : enabledFeatures.join(' · ')}
         </Row>
-      </Box>
+      </div>
     </Stack>
   );
 }

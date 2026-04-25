@@ -47,16 +47,19 @@
  *   StatusLozenge wrapped inside ThemeIssueList DOES follow the 3-colour
  *   rule, because those are issue statuses.
  */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { Box, xcss } from '@atlaskit/primitives';
 import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
 import ProgressBar from '@atlaskit/progress-bar';
-import Button, { IconButton } from '@atlaskit/button/new';
+import Button from '@atlaskit/button/new';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
+import { AvatarGroup } from '@/components/ads';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import { supabase } from '@/integrations/supabase/client';
 import { type } from '@/lib/typography';
 import type { Theme, ThemeIntent } from '@/hooks/useAiThemes';
 import ThemeIssueList from './ThemeIssueList';
@@ -113,6 +116,34 @@ const cardStyles = xcss({
     boxShadow: 'elevation.shadow.overlay',
     borderColor: 'color.border.bold',
   },
+});
+
+// ─── B5 · Expanded drill-in surface ─────────────────────────────────────────
+// When the user reveals the issue table, we want the table region to read as
+// a *different* surface from the card body — a "you've drilled in" cue. The
+// ADS pattern for this is the sunken layer (elevation.surface.sunken,
+// hex-equivalent ~#F7F8F9 light / ~#1D2125 dark), one step below the
+// raised card.
+//
+// Layout
+// ──────
+// Card padding is space.200 (16px). To make the sunken zone extend to the
+// card's left/right/bottom edges (instead of sitting as a smaller inset
+// rectangle inside the padding), we apply negative inline + block-end
+// margins of the same magnitude. Top border is the only divider — the
+// card's own border + bottom radius wrap the rest. `overflow: hidden` on
+// the card itself (set up in B1) keeps the sunken zone clipped to the
+// card's border-radius, so the bottom-left/right corners read clean.
+const drillInStyles = xcss({
+  marginInline: 'space.negative.200',
+  marginBlockEnd: 'space.negative.200',
+  marginBlockStart: 'space.100',
+  paddingInline: 'space.200',
+  paddingBlock: 'space.150',
+  backgroundColor: 'elevation.surface.sunken',
+  borderTopWidth: 'border.width',
+  borderTopStyle: 'solid',
+  borderTopColor: 'color.border',
 });
 
 // ─── Intent → Atlaskit lozenge mapping ──────────────────────────────────────
@@ -181,12 +212,78 @@ export interface ThemeCardProps {
   defaultExpanded?: boolean;
 }
 
+// ─── B4 · Assignee fetch contract ──────────────────────────────────────────
+// We need *just enough* of `ph_issues` to render an assignee avatar group:
+// account_id (for dedup) and display_name (for initials + tooltip + avatar
+// resolver lookup). The drill-in's ThemeIssueList already does its own
+// fuller fetch when the user expands the card — these two queries do not
+// overlap visually, and lifting one into the other would force ThemeIssueList
+// to render a useless avatar column. We accept the second query in exchange
+// for keeping the component scope surgical (one file, no ThemeIssueList edit).
+interface AssigneeRow {
+  assignee_account_id: string | null;
+  assignee_display_name: string | null;
+}
+
 export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+  const [assignees, setAssignees] = useState<AssigneeRow[]>([]);
 
   const intent = INTENT_META[theme.intent] ?? INTENT_META.other;
   const progressValue = useMemo(() => Math.max(0, Math.min(1, theme.percentage / 100)), [theme.percentage]);
+
+  // Fetch the assignee tuple for this theme's issues. We don't gate on
+  // `expanded` — the avatar group lives in Row 1 and must render at first
+  // paint so the card reads as "the cluster has people" before any
+  // interaction. Fires once per mount (issueKeys identity is stable from
+  // the LLM response).
+  useEffect(() => {
+    let cancelled = false;
+    if (!theme.issueKeys || theme.issueKeys.length === 0) {
+      setAssignees([]);
+      return;
+    }
+    (async () => {
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('assignee_account_id, assignee_display_name')
+        .in('issue_key', theme.issueKeys);
+      if (cancelled) return;
+      if (error) {
+        console.error('[ThemeCard] assignee fetch failed:', error.message);
+        setAssignees([]);
+        return;
+      }
+      setAssignees((data ?? []) as AssigneeRow[]);
+    })();
+    return () => { cancelled = true; };
+  }, [theme.issueKeys]);
+
+  // Dedup by account_id, preserving first-seen order. Account-id-less rows
+  // (assignee unset) collapse into a single "Unassigned" entry only if they
+  // dominate the cluster — otherwise they're suppressed so the avatar group
+  // stays a "who's owning this" affordance, not a noise generator.
+  const avatarData = useMemo(() => {
+    const seen = new Set<string>();
+    const items: { key: string; src?: string; name: string }[] = [];
+    for (const row of assignees) {
+      const id = row.assignee_account_id;
+      const name = row.assignee_display_name;
+      if (!id || !name) continue;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      items.push({
+        key: id,
+        name,
+        // Resolve through the canonical avatar chokepoint (CLAUDE.md §19).
+        // Returns undefined when no local PNG matches; AvatarGroup then
+        // falls back to initials, never to an external URL.
+        src: resolveAvatarUrl(name) ?? undefined,
+      });
+    }
+    return items;
+  }, [assignees]);
 
   const handleCopy = async () => {
     try {
@@ -221,10 +318,27 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
         }}
       />
 
-      {/* ─── Row 1: count/percentage (right-aligned) ────────────────────
+      {/* ─── Row 1: avatar group + count/percentage ─────────────────────
           B1 · Lozenge previously sat here; relocated into the action toolbar
-          so the top row reads as pure metadata. */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          so the top row reads as pure metadata.
+          B4 · AvatarGroup renders unique assignees (deduped by
+          assignee_account_id) on the left, count/percentage stays on the
+          right. The two together turn Row 1 into a "who · how big"
+          read — instantly answers the two questions a delivery manager
+          asks first when scanning a theme cluster. */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 24 }}>
+        {avatarData.length > 0 ? (
+          <AvatarGroup
+            data={avatarData}
+            size="small"
+            maxCount={4}
+            aria-label={`${avatarData.length} ${avatarData.length === 1 ? 'assignee' : 'assignees'} on this theme`}
+          />
+        ) : (
+          // Empty <span/> as flex spacer so count/percentage stays
+          // right-aligned even when no avatars resolved.
+          <span aria-hidden="true" />
+        )}
         <span
           style={{
             ...type.meta,
@@ -348,15 +462,14 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
       </div>
 
       {/* ─── Drill-in table (conditional) ──────────────────────────────── */}
+      {/* B5 · Wrapped in a sunken Box that extends to the card edges via
+          negative margins. The shift in elevation (raised → sunken) is the
+          mental-model cue: "you have entered the data layer". Top border
+          divider replaces the previous 1px hand-rolled <div> rule. */}
       {expanded && (
-        <div
-          style={{
-            paddingBlockStart: 8,
-            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-          }}
-        >
+        <Box xcss={drillInStyles}>
           <ThemeIssueList issueKeys={theme.issueKeys ?? []} />
-        </div>
+        </Box>
       )}
     </Box>
   );
