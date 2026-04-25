@@ -290,3 +290,20 @@ export function useUnlinkTestCycle() {
     },
   });
 }
+
+
+export const useUpdateReleaseTargetDate = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, targetDate }: { id: string; targetDate: string }) => {
+      const { error } = await supabase
+        .from('rh_releases')
+        .update({ target_date: targetDate })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['release-hub', 'releases'] });
+    },
+  });
+};

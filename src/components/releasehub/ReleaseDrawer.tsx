@@ -1,10 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity, Sparkles, FileText, Loader2, AlertCircle, Copy } from 'lucide-react';
+import { X as XIcon, Download, RefreshCw, ExternalLink, CheckCircle2, XCircle, Minus, Activity, Sparkles, FileText, Loader2, AlertCircle, Copy, Pencil, Check, X } from 'lucide-react';
 import { RH } from '@/constants/releasehub.design';
 import { StatusLozenge } from './StatusLozenge';
 import { SourceBadge } from './SourceBadge';
 import { CatalystAIChip } from './CatalystAIChip';
-import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff, useLinkTestCycle, useUnlinkTestCycle } from '@/hooks/useReleaseHub';
+import { useUpdateReleaseStatus, useChanges, useReleaseTestCycles, useApproveSignoff, useRejectSignoff, useLinkTestCycle, useUnlinkTestCycle, useUpdateReleaseTargetDate } from '@/hooks/useReleaseHub';
 import { getSignoffWaitTime } from '@/utils/releasehub.utils';
 import { differenceInHours } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,6 +43,10 @@ const TABS = ['Overview', 'Changes', 'Test Cycles', 'Sign-offs', 'Activity'] as 
 export function ReleaseDrawer({ release, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<typeof TABS[number]>('Overview');
   const updateStatus = useUpdateReleaseStatus();
+  const updateTargetDate = useUpdateReleaseTargetDate();
+  const [editingDate, setEditingDate] = useState(false);
+  const [dateInput, setDateInput] = useState('');
+  const [savingDate, setSavingDate] = useState(false);
   const { data: allChanges = [] } = useChanges();
   const { data: testCycles = [] } = useReleaseTestCycles(release.id);
   const relChanges = allChanges.filter((c: any) => c.release_id === release.id);
@@ -188,7 +192,58 @@ export function ReleaseDrawer({ release, onClose }: Props) {
           <h2 className="text-[18px] font-extrabold mb-2" style={{ fontFamily: RH.fontDisplay, color: RH.ink1 }}>{release.name}</h2>
           <div className="flex items-center gap-2 flex-wrap">
             <StatusLozenge status={mapStatus(release.status)} />
-            <span className="text-[12px] text-[#64748B]">{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
+            {editingDate ? (
+              <span className="flex items-center gap-1">
+                <input
+                  type="date"
+                  autoFocus
+                  value={dateInput}
+                  onChange={e => setDateInput(e.target.value)}
+                  className="text-[12px] border border-[#2563EB] rounded px-1.5 py-0.5 outline-none bg-white text-[#0F172A]"
+                  style={{ fontFamily: 'inherit' }}
+                />
+                <button
+                  disabled={savingDate}
+                  onClick={async () => {
+                    if (!dateInput) { setEditingDate(false); return; }
+                    setSavingDate(true);
+                    try {
+                      await updateTargetDate.mutateAsync({ id: release.id, targetDate: dateInput });
+                      release.target_date = dateInput;
+                      toast.success('Release date updated');
+                    } catch {
+                      toast.error('Failed to update date');
+                    } finally {
+                      setSavingDate(false);
+                      setEditingDate(false);
+                    }
+                  }}
+                  className="w-6 h-6 flex items-center justify-center rounded bg-[#2563EB] text-white hover:bg-[#1d4ed8] disabled:opacity-50"
+                  title="Save"
+                >
+                  {savingDate ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />}
+                </button>
+                <button
+                  onClick={() => setEditingDate(false)}
+                  className="w-6 h-6 flex items-center justify-center rounded border border-[#E2E8F0] text-[#64748B] hover:bg-[#F1F5F9]"
+                  title="Cancel"
+                >
+                  <X size={11} />
+                </button>
+              </span>
+            ) : (
+              <button
+                onClick={() => {
+                  setDateInput(release.target_date ? release.target_date.slice(0, 10) : '');
+                  setEditingDate(true);
+                }}
+                className="group flex items-center gap-1 text-[12px] text-[#64748B] hover:text-[#2563EB] transition-colors"
+                title="Edit release date"
+              >
+                <span>{release.target_date ? new Date(release.target_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
+                <Pencil size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+            )}
             <span className="text-[11px] font-bold text-[#0F172A] bg-[#F1F5F9] px-1.5 py-0.5 rounded">{relChanges.length} CHGs</span>
             <span className="text-[11px] font-bold text-[#2563EB] bg-[#EFF6FF] px-1.5 py-0.5 rounded">{testCycles.length} cycles</span>
           </div>
