@@ -57,6 +57,7 @@ export default function ReleaseHealthWidget({
   onToggleCollapse,
 }: WidgetProps) {
   const { filter } = useDashboardFilter();
+  console.log('[ReleaseHealth widget] page filter:', filter);
   const { settings } = useGadgetSettings('release', projectKey);
   const maxRows = (settings.gadgetSpecific?.maxRows as number | undefined) ?? 6;
 

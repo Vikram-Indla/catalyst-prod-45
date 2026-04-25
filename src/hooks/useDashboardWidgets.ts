@@ -511,6 +511,8 @@ export function useDashboardReleaseHealth(
   return useQuery({
     queryKey: ['ph-dashboard-release-health', projectId, dateFrom, dateTo, releaseFilter, maxRows],
     queryFn: async () => {
+      console.log('[ReleaseHealth] filter received:', filters);
+      console.log('[ReleaseHealth] dateFrom:', dateFrom, 'dateTo:', dateTo);
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
