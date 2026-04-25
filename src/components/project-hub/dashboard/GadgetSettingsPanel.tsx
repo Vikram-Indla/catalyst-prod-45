@@ -17,6 +17,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X, Info, ChevronDown, Check } from 'lucide-react';
+import { token } from '@atlaskit/tokens';
+import { Lozenge } from '@/components/ads';
 
 import { supabase } from '@/integrations/supabase/client';
 import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
