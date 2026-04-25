@@ -499,32 +499,31 @@ export function useDashboardReleaseHealth(projectId: string | null | undefined) 
       if (!pKey) return [];
 
       // rh_releases.project_id references the canonical `projects` table, not
-      // `ph_projects`. The dashboard resolves projectId from ph_projects first
-      // (different UUID), so we must re-resolve to the canonical projects.id
-      // via the project key — otherwise the .eq() silently returns zero rows
-      // and hides every 2026 SENAI BAU release behind "No active releases".
-      const { data: canonicalProject } = await supabase
-        .from('projects')
-        .select('id')
-        .eq('key', pKey)
-        .maybeSingle();
-      const canonicalProjectId = canonicalProject?.id ?? projectId!;
+      // `ph_projects`. Re-resolve via the project key — otherwise the .eq()
+      // silently returns zero rows and hides every 2026 SENAI BAU release.
+      const canonicalProjectId = await getCanonicalProjectId(projectId!, pKey);
 
-      // Source of truth for releases is rh_releases (ReleaseHub).
+      // 🛡️ 2026 GUARDRAIL — releases with target_date in 2026 OR updated in 2026.
       const { data: releases, error: relHealthRelError } = await supabase
         .from('rh_releases')
-        .select('id, name, status, target_date')
+        .select('id, name, status, target_date, updated_at')
         .eq('project_id', canonicalProjectId)
         .neq('status', 'done')
+        .or(
+          `and(target_date.gte.${YEAR_2026_START.slice(0,10)},target_date.lt.${YEAR_2026_END.slice(0,10)}),` +
+          `and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`
+        )
         .order('target_date', { ascending: true });
       if (relHealthRelError) throw relHealthRelError;
       if (!releases?.length) return [];
 
+      // 🛡️ 2026 GUARDRAIL on issues
       const { data: issues, error: relHealthIssError } = await supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {
