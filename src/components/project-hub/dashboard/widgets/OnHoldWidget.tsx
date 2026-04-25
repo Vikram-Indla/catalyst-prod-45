@@ -83,6 +83,7 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
       span={1}
       headerBadges={badge}
       footer={footer}
+      onExpand={handleExpand}
     >
       {isLoading ? (
         <div className="animate-pulse">
