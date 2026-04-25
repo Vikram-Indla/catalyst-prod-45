@@ -23,13 +23,33 @@ export function UniversalWorkView({ params, onClose }: Props) {
   const [assigneeFilter, setAssigneeFilter] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [sort, setSort] = useState<UWVSort[]>([{ fieldId: 'key', direction: 'asc' }]);
+  const [sort, setSort] = useState<UWVSort[]>(
+    params.dataType === 'overdue'
+      ? [{ fieldId: 'dueDate', direction: 'asc' }]
+      : [{ fieldId: 'key', direction: 'asc' }],
+  );
   const [typeFilter, setTypeFilter] = useState<'all' | 'epic' | 'feature' | 'story' | 'bug' | 'task'>('all');
   const [groupBy, setGroupBy] = useState<UWVGroupBy>('none');
 
   const viewKey = `uwv:${params.project}:${[...params.hubSource].sort().join(',')}`;
   const { columns, savePrefs, prefs } = useUWVPrefs(viewKey);
-  const visibleColumns = useMemo(() => columns.filter((c) => c.visible), [columns]);
+  const visibleColumns = useMemo(() => {
+    let cols = columns.filter((c) => c.visible);
+    if (params.dataType === 'overdue' && !cols.find((c) => c.fieldId === 'dueDate')) {
+      cols = [
+        ...cols,
+        {
+          fieldId: 'dueDate',
+          label: 'Due Date',
+          width: 110,
+          visible: true,
+          sortable: true,
+          type: 'date' as const,
+        },
+      ];
+    }
+    return cols;
+  }, [columns, params.dataType]);
 
   const { data, fetchNextPage, hasNextPage, isFetching, isLoading } = useUWVData(
     params,
