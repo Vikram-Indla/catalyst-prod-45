@@ -235,11 +235,11 @@ export default function StoryDetailModal({
       if (!parentKey && cat.issue_key) {
         const { data: linkRow } = await supabase
           .from('ph_issue_links')
-          .select('target_issue_key')
-          .eq('source_issue_key', cat.issue_key)
-          .eq('link_type', 'parent')
+          .select('target_id')
+          .eq('source_id', cat.issue_key)
+          .eq('link_type', 'child of')
           .maybeSingle();
-        parentKey = linkRow?.target_issue_key ?? null;
+        parentKey = (linkRow as any)?.target_id ?? null;
       }
 
       // Acceptance criteria — native jsonb column on catalyst_issues
