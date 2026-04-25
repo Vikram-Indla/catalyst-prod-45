@@ -1,12 +1,38 @@
 /**
  * Dashboard V4 — TanStack Query hooks for widget data
  * All queries use REAL Supabase data — zero mocks.
+ *
+ * ═══════════════════════════════════════════════════════════════
+ * 🛡️  2026 GUARDRAIL — PLATFORM-WIDE DASHBOARD POLICY
+ * ═══════════════════════════════════════════════════════════════
+ * Every dashboard widget MUST scope to the 2026 fiscal window:
+ * any record created OR updated in 2026. Use YEAR_2026_START /
+ * YEAR_2026_END constants and the `or2026(createdCol, updatedCol)`
+ * helper. Do NOT remove or weaken these filters without an explicit
+ * guardrail-amendment note in this header. Owner: Vikram.
+ * ═══════════════════════════════════════════════════════════════
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
+
+// 🛡️ 2026 GUARDRAIL — fiscal window boundaries
+export const YEAR_2026_START = '2026-01-01T00:00:00.000Z';
+export const YEAR_2026_END   = '2027-01-01T00:00:00.000Z';
+
+/** Supabase .or() expression: created OR updated within 2026. */
+function or2026(createdCol: string, updatedCol: string): string {
+  return `and(${createdCol}.gte.${YEAR_2026_START},${createdCol}.lt.${YEAR_2026_END}),and(${updatedCol}.gte.${YEAR_2026_START},${updatedCol}.lt.${YEAR_2026_END})`;
+}
+
+/** Resolve canonical projects.id from any incoming projectId (handles ph_projects.id case). */
+async function getCanonicalProjectId(projectId: string, pKey: string | null): Promise<string> {
+  if (!pKey) return projectId;
+  const { data } = await supabase.from('projects').select('id').eq('key', pKey).maybeSingle();
+  return data?.id ?? projectId;
+}
 
 // ─── Avatar resolver: maps display names → avatar URLs via resource_inventory + profiles ───
 let _avatarCache: Map<string, string | null> | null = null;
@@ -83,11 +109,18 @@ export function useActiveReleases(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-active-releases', projectId],
     queryFn: async () => {
+      const pKey = await getProjectKey(projectId!);
+      const canonicalId = await getCanonicalProjectId(projectId!, pKey);
+      // 🛡️ 2026 GUARDRAIL: only releases with a 2026 target date OR updated in 2026.
       const { data, error } = await supabase
-        .from('releases')
-        .select('id, name, status, start_date, target_date')
-        .eq('project_id', projectId!)
-        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+        .from('rh_releases')
+        .select('id, name, status, target_date, updated_at')
+        .eq('project_id', canonicalId)
+        .neq('status', 'done')
+        .or(
+          `and(target_date.gte.${YEAR_2026_START.slice(0,10)},target_date.lt.${YEAR_2026_END.slice(0,10)}),` +
+          `and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`
+        );
       if (error) throw error;
       return data ?? [];
     },
@@ -104,11 +137,13 @@ export function useDashboardStatusCounts(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
 
+      // 🛡️ 2026 GUARDRAIL
       const { data: issues, error } = await supabase
         .from('ph_issues')
         .select('status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (error) throw error;
 
       const counts = { todo: 0, inProgress: 0, done: 0, total: 0 };
@@ -135,6 +170,7 @@ export function useDashboardOverdueItems(projectId: string | null | undefined) {
       if (!pKey) return [];
 
       const today = new Date().toISOString().split('T')[0];
+      // 🛡️ 2026 GUARDRAIL
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, due_date, assignee_display_name, issue_type')
@@ -143,6 +179,7 @@ export function useDashboardOverdueItems(projectId: string | null | undefined) {
         .neq('status_category', 'Done')
         .lt('due_date', today)
         .not('due_date', 'is', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'))
         .order('due_date', { ascending: true })
         .limit(50);
       if (error) throw error;
@@ -161,12 +198,14 @@ export function useDashboardOnHoldItems(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // 🛡️ 2026 GUARDRAIL
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .ilike('status', '%hold%')
+        .or(or2026('jira_created_at', 'jira_updated_at'))
         .limit(50);
       if (error) throw error;
       return data ?? [];
@@ -184,12 +223,14 @@ export function useDashboardTeamWorkload(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // 🛡️ 2026 GUARDRAIL
       const { data: issues, error } = await supabase
         .from('ph_issues')
         .select('assignee_display_name, issue_type, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .neq('status_category', 'Done');
+        .neq('status_category', 'Done')
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (error) throw error;
 
       const map = new Map<string, { assignee: string; total: number; stories: number; bugs: number }>();
@@ -218,26 +259,33 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      const canonicalId = await getCanonicalProjectId(projectId!, pKey);
+      // 🛡️ 2026 GUARDRAIL: releases with target_date in 2026 (rh_releases is source of truth).
       const { data: releases, error: releasesError } = await supabase
-        .from('releases')
-        .select('id, name, start_date')
-        .eq('project_id', projectId!)
-        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+        .from('rh_releases')
+        .select('id, name, created_at, target_date')
+        .eq('project_id', canonicalId)
+        .neq('status', 'done')
+        .gte('target_date', YEAR_2026_START.slice(0, 10))
+        .lt('target_date', YEAR_2026_END.slice(0, 10));
       if (releasesError) throw releasesError;
       if (!releases?.length) return [];
 
+      // 🛡️ 2026 GUARDRAIL on issues
       const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
         .select('fix_versions, jira_created_at')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (issuesError) throw issuesError;
 
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
       for (const rel of releases) {
-        if (!rel.start_date) continue;
-        const startDate = new Date(rel.start_date);
+        const startRef = (rel as any).created_at;
+        if (!startRef) continue;
+        const startDate = new Date(startRef);
         let totalItems = 0;
         let addedAfterStart = 0;
 
@@ -277,12 +325,14 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
       const pKey = projectKey ?? (await getProjectKey(projectId!));
       if (!pKey) return [];
 
+      // 🛡️ 2026 GUARDRAIL
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
         .eq('project_key', pKey)
         .eq('issue_type', 'Production Incident')
         .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'))
         .order('jira_created_at', { ascending: false })
         .limit(10);
       if (error) throw error;
@@ -310,12 +360,16 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
 
+      // 🛡️ 2026 GUARDRAIL — defects created OR updated in 2026
+      const dateOr = `and(created_at.gte.${YEAR_2026_START},created_at.lt.${YEAR_2026_END}),and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+
       // Fetch Jira-synced defects by project key
       if (projectKey) {
         const { data: jiraDefects } = await supabase
           .from('tm_defects')
           .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
           .eq('jira_project_key', projectKey)
+          .or(dateOr)
           .order('created_at', { ascending: false })
           .limit(10);
         if (jiraDefects?.length) allDefects.push(...jiraDefects);
@@ -327,6 +381,7 @@ export function useDashboardDefects(projectId: string | null | undefined, projec
         .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
         .eq('project_id', projectId!)
         .eq('jira_source', false)
+        .or(dateOr)
         .order('created_at', { ascending: false })
         .limit(10);
       if (nativeDefects?.length) allDefects.push(...nativeDefects);
@@ -383,12 +438,13 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // Step A: get ph_issues ids for this project
+      // 🛡️ 2026 GUARDRAIL on parent issues
       const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (issuesError) throw issuesError;
 
       const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
@@ -401,11 +457,13 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       }
       if (!ids.length) return [];
 
-      // Step B: fetch latest activity for those work items
+      // Step B: 🛡️ 2026 GUARDRAIL — only activity that occurred in 2026
       const { data: activity, error: actError } = await supabase
         .from('work_item_activity')
         .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata')
         .in('work_item_id', ids)
+        .gte('occurred_at', YEAR_2026_START)
+        .lt('occurred_at', YEAR_2026_END)
         .order('occurred_at', { ascending: false })
         .limit(20);
       if (actError) throw actError;
@@ -441,32 +499,31 @@ export function useDashboardReleaseHealth(projectId: string | null | undefined) 
       if (!pKey) return [];
 
       // rh_releases.project_id references the canonical `projects` table, not
-      // `ph_projects`. The dashboard resolves projectId from ph_projects first
-      // (different UUID), so we must re-resolve to the canonical projects.id
-      // via the project key — otherwise the .eq() silently returns zero rows
-      // and hides every 2026 SENAI BAU release behind "No active releases".
-      const { data: canonicalProject } = await supabase
-        .from('projects')
-        .select('id')
-        .eq('key', pKey)
-        .maybeSingle();
-      const canonicalProjectId = canonicalProject?.id ?? projectId!;
+      // `ph_projects`. Re-resolve via the project key — otherwise the .eq()
+      // silently returns zero rows and hides every 2026 SENAI BAU release.
+      const canonicalProjectId = await getCanonicalProjectId(projectId!, pKey);
 
-      // Source of truth for releases is rh_releases (ReleaseHub).
+      // 🛡️ 2026 GUARDRAIL — releases with target_date in 2026 OR updated in 2026.
       const { data: releases, error: relHealthRelError } = await supabase
         .from('rh_releases')
-        .select('id, name, status, target_date')
+        .select('id, name, status, target_date, updated_at')
         .eq('project_id', canonicalProjectId)
         .neq('status', 'done')
+        .or(
+          `and(target_date.gte.${YEAR_2026_START.slice(0,10)},target_date.lt.${YEAR_2026_END.slice(0,10)}),` +
+          `and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`
+        )
         .order('target_date', { ascending: true });
       if (relHealthRelError) throw relHealthRelError;
       if (!releases?.length) return [];
 
+      // 🛡️ 2026 GUARDRAIL on issues
       const { data: issues, error: relHealthIssError } = await supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {
