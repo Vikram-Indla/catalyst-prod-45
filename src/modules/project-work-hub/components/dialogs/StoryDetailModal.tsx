@@ -338,23 +338,26 @@ export default function StoryDetailModal({
   );
 
   const { data: comments = [] } = useQuery({
-    queryKey: ['ph-comments', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
+    queryKey: ['ph-comments', itemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!itemId && isOpen && !!issue,
     queryFn: async () => {
-      // 1) Catalyst-native comments (ph_comments)
-      const { data: phData } = await supabase.from('ph_comments').select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
+      const isCatalyst = !!(issue as any)?.__catalyst_source;
+      const tbl = isCatalyst ? 'catalyst_comments' : 'ph_comments';
+      // 1) Native comments (source-aware table)
+      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
       const phRows = phData ?? [];
-      const authorIds = [...new Set(phRows.map(c => c.author_id).filter(Boolean))];
+      const authorIds = [...new Set(phRows.map((c: any) => c.author_id).filter(Boolean))];
       // §19 chokepoint: select full_name only, resolve avatar locally.
       const { data: profiles } = authorIds.length
         ? await supabase.from('profiles').select('id, full_name, email').in('id', authorIds)
         : { data: [] as any[] };
       const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, localizeAvatar(p)]));
-      const phMapped = phRows.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
+      const phMapped = phRows.map((c: any) => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
 
       // 2) Jira-synced comments (jira_sync_comments) — read-only, keyed by issue_key.
-      // §19 chokepoint: drop author_avatar_url from SELECT, resolve via display_name.
+      // Only relevant for Jira-sourced items; Catalyst items have no jira_sync rows.
       let jiraMapped: any[] = [];
-      if (issue?.issue_key) {
+      if (!isCatalyst && issue?.issue_key) {
         const { data: jiraRows } = await supabase
           .from('jira_sync_comments')
           .select('id, jira_comment_id, author_display_name, author_account_id, body, jira_created_at, created_at')
