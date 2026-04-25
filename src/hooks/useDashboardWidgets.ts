@@ -252,11 +252,14 @@ export function useDashboardOverdueItems(
 // ─── On Hold Items ───
 export function useDashboardOnHoldItems(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-on-hold', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-on-hold', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -271,6 +274,8 @@ export function useDashboardOnHoldItems(
       if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
       if (dateTo) q = q.lte('jira_updated_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data, error } = await q.limit(50);
       if (error) throw error;
