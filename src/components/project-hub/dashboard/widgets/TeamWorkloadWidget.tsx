@@ -22,7 +22,11 @@ const WORKLOAD_FILL = 'rgba(37, 99, 235, 0.20)';
 const WORKLOAD_ACCENT = '#2563EB';
 
 export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: workload, isLoading } = useDashboardTeamWorkload(projectId);
+  const { settings } = useGadgetSettings('workload', projectKey);
+  const { data: workload, isLoading } = useDashboardTeamWorkload(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const maxCount = Math.max(1, ...(workload ?? []).map((w) => w.total));
 
   return (
