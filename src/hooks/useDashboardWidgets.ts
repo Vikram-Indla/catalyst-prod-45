@@ -297,13 +297,30 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       // 🛡️ 2026 GUARDRAIL: releases with target_date in 2026 (rh_releases is source of truth).
       const { data: releases, error: releasesError } = await supabase
         .from('rh_releases')
-        .select('id, name, created_at, target_date')
+        .select('id, name, jira_key, created_at, target_date')
         .eq('project_id', canonicalId)
         .neq('status', 'done')
         .gte('target_date', YEAR_2026_START.slice(0, 10))
         .lt('target_date', YEAR_2026_END.slice(0, 10));
       if (releasesError) throw releasesError;
       if (!releases?.length) return [];
+
+      // Fetch ph_versions to get the real start_date from Jira.
+      // rh_releases has no start_date column — ph_versions.start_date is the
+      // authoritative sprint/release start date synced from Jira's version API
+      // (wh-jira-bulk-sync maps v.startDate → ph_versions.start_date).
+      const { data: phVersions } = await supabase
+        .from('ph_versions' as any)
+        .select('jira_id, name, start_date')
+        .eq('project_key', pKey);
+
+      // Build lookup maps: prefer jira_key → jira_id match, fall back to name match.
+      const versionByJiraId = new Map<string, string | null>();
+      const versionByName = new Map<string, string | null>();
+      for (const v of phVersions ?? []) {
+        if (v.jira_id) versionByJiraId.set(v.jira_id, v.start_date ?? null);
+        if (v.name) versionByName.set(v.name, v.start_date ?? null);
+      }
 
       // 🛡️ 2026 GUARDRAIL on issues
       const { data: issues, error: issuesError } = await supabase
@@ -317,16 +334,33 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
 
       for (const rel of releases) {
-        const startRef = (rel as any).created_at;
-        if (!startRef) continue;
-        const startDate = new Date(startRef);
+        // Resolve the release start date:
+        //   1. ph_versions.start_date via jira_key → jira_id (most accurate)
+        //   2. ph_versions.start_date via name match (fallback for manually-created releases)
+        //   3. target_date - 14 days (last-resort proxy when Jira start date is absent)
+        const startDateStr: string | null =
+          (rel.jira_key ? versionByJiraId.get(rel.jira_key) ?? null : null) ??
+          versionByName.get(rel.name) ??
+          null;
+
+        let startDate: Date;
+        if (startDateStr) {
+          startDate = new Date(startDateStr);
+        } else if (rel.target_date) {
+          // Proxy: assume a standard 2-week sprint ending at target_date
+          startDate = new Date(rel.target_date);
+          startDate.setDate(startDate.getDate() - 14);
+        } else {
+          continue; // No usable start reference — skip this release
+        }
+
         let totalItems = 0;
         let addedAfterStart = 0;
 
         for (const issue of issues ?? []) {
           const fv = issue.fix_versions;
-          const versions = Array.isArray(fv) ? fv : [];
-          const belongsToRelease = versions.some((v: any) =>
+          const issueVersions = Array.isArray(fv) ? fv : [];
+          const belongsToRelease = issueVersions.some((v: any) =>
             typeof v === 'string' ? v === rel.name : v?.name === rel.name
           );
           if (!belongsToRelease) continue;
