@@ -77,16 +77,23 @@ export function DefectsSection({
 
   const createMutation = useMutation({
     mutationFn: async (summary: string) => {
-      const tempKey = `${projectKey}-DEF-${Date.now()}`;
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: tempKey, summary: summary.trim(), issue_type: 'Defect',
-        parent_key: storyKey, project_key: projectKey, status: 'To Do',
-        status_category: 'todo', priority: 'High', position: nextPos(defects),
-        reporter_account_id: user?.id, source: 'catalyst',
+      await createChildIssue({
+        parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
+        summary,
+        issueType: 'Defect',
+        projectKey,
+        projectId: parentProjectId,
+        reporterId: user?.id ?? null,
+        priority: 'High',
+        position: nextPos(defects),
       });
-      if (error) throw error;
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['defects', storyKey] }); setDraftSummary(''); setTimeout(() => createRef.current?.focus(), 50); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['defects', storyKey] });
+      setDraftSummary('');
+      setTimeout(() => createRef.current?.focus(), 50);
+    },
+    onError: (err) => toast.error('Failed to log defect', { description: (err as Error).message }),
   });
 
   const deleteMutation = useMutation({
