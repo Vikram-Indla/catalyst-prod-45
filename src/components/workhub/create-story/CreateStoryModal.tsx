@@ -73,6 +73,7 @@ import {
   useTeamMembers,
   useProjectReleases,
   useCreateStoryMutation,
+  useWorkflowStatuses,
 } from './useCreateStory';
 
 // Lazy — keeps @atlaskit/editor-core out of the modal mount path until the
@@ -496,17 +497,19 @@ function StatusChip({
   status,
   workType,
   onChange,
+  options: optionsProp,
 }: {
   status: string;
   workType: string;
   onChange: (s: string) => void;
+  options?: { value: string; label: string }[];
 }) {
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState<number>(-1);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listboxRef = useRef<HTMLDivElement>(null);
-  const options = STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS;
+  const options = optionsProp ?? STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS;
 
   // Close on outside click
   useEffect(() => {
@@ -739,6 +742,26 @@ export function CreateStoryModal({
 
   const [workType, setWorkType] = useState<string>('Story');
   const [createAnother, setCreateAnother] = useState(false);
+
+  // Dynamic workflow statuses from catalyst_workflow_schemes/_statuses.
+  // Falls back to hardcoded STATUS_OPTIONS_BY_TYPE when DB returns no rows
+  // (e.g. unmapped work types like Feature / API Requirement).
+  const { data: workflowStatuses = [], isLoading: statusesLoading } =
+    useWorkflowStatuses(workType, form.projectId);
+
+  const dbStatusOptions = useMemo(
+    () => workflowStatuses.map((s) => ({ value: s.value, label: s.label })),
+    [workflowStatuses],
+  );
+  const resolvedStatusOptions =
+    dbStatusOptions.length > 0
+      ? dbStatusOptions
+      : (STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS);
+
+  const dbInitialStatus = useMemo(
+    () => workflowStatuses.find((s) => s.is_initial)?.value,
+    [workflowStatuses],
+  );
   const [submitAttempted, setSubmitAttempted] = useState(false);
   // BEH-003: blur-based summary validation — error shows after leaving empty field
   const [summaryBlurred, setSummaryBlurred] = useState(false);
@@ -768,11 +791,12 @@ export function CreateStoryModal({
     }
   }, [projectId, projectKey, projects, form.projectId, updateField]);
 
-  // ── Status auto-syncs to work-type's initial status ──────────────────────
+  // ── Status auto-syncs to work-type's initial status (DB-first, fallback hardcoded) ──
   useEffect(() => {
-    const initial = INITIAL_STATUS_BY_TYPE[workType] ?? 'To Do';
+    if (statusesLoading) return;
+    const initial = dbInitialStatus ?? INITIAL_STATUS_BY_TYPE[workType] ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
-  }, [workType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Options ──────────────────────────────────────────────────────────────
   const projectOptions: IconOption[] = useMemo(
@@ -1086,6 +1110,7 @@ export function CreateStoryModal({
                 <StatusChip
                   status={form.status}
                   workType={workType}
+                  options={resolvedStatusOptions}
                   onChange={(s) => updateField('status', s)}
                 />
                 <p style={{

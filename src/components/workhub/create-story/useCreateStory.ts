@@ -96,6 +96,80 @@ export function useProjectReleases(projectId: string) {
   });
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// Workflow statuses (canonical source: catalyst_workflow_schemes + _statuses)
+// Maps Create-modal work types to the canonical scheme.issue_type values.
+// Unmapped types fall through; caller should provide a hardcoded fallback.
+// ────────────────────────────────────────────────────────────────────────────
+const WORK_TYPE_TO_SCHEME_ISSUE_TYPE: Record<string, string> = {
+  'Story': 'Story',
+  'Epic': 'Epic',
+  'Sub-task': 'Sub-task',
+  'Task': 'Task',
+  'QA Bug': 'Defect',
+  'Production Incident': 'Defect',
+  'Business Gap': 'Business Request',
+  'Change Request': 'Business Request',
+  'Feature': 'Story',          // best-fit until a Feature scheme exists
+  'API Requirement': 'Story',  // best-fit until an API Requirement scheme exists
+};
+
+export interface WorkflowStatusOption {
+  value: string;       // status name (what we write to catalyst_issues.status)
+  label: string;
+  color_category: string; // 'todo' | 'in_progress' | 'done'
+  is_initial: boolean;
+  sort_order: number;
+}
+
+export function useWorkflowStatuses(workType: string, _projectId?: string) {
+  const schemeIssueType = WORK_TYPE_TO_SCHEME_ISSUE_TYPE[workType];
+
+  return useQuery({
+    queryKey: ['workflow-statuses', schemeIssueType ?? workType],
+    queryFn: async (): Promise<WorkflowStatusOption[]> => {
+      if (!schemeIssueType) return [];
+
+      // 1. Find the default active scheme for this issue type
+      const { data: scheme, error: schemeErr } = await supabase
+        .from('catalyst_workflow_schemes')
+        .select('id')
+        .eq('issue_type', schemeIssueType)
+        .eq('is_active', true)
+        .eq('is_default', true)
+        .maybeSingle();
+
+      if (schemeErr) {
+        console.error('[useWorkflowStatuses] scheme lookup error:', schemeErr.message);
+        return [];
+      }
+      if (!scheme) return [];
+
+      // 2. Load that scheme's statuses
+      const { data: statuses, error: statusErr } = await supabase
+        .from('catalyst_workflow_statuses')
+        .select('name, category, is_initial, position')
+        .eq('scheme_id', scheme.id)
+        .order('position');
+
+      if (statusErr) {
+        console.error('[useWorkflowStatuses] status lookup error:', statusErr.message);
+        return [];
+      }
+
+      return (statuses ?? []).map((s: any) => ({
+        value: s.name,
+        label: s.name,
+        color_category: s.category,
+        is_initial: !!s.is_initial,
+        sort_order: s.position ?? 0,
+      }));
+    },
+    enabled: !!workType,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 // Fetch parent candidates (epics/stories) for a project
 export function useParentCandidates(projectId: string) {
   return useQuery({
