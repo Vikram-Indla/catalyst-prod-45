@@ -497,17 +497,19 @@ function StatusChip({
   status,
   workType,
   onChange,
+  options: optionsProp,
 }: {
   status: string;
   workType: string;
   onChange: (s: string) => void;
+  options?: { value: string; label: string }[];
 }) {
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState<number>(-1);
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listboxRef = useRef<HTMLDivElement>(null);
-  const options = STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS;
+  const options = optionsProp ?? STATUS_OPTIONS_BY_TYPE[workType] ?? DEFAULT_STATUS_OPTIONS;
 
   // Close on outside click
   useEffect(() => {
