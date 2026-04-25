@@ -485,9 +485,13 @@ export interface DashboardActivityItem {
   status: string | null;
 }
 
-export function useDashboardRecentActivity(projectId: string | null | undefined) {
+export function useDashboardRecentActivity(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery<DashboardActivityItem[]>({
-    queryKey: ['ph-dashboard-recent-activity', projectId],
+    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -507,14 +511,16 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       }
       if (!issueMap.size) return [];
 
-      // Step B: 🛡️ 2026 GUARDRAIL — fetch recent 2026 activity, then filter to
-      // this project's issues client-side. This avoids sending 700+ UUIDs in
-      // the URL (PostgREST 400 "URI too long").
-      const { data: activity, error: actError } = await supabase
+      // Per-gadget date filter overrides 2026 guardrail when supplied
+      let aq = supabase
         .from('work_item_activity')
-        .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata')
-        .gte('occurred_at', YEAR_2026_START)
-        .lt('occurred_at', YEAR_2026_END)
+        .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata');
+      if (dateFrom) aq = aq.gte('occurred_at', dateFrom);
+      else aq = aq.gte('occurred_at', YEAR_2026_START);
+      if (dateTo) aq = aq.lte('occurred_at', dateTo);
+      else if (!dateFrom) aq = aq.lt('occurred_at', YEAR_2026_END);
+
+      const { data: activity, error: actError } = await aq
         .order('occurred_at', { ascending: false })
         .limit(500);
       if (actError) throw actError;
