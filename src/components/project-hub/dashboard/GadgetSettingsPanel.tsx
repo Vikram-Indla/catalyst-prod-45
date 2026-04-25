@@ -91,6 +91,28 @@ export default function GadgetSettingsPanel({
 }: Props) {
   const { filter } = useDashboardFilter();
   const [draft, setDraft] = useState<GadgetSettings>(initialSettings);
+  const [openField, setOpenField] = useState<string | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpenField(null);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpenField(null);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClick);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClick);
+    };
+  }, []);
+
+  const toggleField = (name: string) =>
+    setOpenField((f) => (f === name ? null : name));
 
   // Releases (active)
   const { data: releases = [] } = useQuery({
