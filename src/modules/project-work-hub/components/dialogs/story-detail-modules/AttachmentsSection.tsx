@@ -453,6 +453,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
                     key={att.id}
                     attachment={att}
                     canDelete={canDelete(att)}
+                    bucket={BUCKET}
                     onPreview={() => setPreviewId(att.id)}
                     onDelete={() => setPendingDelete(att)}
                   />
