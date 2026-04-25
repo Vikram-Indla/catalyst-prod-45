@@ -10,6 +10,7 @@
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardRecentActivity } from '@/hooks/useDashboardWidgets';
+import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { EmptyState, StatusLozenge, TruncateCell, toStatusCategory } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
