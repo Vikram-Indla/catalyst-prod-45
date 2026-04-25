@@ -26,9 +26,15 @@ const STATUS_COLORS = {
 
 export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('items', projectKey);
+  // Note: statusFilter is intentionally NOT forwarded — this widget *is* the
+  // status segmentation. A user-selected status would zero out other buckets.
   const { data: counts, isLoading } = useDashboardStatusCounts(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
+    releaseFilter: settings.releaseFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
   });
   const { todo = 0, inProgress = 0, done = 0, total = 0 } = counts ?? {};
 
