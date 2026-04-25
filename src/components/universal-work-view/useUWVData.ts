@@ -167,17 +167,30 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
             q = q.in('issue_type', params.issueTypes);
           }
 
+          // Skip date filter when drilling into specific releases —
+          // fix_versions scope overrides time scope (releases may pre-date quarter).
+          const skipDateFilter = !!(params.fixVersions && params.fixVersions.length > 0);
+
           // Scope filter — match gadget semantics.
-          if (params.scope === 'quarter' && params.quarter) {
+          if (!skipDateFilter && params.scope === 'quarter' && params.quarter) {
             const r = quarterRange(params.quarter);
             if (r) {
               q = q.gte('jira_created_at', `${r.start}T00:00:00.000Z`)
                    .lte('jira_created_at', `${r.end}T23:59:59.999Z`);
             }
           }
-          if (params.scope === 'custom' && params.dateFrom) {
+          if (!skipDateFilter && params.scope === 'custom' && params.dateFrom) {
             q = q.gte('jira_created_at', params.dateFrom);
             if (params.dateTo) q = q.lte('jira_created_at', params.dateTo);
+          }
+
+          // fix_versions filter — JSONB containment via PostgREST `cs` operator.
+          // Each release name becomes a containment check: fix_versions @> [{"name":"X"}]
+          if (params.fixVersions && params.fixVersions.length > 0) {
+            const orClause = params.fixVersions
+              .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+              .join(',');
+            q = q.or(orClause);
           }
 
           const sortMap: Record<string, string> = {
