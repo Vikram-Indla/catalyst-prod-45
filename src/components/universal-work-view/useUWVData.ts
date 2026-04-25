@@ -86,7 +86,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           priority: r.priority,
           created: r.jira_created_at,
           updated: r.jira_updated_at,
-          dueDate: r.due_date,
+          dueDate: r.effective_due_date ?? r.due_date,
           commentCount: 0,
           hubSource: 'projecthub',
           level: levelOverride !== undefined ? levelOverride : (r.parent_key ? 1 : 0),
@@ -95,7 +95,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
 
       const PROJECT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
              assignee_user_id, assignee_display_name, parent_key, project_key,
-             jira_created_at, jira_updated_at, due_date, priority`;
+             jira_created_at, jira_updated_at, due_date, effective_due_date, priority`;
 
       // ─── ProjectHub source ────────────────────────────────────────────────
       if (params.hubSource.includes('projecthub')) {
