@@ -30,7 +30,7 @@
   --pc-r-md: 6px;
   --pc-r-lg: 8px;
   --pc-r-full: 9999px;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--cp-font-body);
   color: var(--pc-ink);
 }
 
@@ -69,7 +69,7 @@
   background: var(--pc-surface);
 }
 .pc-header-title {
-  font-family: 'Sora', system-ui, sans-serif;
+  font-family: var(--cp-font-heading);
   font-size: 22px;
   font-weight: 700;
   color: var(--pc-ink);
@@ -185,7 +185,7 @@
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 10px;
   font-weight: 500;
   color: var(--pc-ink-muted);
@@ -246,7 +246,7 @@
   font-weight: 600;
 }
 .pc-chip-count {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 10px;
   font-weight: 600;
   background: rgba(37, 99, 235, 0.1);
@@ -311,13 +311,13 @@
 }
 .pc-group-heading:not(:first-child) { margin-top: 32px; }
 .pc-group-label {
-  font-family: 'Sora', system-ui, sans-serif;
+  font-family: var(--cp-font-heading);
   font-size: 13px;
   font-weight: 600;
   color: var(--pc-ink);
 }
 .pc-group-count {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 11px;
   font-weight: 500;
   color: var(--pc-ink-muted);
@@ -376,7 +376,7 @@
 
 /* Card ID */
 .pc-card-id {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 12px;
   font-weight: 500;
   color: var(--pc-primary);
@@ -384,7 +384,7 @@
 
 /* Card title */
 .pc-card-title {
-  font-family: 'Sora', system-ui, sans-serif;
+  font-family: var(--cp-font-heading);
   font-size: 14px;
   font-weight: 600;
   color: var(--pc-ink);
@@ -434,7 +434,7 @@
 .pc-score-bar--filled { background: var(--pc-ink-muted); }
 .pc-score-bar--empty { background: var(--pc-border); }
 .pc-score-text {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 12px;
   font-weight: 500;
   color: var(--pc-ink-secondary);
@@ -476,7 +476,7 @@
   transition: width 0.3s;
 }
 .pc-progress-text {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 11px;
   font-weight: 500;
   color: var(--pc-ink-tertiary);
@@ -502,7 +502,7 @@
   margin-bottom: 2px;
 }
 .pc-card-meta {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--cp-font-mono);
   font-size: 11px;
   font-weight: 400;
   color: var(--pc-ink-tertiary);
