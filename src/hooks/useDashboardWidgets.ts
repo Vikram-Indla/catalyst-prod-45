@@ -569,22 +569,28 @@ export interface DashboardActivityItem {
 
 export function useDashboardRecentActivity(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery<DashboardActivityItem[]>({
-    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL on parent issues (used to scope activity to this project)
-      const { data: issues, error: issuesError } = await supabase
+      // 🛡️ 2026 GUARDRAIL on parent issues (used to scope activity to this project).
+      // Layer 2 filters narrow the parent issue set, which in turn scopes activity rows.
+      let iq = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .or(or2026('jira_created_at', 'jira_updated_at'));
+      iq = applyPhIssuesLayer2Filters(iq, filters);
+      const { data: issues, error: issuesError } = await iq;
       if (issuesError) throw issuesError;
 
       const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
