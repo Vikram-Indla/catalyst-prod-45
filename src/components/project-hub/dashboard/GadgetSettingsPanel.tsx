@@ -121,8 +121,8 @@ export default function GadgetSettingsPanel({
       const res = await supabase
         .from('rh_releases' as any)
         .select('id, name, status')
-        .or('release_date.gte.2026-01-01,release_date.is.null')
-        .order('release_date', { ascending: true })
+        .or('target_date.gte.2026-01-01,target_date.is.null')
+        .order('target_date', { ascending: true })
         .limit(50);
       console.log('[GadgetSettingsPanel] rh_releases response:', res);
       return (res.data ?? []) as any[];
