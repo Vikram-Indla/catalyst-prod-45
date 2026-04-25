@@ -352,21 +352,30 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
 }
 
 // ─── Production Incidents (from ph_issues filtered by issue_type) ───
-export function useDashboardIncidents(projectId: string | null | undefined, projectKey?: string | null) {
+export function useDashboardIncidents(
+  projectId: string | null | undefined,
+  projectKey?: string | null,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId, projectKey],
+    queryKey: ['ph-dashboard-incidents', projectId, projectKey, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = projectKey ?? (await getProjectKey(projectId!));
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
         .eq('project_key', pKey)
         .eq('issue_type', 'Production Incident')
-        .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'))
+        .is('deleted_at', null);
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data, error } = await q
         .order('jira_created_at', { ascending: false })
         .limit(10);
       if (error) throw error;
