@@ -170,24 +170,94 @@ export function useProjectListItems(projectKey: string | undefined) {
   });
 }
 
-/* ── All work view: all types ── */
+/* ── All work view: all types ──
+   Reads from BOTH ph_issues (Jira-synced) AND catalyst_issues (in-app
+   created). Mirrors the merge pattern already proven in
+   src/modules/project-work-hub/hooks/useBacklogData.ts so a story created
+   via the "+ Create" flow shows up here in the same render the Jira sync
+   uses for Jira-native stories. Jira wins on issue_key collisions. */
+function mapCatalystIssue(row: any, projectKey: string): WorkItem {
+  return {
+    id: row.issue_key,
+    dbId: row.id ?? null,
+    projectId: row.project_id ?? '',
+    parentId: row.parent_id ?? null,
+    parentKey: null,
+    jiraKey: row.issue_key ?? '',
+    type: normaliseType(row.issue_type),
+    summary: row.title || '(No title)',
+    status: normaliseStatus(row.status),
+    statusName: row.status ?? 'Backlog',
+    statusCategory: statusCategory(row.status),
+    assigneeId: row.assignee_id ?? null,
+    assignee: undefined,
+    reporterId: row.reporter_id ?? null,
+    reporter: undefined,
+    priority: normalisePriority(row.priority),
+    fixVersion: null,
+    commentsCount: 0,
+    childCount: 0,
+    description: row.description ?? null,
+    createdAt: row.created_at ?? new Date().toISOString(),
+    updatedAt: row.updated_at ?? new Date().toISOString(),
+    createdBy: null,
+    parentSummary: null,
+    storyPoints: row.story_points ?? null,
+    sprintName: row.sprint_name ?? null,
+    resolution: null,
+    labels: row.tags ?? [],
+    is_flagged: false,
+    flag_reason: null,
+  };
+}
+
+const CATALYST_ISSUES_SELECT = 'id, project_id, issue_key, title, description, issue_type, status, priority, assignee_id, reporter_id, parent_id, story_points, tags, sprint_name, created_at, updated_at';
+
 export function useProjectAllWorkItems(projectKey: string | undefined) {
   return useQuery({
-    queryKey: ['project-all-work-items-v2', projectKey],
+    queryKey: ['project-all-work-items-v3', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
 
-      // @ts-ignore
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select(PH_ISSUES_SELECT)
-        .eq('project_key', projectKey)
-        .is('jira_removed_at', null)
-        .order('jira_updated_at', { ascending: false, nullsFirst: false })
-        .limit(5000);
-      if (error) throw error;
+      // 1) Resolve project UUID — catalyst_issues is keyed by project_id, not project_key.
+      const { data: project } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('key', projectKey)
+        .maybeSingle();
+      const projectId = project?.id ?? null;
 
-      return (data ?? []).map(mapPhIssue);
+      // 2) Fetch Jira-synced rows + in-app created rows in parallel.
+      const [phRes, catRes] = await Promise.all([
+        // @ts-ignore
+        supabase
+          .from('ph_issues')
+          .select(PH_ISSUES_SELECT)
+          .eq('project_key', projectKey)
+          .is('jira_removed_at', null)
+          .order('jira_updated_at', { ascending: false, nullsFirst: false })
+          .limit(5000),
+        projectId
+          ? supabase
+              .from('catalyst_issues')
+              .select(CATALYST_ISSUES_SELECT)
+              .eq('project_id', projectId)
+              .order('created_at', { ascending: false })
+              .limit(5000)
+          : Promise.resolve({ data: [], error: null } as any),
+      ]);
+      if (phRes.error) throw phRes.error;
+      if (catRes.error) throw catRes.error;
+
+      const jira = (phRes.data ?? []).map(mapPhIssue);
+      const seen = new Set(jira.map((w) => w.jiraKey).filter(Boolean));
+      const catalyst = (catRes.data ?? [])
+        .map((r: any) => mapCatalystIssue(r, projectKey))
+        .filter((w) => !(w.jiraKey && seen.has(w.jiraKey)));
+
+      // Catalyst-created rows surface at the top — they're newer than the
+      // most recent Jira sync by definition, and matches the Backlog ordering.
+      return [...catalyst, ...jira];
     },
     enabled: !!projectKey,
     staleTime: 30_000,

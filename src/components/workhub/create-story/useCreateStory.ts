@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface CreateStoryFormData {
   projectId: string;
@@ -73,22 +74,102 @@ export function useTeamMembers() {
   });
 }
 
-// Fetch releases for a project
+// Fetch releases for a project (canonical source: rh_releases / ReleaseHub)
+// rh_releases.id is UUID and matches catalyst_issues.release_id (also UUID).
 export function useProjectReleases(projectId: string) {
   return useQuery({
     queryKey: ['create-story-releases', projectId],
     queryFn: async () => {
+      console.log('[useProjectReleases] called with projectId:', projectId);
       if (!projectId) return [];
       const { data, error } = await supabase
-        .from('ph_releases' as any)
-        .select('id, name')
+        .from('rh_releases')
+        .select('id, name, status, target_date')
         .eq('project_id', projectId)
+        .order('target_date', { ascending: false, nullsFirst: false })
         .order('name');
-      if (error) return [];
+      if (error) {
+        console.error('[useProjectReleases] Supabase error:', error.message, (error as any).code);
+        return [];
+      }
       return (data as any[]) ?? [];
     },
     enabled: !!projectId,
     staleTime: 2 * 60 * 1000,
+  });
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Workflow statuses (canonical source: catalyst_workflow_schemes + _statuses)
+// Maps Create-modal work types to the canonical scheme.issue_type values.
+// Unmapped types fall through; caller should provide a hardcoded fallback.
+// ────────────────────────────────────────────────────────────────────────────
+const WORK_TYPE_TO_SCHEME_ISSUE_TYPE: Record<string, string> = {
+  'Story': 'Story',
+  'Epic': 'Epic',
+  'Sub-task': 'Sub-task',
+  'Task': 'Task',
+  'QA Bug': 'Defect',
+  'Production Incident': 'Defect',
+  'Business Gap': 'Business Request',
+  'Change Request': 'Business Request',
+  'Feature': 'Story',          // best-fit until a Feature scheme exists
+  'API Requirement': 'Story',  // best-fit until an API Requirement scheme exists
+};
+
+export interface WorkflowStatusOption {
+  value: string;       // status name (what we write to catalyst_issues.status)
+  label: string;
+  color_category: string; // 'todo' | 'in_progress' | 'done'
+  is_initial: boolean;
+  sort_order: number;
+}
+
+export function useWorkflowStatuses(workType: string, _projectId?: string) {
+  const schemeIssueType = WORK_TYPE_TO_SCHEME_ISSUE_TYPE[workType];
+
+  return useQuery({
+    queryKey: ['workflow-statuses', schemeIssueType ?? workType],
+    queryFn: async (): Promise<WorkflowStatusOption[]> => {
+      if (!schemeIssueType) return [];
+
+      // 1. Find the default active scheme for this issue type
+      const { data: scheme, error: schemeErr } = await supabase
+        .from('catalyst_workflow_schemes')
+        .select('id')
+        .eq('issue_type', schemeIssueType)
+        .eq('is_active', true)
+        .eq('is_default', true)
+        .maybeSingle();
+
+      if (schemeErr) {
+        console.error('[useWorkflowStatuses] scheme lookup error:', schemeErr.message);
+        return [];
+      }
+      if (!scheme) return [];
+
+      // 2. Load that scheme's statuses
+      const { data: statuses, error: statusErr } = await supabase
+        .from('catalyst_workflow_statuses')
+        .select('name, category, is_initial, position')
+        .eq('scheme_id', scheme.id)
+        .order('position');
+
+      if (statusErr) {
+        console.error('[useWorkflowStatuses] status lookup error:', statusErr.message);
+        return [];
+      }
+
+      return (statuses ?? []).map((s: any) => ({
+        value: s.name,
+        label: s.name,
+        color_category: s.category,
+        is_initial: !!s.is_initial,
+        sort_order: s.position ?? 0,
+      }));
+    },
+    enabled: !!workType,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -158,9 +239,12 @@ export function useCreateStoryMutation() {
           priority: form.priority,
           assignee_id: uuid(form.assigneeId),
           reporter_id: uuid(form.reporterId),
-          release_id: uuid(form.releaseId),
-          parent_id: uuid(form.parentId),          // was dead — now wired
-          labels: form.labels.length > 0 ? form.labels : [],  // was dead — now wired
+          release_id: form.releaseId && form.releaseId.trim() !== '' ? form.releaseId : null,
+          // parent_id FK is self-referential to catalyst_issues, but Epic parents
+          // live in ph_issues (Jira-synced). We always null this on insert and
+          // record the parent relationship in ph_issue_links below.
+          parent_id: null,
+          // labels: column does not exist on catalyst_issues — removed
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
           sync_enabled: false,
@@ -195,11 +279,54 @@ export function useCreateStoryMutation() {
         console.warn('[CreateStory] Failed to log activity:', actErr);
       }
 
+      // ── Parent link via ph_issue_links ────────────────────────────────────
+      // form.parentId now holds the parent Epic's issue_key (e.g. "BAU-123").
+      // We record the relationship as: <new story> child of <parent epic>.
+      if (form.parentId && form.parentId.trim()) {
+        try {
+          const { error: linkErr } = await supabase.from('ph_issue_links').insert({
+            source_id: issueKey,
+            target_id: form.parentId,
+            link_type: 'child of',
+          } as any);
+          if (linkErr) {
+            console.warn('[CreateStory] Failed to write parent link:', linkErr.message);
+          }
+        } catch (linkCatch) {
+          console.warn('[CreateStory] Parent link insert threw:', linkCatch);
+        }
+      }
+
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
+      const projectId = variables.form.projectId;
+      // Core invalidations — issue lists
       queryClient.invalidateQueries({ queryKey: ['project-all-work'] });
       queryClient.invalidateQueries({ queryKey: ['issue-view-items'] });
+      // Backlog, sprint, board views
+      queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+      queryClient.invalidateQueries({ queryKey: ['sprint-items'] });
+      queryClient.invalidateQueries({ queryKey: ['board-issues'] });
+      // Sidebar + dashboard counts
+      queryClient.invalidateQueries({ queryKey: ['v_issue_counts'] });
+      queryClient.invalidateQueries({ queryKey: ['project-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-metrics'] });
+      // Project-scoped lists (if project is known)
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: ['work-items', projectId] });
+        queryClient.invalidateQueries({ queryKey: ['project-issues', projectId] });
+      }
+      // Parent item — so newly created child appears in parent's children list
+      if (variables.form.parentId) {
+        queryClient.invalidateQueries({ queryKey: ['issue-children', variables.form.parentId] });
+        queryClient.invalidateQueries({ queryKey: ['epic-issues', variables.form.parentId] });
+      }
+    },
+    onError: (error: any) => {
+      const message = error?.message ?? 'Failed to create work item';
+      console.error('[useCreateStory] mutation error:', error);
+      catalystToast.error('Create failed', message);
     },
   });
 }

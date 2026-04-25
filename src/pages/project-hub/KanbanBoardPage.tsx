@@ -243,7 +243,7 @@ export default function KanbanBoardPage() {
   }, [dynamicBoardData]);
 
   const { data: rawIssues = [], isLoading } = useQuery({
-    queryKey: ['kanban-issues', key, showArchived],
+    queryKey: ['kanban-issues', key, projMeta?.id, showArchived],
     queryFn: async () => {
       if (!key) return [];
       const PAGE = 1000;
@@ -267,7 +267,8 @@ export default function KanbanBoardPage() {
         if (data.length < PAGE) break;
         from += PAGE;
       }
-      return all.map((r: any): BoardIssue => {
+
+      const jiraIssues: BoardIssue[] = all.map((r: any): BoardIssue => {
         let fv: string | null = null;
         if (r.fix_versions && Array.isArray(r.fix_versions) && r.fix_versions.length > 0) {
           const f = r.fix_versions[0];
@@ -293,6 +294,38 @@ export default function KanbanBoardPage() {
           createdAt: r.jira_created_at ?? null,
         };
       });
+
+      // Merge in Catalyst-native (in-app created) issues.
+      // Jira-wins: skip catalyst rows whose issue_key already exists in ph_issues.
+      if (!projMeta?.id || showArchived) return jiraIssues;
+      const { data: catData } = await supabase
+        .from('catalyst_issues')
+        .select('id, issue_key, title, status, issue_type, priority, assignee_id, parent_key, labels, created_at, updated_at')
+        .eq('project_id', projMeta.id)
+        .order('created_at', { ascending: false });
+      const seen = new Set(jiraIssues.map(i => i.issueKey).filter(Boolean));
+      const catIssues: BoardIssue[] = (catData || [])
+        .filter((r: any) => !(r.issue_key && seen.has(r.issue_key)))
+        .map((r: any): BoardIssue => ({
+          id: r.id,
+          issueKey: r.issue_key,
+          summary: r.title ?? '',
+          issueType: r.issue_type ?? 'Task',
+          priority: r.priority ?? 'Medium',
+          status: r.status ?? 'Backlog',
+          statusCategory: 'todo',
+          assigneeName: r.assignee_id ?? null,
+          labels: Array.isArray(r.labels) ? (r.labels as string[]) : [],
+          sprintName: null,
+          storyPoints: null,
+          parentKey: r.parent_key ?? null,
+          parentSummary: null,
+          fixVersion: null,
+          isFlagged: false,
+          updatedAt: r.updated_at,
+          createdAt: r.created_at,
+        }));
+      return [...catIssues, ...jiraIssues];
     },
     enabled: !!key,
     staleTime: 30_000,

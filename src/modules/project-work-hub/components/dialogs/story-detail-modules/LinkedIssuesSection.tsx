@@ -116,22 +116,48 @@ function AddLinkRow({ issueKey, onClose, onSuccess, onCreateNew, existingLinkedK
   const { data: results = [] } = useQuery({
     queryKey: ['linkSearch', search],
     queryFn: async () => {
+      const mapCat = (rows: any[]) =>
+        rows.map((r) => ({
+          issue_key: r.issue_key,
+          summary: r.title,
+          issue_type: r.issue_type,
+          status: r.status,
+          status_category: 'todo',
+        }));
       if (!search.trim()) {
-        const { data } = await supabase.from('ph_issues')
+        const [phRes, catRes] = await Promise.all([
+          supabase.from('ph_issues')
+            .select('issue_key, summary, issue_type, status, status_category, jira_updated_at')
+            .is('jira_removed_at', null)
+            .is('archived_at', null)
+            .order('jira_updated_at', { ascending: false })
+            .limit(8),
+          supabase.from('catalyst_issues')
+            .select('issue_key, title, issue_type, status, updated_at')
+            .order('updated_at', { ascending: false })
+            .limit(8),
+        ]);
+        const ph = phRes.data ?? [];
+        const seen = new Set(ph.map((r: any) => r.issue_key));
+        const cat = mapCat((catRes.data ?? []).filter((r: any) => r.issue_key && !seen.has(r.issue_key)));
+        return [...ph, ...cat].slice(0, 12);
+      }
+      const [phRes, catRes] = await Promise.all([
+        supabase.from('ph_issues')
           .select('issue_key, summary, issue_type, status, status_category')
+          .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
           .is('jira_removed_at', null)
           .is('archived_at', null)
-          .order('jira_updated_at', { ascending: false })
-          .limit(8);
-        return data ?? [];
-      }
-      const { data } = await supabase.from('ph_issues')
-        .select('issue_key, summary, issue_type, status, status_category')
-        .or(`issue_key.ilike.${search}%,summary.ilike.%${search}%`)
-        .is('jira_removed_at', null)
-        .is('archived_at', null)
-        .limit(10);
-      return data ?? [];
+          .limit(10),
+        supabase.from('catalyst_issues')
+          .select('issue_key, title, issue_type, status')
+          .or(`issue_key.ilike.${search}%,title.ilike.%${search}%`)
+          .limit(10),
+      ]);
+      const ph = phRes.data ?? [];
+      const seen = new Set(ph.map((r: any) => r.issue_key));
+      const cat = mapCat((catRes.data ?? []).filter((r: any) => r.issue_key && !seen.has(r.issue_key)));
+      return [...ph, ...cat].slice(0, 15);
     },
     enabled: true,
   });
