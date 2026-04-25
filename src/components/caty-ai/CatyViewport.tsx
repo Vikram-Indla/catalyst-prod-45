@@ -335,7 +335,7 @@ function ViewportSkeleton() {
 const styles: Record<string, React.CSSProperties> = {
   viewport: {
     padding: 16,
-    fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+    fontFamily: 'var(--cp-font-body)',
   },
   
   // Metrics Grid
@@ -369,7 +369,7 @@ const styles: Record<string, React.CSSProperties> = {
     textOverflow: 'ellipsis',
   },
   metricValue: {
-    fontFamily: "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
+    fontFamily: 'var(--cp-font-mono)',
     fontSize: 26,
     fontWeight: 700,
     lineHeight: 1,

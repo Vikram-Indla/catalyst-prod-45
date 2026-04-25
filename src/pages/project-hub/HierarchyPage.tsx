@@ -110,7 +110,7 @@ function FilterTrigger({ label, values, onClear, onClick, isOpen }: {
       onClick={onClick}
       style={{
         height: 32, padding: '8px 12px', display: 'inline-flex', alignItems: 'center', gap: 6,
-        fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+        fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
         color: active ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
         background: active ? 'rgba(37,99,235,0.06)' : isDark ? '#1A1A1A' : '#FFFFFF',
         border: `1px solid ${active ? 'rgba(37,99,235,0.3)' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
@@ -216,7 +216,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 autoFocus
                 style={{
                   flex: 1, border: 'none', outline: 'none', background: 'transparent',
-                  fontSize: 12, fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#0F172A',
+                  fontSize: 12, fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A',
                 }}
               />
             </div>
@@ -238,7 +238,7 @@ function FilterDropdown({ options, selected, onChange, onClose, searchable = fal
                 key={opt}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 10, padding: '6px 12px',
-                  cursor: 'pointer', fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Inter', sans-serif",
+                  cursor: 'pointer', fontSize: 13, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-body)',
                   transition: 'background 80ms', borderRadius: 0,
                   background: isSelected ? 'rgba(37,99,235,0.04)' : 'transparent',
                 }}
@@ -371,7 +371,7 @@ export default function HierarchyPage() {
   }, []);
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: isDark ? '#0A0A0A' : '#F8FAFC', fontFamily: 'var(--cp-font-body)' }}>
       {/* PAGE HEADER */}
       <CatalystPageHeader title="All Work Items" />
 
@@ -398,7 +398,7 @@ export default function HierarchyPage() {
             className="!bg-transparent !border-0 !p-0 !outline-none !shadow-none !ring-0 focus:!outline-none focus:!shadow-none focus:!ring-0"
             style={{
               flex: 1, border: 'none', background: 'transparent', outline: 'none',
-              fontSize: 13, fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#0F172A',
+              fontSize: 13, fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A',
               WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none',
               WebkitBoxShadow: '0 0 0 1000px transparent inset',
             } as React.CSSProperties}
@@ -410,7 +410,7 @@ export default function HierarchyPage() {
           onClick={handleFilterToggle}
           style={{
             height: 34, padding: '0 14px', display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: 13, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+            fontSize: 13, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
             color: activeFilterCount > 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#334155',
             background: activeFilterCount > 0 ? (isDark ? 'rgba(37,99,235,0.10)' : '#EFF6FF') : isDark ? '#1A1A1A' : '#FFFFFF',
             border: `1px solid ${activeFilterCount > 0 ? '#2563EB' : isDark ? '#2E2E2E' : '#E2E8F0'}`,
@@ -562,7 +562,7 @@ export default function HierarchyPage() {
             <div style={{ border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 8, background: isDark ? '#1A1A1A' : '#FFFFFF', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 12, padding: 24, textAlign: 'center' }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#DC2626', margin: 0 }}>Failed to load work items</p>
               <p style={{ fontSize: 12, color: isDark ? '#878787' : '#64748B', margin: 0 }}>There was an error fetching the work items.</p>
-              <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif", color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <button onClick={() => refetch()} style={{ height: 32, padding: '0 14px', fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)', color: '#FFFFFF', background: '#2563EB', border: 'none', borderRadius: 6, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <RefreshCw size={14} /> Retry
               </button>
             </div>
@@ -579,7 +579,7 @@ export default function HierarchyPage() {
               </p>
               {(search || activeFilterCount > 0) && (
                 <button onClick={handleClearAllFilters} style={{
-                  height: 32, padding: '0 14px', fontSize: 12, fontWeight: 500, fontFamily: "'Inter', sans-serif",
+                  height: 32, padding: '0 14px', fontSize: 12, fontWeight: 500, fontFamily: 'var(--cp-font-body)',
                   color: isDark ? '#A1A1A1' : '#334155', background: isDark ? '#1A1A1A' : '#FFFFFF', border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, cursor: 'pointer',
                 }}>
                   Clear filters

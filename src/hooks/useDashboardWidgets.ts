@@ -130,20 +130,31 @@ export function useActiveReleases(projectId: string | null | undefined) {
 }
 
 // ─── Status Counts (To Do / In Progress / Done) ───
-export function useDashboardStatusCounts(projectId: string | null | undefined) {
+export interface DashboardDateFilter { dateFrom?: string | null; dateTo?: string | null; }
+
+export function useDashboardStatusCounts(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-status-counts', projectId],
+    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data: issues, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'));
+        .is('deleted_at', null);
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      // Fall back to 2026 guardrail when no date filter applied
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data: issues, error } = await q;
       if (error) throw error;
 
       const counts = { todo: 0, inProgress: 0, done: 0, total: 0 };
@@ -162,25 +173,33 @@ export function useDashboardStatusCounts(projectId: string | null | undefined) {
 }
 
 // ─── Overdue Items ───
-export function useDashboardOverdueItems(projectId: string | null | undefined) {
+export function useDashboardOverdueItems(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-overdue', projectId],
+    queryKey: ['ph-dashboard-overdue', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
       const today = new Date().toISOString().split('T')[0];
-      // 🛡️ 2026 GUARDRAIL
-      const { data, error } = await supabase
+      let q = supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, due_date, assignee_display_name, issue_type')
+        .select('id, issue_key, summary, status, status_category, effective_due_date, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .neq('status_category', 'Done')
-        .lt('due_date', today)
-        .not('due_date', 'is', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'))
-        .order('due_date', { ascending: true })
+        .lt('effective_due_date', today)
+        .not('effective_due_date', 'is', null);
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data, error } = await q
+        .order('effective_due_date', { ascending: true })
         .limit(50);
       if (error) throw error;
       return data ?? [];
@@ -191,22 +210,29 @@ export function useDashboardOverdueItems(projectId: string | null | undefined) {
 }
 
 // ─── On Hold Items ───
-export function useDashboardOnHoldItems(projectId: string | null | undefined) {
+export function useDashboardOnHoldItems(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-on-hold', projectId],
+    queryKey: ['ph-dashboard-on-hold', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .ilike('status', '%hold%')
-        .or(or2026('jira_created_at', 'jira_updated_at'))
-        .limit(50);
+        .ilike('status', '%hold%');
+
+      if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
+      if (dateTo) q = q.lte('jira_updated_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data, error } = await q.limit(50);
       if (error) throw error;
       return data ?? [];
     },
@@ -216,21 +242,29 @@ export function useDashboardOnHoldItems(projectId: string | null | undefined) {
 }
 
 // ─── Team Workload — active releases only ───
-export function useDashboardTeamWorkload(projectId: string | null | undefined) {
+export function useDashboardTeamWorkload(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-team-workload', projectId],
+    queryKey: ['ph-dashboard-team-workload', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data: issues, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('assignee_display_name, issue_type, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .neq('status_category', 'Done')
-        .or(or2026('jira_created_at', 'jira_updated_at'));
+        .neq('status_category', 'Done');
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data: issues, error } = await q;
       if (error) throw error;
 
       const map = new Map<string, { assignee: string; total: number; stories: number; bugs: number }>();
@@ -318,21 +352,30 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
 }
 
 // ─── Production Incidents (from ph_issues filtered by issue_type) ───
-export function useDashboardIncidents(projectId: string | null | undefined, projectKey?: string | null) {
+export function useDashboardIncidents(
+  projectId: string | null | undefined,
+  projectKey?: string | null,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId, projectKey],
+    queryKey: ['ph-dashboard-incidents', projectId, projectKey, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = projectKey ?? (await getProjectKey(projectId!));
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('id, issue_key, summary, priority, status, status_category, assignee_display_name, reporter_display_name, jira_created_at, resolution')
         .eq('project_key', pKey)
         .eq('issue_type', 'Production Incident')
-        .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'))
+        .is('deleted_at', null);
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data, error } = await q
         .order('jira_created_at', { ascending: false })
         .limit(10);
       if (error) throw error;
@@ -353,37 +396,48 @@ export function useDashboardIncidents(projectId: string | null | undefined, proj
 }
 
 // ─── QA Defects (cross-hub from tm_defects) ───
-export function useDashboardDefects(projectId: string | null | undefined, projectKey?: string | null) {
+export function useDashboardDefects(
+  projectId: string | null | undefined,
+  projectKey?: string | null,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-defects', projectId, projectKey],
+    queryKey: ['ph-dashboard-defects', projectId, projectKey, dateFrom, dateTo],
     queryFn: async () => {
       let allDefects: any[] = [];
       const avatarMap = await getAvatarMap();
 
-      // 🛡️ 2026 GUARDRAIL — defects created OR updated in 2026
-      const dateOr = `and(created_at.gte.${YEAR_2026_START},created_at.lt.${YEAR_2026_END}),and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+      // Per-gadget date filter overrides 2026 guardrail when supplied
+      const applyDate = (q: any) => {
+        if (dateFrom) q = q.gte('created_at', dateFrom);
+        if (dateTo) q = q.lte('created_at', dateTo);
+        if (!dateFrom && !dateTo) {
+          const dateOr = `and(created_at.gte.${YEAR_2026_START},created_at.lt.${YEAR_2026_END}),and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+          q = q.or(dateOr);
+        }
+        return q;
+      };
 
       // Fetch Jira-synced defects by project key
       if (projectKey) {
-        const { data: jiraDefects } = await supabase
+        let jq = supabase
           .from('tm_defects')
           .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
-          .eq('jira_project_key', projectKey)
-          .or(dateOr)
-          .order('created_at', { ascending: false })
-          .limit(10);
+          .eq('jira_project_key', projectKey);
+        jq = applyDate(jq);
+        const { data: jiraDefects } = await jq.order('created_at', { ascending: false }).limit(10);
         if (jiraDefects?.length) allDefects.push(...jiraDefects);
       }
 
       // Also fetch native defects by project_id
-      const { data: nativeDefects } = await supabase
+      let nq = supabase
         .from('tm_defects')
         .select('id, defect_key, title, severity, status, created_at, jira_key, jira_source, jira_assignee_name')
         .eq('project_id', projectId!)
-        .eq('jira_source', false)
-        .or(dateOr)
-        .order('created_at', { ascending: false })
-        .limit(10);
+        .eq('jira_source', false);
+      nq = applyDate(nq);
+      const { data: nativeDefects } = await nq.order('created_at', { ascending: false }).limit(10);
       if (nativeDefects?.length) allDefects.push(...nativeDefects);
 
       // Dedupe, sort, cap at 10
@@ -431,9 +485,13 @@ export interface DashboardActivityItem {
   status: string | null;
 }
 
-export function useDashboardRecentActivity(projectId: string | null | undefined) {
+export function useDashboardRecentActivity(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery<DashboardActivityItem[]>({
-    queryKey: ['ph-dashboard-recent-activity', projectId],
+    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -453,14 +511,16 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       }
       if (!issueMap.size) return [];
 
-      // Step B: 🛡️ 2026 GUARDRAIL — fetch recent 2026 activity, then filter to
-      // this project's issues client-side. This avoids sending 700+ UUIDs in
-      // the URL (PostgREST 400 "URI too long").
-      const { data: activity, error: actError } = await supabase
+      // Per-gadget date filter overrides 2026 guardrail when supplied
+      let aq = supabase
         .from('work_item_activity')
-        .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata')
-        .gte('occurred_at', YEAR_2026_START)
-        .lt('occurred_at', YEAR_2026_END)
+        .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata');
+      if (dateFrom) aq = aq.gte('occurred_at', dateFrom);
+      else aq = aq.gte('occurred_at', YEAR_2026_START);
+      if (dateTo) aq = aq.lte('occurred_at', dateTo);
+      else if (!dateFrom) aq = aq.lt('occurred_at', YEAR_2026_END);
+
+      const { data: activity, error: actError } = await aq
         .order('occurred_at', { ascending: false })
         .limit(500);
       if (actError) throw actError;

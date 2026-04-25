@@ -148,7 +148,7 @@ export function WiringAudit() {
         borderRadius: 8,
         backgroundColor: "#FAFBFC",
         padding: 20,
-        fontFamily: "Inter, sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
@@ -172,7 +172,7 @@ export function WiringAudit() {
               padding: "0 14px",
               fontSize: 12,
               fontWeight: 600,
-              fontFamily: "Inter, sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               backgroundColor: "#2563EB",
               color: "#FFFFFF",
               border: "none",
@@ -197,7 +197,7 @@ export function WiringAudit() {
             borderTop: i === 0 ? "1px solid var(--bd-default, #E2E8F0)" : "none",
             borderBottom: "1px solid var(--bd-default, #E2E8F0)",
             fontSize: 12,
-            fontFamily: "Inter, sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           <span

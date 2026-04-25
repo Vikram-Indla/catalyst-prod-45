@@ -265,7 +265,7 @@ export default function RAGAuditPage() {
   const summaryBg = totalPass >= 22 ? "#1B7F37" : totalPass >= 15 ? "#FFFAE6" : "#FFEBE6";
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: "Sora, system-ui, sans-serif" }}>
+    <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 24px", fontFamily: 'var(--cp-font-heading)' }}>
       <h1 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>RAG Pipeline Audit — Layers 1–3</h1>
       <p style={{ fontSize: 13, color: "#64748B", marginBottom: 24 }}>Req Assist™ · Run by Vikram · {today}</p>
 

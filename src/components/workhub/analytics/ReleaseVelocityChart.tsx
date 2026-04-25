@@ -41,7 +41,7 @@ export function ReleaseVelocityChart({ data }: Props) {
       padding: 24,
     }}>
       <h3 style={{
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         fontSize: 16, fontWeight: 600,
         color: 'var(--fg-1)', marginBottom: 20,
       }}>
@@ -51,7 +51,7 @@ export function ReleaseVelocityChart({ data }: Props) {
       <ResponsiveContainer width="100%" height={320}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: 'Inter' }} />
+          <XAxis dataKey="name" tick={{ fontSize: 12, fontFamily: 'var(--cp-font-body)' }} />
           <YAxis yAxisId="left" domain={[0, 100]} tickFormatter={v => `${v}%`} tick={{ fontSize: 12 }} />
           <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 12 }} />
           <Tooltip content={<VelocityTooltip />} />

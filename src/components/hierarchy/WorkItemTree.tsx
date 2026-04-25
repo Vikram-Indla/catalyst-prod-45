@@ -95,7 +95,7 @@ function AssigneeAvatar({ assignee }: { assignee?: WorkItem['assignee'] }) {
   const bgColor = getAvatarColor(assignee.displayName);
   return (
     <div style={{ width: 24, height: 24, borderRadius: '50%', background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>{initials}</span>
+      <span style={{ fontSize: 10, fontWeight: 700, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)' }}>{initials}</span>
     </div>
   );
 }
@@ -113,7 +113,7 @@ function ProgressBar({ stats }: { stats: WorkItem['stats'] }) {
       <div style={{ height: 4, background: isDark ? '#1A1A1A' : '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: fillColor, borderRadius: 4, transition: 'width 300ms ease' }} />
       </div>
-      <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: "'Inter', sans-serif", fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
+      <span style={{ fontSize: 11, fontWeight: 500, color: textColor, fontFamily: 'var(--cp-font-body)', fontVariantNumeric: 'tabular-nums', textAlign: 'right' }}>
         {pct}%
       </span>
     </div>
@@ -152,7 +152,7 @@ function ActionsMenu({ item, onDelete }: { item: WorkItem; onDelete?: (item: Wor
           <button
             onClick={(e) => { e.stopPropagation(); setOpen(false); onDelete?.(item); }}
             style={{
-              width: '100%', padding: '8px 12px', fontSize: 13, fontFamily: "'Inter', sans-serif",
+              width: '100%', padding: '8px 12px', fontSize: 13, fontFamily: 'var(--cp-font-body)',
               color: 'var(--sem-danger)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left',
               display: 'flex', alignItems: 'center', gap: 8,
             }}
@@ -182,7 +182,7 @@ function NoChildrenMessage({ parentLevel, depth, onAdd, parent }: { parentLevel:
     <div style={{
       height: 50, display: 'flex', alignItems: 'center', gap: 8,
       paddingLeft: (depth + 1) * 20 + 12, paddingRight: 12,
-      borderBottom: '1px solid var(--divider)', fontFamily: "'Inter', sans-serif",
+      borderBottom: '1px solid var(--divider)', fontFamily: 'var(--cp-font-body)',
     }}>
       <span style={{ fontSize: 12, color: 'var(--fg-3)', fontStyle: 'italic' }}>No child items</span>
       {onAdd && (
@@ -190,7 +190,7 @@ function NoChildrenMessage({ parentLevel, depth, onAdd, parent }: { parentLevel:
           onClick={() => onAdd(parent)}
           style={{
             fontSize: 12, fontWeight: 600, color: 'var(--cp-blue)', background: 'none', border: 'none',
-            cursor: 'pointer', fontFamily: "'Inter', sans-serif", padding: 0,
+            cursor: 'pointer', fontFamily: 'var(--cp-font-body)', padding: 0,
           }}
         >
           + Add {childLevel.name}
@@ -245,7 +245,7 @@ function TreeRow({
         height: 44, maxHeight: 44, display: 'flex', alignItems: 'center', gap: 8,
         paddingLeft: Math.min(depth, 8) * 20 + 12, paddingRight: 12, borderBottom: '1px solid var(--divider)',
         background: selected ? 'var(--cp-primary-5)' : undefined, cursor: 'pointer', outline: 'none',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         opacity: isDragged ? 0.5 : 1,
         borderLeft,
         transition: 'opacity 150ms ease, border-left 150ms ease, background 100ms ease',
@@ -518,7 +518,7 @@ export function WorkItemTree({ items, selectedId, onSelect, onDeselect, onDelete
       <div style={{
         height: 50, background: isDark ? '#1F1F1F' : '#FAFAFA', borderBottom: '1px solid var(--divider)',
         display: 'flex', alignItems: 'center', padding: '8px 12px',
-        fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
+        fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 600,
         textTransform: 'uppercase', color: 'var(--fg-3)', letterSpacing: '0.06em',
       }}>
         <span style={{ flex: 1 }}>Work</span>

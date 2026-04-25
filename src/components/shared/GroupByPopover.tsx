@@ -129,7 +129,7 @@ export function GroupByPopover<K extends string>({
           border: `1.5px solid ${isActive ? tk.selectedBorder : tk.border}`,
           background: isActive ? tk.triggerBgActive : tk.triggerBg,
           color: isActive ? '#2563EB' : tk.text,
-          fontFamily: "'Inter', sans-serif",
+          fontFamily: 'var(--cp-font-body)',
         }}
       >
         <Layers size={14} strokeWidth={2.2} />
@@ -183,7 +183,7 @@ export function GroupByPopover<K extends string>({
                   width: '100%', height: 32, paddingLeft: 28, paddingRight: search ? 28 : 8,
                   border: `1.5px solid ${tk.border}`, borderRadius: 6,
                   fontSize: 13, color: tk.text, background: tk.inputBg,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   transition: 'border-color 150ms',
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = '#2563EB')}
@@ -211,7 +211,7 @@ export function GroupByPopover<K extends string>({
               style={{
                 padding: '6px 12px 4px', fontSize: 11, fontWeight: 600,
                 color: tk.textMuted, textTransform: 'uppercase',
-                letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif",
+                letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)',
               }}
             >
               All fields
@@ -238,7 +238,7 @@ export function GroupByPopover<K extends string>({
                         : 'transparent',
                     color: isSelected ? '#2563EB' : tk.text,
                     fontSize: 13.5, fontWeight: isSelected ? 500 : 400,
-                    cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                    cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
                     borderLeft: isSelected ? '3px solid #2563EB' : '3px solid transparent',
                     transition: 'background 100ms',
                   }}
@@ -261,7 +261,7 @@ export function GroupByPopover<K extends string>({
               <div style={{
                 padding: '16px 12px', textAlign: 'center',
                 fontSize: 13, color: tk.textMuted,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}>
                 No matching fields
               </div>
@@ -278,7 +278,7 @@ export function GroupByPopover<K extends string>({
                   border: 'none', background: 'transparent',
                   color: tk.textMuted,
                   fontSize: 12.5, fontWeight: 500, cursor: 'pointer',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   padding: '4px 0',
                   transition: 'color 100ms',
                 }}

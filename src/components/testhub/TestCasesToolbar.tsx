@@ -130,7 +130,7 @@ export function TestCasesToolbar({
             onChange={(e) => onSearchChange(e.target.value)}
             style={{
               width: '100%', height: 40, padding: '0 12px 0 40px', fontSize: 14,
-              fontFamily: 'Inter, sans-serif', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)',
+              fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)', backgroundColor: 'var(--cp-float)',
               border: '1.5px solid var(--divider)', borderRadius: 8, outline: 'none',
               transition: 'border-color 0.15s, box-shadow 0.15s',
             }}
@@ -148,7 +148,7 @@ export function TestCasesToolbar({
               height: 40, padding: '0 16px',
               backgroundColor: activeFilterCount > 0 ? 'color-mix(in srgb, var(--cp-blue) 8%, transparent)' : 'var(--cp-float)',
               border: `1.5px solid ${activeFilterCount > 0 ? 'var(--cp-blue)' : 'var(--divider)'}`,
-              borderRadius: 8, fontSize: 14, fontFamily: 'Inter, sans-serif', fontWeight: 500,
+              borderRadius: 8, fontSize: 14, fontFamily: 'var(--cp-font-body)', fontWeight: 500,
               color: activeFilterCount > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
             }}
@@ -192,7 +192,7 @@ export function TestCasesToolbar({
             style={{
               height: 40, padding: '0 16px', backgroundColor: 'var(--cp-float)',
               border: '1.5px solid var(--divider)', borderRadius: 8, fontSize: 14,
-              fontFamily: 'Inter, sans-serif', fontWeight: 500, color: 'var(--fg-2)',
+              fontFamily: 'var(--cp-font-body)', fontWeight: 500, color: 'var(--fg-2)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, transition: 'all 0.15s',
             }}
           >
@@ -242,7 +242,7 @@ export function TestCasesToolbar({
 
       {/* Right side */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>
+        <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
           <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{testCaseCount}</strong> test cases
         </span>
 

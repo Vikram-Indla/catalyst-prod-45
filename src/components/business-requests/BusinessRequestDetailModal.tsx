@@ -460,7 +460,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 <rect x="6.25" y="11.5" width="3.5" height="0.75" rx="0.375" fill="white"/>
                 <rect x="6.75" y="12.75" width="2.5" height="0.75" rx="0.375" fill="white"/>
               </svg>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, fontWeight: 600, color: '#0052CC' }}>
                 {request.request_key || '—'}
               </span>
             </div>
@@ -478,7 +478,7 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 10px',
                 borderRadius: 4, color: '#42526E', fontSize: 13, fontWeight: 500,
                 display: 'flex', alignItems: 'center', gap: 6, transition: 'background 0.15s',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}
                 onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
                 onMouseLeave={e => (e.currentTarget.style.background = 'none')}

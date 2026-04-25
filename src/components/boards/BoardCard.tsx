@@ -91,10 +91,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{
                 fontSize: 13.5, fontWeight: 650, color: 'var(--fg-1)',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
                 overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               }}>{board.name}</div>
-              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>Kanban Board</div>
+              <div style={{ fontSize: 11, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>Kanban Board</div>
             </div>
           </div>
 
@@ -158,7 +158,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                 height: 18, padding: '0 8px', borderRadius: 8,
                 background: isDark ? 'rgba(0,82,204,0.15)' : 'rgba(0,82,204,0.06)', border: isDark ? '0.75px solid rgba(0,82,204,0.30)' : '0.75px solid rgba(0,82,204,0.18)',
                 fontSize: 10.5, fontWeight: 600, color: '#0052CC',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}>
                 <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#0052CC' }} />
                 Jira Sync
@@ -169,7 +169,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
             borderTop: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)', paddingTop: 10,
-            fontSize: 11.5, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif",
+            fontSize: 11.5, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)',
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <LayoutGrid size={12} /> {board.issueCount} issues
@@ -190,14 +190,14 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '0 10px',
             background: isDark ? '#0A0A0A' : 'var(--bg-app)', border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
             borderRadius: 6, cursor: 'pointer', fontSize: 11.5, fontWeight: 500,
-            color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
+            color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
           }}>
             <Settings size={13} /> Settings
           </button>
           <button onClick={e => { e.stopPropagation(); handleOpen(); }} style={{
             display: 'flex', alignItems: 'center', gap: 5, height: 30, padding: '8px 12px',
             background: 'var(--cp-blue)', border: 'none', borderRadius: 6, cursor: 'pointer',
-            fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Inter', sans-serif",
+            fontSize: 11.5, fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--cp-font-body)',
           }}>
             Open Board <ArrowRight size={12} />
           </button>
@@ -214,10 +214,10 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
             width: 420, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
             padding: 24, border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.12)',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: "'Sora', sans-serif" }}>
+            <h3 style={{ fontSize: 15, fontWeight: 700, color: 'var(--fg-1)', margin: '0 0 8px', fontFamily: 'var(--cp-font-heading)' }}>
               Delete Board
             </h3>
-            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ fontSize: 13, color: 'var(--fg-3)', margin: '0 0 16px', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
               Type the board name '<strong style={{ color: 'var(--fg-1)' }}>{board.name}</strong>' to confirm deletion.
               This action cannot be undone.
             </p>
@@ -228,7 +228,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               style={{
                 width: '100%', height: 50, padding: '8px 12px', boxSizing: 'border-box',
                 border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
-                fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
+                fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
                 outline: 'none', background: isDark ? '#0A0A0A' : 'var(--bg-app)', marginBottom: 16,
               }}
             />
@@ -236,7 +236,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
               <button onClick={() => { setDeleteModal(false); setDeleteConfirm(''); }} style={{
                 padding: '8px 16px', fontSize: 13, fontWeight: 500, borderRadius: 6,
                 border: isDark ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.15)', background: isDark ? '#0A0A0A' : 'var(--bg-app)',
-                color: 'var(--fg-2)', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                color: 'var(--fg-2)', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Cancel</button>
               <button onClick={handleDelete}
                 disabled={deleteConfirm !== board.name || deleteBoard.isPending}
@@ -246,7 +246,7 @@ export default function BoardCard({ board, projectId, onOpen, onSettings }: Boar
                   background: deleteConfirm === board.name ? 'var(--sem-danger)' : 'var(--divider)',
                   color: deleteConfirm === board.name ? '#FFFFFF' : 'var(--fg-4)',
                   cursor: deleteConfirm === board.name ? 'pointer' : 'not-allowed',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}>
                 {deleteBoard.isPending ? 'Deleting…' : 'Delete Board'}
               </button>
@@ -265,7 +265,7 @@ function MenuItem({ children, onClick, danger }: { children: React.ReactNode; on
       padding: '7px 12px', border: 'none', background: 'transparent',
       cursor: 'pointer', fontSize: 12, fontWeight: 500,
       color: danger ? 'var(--sem-danger)' : 'var(--fg-2)',
-      fontFamily: "'Inter', sans-serif", textAlign: 'left',
+      fontFamily: 'var(--cp-font-body)', textAlign: 'left',
     }}
       onMouseEnter={e => (e.currentTarget.style.background = danger ? (document.documentElement.classList.contains('dark') ? 'rgba(220,38,38,0.10)' : '#FEF2F2') : (document.documentElement.classList.contains('dark') ? '#1F1F1F' : 'rgba(15,23,42,0.04)'))}
       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -281,7 +281,7 @@ function Chip({ children, bg, color }: { children: React.ReactNode; bg: string; 
       display: 'inline-flex', alignItems: 'center', height: 20, padding: '0 8px',
       borderRadius: 12, fontSize: 11, fontWeight: 500,
       background: bg, color, border: document.documentElement.classList.contains('dark') ? '0.75px solid #2E2E2E' : '0.75px solid rgba(15,23,42,0.08)',
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--cp-font-body)',
     }}>{children}</span>
   );
 }

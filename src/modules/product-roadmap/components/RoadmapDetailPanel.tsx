@@ -137,7 +137,7 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                       borderRadius: '4px',
                       fontSize: '12px',
                       fontWeight: 600,
-                      fontFamily: "'JetBrains Mono', monospace",
+                      fontFamily: 'var(--cp-font-mono)',
                       backgroundColor: 'rgba(59,130,246,0.1)',
                       color: '#2563eb',
                       flexShrink: 0,

@@ -308,16 +308,16 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <JiraIssueTypeIcon issueType={item.issueType} size={16} />
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 650, color: T.primary, flexShrink: 0 }}>{item.key}</span>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 650, color: T.primary, flexShrink: 0 }}>{item.key}</span>
         <JiraSyncChip jiraKey={item.key} size="sm" />
-        <span style={{ fontSize: 13, fontWeight: 500, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontFamily: "'Inter', system-ui" }}>{item.summary}</span>
+        <span style={{ fontSize: 13, fontWeight: 500, color: T.ink, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, fontFamily: 'var(--cp-font-body)' }}>{item.summary}</span>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14, paddingLeft: 26 }}>
         <StatusLozenge status={item.status} />
         {item.assigneeName && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <Avatar name={item.assigneeName} size={20} />
-            <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary, fontFamily: "'Inter', system-ui" }}>{item.assigneeName}</span>
+            <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary, fontFamily: 'var(--cp-font-body)' }}>{item.assigneeName}</span>
           </div>
         )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -328,7 +328,7 @@ function SubTaskCard({ item, onClick }: { item: SubTaskItem; onClick: () => void
           </div>
           <span style={{ fontSize: 12, fontWeight: 500, color: T.inkMuted }}>{item.priority}</span>
         </div>
-        <span style={{ fontSize: 11, fontWeight: 500, color: T.inkMuted, marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>{formatTimeAgo(item.updatedAt)}</span>
+        <span style={{ fontSize: 11, fontWeight: 500, color: T.inkMuted, marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>{formatTimeAgo(item.updatedAt)}</span>
       </div>
     </button>
   );
@@ -601,12 +601,12 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
               <ArrowLeft size={18} />
               {canGoBack && <span style={{ fontSize: 13, fontWeight: 500 }}>Back</span>}
             </button>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary, background: T.primaryBg, padding: '4px 12px', borderRadius: 4 }}>{currentItem.key}</span>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: T.primary, background: T.primaryBg, padding: '4px 12px', borderRadius: 4 }}>{currentItem.key}</span>
             <button onClick={openInJira} style={{ fontSize: 12, fontWeight: 600, color: T.primary, display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer' }}><ExternalLink size={13} /> Open in Jira</button>
             <button onClick={() => navigator.clipboard?.writeText(currentItem.key)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkMuted, display: 'flex', padding: 2 }}><Copy size={13} /></button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 10, fontWeight: 700, color: T.primary, background: T.primaryBg, padding: '3px 8px', borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", textTransform: 'uppercase', letterSpacing: '0.06em' }}>JIRA SYNC</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: T.primary, background: T.primaryBg, padding: '3px 8px', borderRadius: 4, fontFamily: 'var(--cp-font-mono)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>JIRA SYNC</span>
             <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.inkMuted, display: 'flex', padding: 4 }}><X size={18} /></button>
           </div>
         </div>
@@ -618,14 +618,14 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
               <Fragment key={stackItem.key}>
                 <button
                   onClick={() => handleBreadcrumbNav(i)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.primary, fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 650, padding: 0 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: T.primary, fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 650, padding: 0 }}
                 >
                   {stackItem.key}
                 </button>
                 <span style={{ color: T.borderStrong }}>/</span>
               </Fragment>
             ))}
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, fontWeight: 650, color: T.ink }}>{currentItem.key}</span>
+            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 650, color: T.ink }}>{currentItem.key}</span>
           </div>
         )}
 
@@ -634,7 +634,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
             <div style={{ marginTop: 3 }}><JiraIssueTypeIcon issueType={currentItem.issueType} size={22} /></div>
             <div style={{ flex: 1 }}>
-              <h2 style={{ fontFamily: "'Sora', system-ui", fontSize: 18, fontWeight: 700, color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35 }}>{currentItem.summary}</h2>
+              <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: T.ink, letterSpacing: '-0.025em', lineHeight: 1.35 }}>{currentItem.summary}</h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 8, flexWrap: 'wrap' }}>
                 <StatusPill status={currentItem.status} />
                 <span style={{ fontSize: 12, fontWeight: 500, color: T.inkTertiary }}>{currentItem.project}</span>
@@ -654,7 +654,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                 padding: '10px 14px', fontSize: 13, fontWeight: isActive ? 600 : 500,
                 color: isActive ? T.primary : T.inkTertiary, background: 'none', border: 'none',
                 borderBottom: isActive ? `2px solid ${T.primary}` : '2px solid transparent',
-                cursor: 'pointer', fontFamily: "'Inter', system-ui", display: 'flex', alignItems: 'center', gap: 6,
+                cursor: 'pointer', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 {t.icon}{t.label}
                 {t.count != null && t.count > 0 && (
@@ -676,7 +676,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                   <CornerDownLeft size={14} style={{ color: T.inkMuted, flexShrink: 0 }} />
                   <span style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.05em' }}>PARENT</span>
                   <JiraIssueTypeIcon issueType="epic" size={14} />
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{currentItem.parentKey}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: T.primary }}>{currentItem.parentKey}</span>
                   {currentItem.parentSummary && <span style={{ fontSize: 13, fontWeight: 500, color: T.inkSecondary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{currentItem.parentSummary}</span>}
                 </div>
               )}
@@ -686,7 +686,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                 <FieldRow icon={<Zap size={13} />} label="Status"><StatusPill status={currentItem.status} /></FieldRow>
                 <FieldRow icon={<Target size={13} />} label="Priority"><PriorityBars level={currentItem.priorityLevel} showLabel /></FieldRow>
                 <FieldRow icon={<Layers size={13} />} label="Project"><span style={{ fontWeight: 600 }}>{currentItem.project}</span></FieldRow>
-                <FieldRow icon={<GitBranch size={13} />} label="Fix Version"><span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}>{currentItem.fixVersion || '—'}</span></FieldRow>
+                <FieldRow icon={<GitBranch size={13} />} label="Fix Version"><span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12 }}>{currentItem.fixVersion || '—'}</span></FieldRow>
                 <div style={{ height: 2, background: T.surfaceTertiary }} />
                 <FieldRow icon={<User size={13} />} label="Reporter">
                   {currentItem.reporter ? (<><Avatar name={currentItem.reporter} size={22} /><span style={{ fontWeight: 500 }}>{currentItem.reporter}</span></>) : <span style={{ color: T.inkMuted }}>—</span>}
@@ -700,13 +700,13 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
               {/* Jira Sync bar */}
               <div className="fy-jira-sync" style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, padding: '10px 14px', background: T.primaryBg, borderRadius: 8, border: `1px solid ${T.border}` }}>
                 <ExternalLink size={13} style={{ color: T.primary }} />
-                <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, fontFamily: "'JetBrains Mono', monospace" }}>JIRA SYNC</span>
+                <span style={{ fontSize: 12, fontWeight: 700, color: T.primary, fontFamily: 'var(--cp-font-mono)' }}>JIRA SYNC</span>
                 <span style={{ fontSize: 12, color: T.inkTertiary }}>· Last synced {currentItem.lastSyncedAt ? new Date(currentItem.lastSyncedAt).toLocaleDateString() : currentItem.updatedAt} · Source of truth: Jira</span>
               </div>
 
               {/* Description — with Linkify */}
               <div style={{ marginTop: 24 }}>
-                <h3 style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12 }}>Description</h3>
+                <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 12 }}>Description</h3>
                 <div style={{ fontSize: 13, color: T.inkSecondary, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
                   <Linkify text={currentItem.description || (currentItem.issueType?.toLowerCase().includes('bug')
                     ? `Steps to reproduce: Navigate to the relevant screen → perform the action described → observe the inconsistency. Expected: Match the approved Figma design specifications.`
@@ -716,7 +716,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
 
               {/* Recent Activity */}
               <div className="fy-activity" style={{ marginTop: 24 }}>
-                <h3 style={{ fontFamily: "'Sora', system-ui", fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 16 }}>Recent Activity</h3>
+                <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: T.ink, paddingBottom: 8, borderBottom: `1px solid ${T.border}`, marginBottom: 16 }}>Recent Activity</h3>
                 {recentActivity.map((a, i) => (
                   <div key={i} style={{ display: 'flex', gap: 12, padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? `1px solid ${T.surfaceTertiary}` : 'none' }}>
                     <Avatar name={a.user} size={28} />
@@ -878,7 +878,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                         <div style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>IS CHILD OF</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
                           <JiraIssueTypeIcon issueType="epic" size={14} />
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{currentItem.parentKey}</span>
+                          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: T.primary }}>{currentItem.parentKey}</span>
                           <span style={{ fontSize: 13, color: T.inkSecondary }}>{currentItem.parentSummary || ''}</span>
                         </div>
                       </div>
@@ -898,7 +898,7 @@ export function ForYouDetailPanel({ item, onClose }: ForYouDetailPanelProps) {
                           <div style={{ fontSize: 11, fontWeight: 600, color: T.inkMuted, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{relLabel}</div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
                             <JiraIssueTypeIcon issueType={link.target_type || 'story'} size={14} />
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 600, color: T.primary }}>{linkedKey}</span>
+                            <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, fontWeight: 600, color: T.primary }}>{linkedKey}</span>
                             {link.target_summary && <span style={{ fontSize: 13, color: T.inkSecondary }}>{link.target_summary}</span>}
                             {link.target_status && <StatusPill status={link.target_status} />}
                           </div>

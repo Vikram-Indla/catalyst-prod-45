@@ -30,10 +30,10 @@ export default function IncidentInsightsPage() {
             <Sparkles size={18} style={{ color: '#7C3AED' }} />
           </div>
           <div className="flex items-center gap-2">
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: textPrimary }}>Insights</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: textPrimary }}>Insights</h1>
             <span className="px-1.5 py-0.5" style={{ fontSize: 10, fontWeight: 700, backgroundColor: isDark ? 'rgba(124,58,237,0.16)' : '#F3E8FF', color: '#7C3AED', borderRadius: 3 }}>AI</span>
           </div>
-          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: textSecondary, marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
+          <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: textSecondary, marginLeft: 'auto' }}>Pattern analysis and recommendations</p>
         </div>
 
         {/* Featured AI Card */}
@@ -46,10 +46,10 @@ export default function IncidentInsightsPage() {
               <Sparkles size={18} style={{ color: '#FFFFFF' }} />
             </div>
             <div>
-              <h3 style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 650, color: textPrimary, marginBottom: 4 }}>
+              <h3 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 650, color: textPrimary, marginBottom: 4 }}>
                 Pattern Analysis
               </h3>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, color: textBody, lineHeight: 1.6 }}>
+              <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, color: textBody, lineHeight: 1.6 }}>
                 {sev1Count > 0
                   ? `${sev1Count} SEV-1 incident(s) detected in the current window. Analysis suggests correlation with recent deployment activities. ${breachedCount > 0 ? `${breachedCount} SLA breach(es) require immediate attention.` : 'SLA targets are currently being met.'}`
                   : 'No critical incidents detected. System health appears stable across all monitored services.'}
@@ -62,7 +62,7 @@ export default function IncidentInsightsPage() {
         <div className="grid grid-cols-2 gap-4">
           {/* Risk Signals */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
-            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: textPrimary }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#DC2626', display: 'inline-block' }} />
               Risk Signals
             </h3>
@@ -76,8 +76,8 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(248,113,113,0.2)' : '#FECACA'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#F87171' : '#B91C1C' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#FCA5A5' : '#991B1B', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#F87171' : '#B91C1C' }}>{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -85,7 +85,7 @@ export default function IncidentInsightsPage() {
 
           {/* Improvements */}
           <div className="p-4" style={{ border: `1px solid ${borderColor}`, borderRadius: 6 }}>
-            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 700, color: textPrimary }}>
+            <h3 className="flex items-center gap-2 mb-3" style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 700, color: textPrimary }}>
               <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#16A34A', display: 'inline-block' }} />
               Improvements
             </h3>
@@ -99,8 +99,8 @@ export default function IncidentInsightsPage() {
                   borderRadius: 4,
                   border: `1px solid ${isDark ? 'rgba(34,197,94,0.2)' : '#BBF7D0'}`,
                 }}>
-                  <h4 style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, fontWeight: 650, color: isDark ? '#86EFAC' : '#166534', marginBottom: 2 }}>{item.title}</h4>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: isDark ? '#4ADE80' : '#15803D' }}>{item.desc}</p>
+                  <h4 style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, fontWeight: 650, color: isDark ? '#86EFAC' : '#166534', marginBottom: 2 }}>{item.title}</h4>
+                  <p style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: isDark ? '#4ADE80' : '#15803D' }}>{item.desc}</p>
                 </div>
               ))}
             </div>

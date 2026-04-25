@@ -87,7 +87,7 @@ export function ThemeModal({ isOpen, onClose, theme }: ThemeModalProps) {
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         background: 'var(--cp-float)', borderRadius: 12, width: 480, maxWidth: '95vw',
         boxShadow: '0 20px 60px rgba(0,0,0,.2)', zIndex: 9999,
-        fontFamily: 'var(--wh-font-sans, Inter, sans-serif)',
+        fontFamily: 'var(--cp-font-body)',
       }}>
         {/* Header */}
         <div style={{

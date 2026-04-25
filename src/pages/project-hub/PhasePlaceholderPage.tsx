@@ -13,7 +13,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
   const { key } = useParams<{ key: string }>();
 
   return (
-    <div className="ph-content-wrapper" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="ph-content-wrapper" style={{ fontFamily: 'var(--cp-font-body)' }}>
       <div className="ph-inner-content">
         <CatalystPageHeader title={title} />
 
@@ -22,7 +22,7 @@ export default function PhasePlaceholderPage({ title, phase, icon: Icon = List, 
           style={{ padding: '80px 40px' }}
         >
           <Icon size={48} color="#CBD5E1" strokeWidth={1.25} />
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginTop: 16, fontFamily: "'Sora', sans-serif" }}>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1, #0F172A)', marginTop: 16, fontFamily: 'var(--cp-font-heading)' }}>
             {title}
           </h3>
           <p style={{ fontSize: 14, color: '#64748B', marginTop: 4, textAlign: 'center', maxWidth: 400 }}>

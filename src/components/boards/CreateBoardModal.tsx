@@ -82,7 +82,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
           padding: '16px 20px', borderBottom: '0.75px solid rgba(15,23,42,0.08)',
         }}>
           <h2 style={{
-            fontSize: 15, fontFamily: "'Sora', sans-serif", fontWeight: 700,
+            fontSize: 15, fontFamily: 'var(--cp-font-heading)', fontWeight: 700,
             color: 'var(--fg-1)', margin: 0,
           }}>Create Board</h2>
           <button onClick={onClose} style={{
@@ -102,7 +102,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             style={{
               width: '100%', height: 50, padding: '8px 12px',
               border: '0.75px solid rgba(15,23,42,0.15)', borderRadius: 6,
-              fontSize: 13, fontFamily: "'Inter', sans-serif", color: 'var(--fg-1)',
+              fontSize: 13, fontFamily: 'var(--cp-font-body)', color: 'var(--fg-1)',
               outline: 'none', background: 'var(--bg-app)', marginBottom: 20, boxSizing: 'border-box',
             }}
           />
@@ -116,7 +116,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                 background: template === t.id ? 'rgba(37,99,235,0.04)' : 'var(--bg-app)',
                 transition: 'all 100ms',
               }}>
-                <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif", marginBottom: 6 }}>
+                <div style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)', marginBottom: 6 }}>
                   {t.name}
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
@@ -124,10 +124,10 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                     <span key={c.name} style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 4,
                       background: 'var(--bg-1)', color: 'var(--fg-3)',
-                      fontFamily: "'Inter', sans-serif",
+                      fontFamily: 'var(--cp-font-body)',
                     }}>{c.name}</span>
                   )) : (
-                    <span style={{ fontSize: 10.5, color: 'var(--fg-4)', fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ fontSize: 10.5, color: 'var(--fg-4)', fontFamily: 'var(--cp-font-body)' }}>
                       Start from scratch
                     </span>
                   )}
@@ -148,10 +148,10 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               }}>
                 <RadioCircle selected={swimlane === opt.value} />
                 <div>
-                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
+                  <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                     {opt.label}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -185,7 +185,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                 <RadioCircle selected={visibility === opt.value} />
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}>
                       {opt.label}
                     </span>
                     {opt.warning && (
@@ -194,7 +194,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 1 }}>
+                  <div style={{ fontSize: 11, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 1 }}>
                     {opt.desc}
                   </div>
                 </div>
@@ -212,7 +212,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
             height: 34, padding: '0 16px', borderRadius: 6,
             border: '0.75px solid rgba(15,23,42,0.12)', background: 'var(--bg-app)',
             fontSize: 12.5, fontWeight: 500, color: 'var(--fg-2)',
-            fontFamily: "'Inter', sans-serif", cursor: 'pointer',
+            fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
           }}>Cancel</button>
           <button onClick={handleCreate} disabled={!name.trim() || createBoard.isPending}
             style={{
@@ -220,7 +220,7 @@ export default function CreateBoardModal({ projectId, basePath, onClose }: Props
               background: name.trim() ? 'var(--cp-blue)' : 'var(--divider)',
               fontSize: 12.5, fontWeight: 600,
               color: name.trim() ? '#FFFFFF' : 'var(--fg-4)',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               cursor: name.trim() ? 'pointer' : 'not-allowed',
             }}>
             {createBoard.isPending ? 'Creating…' : 'Create Board'}
@@ -235,7 +235,7 @@ function FieldLabel({ children, required }: { children: React.ReactNode; require
   return (
     <label style={{
       display: 'block', fontSize: 12, fontWeight: 600,
-      color: 'var(--fg-2)', fontFamily: "'Inter', sans-serif",
+      color: 'var(--fg-2)', fontFamily: 'var(--cp-font-body)',
       marginBottom: 6,
     }}>
       {children}{required && <span style={{ color: 'var(--sem-danger)' }}> *</span>}

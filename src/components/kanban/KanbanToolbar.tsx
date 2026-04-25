@@ -98,7 +98,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
                   width: '100%', height: 36, paddingLeft: 32, paddingRight: q ? 32 : 10,
                   border: `1.5px solid ${tk.inputBorder}`, borderRadius: 6,
                   fontSize: 13.5, color: tk.textPrimary, background: tk.inputBg, outline: 'none',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   transition: 'border-color 120ms',
                 }}
                 onFocus={e => e.currentTarget.style.borderColor = tk.selectedAccent}
@@ -122,7 +122,7 @@ export function EpicFilterDropdown({ epics, selected, onChange, tk }: {
                 <CheckRow key={e.key} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== e.key) : [...selected, e.key])} tk={tk}>
                   <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
                     <div style={{ fontSize: 13.5, color: tk.textPrimary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{e.summary || e.key}</div>
-                    <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace" }}>{e.key}</div>
+                    <div style={{ fontSize: 11, color: tk.textMuted, fontFamily: 'var(--cp-font-mono)' }}>{e.key}</div>
                   </div>
                 </CheckRow>
               );
@@ -159,7 +159,7 @@ export function TypeFilterDropdown({ types, selected, onChange, tk }: {
                 <CheckRow key={t.type} checked={isSel} onClick={() => onChange(isSel ? selected.filter(k => k !== t.type) : [...selected, t.type])} tk={tk}>
                   <JiraIssueTypeIcon type={t.type} size={16} />
                   <span style={{ flex: 1, fontSize: 13.5, color: tk.textPrimary, fontWeight: 450 }}>{t.type}</span>
-                  <span style={{ fontSize: 11, color: tk.textMuted, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace" }}>{t.count}</span>
+                  <span style={{ fontSize: 11, color: tk.textMuted, fontWeight: 600, fontFamily: 'var(--cp-font-mono)' }}>{t.count}</span>
                 </CheckRow>
               );
             })}
@@ -230,7 +230,7 @@ export function QuickFilterDropdown({ selected, onChange, tk }: {
           display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
           borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
           background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
-          fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           transition: 'all 120ms ease', outline: 'none',
         }}>
         <Filter size={14} />
@@ -271,7 +271,7 @@ export function DensityToggle({ value, onChange, tk }: {
           padding: '0 12px', height: 30, fontSize: 12, fontWeight: value === o.key ? 600 : 450,
           background: value === o.key ? tk.selectedAccent : tk.surfaceBg,
           color: value === o.key ? '#FFFFFF' : tk.textSecondary,
-          border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+          border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           transition: 'all 100ms ease',
         }}>{o.label}</button>
       ))}
@@ -307,7 +307,7 @@ export function GroupByBtn({ value, onChange, tk }: {
           borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
           background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
           fontSize: 13.5, fontWeight: active ? 600 : 500, cursor: 'pointer',
-          fontFamily: "'Inter', sans-serif", transition: 'all 120ms ease', outline: 'none',
+          fontFamily: 'var(--cp-font-body)', transition: 'all 120ms ease', outline: 'none',
         }}>
         {active ? `Group: ${lbl}` : 'Group'} <ChevronDown size={13} />
       </button>
@@ -325,7 +325,7 @@ export function GroupByBtn({ value, onChange, tk }: {
                   cursor: 'pointer', fontSize: 13.5,
                   color: sel ? tk.selectedAccent : tk.textPrimary,
                   fontWeight: sel ? 600 : 450,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   transition: 'background 80ms ease',
                 }}
                 onMouseEnter={e => { if (!sel) e.currentTarget.style.background = tk.surfaceHover; }}
@@ -370,7 +370,7 @@ function FilterTrigger({ label, count, active, onClick, tk }: {
         display: 'inline-flex', alignItems: 'center', gap: 5, height: 34, padding: '0 12px',
         borderRadius: 6, border: active ? `2px solid ${tk.selectedAccent}` : `1px solid ${tk.border}`,
         background: active ? tk.dropHighlight : tk.surfaceBg, color: active ? tk.selectedAccent : tk.textSecondary,
-        fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+        fontSize: 13.5, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
         transition: 'all 120ms ease', outline: 'none',
       }}>
       {label}
@@ -425,7 +425,7 @@ function ClearAll({ onClick, tk }: { onClick: () => void; tk: KanbanThemeTokens 
       <button onClick={onClick} style={{
         fontSize: 13, color: tk.selectedAccent,
         background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}>Clear all</button>
     </div>
   );

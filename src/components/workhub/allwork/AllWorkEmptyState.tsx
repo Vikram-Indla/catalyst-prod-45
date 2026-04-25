@@ -55,13 +55,13 @@ export function AllWorkEmptyState({ type, message, query, onAction, onClear, onR
       />
       <p
         className={`${isSmall ? 'text-[13px]' : 'text-[14px]'} font-medium mb-1`}
-        style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+        style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
       >
         {title}
       </p>
       <p
         className={`${isSmall ? 'text-[11px]' : 'text-[13px]'} ${actionHandler && actionLabel ? 'mb-4' : ''}`}
-        style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}
+        style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}
       >
         {subtitle}
       </p>

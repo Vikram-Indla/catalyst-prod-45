@@ -131,7 +131,7 @@ export function MembersTab({ projectId, currentUserId }: MembersTabProps) {
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Search by name or email to add..."
             className="flex-1 bg-transparent outline-none"
-            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: "'Inter', sans-serif" }}
+            style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
           />
         </div>
 

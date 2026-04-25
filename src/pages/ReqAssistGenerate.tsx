@@ -258,11 +258,11 @@ export default function ReqAssistGenerate() {
       <div style={{ padding: '24px 28px' }}>
         {/* HEADER */}
         <div style={{ marginBottom: 24 }}>
-          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: '#2563EB', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: "'Inter', sans-serif" }}>
+          <button onClick={() => navigate('/product/req-assist')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, color: '#2563EB', fontWeight: 500, marginBottom: 16, padding: 0, fontFamily: 'var(--cp-font-body)' }}>
             <ArrowLeft size={14} /> Back to Library
           </button>
-          <h2 style={{ fontFamily: "'Sora', sans-serif", fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#111827', margin: '0 0 6px' }}>Generate BRD from Text</h2>
-          <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', margin: 0, lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>
+          <h2 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 24, fontWeight: 700, color: isDark ? '#EDEDED' : '#111827', margin: '0 0 6px' }}>Generate BRD from Text</h2>
+          <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', margin: 0, lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>
             Paste raw requirements, notes, or a brief. The system qualifies your text before generating — it will not produce a BRD from unstructured input.
           </p>
         </div>
@@ -271,27 +271,27 @@ export default function ReqAssistGenerate() {
         <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: 24, marginBottom: 20 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
             <FileText size={15} color="#7C3AED" />
-            <span style={{ fontSize: 13, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: "'Inter', sans-serif" }}>Requirements Input</span>
-            <span style={{ fontSize: 13, color: isDark ? '#878787' : '#6B7280', fontFamily: "'Inter', sans-serif" }}>· Paste text from meetings, briefs, email threads, or scope documents</span>
+            <span style={{ fontSize: 13, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: 'var(--cp-font-body)' }}>Requirements Input</span>
+            <span style={{ fontSize: 13, color: isDark ? '#878787' : '#6B7280', fontFamily: 'var(--cp-font-body)' }}>· Paste text from meetings, briefs, email threads, or scope documents</span>
           </div>
 
           <textarea
             value={text}
             onChange={(e) => { setText(e.target.value); setQualifyResult(null); setGenResult(null); setGenError(null); setSavedDocId(null); setHasEpics(false); setDuplicateDoc(null); setWikiState('idle'); setShowSavedBanner(false); }}
             placeholder="Paste your requirements here..."
-            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: "'Inter', sans-serif", color: isDark ? '#EDEDED' : '#111827', transition: 'border-color 150ms, box-shadow 150ms' }}
+            style={{ width: '100%', minHeight: 200, padding: 14, fontSize: 14, lineHeight: 1.65, border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 4, outline: 'none', resize: 'vertical', fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#111827', transition: 'border-color 150ms, box-shadow 150ms' }}
             onFocus={(e) => { e.currentTarget.style.borderColor = '#7C3AED'; e.currentTarget.style.boxShadow = '0 0 0 2px rgba(124,58,237,0.10)'; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = isDark ? '#2E2E2E' : '#E2E8F0'; e.currentTarget.style.boxShadow = 'none'; }}
           />
-          <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>The AI will first qualify whether this text contains enough structured requirements.</p>
+          <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>The AI will first qualify whether this text contains enough structured requirements.</p>
 
           {/* Qualify fail */}
           {qualifyResult && !qualifyResult.qualified && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6, display: 'flex', gap: 10 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><X size={12} color="#DC2626" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>✗ Not Qualified</div>
-                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: 'var(--cp-font-body)' }}>✗ Not Qualified</div>
+                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
               </div>
             </div>
           )}
@@ -301,9 +301,9 @@ export default function ReqAssistGenerate() {
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#F0FDF4', border: '0.75px solid #DCFCE7', borderRadius: 6, display: 'flex', gap: 10 }}>
               <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#DCFCE7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} color="#16A34A" /></div>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: "'Inter', sans-serif" }}>✓ Qualified — Score {qualifyResult.score}/100</div>
-                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: "'Inter', sans-serif" }}>• {r}</p>)}
-                <p style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', margin: '6px 0 0', fontFamily: "'Inter', sans-serif" }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#16A34A', fontFamily: 'var(--cp-font-body)' }}>✓ Qualified — Score {qualifyResult.score}/100</div>
+                {qualifyResult.reasons.map((r, i) => <p key={i} style={{ fontSize: 12, color: '#166534', margin: '4px 0 0', lineHeight: 1.5, fontFamily: 'var(--cp-font-body)' }}>• {r}</p>)}
+                <p style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', margin: '6px 0 0', fontFamily: 'var(--cp-font-body)' }}>
                   Domain: {qualifyResult.domain_detected} · ~{qualifyResult.requirement_count_estimate} requirements · {qualifyResult.language.toUpperCase()}
                 </p>
               </div>
@@ -313,8 +313,8 @@ export default function ReqAssistGenerate() {
           {/* Error */}
           {genError && (
             <div style={{ marginTop: 12, padding: '14px 16px', background: '#FEF2F2', border: '0.75px solid rgba(220,38,38,0.12)', borderRadius: 6 }}>
-              <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>Generation Error</div>
-              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: "'Inter', sans-serif" }}>{sanitiseError(genError)}</p>
+              <div style={{ fontSize: 13, fontWeight: 600, color: '#DC2626', fontFamily: 'var(--cp-font-body)' }}>Generation Error</div>
+              <p style={{ fontSize: 12, color: '#991B1B', margin: '4px 0 0', fontFamily: 'var(--cp-font-body)' }}>{sanitiseError(genError)}</p>
             </div>
           )}
 
@@ -337,8 +337,8 @@ export default function ReqAssistGenerate() {
         {generating && !genResult && (
           <div style={{ background: isDark ? '#1A1A1A' : '#FFFFFF', border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, padding: '40px 24px', textAlign: 'center' }}>
             <Loader2 size={24} color="#7C3AED" style={{ animation: 'ra-spin 1s linear infinite', margin: '0 auto 12px', display: 'block' }} />
-            <p style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#374151', margin: '0 0 4px', fontFamily: "'Inter', sans-serif" }}>Generating BRD sections from your input…</p>
-            <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: 0, fontFamily: "'Inter', sans-serif" }}>This typically takes 15–30 seconds</p>
+            <p style={{ fontSize: 14, fontWeight: 500, color: isDark ? '#A1A1A1' : '#374151', margin: '0 0 4px', fontFamily: 'var(--cp-font-body)' }}>Generating BRD sections from your input…</p>
+            <p style={{ fontSize: 12, color: isDark ? '#878787' : '#6B7280', margin: 0, fontFamily: 'var(--cp-font-body)' }}>This typically takes 15–30 seconds</p>
           </div>
         )}
 
@@ -347,9 +347,9 @@ export default function ReqAssistGenerate() {
           <div style={{ border: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: 6, overflow: 'hidden', background: isDark ? '#1A1A1A' : '#FFFFFF' }}>
             {/* Header */}
             <div style={{ padding: '12px 16px', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>Generated BRD</span>
+              <span style={{ fontSize: 14, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-heading)' }}>Generated BRD</span>
               <span style={{ display: 'inline-flex', alignItems: 'center', padding: '0 6px', height: 20, borderRadius: 4, fontSize: 11, fontWeight: 700, textTransform: 'uppercase' as const, background: '#1B7F37', color: '#FFFFFF' }}>QUALIFIED</span>
-              <span style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ fontSize: 11, color: isDark ? '#878787' : '#64748B', marginLeft: 'auto', fontFamily: 'var(--cp-font-mono)' }}>
                 {genResult.section_count} sections · {genResult.language.toUpperCase()} · {genResult.total_requirements} requirements
               </span>
             </div>
@@ -362,17 +362,17 @@ export default function ReqAssistGenerate() {
                   paddingBottom: i < genResult.sections.length - 1 ? 20 : 0,
                   borderBottom: i < genResult.sections.length - 1 ? '0.75px solid rgba(0,0,0,0.06)' : 'none',
                 }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: "'Inter', sans-serif" }}>SECTION {section.sectionNumber}</span>
-                  <h4 style={{ fontSize: 15, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '4px 0 8px', fontFamily: "'Sora', sans-serif" }}>{section.title}</h4>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#94A3B8', textTransform: 'uppercase' as const, letterSpacing: '0.06em', fontFamily: 'var(--cp-font-body)' }}>SECTION {section.sectionNumber}</span>
+                  <h4 style={{ fontSize: 15, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', margin: '4px 0 8px', fontFamily: 'var(--cp-font-heading)' }}>{section.title}</h4>
                   <div className="ra-brd-markdown">
                     <ReactMarkdown components={{
-                      p: ({ children }) => <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, marginBottom: 12, fontFamily: "'Inter', sans-serif" }}>{children}</p>,
+                      p: ({ children }) => <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, marginBottom: 12, fontFamily: 'var(--cp-font-body)' }}>{children}</p>,
                       strong: ({ children }) => <strong style={{ fontWeight: 650, color: isDark ? '#EDEDED' : '#111827' }}>{children}</strong>,
                       ul: ({ children }) => <ul style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ul>,
                       ol: ({ children }) => <ol style={{ paddingLeft: 20, marginBottom: 12 }}>{children}</ol>,
-                      li: ({ children }) => <li style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, marginBottom: 4, listStyleType: 'disc', fontFamily: "'Inter', sans-serif" }}>{children}</li>,
-                      h3: ({ children }) => <h3 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 650, color: isDark ? '#878787' : '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h3>,
-                      h4: ({ children }) => <h4 style={{ fontSize: 13, fontFamily: "'Sora', sans-serif", fontWeight: 650, color: isDark ? '#878787' : '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h4>,
+                      li: ({ children }) => <li style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, marginBottom: 4, listStyleType: 'disc', fontFamily: 'var(--cp-font-body)' }}>{children}</li>,
+                      h3: ({ children }) => <h3 style={{ fontSize: 13, fontFamily: 'var(--cp-font-heading)', fontWeight: 650, color: isDark ? '#878787' : '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h3>,
+                      h4: ({ children }) => <h4 style={{ fontSize: 13, fontFamily: 'var(--cp-font-heading)', fontWeight: 650, color: isDark ? '#878787' : '#6B7280', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 8, marginTop: 16 }}>{children}</h4>,
                     }}>{section.content}</ReactMarkdown>
                   </div>
                 </div>
@@ -383,7 +383,7 @@ export default function ReqAssistGenerate() {
             {brdState === 'generated' && (
               <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#FEF2F2', border: '0.75px solid #FECACA', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <AlertTriangle size={15} color="#DC2626" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: '#DC2626', fontFamily: "'Inter', sans-serif" }}>
+                <span style={{ fontSize: 13, color: '#DC2626', fontFamily: 'var(--cp-font-body)' }}>
                   This BRD has not been saved yet. Save to Library to enable Epics generation and WikiHub sync.
                 </span>
               </div>
@@ -391,7 +391,7 @@ export default function ReqAssistGenerate() {
             {showSavedBanner && brdState === 'saved' && (
               <div style={{ margin: '0 16px 12px', padding: '10px 14px', background: '#F0FDF4', border: '0.75px solid #BBF7D0', borderRadius: 6, display: 'flex', alignItems: 'center', gap: 8 }}>
                 <Check size={15} color="#166534" style={{ flexShrink: 0 }} />
-                <span style={{ fontSize: 13, color: '#166534', fontFamily: "'Inter', sans-serif" }}>Saved to Library. Ready to generate Epics.</span>
+                <span style={{ fontSize: 13, color: '#166534', fontFamily: 'var(--cp-font-body)' }}>Saved to Library. Ready to generate Epics.</span>
               </div>
             )}
 
@@ -431,7 +431,7 @@ export default function ReqAssistGenerate() {
                     </BtnOutline>
                   )}
                   {wikiState === 'success' && (
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: '#1B7F37', color: '#FFFFFF', fontSize: 14, fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '8px 16px', borderRadius: 6, background: '#1B7F37', color: '#FFFFFF', fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-body)' }}>
                       <Check size={14} /> In WikiHub
                     </span>
                   )}
@@ -473,10 +473,10 @@ export default function ReqAssistGenerate() {
       {/* DUPLICATE MODAL */}
       {dupModalOpen && duplicateDoc && (
         <ModalOverlay>
-          <div style={{ width: 480, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
+          <div style={{ width: 480, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
               <AlertTriangle size={20} color="#64748B" />
-              <span style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: "'Sora', sans-serif" }}>Document Already Exists</span>
+              <span style={{ fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#111827', fontFamily: 'var(--cp-font-heading)' }}>Document Already Exists</span>
             </div>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 20px' }}>
               A BRD with identical content already exists in your library: <strong style={{ fontWeight: 650, color: isDark ? '#EDEDED' : '#111827' }}>"{duplicateDoc.title}"</strong>. What would you like to do?
@@ -514,7 +514,7 @@ export default function ReqAssistGenerate() {
               </BtnPrimary>
               <button onClick={() => setOverwriteConfirmOpen(true)} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
-                border: '0.75px solid #DC2626', borderRadius: 6, background: 'transparent', color: '#DC2626', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                border: '0.75px solid #DC2626', borderRadius: 6, background: 'transparent', color: '#DC2626', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Overwrite</button>
               <BtnGhost onClick={() => { setDupModalOpen(false); setDuplicateDoc(null); }}>Cancel</BtnGhost>
             </div>
@@ -525,7 +525,7 @@ export default function ReqAssistGenerate() {
       {/* OVERWRITE CONFIRM */}
       {overwriteConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
+          <div style={{ width: 440, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 16px' }}>
               Are you sure? This will replace the existing BRD and clear any generated Epics for that document.
             </p>
@@ -542,7 +542,7 @@ export default function ReqAssistGenerate() {
                 } catch (err: any) { setGenError(err.message); } finally { setGenerating(false); setOverwriteConfirmOpen(false); }
               }} style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
-                border: 'none', borderRadius: 6, background: '#DC2626', color: '#FFFFFF', cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+                border: 'none', borderRadius: 6, background: '#DC2626', color: '#FFFFFF', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
               }}>Yes, Overwrite</button>
               <BtnGhost onClick={() => setOverwriteConfirmOpen(false)}>Go Back</BtnGhost>
             </div>
@@ -553,7 +553,7 @@ export default function ReqAssistGenerate() {
       {/* REGEN EPICS CONFIRM */}
       {regenConfirmOpen && (
         <ModalOverlay>
-          <div style={{ width: 440, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: "'Inter', sans-serif" }}>
+          <div style={{ width: 440, background: isDark ? '#1A1A1A' : '#FFFFFF', borderRadius: 6, padding: 24, fontFamily: 'var(--cp-font-body)' }}>
             <p style={{ fontSize: 14, color: isDark ? '#A1A1A1' : '#374151', lineHeight: 1.6, margin: '0 0 16px' }}>
               Regenerating will replace all {epicCount} existing epics for this document. This cannot be undone.
             </p>
@@ -586,7 +586,7 @@ function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)', color: '#FFFFFF',
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'filter 120ms',
       ...props.style,
     }}>{children}</button>
@@ -599,7 +599,7 @@ function BtnAI({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElem
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 600,
       border: 'none', borderRadius: 4, cursor: props.disabled ? 'not-allowed' : 'pointer',
       background: '#7C3AED', color: '#FFFFFF',
-      fontFamily: "'Inter', sans-serif",
+      fontFamily: 'var(--cp-font-body)',
       opacity: props.disabled ? 0.6 : 1, transition: 'background 120ms',
       ...props.style,
     }}>{children}</button>
@@ -612,7 +612,7 @@ function BtnOutline({ children, ...props }: React.ButtonHTMLAttributes<HTMLButto
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: `0.75px solid ${isDark ? '#2E2E2E' : '#CBD5E1'}`, borderRadius: 6, cursor: props.disabled ? 'not-allowed' : 'pointer',
-      background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', fontFamily: "'Inter', sans-serif",
+      background: isDark ? '#1A1A1A' : '#FFFFFF', color: isDark ? '#A1A1A1' : '#374151', fontFamily: 'var(--cp-font-body)',
       transition: 'background 120ms',
       ...props.style,
     }}>{children}</button>
@@ -625,7 +625,7 @@ function BtnGhost({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonE
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: 'none', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: isDark ? '#878787' : '#64748B', fontFamily: "'Inter', sans-serif",
+      background: 'transparent', color: isDark ? '#878787' : '#64748B', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );
@@ -636,7 +636,7 @@ function BtnDanger({ children, ...props }: React.ButtonHTMLAttributes<HTMLButton
     <button {...props} style={{
       display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px', fontSize: 14, fontWeight: 500,
       border: '0.75px solid #DC2626', borderRadius: 6, cursor: 'pointer',
-      background: 'transparent', color: '#DC2626', fontFamily: "'Inter', sans-serif",
+      background: 'transparent', color: '#DC2626', fontFamily: 'var(--cp-font-body)',
       ...props.style,
     }}>{children}</button>
   );
@@ -667,14 +667,14 @@ function CatalystTopNav() {
     { label: 'WikiHub', path: '/wikihub' },
   ];
   return (
-    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 24px', fontFamily: "'Inter', sans-serif" }}>
+    <nav style={{ height: 48, display: 'flex', alignItems: 'center', gap: 0, background: isDark ? '#1A1A1A' : '#FFFFFF', borderBottom: `0.75px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, padding: '0 24px', fontFamily: 'var(--cp-font-body)' }}>
       {HUBS.map(h => {
         const isActive = h.label === 'ProductHub';
         return (
           <button key={h.label} onClick={() => navigate(h.path)} style={{
             height: 48, padding: '0 14px', fontSize: 13, fontWeight: isActive ? 600 : 400,
             color: isActive ? '#2563EB' : '#64748B', background: 'transparent', border: 'none', cursor: 'pointer',
-            borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: "'Inter', sans-serif",
+            borderBottom: isActive ? '3px solid #2563EB' : '3px solid transparent', transition: 'color 120ms', fontFamily: 'var(--cp-font-body)',
           }}>{h.label}</button>
         );
       })}

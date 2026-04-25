@@ -26,7 +26,7 @@ function DuplicateWarning({ duplicates, onDismiss, isDark }: { duplicates: any[]
         {duplicates.map((d: any) => (
           <div key={d.id} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
             <span style={{
-              fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700,
+              fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700,
               padding: '1px 5px', borderRadius: 4,
               background: isDark ? 'rgba(217,119,6,0.2)' : '#FEF3C7',
               color: '#D97706',
@@ -67,7 +67,7 @@ function SimpleDateInput({ label, value, onChange, helperText, isDark }: {
             width: '100%', padding: '7px 10px', fontSize: 12, borderRadius: 4,
             border: `0.75px solid ${isDark ? '#2E2E2E' : 'rgba(15,23,42,0.12)'}`,
             background: isDark ? '#1A1A1A' : '#FFFFFF',
-            color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'Inter, sans-serif',
+            color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-body)',
           }}
         />
       </div>
@@ -169,7 +169,7 @@ export default function WikiTemplatesPage() {
 
   return (
     <div style={{
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--cp-font-body)',
       color: isDark ? '#EDEDED' : '#0F172A',
       background: isDark ? '#0A0A0A' : '#F8FAFC',
       minHeight: '100%', padding: '24px 40px 48px',
@@ -180,7 +180,7 @@ export default function WikiTemplatesPage() {
         <span style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', fontWeight: 600 }}>Templates</span>
       </nav>
 
-      <h1 style={{ fontFamily: "'Sora', sans-serif", fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#EDEDED' : '#0F172A' }}>Article Templates</h1>
+      <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, marginBottom: 8, color: isDark ? '#EDEDED' : '#0F172A' }}>Article Templates</h1>
       <p style={{ fontSize: 12, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 16 }}>Pre-built structures for common article types. Click "Use Template" to create a pre-filled article.</p>
 
       {/* ── Duplicate Detection Warning ── */}
@@ -271,7 +271,7 @@ export default function WikiTemplatesPage() {
                   <FileText size={16} style={{ color: isDark ? '#A1A1A1' : '#64748B' }} />
                 </div>
                 <div>
-                  <div style={{ fontFamily: "'Sora', sans-serif", fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{t.name}</div>
+                  <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 13, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{t.name}</div>
                   <div style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B' }}>{t.description}</div>
                 </div>
               </div>

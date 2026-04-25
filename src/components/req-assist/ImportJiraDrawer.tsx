@@ -23,7 +23,7 @@ const getAvatarColor = (key: string) => PROJECT_COLORS[key] || '#3F3F46';
 function ProjectTicketCountBadge({ projectKey }: { projectKey: string }) {
   const { data: count } = useProjectTicketCount(projectKey);
   return (
-    <span style={{ background: '#DFE1E6', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: "'Inter', sans-serif" }}>
+    <span style={{ background: '#DFE1E6', color: '#374151', fontSize: 11, fontWeight: 600, borderRadius: 4, padding: '2px 6px', fontFamily: 'var(--cp-font-body)' }}>
       {count ?? '…'}
     </span>
   );
@@ -223,15 +223,15 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         {/* HEADER */}
         <div style={{ padding: '0 24px', height: 64, borderBottom: '0.75px solid #E5E7EB', display: 'flex', flexDirection: 'column', justifyContent: 'center', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: "'Sora', sans-serif" }}>Import from Jira</span>
+            <span style={{ fontSize: 16, fontWeight: 650, color: '#111827', fontFamily: 'var(--cp-font-heading)' }}>Import from Jira</span>
             <span style={{ flex: 1 }} />
             <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', borderRadius: 4, padding: '2px 8px' }}>AI-Assisted Import</span>
-            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Step {step} of 2</span>
+            <span style={{ fontSize: 12, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Step {step} of 2</span>
             <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, color: 'var(--fg-3)' }}>
               <X size={16} />
             </button>
           </div>
-          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", marginTop: 2 }}>Connected via Catalyst integration</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', marginTop: 2 }}>Connected via Catalyst integration</span>
         </div>
 
         {/* BODY */}
@@ -274,7 +274,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
         <div style={{ height: 64, borderTop: '0.75px solid #E5E7EB', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
           {step === 1 ? (
             <>
-              <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Cancel</button>
+              <button onClick={handleClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Cancel</button>
               <button
                 onClick={() => { if (selectedProject) { setStep(2); setSelectedTickets([]); } }}
                 disabled={!selectedProject}
@@ -282,13 +282,13 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                   background: selectedProject ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
                   fontSize: 13, fontWeight: 600, cursor: selectedProject ? 'pointer' : 'not-allowed',
-                  fontFamily: "'Inter', sans-serif", opacity: selectedProject ? 1 : 0.6,
+                  fontFamily: 'var(--cp-font-body)', opacity: selectedProject ? 1 : 0.6,
                 }}
               >Next: Select Tickets →</button>
             </>
           ) : (
             <>
-              <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>← Back</button>
+              <button onClick={() => setStep(1)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, fontWeight: 500, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>← Back</button>
               <button
                 onClick={handleImport}
                 disabled={selectedTickets.length === 0 || importMutation.isPending}
@@ -297,7 +297,7 @@ export default function ImportJiraDrawer({ open, onOpenChange }: Props) {
                   border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
                   fontSize: 13, fontWeight: 600,
                   cursor: selectedTickets.length > 0 ? 'pointer' : 'not-allowed',
-                  fontFamily: "'Inter', sans-serif", opacity: selectedTickets.length > 0 ? 1 : 0.6,
+                  fontFamily: 'var(--cp-font-body)', opacity: selectedTickets.length > 0 ? 1 : 0.6,
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}
               >
@@ -340,9 +340,9 @@ function Step1({
     <>
       {/* Section label */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: "'Inter', sans-serif" }}>SELECT PROJECT</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', textTransform: 'uppercase', letterSpacing: '0.05em', fontFamily: 'var(--cp-font-body)' }}>SELECT PROJECT</span>
         {projects.length > 0 && (
-          <button onClick={onSyncAll} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
+          <button onClick={onSyncAll} style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
             <RefreshCw size={14} className={syncingKey ? 'animate-spin' : ''} />
             Sync All
           </button>
@@ -357,8 +357,8 @@ function Step1({
       ) : projects.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
           <Inbox size={32} style={{ color: 'var(--fg-4)' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>No projects connected yet</span>
-          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Add your first Jira project below</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#374151', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No projects connected yet</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Add your first Jira project below</span>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -381,11 +381,11 @@ function Step1({
                 {/* Avatar */}
                 <div style={{
                   width: 32, height: 32, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: getAvatarColor(p.project_key), color: 'var(--bg-app)', fontSize: 13, fontWeight: 700, fontFamily: "'Inter', sans-serif",
+                  background: getAvatarColor(p.project_key), color: 'var(--bg-app)', fontSize: 13, fontWeight: 700, fontFamily: 'var(--cp-font-body)',
                 }}>
                   {p.project_key}
                 </div>
-                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: "'Inter', sans-serif", flex: 1 }}>
+                <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', fontFamily: 'var(--cp-font-body)', flex: 1 }}>
                   {p.project_name} <span style={{ fontSize: 12, color: 'var(--fg-3)', fontWeight: 400 }}>({p.project_key})</span>
                 </span>
                 <ProjectTicketCountBadge projectKey={p.project_key} />
@@ -405,7 +405,7 @@ function Step1({
       <div style={{ marginTop: 24, position: 'relative' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
           <div style={{ flex: 1, height: '0.75px', background: '#F3F4F6' }} />
-          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', textTransform: 'uppercase', fontFamily: "'Inter', sans-serif", background: 'var(--bg-app)', padding: '0 8px' }}>ADD PROJECT</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-4)', textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)', background: 'var(--bg-app)', padding: '0 8px' }}>ADD PROJECT</span>
           <div style={{ flex: 1, height: '0.75px', background: '#F3F4F6' }} />
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -415,7 +415,7 @@ function Step1({
             placeholder="Project key (e.g. SEN, MDT)"
             style={{
               flex: 1, height: 50, border: '0.75px solid #E5E7EB', borderRadius: 4,
-              padding: '8px 12px', fontSize: 13, fontFamily: "'JetBrains Mono', monospace",
+              padding: '8px 12px', fontSize: 13, fontFamily: 'var(--cp-font-mono)',
               outline: 'none', color: '#111827',
             }}
             onKeyDown={e => { if (e.key === 'Enter') onVerify(); }}
@@ -427,7 +427,7 @@ function Step1({
               background: addInput.trim() ? 'var(--cp-blue)' : '#93C5FD', color: 'var(--bg-app)',
               border: 'none', borderRadius: 6, padding: '0 16px', height: 50,
               fontSize: 13, fontWeight: 600, cursor: addInput.trim() ? 'pointer' : 'not-allowed',
-              fontFamily: "'Inter', sans-serif", display: 'flex', alignItems: 'center', gap: 6,
+              fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
               opacity: addInput.trim() ? 1 : 0.6,
             }}
           >
@@ -440,27 +440,27 @@ function Step1({
           {verifyState === 'loading' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <Loader2 size={14} className="animate-spin" style={{ color: 'var(--fg-3)' }} />
-              <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Verifying with Jira...</span>
+              <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Verifying with Jira...</span>
             </div>
           )}
           {verifyState === 'success' && verifyResult && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <CheckCircle size={14} style={{ color: 'var(--sem-success)' }} />
-              <span style={{ fontSize: 13, color: 'var(--sem-success)', fontFamily: "'Inter', sans-serif" }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
+              <span style={{ fontSize: 13, color: 'var(--sem-success)', fontFamily: 'var(--cp-font-body)' }}>{verifyResult.project_name} found · {verifyResult.count} tickets</span>
             </div>
           )}
           {verifyState === 'not_found' && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <XCircle size={14} style={{ color: 'var(--sem-danger)' }} />
-              <span style={{ fontSize: 13, color: 'var(--sem-danger)', fontFamily: "'Inter', sans-serif" }}>Project not found. Check the key and try again.</span>
+              <span style={{ fontSize: 13, color: 'var(--sem-danger)', fontFamily: 'var(--cp-font-body)' }}>Project not found. Check the key and try again.</span>
             </div>
           )}
           {verifyState === 'not_configured' && (
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: '#FEF3C7', border: '0.75px solid var(--sem-warning)', borderRadius: 6, padding: '10px 12px', marginTop: 4 }}>
               <AlertTriangle size={14} style={{ color: 'var(--sem-warning)', flexShrink: 0, marginTop: 2 }} />
               <div>
-                <span style={{ fontSize: 13, color: '#92400E', fontFamily: "'Inter', sans-serif" }}>Jira integration not configured. Go to Settings → Integrations. </span>
-                <a href="/settings/integrations" style={{ fontSize: 13, color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: "'Inter', sans-serif" }}>Go to Settings →</a>
+                <span style={{ fontSize: 13, color: '#92400E', fontFamily: 'var(--cp-font-body)' }}>Jira integration not configured. Go to Settings → Integrations. </span>
+                <a href="/settings/integrations" style={{ fontSize: 13, color: 'var(--cp-blue)', textDecoration: 'underline', fontFamily: 'var(--cp-font-body)' }}>Go to Settings →</a>
               </div>
             </div>
           )}
@@ -503,13 +503,13 @@ function Step2({
 
   return (
     <>
-      <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 4, fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 13, color: 'var(--fg-3)', marginBottom: 4, fontFamily: 'var(--cp-font-body)' }}>
         {projectName} · Showing tickets with attachments only
       </div>
-      <div style={{ fontSize: 12, color: 'var(--fg-3)', margin: '8px 0 4px 0', fontFamily: "'Inter', sans-serif" }}>
+      <div style={{ fontSize: 12, color: 'var(--fg-3)', margin: '8px 0 4px 0', fontFamily: 'var(--cp-font-body)' }}>
         Showing {pdfIssueCount} of {totalIssueCount} issues — PDF attachments only
       </div>
-      <div style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 16, fontFamily: "'JetBrains Mono', monospace" }}>
+      <div style={{ fontSize: 11, color: 'var(--fg-4)', marginBottom: 16, fontFamily: 'var(--cp-font-mono)' }}>
         {syncLabel}
       </div>
 
@@ -523,7 +523,7 @@ function Step2({
             placeholder="Search tickets..."
             style={{
               width: '100%', height: 50, border: '0.75px solid #E5E7EB', borderRadius: 4,
-              padding: '0 12px 0 32px', fontSize: 13, fontFamily: "'Inter', sans-serif",
+              padding: '0 12px 0 32px', fontSize: 13, fontFamily: 'var(--cp-font-body)',
               outline: 'none', color: '#111827',
             }}
           />
@@ -532,7 +532,7 @@ function Step2({
           onClick={onPdfToggle}
           style={{
             height: 50, borderRadius: 6, padding: '8px 12px', fontSize: 13, fontWeight: 600,
-            cursor: 'pointer', fontFamily: "'Inter', sans-serif",
+            cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             background: pdfOnly ? '#0C66E4' : '#F3F4F6',
             color: pdfOnly ? 'var(--bg-app)' : '#374151',
             border: `0.75px solid ${pdfOnly ? '#BFDBFE' : '#E5E7EB'}`,
@@ -553,8 +553,8 @@ function Step2({
       ) : tickets.length === 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 0' }}>
           <RefreshCw size={32} style={{ color: 'var(--fg-3)' }} />
-          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginTop: 12, fontFamily: "'Inter', sans-serif" }}>No tickets found</span>
-          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif", textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
+          <span style={{ fontSize: 14, fontWeight: 600, color: '#111827', marginTop: 12, fontFamily: 'var(--cp-font-body)' }}>No tickets found</span>
+          <span style={{ fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)', textAlign: 'center', maxWidth: 280, marginTop: 4 }}>
             No Jira tickets with attachments were found for this project. Tickets must have at least one attachment to appear here.
           </span>
           <button
@@ -562,7 +562,7 @@ function Step2({
             disabled={syncing}
             style={{
               marginTop: 12, height: 32, borderRadius: 6, padding: '0 16px',
-              fontSize: 13, fontWeight: 600, fontFamily: "'Inter', sans-serif",
+              fontSize: 13, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
               color: 'var(--cp-blue)', background: 'transparent', border: '1px solid var(--cp-blue)',
               cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
             }}
@@ -593,7 +593,7 @@ function Step2({
               <div key={col.label} style={{
                 width: col.w, flex: col.w ? undefined : 1,
                 padding: '10px 12px', fontSize: 11, fontWeight: 700, color: 'var(--fg-3)',
-                textTransform: 'uppercase', fontFamily: "'Inter', sans-serif",
+                textTransform: 'uppercase', fontFamily: 'var(--cp-font-body)',
               }}>{col.label}</div>
             ))}
           </div>
@@ -627,8 +627,8 @@ function Step2({
                     style={{ width: 16, height: 16, cursor: 'pointer', accentColor: 'var(--cp-blue)', opacity: 1 }}
                   />
                 </div>
-                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? 'var(--fg-4)' : '#374151', fontFamily: "'JetBrains Mono', monospace" }}>{t.ticket_key}</div>
-                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: muted ? 'var(--fg-4)' : '#111827', fontFamily: "'Inter', sans-serif", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
+                <div style={{ width: 96, padding: '8px 12px', fontSize: 12, fontWeight: 500, color: muted ? 'var(--fg-4)' : '#374151', fontFamily: 'var(--cp-font-mono)' }}>{t.ticket_key}</div>
+                <div dir="auto" style={{ flex: 1, padding: '8px 12px', fontSize: 13, color: muted ? 'var(--fg-4)' : '#111827', fontFamily: 'var(--cp-font-body)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t.ticket_summary}</div>
                 <div style={{ width: 88, padding: '8px 12px', opacity: muted ? 0.4 : 1 }}>
                   <Lozenge label={t.priority || 'MEDIUM'} styles={PRIORITY_STYLES} />
                 </div>
@@ -640,14 +640,14 @@ function Step2({
                 </div>
                 <div style={{ width: 100, padding: '4px 8px', display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
                   {reActivated ? (
-                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#0C66E4', color: 'var(--bg-app)', fontFamily: "'Inter', sans-serif" }}>Re-import</span>
+                    <span style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#0C66E4', color: 'var(--bg-app)', fontFamily: 'var(--cp-font-body)' }}>Re-import</span>
                   ) : imported ? (
                     <>
-                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#F3F4F6', color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>Imported</span>
+                      <span className="group-hover:hidden" style={{ fontSize: 11, padding: '2px 6px', borderRadius: 4, background: '#F3F4F6', color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Imported</span>
                       <button
                         className="hidden group-hover:inline-flex"
                         onClick={(e) => { e.stopPropagation(); onReImport(t.ticket_key); }}
-                        style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Inter', sans-serif", whiteSpace: 'nowrap' }}
+                        style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-blue)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--cp-font-body)', whiteSpace: 'nowrap' }}
                         onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
                         onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
                       >↻ Re-import</button>
@@ -659,7 +659,7 @@ function Step2({
           })}
 
           {/* Footer */}
-          <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: 'var(--fg-3)', fontFamily: "'Inter', sans-serif" }}>
+          <div style={{ padding: '8px 0', marginTop: 8, fontSize: 13, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>
             {selectedTickets.length} of {tickets.length} tickets selected
           </div>
         </>

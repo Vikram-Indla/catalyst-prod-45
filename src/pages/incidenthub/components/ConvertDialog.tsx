@@ -39,7 +39,7 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
     <Dialog open={open} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="sm:max-w-[640px]" style={{ borderRadius: 8, padding: 0 }}>
         <DialogHeader className="px-6 pt-5 pb-3" style={{ borderBottom: '0.75px solid rgba(15,23,42,0.06)' }}>
-          <DialogTitle style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 700 }}>Convert Incident</DialogTitle>
+          <DialogTitle style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 700 }}>Convert Incident</DialogTitle>
         </DialogHeader>
 
         <div className="px-6 py-4">
@@ -61,8 +61,8 @@ export function ConvertDialog({ open, onClose, incidentId }: ConvertDialogProps)
                     <rect x="2" y="2" width="12" height="12" rx="2" fill={t.color} opacity="0.8" />
                   </svg>
                 </div>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, #0F172A)', marginBottom: 2 }}>{t.label}</div>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 11, color: '#64748B' }}>{t.desc}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 13, fontWeight: 650, color: 'var(--fg-1, #0F172A)', marginBottom: 2 }}>{t.label}</div>
+                <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 11, color: '#64748B' }}>{t.desc}</div>
               </button>
             ))}
           </div>

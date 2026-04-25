@@ -178,7 +178,7 @@ export default function SharedStepDetailPage() {
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                   >
                     <td style={{ padding: '0 16px' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 13, fontWeight: 500, color: '#2563EB' }}>{tc.case_key}</span>
+                      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 13, fontWeight: 500, color: '#2563EB' }}>{tc.case_key}</span>
                     </td>
                     <td style={{ padding: '0 16px', fontSize: 14, color: isDark ? '#EDEDED' : '#334155' }}>{tc.title}</td>
                   </tr>

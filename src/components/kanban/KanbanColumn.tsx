@@ -43,7 +43,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
       <span style={{
         fontSize: 12, fontWeight: 500, textTransform: 'uppercase',
         color: tk.textMuted,                            /* no letter-spacing (Jira: normal) */
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         lineHeight: '16px',
         flex: 1,
       }}>{name}</span>
@@ -53,7 +53,7 @@ function ColHeader({ name, count, category, tk }: { name: string; count: number;
         color: tk.textPrimary,
         background: 'transparent',
         padding: 0, lineHeight: '16px',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}>{count}</span>
     </div>
   );
@@ -121,7 +121,7 @@ export const DroppableColumn = memo(function DroppableColumn({ column, issueIds,
           {issueIds.length === 0 && (
             <div className="flex flex-col items-center justify-center" style={{
               minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 6,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}>
               {isOver ? (
                 <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 13 }}>Drop here</span>

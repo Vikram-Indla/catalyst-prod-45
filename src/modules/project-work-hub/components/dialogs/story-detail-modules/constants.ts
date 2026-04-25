@@ -167,7 +167,7 @@ export const AI_IMPROVE_OPTIONS: { value: AIImproveType; label: string }[] = [
 
 export const menuItemStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',
-  background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+  background: 'none', border: 'none', fontSize: 13, color: '#344054', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
   textAlign: 'left',
 };
 

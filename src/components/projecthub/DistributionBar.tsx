@@ -11,7 +11,7 @@ export function DistributionBar({ todo, inProgress, done, showNumbers = false }:
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <div className="bg-[#F1F5F9] dark:bg-[#2E2E2E]" style={{ flex: 1, height: 4, borderRadius: 4, minWidth: 50 }} />
-        {showNumbers && <span className="text-[#94A3B8] dark:text-[#878787]" style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>—</span>}
+        {showNumbers && <span className="text-[#94A3B8] dark:text-[#878787]" style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap' }}>—</span>}
       </div>
     );
   }
@@ -25,7 +25,7 @@ export function DistributionBar({ todo, inProgress, done, showNumbers = false }:
         {ipP > 0 && <div style={{ width: `${ipP}%`, background: 'var(--cp-blue)' }} />}
       </div>
       {showNumbers && (
-        <span className="text-[#64748B] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontFamily: "'JetBrains Mono', monospace", whiteSpace: 'nowrap' }}>
+        <span className="text-[#64748B] dark:text-[#A1A1A1]" style={{ fontSize: 10, fontFamily: 'var(--cp-font-mono)', whiteSpace: 'nowrap' }}>
           {done}/{inProgress}/{todo}
         </span>
       )}

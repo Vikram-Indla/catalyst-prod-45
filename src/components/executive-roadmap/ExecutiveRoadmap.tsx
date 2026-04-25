@@ -460,7 +460,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       )}
       style={{
         direction: isRTL ? 'rtl' : 'ltr',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         backgroundColor: 'hsl(var(--roadmap-ivory))'
       }}
     >

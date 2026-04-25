@@ -134,7 +134,7 @@ export function SidebarProjectNav({
       style={{
         width: collapsed ? 56 : 220,
         transition: 'width 200ms ease',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         position: 'relative',
       }}
     >
@@ -146,7 +146,7 @@ export function SidebarProjectNav({
             style={{
               width: 30, height: 30, backgroundColor: projectColor, color: '#FFFFFF',
               fontSize: 11, fontWeight: 700, borderRadius: 6,
-              fontFamily: "'Sora', sans-serif", boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+              fontFamily: 'var(--cp-font-heading)', boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
             }}
           >
             {projectKey.slice(0, 2)}
@@ -161,7 +161,7 @@ export function SidebarProjectNav({
               >
                 <div className="min-w-0">
                   <div className="text-[#6B778C] dark:text-[#878787]" style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: '0.03em', textTransform: 'uppercase' }}>{projectKey}</div>
-                  <div className="truncate text-[#172B4D] dark:text-[#EDEDED]" style={{ fontSize: 14, fontWeight: 600, fontFamily: "'Sora', sans-serif", lineHeight: '18px' }}>
+                  <div className="truncate text-[#172B4D] dark:text-[#EDEDED]" style={{ fontSize: 14, fontWeight: 600, fontFamily: 'var(--cp-font-heading)', lineHeight: '18px' }}>
                     {projectName}
                   </div>
                 </div>
@@ -273,7 +273,7 @@ export function SidebarProjectNav({
               <span className="dark:text-[#7D7D7D]" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#6B778C' }}>
                 Recents
               </span>
-              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+              <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: 'var(--cp-font-mono)' }}>
                 {recentItems.length}
               </span>
             </button>
@@ -299,13 +299,13 @@ export function SidebarProjectNav({
                       onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                       <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: typeColor, flexShrink: 0 }} />
-                      <span style={{ fontSize: 11.5, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: "'JetBrains Mono', monospace", flexShrink: 0, letterSpacing: '-0.02em' }}>
+                      <span style={{ fontSize: 11.5, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: 'var(--cp-font-mono)', flexShrink: 0, letterSpacing: '-0.02em' }}>
                         {item.entity_key}
                       </span>
                       <span style={{ fontSize: 12, fontWeight: 400, color: isDark ? '#878787' : '#6B778C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
                         {item.display_summary}
                       </span>
-                      <span className="group-hover:hidden" style={{ fontSize: 10, fontWeight: 500, color: isDark ? '#7D7D7D' : '#94A3B8', flexShrink: 0, fontFamily: "'JetBrains Mono', monospace" }}>
+                      <span className="group-hover:hidden" style={{ fontSize: 10, fontWeight: 500, color: isDark ? '#7D7D7D' : '#94A3B8', flexShrink: 0, fontFamily: 'var(--cp-font-mono)' }}>
                         {formatTimeAgo(item.visited_at)}
                       </span>
                       <button

@@ -189,7 +189,7 @@ export function ExecutionSidebar({
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', fontFamily: 'JetBrains Mono, monospace' }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>
                         {defect.defect_key}
                       </span>
                       <span style={{

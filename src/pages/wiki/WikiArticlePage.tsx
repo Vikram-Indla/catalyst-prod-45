@@ -80,7 +80,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
       position: 'fixed', top: 0, right: 0, bottom: 0, width: 400, zIndex: 200,
       background: isDark ? '#1A1A1A' : '#FFFFFF', borderLeft: isDark ? '1px solid #2E2E2E' : '1px solid rgba(15,23,42,0.12)',
       boxShadow: isDark ? '-8px 0 24px rgba(0,0,0,0.3)' : '-8px 0 24px rgba(15,23,42,0.08)',
-      display: 'flex', flexDirection: 'column', fontFamily: 'Inter, sans-serif',
+      display: 'flex', flexDirection: 'column', fontFamily: 'var(--cp-font-body)',
     }}>
       {/* Header */}
       <div style={{
@@ -89,7 +89,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <History size={16} style={{ color: '#2563EB' }} />
-          <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Version History</span>
+          <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A' }}>Version History</span>
           <span style={{
             fontSize: 10, fontWeight: 650, padding: '2px 6px', borderRadius: 9999,
             background: isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF', color: '#2563EB',
@@ -120,7 +120,7 @@ function VersionHistoryPanel({ versions, onRestore, onClose }: {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span style={{
-                  fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 700,
+                  fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 700,
                   color: i === 0 ? '#2563EB' : isDark ? '#A1A1A1' : '#64748B',
                   padding: '2px 6px', borderRadius: 4,
                   background: i === 0 ? (isDark ? 'rgba(37,99,235,0.12)' : '#EFF6FF') : (isDark ? '#1A1A1A' : '#F1F5F9'),
@@ -226,7 +226,7 @@ function CrossModuleLinks({ links }: { links: any[] }) {
                 fontSize: 9, fontWeight: 700, padding: '1px 4px', borderRadius: 4,
                 background: `${mod.color}15`, color: mod.color,
               }}>{mod.label}</span>
-              <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, fontWeight: 700 }}>
+              <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, fontWeight: 700 }}>
                 {link.target_id}
               </span>
               {link.target_title && (
@@ -343,9 +343,9 @@ export default function WikiArticlePage() {
   /* ── Not found ── */
   if (error || !page) {
     return (
-      <div style={{ fontFamily: 'Inter, sans-serif', padding: 80, textAlign: 'center', background: isDark ? '#0A0A0A' : undefined, minHeight: '100%' }}>
+      <div style={{ fontFamily: 'var(--cp-font-body)', padding: 80, textAlign: 'center', background: isDark ? '#0A0A0A' : undefined, minHeight: '100%' }}>
         <div style={{ fontSize: 48, marginBottom: 12 }}>📄</div>
-        <div style={{ fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Article not found</div>
+        <div style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', marginBottom: 8 }}>Article not found</div>
         <div style={{ fontSize: 13, color: isDark ? '#A1A1A1' : '#64748B', marginBottom: 16 }}>The article you're looking for doesn't exist or has been removed.</div>
         <button onClick={() => navigate('/wiki')} style={{
           fontSize: 12, fontWeight: 650, padding: '8px 20px', borderRadius: 6,
@@ -388,36 +388,36 @@ export default function WikiArticlePage() {
     { label: 'Hub', value: info.hub, show: !!info.hub },
     { label: 'Project', value: info.project, show: !!info.project },
     { label: 'Epic', value: info.epicKey ? (
-      <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'JetBrains Mono, monospace' }}>{info.epicKey}</span>
+      <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{info.epicKey}</span>
     ) : null, show: !!info.epicKey },
     { label: 'Stories', value: info.totalStories ? (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{info.doneStories ?? 0}/{info.totalStories} done</span>
         <div style={{ width: 40, height: 3, borderRadius: 4, background: isDark ? '#292929' : '#E2E8F0' }}>
           <div style={{ height: '100%', borderRadius: 4, background: '#2563EB', width: `${info.donePercent ?? 0}%` }} />
         </div>
       </div>
     ) : null, show: !!info.totalStories },
     { label: 'Done %', value: info.donePercent != null ? (
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.donePercent >= 80 ? '#FFFFFF' : '#FFFFFF' }}>{info.donePercent}%</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.donePercent >= 80 ? '#FFFFFF' : '#FFFFFF' }}>{info.donePercent}%</span>
     ) : null, show: info.donePercent != null },
     { label: 'Open Defects', value: info.openDefects != null ? (
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: info.openDefects > 0 ? '#DC2626' : (isDark ? '#A1A1A1' : '#64748B') }}>{info.openDefects}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: info.openDefects > 0 ? '#DC2626' : (isDark ? '#A1A1A1' : '#64748B') }}>{info.openDefects}</span>
     ) : null, show: info.openDefects != null },
     { label: 'Sprint', value: info.currentSprint, show: !!info.currentSprint },
     { label: 'Owner', value: info.owner ? <span style={{ fontWeight: 600 }}>{info.owner}</span> : null, show: !!info.owner },
     { label: 'BRD', value: info.brdVersion, show: !!info.brdVersion },
     { label: 'Documents', value: info.documentsCount ? (
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11 }}>{info.documentsCount}</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11 }}>{info.documentsCount}</span>
     ) : null, show: !!info.documentsCount },
     { label: 'Last Sync', value: info.lastSync ? timeAgo(info.lastSync) : null, show: !!info.lastSync },
     { label: 'AI Confidence', value: (
-      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, fontWeight: 600, color: confColor }}>{conf}%</span>
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, fontWeight: 600, color: confColor }}>{conf}%</span>
     ), show: true },
   ].filter(r => r.show);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', color: isDark ? '#EDEDED' : '#0F172A', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%' }}>
       {/* Scroll progress bar */}
       <div style={{
         position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100,
@@ -444,7 +444,7 @@ export default function WikiArticlePage() {
           {/* Main content */}
           <article>
             {/* Title */}
-            <h1 style={{ fontFamily: 'Sora, sans-serif', fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px' }}>{title}</h1>
+            <h1 style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 28, fontWeight: 700, color: isDark ? '#EDEDED' : '#0F172A', margin: '0 0 12px' }}>{title}</h1>
 
             {/* Metadata row */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
@@ -456,7 +456,7 @@ export default function WikiArticlePage() {
                 }}><Sparkles size={9} /> AI {conf}%</span>
               )}
               {formatIcon}
-              <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'JetBrains Mono, monospace' }}>
+              <span style={{ fontSize: 11, color: isDark ? '#A1A1A1' : '#64748B', display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'var(--cp-font-mono)' }}>
                 <GitBranch size={11} /> v{page.version ?? 1}
               </span>
               {readTime && (
@@ -569,7 +569,7 @@ export default function WikiArticlePage() {
                     display: 'block', fontSize: 12, color: '#2563EB', padding: '3px 0',
                     textDecoration: 'none',
                   }}>
-                    <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : '#94A3B8', marginRight: 8 }}>{i + 1}.</span>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? '#878787' : '#94A3B8', marginRight: 8 }}>{i + 1}.</span>
                     {s.title}
                   </a>
                 ))}
@@ -580,10 +580,10 @@ export default function WikiArticlePage() {
             {sections.map((s: any, i: number) => (
               <div key={s.id} id={`section-${i}`} style={{ marginBottom: 32 }}>
                 <h2 style={{
-                  fontFamily: 'Sora, sans-serif', fontSize: 18, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A',
+                  fontFamily: 'var(--cp-font-heading)', fontSize: 18, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A',
                   margin: '0 0 12px', display: 'flex', alignItems: 'center', gap: 8,
                 }}>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 14, color: isDark ? '#878787' : '#94A3B8' }}>{i + 1}.</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: isDark ? '#878787' : '#94A3B8' }}>{i + 1}.</span>
                   {s.title}
                   {s.is_live_data && (
                     <span style={{
@@ -643,7 +643,7 @@ export default function WikiArticlePage() {
                     fontSize: 10, fontWeight: 650, padding: '2px 8px', borderRadius: 9999,
                     background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED', display: 'inline-flex', alignItems: 'center', gap: 3,
                   }}><Sparkles size={9} /> AI {conf}%</span>
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? '#A1A1A1' : '#64748B' }}>
                     {Math.round((page.source_coverage ?? 0) * 100)}% coverage
                   </span>
                 </div>
@@ -655,7 +655,7 @@ export default function WikiArticlePage() {
               <div style={{ marginTop: 40 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                   <div style={{ width: 3, height: 16, borderRadius: 4, background: '#2563EB' }} />
-                  <span style={{ fontFamily: 'Sora, sans-serif', fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>Related Articles</span>
+                  <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 16, fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A' }}>Related Articles</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 12 }}>
                   {(related ?? []).map((r: any) => (
@@ -749,9 +749,9 @@ function ReferencesSection({ refs }: { refs: any[] }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {refs.map((r: any) => (
         <div key={r.ref_number ?? r.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
-          <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: isDark ? '#878787' : '#94A3B8', minWidth: 24 }}>[{r.ref_number}]</span>
+          <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 10, color: isDark ? '#878787' : '#94A3B8', minWidth: 24 }}>[{r.ref_number}]</span>
           {r.source_type === 'jira' ? (
-            <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'JetBrains Mono, monospace' }}>{r.source_key}</span>
+            <span style={{ fontSize: 11, fontWeight: 650, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{r.source_key}</span>
           ) : r.source_type === 'document' ? (
             <span style={{ fontSize: 11, fontWeight: 650, padding: '2px 6px', borderRadius: 4, background: isDark ? 'rgba(124,58,237,0.12)' : '#F5F3FF', color: '#7C3AED' }}>{r.source_key}</span>
           ) : (
@@ -768,7 +768,7 @@ function ReferencesSection({ refs }: { refs: any[] }) {
 function ArticleSkeleton() {
   const { isDark } = useTheme();
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '20px 40px 48px' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', background: isDark ? '#0A0A0A' : '#F8FAFC', minHeight: '100%', padding: '20px 40px 48px' }}>
       <Sk w={200} h={14} style={{ marginBottom: 24 }} isDark={isDark} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 32 }}>
         <div>

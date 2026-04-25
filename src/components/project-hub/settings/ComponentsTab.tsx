@@ -59,7 +59,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
   const inputStyle: React.CSSProperties = {
     height: 50, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
-    borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
+    borderRadius: 6, outline: 'none', fontFamily: 'var(--cp-font-body)',
     flex: 1, minWidth: 0,
     transition: 'border-color 150ms, box-shadow 150ms',
   };
@@ -75,7 +75,7 @@ export function ComponentsTab({ projectId }: ComponentsTabProps) {
       ) : components.length === 0 ? (
         <div className="flex flex-col items-center py-8" style={{ color: 'var(--divider)' }}>
           <Puzzle size={32} strokeWidth={1.25} />
-          <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', marginTop: 12, fontFamily: "'Sora', sans-serif" }}>No components yet</p>
+          <p style={{ fontSize: 18, fontWeight: 600, color: 'var(--fg-1)', marginTop: 12, fontFamily: 'var(--cp-font-heading)' }}>No components yet</p>
           <p style={{ fontSize: 14, color: 'var(--fg-3)', marginTop: 4, textAlign: 'center', maxWidth: 320 }}>
             Components represent areas like Backend, Frontend, API.
           </p>

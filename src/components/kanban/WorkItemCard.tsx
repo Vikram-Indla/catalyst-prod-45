@@ -157,7 +157,7 @@ export function WorkItemCard({
                   lineHeight: `${d.titleSize + 6}px`,
                   color: tk.textPrimary,
                   fontWeight: 500,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                   background: tk.cardBg,
                   border: `2px solid ${tk.selectedAccent}`,
                   borderRadius: 4,
@@ -211,7 +211,7 @@ export function WorkItemCard({
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               wordBreak: 'break-word',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}>
               {issue.summary}
             </div>
@@ -300,7 +300,7 @@ export function WorkItemCard({
         {vf?.workItemKey !== false && (
           <span style={{
             fontSize: d.metaSize + 1, fontWeight: 500,
-            color: tk.textMuted, fontFamily: "'JetBrains Mono', monospace",
+            color: tk.textMuted, fontFamily: 'var(--cp-font-mono)',
             lineHeight: '14px',
           }}>
             {issue.issueKey}

@@ -122,9 +122,9 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
         position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 440, background: 'var(--cp-float)', borderRadius: 8, zIndex: 90,
         padding: 24, border: '0.75px solid var(--divider)',
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}>
-        <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 16px', fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 16, fontWeight: 650, color: 'var(--fg-1)', margin: '0 0 16px', fontFamily: 'var(--cp-font-heading)' }}>
           Publish Epics to Project
         </h3>
 
@@ -144,7 +144,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
                 style={{
                   flex: 1, border: 'none', outline: 'none', fontSize: 13,
                   color: 'var(--fg-1)', background: 'transparent',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}
               />
             </div>
@@ -196,7 +196,7 @@ export default function RAPublishEpicsModal({ brdId, epics, onClose, onPublished
               {epics.map(e => (
                 <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '4px 0' }}>
                   <span style={{
-                    fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
+                    fontFamily: 'var(--cp-font-mono)', fontSize: 10,
                     color: 'var(--fg-2)', background: '#F1F5F9', padding: '1px 6px', borderRadius: 4,
                   }}>{e.ra_tag || '—'}</span>
                   <span style={{ fontSize: 12, color: 'var(--fg-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

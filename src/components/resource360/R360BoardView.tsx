@@ -119,7 +119,7 @@ export const R360BoardView: React.FC<Props> = ({ items, onItemClick, memberName 
 
                   {/* Top: Key + Project + Age */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
-                    <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                    <span style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                     {item.project_key && (
                       <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', color: '#FFF', background: projColor }}>{item.project_key}</span>
                     )}

@@ -34,7 +34,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   min-height: 100vh;
-  font-family: 'Sora', 'Plus Jakarta Sans', -apple-system, sans-serif;
+  font-family: var(--cp-font-heading);
   background: #fff;
 }
 
@@ -126,7 +126,7 @@
 }
 
 .hero-wordmark {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cp-font-heading);
   font-size: 3rem;
   font-weight: 800;
   color: #fff;
@@ -136,7 +136,7 @@
 }
 
 .hero-subbrand {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cp-font-heading);
   font-size: 0.72rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.7);
@@ -154,7 +154,7 @@
 }
 
 .hero-tagline {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--cp-font-heading);
   font-size: 1.15rem;
   font-weight: 400;
   color: rgba(255, 255, 255, 0.85);

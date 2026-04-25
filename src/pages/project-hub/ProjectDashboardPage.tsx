@@ -32,7 +32,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AtlaskitPageShell, Button } from '@/components/ads';
 import DashboardWidgetGrid, { useDashboardWidgetConfig } from '@/components/project-hub/dashboard/DashboardWidgetGrid';
 import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGalleryModal';
-import DashboardDatePicker from '@/components/project-hub/dashboard/DashboardDatePicker';
+// DashboardDatePicker removed — date filter is now per-gadget via gear panel.
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 
 export default function ProjectDashboardPage() {
@@ -69,7 +69,6 @@ function ProjectDashboardPageInner() {
 
   const actions = (
     <>
-      <DashboardDatePicker />
       <Button
         appearance="subtle"
         spacing="compact"

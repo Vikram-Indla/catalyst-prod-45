@@ -56,7 +56,7 @@ export function Resource360Chronology({ items, onItemClick }: Props) {
   const clearAll = () => { setHubFilter('all'); setStatusFilter('all'); setPriorityFilter('all'); setAssignerFilter('all'); setDateFrom(''); setDateTo(''); setShowPendingOnly(false); setSearchTerm(''); };
 
   return (
-    <div style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)' }}>
       {/* FILTER BAR */}
       <div style={{ padding: '8px 16px', borderBottom: `1px solid ${T.border}`, background: T.surface }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>

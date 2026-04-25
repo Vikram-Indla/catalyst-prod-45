@@ -38,7 +38,7 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
   const inputStyle: React.CSSProperties = {
     width: '100%', height: 40, padding: '8px 12px', fontSize: 13,
     color: 'var(--fg-1)', border: '1px solid var(--divider)',
-    borderRadius: 6, outline: 'none', fontFamily: "'Inter', sans-serif",
+    borderRadius: 6, outline: 'none', fontFamily: 'var(--cp-font-body)',
   };
 
   return (
@@ -46,11 +46,11 @@ export function DeleteStatusModal({ open, statusName, itemCount, otherStatuses, 
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50"
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: "'Inter', sans-serif" }}>
+      <div className="bg-[var(--cp-float)] dark:bg-[#1A1A1A]" style={{ width: 440, borderRadius: 12, padding: 24, boxShadow: '0 20px 25px -5px rgba(0,0,0,.1)', fontFamily: 'var(--cp-font-body)' }}>
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <AlertTriangle size={18} color="var(--sem-danger)" strokeWidth={2} />
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: "'Sora', sans-serif" }}>Delete Status</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)' }}>Delete Status</h3>
           </div>
           <button onClick={onClose} className="flex items-center justify-center rounded-md hover:bg-[var(--cp-bd-zone)] transition-colors" style={{ width: 28, height: 28, border: 'none', background: 'transparent', cursor: 'pointer' }}>
             <X size={16} color="var(--fg-3)" />

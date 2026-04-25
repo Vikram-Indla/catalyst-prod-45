@@ -65,7 +65,7 @@ export default function RAGenerationBar({ slots, artifactCounts, isProcessing, e
       </div>
       {/* Label */}
       {labelText ? (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: labelColor, whiteSpace: 'nowrap' }}>
+        <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 11, color: labelColor, whiteSpace: 'nowrap' }}>
           {labelText}
         </span>
       ) : (

@@ -217,7 +217,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
         <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: isDark ? '#7D7D7D' : '#6B778C' }}>
           Recents
         </span>
-        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ marginLeft: 'auto', fontSize: 10, fontWeight: 600, color: isDark ? '#7D7D7D' : '#94A3B8', fontFamily: 'var(--cp-font-mono)' }}>
           {recentItems.length}
         </span>
       </button>
@@ -239,7 +239,7 @@ function ModuleLevelSidebar({ expanded, onToggle, className, favouritesSection }
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
               <span style={{ width: 8, height: 8, borderRadius: 2, background: issueTypeColor(item.entity_type), flexShrink: 0 }} />
-              <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: "'JetBrains Mono', monospace", flexShrink: 0 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, color: isDark ? '#A1A1A1' : '#42526E', fontFamily: 'var(--cp-font-mono)', flexShrink: 0 }}>
                 {item.entity_key}
               </span>
               <span style={{

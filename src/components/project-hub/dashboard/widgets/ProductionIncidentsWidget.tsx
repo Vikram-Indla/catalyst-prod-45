@@ -18,6 +18,7 @@ import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
+import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
@@ -30,7 +31,11 @@ import {
 } from '@/components/ads';
 
 export default function ProductionIncidentsWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: incidents, isLoading } = useDashboardIncidents(projectId, projectKey);
+  const { settings } = useGadgetSettings('incidents', projectKey);
+  const { data: incidents, isLoading } = useDashboardIncidents(projectId, projectKey, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const { openUWV } = useUWV();
 
   const footer = (

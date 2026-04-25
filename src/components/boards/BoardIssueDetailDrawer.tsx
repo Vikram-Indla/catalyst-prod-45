@@ -271,7 +271,7 @@ function OverviewTab({ issue }: { issue: any }) {
 
       {/* Description */}
       <div>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>
           Description
         </h3>
         <div style={{
@@ -285,7 +285,7 @@ function OverviewTab({ issue }: { issue: any }) {
 
       {/* Comments placeholder */}
       <div>
-        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 8, fontFamily: "'Sora', sans-serif" }}>
+        <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--fg-1)', marginBottom: 8, fontFamily: 'var(--cp-font-heading)' }}>
           Comments <span style={{ fontWeight: 400, color: 'var(--fg-4)' }}>(0)</span>
         </h3>
         <div style={{ borderTop: '1px solid var(--divider)', paddingTop: 12 }}>
@@ -296,7 +296,7 @@ function OverviewTab({ issue }: { issue: any }) {
               style={{
                 flex: 1, padding: '8px 12px', borderRadius: 6,
                 border: '1px solid var(--divider)', fontSize: 13, outline: 'none',
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}
               disabled
             />
@@ -339,7 +339,7 @@ function DetailsTab({ issue }: { issue: any }) {
             <div key={f.label} className={`idp-field-cell ${isOdd ? 'idp-field-cell--odd' : ''} ${isLastRow ? 'idp-field-cell--last' : ''}`}>
               <div className="idp-field-label">{f.label}</div>
               <div className="idp-field-value">
-                <span style={{ fontSize: 13, fontWeight: 500, color: f.value ? 'var(--fg-1)' : 'var(--fg-4)', fontFamily: f.label.includes('Key') ? "'JetBrains Mono', monospace" : 'inherit' }}>
+                <span style={{ fontSize: 13, fontWeight: 500, color: f.value ? 'var(--fg-1)' : 'var(--fg-4)', fontFamily: f.label.includes('Key') ? 'var(--cp-font-mono)' : 'inherit' }}>
                   {f.value || '—'}
                 </span>
               </div>

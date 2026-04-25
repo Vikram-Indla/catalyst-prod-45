@@ -77,7 +77,7 @@ export function ThemeDetail() {
   const dateRange = startStr && endStr ? `${startStr} — ${endStr}` : startStr || endStr || 'No dates set';
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1100, margin: '0 auto', fontFamily: 'var(--wh-font-sans, Inter, sans-serif)' }}>
+    <div style={{ padding: '24px 32px', maxWidth: 1100, margin: '0 auto', fontFamily: 'var(--cp-font-body)' }}>
       {/* Breadcrumb */}
       <button
         onClick={() => navigate('/projecthub/themes')}
@@ -98,7 +98,7 @@ export function ThemeDetail() {
           <span style={{ width: 12, height: 12, borderRadius: '50%', background: theme.color, flexShrink: 0 }} />
           <h1 style={{
             fontSize: 24, fontWeight: 700, margin: 0,
-            fontFamily: 'var(--wh-font-display, Sora, sans-serif)',
+            fontFamily: 'var(--cp-font-heading)',
             color: 'var(--fg-1)',
           }}>
             {theme.name}

@@ -118,7 +118,7 @@ function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }
   return (
     <div className="flex items-center gap-2 pt-4 pb-3 border-t" style={{ borderColor: T.border, marginTop: 4 }}>
       <span style={{ color: T.inkSec, display: 'flex' }}>{icon}</span>
-      <span style={{ fontSize: 13, fontWeight: 700, color: T.inkSec, fontFamily: "'Inter',sans-serif", letterSpacing: '.02em' }}>{label}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, color: T.inkSec, fontFamily: 'var(--cp-font-body)', letterSpacing: '.02em' }}>{label}</span>
     </div>
   );
 }
@@ -267,7 +267,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
         zIndex: 610, width: 580, maxHeight: '90vh', display: 'flex', flexDirection: 'column',
         background: T.surface, borderRadius: 16,
         boxShadow: '0 24px 80px rgba(0,0,0,.18)',
-        fontFamily: "'Inter',-apple-system,'Segoe UI',system-ui,sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         animation: `${closing ? 'niSlideOut 200ms' : 'niSlideIn 250ms'} cubic-bezier(.4,0,.2,1) forwards`,
       }}>
 
@@ -275,12 +275,12 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
         <div style={{ padding: '20px 24px 16px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: "'Sora',sans-serif", letterSpacing: '-.02em' }}>New Initiative</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Initiative</div>
               {nextKey && (
                 <div style={{
                   display: 'inline-block', marginTop: 6, fontSize: 12, fontWeight: 600,
                   color: T.primary, background: T.primaryBg, padding: '2px 10px',
-                  borderRadius: 4, fontFamily: "'JetBrains Mono',monospace", lineHeight: '20px',
+                  borderRadius: 4, fontFamily: 'var(--cp-font-mono)', lineHeight: '20px',
                 }}>{nextKey}</div>
               )}
             </div>
@@ -303,7 +303,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                 <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
               </div>
               <div className="text-[12px] mt-1" style={{ color: 'var(--fg-2)' }}>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
+                <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
                 {' · '}{conversionSource.primaryIdea.title}
               </div>
             </div>
@@ -314,11 +314,11 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
                 <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
               </div>
               <div className="text-[12px] mt-1" style={{ color: 'var(--fg-2)' }}>
-                Primary: <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
+                Primary: <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
                 {' · '}{conversionSource.primaryIdea.title}
               </div>
               <div className="text-[12px] mt-0.5" style={{ color: 'var(--fg-2)' }}>
-                Merging: <span style={{ fontFamily: "'JetBrains Mono',monospace", fontWeight: 600, color: T.primary }}>{conversionSource.mergeIdea.key}</span>
+                Merging: <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: T.primary }}>{conversionSource.mergeIdea.key}</span>
                 {' · '}{conversionSource.mergeIdea.title}
               </div>
             </div>
@@ -395,17 +395,17 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           <div className="grid grid-cols-2 gap-4">
             <FieldWrapper label="Kickoff Date">
               <input type="date" value={form.kickoff_date} onChange={e => updateField('kickoff_date', e.target.value)}
-                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: "'JetBrains Mono',monospace" }} />
+                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: 'var(--cp-font-mono)' }} />
             </FieldWrapper>
             <FieldWrapper label="Target Complete">
               <input type="date" value={form.target_complete} onChange={e => updateField('target_complete', e.target.value)}
-                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: "'JetBrains Mono',monospace" }} />
+                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: 'var(--cp-font-mono)' }} />
             </FieldWrapper>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <FieldWrapper label="Business Ask Date">
               <input type="date" value={form.business_ask_date} onChange={e => updateField('business_ask_date', e.target.value)}
-                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: "'JetBrains Mono',monospace" }} />
+                className={cn(INPUT_CLS, 'appearance-none')} style={{ borderColor: T.border, fontFamily: 'var(--cp-font-mono)' }} />
             </FieldWrapper>
             <div />
           </div>

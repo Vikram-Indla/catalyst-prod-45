@@ -14,7 +14,7 @@ export default function SectionHeader({ label }: SectionHeaderProps) {
       zIndex: 10,
       background: isDark ? '#0A0A0A' : '#FFFFFF',
       padding: '12px 16px 4px',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--cp-font-body)',
       fontSize: 11,
       fontWeight: 500,
       color: isDark ? '#878787' : '#94A3B8',

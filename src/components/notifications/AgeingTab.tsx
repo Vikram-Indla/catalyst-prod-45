@@ -182,7 +182,7 @@ function StatusLozenge({ status }: { status: StatusType }) {
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       letterSpacing: '0.03em', borderRadius: 3, padding: '0 7px',
       background: bg, color: fg, whiteSpace: 'nowrap',
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--cp-font-body)',
     }}>
       {status}
     </span>
@@ -271,7 +271,7 @@ function GroupHeader({ label, count, isOpen, onToggle, accentColor }: {
             background: ADS.surfaceSunken,
             borderBottom: `1px solid ${ADS.border}`,
             borderLeft: `3px solid ${accentColor}`,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           {isOpen
@@ -421,7 +421,7 @@ function GovernanceRagPill({ onCleanupClick }: { onCleanupClick: () => void }) {
           borderRadius: 20, padding: '3px 10px',
           fontSize: 11, fontWeight: 700,
           background: cfg.bg, border: `1px solid ${cfg.border}`, color: cfg.color,
-          cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+          cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
           letterSpacing: '0.04em',
         }}
       >
@@ -631,7 +631,7 @@ export default function AgeingTab({ onClose }: { onClose?: () => void }) {
   }, [filtered]);
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)', display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Toolbar — /design-critique callout ①: 20px paddingInline lifts the
           visual crunch; the subtle neutral border comes from the ADS token. */}
       <div style={{
@@ -902,7 +902,7 @@ function StatChip({ label, value, intent }: { label: string; value: string | num
       <span style={{
         fontSize: 16, fontWeight: 700, color: numericColor,
         fontVariantNumeric: 'tabular-nums',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
       }}>
         {value}
       </span>

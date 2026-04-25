@@ -35,7 +35,7 @@ function Badge({ name }: { name: string }) {
 
 export function TypeHierarchy({ featureLayerEnabled }: TypeHierarchyProps) {
   const connectorStyle: React.CSSProperties = {
-    fontFamily: "'JetBrains Mono', monospace",
+    fontFamily: 'var(--cp-font-mono)',
     fontSize: 13,
     color: 'var(--divider)',
     userSelect: 'none',

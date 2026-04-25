@@ -215,7 +215,7 @@ function SectionLabel({ icon, label, isDark }: { icon: React.ReactNode; label: s
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
       {icon}
-      <span style={{ fontFamily: "'Sora', sans-serif", fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{label}</span>
+      <span style={{ fontFamily: 'var(--cp-font-heading)', fontSize: 14, fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A' }}>{label}</span>
     </div>
   );
 }
