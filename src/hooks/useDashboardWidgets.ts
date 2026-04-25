@@ -608,13 +608,15 @@ export function useDashboardReleaseHealth(
       if (relHealthRelError) throw relHealthRelError;
       if (!releases?.length) return [];
 
-      // 🛡️ 2026 GUARDRAIL on issues
+      // NOTE: No date guardrail on ph_issues here — the 2026 scope is enforced
+      // by rh_releases.target_date above. Filtering issues by jira_created_at /
+      // jira_updated_at silently drops items linked to in-scope releases that
+      // were last touched in 2025, causing gadget/UWV count mismatch.
       const { data: issues, error: relHealthIssError } = await supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'));
+        .is('deleted_at', null);
       if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {
