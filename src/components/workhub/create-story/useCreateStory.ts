@@ -278,6 +278,24 @@ export function useCreateStoryMutation() {
         console.warn('[CreateStory] Failed to log activity:', actErr);
       }
 
+      // ── Parent link via ph_issue_links ────────────────────────────────────
+      // form.parentId now holds the parent Epic's issue_key (e.g. "BAU-123").
+      // We record the relationship as: <new story> child of <parent epic>.
+      if (form.parentId && form.parentId.trim()) {
+        try {
+          const { error: linkErr } = await supabase.from('ph_issue_links').insert({
+            source_id: issueKey,
+            target_id: form.parentId,
+            link_type: 'child of',
+          } as any);
+          if (linkErr) {
+            console.warn('[CreateStory] Failed to write parent link:', linkErr.message);
+          }
+        } catch (linkCatch) {
+          console.warn('[CreateStory] Parent link insert threw:', linkCatch);
+        }
+      }
+
       return data;
     },
     onSuccess: (_data, variables) => {
