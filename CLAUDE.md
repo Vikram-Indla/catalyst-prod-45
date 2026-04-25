@@ -24,7 +24,10 @@ Backend:    Supabase (PostgreSQL + Edge Functions + Auth)
 Data:       TanStack Query (React Query)
 Icons:      Lucide React for UI chrome; canonical SVGs for work-item types (see §11)
 Builder:    Lovable AI (Claude Code now assists/replaces for fixes)
-Fonts:      Sora (headings) · Inter (body/UI) · JetBrains Mono (data)
+Fonts:      Charlie Display (headings) · Charlie Text (body/UI) · Charlie Code (data)
+            Served via Atlassian DS CDN (@font-face in index.html). Arabic i18n: IBM Plex
+            Sans Arabic + Noto Naskh Arabic (Google Fonts). Any other literal font-family
+            in the codebase outside @font-face is a P0 bug.
 
 Atlassian Design System / Atlaskit:
   Active migration target. Catalyst is being migrated to @atlaskit/* and the
@@ -231,12 +234,13 @@ Shadow:         NONE (border only, no table shadow)
 ### Typography (Locked)
 
 ```
-Headings:      Sora
-Body/UI:       Inter
-Data/Mono:     JetBrains Mono
+Headings:      Charlie Display, system-ui, -apple-system, sans-serif
+Body/UI:       Charlie Text,    system-ui, -apple-system, sans-serif
+Data/Mono:     Charlie Code,    ui-monospace, monospace
 Body emphasis: font-weight 650 (NOT 700)
 Display/Hero:  font-weight 700
 Uppercase:     table headers + sidebar section labels ONLY
+Token source:  --cp-font-heading / --cp-font-body / --cp-font-mono (always use tokens, never literals)
 ```
 
 ---
@@ -282,7 +286,8 @@ These are NON-SEMANTIC structural identifiers. They must NEVER be confused with 
 ❌ HSL color values anywhere in code (use hex only)
 ❌ Native <select> elements (use shadcn/ui Select)
 ❌ Saturated status pills (only the 3-colour guardrail above)
-❌ System fonts (always Sora/Inter/JetBrains Mono)
+❌ Literal font-family values outside @font-face — always use --cp-font-* tokens
+❌ System fonts (Charlie Display/Text/Code via ADS CDN are the only valid fonts)
 ❌ Dark mode in light-mode demos/screenshots
 ❌ Zebra striping on tables
 ❌ Card wrappers around tables

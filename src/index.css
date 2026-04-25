@@ -273,9 +273,9 @@
   --src-jira-bg: #FFF7ED;
   --src-jira-text: #9A3412;
   --src-jira-border: #FED7AA;
-  --cp-font-heading: 'Charlie Display', 'Sora',           system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --cp-font-body:    'Charlie Text',    'Inter',          system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --cp-font-mono:    'Charlie Code',    'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --cp-font-heading: 'Charlie Display', system-ui, -apple-system, sans-serif;
+  --cp-font-body:    'Charlie Text',    system-ui, -apple-system, sans-serif;
+  --cp-font-mono:    'Charlie Code',    ui-monospace, monospace;
   --cp-size-table-row: 36px;
   --cp-layout-sidebar: 240px;
   --cp-layout-topnav: 56px;
