@@ -25,7 +25,11 @@ const STATUS_COLORS = {
 } as const;
 
 export default function ItemsByStatusWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: counts, isLoading } = useDashboardStatusCounts(projectId);
+  const { settings } = useGadgetSettings('items', projectKey);
+  const { data: counts, isLoading } = useDashboardStatusCounts(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const { todo = 0, inProgress = 0, done = 0, total = 0 } = counts ?? {};
 
   return (
