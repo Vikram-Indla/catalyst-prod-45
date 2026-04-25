@@ -85,6 +85,14 @@ export interface SidebarMenuItem {
   textBadge?: string;
   textBadgeVariant?: 'new' | 'beta' | 'info';
   alwaysStarred?: boolean;
+  /**
+   * Optional click handler — when provided, takes precedence over the
+   * default `handleNavigation(item.path)`. Added April 2026 so HomeSidebar
+   * "Pinned" rows can call `openDetail()` (drawer) instead of navigating
+   * to a route. Existing consumers ignore this prop and keep their
+   * navigation-by-path behaviour.
+   */
+  onClick?: () => void;
 }
 
 export interface SidebarSection {
@@ -381,7 +389,7 @@ function renderMenuItem(
 
   const menuButton = (
     <button
-      onClick={() => handleNavigation(item.path)}
+      onClick={() => (item.onClick ? item.onClick() : handleNavigation(item.path))}
       className="group w-full flex items-center border-none cursor-pointer transition-all relative"
       style={{
         height: '32px',

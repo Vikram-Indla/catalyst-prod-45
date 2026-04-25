@@ -424,12 +424,12 @@ export default {
          JetBrains Mono: Data, code, IDs, monospace content
          ═══════════════════════════════════════════════════════════════ */
       fontFamily: {
-        sans: ['"Inter"', "ui-sans-serif", "-apple-system", "system-ui", '"Segoe UI"', "sans-serif"],
-        heading: ['"Sora"', "ui-sans-serif", "-apple-system", "system-ui", "sans-serif"],
-        body: ['"Inter"', "ui-sans-serif", "-apple-system", "system-ui", "sans-serif"],
-        display: ['"Sora"', "ui-sans-serif", "-apple-system", "sans-serif"],
-        serif: ["Georgia", "'Times New Roman'", "serif"],
-        mono: ['"JetBrains Mono"', '"SF Mono"', "Monaco", "Consolas", "monospace"],
+        sans:    ["var(--ds-font-family-body)",       "system-ui", "-apple-system", "sans-serif"],
+        body:    ["var(--ds-font-family-body)",       "system-ui", "-apple-system", "sans-serif"],
+        heading: ["var(--ds-font-family-heading)",    "system-ui", "-apple-system", "sans-serif"],
+        display: ["var(--ds-font-family-heading)",    "system-ui", "-apple-system", "sans-serif"],
+        serif:   ["Georgia", "'Times New Roman'", "serif"],
+        mono:    ["var(--ds-font-family-monospaced)", "ui-monospace", "SF Mono", "monospace"],
       },
       
       fontSize: {

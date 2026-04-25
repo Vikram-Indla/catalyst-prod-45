@@ -181,7 +181,7 @@ export default function AllProjectsPage() {
         }
       />
 
-      <div className="flex-1 overflow-auto px-6 py-3 bg-slate-50 dark:!bg-[#0A0A0A] text-foreground">
+      <div className="flex-1 overflow-auto px-6 py-3 bg-white dark:!bg-[#0A0A0A] text-foreground">
         {/* Toolbar */}
         <div className="mb-2.5">
           <AllProjectsToolbar

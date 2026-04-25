@@ -31,16 +31,23 @@ export interface Hub {
 const iconProps = (label: string) => ({ label, size: 'medium' as const, primaryColor: 'currentColor' });
 const renderIcon = (Icon: React.ComponentType<any>, label: string) => createElement(Icon, iconProps(label));
 
+// Canonical hub names (CLAUDE.md §2 — Hub Architecture).
+// CamelCase labels are the brand-locked spelling that appears in the top
+// nav, the sidebar "Jump to" rail, breadcrumbs, and page titles. Paths
+// match the primary alias each hub registers; routeAliases below covers
+// the legacy short-form prefixes (/enterprise, /product, /project, ...)
+// so existing routes keep resolving while we converge on the canonical
+// path everywhere.
 export const HUBS: Hub[] = [
-  { id: 'enterprise', label: 'Enterprise Hub', path: '/enterprise', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'Enterprise Hub') },
-  { id: 'product', label: 'Product Room', path: '/product', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'Product Room') },
-  { id: 'project', label: 'Project', path: '/project', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'Project') },
-  { id: 'release', label: 'Release', path: '/release', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'Release') },
-  { id: 'test', label: 'Test', path: '/test', tileColor: 'green', glyph: renderIcon(TaskIcon, 'Test') },
-  { id: 'incident', label: 'Incident', path: '/incident', tileColor: 'red', glyph: renderIcon(WarningIcon, 'Incident') },
-  { id: 'task', label: 'Task', path: '/task', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'Task') },
-  { id: 'plan', label: 'Plan', path: '/plan', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'Plan') },
-  { id: 'wiki', label: 'Wiki', path: '/wiki', tileColor: 'lime', glyph: renderIcon(BookIcon, 'Wiki') },
+  { id: 'enterprise', label: 'StrategyHub', path: '/strategyhub', tileColor: 'purple', glyph: renderIcon(OfficeBuildingIcon, 'StrategyHub') },
+  { id: 'product', label: 'ProductHub', path: '/producthub', tileColor: 'blue', glyph: renderIcon(PortfolioIcon, 'ProductHub') },
+  { id: 'project', label: 'ProjectHub', path: '/project-hub', tileColor: 'teal', glyph: renderIcon(FolderIcon, 'ProjectHub') },
+  { id: 'release', label: 'ReleaseHub', path: '/release-hub/command-center', tileColor: 'orange', glyph: renderIcon(ShipIcon, 'ReleaseHub') },
+  { id: 'test', label: 'TestHub', path: '/testhub/dashboard', tileColor: 'green', glyph: renderIcon(TaskIcon, 'TestHub') },
+  { id: 'incident', label: 'IncidentHub', path: '/incident-hub', tileColor: 'red', glyph: renderIcon(WarningIcon, 'IncidentHub') },
+  { id: 'task', label: 'TaskHub', path: '/taskhub/boards', tileColor: 'yellow', glyph: renderIcon(CheckCircleIcon, 'TaskHub') },
+  { id: 'plan', label: 'PlanHub', path: '/planhub', tileColor: 'magenta', glyph: renderIcon(CalendarIcon, 'PlanHub') },
+  { id: 'wiki', label: 'WikiHub', path: '/wiki', tileColor: 'lime', glyph: renderIcon(BookIcon, 'WikiHub') },
 ];
 
 const routeAliases: Record<string, string[]> = {

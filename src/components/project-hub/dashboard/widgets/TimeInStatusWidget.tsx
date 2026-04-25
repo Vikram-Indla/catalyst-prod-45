@@ -1,13 +1,11 @@
 // @ts-nocheck
 /**
  * TimeInStatusWidget — placeholder (activates when lifecycle timestamps exist).
- *
- * Rewritten Apr 19, 2026 per docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 6.
- *   - Bespoke empty-state → <EmptyState>
  */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import { EmptyState } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 export default function TimeInStatusWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   return (
@@ -17,6 +15,7 @@ export default function TimeInStatusWidget({ projectId, projectKey, collapsed, o
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={2}
+      headerBadges={<WidgetGearButton gadgetType="workload" projectKey={projectKey} projectId={projectId} />}
     >
       <EmptyState
         size="compact"

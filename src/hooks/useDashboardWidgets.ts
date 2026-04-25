@@ -490,29 +490,61 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
 }
 
 // ─── Release Health (active release progress) ───
-export function useDashboardReleaseHealth(projectId: string | null | undefined) {
+//
+// Hybrid filter wiring (Apr 25, 2026):
+//   - Layer 1 (page-level date) → filterFrom/filterTo override the 2026
+//     guardrail when provided. When null, the existing 2026 window stays.
+//   - Layer 2 (gadget-level) → releaseFilter narrows the returned rows by
+//     release name; maxRows caps how many we return.
+export interface DashboardReleaseHealthFilters {
+  dateFrom?: string | null;
+  dateTo?: string | null;
+  releaseFilter?: string[];
+  maxRows?: number;
+}
+
+export function useDashboardReleaseHealth(
+  projectId: string | null | undefined,
+  filters: DashboardReleaseHealthFilters = {},
+) {
+  const { dateFrom = null, dateTo = null, releaseFilter = [], maxRows } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-release-health', projectId],
+    queryKey: ['ph-dashboard-release-health', projectId, dateFrom, dateTo, releaseFilter, maxRows],
     queryFn: async () => {
+      console.log('[ReleaseHealth] filter received:', filters);
+      console.log('[ReleaseHealth] dateFrom:', dateFrom, 'dateTo:', dateTo);
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // rh_releases.project_id references the canonical `projects` table, not
-      // `ph_projects`. Re-resolve via the project key — otherwise the .eq()
-      // silently returns zero rows and hides every 2026 SENAI BAU release.
       const canonicalProjectId = await getCanonicalProjectId(projectId!, pKey);
 
-      // 🛡️ 2026 GUARDRAIL — releases with target_date in 2026 OR updated in 2026.
-      const { data: releases, error: relHealthRelError } = await supabase
+      // Build the date predicate: page filter takes precedence; otherwise
+      // fall back to the 2026 guardrail.
+      const datePredicate =
+        dateFrom && dateTo
+          ? `and(target_date.gte.${dateFrom},target_date.lte.${dateTo}),` +
+            `and(updated_at.gte.${dateFrom},updated_at.lte.${dateTo})`
+          : `and(target_date.gte.${YEAR_2026_START.slice(0, 10)},target_date.lt.${YEAR_2026_END.slice(0, 10)}),` +
+            `and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`;
+
+      let q = supabase
         .from('rh_releases')
         .select('id, name, status, target_date, updated_at')
         .eq('project_id', canonicalProjectId)
-        .neq('status', 'done')
-        .or(
-          `and(target_date.gte.${YEAR_2026_START.slice(0,10)},target_date.lt.${YEAR_2026_END.slice(0,10)}),` +
-          `and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`
-        )
-        .order('target_date', { ascending: true });
+        .neq('status', 'done');
+
+      // Only apply the date predicate when filtering. "All active" (both
+      // dates null AND no fallback needed) is handled by the else branch
+      // above — which still applies the 2026 window. To truly bypass dates
+      // (preset='all'), pass dateFrom='1900-01-01', dateTo='2999-12-31' or
+      // wire a sentinel — current spec keeps the 2026 floor.
+      q = q.or(datePredicate);
+
+      if (releaseFilter.length > 0) {
+        q = q.in('name', releaseFilter);
+      }
+
+      const { data: releases, error: relHealthRelError } = await q.order('target_date', { ascending: true });
       if (relHealthRelError) throw relHealthRelError;
       if (!releases?.length) return [];
 

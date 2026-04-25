@@ -345,7 +345,15 @@ function CatalystShellContent() {
     // HomeSidebar fills the rail with Pinned / Recent / Jump-to sections,
     // turning that real estate into the user's own navigation surface.
     if (location.pathname === '/') {
-      return <HomeSidebar />;
+      // HomeSidebar now composes SidebarBase, so it shares the canonical
+      // hub-rail props (expanded + onToggle) with every other panel —
+      // identical density, active-state, and collapse behaviour.
+      return (
+        <HomeSidebar
+          expanded={true}
+          onToggle={cycleSidebarState}
+        />
+      );
     }
 
     // No sidebar for legacy /for-you or Admin routes

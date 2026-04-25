@@ -13,6 +13,7 @@ import { useDashboardOverdueItems } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { data: items, isLoading } = useDashboardOverdueItems(projectId);
@@ -20,7 +21,10 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
   const { openUWV } = useUWV();
 
   const badge = (
-    <Lozenge appearance={count === 0 ? 'success' : 'removed'}>{count}</Lozenge>
+    <>
+      <Lozenge appearance={count === 0 ? 'success' : 'removed'}>{count}</Lozenge>
+      <WidgetGearButton gadgetType="overdue" projectKey={projectKey} projectId={projectId} />
+    </>
   );
 
   const footer = (

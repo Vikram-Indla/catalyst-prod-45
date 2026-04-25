@@ -16,6 +16,7 @@
  */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
+import WidgetGearButton from '../WidgetGearButton';
 import { useDashboardDefects } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
@@ -141,6 +142,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
       span={1}
       footer={footer}
       flushBody
+      headerBadges={<WidgetGearButton gadgetType="qa" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
         <div className="p-4 animate-pulse">

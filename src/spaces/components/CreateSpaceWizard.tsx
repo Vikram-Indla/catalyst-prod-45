@@ -7,8 +7,8 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
-import Form, { FormFooter, FormHeader } from '@atlaskit/form';
-import { Box, Inline, Stack } from '@atlaskit/primitives';
+import Heading from '@atlaskit/heading';
+import { Stack } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import SectionMessage from '@atlaskit/section-message';
 
@@ -217,90 +217,93 @@ export function CreateSpaceWizard({ onCancel, onCreated }: Props) {
 
   return (
     <div ref={containerRef}>
-      <Form onSubmit={() => undefined}>
-        {() => (
-          <>
-            <FormHeader title={currentStep.label}>
-              <Box paddingBlockStart="space.050">
-                <span style={{ fontSize: 12, color: token('color.text.subtle') }}>
-                  Step {stepIdx + 1} of {STEPS.length}
-                </span>
-              </Box>
-            </FormHeader>
+      <div style={{ paddingBlockEnd: 8 }}>
+        <Heading size="medium">{currentStep.label}</Heading>
+        <div style={{ paddingTop: 4 }}>
+          <span style={{ fontSize: 12, color: token('color.text.subtle') }}>
+            Step {stepIdx + 1} of {STEPS.length}
+          </span>
+        </div>
+      </div>
 
-            {/* Step indicator pills */}
-            <div
-              style={{
-                display: 'flex',
-                gap: 6,
-                paddingBottom: 16,
-              }}
-            >
-              {STEPS.map((s, i) => (
-                <div
-                  key={s.id}
-                  style={{
-                    flex: 1,
-                    height: 4,
-                    borderRadius: 2,
-                    background:
-                      i <= stepIdx
-                        ? token('color.background.brand.bold')
-                        : token('color.background.neutral'),
-                  }}
-                />
-              ))}
-            </div>
+      {/* Step indicator pills */}
+      <div
+        style={{
+          display: 'flex',
+          gap: 6,
+          paddingBottom: 16,
+          paddingTop: 8,
+        }}
+      >
+        {STEPS.map((s, i) => (
+          <div
+            key={s.id}
+            style={{
+              flex: 1,
+              height: 4,
+              borderRadius: 2,
+              background:
+                i <= stepIdx
+                  ? token('color.background.brand.bold')
+                  : token('color.background.neutral'),
+            }}
+          />
+        ))}
+      </div>
 
-            <Stack space="space.150">
-              {serverError && (
-                <SectionMessage appearance="error" title="Couldn't create project">
-                  <p>{serverError}</p>
-                </SectionMessage>
-              )}
-              {stepBody}
-            </Stack>
-
-            <FormFooter>
-              <Inline space="space.100" alignInline="end">
-                <Button appearance="subtle" onClick={onCancel} isDisabled={submitting}>
-                  Cancel
-                </Button>
-                {!isFirstStep && (
-                  <Button appearance="default" onClick={goBack} isDisabled={submitting}>
-                    Back
-                  </Button>
-                )}
-                {!isLastStep ? (
-                  <Button
-                    appearance="primary"
-                    onClick={() => { void goNext(); }}
-                    isDisabled={submitting}
-                  >
-                    {submitting ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <Spinner size="small" /> Next
-                      </span>
-                    ) : 'Next'}
-                  </Button>
-                ) : (
-                  <Button
-                    appearance="primary"
-                    onClick={() => { void handleSubmit(); }}
-                    isDisabled={submitting}
-                  >
-                    {submitting ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                        <Spinner size="small" /> Creating…
-                      </span>
-                    ) : 'Create project'}
-                  </Button>
-                )}
-              </Inline>
-            </FormFooter>
-          </>
+      <Stack space="space.150">
+        {serverError && (
+          <SectionMessage appearance="error" title="Couldn't create project">
+            <p>{serverError}</p>
+          </SectionMessage>
         )}
-      </Form>
+        {stepBody}
+      </Stack>
+
+      <div
+        style={{
+          display: 'flex',
+          gap: 8,
+          justifyContent: 'flex-end',
+          paddingTop: 24,
+          marginTop: 16,
+          borderTop: `1px solid ${token('color.border')}`,
+        }}
+      >
+        <Button appearance="subtle" onClick={onCancel} isDisabled={submitting}>
+          Cancel
+        </Button>
+        {!isFirstStep && (
+          <Button appearance="default" onClick={goBack} isDisabled={submitting}>
+            Back
+          </Button>
+        )}
+        {!isLastStep ? (
+          <Button
+            appearance="primary"
+            onClick={() => { void goNext(); }}
+            isDisabled={submitting}
+          >
+            {submitting ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Spinner size="small" /> Next
+              </span>
+            ) : 'Next'}
+          </Button>
+        ) : (
+          <Button
+            appearance="primary"
+            onClick={() => { void handleSubmit(); }}
+            isDisabled={submitting}
+          >
+            {submitting ? (
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Spinner size="small" /> Creating…
+              </span>
+            ) : 'Create project'}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

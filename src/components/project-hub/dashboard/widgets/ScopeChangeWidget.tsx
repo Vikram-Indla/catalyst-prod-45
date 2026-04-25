@@ -15,6 +15,7 @@ import WidgetWrapper from '../WidgetWrapper';
 import { useDashboardScopeChange } from '@/hooks/useDashboardWidgets';
 import { token } from '@atlaskit/tokens';
 import { EmptyState } from '@/components/ads';
+import WidgetGearButton from '../WidgetGearButton';
 
 /** Scope-bar palette — scoped to this widget. See file header. */
 const SCOPE_ORIG = 'rgba(37, 99, 235, 0.20)';    // original scope fill (blue @ 20%)
@@ -31,6 +32,7 @@ export default function ScopeChangeWidget({ projectId, projectKey, collapsed, on
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       span={1}
+      headerBadges={<WidgetGearButton gadgetType="items" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (
         <div className="animate-pulse">
