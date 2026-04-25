@@ -438,12 +438,13 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // Step A: get ph_issues ids for this project
+      // 🛡️ 2026 GUARDRAIL on parent issues
       const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (issuesError) throw issuesError;
 
       const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
@@ -456,11 +457,13 @@ export function useDashboardRecentActivity(projectId: string | null | undefined)
       }
       if (!ids.length) return [];
 
-      // Step B: fetch latest activity for those work items
+      // Step B: 🛡️ 2026 GUARDRAIL — only activity that occurred in 2026
       const { data: activity, error: actError } = await supabase
         .from('work_item_activity')
         .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata')
         .in('work_item_id', ids)
+        .gte('occurred_at', YEAR_2026_START)
+        .lt('occurred_at', YEAR_2026_END)
         .order('occurred_at', { ascending: false })
         .limit(20);
       if (actError) throw actError;
