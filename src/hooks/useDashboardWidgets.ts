@@ -405,11 +405,14 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
 export function useDashboardIncidents(
   projectId: string | null | undefined,
   projectKey?: string | null,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-incidents', projectId, projectKey, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-incidents', projectId, projectKey, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = projectKey ?? (await getProjectKey(projectId!));
       if (!pKey) return [];
@@ -424,6 +427,18 @@ export function useDashboardIncidents(
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      // Layer 2 filters — note: itemType is fixed to 'Production Incident' for
+      // this widget so itemTypeFilter is intentionally ignored here.
+      if (statusFilter.length)   q = q.in('status_category', statusFilter);
+      if (assigneeFilter.length) q = q.in('assignee_display_name', assigneeFilter);
+      if (priorityFilter.length) q = q.in('priority', priorityFilter);
+      if (releaseFilter.length) {
+        const orClause = releaseFilter
+          .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+          .join(',');
+        q = q.or(orClause);
+      }
 
       const { data, error } = await q
         .order('jira_created_at', { ascending: false })
