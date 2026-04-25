@@ -61,9 +61,8 @@ export default function ReleaseHealthWidget({
   const openAll = () =>
     openUWV({
       project: projectKey,
-      projectId: projectId,
-      hubSource: ['releasehub'],
-      dataType: 'releases',
+      hubSource: ['projecthub'],
+      dataType: 'epics',
       title: `Release Health · ${projectKey}`,
     });
 
