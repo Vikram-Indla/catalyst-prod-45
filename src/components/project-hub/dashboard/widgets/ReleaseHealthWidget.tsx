@@ -65,6 +65,10 @@ export default function ReleaseHealthWidget({
     dateFrom: filter.dateFrom,
     dateTo: filter.dateTo,
     releaseFilter: settings.releaseFilter,
+    statusFilter: settings.statusFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
     maxRows,
   });
   const { openUWV } = useUWV();
