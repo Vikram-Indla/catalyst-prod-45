@@ -648,6 +648,10 @@ export interface DashboardReleaseHealthFilters {
   dateFrom?: string | null;
   dateTo?: string | null;
   releaseFilter?: string[];
+  statusFilter?: string[];
+  assigneeFilter?: string[];
+  itemTypeFilter?: string[];
+  priorityFilter?: string[];
   maxRows?: number;
 }
 
@@ -655,9 +659,12 @@ export function useDashboardReleaseHealth(
   projectId: string | null | undefined,
   filters: DashboardReleaseHealthFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null, releaseFilter = [], maxRows } = filters;
+  const { dateFrom = null, dateTo = null, releaseFilter = [],
+    statusFilter = [], assigneeFilter = [], itemTypeFilter = [], priorityFilter = [],
+    maxRows } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-release-health', projectId, dateFrom, dateTo, releaseFilter, maxRows],
+    queryKey: ['ph-dashboard-release-health', projectId, dateFrom, dateTo, releaseFilter,
+      statusFilter, assigneeFilter, itemTypeFilter, priorityFilter, maxRows],
     queryFn: async () => {
       console.log('[ReleaseHealth] filter received:', filters);
       console.log('[ReleaseHealth] dateFrom:', dateFrom, 'dateTo:', dateTo);
