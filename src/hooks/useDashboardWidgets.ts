@@ -715,13 +715,17 @@ export function useDashboardReleaseHealth(
       const fvOrClause = releaseNames
         .map(n => `fix_versions.cs.${JSON.stringify([{ name: n }])}`)
         .join(',');
-      const { data: issues, error: relHealthIssError } = await supabase
+      let issuesQ = supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .or(fvOrClause)
-        .limit(5000);
+        .or(fvOrClause);
+      if (statusFilter.length)   issuesQ = issuesQ.in('status_category', statusFilter);
+      if (assigneeFilter.length) issuesQ = issuesQ.in('assignee_display_name', assigneeFilter);
+      if (itemTypeFilter.length) issuesQ = issuesQ.in('issue_type', itemTypeFilter);
+      if (priorityFilter.length) issuesQ = issuesQ.in('priority', priorityFilter);
+      const { data: issues, error: relHealthIssError } = await issuesQ.limit(5000);
       if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {
