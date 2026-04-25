@@ -532,11 +532,15 @@ function MultiSelectGeneric({
 function MultiSelectStatus({
   value,
   onChange,
+  isOpen,
+  onToggle,
 }: {
   value: string[];
   onChange: (v: string[]) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }) {
-  const [open, setOpen] = useState(false);
+  const open = isOpen;
   const selected = useMemo(() => new Set(value), [value]);
 
   const toggle = (s: string) => {
@@ -553,7 +557,7 @@ function MultiSelectStatus({
     <div style={{ position: 'relative' }}>
       <button
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={onToggle}
         style={{
           minHeight: 32,
           width: '100%',
