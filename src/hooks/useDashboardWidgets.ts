@@ -130,20 +130,31 @@ export function useActiveReleases(projectId: string | null | undefined) {
 }
 
 // ─── Status Counts (To Do / In Progress / Done) ───
-export function useDashboardStatusCounts(projectId: string | null | undefined) {
+export interface DashboardDateFilter { dateFrom?: string | null; dateTo?: string | null; }
+
+export function useDashboardStatusCounts(
+  projectId: string | null | undefined,
+  filters: DashboardDateFilter = {},
+) {
+  const { dateFrom = null, dateTo = null } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-status-counts', projectId],
+    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
 
-      // 🛡️ 2026 GUARDRAIL
-      const { data: issues, error } = await supabase
+      let q = supabase
         .from('ph_issues')
         .select('status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'));
+        .is('deleted_at', null);
+
+      if (dateFrom) q = q.gte('jira_created_at', dateFrom);
+      if (dateTo) q = q.lte('jira_created_at', dateTo);
+      // Fall back to 2026 guardrail when no date filter applied
+      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      const { data: issues, error } = await q;
       if (error) throw error;
 
       const counts = { todo: 0, inProgress: 0, done: 0, total: 0 };
