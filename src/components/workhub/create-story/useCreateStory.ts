@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { catalystToast } from '@/lib/catalystToast';
 
 export interface CreateStoryFormData {
   projectId: string;
