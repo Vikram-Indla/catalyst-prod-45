@@ -117,7 +117,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
                   flexShrink: 0,
                 }}
               >
-                {Math.ceil((Date.now() - new Date(item.due_date!).getTime()) / 86400000)}d
+                {Math.ceil((Date.now() - new Date((item as any).effective_due_date ?? (item as any).due_date).getTime()) / 86400000)}d
               </span>
             </div>
           ))}
