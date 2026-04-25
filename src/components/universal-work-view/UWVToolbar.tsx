@@ -84,6 +84,7 @@ function MoreIcon({ label }: { label?: string }) {
 
 export function UWVToolbar({
   title,
+  subtitle,
   filteredCount,
   totalCount,
   searchText,
