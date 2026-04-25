@@ -118,7 +118,7 @@ export default function ReleaseHealthWidget({
       onToggleCollapse={onToggleCollapse}
       span={1}
       footer={footer}
-      headerActions={headerExtras}
+      headerBadges={headerExtras}
     >
       {isLoading ? (
         <div className="animate-pulse space-y-3">
