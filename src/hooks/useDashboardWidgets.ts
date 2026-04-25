@@ -612,11 +612,21 @@ export function useDashboardReleaseHealth(
       // by rh_releases.target_date above. Filtering issues by jira_created_at /
       // jira_updated_at silently drops items linked to in-scope releases that
       // were last touched in 2025, causing gadget/UWV count mismatch.
+      //
+      // CRITICAL: Filter by fix_versions server-side. Without this, a project
+      // with >1000 issues hits the Supabase default row cap and silently drops
+      // release-linked items (BAU has 1,128 active issues → 29 vs real 31).
+      const releaseNames = releases.map(r => r.name);
+      const fvOrClause = releaseNames
+        .map(n => `fix_versions.cs.${JSON.stringify([{ name: n }])}`)
+        .join(',');
       const { data: issues, error: relHealthIssError } = await supabase
         .from('ph_issues')
         .select('fix_versions, status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(fvOrClause)
+        .limit(5000);
       if (relHealthIssError) throw relHealthIssError;
 
       return releases.map(rel => {
