@@ -110,7 +110,20 @@ export function useToggleStar() {
   });
 }
 
-// Fetch full starred items with details for delivery mode
+// Fetch full starred items with details for delivery mode.
+//
+// Orphan-star cleanup (H1B, Apr 2026)
+// ──────────────────────────────────
+// `user_starred_items` is a thin join table — when an underlying issue is
+// soft-deleted (`deleted_at != null`) or hard-deleted, the join row stays
+// behind and the home rail keeps trying to render a "ghost" pin
+// (CEA-020-style ghosts in the Apr 2026 incident). To make the rail
+// self-healing, after the four parallel fetches we walk the starred set,
+// identify rows whose `item_id` failed to resolve in *any* of the four
+// tables, and fire-and-forget delete them. The user sees them disappear
+// on the next refetch (staleTime 30s); no spinner, no toast, no error.
+// We intentionally swallow the cleanup error — if it fails (auth race,
+// RLS hiccup) the orphan just gets retried next mount.
 export function useStarredDeliveryItems() {
   const { user } = useAuth();
   const userId = user?.id;
@@ -139,6 +152,11 @@ export function useStarredDeliveryItems() {
       const taskIds = starredItems.filter(s => s.item_type === 'task').map(s => s.item_id);
 
       const items: any[] = [];
+      // Track which (item_id, item_type) tuples resolved to a real row in
+      // their respective table. Anything starred but not present in this
+      // set is an orphan and gets cleaned up at the end.
+      const resolved = new Set<string>();
+      const resolveKey = (id: string, type: string) => `${type}::${id}`;
 
       // Fetch stories
       if (storyIds.length > 0) {
@@ -149,6 +167,7 @@ export function useStarredDeliveryItems() {
           .is('deleted_at', null);
 
         (stories || []).forEach(story => {
+          resolved.add(resolveKey(story.id, 'story'));
           const starredItem = starredItems.find(s => s.item_id === story.id);
           items.push({
             id: story.id,
@@ -176,6 +195,7 @@ export function useStarredDeliveryItems() {
           .is('deleted_at', null);
 
         (features || []).forEach(feature => {
+          resolved.add(resolveKey(feature.id, 'feature'));
           const starredItem = starredItems.find(s => s.item_id === feature.id);
           items.push({
             id: feature.id,
@@ -203,6 +223,7 @@ export function useStarredDeliveryItems() {
           .is('deleted_at', null);
 
         (epics || []).forEach(epic => {
+          resolved.add(resolveKey(epic.id, 'epic'));
           const starredItem = starredItems.find(s => s.item_id === epic.id);
           items.push({
             id: epic.id,
@@ -227,6 +248,7 @@ export function useStarredDeliveryItems() {
           .in('id', taskIds);
 
         (tasks || []).forEach(task => {
+          resolved.add(resolveKey(task.id, 'task'));
           const starredItem = starredItems.find(s => s.item_id === task.id);
           items.push({
             id: task.id,
@@ -243,6 +265,33 @@ export function useStarredDeliveryItems() {
             starredAt: starredItem?.starred_at,
           });
         });
+      }
+
+      // Orphan-star cleanup — find starred rows whose item_id was NOT
+      // present in any of the four resolved sets (or whose type isn't one
+      // we can resolve at all) and silently delete them. We only consider
+      // the four types we actually queried; an item_type we don't yet
+      // support (e.g. 'incident', 'business_request') is left alone so we
+      // don't lose pins the moment we add support for that type later.
+      const supportedTypes = new Set(['story', 'feature', 'epic', 'task']);
+      const orphans = starredItems.filter(s =>
+        supportedTypes.has(s.item_type) && !resolved.has(resolveKey(s.item_id, s.item_type))
+      );
+      if (orphans.length > 0) {
+        // Fire-and-forget delete; swallow errors so a transient RLS or
+        // network blip doesn't break the home rail render. The next
+        // refetch will retry the cleanup if it matters.
+        void supabase
+          .from('user_starred_items')
+          .delete()
+          .eq('user_id', userId)
+          .in('item_id', orphans.map(o => o.item_id))
+          .then(({ error }) => {
+            if (error) {
+              // eslint-disable-next-line no-console
+              console.warn('[useStarredDeliveryItems] orphan cleanup failed', error.message);
+            }
+          });
       }
 
       // Sort by starred_at (most recent first)
