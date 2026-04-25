@@ -42,6 +42,7 @@ const GADGET_DATE_FIELD: Record<GadgetType, string> = {
   onhold:    'ph_issues.jira_updated_at',
   workload:  'ph_issues.jira_created_at',
   activity:  'work_item_activity.occurred_at',
+  scope:     'ph_versions.start_date (target_date − 14d fallback)',
 };
 
 interface Props {
