@@ -720,9 +720,9 @@ export default function StoryDetailModal({
 
   const handleApplyAC = useCallback(async (newAC: string, _prev: string) => {
     setAcceptanceCriteria(newAC);
-    await supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId);
+    await supabase.from(issueTable).update({ acceptance_criteria: newAC } as any).eq('id', itemId);
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-  }, [itemId, queryClient]);
+  }, [itemId, queryClient, issueTable]);
 
   const doAiGenerate = useCallback(async () => {
     setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false); setShowAiRegenConfirm(false);
