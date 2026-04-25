@@ -1653,12 +1653,14 @@ export type Database = {
       }
       catalyst_issues: {
         Row: {
+          acceptance_criteria: Json | null
           assignee_id: string | null
           closure_method: string | null
           created_at: string | null
           deleted_at: string | null
           description: string | null
           description_adf_raw: Json | null
+          fix_versions: Json | null
           force_close_reason: string | null
           force_closed_at: string | null
           force_closed_by: string | null
@@ -1667,8 +1669,10 @@ export type Database = {
           issue_key: string
           issue_type: string
           jira_last_modified_at: string | null
+          labels: string[] | null
           last_modified_by_system: string
           parent_id: string | null
+          parent_key: string | null
           priority: string | null
           project_id: string
           release_id: string | null
@@ -1676,6 +1680,7 @@ export type Database = {
           restore_deadline: string | null
           sprint_name: string | null
           status: string
+          status_category: string | null
           story_points: number | null
           sync_enabled: boolean | null
           tags: string[] | null
@@ -1683,12 +1688,14 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          acceptance_criteria?: Json | null
           assignee_id?: string | null
           closure_method?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
           description_adf_raw?: Json | null
+          fix_versions?: Json | null
           force_close_reason?: string | null
           force_closed_at?: string | null
           force_closed_by?: string | null
@@ -1697,8 +1704,10 @@ export type Database = {
           issue_key: string
           issue_type?: string
           jira_last_modified_at?: string | null
+          labels?: string[] | null
           last_modified_by_system?: string
           parent_id?: string | null
+          parent_key?: string | null
           priority?: string | null
           project_id: string
           release_id?: string | null
@@ -1706,6 +1715,7 @@ export type Database = {
           restore_deadline?: string | null
           sprint_name?: string | null
           status?: string
+          status_category?: string | null
           story_points?: number | null
           sync_enabled?: boolean | null
           tags?: string[] | null
@@ -1713,12 +1723,14 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          acceptance_criteria?: Json | null
           assignee_id?: string | null
           closure_method?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
           description_adf_raw?: Json | null
+          fix_versions?: Json | null
           force_close_reason?: string | null
           force_closed_at?: string | null
           force_closed_by?: string | null
@@ -1727,8 +1739,10 @@ export type Database = {
           issue_key?: string
           issue_type?: string
           jira_last_modified_at?: string | null
+          labels?: string[] | null
           last_modified_by_system?: string
           parent_id?: string | null
+          parent_key?: string | null
           priority?: string | null
           project_id?: string
           release_id?: string | null
@@ -1736,6 +1750,7 @@ export type Database = {
           restore_deadline?: string | null
           sprint_name?: string | null
           status?: string
+          status_category?: string | null
           story_points?: number | null
           sync_enabled?: boolean | null
           tags?: string[] | null
