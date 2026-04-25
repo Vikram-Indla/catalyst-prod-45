@@ -1583,65 +1583,11 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
           onClick={(e) => e.stopPropagation()}
           style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexShrink: 0 }}
         >
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: token('space.050', '4px'),
-              font: token('font.body.small'),
-              color: token('color.text.subtle'),
-              background: token('color.background.neutral'),
-              borderRadius: token('border.radius.100', '4px'),
-              padding: `${token('space.050', '4px')} ${token('space.100', '8px')}`,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            <CalendarIcon label="" color="currentColor" />
-            {periodBadge}
-          </span>
-          <span ref={gearRef} style={{ display: 'inline-flex' }}>
-            <IconButton
-              icon={SettingsIcon}
-              label="Configure demand gadget"
-              appearance="subtle"
-              spacing="compact"
-              isTooltipDisabled={false}
-              onClick={(e) => {
-                e.stopPropagation();
-                setSettingsOpen((prev) => !prev);
-              }}
-            />
-          </span>
-          {settingsOpen && (() => {
-            const rect = gearRef.current?.getBoundingClientRect();
-            return ReactDOM.createPortal(
-              <div
-                id="demand-settings-popup"
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  position: 'fixed',
-                  top: (rect?.bottom ?? 0) + 4,
-                  right: window.innerWidth - (rect?.right ?? 0),
-                  zIndex: 510,
-                  background: token('elevation.surface.overlay', '#FFFFFF'),
-                  borderRadius: token('border.radius.100', '4px'),
-                  boxShadow: '0 4px 8px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
-                  minWidth: 300,
-                }}
-              >
-                <SettingsPopupBody
-                  initial={settings}
-                  projectKey={projectKey}
-                  onCancel={() => setSettingsOpen(false)}
-                  onApply={async (next) => {
-                    await save(next);
-                    setSettingsOpen(false);
-                  }}
-                />
-              </div>,
-              document.body,
-            );
-          })()}
+          <WidgetGearButton
+            gadgetType="demand"
+            projectKey={projectKey}
+            projectId={projectId}
+          />
         </span>
       }
     >
