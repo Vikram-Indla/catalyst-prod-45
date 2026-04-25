@@ -202,7 +202,7 @@ export default function DashboardWidgetGrid({ projectId, projectKey }: Dashboard
   }
 
   return (
-    <div className="flex flex-col" style={{ gap: 16 }}>
+    <div className="flex flex-col min-w-0 w-full max-w-full overflow-hidden" style={{ gap: 16 }}>
       {GRID_LAYOUT.map((row, rowIdx) => {
         const visibleInRow = row.widgetIds.filter(id => widgetMap.get(id)?.visible);
         if (visibleInRow.length === 0) return null;
@@ -210,7 +210,14 @@ export default function DashboardWidgetGrid({ projectId, projectKey }: Dashboard
         return (
           <div
             key={rowIdx}
-            style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+              gap: 16,
+              width: '100%',
+              minWidth: 0,
+              maxWidth: '100%',
+            }}
           >
             {row.widgetIds.map((widgetId, colIdx) => {
               const w = widgetMap.get(widgetId);
@@ -223,7 +230,15 @@ export default function DashboardWidgetGrid({ projectId, projectKey }: Dashboard
 
               const WidgetComponent = w.component;
               return (
-                <div key={widgetId} style={{ gridColumn: `span ${effectiveSpan}` }}>
+                <div
+                  key={widgetId}
+                  style={{
+                    gridColumn: `span ${effectiveSpan}`,
+                    minWidth: 0,
+                    maxWidth: '100%',
+                    overflow: 'hidden',
+                  }}
+                >
                   <WidgetComponent
                     projectId={projectId}
                     projectKey={projectKey}
