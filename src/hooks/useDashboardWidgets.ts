@@ -436,11 +436,15 @@ export function useDashboardReleaseHealth(projectId: string | null | undefined) 
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // Source of truth for releases is rh_releases (ReleaseHub).
+      // The legacy 'releases' table is empty for this project; querying it
+      // hid all 2026 SENAI BAU releases behind a "No active releases" empty state.
       const { data: releases, error: relHealthRelError } = await supabase
-        .from('releases')
-        .select('id, name, status, target_date, start_date')
+        .from('rh_releases')
+        .select('id, name, status, target_date')
         .eq('project_id', projectId!)
-        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+        .neq('status', 'done')
+        .order('target_date', { ascending: true });
       if (relHealthRelError) throw relHealthRelError;
       if (!releases?.length) return [];
 
