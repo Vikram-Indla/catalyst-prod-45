@@ -59,6 +59,10 @@ export function resolveAvatarUrl(avatarMap: Map<string, string | null>, displayN
 }
 
 async function getProjectKey(projectId: string): Promise<string | null> {
+  // Try ph_projects first (dashboard resolves projectId from ph_projects);
+  // fall back to canonical projects table for legacy callers.
+  const { data: ph } = await supabase.from('ph_projects').select('key').eq('id', projectId).maybeSingle();
+  if (ph?.key) return ph.key;
   const { data, error } = await supabase.from('projects').select('key').eq('id', projectId).single();
   if (error && error.code !== 'PGRST116') throw error;
   return data?.key ?? null;
