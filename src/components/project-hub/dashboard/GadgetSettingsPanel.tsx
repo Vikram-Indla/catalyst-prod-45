@@ -22,10 +22,25 @@ import { supabase } from '@/integrations/supabase/client';
 import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
 import {
   DEFAULT_GADGET_SETTINGS,
+  resolvePreset,
+  broadcastDateToAllGadgets,
+  type DatePreset,
   type GadgetSettings,
   type GadgetType,
 } from '@/hooks/useGadgetSettings';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+
+const GADGET_DATE_FIELD: Record<GadgetType, string> = {
+  demand:    'ph_initiatives.target_complete + release cascade',
+  release:   'rh_releases.target_date',
+  incidents: 'incidents.created_at',
+  qa:        'tm_defects.created_at',
+  items:     'ph_issues.jira_created_at',
+  overdue:   'ph_issues.effective_due_date',
+  onhold:    'ph_issues.jira_updated_at',
+  workload:  'ph_issues.jira_created_at',
+  activity:  'work_item_activity.occurred_at',
+};
 
 interface Props {
   gadgetType: GadgetType;
