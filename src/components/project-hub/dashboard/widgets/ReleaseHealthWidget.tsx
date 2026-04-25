@@ -42,7 +42,7 @@ export default function ReleaseHealthWidget({ projectId, projectKey, collapsed, 
         gap: 4,
       }}
     >
-      View in ReleaseHub ↗
+      View all ↗
     </button>
   );
 
