@@ -729,6 +729,7 @@ export function CreateStoryModal({
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
   const { data: projects = [] } = useProjects();
+  console.log('[CreateModal] form.projectId:', form.projectId, 'projects list:', projects.map((p: any) => ({ id: p.id, name: p.name, key: p.key })));
   const { data: members = [] } = useTeamMembers();
   const { data: releases = [], isLoading: releasesLoading, error: releasesError } = useProjectReleases(form.projectId);
 
