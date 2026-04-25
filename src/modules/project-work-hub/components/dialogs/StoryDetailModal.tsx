@@ -704,13 +704,13 @@ export default function StoryDetailModal({
   const saveFigmaLink = useCallback(() => {
     if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) { setFigmaError('Only Figma URLs accepted (figma.com)'); return; }
     setFigmaError('');
-    supabase.from('ph_attachments').insert({ work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id }).then(({ error }) => {
+    supabase.from(attachmentsTable).insert({ work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id } as any).then(({ error }) => {
       if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
       setFigmaUrl(''); setShowFigmaInput(false);
       toast.success('Figma design link added');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     });
-  }, [figmaUrl, itemId, user, queryClient]);
+  }, [figmaUrl, itemId, user, queryClient, attachmentsTable]);
 
   /* ── AI Apply handlers ─────────────────────── */
   const handleApplyDescription = useCallback(async (newDesc: string, prev: string) => {
