@@ -1422,7 +1422,8 @@ export default function StoryDetailModal({
                                 onSave={(adfJson) => {
                                   if (!itemId) { setDescEditMode(false); return; }
                                   const parsed = adfJson ? JSON.parse(adfJson) : null;
-                                  supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
+                                   const descCol = workItemSource === 'catalyst' ? 'description_adf_raw' : 'description_adf';
+                                   supabase.from(issueTable).update({ [descCol]: parsed } as any).eq('id', itemId).then(() => {
                                     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
                                     queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
                                     queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
