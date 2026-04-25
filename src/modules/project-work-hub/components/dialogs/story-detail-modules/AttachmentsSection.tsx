@@ -188,14 +188,14 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
       clearInterval(progressTimer);
       if (uploadError) throw new Error(uploadError.message);
 
-      const { error: dbError } = await supabase.from('ph_attachments').insert({
+      const { error: dbError } = await supabase.from(ATTACHMENTS_TABLE as any).insert({
         work_item_id: itemId,
         file_name: file.name,
         file_size: file.size,
         mime_type: file.type || 'application/octet-stream',
         storage_path: path,
         uploaded_by: userId,
-      });
+      } as any);
       if (dbError) {
         // Best-effort cleanup of storage on DB failure
         await supabase.storage.from(BUCKET).remove([path]);
