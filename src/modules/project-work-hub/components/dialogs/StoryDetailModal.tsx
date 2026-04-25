@@ -1590,6 +1590,7 @@ export default function StoryDetailModal({
                       itemId={itemId}
                       userId={user.id}
                       projectKey={issue?.project_key}
+                      source={workItemSource}
                     />
                   )}
 
