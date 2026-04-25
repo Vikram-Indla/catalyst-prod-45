@@ -196,22 +196,88 @@ export default function StoryDetailModal({
       const { data } = await supabase.from('ph_issues').select('*').eq('id', itemId).is('deleted_at', null).maybeSingle();
       if (data) return data as unknown as PhIssue;
       // Fallback: catalyst_issues (locally-created items like BAU-1)
-      const { data: cat } = await supabase.from('catalyst_issues').select('*').eq('id', itemId).maybeSingle();
-      if (cat) {
-        return {
-          id: cat.id, issue_key: cat.issue_key, summary: cat.title, description: cat.description,
-          status: cat.status, status_category: cat.status === 'Done' ? 'Done' : cat.status === 'In Progress' ? 'In Progress' : 'To Do',
-          issue_type: cat.issue_type, priority: cat.priority, story_points: cat.story_points,
-          assignee_account_id: cat.assignee_id, assignee_display_name: null,
-          reporter_account_id: cat.reporter_id, reporter_display_name: null,
-          project_key: cat.issue_key?.split('-')[0] || projectKey || '',
-          sprint_name: cat.sprint_name, created_at: cat.created_at, updated_at: cat.updated_at,
-          parent_key: null, acceptance_criteria: null, labels: null,
-        } as unknown as PhIssue;
+      const { data: cat } = await supabase
+        .from('catalyst_issues')
+        .select('*')
+        .eq('id', itemId)
+        .is('deleted_at', null)
+        .maybeSingle();
+      if (!cat) return null;
+
+      // Resolve assignee + reporter display names from profiles (catalyst stores
+      // profiles.id directly in assignee_id/reporter_id, unlike ph_issues which
+      // stores Atlassian account_id strings).
+      const profileIds = [cat.assignee_id, cat.reporter_id].filter(Boolean) as string[];
+      const profileMap = new Map<string, { full_name: string | null; avatar_url: string | null }>();
+      if (profileIds.length) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', profileIds);
+        for (const p of profs ?? []) {
+          const localized = localizeAvatar(p as any);
+          profileMap.set(p.id, { full_name: localized?.full_name ?? null, avatar_url: localized?.avatar_url ?? null });
+        }
       }
-      return null;
+
+      // Resolve parent (catalyst uses parent_id uuid → look up issue_key)
+      let parentKey: string | null = null;
+      if (cat.parent_id) {
+        const { data: par } = await supabase
+          .from('catalyst_issues')
+          .select('issue_key')
+          .eq('id', cat.parent_id)
+          .maybeSingle();
+        parentKey = par?.issue_key ?? null;
+      }
+
+      // Acceptance criteria — preserved as a JSON extension key when the editor
+      // saves it (see handleApplyAC). Read it back from description_adf_raw.
+      const acExt = (cat.description_adf_raw && typeof cat.description_adf_raw === 'object'
+        && (cat.description_adf_raw as any).__catalyst_extensions?.acceptance_criteria) ?? null;
+
+      const assignee = cat.assignee_id ? profileMap.get(cat.assignee_id) : undefined;
+      const reporter = cat.reporter_id ? profileMap.get(cat.reporter_id) : undefined;
+
+      return {
+        id: cat.id,
+        issue_key: cat.issue_key,
+        summary: cat.title,
+        description: cat.description,
+        description_text: cat.description,
+        description_adf: cat.description_adf_raw,
+        status: cat.status,
+        status_category: cat.status === 'Done' ? 'Done' : cat.status === 'In Progress' ? 'In Progress' : 'To Do',
+        issue_type: cat.issue_type,
+        priority: cat.priority,
+        story_points: cat.story_points,
+        assignee_account_id: cat.assignee_id,
+        assignee_display_name: assignee?.full_name ?? null,
+        reporter_account_id: cat.reporter_id,
+        reporter_display_name: reporter?.full_name ?? null,
+        project_key: cat.issue_key?.split('-')[0] || projectKey || '',
+        sprint_name: cat.sprint_name,
+        created_at: cat.created_at,
+        updated_at: cat.updated_at,
+        // Sidebar renders Created/Updated from jira_* keys — alias them.
+        jira_created_at: cat.created_at,
+        jira_updated_at: cat.updated_at,
+        parent_key: parentKey,
+        acceptance_criteria: acExt,
+        labels: cat.tags ?? null,
+        fix_versions: null,
+        // Marker so downstream code can detect source without re-querying.
+        __catalyst_source: true,
+      } as unknown as PhIssue;
     },
   });
+
+  // Source detection — every mutation in this modal must target the right table.
+  const workItemSource: 'jira' | 'catalyst' = (issue as any)?.__catalyst_source ? 'catalyst' : 'jira';
+  const resolvedSource = useMemo(
+    () => issue ? ({ source: workItemSource, id: issue.id, issueKey: issue.issue_key ?? null, projectKey: (issue as any).project_key ?? null } as const) : null,
+    [issue, workItemSource],
+  );
 
   // ── Recents tracking (sidebar Recent rail picks this up) ──
   // The story modal also opens for issue_type === 'Subtask'. Subtask exclusion
@@ -482,51 +548,111 @@ export default function StoryDetailModal({
 
   /* ── MUTATIONS ─────────────────────────────── */
 
+  // Source-aware table router. For catalyst items every mutation targets
+  // catalyst_* tables; trigger tg_catalyst_issue_audit handles activity logging.
+  const issueTable = workItemSource === 'catalyst' ? 'catalyst_issues' : 'ph_issues';
+  const commentsTable = workItemSource === 'catalyst' ? 'catalyst_comments' : 'ph_comments';
+  const attachmentsTable = workItemSource === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
+  const attachmentsBucket = workItemSource === 'catalyst' ? 'catalyst-attachments' : 'attachments';
+  // Field-name shim: catalyst_issues uses different column names.
+  const mapField = (f: string): string | null => {
+    if (workItemSource !== 'catalyst') return f;
+    const m: Record<string, string | null> = {
+      summary: 'title', description: 'description', description_text: 'description',
+      description_adf: 'description_adf_raw', labels: 'tags',
+      assignee_account_id: 'assignee_id', reporter_account_id: 'reporter_id',
+      // Catalyst now has parity columns added in migration 20260425185838
+      status_category: 'status_category',
+      fix_versions: 'fix_versions',
+      acceptance_criteria: 'acceptance_criteria',
+      parent_key: 'parent_key',
+    };
+    return f in m ? m[f] : f;
+  };
+  const remapPatch = (patch: Record<string, any>) => {
+    if (workItemSource !== 'catalyst') return patch;
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(patch)) {
+      const mapped = mapField(k);
+      if (mapped) out[mapped] = v;
+    }
+    return out;
+  };
+
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const { error } = await supabase.from('ph_issues').update({ status: newStatus, status_category: resolveStatusCategory(newStatus) }).eq('id', itemId);
+      const patch = workItemSource === 'catalyst'
+        ? { status: newStatus }
+        : { status: newStatus, status_category: resolveStatusCategory(newStatus) };
+      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
       if (error) throw error;
-      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'status', newValue: newStatus });
+      if (workItemSource === 'jira') {
+        await enqueueWriteBack({ phIssueId: itemId, fieldName: 'status', newValue: newStatus });
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+    },
     onError: () => toast.error('Failed to update status'),
   });
 
   const updateFieldMutation = useMutation({
     mutationFn: async ({ field, value, oldValue }: { field: string; value: string; oldValue: string }) => {
-      const { error } = await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
+      const patch = remapPatch({ [field]: value });
+      if (Object.keys(patch).length === 0) return; // field has no equivalent in this source
+      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
       if (error) throw error;
-      await supabase.from('ph_activity_log').insert({
-        work_item_id: itemId, action: 'field_updated', field_name: field,
-        old_value: oldValue, new_value: value, user_id: user!.id,
-      });
+      // ph_issues needs explicit activity rows (no DB trigger). Catalyst gets
+      // them automatically via tg_catalyst_issue_audit.
+      if (workItemSource === 'jira') {
+        await supabase.from('ph_activity_log').insert({
+          work_item_id: itemId, action: 'field_updated', field_name: field,
+          old_value: oldValue, new_value: value, user_id: user!.id,
+        });
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
+    },
     onError: () => toast.error('Failed to update'),
   });
 
   const updateAssigneeMutation = useMutation({
     mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
-      const { error } = await supabase.from('ph_issues').update({ assignee_account_id: userId, assignee_display_name: displayName }).eq('id', itemId);
+      const patch = workItemSource === 'catalyst'
+        ? { assignee_id: userId }
+        : { assignee_account_id: userId, assignee_display_name: displayName };
+      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
       if (error) throw error;
-      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'assignee', newValue: userId });
+      if (workItemSource === 'jira') {
+        await enqueueWriteBack({ phIssueId: itemId, fieldName: 'assignee', newValue: userId });
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+    },
     onError: () => toast.error('Failed to update assignee'),
   });
 
   const addCommentMutation = useMutation({
     mutationFn: async (body: string) => {
-      const { error } = await supabase.from('ph_comments').insert({ work_item_id: itemId, body, author_id: user!.id });
+      const { error } = await supabase.from(commentsTable).insert({ work_item_id: itemId, body, author_id: user!.id } as any);
       if (error) throw error;
     },
-    onSuccess: () => { setNewComment(''); toast.success('Comment added'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
-    onError: () => toast.error('Failed to add comment'),
+    onSuccess: () => { setNewComment(''); toast.success('Comment added'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] }); },
+    onError: (e: any) => toast.error(`Failed to add comment: ${e?.message ?? ''}`),
   });
 
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: string) => {
-      const { error } = await supabase.from('ph_comments').delete().eq('id', commentId);
+      const { error } = await supabase.from(commentsTable).delete().eq('id', commentId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success('Comment deleted'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
@@ -535,7 +661,7 @@ export default function StoryDetailModal({
 
   const editCommentMutation = useMutation({
     mutationFn: async ({ commentId, body }: { commentId: string; body: string }) => {
-      const { error } = await supabase.from('ph_comments').update({ body }).eq('id', commentId);
+      const { error } = await supabase.from(commentsTable).update({ body }).eq('id', commentId);
       if (error) throw error;
     },
     onSuccess: () => { setEditingCommentId(null); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
@@ -544,10 +670,14 @@ export default function StoryDetailModal({
 
   const deleteIssueMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
+      const { error } = await supabase.from(issueTable).update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success('Ticket deleted'); onClose(); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      toast.success('Ticket deleted'); onClose();
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+    },
     onError: () => toast.error('Failed to delete'),
   });
 
@@ -555,13 +685,13 @@ export default function StoryDetailModal({
     mutationFn: async (file: File) => {
       const ext = file.name.split('.').pop();
       const path = `attachments/${itemId}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('attachments').upload(path, file);
+      const { error: uploadError } = await supabase.storage.from(attachmentsBucket).upload(path, file);
       if (uploadError) throw uploadError;
-      const { error: dbError } = await supabase.from('ph_attachments').insert({ work_item_id: itemId, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id });
+      const { error: dbError } = await supabase.from(attachmentsTable).insert({ work_item_id: itemId, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id } as any);
       if (dbError) throw dbError;
     },
     onSuccess: () => { toast.success('Attachment uploaded'); queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] }); },
-    onError: () => toast.error('Failed to upload'),
+    onError: (e: any) => toast.error(`Failed to upload: ${e?.message ?? ''}`),
   });
 
   const handleCommentSubmit = (html: string) => { if (html.trim()) addCommentMutation.mutate(html); };
@@ -574,13 +704,13 @@ export default function StoryDetailModal({
   const saveFigmaLink = useCallback(() => {
     if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) { setFigmaError('Only Figma URLs accepted (figma.com)'); return; }
     setFigmaError('');
-    supabase.from('ph_attachments').insert({ work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id }).then(({ error }) => {
+    supabase.from(attachmentsTable).insert({ work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id } as any).then(({ error }) => {
       if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
       setFigmaUrl(''); setShowFigmaInput(false);
       toast.success('Figma design link added');
       queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] });
     });
-  }, [figmaUrl, itemId, user, queryClient]);
+  }, [figmaUrl, itemId, user, queryClient, attachmentsTable]);
 
   /* ── AI Apply handlers ─────────────────────── */
   const handleApplyDescription = useCallback(async (newDesc: string, prev: string) => {
@@ -590,9 +720,9 @@ export default function StoryDetailModal({
 
   const handleApplyAC = useCallback(async (newAC: string, _prev: string) => {
     setAcceptanceCriteria(newAC);
-    await supabase.from('ph_issues').update({ acceptance_criteria: newAC }).eq('id', itemId);
+    await supabase.from(issueTable).update({ acceptance_criteria: newAC } as any).eq('id', itemId);
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-  }, [itemId, queryClient]);
+  }, [itemId, queryClient, issueTable]);
 
   const doAiGenerate = useCallback(async () => {
     setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false); setShowAiRegenConfirm(false);
@@ -625,13 +755,14 @@ export default function StoryDetailModal({
   }, [aiGenerating, aiEdited, aiOutput, doAiGenerate]);
 
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
-    await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
-    // Write-back to Jira
-    await enqueueWriteBack({ phIssueId: itemId, fieldName: 'parent', newValue: newParentKey ?? '' });
-    // Refresh detail + all table views across Catalyst
+    await supabase.from(issueTable).update({ parent_key: newParentKey } as any).eq('id', itemId);
+    if (workItemSource === 'jira') {
+      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'parent', newValue: newParentKey ?? '' });
+    }
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
     queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
-  }, [itemId, queryClient]);
+    queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+  }, [itemId, queryClient, issueTable, workItemSource]);
 
   /* ── DERIVED ───────────────────────────────── */
   const statusCategory = issue?.status_category ?? 'todo';
@@ -659,23 +790,26 @@ export default function StoryDetailModal({
     }
     // Save as array of {name} objects to match Jira JSONB format
     const jsonValue = updated.map(n => ({ name: n }));
-    supabase.from('ph_issues').update({ fix_versions: jsonValue } as any).eq('id', itemId).then(async () => {
-      // Log to ph_activity_log — Catalyst-native, Jira-decommission-ready.
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase.from('ph_activity_log').insert({
-          work_item_id: itemId,
-          user_id: user.id,
-          action: 'updated',
-          field_name: 'fix_versions',
-          old_value: current.join(', ') || null,
-          new_value: updated.join(', ') || null,
-        });
+    supabase.from(issueTable).update({ fix_versions: jsonValue } as any).eq('id', itemId).then(async () => {
+      // For Jira items, log to ph_activity_log manually. Catalyst items get
+      // activity rows automatically via tg_catalyst_issue_audit trigger.
+      if (workItemSource === 'jira') {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          await supabase.from('ph_activity_log').insert({
+            work_item_id: itemId,
+            user_id: user.id,
+            action: 'updated',
+            field_name: 'fix_versions',
+            old_value: current.join(', ') || null,
+            new_value: updated.join(', ') || null,
+          });
+        }
       }
       queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
       queryClient.invalidateQueries({ queryKey: ['ph-dashboard-scope-change'] });
     });
-  }, [fixVersionNames, itemId, queryClient]);
+  }, [fixVersionNames, itemId, queryClient, issueTable, workItemSource]);
 
   // Close fix version dropdown on outside click
   useEffect(() => {
@@ -1288,7 +1422,8 @@ export default function StoryDetailModal({
                                 onSave={(adfJson) => {
                                   if (!itemId) { setDescEditMode(false); return; }
                                   const parsed = adfJson ? JSON.parse(adfJson) : null;
-                                  supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', itemId).then(() => {
+                                   const descCol = workItemSource === 'catalyst' ? 'description_adf_raw' : 'description_adf';
+                                   supabase.from(issueTable).update({ [descCol]: parsed } as any).eq('id', itemId).then(() => {
                                     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
                                     queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
                                     queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
@@ -1361,7 +1496,7 @@ export default function StoryDetailModal({
                                   onSave={(adfJson) => {
                                     const parsed = adfJson ? JSON.parse(adfJson) : null;
                                     setAcceptanceCriteria(adfJson);
-                                    supabase.from('ph_issues').update({ acceptance_criteria: parsed }).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                    supabase.from(issueTable).update({ acceptance_criteria: parsed } as any).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
                                     setAcEditMode(false);
                                     setAcUnsaved(false);
                                   }}
