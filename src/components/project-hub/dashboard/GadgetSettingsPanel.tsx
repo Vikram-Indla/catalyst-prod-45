@@ -148,6 +148,31 @@ export default function GadgetSettingsPanel({
     staleTime: 60_000,
   });
 
+  // Distinct issue types from ph_issues for THIS project (scoped — avoids
+  // bleed-through from other projects in multi-project Jira setups).
+  const { data: itemTypes = [] } = useQuery({
+    queryKey: ['gadget-panel-item-types', projectKey],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues' as any)
+        .select('issue_type')
+        .eq('project_key', projectKey)
+        .not('issue_type', 'is', null)
+        .limit(1000);
+      const counts = new Map<string, number>();
+      (data ?? []).forEach((r: any) => {
+        const t = (r.issue_type ?? '').trim();
+        if (!t) return;
+        counts.set(t, (counts.get(t) ?? 0) + 1);
+      });
+      return Array.from(counts.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([value]) => ({ value, label: value }));
+    },
+    enabled: !!projectKey,
+    staleTime: 60_000,
+  });
+
   // Assignees from ph_issues for this project
   const { data: assignees = [] } = useQuery({
     queryKey: ['gadget-panel-assignees', projectKey],
