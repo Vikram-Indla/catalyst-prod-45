@@ -335,14 +335,43 @@ export function SubtasksPanel({
   const { data: children = [], isLoading } = useQuery({
     queryKey: ['childIssues', storyKey],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,fix_versions,jira_created_at')
-        .eq('parent_key', storyKey)
-        .is('deleted_at', null)
-        .order('position', { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as SubtaskRow[];
+      // Phase 5 (Apr 2026): union catalyst_issues alongside ph_issues so
+      // Catalyst-native subtasks render in the same list as Jira-synced ones.
+      const [phRes, catRes] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('id,issue_key,summary,status,status_category,issue_type,assignee_display_name,assignee_account_id,priority,position,deleted_at,fix_versions,jira_created_at')
+          .eq('parent_key', storyKey)
+          .is('deleted_at', null)
+          .order('position', { ascending: true }),
+        supabase
+          .from('catalyst_issues')
+          .select('id,issue_key,title,status,status_category,issue_type,assignee_id,priority,fix_versions,created_at,parent_key,deleted_at')
+          .eq('parent_key', storyKey)
+          .is('deleted_at', null)
+          .order('created_at', { ascending: true }),
+      ]);
+      if (phRes.error) throw phRes.error;
+      const ph = (phRes.data ?? []) as SubtaskRow[];
+      const seen = new Set(ph.map((r) => r.issue_key));
+      const cat: SubtaskRow[] = (catRes.data ?? [])
+        .filter((r: any) => r.issue_key && !seen.has(r.issue_key))
+        .map((r: any) => ({
+          id: r.id,
+          issue_key: r.issue_key,
+          summary: r.title,
+          status: r.status,
+          status_category: (r.status_category as any) ?? (r.status === 'Done' ? 'done' : r.status === 'In Progress' ? 'in_progress' : 'todo'),
+          issue_type: r.issue_type,
+          assignee_account_id: r.assignee_id ?? null,
+          assignee_display_name: null,
+          priority: r.priority,
+          position: null,
+          deleted_at: null,
+          fix_versions: r.fix_versions ?? null,
+          jira_created_at: r.created_at,
+        } as SubtaskRow));
+      return [...ph, ...cat];
     },
     enabled: !!storyKey,
   });
