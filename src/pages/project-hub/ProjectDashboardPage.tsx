@@ -32,8 +32,18 @@ import { supabase } from '@/integrations/supabase/client';
 import { AtlaskitPageShell, Button } from '@/components/ads';
 import DashboardWidgetGrid, { useDashboardWidgetConfig } from '@/components/project-hub/dashboard/DashboardWidgetGrid';
 import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGalleryModal';
+import DashboardDatePicker from '@/components/project-hub/dashboard/DashboardDatePicker';
+import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
 
 export default function ProjectDashboardPage() {
+  return (
+    <DashboardFilterProvider>
+      <ProjectDashboardPageInner />
+    </DashboardFilterProvider>
+  );
+}
+
+function ProjectDashboardPageInner() {
   const { key } = useParams<{ key: string }>();
   const [galleryOpen, setGalleryOpen] = useState(false);
 
