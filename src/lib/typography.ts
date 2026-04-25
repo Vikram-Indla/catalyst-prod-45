@@ -38,7 +38,9 @@
  */
 import { token } from '@atlaskit/tokens';
 
-const FONT_STACK = '"Inter", system-ui, -apple-system, "Segoe UI", sans-serif';
+const FONT_STACK         = 'var(--ds-font-family-body, "Inter", system-ui, sans-serif)';
+const FONT_STACK_HEADING = 'var(--ds-font-family-heading, "Sora", system-ui, sans-serif)';
+const FONT_STACK_MONO    = 'var(--ds-font-family-monospaced, "JetBrains Mono", ui-monospace, monospace)';
 
 export const type = {
   /** Display heading — page titles ("For you", hub names). 20/24/500. */

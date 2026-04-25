@@ -3269,6 +3269,23 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* ═══════════════════════════════════════════════════
+   CATALYST FONT BRIDGE TOKENS — F1 ADS Source of Truth
+   Single source of truth: update values here ONLY.
+   --ds-font-family-* in catalyst-typography.css delegate to these.
+   Tailwind fontFamily, typography.ts, and tokens.ts all read via ADS chain.
+   F2 will swap values to Charlie Display; no pixel change until then.
+   ═══════════════════════════════════════════════════ */
+:root {
+  --cp-font-body:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --cp-font-heading: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --cp-font-mono:    'JetBrains Mono', ui-monospace, 'SF Mono', Consolas, monospace;
+  --cp-font-weight-regular:  400;
+  --cp-font-weight-medium:   500;
+  --cp-font-weight-semibold: 650;
+  --cp-font-weight-bold:     700;
+}
+
+/* ═══════════════════════════════════════════════════
    ECLIPSE — NOCTURNE DARK MODE OVERRIDES v2.0
    Consolidated: April 2026
    DO NOT ADD BLOCKS BELOW THIS — CONSOLIDATE ONLY
