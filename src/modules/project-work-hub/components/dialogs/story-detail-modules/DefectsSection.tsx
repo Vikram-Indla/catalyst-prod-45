@@ -25,11 +25,11 @@ export function DefectsSection({ storyKey, projectKey }: { storyKey: string; pro
     queryKey: ['defects', storyKey],
     queryFn: async () => {
       const [phRes, catRes] = await Promise.all([
-        supabase.from('ph_issues')
+        (supabase as any).from('ph_issues')
           .select('id,issue_key,summary,status,status_category,issue_type,assignee_account_id,assignee_display_name,priority,position,jira_created_at,jira_updated_at,deleted_at')
           .eq('parent_key', storyKey).in('issue_type', ['QA Bug', 'Defect']).is('deleted_at', null).is('archived_at', null)
           .order('position', { ascending: true }),
-        supabase.from('catalyst_issues')
+        (supabase as any).from('catalyst_issues')
           .select('id,issue_key,title,status,issue_type,assignee_id,priority,parent_key,created_at,updated_at')
           .eq('parent_key', storyKey).in('issue_type', ['QA Bug', 'Defect'])
           .order('created_at', { ascending: true }),
