@@ -56,6 +56,7 @@ import Modal, {
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import DynamicTable from '@atlaskit/dynamic-table';
+import { createChildIssue } from '../../lib/workItemRepo';
 import './SubtasksPanel.css';
 
 type VisibleColumn = 'type' | 'key' | 'summary' | 'priority' | 'assignee' | 'status' | 'fixVersions';
