@@ -58,16 +58,26 @@ export default function AllProjectsPage() {
   const toggleFav = useToggleFavorite();
   useProjectsRealtime();
 
-  // Fetch real issue counts from ph_issues to enrich sort
+  // Fetch real issue counts from ph_issues + catalyst_issues to enrich sort
   const { data: syncCountMap } = useQuery({
     queryKey: ['project-sync-counts'],
     queryFn: async () => {
       const map: Record<string, number> = {};
-      const { data: rows } = await typedQuery('v_issue_counts')
-        .select('project_key, cnt');
-      if (rows) {
-        rows.forEach((r: any) => {
+      const [phRes, catRes] = await Promise.all([
+        typedQuery('v_issue_counts').select('project_key, cnt'),
+        (supabase as any).from('catalyst_issues').select('projects!inner(key)'),
+      ]);
+      const phRows = (phRes as any).data;
+      if (phRows) {
+        phRows.forEach((r: any) => {
           if (r.project_key) map[r.project_key] = (map[r.project_key] || 0) + Number(r.cnt || 0);
+        });
+      }
+      const catRows = catRes.data;
+      if (catRows) {
+        catRows.forEach((r: any) => {
+          const k = r.projects?.key;
+          if (k) map[k] = (map[k] || 0) + 1;
         });
       }
       return map;
