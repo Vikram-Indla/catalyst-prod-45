@@ -791,11 +791,12 @@ export function CreateStoryModal({
     }
   }, [projectId, projectKey, projects, form.projectId, updateField]);
 
-  // ── Status auto-syncs to work-type's initial status ──────────────────────
+  // ── Status auto-syncs to work-type's initial status (DB-first, fallback hardcoded) ──
   useEffect(() => {
-    const initial = INITIAL_STATUS_BY_TYPE[workType] ?? 'To Do';
+    if (statusesLoading) return;
+    const initial = dbInitialStatus ?? INITIAL_STATUS_BY_TYPE[workType] ?? 'To Do';
     if (form.status !== initial) updateField('status', initial);
-  }, [workType]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [workType, dbInitialStatus, statusesLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Options ──────────────────────────────────────────────────────────────
   const projectOptions: IconOption[] = useMemo(
