@@ -164,11 +164,14 @@ function applyPhIssuesLayer2Filters(q: any, f: DashboardWidgetFilters): any {
 
 export function useDashboardStatusCounts(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
@@ -183,6 +186,8 @@ export function useDashboardStatusCounts(
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       // Fall back to 2026 guardrail when no date filter applied
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
@@ -205,11 +210,14 @@ export function useDashboardStatusCounts(
 // ─── Overdue Items ───
 export function useDashboardOverdueItems(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-overdue', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-overdue', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -228,9 +236,8 @@ export function useDashboardOverdueItems(
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
 
-      const { data, error } = await q
-        .order('effective_due_date', { ascending: true })
-        .limit(50);
+      q = applyPhIssuesLayer2Filters(q, filters);
+
       if (error) throw error;
       return data ?? [];
     },
