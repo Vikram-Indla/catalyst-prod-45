@@ -109,11 +109,18 @@ export function useActiveReleases(projectId: string | null | undefined) {
   return useQuery({
     queryKey: ['ph-dashboard-active-releases', projectId],
     queryFn: async () => {
+      const pKey = await getProjectKey(projectId!);
+      const canonicalId = await getCanonicalProjectId(projectId!, pKey);
+      // 🛡️ 2026 GUARDRAIL: only releases with a 2026 target date OR updated in 2026.
       const { data, error } = await supabase
-        .from('releases')
-        .select('id, name, status, start_date, target_date')
-        .eq('project_id', projectId!)
-        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+        .from('rh_releases')
+        .select('id, name, status, target_date, updated_at')
+        .eq('project_id', canonicalId)
+        .neq('status', 'done')
+        .or(
+          `and(target_date.gte.${YEAR_2026_START.slice(0,10)},target_date.lt.${YEAR_2026_END.slice(0,10)}),` +
+          `and(updated_at.gte.${YEAR_2026_START},updated_at.lt.${YEAR_2026_END})`
+        );
       if (error) throw error;
       return data ?? [];
     },
@@ -130,11 +137,13 @@ export function useDashboardStatusCounts(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
 
+      // 🛡️ 2026 GUARDRAIL
       const { data: issues, error } = await supabase
         .from('ph_issues')
         .select('status_category')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (error) throw error;
 
       const counts = { todo: 0, inProgress: 0, done: 0, total: 0 };
@@ -161,6 +170,7 @@ export function useDashboardOverdueItems(projectId: string | null | undefined) {
       if (!pKey) return [];
 
       const today = new Date().toISOString().split('T')[0];
+      // 🛡️ 2026 GUARDRAIL
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, status_category, due_date, assignee_display_name, issue_type')
@@ -169,6 +179,7 @@ export function useDashboardOverdueItems(projectId: string | null | undefined) {
         .neq('status_category', 'Done')
         .lt('due_date', today)
         .not('due_date', 'is', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'))
         .order('due_date', { ascending: true })
         .limit(50);
       if (error) throw error;
@@ -187,12 +198,14 @@ export function useDashboardOnHoldItems(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // 🛡️ 2026 GUARDRAIL
       const { data, error } = await supabase
         .from('ph_issues')
         .select('id, issue_key, summary, status, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
         .ilike('status', '%hold%')
+        .or(or2026('jira_created_at', 'jira_updated_at'))
         .limit(50);
       if (error) throw error;
       return data ?? [];
@@ -210,12 +223,14 @@ export function useDashboardTeamWorkload(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      // 🛡️ 2026 GUARDRAIL
       const { data: issues, error } = await supabase
         .from('ph_issues')
         .select('assignee_display_name, issue_type, status_category')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .neq('status_category', 'Done');
+        .neq('status_category', 'Done')
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (error) throw error;
 
       const map = new Map<string, { assignee: string; total: number; stories: number; bugs: number }>();
@@ -244,19 +259,25 @@ export function useDashboardScopeChange(projectId: string | null | undefined) {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
+      const canonicalId = await getCanonicalProjectId(projectId!, pKey);
+      // 🛡️ 2026 GUARDRAIL: releases with target_date in 2026 (rh_releases is source of truth).
       const { data: releases, error: releasesError } = await supabase
-        .from('releases')
-        .select('id, name, start_date')
-        .eq('project_id', projectId!)
-        .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+        .from('rh_releases')
+        .select('id, name, start_date, target_date')
+        .eq('project_id', canonicalId)
+        .neq('status', 'done')
+        .gte('target_date', YEAR_2026_START.slice(0, 10))
+        .lt('target_date', YEAR_2026_END.slice(0, 10));
       if (releasesError) throw releasesError;
       if (!releases?.length) return [];
 
+      // 🛡️ 2026 GUARDRAIL on issues
       const { data: issues, error: issuesError } = await supabase
         .from('ph_issues')
         .select('fix_versions, jira_created_at')
         .eq('project_key', pKey)
-        .is('deleted_at', null);
+        .is('deleted_at', null)
+        .or(or2026('jira_created_at', 'jira_updated_at'));
       if (issuesError) throw issuesError;
 
       const results: { releaseName: string; totalItems: number; addedAfterStart: number; deltaPercent: number }[] = [];
