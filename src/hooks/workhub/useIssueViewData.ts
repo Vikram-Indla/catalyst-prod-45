@@ -1,6 +1,7 @@
 /**
- * useIssueViewData — Composite hook for the 3-column hierarchy/allwork view
+ * useIssueViewData — Composite hook for the deprecated 3-column allwork view
  * ════════════════════════════════════════════════════════════════════════════
+ * Deprecated 2026-04-25 with the /project-hub/:key/hierarchy/allwork route.
  * Wires to existing Supabase hooks. Maps WorkItem → AllWorkItem shape.
  * Handles: item list, selected item detail, comments, links, history, children.
  */

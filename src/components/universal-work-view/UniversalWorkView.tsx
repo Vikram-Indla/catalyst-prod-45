@@ -61,7 +61,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
         window.history.pushState(
           {},
           '',
-          `/project-hub/${params.project}/hierarchy/allwork?selectedIssue=${key}`,
+          `/project-hub/${params.project}/allwork?issue=${key}`,
         );
         // Trigger a navigation event so React Router picks it up.
         window.dispatchEvent(new PopStateEvent('popstate'));

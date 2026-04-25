@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { ENABLE_AI, ENABLE_WIKI, ENABLE_KNOWLEDGE_HUB, ENABLE_HEAVY_EXPORTS } from '../lib/featureFlags';
 import { FeatureComingSoon } from '../components/common/FeatureComingSoon';
 import { ModuleGate } from '../components/common/ModuleGate';
@@ -44,7 +44,17 @@ const StoryDetailPageLazy = lazy(() => import("../pages/project-hub/StoryDetailP
 const IssueDetailPageLazy = lazy(() => import("../pages/project-hub/IssueDetailPage"));
 const HierarchyPageLazy = lazy(() => import("../pages/project-hub/HierarchyPage"));
 const ProjectJiraLayoutLazy = lazy(() => import("../pages/project-hub/jira-list/ProjectJiraLayout"));
-const HierarchyAllWorkPageLazy = lazy(() => import("../pages/project-hub/HierarchyAllWorkPage"));
+// Deprecated 2026-04-25: /project-hub/:key/hierarchy/allwork now redirects to /project-hub/:key/allwork.
+// HierarchyAllWorkPage is no longer mounted; the page module is retained for reference until removal.
+function HierarchyAllWorkRedirect() {
+  const { key } = useParams();
+  const [params] = useSearchParams();
+  const next = new URLSearchParams(params);
+  const legacy = next.get('selectedIssue');
+  if (legacy) { next.delete('selectedIssue'); next.set('issue', legacy); }
+  const qs = next.toString();
+  return <Navigate to={`/project-hub/${key}/allwork${qs ? `?${qs}` : ''}`} replace />;
+}
 const PHPlaceholderBase = lazy(() => import("../pages/project-hub/PhasePlaceholderPage"));
 
 function PHPlaceholder({ title, phase }: { title: string; phase: string }) {
@@ -844,8 +854,8 @@ export default function FullAppRoutes() {
         <Route path="/project-hub/:key/boards" element={<S><KanbanBoardPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/map-statuses" element={<S><MapStatusesPageLazy /></S>} />
         <Route path="/project-hub/:key/boards/:boardId" element={<S><KanbanBoardPageLazy /></S>} />
-        <Route path="/project-hub/:key/hierarchy/allwork" element={<S><HierarchyAllWorkPageLazy /></S>} />
-        <Route path="/project-hub/:key/hierarchy" element={<Navigate to="allwork" replace />} />
+        <Route path="/project-hub/:key/hierarchy/allwork" element={<HierarchyAllWorkRedirect />} />
+        <Route path="/project-hub/:key/hierarchy" element={<Navigate to="../allwork" replace />} />
         <Route path="/project-hub/:key/list" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/allwork" element={<S><ProjectJiraLayoutLazy /></S>} />
         <Route path="/project-hub/:key/timeline" element={<PHPlaceholder title="Timeline" phase="Phase 3" />} />
