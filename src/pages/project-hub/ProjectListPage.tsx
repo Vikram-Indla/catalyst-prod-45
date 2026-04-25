@@ -78,18 +78,31 @@ export default function ProjectListPage() {
     queryFn: async () => {
       if (rawProjects.length === 0) return {};
       const keys = rawProjects.map(p => p.key);
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select('project_key, assignee_display_name')
-        .in('project_key', keys)
-        .is('deleted_at', null)
-        .not('assignee_display_name', 'is', null);
-      if (error) return {};
+      const [phRes, catRes] = await Promise.all([
+        supabase
+          .from('ph_issues')
+          .select('project_key, assignee_display_name')
+          .in('project_key', keys)
+          .is('deleted_at', null)
+          .not('assignee_display_name', 'is', null),
+        (supabase as any)
+          .from('catalyst_issues')
+          .select('assignee_id, projects!inner(key)')
+          .in('projects.key', keys)
+          .not('assignee_id', 'is', null),
+      ]);
+      if (phRes.error) return {};
       const map: Record<string, Set<string>> = {};
-      (data || []).forEach((r: any) => {
+      (phRes.data || []).forEach((r: any) => {
         if (!r.assignee_display_name) return;
         if (!map[r.project_key]) map[r.project_key] = new Set();
         map[r.project_key].add(r.assignee_display_name);
+      });
+      (catRes.data || []).forEach((r: any) => {
+        const k = r.projects?.key;
+        if (!k || !r.assignee_id) return;
+        if (!map[k]) map[k] = new Set();
+        map[k].add(String(r.assignee_id));
       });
       const result: Record<string, string[]> = {};
       Object.entries(map).forEach(([k, v]) => { result[k] = Array.from(v).sort(); });
