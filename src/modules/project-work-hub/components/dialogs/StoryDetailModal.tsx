@@ -220,9 +220,11 @@ export default function StoryDetailModal({
         }
       }
 
-      // Resolve parent (catalyst uses parent_id uuid → look up issue_key)
-      let parentKey: string | null = null;
-      if (cat.parent_id) {
+      // Resolve parent — prefer the native parent_key text column (Phase 2
+      // parity); fall back to parent_id uuid lookup; finally fall back to
+      // ph_issue_links 'parent' edge (cross-source parents).
+      let parentKey: string | null = (cat as any).parent_key ?? null;
+      if (!parentKey && cat.parent_id) {
         const { data: par } = await supabase
           .from('catalyst_issues')
           .select('issue_key')
@@ -230,11 +232,19 @@ export default function StoryDetailModal({
           .maybeSingle();
         parentKey = par?.issue_key ?? null;
       }
+      if (!parentKey && cat.issue_key) {
+        const { data: linkRow } = await supabase
+          .from('ph_issue_links')
+          .select('target_issue_key')
+          .eq('source_issue_key', cat.issue_key)
+          .eq('link_type', 'parent')
+          .maybeSingle();
+        parentKey = linkRow?.target_issue_key ?? null;
+      }
 
-      // Acceptance criteria — preserved as a JSON extension key when the editor
-      // saves it (see handleApplyAC). Read it back from description_adf_raw.
-      const acExt = (cat.description_adf_raw && typeof cat.description_adf_raw === 'object'
-        && (cat.description_adf_raw as any).__catalyst_extensions?.acceptance_criteria) ?? null;
+      // Acceptance criteria — native jsonb column on catalyst_issues
+      // (parity migration 20260425185838).
+      const acExt = (cat as any).acceptance_criteria ?? null;
 
       const assignee = cat.assignee_id ? profileMap.get(cat.assignee_id) : undefined;
       const reporter = cat.reporter_id ? profileMap.get(cat.reporter_id) : undefined;
