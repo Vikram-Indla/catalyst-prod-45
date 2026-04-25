@@ -308,11 +308,11 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment-unlinked', projectKey, settings.include_stories, settings.include_defects],
     queryFn: async (): Promise<UnlinkedEpic[]> => {
-      // Fetch all linked epic ids first
+      // Fetch all linked epic ids first (es_initiative_epics — canonical join table).
       const { data: links } = await (supabase as any)
-        .from('ph_initiative_links')
-        .select('issue_id');
-      const linkedIds = new Set((links ?? []).map((l: any) => l.issue_id));
+        .from('es_initiative_epics')
+        .select('epic_id');
+      const linkedIds = new Set((links ?? []).map((l: any) => l.epic_id));
 
       const { data: epics } = await (supabase as any)
         .from('ph_issues')
@@ -410,15 +410,15 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment', projectKey, settings],
     queryFn: async (): Promise<DemandRow[]> => {
-      // 1) Fetch epic↔initiative links (ph_initiative_links).
+      // 1) Fetch epic↔initiative links (es_initiative_epics — canonical join table).
       const { data: links } = await (supabase as any)
-        .from('ph_initiative_links')
-        .select('initiative_id, issue_id');
+        .from('es_initiative_epics')
+        .select('initiative_id, epic_id');
 
       if (!links || links.length === 0) return [];
 
       const initiativeIds = Array.from(new Set(links.map((l: any) => l.initiative_id)));
-      const epicIds = Array.from(new Set(links.map((l: any) => l.issue_id)));
+      const epicIds = Array.from(new Set(links.map((l: any) => l.epic_id)));
 
       // 2) Fetch initiatives (filtered later by scope; do not filter on status).
       const { data: initiatives } = await (supabase as any)
@@ -512,7 +512,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
       // Group epics under their MDT.
       const epicsByInitiative = new Map<string, EpicRow[]>();
       links.forEach((l: any) => {
-        const epicKey = epicByIdToKey.get(l.issue_id);
+        const epicKey = epicByIdToKey.get(l.epic_id);
         if (!epicKey) return;
         const epic = epicByKey.get(epicKey);
         if (!epic) return;
