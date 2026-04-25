@@ -251,17 +251,26 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey, so
     const att = pendingDelete;
     setPendingDelete(null);
     try {
-      const { data, error } = await supabase.functions.invoke('attachment-delete', {
-        body: { attachmentId: att.id },
-      });
-      if (error) throw error;
-      if (data && (data as any).error) throw new Error((data as any).error);
+      if (source === 'catalyst') {
+        // Catalyst path — inline delete (no dedicated edge function yet).
+        // RLS on catalyst_attachments enforces uploader-or-admin permission.
+        await supabase.storage.from(BUCKET).remove([att.storage_path]);
+        const { error: dbErr } = await supabase.from(ATTACHMENTS_TABLE as any).delete().eq('id', att.id);
+        if (dbErr) throw dbErr;
+      } else {
+        // Jira path — go through hardened edge function (handles signed cleanup).
+        const { data, error } = await supabase.functions.invoke('attachment-delete', {
+          body: { attachmentId: att.id },
+        });
+        if (error) throw error;
+        if (data && (data as any).error) throw new Error((data as any).error);
+      }
       toast.success('Attachment deleted');
       invalidate();
     } catch (e) {
       toast.error(`Delete failed: ${e instanceof Error ? e.message : 'Unknown'}`);
     }
-  }, [pendingDelete, invalidate]);
+  }, [pendingDelete, invalidate, source, BUCKET, ATTACHMENTS_TABLE]);
 
   /* ───── DOWNLOAD ALL (zip) ───── */
   const handleDownloadAll = useCallback(async () => {
