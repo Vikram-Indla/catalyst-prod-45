@@ -289,11 +289,14 @@ export function useDashboardOnHoldItems(
 // ─── Team Workload — active releases only ───
 export function useDashboardTeamWorkload(
   projectId: string | null | undefined,
-  filters: DashboardDateFilter = {},
+  filters: DashboardWidgetFilters = {},
 ) {
-  const { dateFrom = null, dateTo = null } = filters;
+  const { dateFrom = null, dateTo = null,
+    statusFilter = [], releaseFilter = [], assigneeFilter = [],
+    itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery({
-    queryKey: ['ph-dashboard-team-workload', projectId, dateFrom, dateTo],
+    queryKey: ['ph-dashboard-team-workload', projectId, dateFrom, dateTo,
+      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
@@ -308,6 +311,8 @@ export function useDashboardTeamWorkload(
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+
+      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
