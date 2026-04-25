@@ -82,7 +82,6 @@ const keyPressableStyles = xcss({
 // -webkit-line-clamp idiom — token-resolved colour, no literal hex.
 const summaryStyles = xcss({
   display: '-webkit-box',
-  // @ts-expect-error — non-standard but required for line-clamp; safe per ADS guidance.
   WebkitLineClamp: '2',
   WebkitBoxOrient: 'vertical',
   overflow: 'hidden',
@@ -197,7 +196,7 @@ export default function ThemeIssueList({ issueKeys }: ThemeIssueListProps) {
                 child string in a Box span carrying the line-clamp xcss.
                 Full text remains in `title` so hover/long-press users get
                 the untruncated string. */}
-            <Heading size="xsmall" as="p">
+            <Heading size="xsmall" as="span">
               <Box as="span" xcss={summaryStyles} title={row.summary}>
                 {row.summary}
               </Box>
