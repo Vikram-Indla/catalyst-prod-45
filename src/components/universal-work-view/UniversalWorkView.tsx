@@ -109,6 +109,7 @@ export function UniversalWorkView({ params, onClose }: Props) {
     >
       <UWVToolbar
         title={title}
+        subtitle={params.subtitle}
         filteredCount={allItems.length}
         totalCount={totalCount}
         searchText={searchText}
