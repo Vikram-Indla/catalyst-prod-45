@@ -155,6 +155,13 @@ These are hard-won lessons from the ECLIPSE pipeline. Violating them causes regr
 > **Debug pattern:** If a Supabase query returns empty unexpectedly, check column types first.
 > RCA: BAU-5389 convert-to-subtask parent search returned 0 results for 6 consecutive fix attempts.
 
+**L43 — PlanHub typography is now on the bridge (F5, Apr 2026)**
+> `--ph-font` (planhub.css) and `--pln-cal-font-family` (planner-calendar.css) now delegate to
+> `var(--cp-font-body)`. The G1 PlanHub ring-fence is lifted for typography only. Row heights and
+> layout tokens remain ring-fenced under `--ph-*` / `--planner-*`. Charlie renders at the same
+> metrics as Inter — no row height inflation expected, but smoke-test the gantt/calendar on each
+> PlanHub deploy.
+
 ### ProjectHub Violation Pattern (S7 RCA)
 
 **Root cause:** Multiple `.dark .bg-white { background: ... !important }` blocks in `index.css` create elevation token conflicts.
