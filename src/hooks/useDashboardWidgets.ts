@@ -164,41 +164,61 @@ function applyPhIssuesLayer2Filters(q: any, f: DashboardWidgetFilters): any {
 
 export function useDashboardStatusCounts(
   projectId: string | null | undefined,
-  filters: DashboardWidgetFilters = {},
+  filters: DashboardWidgetFilters & { blockedStatuses?: string[] } = {},
 ) {
-  const { dateFrom = null, dateTo = null,
-    statusFilter = [], releaseFilter = [], assigneeFilter = [],
-    itemTypeFilter = [], priorityFilter = [] } = filters;
+  const {
+    dateFrom = null,
+    dateTo = null,
+    blockedStatuses = ['on hold', 'blocked', 'awaiting info', 'impediment'],
+  } = filters;
+
   return useQuery({
-    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo,
-      statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
+    queryKey: ['ph-dashboard-status-counts', projectId, dateFrom, dateTo, blockedStatuses],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
-      if (!pKey) return { todo: 0, inProgress: 0, done: 0, total: 0 };
+      if (!pKey) return {
+        todo: 0, inProgress: 0, done: 0, blocked: 0, total: 0,
+        blockedDetail: { onHold: 0, awaitingInfo: 0, blocked: 0 },
+      };
 
       let q = supabase
         .from('ph_issues')
-        .select('status_category')
+        .select('status_category, status')
         .eq('project_key', pKey)
         .is('deleted_at', null);
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
-      if (dateTo) q = q.lte('jira_created_at', dateTo);
-      // Fall back to 2026 guardrail when no date filter applied
+      if (dateTo)   q = q.lte('jira_created_at', dateTo);
       if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
-
-      q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
 
-      const counts = { todo: 0, inProgress: 0, done: 0, total: 0 };
+      const counts = {
+        todo: 0, inProgress: 0, done: 0, blocked: 0, total: 0,
+        blockedDetail: { onHold: 0, awaitingInfo: 0, blocked: 0 },
+      };
+
       for (const issue of issues ?? []) {
         counts.total++;
-        const cat = (issue.status_category || '').toLowerCase();
-        if (cat === 'done') counts.done++;
-        else if (cat === 'in progress' || cat === 'in_progress') counts.inProgress++;
-        else counts.todo++;
+        const rawStatus = (issue.status ?? '').toLowerCase();
+        const cat       = (issue.status_category ?? '').toLowerCase();
+
+        // Blocked check fires first — pulls matching items out of todo/inProgress.
+        const isBlocked = blockedStatuses.some((s) => rawStatus.includes(s.toLowerCase()));
+
+        if (isBlocked) {
+          counts.blocked++;
+          if (rawStatus.includes('awaiting'))   counts.blockedDetail.awaitingInfo++;
+          else if (rawStatus.includes('block')) counts.blockedDetail.blocked++;
+          else                                  counts.blockedDetail.onHold++;
+        } else if (cat === 'done') {
+          counts.done++;
+        } else if (cat === 'in progress' || cat === 'in_progress') {
+          counts.inProgress++;
+        } else {
+          counts.todo++;
+        }
       }
       return counts;
     },

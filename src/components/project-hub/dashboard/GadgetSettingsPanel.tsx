@@ -17,6 +17,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X, Info, ChevronDown, Check } from 'lucide-react';
+import { token } from '@atlaskit/tokens';
+import { Lozenge } from '@/components/ads';
 
 import { supabase } from '@/integrations/supabase/client';
 import { useDashboardFilter } from '@/contexts/DashboardFilterContext';
@@ -419,6 +421,98 @@ export default function GadgetSettingsPanel({
             onToggle={() => toggleField('priority')}
           />
         </Field>
+
+        {/* Items-by-status: chart type + blocked statuses */}
+        {gadgetType === 'items' && (
+          <div
+            style={{
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              paddingTop: 14, marginTop: 14,
+            }}
+          >
+            <div
+              style={{
+                fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                letterSpacing: '.5px',
+                color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 8,
+              }}
+            >
+              Chart type
+            </div>
+            <div
+              style={{
+                display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6,
+                marginBottom: 16,
+              }}
+            >
+              {(['stacked', 'hbar', 'vbar', 'donut'] as const).map((t) => {
+                const labels = {
+                  stacked: 'Stacked bar', hbar: 'Horizontal bars',
+                  vbar: 'Vertical bars',  donut: 'Donut',
+                };
+                const active = (draft.gadgetSpecific?.chartType ?? 'stacked') === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() =>
+                      setDraft((d) => ({
+                        ...d,
+                        gadgetSpecific: { ...d.gadgetSpecific, chartType: t },
+                      }))
+                    }
+                    style={{
+                      padding: '6px 10px',
+                      fontSize: 12,
+                      borderRadius: 3,
+                      cursor: 'pointer',
+                      border: active ? '1px solid #0052CC' : '1px solid #DFE1E6',
+                      background: active ? '#DEEBFF' : '#F4F5F7',
+                      color: active ? '#0052CC' : '#42526E',
+                      fontWeight: active ? 500 : 400,
+                      textAlign: 'left',
+                    }}
+                  >
+                    {labels[t]}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              style={{
+                fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
+                letterSpacing: '.5px',
+                color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 6,
+              }}
+            >
+              Blocked statuses
+            </div>
+            <div
+              style={{
+                fontSize: 11, color: token('color.text.subtle', '#6B778C'),
+                marginBottom: 8, lineHeight: 1.5,
+              }}
+            >
+              Items matching these Jira statuses are counted in the Blocked bucket.
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+              {['On Hold', 'Awaiting Info', 'Blocked', 'Impediment'].map((s) => (
+                <Lozenge key={s} appearance="moved">{s}</Lozenge>
+              ))}
+            </div>
+            <div
+              style={{
+                fontSize: 11, color: token('color.text.subtlest', '#97A0AF'),
+                fontStyle: 'italic',
+              }}
+            >
+              Customisation coming in a future release.
+            </div>
+          </div>
+        )}
 
         {/* Gadget-specific tail */}
         <GadgetSpecific
