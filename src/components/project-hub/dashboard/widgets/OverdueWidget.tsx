@@ -38,24 +38,26 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
     </>
   );
 
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub'],
+    dataType: 'overdue',
+    title: `Overdue Items · ${projectKey}`,
+    scope: settings.dateFrom ? 'custom' : 'all',
+    dateFrom: settings.dateFrom ?? null,
+    dateTo: settings.dateTo ?? null,
+    dateLabel: settings.dateLabel,
+    statusFilter: settings.statusFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
+    releaseFilter: settings.releaseFilter,
+  });
+
   const footer = (
     <button
       type="button"
-      onClick={() => openUWV({
-        project: projectKey,
-        hubSource: ['projecthub'],
-        dataType: 'overdue',
-        title: `Overdue Items · ${projectKey}`,
-        scope: settings.dateFrom ? 'custom' : 'all',
-        dateFrom: settings.dateFrom ?? null,
-        dateTo: settings.dateTo ?? null,
-        dateLabel: settings.dateLabel,
-        statusFilter: settings.statusFilter,
-        assigneeFilter: settings.assigneeFilter,
-        itemTypeFilter: settings.itemTypeFilter,
-        priorityFilter: settings.priorityFilter,
-        releaseFilter: settings.releaseFilter,
-      })}
+      onClick={handleExpand}
       style={{
         background: 'transparent',
         border: 0,
@@ -81,6 +83,7 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
       span={1}
       headerBadges={badge}
       footer={footer}
+      onExpand={handleExpand}
     >
       {isLoading ? (
         <div className="animate-pulse">

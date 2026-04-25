@@ -46,24 +46,26 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
   });
   const { openUWV } = useUWV();
 
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['testhub'],
+    dataType: 'defects',
+    title: `QA Defects · ${projectKey}`,
+    scope: settings.dateFrom ? 'custom' : 'all',
+    dateFrom: settings.dateFrom ?? null,
+    dateTo: settings.dateTo ?? null,
+    dateLabel: settings.dateLabel,
+    statusFilter: settings.statusFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
+    releaseFilter: settings.releaseFilter,
+  });
+
   const footer = (
     <button
       type="button"
-      onClick={() => openUWV({
-        project: projectKey,
-        hubSource: ['testhub'],
-        dataType: 'defects',
-        title: `QA Defects · ${projectKey}`,
-        scope: settings.dateFrom ? 'custom' : 'all',
-        dateFrom: settings.dateFrom ?? null,
-        dateTo: settings.dateTo ?? null,
-        dateLabel: settings.dateLabel,
-        statusFilter: settings.statusFilter,
-        assigneeFilter: settings.assigneeFilter,
-        itemTypeFilter: settings.itemTypeFilter,
-        priorityFilter: settings.priorityFilter,
-        releaseFilter: settings.releaseFilter,
-      })}
+      onClick={handleExpand}
       style={{
         background: 'transparent',
         border: 0,
@@ -196,6 +198,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
       span={1}
       footer={footer}
       flushBody
+      onExpand={handleExpand}
       headerBadges={<WidgetGearButton gadgetType="qa" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (

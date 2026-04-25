@@ -729,62 +729,133 @@ export function useDashboardRecentActivity(
     statusFilter = [], releaseFilter = [], assigneeFilter = [],
     itemTypeFilter = [], priorityFilter = [] } = filters;
   return useQuery<DashboardActivityItem[]>({
-    queryKey: ['ph-dashboard-recent-activity', projectId, dateFrom, dateTo,
+    queryKey: ['ph-dashboard-recent-activity-v2', projectId, dateFrom, dateTo,
       statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
     queryFn: async () => {
       const pKey = await getProjectKey(projectId!);
       if (!pKey) return [];
 
-      // 🛡️ 2026 GUARDRAIL on parent issues (used to scope activity to this project).
-      // Layer 2 filters narrow the parent issue set, which in turn scopes activity rows.
-      let iq = supabase
-        .from('ph_issues')
-        .select('id, issue_key, summary, status')
-        .eq('project_key', pKey)
-        .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'));
-      iq = applyPhIssuesLayer2Filters(iq, filters);
-      const { data: issues, error: issuesError } = await iq;
-      if (issuesError) throw issuesError;
+      // ─── DEFAULT: last 14 days. The previous implementation read from
+      // `work_item_activity` which is RLS-locked per user_id (not project-
+      // scoped) and contains only 3 rows in this tenant — useless for a
+      // project-level "what's happening" feed. New implementation merges
+      // three project-scoped sources:
+      //   1. ph_issues — every recently-updated issue
+      //   2. catalyst_status_history — every status transition
+      //   3. tm_defects — every recently-updated QA defect
+      // Result is sorted desc by occurred_at, capped at 20 rows.
+      const TWO_WEEKS_MS = 14 * 24 * 60 * 60 * 1000;
+      const fromIso = dateFrom ?? new Date(Date.now() - TWO_WEEKS_MS).toISOString();
+      const toIso = dateTo ?? new Date().toISOString();
 
-      const issueMap = new Map<string, { issue_key: string | null; summary: string | null; status: string | null }>();
-      for (const i of issues ?? []) {
-        if (i.id) issueMap.set(i.id, { issue_key: i.issue_key, summary: i.summary, status: i.status });
+      const events: DashboardActivityItem[] = [];
+
+      // 1. ph_issues — updates within the window
+      try {
+        let iq = supabase
+          .from('ph_issues')
+          .select('issue_key, summary, status, issue_type, jira_created_at, jira_updated_at, assignee_display_name')
+          .eq('project_key', pKey)
+          .is('deleted_at', null)
+          .gte('jira_updated_at', fromIso)
+          .lte('jira_updated_at', toIso);
+        iq = applyPhIssuesLayer2Filters(iq, filters);
+        const { data: issues } = await iq.order('jira_updated_at', { ascending: false }).limit(50);
+        for (const i of issues ?? []) {
+          const created = i.jira_created_at ? new Date(i.jira_created_at).getTime() : 0;
+          const updated = i.jira_updated_at ? new Date(i.jira_updated_at).getTime() : 0;
+          const isCreated = updated && created && Math.abs(updated - created) < 60_000;
+          events.push({
+            id: `ph:${i.issue_key}:${i.jira_updated_at}`,
+            work_item_id: i.issue_key,
+            work_item_type: i.issue_type ?? 'task',
+            activity_type: isCreated ? 'created' : 'updated',
+            activity_label: isCreated ? 'Created' : 'Updated',
+            occurred_at: i.jira_updated_at,
+            metadata: { assignee: i.assignee_display_name },
+            issue_key: i.issue_key,
+            summary: i.summary,
+            status: i.status,
+          });
+        }
+      } catch {
+        /* soft-fail per source */
       }
-      if (!issueMap.size) return [];
 
-      // Per-gadget date filter overrides 2026 guardrail when supplied
-      let aq = supabase
-        .from('work_item_activity')
-        .select('id, work_item_id, work_item_type, activity_type, occurred_at, metadata');
-      if (dateFrom) aq = aq.gte('occurred_at', dateFrom);
-      else aq = aq.gte('occurred_at', YEAR_2026_START);
-      if (dateTo) aq = aq.lte('occurred_at', dateTo);
-      else if (!dateFrom) aq = aq.lt('occurred_at', YEAR_2026_END);
+      // 2. catalyst_status_history — status transitions within the window
+      try {
+        const { data: trans } = await supabase
+          .from('catalyst_status_history')
+          .select('issue_key, from_status, to_status, changed_at')
+          .eq('project_key', pKey)
+          .gte('changed_at', fromIso)
+          .lte('changed_at', toIso)
+          .order('changed_at', { ascending: false })
+          .limit(50);
+        for (const t of trans ?? []) {
+          events.push({
+            id: `csh:${t.issue_key}:${t.changed_at}:${t.to_status}`,
+            work_item_id: t.issue_key,
+            work_item_type: 'task',
+            activity_type: 'status_changed',
+            activity_label: t.from_status
+              ? `Status: ${t.from_status} → ${t.to_status}`
+              : `Status set: ${t.to_status}`,
+            occurred_at: t.changed_at,
+            metadata: { from_status: t.from_status, to_status: t.to_status },
+            issue_key: t.issue_key,
+            summary: null,
+            status: t.to_status,
+          });
+        }
+      } catch {
+        /* table may not exist — soft-fail */
+      }
 
-      const { data: activity, error: actError } = await aq
-        .order('occurred_at', { ascending: false })
-        .limit(500);
-      if (actError) throw actError;
+      // 3. tm_defects — QA defect updates within the window
+      try {
+        const { data: defects } = await supabase
+          .from('tm_defects')
+          .select('defect_key, jira_key, title, status, severity, jira_assignee_name, created_at, updated_at')
+          .eq('jira_project_key', pKey)
+          .gte('updated_at', fromIso)
+          .lte('updated_at', toIso)
+          .order('updated_at', { ascending: false })
+          .limit(50);
+        for (const d of defects ?? []) {
+          events.push({
+            id: `def:${d.defect_key ?? d.jira_key}:${d.updated_at}`,
+            work_item_id: d.jira_key ?? d.defect_key,
+            work_item_type: 'bug',
+            activity_type: 'updated',
+            activity_label: 'Defect updated',
+            occurred_at: d.updated_at,
+            metadata: { severity: d.severity, assignee: d.jira_assignee_name },
+            issue_key: d.jira_key ?? d.defect_key,
+            summary: d.title,
+            status: d.status,
+          });
+        }
+      } catch {
+        /* soft-fail */
+      }
 
-      const scoped = (activity ?? []).filter((a: any) => issueMap.has(a.work_item_id)).slice(0, 20);
+      // Sort merged events by recency desc, dedupe by id, cap at 20
+      const seen = new Set<string>();
+      const merged = events
+        .filter((e) => {
+          if (seen.has(e.id)) return false;
+          seen.add(e.id);
+          return true;
+        })
+        .sort((a, b) => {
+          const ta = a.occurred_at ? new Date(a.occurred_at).getTime() : 0;
+          const tb = b.occurred_at ? new Date(b.occurred_at).getTime() : 0;
+          return tb - ta;
+        })
+        .slice(0, 20);
 
-      // Step C: merge
-      return scoped.map((a: any) => {
-        const issue = issueMap.get(a.work_item_id);
-        return {
-          id: a.id,
-          work_item_id: a.work_item_id,
-          work_item_type: a.work_item_type,
-          activity_type: a.activity_type,
-          activity_label: ACTIVITY_LABELS[a.activity_type] ?? a.activity_type,
-          occurred_at: a.occurred_at,
-          metadata: a.metadata,
-          issue_key: issue?.issue_key ?? null,
-          summary: issue?.summary ?? null,
-          status: issue?.status ?? null,
-        };
-      });
+      return merged;
     },
     enabled: !!projectId,
     staleTime: 30_000,
@@ -944,8 +1015,10 @@ export interface TimeInStatusMatrixRow {
   assignee_display_name: string | null;
   assignee_avatar_url: string | null;
   jira_created_at: string | null;
-  /** ms spent in each status, keyed by status name */
+  /** ms spent in each status (summed across all visits), keyed by status name */
   byStatus: Record<string, number>;
+  /** number of distinct visits to each status. > 1 means the ticket re-entered. */
+  visitsByStatus: Record<string, number>;
   totalMs: number;
   hasHistory: boolean;
 }
@@ -994,66 +1067,115 @@ export function useTimeInStatusMatrix(
     enabled: !!projectKey && !!issueType,
     staleTime: 60_000,
     queryFn: async (): Promise<TimeInStatusMatrixResult> => {
-      // 1. Workflow status definitions for this issue type
-      const { data: schemes } = await typedQuery('catalyst_workflow_schemes' as any)
-        .select('id')
-        .eq('issue_type', issueType)
-        .eq('is_default', true)
-        .eq('is_active', true)
-        .limit(1);
-      const schemeId = (schemes as any)?.[0]?.id;
-
+      // 1. Workflow status definitions — soft-fail if missing.
+      //    Catalyst exposes columns even with zero schemes (degraded mode).
       let statusColumns: TimeInStatusMatrixResult['statusColumns'] = [];
-      if (schemeId) {
-        const { data: statuses } = await typedQuery('catalyst_workflow_statuses' as any)
-          .select('name, category, position')
-          .eq('scheme_id', schemeId)
-          .order('position', { ascending: true });
-        statusColumns = ((statuses as any) ?? []).map((s: any) => ({
-          name: s.name,
-          category: s.category,
-          position: s.position,
-        }));
+      try {
+        const { data: schemes } = await typedQuery('catalyst_workflow_schemes' as any)
+          .select('id')
+          .eq('issue_type', issueType)
+          .eq('is_default', true)
+          .eq('is_active', true)
+          .limit(1);
+        const schemeId = (schemes as any)?.[0]?.id;
+        if (schemeId) {
+          const { data: statuses } = await typedQuery('catalyst_workflow_statuses' as any)
+            .select('name, category, position')
+            .eq('scheme_id', schemeId)
+            .order('position', { ascending: true });
+          statusColumns = ((statuses as any) ?? []).map((s: any) => ({
+            name: s.name,
+            category: s.category,
+            position: s.position,
+          }));
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('[TimeInStatus] workflow lookup failed — falling back to discovered statuses', e);
       }
 
-      // 2. Tickets of this issue type for the project
-      let tq = supabase
-        .from('ph_issues')
-        .select(
-          'issue_key, project_key, summary, issue_type, status, priority, assignee_display_name, jira_created_at, jira_updated_at',
-          { count: 'exact' },
-        )
-        .eq('project_key', projectKey!)
-        .eq('issue_type', issueType);
+      // 2. Tickets — try with full select, fall back on column errors.
+      let tickets: any[] | null = null;
+      let count = 0;
+      const buildQuery = () => {
+        let tq = supabase
+          .from('ph_issues')
+          .select(
+            'issue_key, project_key, summary, issue_type, status, priority, assignee_display_name, jira_created_at, jira_updated_at',
+            { count: 'exact' },
+          )
+          .eq('project_key', projectKey!)
+          .eq('issue_type', issueType);
 
-      if (dateFrom) tq = tq.gte('jira_updated_at', dateFrom);
-      if (dateTo) tq = tq.lte('jira_updated_at', dateTo);
-      if (!dateFrom && !dateTo) tq = tq.or(or2026('jira_created_at', 'jira_updated_at'));
-      if (assigneeFilter.length) tq = tq.in('assignee_display_name', assigneeFilter);
-      if (priorityFilter.length) tq = tq.in('priority', priorityFilter);
+        if (dateFrom) tq = tq.gte('jira_updated_at', dateFrom);
+        if (dateTo) tq = tq.lte('jira_updated_at', dateTo);
+        if (!dateFrom && !dateTo) tq = tq.or(or2026('jira_created_at', 'jira_updated_at'));
+        if (assigneeFilter.length) tq = tq.in('assignee_display_name', assigneeFilter);
+        if (priorityFilter.length) tq = tq.in('priority', priorityFilter);
 
-      const { data: tickets, error: tErr, count } = await tq
-        .order('jira_updated_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-      if (tErr) throw tErr;
+        return tq
+          .order('jira_updated_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+      };
+
+      const r1 = await buildQuery();
+      if (r1.error) {
+        // Retry without `priority` (in case the column doesn't exist on this tenant)
+        const fallbackSelect =
+          'issue_key, project_key, summary, issue_type, status, assignee_display_name, jira_created_at, jira_updated_at';
+        let tq2 = supabase
+          .from('ph_issues')
+          .select(fallbackSelect, { count: 'exact' })
+          .eq('project_key', projectKey!)
+          .eq('issue_type', issueType);
+        if (dateFrom) tq2 = tq2.gte('jira_updated_at', dateFrom);
+        if (dateTo) tq2 = tq2.lte('jira_updated_at', dateTo);
+        if (!dateFrom && !dateTo) tq2 = tq2.or(or2026('jira_created_at', 'jira_updated_at'));
+        if (assigneeFilter.length) tq2 = tq2.in('assignee_display_name', assigneeFilter);
+        const r2 = await tq2
+          .order('jira_updated_at', { ascending: false })
+          .range(offset, offset + limit - 1);
+        if (r2.error) {
+          // eslint-disable-next-line no-console
+          console.error('[TimeInStatus] ph_issues query failed', r2.error);
+          throw r2.error;
+        }
+        tickets = r2.data;
+        count = r2.count ?? 0;
+      } else {
+        tickets = r1.data;
+        count = r1.count ?? 0;
+      }
 
       const issueKeys = (tickets ?? []).map((t: any) => t.issue_key);
       if (!issueKeys.length) {
         return {
           rows: [],
           statusColumns,
-          total: count ?? 0,
+          total: count,
           hasAnyHistory: false,
         };
       }
 
-      // 3. Transitions for these tickets
-      const { data: transitions } = await supabase
-        .from('catalyst_status_history')
-        .select('issue_key, from_status, to_status, changed_at')
-        .eq('project_key', projectKey!)
-        .in('issue_key', issueKeys)
-        .order('changed_at', { ascending: true });
+      // 3. Transitions — soft-fail (RLS denial / missing table both ok).
+      let transitions: any[] | null = [];
+      try {
+        const { data, error } = await supabase
+          .from('catalyst_status_history')
+          .select('issue_key, from_status, to_status, changed_at')
+          .eq('project_key', projectKey!)
+          .in('issue_key', issueKeys)
+          .order('changed_at', { ascending: true });
+        if (error) {
+          // eslint-disable-next-line no-console
+          console.warn('[TimeInStatus] history fetch failed (likely RLS or empty table)', error);
+        } else {
+          transitions = data ?? [];
+        }
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.warn('[TimeInStatus] history fetch threw', e);
+      }
 
       const txByKey = new Map<string, any[]>();
       (transitions ?? []).forEach((t: any) => {
@@ -1066,17 +1188,33 @@ export function useTimeInStatusMatrix(
 
       // 4. Compute matrix per ticket
       const now = Date.now();
+      // Edge weights for chronological-frequency column sort:
+      //   for every transition A→B observed, edges[A][B] += 1
+      const edges: Record<string, Record<string, number>> = {};
+      const incEdge = (a: string | null, b: string) => {
+        if (!a || !b) return;
+        edges[a] = edges[a] ?? {};
+        edges[a][b] = (edges[a][b] ?? 0) + 1;
+      };
+
       const rows: TimeInStatusMatrixRow[] = (tickets ?? []).map((tk: any) => {
         const tx = txByKey.get(tk.issue_key) ?? [];
         const byStatus: Record<string, number> = {};
+        const visitsByStatus: Record<string, number> = {};
         const created = tk.jira_created_at ? new Date(tk.jira_created_at).getTime() : null;
 
+        const enterStatus = (s: string | null) => {
+          if (!s) return;
+          visitsByStatus[s] = (visitsByStatus[s] ?? 0) + 1;
+        };
+
         if (tx.length === 0) {
-          // No history rows yet — full duration sits in the current status.
-          // (Either pre-trigger ticket OR a brand new ticket that was
-          // INSERTED before the trigger landed.)
+          // No history yet — full duration sits in current status (1 visit).
           const dur = created ? now - created : 0;
-          if (tk.status) byStatus[tk.status] = dur;
+          if (tk.status) {
+            byStatus[tk.status] = dur;
+            visitsByStatus[tk.status] = 1;
+          }
           return {
             issue_key: tk.issue_key,
             title: tk.summary ?? '',
@@ -1087,42 +1225,47 @@ export function useTimeInStatusMatrix(
             assignee_avatar_url: resolveAvatarUrl(avatarMap, tk.assignee_display_name),
             jira_created_at: tk.jira_created_at,
             byStatus,
+            visitsByStatus,
             totalMs: dur,
             hasHistory: false,
           };
         }
 
-        // Pairwise walk. The first transition's `from_status` (or null
-        // for INSERT-trigger rows) is the entry status.
+        // Pairwise walk + count visits per status entry
         const first = tx[0];
         let prevAt: number;
         let prevStatus: string | null;
         if (first.from_status === null) {
-          // Trigger fired on INSERT — the FIRST status was set at this
-          // transition's changed_at. No prior state.
           prevAt = new Date(first.changed_at).getTime();
           prevStatus = first.to_status;
+          enterStatus(first.to_status);
         } else if (created) {
-          // The ticket existed BEFORE the trigger — its initial state was
-          // first.from_status, held from creation until the first
-          // transition.
-          byStatus[first.from_status] = (byStatus[first.from_status] ?? 0) + (new Date(first.changed_at).getTime() - created);
+          // Ticket existed before trigger — initial state was first.from_status
+          enterStatus(first.from_status);
+          byStatus[first.from_status] =
+            (byStatus[first.from_status] ?? 0) +
+            (new Date(first.changed_at).getTime() - created);
+          incEdge(first.from_status, first.to_status);
           prevAt = new Date(first.changed_at).getTime();
           prevStatus = first.to_status;
+          enterStatus(first.to_status);
         } else {
           prevAt = new Date(first.changed_at).getTime();
           prevStatus = first.to_status;
+          enterStatus(first.to_status);
         }
 
-        // Walk subsequent transitions
         for (let i = 1; i < tx.length; i++) {
           const at = new Date(tx[i].changed_at).getTime();
-          if (prevStatus) byStatus[prevStatus] = (byStatus[prevStatus] ?? 0) + (at - prevAt);
+          if (prevStatus) {
+            byStatus[prevStatus] = (byStatus[prevStatus] ?? 0) + (at - prevAt);
+            incEdge(prevStatus, tx[i].to_status);
+          }
           prevAt = at;
           prevStatus = tx[i].to_status;
+          enterStatus(tx[i].to_status);
         }
 
-        // Final segment: prevStatus held from prevAt to now
         if (prevStatus) byStatus[prevStatus] = (byStatus[prevStatus] ?? 0) + (now - prevAt);
 
         const totalMs = Object.values(byStatus).reduce((a, b) => a + b, 0);
@@ -1137,16 +1280,64 @@ export function useTimeInStatusMatrix(
           assignee_avatar_url: resolveAvatarUrl(avatarMap, tk.assignee_display_name),
           jira_created_at: tk.jira_created_at,
           byStatus,
+          visitsByStatus,
           totalMs,
           hasHistory: true,
         };
       });
 
+      // Chronological column ordering — score each status by
+      // (incoming-edge count) − (outgoing-edge count). Lower score = appears
+      // earlier in typical flow. If no transitions were observed (edges
+      // map is empty), preserve the workflow's `position` ordering.
+      const hasEdgeData = Object.keys(edges).length > 0;
+      if (hasEdgeData && statusColumns.length > 0) {
+        const scoreOf = (name: string) => {
+          let inc = 0;
+          let out = 0;
+          for (const [from, tos] of Object.entries(edges)) {
+            for (const [to, n] of Object.entries(tos)) {
+              if (to === name) inc += n;
+              if (from === name) out += n;
+            }
+          }
+          return inc - out;
+        };
+        statusColumns = [...statusColumns].sort((a, b) => {
+          const sa = scoreOf(a.name);
+          const sb = scoreOf(b.name);
+          if (sa !== sb) return sa - sb;
+          return a.position - b.position;
+        });
+      }
+
       // Sort by total descending — biggest pain first
       rows.sort((a, b) => b.totalMs - a.totalMs);
 
+      // Fallback: if workflow has no configured statuses for this issue type,
+      // derive columns from data we actually saw — every distinct status that
+      // appeared in either current ph_issues.status or transition history.
+      if (statusColumns.length === 0) {
+        const seen = new Map<string, number>();
+        for (const r of rows) {
+          if (r.current_status) seen.set(r.current_status, seen.get(r.current_status) ?? 0);
+          for (const k of Object.keys(r.byStatus)) {
+            if (!seen.has(k)) seen.set(k, seen.size);
+          }
+        }
+        statusColumns = Array.from(seen.keys()).map((name, i) => ({
+          name,
+          // Best-effort category guess via toStatusCategory-like rules
+          category:
+            /done|closed|complete|resolved|shipped/i.test(name) ? 'done'
+            : /progress|review|qa|testing|dev/i.test(name) ? 'in_progress'
+            : 'todo',
+          position: i,
+        }));
+      }
+
       const hasAnyHistory = rows.some((r) => r.hasHistory);
-      return { rows, statusColumns, total: count ?? 0, hasAnyHistory };
+      return { rows, statusColumns, total: count, hasAnyHistory };
     },
   });
 }

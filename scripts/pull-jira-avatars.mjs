@@ -1,3 +1,4 @@
+/**
  * pull-jira-avatars.mjs — Hybrid canonical face puller
  *
  * Flow

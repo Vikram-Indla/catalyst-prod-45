@@ -5821,3 +5821,36 @@ input[type="range"]::-moz-range-thumb {
 [data-catalyst-top-nav] {
   grid-template-columns: auto 1fr auto;
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   PRESENTATION / TV MODE — Apr 25, 2026
+   Toggled by setting `data-presentation` on the <html> element. Scales up
+   typography + spacing inside the project-hub dashboard so the screen reads
+   well on a wall-mounted TV / projector at distance. AAA contrast preserved
+   (we ride the existing color tokens; only sizes change).
+   ──────────────────────────────────────────────────────────────────────── */
+html[data-presentation="true"] {
+  --catalyst-tv-scale: 1.45;
+}
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] {
+  font-size: calc(14px * var(--catalyst-tv-scale, 1));
+}
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] h1 {
+  font-size: calc(20px * var(--catalyst-tv-scale, 1));
+  letter-spacing: 0;
+}
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] h2 {
+  font-size: calc(16px * var(--catalyst-tv-scale, 1));
+}
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] .dashboard-widget-body,
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] .dashboard-widget-body * {
+  font-size: calc(12px * var(--catalyst-tv-scale, 1)) !important;
+  line-height: 1.6 !important;
+}
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="region"] {
+  /* widget cards: more breathing room */
+  padding: 0;
+}
+html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="region"] > div {
+  min-height: 56px !important;
+}

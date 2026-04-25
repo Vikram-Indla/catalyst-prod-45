@@ -8,6 +8,7 @@
 
 import React, { createContext, useContext, useState, useCallback, lazy, Suspense, useEffect } from 'react';
 import Spinner from '@atlaskit/spinner';
+import Drawer from '@atlaskit/drawer';
 import type { UWVParams, UWVState } from './uwv.types';
 
 const UniversalWorkView = lazy(() =>
@@ -68,27 +69,37 @@ export function UWVProvider({ children }: { children: React.ReactNode }) {
   return (
     <UWVContext.Provider value={{ openUWV, closeUWV }}>
       {children}
-      {state.isOpen && state.params && (
-        <Suspense
-          fallback={
-            <div
-              style={{
-                position: 'fixed',
-                inset: 0,
-                zIndex: 510,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                background: '#FFFFFF',
-              }}
-            >
-              <Spinner size="large" />
-            </div>
-          }
-        >
-          <UniversalWorkView params={state.params} onClose={closeUWV} />
-        </Suspense>
-      )}
+      {/* Apr 25, 2026 — UWV is now an Atlaskit Drawer. Replaces the prior
+          full-bleed div overlay. Native: blanket, focus trap, ESC-to-close,
+          slide animation, elevation.shadow.overlay, return-focus-on-close.
+          Width "extended" = calc(100vw - 128px) — executive canvas with a
+          sliver of the dashboard visible behind the blanket. */}
+      <Drawer
+        isOpen={state.isOpen && !!state.params}
+        onClose={closeUWV}
+        width="extended"
+        label={state.params?.title || 'Work view'}
+      >
+        {state.isOpen && state.params && (
+          <Suspense
+            fallback={
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '100%',
+                  width: '100%',
+                }}
+              >
+                <Spinner size="large" />
+              </div>
+            }
+          >
+            <UniversalWorkView params={state.params} onClose={closeUWV} />
+          </Suspense>
+        )}
+      </Drawer>
     </UWVContext.Provider>
   );
 }

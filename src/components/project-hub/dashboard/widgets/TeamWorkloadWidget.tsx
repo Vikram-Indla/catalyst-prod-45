@@ -76,18 +76,23 @@ export default function TeamWorkloadWidget({ projectId, projectKey, collapsed, o
                 openUWV({
                   project: projectKey,
                   hubSource: ['projecthub'],
-                  dataType: 'epics',
+                  // Show ALL work-item types this assignee has, not just epics.
+                  dataType: 'all',
                   title: `Open work · ${w.assignee}`,
                   scope: 'all',
                   // Drill-down: this assignee's open items, exclude closed/done.
                   assigneeFilter: [w.assignee],
                   statusFilter: ['todo', 'in_progress'],
-                  dateFrom: settings.dateFrom ?? null,
-                  dateTo: settings.dateTo ?? null,
-                  dateLabel: settings.dateLabel,
+                  // Drop the date window — open work is open work regardless
+                  // of fiscal quarter. The widget itself counts "open in
+                  // active releases" (not date-bound), so the drill-down
+                  // should match that mental model.
+                  dateFrom: null,
+                  dateTo: null,
+                  dateLabel: 'All open work',
                   releaseFilter: settings.releaseFilter,
-                  itemTypeFilter: settings.itemTypeFilter,
-                  priorityFilter: settings.priorityFilter,
+                  itemTypeFilter: [],
+                  priorityFilter: [],
                 })
               }
               onKeyDown={(e) => {

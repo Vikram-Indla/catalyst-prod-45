@@ -97,19 +97,38 @@ function fmtDuration(ms: number | undefined): string {
   return `${sec}s`;
 }
 
-/** Heatmap shade — relative to max duration in the column. */
-function heatBg(ms: number, max: number): string {
-  if (!ms || ms <= 0 || max <= 0) return 'transparent';
-  const ratio = Math.min(1, ms / max);
-  if (ratio < 0.15) return 'transparent';
-  if (ratio < 0.4)  return 'var(--ds-background-accent-orange-subtler, #FFE2BD)';
-  if (ratio < 0.7)  return 'var(--ds-background-accent-orange-subtler, #F8E6A0)';
-  return 'var(--ds-background-accent-red-subtler, #FFD5D2)';
+/**
+ * Cell background by status category — Jira-canonical colors via ADS tokens.
+ *  todo        → gray  (color.background.accent.gray.subtler)
+ *  in_progress → blue  (color.background.accent.blue.subtler)
+ *  done        → green (color.background.accent.green.subtler)
+ * Empty cells stay transparent. No more peach/red duration heatmap.
+ */
+function categoryBg(category: 'todo' | 'in_progress' | 'done' | undefined, ms: number): string {
+  if (!ms || ms <= 0) return 'transparent';
+  switch (category) {
+    case 'in_progress':
+      return 'var(--ds-background-accent-blue-subtler, #CCE0FF)';
+    case 'done':
+      return 'var(--ds-background-accent-green-subtler, #BAF3DB)';
+    case 'todo':
+    default:
+      return 'var(--ds-background-accent-gray-subtler, #DCDFE4)';
+  }
 }
 
-const ROW_HEIGHT = 36;
-const STATUS_COL_MIN = 96;
-const FROZEN_LEFT_WIDTH = 380; // priority + key + title + assignee
+/** Total-column accent: subtle neutral so it doesn't compete with status cells. */
+function totalBg(ms: number, max: number): string {
+  if (!ms || max <= 0) return 'transparent';
+  const ratio = Math.min(1, ms / max);
+  if (ratio < 0.5) return 'transparent';
+  return 'var(--ds-background-neutral, #F1F2F4)';
+}
+
+const ROW_HEIGHT = 40;
+const STATUS_COL_MIN = 128;       // bumped from 96 — gives "3mo 12d ×2" room to breathe
+const FROZEN_LEFT_WIDTH = 420;    // bumped from 380; priority + key + title + assignee
+const TOTAL_COL_WIDTH = 110;
 
 export default function TimeInStatusWidget({
   projectId,
@@ -164,6 +183,21 @@ export default function TimeInStatusWidget({
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       flushBody
+      onExpand={() =>
+        openUWV({
+          project: projectKey,
+          hubSource: ['projecthub'],
+          dataType: 'all',
+          title: `Time in Status · ${issueType} · ${projectKey}`,
+          scope: 'all',
+          dateFrom,
+          dateTo,
+          dateLabel: WINDOW_LABELS[windowPreset],
+          itemTypeFilter: [issueType],
+          assigneeFilter: settings.assigneeFilter,
+          priorityFilter: settings.priorityFilter,
+        })
+      }
       headerBadges={
         <>
           <Lozenge appearance="default">{String(total)}</Lozenge>
@@ -365,7 +399,8 @@ export default function TimeInStatusWidget({
                   <td
                     style={{
                       position: 'sticky', left: 0,
-                      background: 'inherit',
+                      background: token('elevation.surface', '#FFFFFF'),
+                    boxShadow: '1px 0 0 0 ' + token('color.border', '#E2E8F0'),
                       padding: '6px 12px',
                       borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                       borderRight: `1px solid ${token('color.border', '#E2E8F0')}`,
@@ -403,10 +438,10 @@ export default function TimeInStatusWidget({
                     </div>
                   </td>
 
-                  {/* Status cells */}
+                  {/* Status cells — ADS category colors + ×N revisit counter */}
                   {statusColumns.map((s) => {
                     const ms = r.byStatus[s.name] ?? 0;
-                    const max = colMax[s.name] ?? 0;
+                    const visits = r.visitsByStatus?.[s.name] ?? 0;
                     return (
                       <td
                         key={s.name}
@@ -415,18 +450,48 @@ export default function TimeInStatusWidget({
                           padding: '6px 12px',
                           borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
                           borderRight: `1px solid ${token('color.border', '#E2E8F0')}`,
-                          background: heatBg(ms, max),
+                          background: categoryBg(s.category, ms),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                           fontSize: 11,
-                          color: token('color.text.subtle', '#505258'),
+                          color: token('color.text', '#172B4D'),
                         }}
                       >
                         {ms > 0 ? (
-                          <Tooltip content={`In ${s.name}: ${fmtDuration(ms)}`} position="top">
-                            {(tp) => <span {...tp}>{fmtDuration(ms)}</span>}
+                          <Tooltip
+                            content={
+                              visits > 1
+                                ? `In ${s.name}: ${fmtDuration(ms)} across ${visits} visits`
+                                : `In ${s.name}: ${fmtDuration(ms)}`
+                            }
+                            position="top"
+                          >
+                            {(tp) => (
+                              <span
+                                {...tp}
+                                style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+                              >
+                                {fmtDuration(ms)}
+                                {visits > 1 && (
+                                  <span
+                                    style={{
+                                      fontSize: 10,
+                                      fontWeight: 700,
+                                      color: 'var(--ds-text-accent-red, #AE2A19)',
+                                      padding: '0 4px',
+                                      borderRadius: 'var(--ds-border-radius, 4px)',
+                                      background: 'var(--ds-background-accent-red-subtler, #FFD5D2)',
+                                      lineHeight: 1.4,
+                                    }}
+                                    aria-label={`${visits} visits`}
+                                  >
+                                    ×{visits}
+                                  </span>
+                                )}
+                              </span>
+                            )}
                           </Tooltip>
                         ) : (
-                          '—'
+                          <span style={{ color: token('color.text.disabled', '#B3B9C4') }}>—</span>
                         )}
                       </td>
                     );
@@ -442,7 +507,7 @@ export default function TimeInStatusWidget({
                       fontSize: 12,
                       fontWeight: 600,
                       color: token('color.text', '#172B4D'),
-                      background: heatBg(r.totalMs, totalMax),
+                      background: totalBg(r.totalMs, totalMax),
                       position: 'sticky', right: 0,
                     }}
                   >

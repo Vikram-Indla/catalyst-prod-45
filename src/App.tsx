@@ -6,6 +6,8 @@ import { ENABLE_FULL_APP } from './lib/featureFlags';
 // ─── Core infrastructure (always loaded) ────────────────────────────
 import { Toaster } from "@/components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import { AdsThemeProvider } from "@/theme/ads";
@@ -47,15 +49,30 @@ const FullAppRoutes = ENABLE_FULL_APP
   ? lazy(() => import("./routes/FullAppRoutes"))
   : null;
 
+// Apr 25, 2026 — Persistent cache layer.
+//   • staleTime 15min: data treated fresh for 15 min, no refetch
+//   • gcTime 30 days: cached entries remain in localStorage for 30 days
+//   • Persist via SyncStorage → page reloads hydrate instantly from cache,
+//     refetch only happens after staleTime elapses
+//   • buster: bump CACHE_VERSION to invalidate ALL cached queries on deploy
+const CACHE_VERSION = 'v1.2026-04-25';
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 15 * 60 * 1000,
-      gcTime: 30 * 60 * 1000,
+      gcTime: THIRTY_DAYS_MS,
       refetchOnWindowFocus: false,
       retry: 1,
     },
   },
+});
+
+const persister = createSyncStoragePersister({
+  storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+  key: 'catalyst-rq-cache',
+  throttleTime: 1000,
 });
 
 const S = ({ children }: { children: React.ReactNode }) => (
@@ -69,7 +86,18 @@ function App() {
   return (
   <ErrorBoundary>
   <PreviewRecoveryBanner />
-  <QueryClientProvider client={queryClient}>
+  <PersistQueryClientProvider
+    client={queryClient}
+    persistOptions={{
+      persister,
+      maxAge: THIRTY_DAYS_MS,
+      buster: CACHE_VERSION,
+      dehydrateOptions: {
+        // Don't persist mutations or pending queries
+        shouldDehydrateQuery: (q) => q.state.status === 'success',
+      },
+    }}
+  >
     <ThemeProvider>
       {/**
        * AdsThemeProvider bridges Catalyst's resolvedTheme to @atlaskit/tokens.
@@ -146,7 +174,7 @@ function App() {
       </IntlProvider>
       </AdsThemeProvider>
     </ThemeProvider>
-  </QueryClientProvider>
+  </PersistQueryClientProvider>
   </ErrorBoundary>
   );
 }

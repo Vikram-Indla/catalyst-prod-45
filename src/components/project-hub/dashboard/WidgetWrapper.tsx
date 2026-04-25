@@ -23,8 +23,9 @@
  */
 import { Component, type ReactNode, type ErrorInfo, useEffect, useRef } from 'react';
 import { token } from '@atlaskit/tokens';
-import { GripVertical, ChevronDown, ChevronRight, Minus, Plus } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronRight, Minus, Plus, Maximize2 } from 'lucide-react';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
+import Tooltip from '@atlaskit/tooltip';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { Heading, SectionMessage } from '@/components/ads';
@@ -42,6 +43,13 @@ interface WidgetWrapperProps {
   /** Backwards-compat — span is owned by the outer grid cell now. Ignored. */
   span?: 1 | 2 | 3;
   flushBody?: boolean;
+  /**
+   * Click handler for the "Open in UWV" header icon. When provided, the
+   * wrapper renders an Atlaskit IconButton (Maximize glyph) on the right
+   * side of the header that opens the widget's contents in the Universal
+   * Work View drawer for an executive / presentation-mode read.
+   */
+  onExpand?: () => void;
 }
 
 class WidgetErrorBoundary extends Component<
@@ -80,6 +88,7 @@ export default function WidgetWrapper({
   footer,
   children,
   flushBody = false,
+  onExpand,
 }: WidgetWrapperProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const editState = useWidgetEditState();
@@ -223,6 +232,24 @@ export default function WidgetWrapper({
                 onClick={() => onResize('wider')}
               />
             </>
+          )}
+          {onExpand && (
+            <Tooltip content="Open in executive view" position="top">
+              {(tp) => (
+                <span {...tp} style={{ display: 'inline-flex' }}>
+                  <AkIconButton
+                    label="Open in executive view"
+                    icon={() => <Maximize2 size={14} />}
+                    appearance="subtle"
+                    spacing="compact"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onExpand();
+                    }}
+                  />
+                </span>
+              )}
+            </Tooltip>
           )}
           <AkIconButton
             label={collapsed ? 'Expand widget' : 'Collapse widget'}

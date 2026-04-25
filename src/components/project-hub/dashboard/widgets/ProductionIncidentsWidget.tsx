@@ -46,25 +46,27 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   });
   const { openUWV } = useUWV();
 
+  const handleExpand = () => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub'],
+    issueTypes: ['Production Incident'],
+    dataType: 'incidents',
+    title: `Production Incidents · ${projectKey}`,
+    scope: settings.dateFrom ? 'custom' : 'all',
+    dateFrom: settings.dateFrom ?? null,
+    dateTo: settings.dateTo ?? null,
+    dateLabel: settings.dateLabel,
+    statusFilter: settings.statusFilter,
+    assigneeFilter: settings.assigneeFilter,
+    itemTypeFilter: settings.itemTypeFilter,
+    priorityFilter: settings.priorityFilter,
+    releaseFilter: settings.releaseFilter,
+  });
+
   const footer = (
     <button
       type="button"
-      onClick={() => openUWV({
-        project: projectKey,
-        hubSource: ['projecthub'],
-        issueTypes: ['Production Incident'],
-        dataType: 'incidents',
-        title: `Production Incidents · ${projectKey}`,
-        scope: settings.dateFrom ? 'custom' : 'all',
-        dateFrom: settings.dateFrom ?? null,
-        dateTo: settings.dateTo ?? null,
-        dateLabel: settings.dateLabel,
-        statusFilter: settings.statusFilter,
-        assigneeFilter: settings.assigneeFilter,
-        itemTypeFilter: settings.itemTypeFilter,
-        priorityFilter: settings.priorityFilter,
-        releaseFilter: settings.releaseFilter,
-      })}
+      onClick={handleExpand}
       style={{
         background: 'transparent',
         border: 0,
@@ -207,6 +209,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
       span={2}
       footer={footer}
       flushBody
+      onExpand={handleExpand}
       headerBadges={<WidgetGearButton gadgetType="incidents" projectKey={projectKey} projectId={projectId} />}
     >
       {isLoading ? (

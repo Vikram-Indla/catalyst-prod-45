@@ -14,10 +14,10 @@
  *     defaultSpan.
  *   - Success Flag via @atlaskit/flag.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, LayoutGrid, RotateCcw } from 'lucide-react';
+import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
 
 import { supabase } from '@/integrations/supabase/client';
@@ -44,6 +44,25 @@ function ProjectDashboardPageInner() {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState<ResolvedWidget[] | null>(null);
   const [savedFlag, setSavedFlag] = useState(false);
+
+  // Presentation / TV mode — toggles a data attr on <html>.
+  // CSS in index.css scales typography 1.45× when active so the dashboard
+  // reads cleanly on big screens (wall-mounted TVs, projectors).
+  // Persisted to localStorage so kiosks survive reloads.
+  const [presentation, setPresentation] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem('catalyst-presentation') === 'true';
+  });
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (presentation) {
+      document.documentElement.setAttribute('data-presentation', 'true');
+      window.localStorage.setItem('catalyst-presentation', 'true');
+    } else {
+      document.documentElement.removeAttribute('data-presentation');
+      window.localStorage.removeItem('catalyst-presentation');
+    }
+  }, [presentation]);
 
   const { data: project, isLoading } = useQuery({
     queryKey: ['ph-project-dashboard-v5', key],
@@ -265,6 +284,15 @@ function ProjectDashboardPageInner() {
     </>
   ) : (
     <>
+      <Button
+        appearance="subtle"
+        spacing="compact"
+        iconBefore={presentation ? <TvMinimal size={13} /> : <Tv size={13} />}
+        onClick={() => setPresentation((p) => !p)}
+        testId="dashboard-presentation-toggle"
+      >
+        {presentation ? 'Exit TV mode' : 'TV mode'}
+      </Button>
       <Button
         appearance="subtle"
         spacing="compact"
