@@ -112,12 +112,27 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
                 {item.summary}
               </span>
               <span
-                className="flex-shrink-0 max-w-[40%] truncate"
-                style={{ display: 'inline-flex' }}
+                className="flex-shrink-0"
+                style={{
+                  display: 'inline-flex',
+                  maxWidth: '45%',
+                  overflow: 'hidden',
+                }}
                 title={(item.status ?? 'ON HOLD').toUpperCase()}
               >
                 <StatusLozenge status="todo">
-                  {(item.status ?? 'ON HOLD').toUpperCase()}
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      verticalAlign: 'bottom',
+                    }}
+                  >
+                    {(item.status ?? 'ON HOLD').toUpperCase()}
+                  </span>
                 </StatusLozenge>
               </span>
             </div>
