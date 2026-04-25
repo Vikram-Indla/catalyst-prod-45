@@ -74,16 +74,18 @@ export function useTeamMembers() {
   });
 }
 
-// Fetch releases for a project
+// Fetch releases for a project (canonical source: rh_releases / ReleaseHub)
+// rh_releases.id is UUID and matches catalyst_issues.release_id (also UUID).
 export function useProjectReleases(projectId: string) {
   return useQuery({
     queryKey: ['create-story-releases', projectId],
     queryFn: async () => {
       if (!projectId) return [];
       const { data, error } = await supabase
-        .from('ph_releases' as any)
-        .select('id, name, status')
+        .from('rh_releases')
+        .select('id, name, status, target_date')
         .eq('project_id', projectId)
+        .order('target_date', { ascending: false, nullsFirst: false })
         .order('name');
       if (error) {
         console.error('[useProjectReleases] Supabase error:', error.message, (error as any).code);
