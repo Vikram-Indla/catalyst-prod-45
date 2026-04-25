@@ -15,6 +15,13 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Avatar, Tooltip } from '@/components/ads';
 import { IssueBreakdownPopover } from './IssueBreakdownPopover';
+// Atlaskit primitives for Lead reassign + row actions (Atlaskit migration scope)
+import Popup from '@atlaskit/popup';
+import Textfield from '@atlaskit/textfield';
+import { token } from '@atlaskit/tokens';
+import AKDropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import AKModal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import AKButton from '@atlaskit/button/new';
 
 // ── Utilities ──────────────────────────────────────────
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
@@ -132,62 +139,127 @@ function LeadReassignPopover({ project }: { project: ProjectListItem }) {
   }, [profiles, project, queryClient]);
 
   return (
-    <div className="flex items-center gap-2 group/lead overflow-hidden">
-      {displayLead.name ? (
-        <>
-          <span className="flex-shrink-0">
-            <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="xsmall" />
-          </span>
-          <span className="text-[13px] font-medium truncate text-slate-600 dark:text-[#A1A1A1]" title={displayLead.name || ''}>
-            {(displayLead.name || '').split(' ').slice(0, 2).join(' ')}
-          </span>
-        </>
-      ) : (
-        <span className="text-[13px] text-slate-400 dark:text-[#878787]">—</span>
-      )}
-      <Popover open={open} onOpenChange={o => { setOpen(o); if (!o) setSearch(''); }}>
-        <PopoverTrigger asChild>
-          <button
-            onClick={e => e.stopPropagation()}
-            className="opacity-0 group-hover/lead:opacity-100 transition-opacity ml-auto flex-shrink-0 text-slate-400 cursor-pointer bg-transparent border-none p-0 focus-visible:ring-2 focus-visible:ring-blue-600 outline-none rounded"
-          >
-            <Pencil size={14} />
-          </button>
-        </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          className="w-60 p-3 bg-white dark:!bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]"
-          onClick={e => e.stopPropagation()}
+    <Popup
+      isOpen={open}
+      onClose={() => { setOpen(false); setSearch(''); }}
+      placement="bottom-start"
+      trigger={(triggerProps) => (
+        <button
+          {...triggerProps}
+          onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+          aria-label={`Lead: ${displayLead.name || 'unassigned'} (click to reassign)`}
+          className="inline-flex items-center gap-2 max-w-full overflow-hidden rounded-md px-1.5 py-1 -ml-1.5 bg-transparent border-0 cursor-pointer hover:bg-slate-100 dark:hover:bg-white/5 transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
         >
-          <p className="text-xs font-semibold text-slate-500 dark:text-[#A1A1A1] mb-2">Reassign lead</p>
-          <div className="relative mb-2">
-            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              placeholder="Search people..."
+          {displayLead.name ? (
+            <>
+              <span className="flex-shrink-0">
+                <Avatar src={displayLead.avatar_url || undefined} name={displayLead.name || '??'} size="xsmall" />
+              </span>
+              <span className="text-[13px] font-medium truncate text-slate-700 dark:text-[#EDEDED]" title={displayLead.name || ''}>
+                {(displayLead.name || '').split(' ').slice(0, 2).join(' ')}
+              </span>
+              <Pencil size={12} className="flex-shrink-0 text-slate-400 dark:text-[#878787]" />
+            </>
+          ) : (
+            <span className="text-[13px] text-slate-500 dark:text-[#A1A1A1]">— Assign lead</span>
+          )}
+        </button>
+      )}
+      content={() => (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            width: 280,
+            padding: 12,
+            background: token('elevation.surface.overlay'),
+            border: `1px solid ${token('color.border')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay'),
+          }}
+        >
+          <div style={{
+            fontSize: 11,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            color: token('color.text.subtlest'),
+            marginBottom: 8,
+          }}>
+            Reassign lead
+          </div>
+          <div style={{ marginBottom: 8 }}>
+            <Textfield
               value={search}
-              onChange={e => handleSearchChange(e.target.value)}
-              className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[13px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] focus:outline-none focus:ring-1 focus:ring-blue-500"
+              onChange={(e) => handleSearchChange((e.target as HTMLInputElement).value)}
+              placeholder="Search people..."
+              autoFocus
+              elemBeforeInput={
+                <span style={{ paddingLeft: 8, display: 'inline-flex', alignItems: 'center', color: token('color.text.subtlest') }}>
+                  <Search size={12} />
+                </span>
+              }
             />
           </div>
-          <div className="max-h-48 overflow-y-auto space-y-0.5">
+          <div style={{ maxHeight: 240, overflowY: 'auto' }}>
             {filtered.map(p => (
               <button
                 key={p.id}
                 onClick={() => handleLeadChange(p.id)}
-                className="flex items-center gap-2 px-2.5 py-2 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-white/5 w-full text-left bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '8px 10px',
+                  borderRadius: 4,
+                  width: '100%',
+                  textAlign: 'left',
+                  background: p.id === displayLead.id ? token('color.background.selected') : 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  if (p.id !== displayLead.id) e.currentTarget.style.background = token('color.background.neutral.subtle.hovered');
+                }}
+                onMouseLeave={(e) => {
+                  if (p.id !== displayLead.id) e.currentTarget.style.background = 'transparent';
+                }}
               >
                 <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
-                <div className="min-w-0">
-                  <div className="text-[13px] font-medium truncate text-slate-900 dark:text-white">{p.display_name}</div>
-                  <div className="text-[11px] truncate text-slate-500 dark:text-[#A1A1A1]">{formatRole(p.role || 'Team Member')}</div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{
+                    fontSize: 13,
+                    fontWeight: 500,
+                    color: token('color.text'),
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {p.display_name}
+                  </div>
+                  <div style={{
+                    fontSize: 11,
+                    color: token('color.text.subtlest'),
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {formatRole(p.role || 'Team Member')}
+                  </div>
                 </div>
+                {p.id === displayLead.id && (
+                  <span style={{ fontSize: 10, color: token('color.text.brand'), fontWeight: 700 }}>CURRENT</span>
+                )}
               </button>
             ))}
-            {filtered.length === 0 && <p className="text-xs text-slate-400 text-center py-3">No results</p>}
+            {filtered.length === 0 && (
+              <p style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0', margin: 0 }}>
+                No results
+              </p>
+            )}
           </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+        </div>
+      )}
+    />
   );
 }
 
@@ -239,94 +311,255 @@ function MemberManagePopover({ project }: { project: ProjectListItem }) {
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };
 
+  const popupContent = () => (
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: 280,
+        padding: 12,
+        background: token('elevation.surface.overlay'),
+        border: `1px solid ${token('color.border')}`,
+        borderRadius: 4,
+        boxShadow: token('elevation.shadow.overlay'),
+      }}
+    >
+      <div style={{
+        fontSize: 11,
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+        color: token('color.text.subtlest'),
+        marginBottom: 8,
+      }}>
+        {addMode ? 'Add members' : 'Manage members'}
+      </div>
+
+      {addMode ? (
+        <>
+          <div style={{ marginBottom: 8 }}>
+            <Textfield
+              value={search}
+              onChange={(e) => handleMemberSearchChange((e.target as HTMLInputElement).value)}
+              placeholder="Search people..."
+              autoFocus
+              elemBeforeInput={
+                <span style={{ paddingLeft: 8, display: 'inline-flex', alignItems: 'center', color: token('color.text.subtlest') }}>
+                  <Search size={12} />
+                </span>
+              }
+            />
+          </div>
+          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+            {nonMembers.map(p => (
+              <button
+                key={p.id}
+                onClick={() => handleAdd(p.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '6px 8px',
+                  borderRadius: 4,
+                  width: '100%',
+                  textAlign: 'left',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xsmall" />
+                <span style={{ fontSize: 13, color: token('color.text'), flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {p.display_name}
+                </span>
+                <span style={{ color: token('color.text.brand'), fontSize: 14, fontWeight: 700 }}>+</span>
+              </button>
+            ))}
+            {nonMembers.length === 0 && (
+              <p style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '12px 0', margin: 0 }}>
+                No results
+              </p>
+            )}
+          </div>
+          <button
+            onClick={() => { setAddMode(false); setSearch(''); }}
+            style={{
+              marginTop: 8,
+              fontSize: 12,
+              color: token('color.text.subtle'),
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px 0',
+            }}
+          >← Back</button>
+        </>
+      ) : (
+        <>
+          <div style={{
+            fontSize: 10,
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            color: token('color.text.subtlest'),
+            marginBottom: 4,
+          }}>
+            Current · {members.length}
+          </div>
+          <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 8 }}>
+            {members.map(m => (
+              <div
+                key={m.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '6px 8px',
+                  borderRadius: 4,
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.neutral.subtle.hovered'); }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                <Avatar src={m.avatar_url || undefined} name={m.display_name || '??'} size="xsmall" />
+                <span style={{ fontSize: 13, color: token('color.text'), flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {m.display_name}
+                </span>
+                {m.id === project.lead_id ? (
+                  <span style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: token('color.text.brand'),
+                    background: token('color.background.selected'),
+                    padding: '2px 6px',
+                    borderRadius: 3,
+                  }}>LEAD</span>
+                ) : (
+                  <button
+                    onClick={() => handleRemove(m.id)}
+                    aria-label={`Remove ${m.display_name}`}
+                    style={{
+                      color: token('color.text.subtlest'),
+                      background: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: 14,
+                      lineHeight: 1,
+                      padding: 2,
+                    }}
+                  >×</button>
+                )}
+              </div>
+            ))}
+            {members.length === 0 && (
+              <p style={{ fontSize: 12, color: token('color.text.subtlest'), textAlign: 'center', padding: '8px 0', margin: 0 }}>
+                No members
+              </p>
+            )}
+          </div>
+          <div style={{ borderTop: `1px solid ${token('color.border')}`, paddingTop: 8 }}>
+            <button
+              onClick={() => setAddMode(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 8px',
+                color: token('color.text.brand'),
+                fontSize: 13,
+                fontWeight: 500,
+                borderRadius: 4,
+                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = token('color.background.selected.hovered'); }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+            >+ Add member</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+
   return (
-    <Popover open={open} onOpenChange={o => { setOpen(o); if (!o) { setAddMode(false); setSearch(''); } }}>
-      <PopoverTrigger asChild>
-        <button onClick={e => e.stopPropagation()} className="flex items-center cursor-pointer bg-transparent border-none p-0 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none rounded">
+    <Popup
+      isOpen={open}
+      onClose={() => { setOpen(false); setAddMode(false); setSearch(''); }}
+      placement="bottom-start"
+      trigger={(triggerProps) => (
+        <button
+          {...triggerProps}
+          onClick={(e) => { e.stopPropagation(); setOpen(o => !o); }}
+          aria-label={`${memberIds.length} members (click to manage)`}
+          className="flex items-center gap-2 cursor-pointer bg-transparent border-0 p-0 focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2 outline-none rounded"
+        >
           {memberIds.length > 0 ? (
-            <MemberStack memberIds={memberIds} memberCount={project.member_count} max={10} />
+            <>
+              <MemberStack memberIds={memberIds} memberCount={project.member_count} max={10} />
+              <span
+                aria-hidden
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 22,
+                  height: 22,
+                  borderRadius: 11,
+                  border: `1px dashed ${token('color.border')}`,
+                  color: token('color.text.subtle'),
+                  fontSize: 14,
+                  fontWeight: 700,
+                  marginLeft: -4,
+                  background: token('elevation.surface'),
+                }}
+              >+</span>
+            </>
           ) : (
-            <span className="text-[13px] text-slate-400 dark:text-[#878787]">—</span>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: 13,
+                color: token('color.text.subtle'),
+              }}
+            >
+              <span
+                aria-hidden
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 22,
+                  height: 22,
+                  borderRadius: 11,
+                  border: `1px dashed ${token('color.border')}`,
+                  color: token('color.text.subtle'),
+                  fontSize: 14,
+                  fontWeight: 700,
+                }}
+              >+</span>
+              Add members
+            </span>
           )}
         </button>
-      </PopoverTrigger>
-      <PopoverContent
-        align="start"
-        className="w-[260px] p-3 bg-white dark:!bg-[#1A1A1A] border-slate-200 dark:border-[#2E2E2E]"
-        onClick={e => e.stopPropagation()}
-      >
-        <p className="text-xs font-semibold text-slate-500 dark:text-[#A1A1A1] mb-2">Manage members</p>
-
-        {addMode ? (
-          <>
-            <div className="relative mb-2">
-              <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                placeholder="Search people..."
-                value={search}
-                onChange={e => handleMemberSearchChange(e.target.value)}
-                autoFocus
-                className="h-8 w-full pl-8 pr-2 rounded border border-slate-200 dark:border-[#2E2E2E] bg-white dark:bg-[#1A1A1A] text-[13px] text-slate-900 dark:text-[#EDEDED] placeholder:text-slate-400 dark:placeholder:text-[#878787] focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </div>
-            <div className="max-h-40 overflow-y-auto space-y-0.5">
-              {nonMembers.map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => handleAdd(p.id)}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-slate-50 dark:hover:bg-white/5 w-full text-left bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
-                >
-                  <Avatar src={p.avatar_url || undefined} name={p.display_name || '??'} size="xxsmall" />
-                  <span className="text-[13px] truncate text-slate-900 dark:text-white">{p.display_name}</span>
-                  <span className="ml-auto text-blue-600 text-xs font-bold">+</span>
-                </button>
-              ))}
-              {nonMembers.length === 0 && <p className="text-xs text-slate-400 text-center py-3">No results</p>}
-            </div>
-            <button
-              onClick={() => { setAddMode(false); setSearch(''); }}
-              className="mt-2 text-[12px] text-slate-500 hover:text-slate-700 dark:hover:text-[#A1A1A1] bg-transparent border-none cursor-pointer"
-            >← Back</button>
-          </>
-        ) : (
-          <>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Current · {members.length}</p>
-            <div className="max-h-40 overflow-y-auto space-y-0.5 mb-2">
-              {members.map(m => (
-                <div key={m.id} className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-slate-50 dark:hover:bg-white/5">
-                  <Avatar src={m.avatar_url || undefined} name={m.display_name || '??'} size="xxsmall" />
-                  <span className="text-[13px] truncate flex-1 text-slate-900 dark:text-white">{m.display_name}</span>
-                  {m.id === project.lead_id && (
-                    <span className="text-[10px] font-semibold text-blue-600 bg-blue-50 dark:bg-[rgba(37,99,235,0.12)] px-1.5 py-0.5 rounded">Lead</span>
-                  )}
-                  {m.id !== project.lead_id && (
-                    <button
-                      onClick={() => handleRemove(m.id)}
-                      className="text-slate-400 hover:text-red-600 text-xs transition-colors bg-transparent border-none cursor-pointer px-0.5"
-                    >×</button>
-                  )}
-                </div>
-              ))}
-              {members.length === 0 && <p className="text-xs text-slate-400 text-center py-2">No members</p>}
-            </div>
-            <div className="border-t border-slate-100 dark:border-[#2E2E2E] pt-2">
-              <button
-                onClick={() => setAddMode(true)}
-                className="flex items-center gap-1.5 px-2 py-1.5 text-blue-600 text-[13px] font-medium rounded-md hover:bg-blue-50 dark:hover:bg-[rgba(37,99,235,0.12)] w-full bg-transparent border-none cursor-pointer text-left"
-              >
-                + Add member
-              </button>
-            </div>
-          </>
-        )}
-      </PopoverContent>
-    </Popover>
+      )}
+      content={popupContent}
+    />
   );
 }
 
 function RowActionMenu({ project }: { project: ProjectListItem }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [renameOpen, setRenameOpen] = useState(false);
+  const [renameValue, setRenameValue] = useState(project.name);
+  const [renameSaving, setRenameSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const handleArchive = async () => {
     const { error } = await supabase
@@ -338,33 +571,186 @@ function RowActionMenu({ project }: { project: ProjectListItem }) {
     queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
   };
 
+  const handleRenameSubmit = async () => {
+    const next = renameValue.trim();
+    if (!next || next === project.name) {
+      setRenameOpen(false);
+      return;
+    }
+    setRenameSaving(true);
+    const { error } = await supabase
+      .from('projects')
+      .update({ name: next, updated_at: new Date().toISOString() } as any)
+      .eq('id', project.id);
+    setRenameSaving(false);
+    if (error) { toast.error('Failed to rename project'); return; }
+    toast.success(`Renamed to "${next}"`);
+    setRenameOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', project.id);
+    setDeleting(false);
+    if (error) { toast.error(`Failed to delete: ${error.message}`); return; }
+    toast.success(`${project.name} deleted`);
+    setDeleteOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['projecthub', 'projects'] });
+  };
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          onClick={e => e.stopPropagation()}
-          className="flex h-7 w-7 items-center justify-center rounded opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 dark:text-[#878787] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-700 dark:hover:text-[#EDEDED] bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none"
-        >
-          <MoreHorizontal size={16} />
-        </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[180px]" onClick={e => e.stopPropagation()}>
-        <DropdownMenuLabel className="text-xs text-slate-500">Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}>
-          <ExternalLink size={14} className="mr-2" /> Open Project
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate(`/project-hub/${project.project_key}/sync`)} disabled>
-          <Settings size={14} className="mr-2" /> Sync Settings
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={handleArchive}
-          className="text-red-600 focus:text-red-600 focus:bg-red-50"
-        >
-          <Archive size={14} className="mr-2" /> Archive
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <AKDropdownMenu
+        placement="bottom-end"
+        trigger={({ triggerRef, ...triggerProps }) => (
+          <button
+            {...triggerProps}
+            ref={triggerRef as React.Ref<HTMLButtonElement>}
+            onClick={(e) => { e.stopPropagation(); triggerProps.onClick?.(e as any); }}
+            aria-label={`Actions for ${project.name}`}
+            className="flex h-7 w-7 items-center justify-center rounded text-slate-500 dark:text-[#A1A1A1] hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-800 dark:hover:text-[#EDEDED] bg-transparent border-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-600 outline-none transition-colors"
+          >
+            <MoreHorizontal size={16} />
+          </button>
+        )}
+      >
+        <DropdownItemGroup>
+          <DropdownItem
+            elemBefore={<ExternalLink size={14} />}
+            onClick={() => navigate(`/project-hub/${project.project_key}/dashboard`)}
+          >
+            Open project
+          </DropdownItem>
+          <DropdownItem
+            elemBefore={<Pencil size={14} />}
+            onClick={() => { setRenameValue(project.name); setRenameOpen(true); }}
+          >
+            Rename
+          </DropdownItem>
+          <DropdownItem
+            elemBefore={<Settings size={14} />}
+            onClick={() => navigate(`/project-hub/${project.project_key}/sync`)}
+            isDisabled
+          >
+            Sync settings
+          </DropdownItem>
+        </DropdownItemGroup>
+        <DropdownItemGroup hasSeparator>
+          <DropdownItem
+            elemBefore={<Archive size={14} />}
+            onClick={handleArchive}
+          >
+            Archive project
+          </DropdownItem>
+          <DropdownItem
+            elemBefore={<span style={{ color: token('color.text.danger') }}>×</span>}
+            onClick={() => setDeleteOpen(true)}
+          >
+            <span style={{ color: token('color.text.danger') }}>Delete project…</span>
+          </DropdownItem>
+        </DropdownItemGroup>
+      </AKDropdownMenu>
+
+      {/* Rename modal */}
+      <ModalTransition>
+        {renameOpen && (
+          <AKModal onClose={() => setRenameOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle>Rename project</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ paddingBlock: 8 }}>
+                <label
+                  htmlFor={`rename-${project.id}`}
+                  style={{
+                    display: 'block',
+                    fontSize: 12,
+                    fontWeight: 600,
+                    color: token('color.text.subtle'),
+                    marginBottom: 6,
+                  }}
+                >
+                  Project name
+                </label>
+                <Textfield
+                  id={`rename-${project.id}`}
+                  autoFocus
+                  value={renameValue}
+                  onChange={(e) => setRenameValue((e.target as HTMLInputElement).value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      void handleRenameSubmit();
+                    }
+                  }}
+                />
+                <p style={{ fontSize: 12, color: token('color.text.subtlest'), marginTop: 6, margin: 0 }}>
+                  Key (<code style={{ fontFamily: 'JetBrains Mono, monospace' }}>{project.project_key}</code>) and member assignments are unchanged.
+                </p>
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <AKButton appearance="subtle" onClick={() => setRenameOpen(false)} isDisabled={renameSaving}>
+                Cancel
+              </AKButton>
+              <AKButton
+                appearance="primary"
+                onClick={() => { void handleRenameSubmit(); }}
+                isDisabled={renameSaving || !renameValue.trim() || renameValue.trim() === project.name}
+              >
+                {renameSaving ? 'Saving…' : 'Save'}
+              </AKButton>
+            </ModalFooter>
+          </AKModal>
+        )}
+      </ModalTransition>
+
+      {/* Delete confirmation */}
+      <ModalTransition>
+        {deleteOpen && (
+          <AKModal onClose={() => setDeleteOpen(false)} width="small">
+            <ModalHeader>
+              <ModalTitle appearance="danger">Delete project</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              <p style={{ margin: 0 }}>
+                You're about to permanently delete{' '}
+                <strong>{project.name}</strong> (
+                <code style={{ fontFamily: 'JetBrains Mono, monospace' }}>{project.project_key}</code>
+                ). This cannot be undone — all issues, comments, and member
+                assignments tied to this project will be removed.
+              </p>
+              <p style={{ marginTop: 12, color: token('color.text.subtle'), fontSize: 13 }}>
+                Consider archiving instead if you might want it back later.
+              </p>
+            </ModalBody>
+            <ModalFooter>
+              <AKButton appearance="subtle" onClick={() => setDeleteOpen(false)} isDisabled={deleting}>
+                Cancel
+              </AKButton>
+              <AKButton
+                appearance="warning"
+                onClick={() => { void handleArchive(); setDeleteOpen(false); }}
+                isDisabled={deleting}
+              >
+                Archive instead
+              </AKButton>
+              <AKButton
+                appearance="danger"
+                onClick={() => { void handleDelete(); }}
+                isDisabled={deleting}
+              >
+                {deleting ? 'Deleting…' : 'Delete project'}
+              </AKButton>
+            </ModalFooter>
+          </AKModal>
+        )}
+      </ModalTransition>
+    </>
   );
 }
 
