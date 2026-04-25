@@ -132,6 +132,36 @@ export function useActiveReleases(projectId: string | null | undefined) {
 // ─── Status Counts (To Do / In Progress / Done) ───
 export interface DashboardDateFilter { dateFrom?: string | null; dateTo?: string | null; }
 
+/**
+ * Layer 2 (per-gadget) filter dimensions persisted by useGadgetSettings.
+ * Every ph_issues-backed widget hook accepts these and AND-combines any
+ * non-empty filter into the underlying Supabase query. Each filter array
+ * also participates in the queryKey so a settings change triggers a refetch.
+ */
+export interface DashboardWidgetFilters extends DashboardDateFilter {
+  statusFilter?: string[];      // matched against ph_issues.status_category
+  releaseFilter?: string[];     // JSONB containment on ph_issues.fix_versions
+  assigneeFilter?: string[];    // matched against ph_issues.assignee_display_name
+  itemTypeFilter?: string[];    // matched against ph_issues.issue_type
+  priorityFilter?: string[];    // matched against ph_issues.priority
+}
+
+/** Apply Layer 2 filters to a ph_issues query builder. Mutates and returns q. */
+function applyPhIssuesLayer2Filters(q: any, f: DashboardWidgetFilters): any {
+  if (f.statusFilter?.length)   q = q.in('status_category', f.statusFilter);
+  if (f.assigneeFilter?.length) q = q.in('assignee_display_name', f.assigneeFilter);
+  if (f.itemTypeFilter?.length) q = q.in('issue_type', f.itemTypeFilter);
+  if (f.priorityFilter?.length) q = q.in('priority', f.priorityFilter);
+  if (f.releaseFilter?.length) {
+    const orClause = f.releaseFilter
+      .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+      .join(',');
+    q = q.or(orClause);
+  }
+  return q;
+}
+
+
 export function useDashboardStatusCounts(
   projectId: string | null | undefined,
   filters: DashboardDateFilter = {},
