@@ -225,7 +225,7 @@ export function InlineCreateWithAI({
                     onClick={() => { onLinkExisting(r.id); setDraft(''); }}
                   >
                     <JiraIssueTypeIcon type={r.issue_type} size={14} />
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: '#1868DB', marginRight: 8 }}>
+                    <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: '#1868DB', marginRight: 8 }}>
                       {r.issue_key}
                     </span>
                     <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

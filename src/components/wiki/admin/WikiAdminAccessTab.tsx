@@ -52,12 +52,12 @@ export function WikiAdminAccessTab() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
+      <div style={{ fontFamily: 'var(--cp-font-body)', fontSize: 12, color: 'var(--cp-text-tertiary, #64748B)' }}>
         Click cells to toggle access. Green = Access, Grey = No Access.
       </div>
 
       <div style={{ border: '1px solid var(--cp-border-default, rgba(15,23,42,0.12))', borderRadius: 4, overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Inter, sans-serif', fontSize: 12 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)', fontSize: 12 }}>
           <thead>
             <tr style={{ background: 'var(--cp-bg-sunken, #F8FAFC)' }}>
               <th style={{ padding: '8px 12px', textAlign: 'start', fontWeight: 650, fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.03em', color: 'var(--cp-text-tertiary, #64748B)', position: 'sticky', insetInlineStart: 0, background: 'var(--cp-bg-sunken, #F8FAFC)', zIndex: 1 }}>Role</th>

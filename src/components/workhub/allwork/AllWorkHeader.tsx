@@ -25,11 +25,11 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
     <div className="px-8 pt-5 pb-0" style={{ borderBottom: '1px solid var(--bd-subtle, #292929)' }}>
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1.5 mb-2" aria-label="Breadcrumb">
-        <a href="#" className="text-[12px] hover:underline" style={{ color: 'var(--cp-blue)', fontFamily: 'Inter, sans-serif' }}>Projects</a>
+        <a href="#" className="text-[12px] hover:underline" style={{ color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-body)' }}>Projects</a>
         <span className="text-[12px]" style={{ color: 'var(--fg-3)' }} aria-hidden="true">/</span>
-        <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'Inter, sans-serif' }}>Senaei BAU</span>
+        <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-body)' }}>Senaei BAU</span>
         <span className="text-[12px]" style={{ color: 'var(--fg-3)' }} aria-hidden="true">/</span>
-        <span className="text-[12px] font-medium" style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }} aria-current="page">All Work</span>
+        <span className="text-[12px] font-medium" style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }} aria-current="page">All Work</span>
       </nav>
 
       {/* Title row */}
@@ -42,7 +42,7 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
           >
             B
           </div>
-          <h1 className="text-[20px] font-semibold" style={{ color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: 'Inter, sans-serif' }}>
+          <h1 className="text-[20px] font-semibold" style={{ color: 'var(--fg-1)', letterSpacing: '-0.01em', fontFamily: 'var(--cp-font-body)' }}>
             Senaei BAU
           </h1>
         </div>
@@ -71,7 +71,7 @@ export function AllWorkHeader({ activeTab, onTabChange }: Props) {
               style={{
                 color: isActive ? '#2563EB' : '#6b6e76',
                 fontWeight: isActive ? 600 : 400,
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
               }}
               role="tab"
               aria-selected={isActive}

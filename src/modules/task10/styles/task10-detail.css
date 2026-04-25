@@ -7,7 +7,7 @@
 
 /* Base Container */
 .t10-detail-page {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--cp-font-body);
   background: #f8fafc;
   min-height: 100vh;
 }
@@ -90,7 +90,7 @@
 .t10-detail-list-key {
   padding: 5px 10px;
   font-size: 12px;
-  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--cp-font-mono);
   font-weight: 600;
   border-radius: 6px;
   background: #f1f5f9;
@@ -399,7 +399,7 @@
 
 .t10-detail-ai-suggestion-key {
   font-size: 13px;
-  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-family: var(--cp-font-mono);
   font-weight: 600;
   color: #2563eb;
   flex-shrink: 0;

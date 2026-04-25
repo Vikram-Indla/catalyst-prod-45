@@ -141,13 +141,13 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
         background: 'var(--cp-float)', borderLeft: '1px solid var(--divider)', zIndex: 201,
         display: 'flex', flexDirection: 'column', overflow: 'hidden',
         boxShadow: '-4px 0 20px rgba(15,23,42,.08)',
-        fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+        fontFamily: 'var(--cp-font-body)',
         animation: 'r3SlideIn 250ms cubic-bezier(.32,.72,0,1) forwards',
       }}>
         {/* Header */}
         <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--divider)', background: 'var(--bg-app)', position: 'sticky', top: 0, zIndex: 10 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cp-blue)', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+            <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--cp-blue)', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
             <button onClick={onClose} style={{
               width: '28px', height: '28px', border: '1px solid var(--divider)', borderRadius: '6px',
               background: 'var(--cp-float)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -236,7 +236,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                 {/* Parent */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 8px', borderRadius: '6px', border: '1px solid var(--divider)', background: 'var(--bg-app)' }}>
                   {getJiraIcon(item.parent_type || 'epic')}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--fg-3)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.parent_key}</span>
                   <span style={{ fontSize: '12px', color: 'var(--fg-2)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.parent_title}</span>
                 </div>
                 <div style={{ paddingLeft: '20px', color: 'var(--fg-3)', fontSize: '11px', margin: '2px 0' }}>↳</div>
@@ -246,7 +246,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                   borderRadius: '6px', border: '1.5px solid var(--cp-blue)', background: '#EFF6FF',
                 }}>
                   {getJiraIcon(item.item_type)}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
+                  <span style={{ fontFamily: 'var(--cp-font-mono)', fontSize: '11px', color: 'var(--cp-blue)', whiteSpace: 'nowrap', flexShrink: 0, minWidth: '72px', fontWeight: 600 }}>{item.item_key}</span>
                   <span style={{
                     fontSize: '13px', fontWeight: 500, color: '#020617',
                     overflow: 'hidden', display: '-webkit-box',
@@ -282,7 +282,7 @@ export const R360DetailPanel: React.FC<Props> = ({ item, siblings, onClose, onSi
                       onMouseLeave={e => { if (!isCurrent) e.currentTarget.style.background = 'transparent'; }}
                     >
                       <span style={{ flexShrink: 0 }}>{getJiraIcon(sib.item_type || 'Task')}</span>
-                      <span style={{ fontSize: '11px', fontFamily: "'JetBrains Mono', monospace", color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
+                      <span style={{ fontSize: '11px', fontFamily: 'var(--cp-font-mono)', color: 'var(--cp-blue)', fontWeight: 600, width: '72px', flexShrink: 0 }}>{sib.item_key}</span>
                       {/* Status pill — INLINE, small */}
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: '3px',

@@ -28,7 +28,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                   color: '#FFFFFF',
                   fontSize: 12,
                   fontWeight: 600,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}
               >
                 {isDone ? (
@@ -44,7 +44,7 @@ export function StepIndicator({ current }: StepIndicatorProps) {
                   color: isActive ? 'var(--fg-1)' : isDone ? 'var(--sem-success)' : 'var(--fg-4)',
                   marginTop: 4,
                   whiteSpace: 'nowrap',
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: 'var(--cp-font-body)',
                 }}
               >
                 {label}

@@ -38,7 +38,7 @@ export function ArchiveConfirmDialog({ issueKey, tk, onConfirm, onCancel }: Prop
         style={{
           width: 400, background: tk.surfaceBg, borderRadius: 8,
           border: `1px solid ${tk.border}`, boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-          padding: 24, fontFamily: "'Inter', sans-serif",
+          padding: 24, fontFamily: 'var(--cp-font-body)',
         }}
       >
         <div className="flex items-center gap-3" style={{ marginBottom: 16 }}>

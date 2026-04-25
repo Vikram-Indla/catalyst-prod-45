@@ -49,7 +49,7 @@ function GroupSkeleton({ label, rowCount, isDark }: {
             <span style={{
               fontSize: 11, fontWeight: 700, color: isDark ? '#878787' : '#64748B',
               textTransform: 'uppercase', letterSpacing: '0.04em',
-              fontFamily: 'Inter, sans-serif', opacity: 0.6,
+              fontFamily: 'var(--cp-font-body)', opacity: 0.6,
             }}>
               {label}
             </span>
@@ -85,7 +85,7 @@ export default function AgeingSkeleton() {
   const { isDark } = useTheme();
 
   return (
-    <div style={{ fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ fontFamily: 'var(--cp-font-body)' }}>
       <style>{shimmerKeyframes}</style>
 
       {/* Toolbar skeleton — mimics filter pills */}

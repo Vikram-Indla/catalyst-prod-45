@@ -49,7 +49,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
               borderWidth: 1,
               borderStyle: 'solid',
               cursor: 'pointer',
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: 'var(--cp-font-body)',
             }}
           >
             {tab.icon === 'star' && (
@@ -71,7 +71,7 @@ export function ProjectStatusTabs({ activeTab, onTabChange, counts, isDark = fal
                 fontWeight: 600,
                 backgroundColor: isActive ? '#0052CC' : (isDark ? '#2E2E2E' : '#EBECF0'),
                 color: isActive ? '#FFFFFF' : (isDark ? '#878787' : '#6B778C'),
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: 'var(--cp-font-body)',
               }}
             >
               {count}

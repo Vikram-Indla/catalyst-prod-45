@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 /* ═══ WORKHUB RING-FENCED DESIGN TOKENS ═══ */
 :root {
   /* Surfaces */
@@ -32,9 +30,9 @@
   --wh-pur-bg: #EFF6FF;
 
   /* Typography */
-  --wh-fh: 'Sora', sans-serif;
-  --wh-fn: 'Inter', sans-serif;
-  --wh-mo: 'JetBrains Mono', monospace;
+  --wh-fh: var(--cp-font-heading);
+  --wh-fn: var(--cp-font-body);
+  --wh-mo: var(--cp-font-mono);
 
   /* Sizing */
   --wh-hdr: 46px;

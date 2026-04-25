@@ -140,7 +140,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                   <div style={{ flexShrink: 0, marginTop: '2px' }}>{getJiraIcon(item.item_type)}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '3px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                      <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                       <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                       <StatusLozenge status="Done" />
                     </div>
@@ -185,12 +185,12 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               <img src={avatarUrl} alt={name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
             ) : (
-              <span style={{ fontSize: '22px', fontWeight: 700, color: 'white', fontFamily: "'Sora', sans-serif" }}>{initials(name)}</span>
+              <span style={{ fontSize: '22px', fontWeight: 700, color: 'white', fontFamily: 'var(--cp-font-heading)' }}>{initials(name)}</span>
             )}
           </div>
 
           {/* Name + Role */}
-          <div style={{ fontSize: '16px', fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: "'Sora', sans-serif" }}>{name}</div>
+          <div style={{ fontSize: '16px', fontWeight: 650, color: isDark ? '#EDEDED' : '#0F172A', fontFamily: 'var(--cp-font-heading)' }}>{name}</div>
           <div style={{ fontSize: '13px', color: isDark ? '#878787' : '#64748B', marginBottom: '16px' }}>{role}</div>
 
           {/* Week Stats Row */}
@@ -234,9 +234,9 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     </div>
                     {/* Row 2 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                       <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
-                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC', color: item.age_days > 30 ? '#D97706' : '#64748B', fontFamily: "'JetBrains Mono', monospace" }}>{item.age_days}d</span>
+                      <span style={{ marginLeft: 'auto', fontSize: '10px', fontWeight: 600, padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC', color: item.age_days > 30 ? '#D97706' : '#64748B', fontFamily: 'var(--cp-font-mono)' }}>{item.age_days}d</span>
                     </div>
                     {/* Row 3 -- full title */}
                     <div style={{ fontSize: '12px', fontWeight: 500, color: isDark ? '#EDEDED' : '#0F172A', lineHeight: '1.35', marginBottom: '5px' }}>{item.title}</div>
@@ -269,7 +269,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                        <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                         <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                         <StatusLozenge status="Done" />
                       </div>
@@ -368,13 +368,13 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
               </div>
               {/* Row 2: key + project badge + age -- fixed 18px */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '5px', flexShrink: 0, height: '18px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: "'JetBrains Mono', monospace" }}>{item.item_key}</span>
+                <span style={{ fontSize: '12px', fontWeight: 600, color: '#2563EB', fontFamily: 'var(--cp-font-mono)' }}>{item.item_key}</span>
                 <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 6px', borderRadius: '4px', background: isDark ? '#1A1A1A' : '#F1F5F9', color: isDark ? '#878787' : '#64748B' }}>{item.project_key}</span>
                 <span style={{
                   marginLeft: 'auto', fontSize: '10px', fontWeight: 600,
                   padding: '1px 6px', borderRadius: '4px', background: isDark ? '#0A0A0A' : '#F8FAFC',
                   color: item.age_days > 30 ? '#D97706' : '#64748B',
-                  fontFamily: "'JetBrains Mono', monospace",
+                  fontFamily: 'var(--cp-font-mono)',
                 }}>{item.age_days}d</span>
               </div>
               {/* Row 3: title -- 11px, 2-line clamp, flex fills remaining space */}
@@ -407,7 +407,7 @@ export function RingView({ items, name, role, avatarUrl, onSelect, selected, ove
           display: 'flex', alignItems: 'center', gap: '8px',
           fontSize: '11px', fontWeight: 600, color: isDark ? '#878787' : '#64748B', background: isDark ? '#0A0A0A' : '#F8FAFC',
           border: `1px solid ${isDark ? '#2E2E2E' : '#E2E8F0'}`, borderRadius: '12px', padding: '3px 8px',
-          fontFamily: "'JetBrains Mono', monospace", zIndex: 8,
+          fontFamily: 'var(--cp-font-mono)', zIndex: 8,
         }}>
           <button
             onClick={(e) => { e.stopPropagation(); setRingPage(p => Math.max(0, p - 1)); }}

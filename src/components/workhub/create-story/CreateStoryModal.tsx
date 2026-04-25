@@ -466,7 +466,7 @@ function MoreActionsButton() {
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 14,
                 color: token('color.text', '#172B4D'),
                 textAlign: 'left',
@@ -592,7 +592,7 @@ function StatusChip({
           padding: '0 10px',
           fontSize: 14,
           fontWeight: 500,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           color: token('color.text', '#172B4D'),
           cursor: 'pointer',
           display: 'inline-flex',
@@ -634,7 +634,7 @@ function StatusChip({
             padding: '6px 12px 4px',
             fontSize: 11,
             fontWeight: 700,
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             color: token('color.text.subtlest', '#8590A2'),
@@ -660,7 +660,7 @@ function StatusChip({
                   ? token('color.background.selected', 'rgba(37,99,235,0.08)')
                   : 'transparent',
                 cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 14,
                 color: token('color.text', '#172B4D'),
                 outline: 'none',
@@ -1065,7 +1065,7 @@ export function CreateStoryModal({
                 <label
                   htmlFor={STATUS_CHIP_TRIGGER_ID}
                   style={{
-                    fontFamily: 'Inter, sans-serif',
+                    fontFamily: 'var(--cp-font-body)',
                     fontSize: 12,
                     fontWeight: 600,
                     color: token('color.text.subtle', '#44546F'),
@@ -1082,7 +1082,7 @@ export function CreateStoryModal({
                   onChange={(s) => updateField('status', s)}
                 />
                 <p style={{
-                  fontFamily: 'Inter, sans-serif',
+                  fontFamily: 'var(--cp-font-body)',
                   fontSize: 12,
                   color: token('color.text.subtlest', '#8590A2'),
                   marginTop: 4,

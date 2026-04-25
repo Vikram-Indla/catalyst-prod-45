@@ -64,7 +64,7 @@ function StatusLozenge({ status }: { status: string }) {
       padding: '0 6px', borderRadius: 4,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
       background: bg, color: text,
-      fontFamily: 'Inter, sans-serif',
+      fontFamily: 'var(--cp-font-body)',
     }}>
       {status}
     </span>
@@ -107,7 +107,7 @@ export function JiraSyncDrawer({
         width: 480,
         boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
         display: 'flex', flexDirection: 'column',
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: 'var(--cp-font-body)',
         transform: animating ? 'translateX(0)' : 'translateX(100%)',
         transition: animating ? 'transform 250ms ease-out' : 'transform 200ms ease-in',
       }}>
@@ -117,7 +117,7 @@ export function JiraSyncDrawer({
           borderBottom: '0.75px solid var(--cp-border-default, rgba(15,23,42,0.12))',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif', margin: 0 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)', margin: 0 }}>
             Jira Sync Log
           </h2>
           <button onClick={onClose} style={{ width: 28, height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 4, border: 'none', background: 'none', cursor: 'pointer', color: 'var(--fg-3)' }}>
@@ -148,7 +148,7 @@ export function JiraSyncDrawer({
               style={{
                 height: 32, padding: '0 14px', borderRadius: 4,
                 color: '#FFFFFF', border: 'none',
-                fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif',
+                fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)',
                 cursor: isSyncing ? 'not-allowed' : 'pointer',
               }}
             >
@@ -180,7 +180,7 @@ export function JiraSyncDrawer({
                   {log.status === 'completed' ? <CheckCircle2 size={14} style={{ color: 'var(--sem-success)', flexShrink: 0 }} />
                     : log.status === 'failed' ? <AlertCircle size={14} style={{ color: 'var(--sem-danger)', flexShrink: 0 }} />
                     : <Clock size={14} style={{ color: 'var(--cp-blue)', flexShrink: 0 }} />}
-                  <span style={{ fontSize: 11, color: 'var(--fg-2)', fontFamily: 'JetBrains Mono, monospace', minWidth: 90 }}>
+                  <span style={{ fontSize: 11, color: 'var(--fg-2)', fontFamily: 'var(--cp-font-mono)', minWidth: 90 }}>
                     {formatDate(log.startedAt)}
                   </span>
                   <span style={{ fontSize: 11, color: 'var(--fg-3)', flex: 1 }}>
@@ -224,7 +224,7 @@ export function JiraSyncDrawer({
                       height: 24, padding: '0 8px', borderRadius: 4,
                       border: '0.75px solid var(--divider)', background: 'none',
                       fontSize: 10, fontWeight: 600, color: 'var(--fg-2)',
-                      fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+                      fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
                     }}
                   >
                     <Check size={10} /> Approve

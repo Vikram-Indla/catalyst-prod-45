@@ -234,7 +234,7 @@ function BDDEditor({
     And I enter password "{{password}}"
     Then I should be redirected to dashboard`}
           className="min-h-[300px] font-mono text-sm bg-slate-900 text-slate-200 resize-none"
-          style={{ fontFamily: 'JetBrains Mono, monospace' }}
+          style={{ fontFamily: 'var(--cp-font-mono)' }}
         />
       </div>
     </div>

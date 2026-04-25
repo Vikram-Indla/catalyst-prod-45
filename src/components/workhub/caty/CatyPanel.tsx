@@ -52,7 +52,7 @@ export function CatyPanel({ isOpen, onClose }: CatyPanelProps) {
             <div>
               <h2
                 className="text-sm font-bold"
-                style={{ color: 'var(--wh-text-primary)', fontFamily: 'Sora' }}
+                style={{ color: 'var(--wh-text-primary)', fontFamily: 'var(--cp-font-heading)' }}
               >
                 Caty AI
               </h2>

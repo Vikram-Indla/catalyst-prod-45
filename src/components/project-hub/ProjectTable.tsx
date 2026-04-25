@@ -23,7 +23,7 @@ export function ProjectTable({ projects, starredIds, onToggleStar, onContextMenu
     <div
       className={`overflow-x-auto rounded-[6px] border ${isDark ? 'bg-transparent border-[#2E2E2E]' : 'bg-white border-[#E2E8F0]'}`}
     >
-      <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: "'Inter', sans-serif" }}>
+      <table className="w-full" style={{ borderCollapse: 'collapse', fontFamily: 'var(--cp-font-body)' }}>
         <thead>
           <tr
             className={isDark ? 'bg-[#111111]' : 'bg-[#F8FAFC]'}

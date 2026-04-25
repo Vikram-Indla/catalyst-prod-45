@@ -31,7 +31,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
       <div>
         <h1
           style={{
-            fontFamily: "'Sora', system-ui",
+            fontFamily: 'var(--cp-font-heading)',
             fontSize: 22,
             fontWeight: 700,
             color: isDark ? '#EDEDED' : '#09090B',
@@ -49,7 +49,7 @@ export function ProductHubPageHeader({ title, subtitle, actions }: ProductHubPag
             marginTop: 2,
             margin: 0,
             marginBlockStart: 2,
-            fontFamily: "'Inter', system-ui, sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           {subtitle}

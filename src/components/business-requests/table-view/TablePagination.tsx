@@ -28,7 +28,7 @@ export function TablePagination({
 
   /* V12 monospace style for numeric text */
   const monoStyle: React.CSSProperties = {
-    fontFamily: "'JetBrains Mono', 'SF Mono', monospace",
+    fontFamily: 'var(--cp-font-mono)',
     fontSize: 12,
     fontVariantNumeric: 'tabular-nums',
   };

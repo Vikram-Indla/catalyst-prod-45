@@ -47,7 +47,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
               width: '100%', height: 28, paddingLeft: 26, paddingRight: 8,
               border: `1px solid ${tk.inputBorder}`, borderRadius: 3,
               fontSize: 12, color: tk.textPrimary, background: tk.inputBg,
-              outline: 'none', fontFamily: "'Inter', sans-serif",
+              outline: 'none', fontFamily: 'var(--cp-font-body)',
               boxSizing: 'border-box',
             }}
           />
@@ -87,7 +87,7 @@ export function StatusChangePanel({ currentStatus, tk, onChangeStatus, onClose }
                       cursor: isCurrent ? 'default' : 'pointer',
                       fontSize: 12, color: isCurrent ? tk.selectedAccent : tk.textPrimary,
                       fontWeight: isCurrent ? 600 : 400,
-                      fontFamily: "'Inter', sans-serif", textAlign: 'left',
+                      fontFamily: 'var(--cp-font-body)', textAlign: 'left',
                     }}
                     onMouseEnter={e => { if (!isCurrent) e.currentTarget.style.background = tk.surfaceHover; }}
                     onMouseLeave={e => { e.currentTarget.style.background = isCurrent ? tk.dropHighlight : 'transparent'; }}

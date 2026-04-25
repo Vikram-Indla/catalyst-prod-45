@@ -69,7 +69,7 @@
   margin: 0;
   padding: 0 4px 0 0;
   line-height: 1.4;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-count-badge {
@@ -84,7 +84,7 @@
   color: #42526E;
   font-size: 11px;
   font-weight: 650;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-chevron-btn {
@@ -131,7 +131,7 @@
 [data-sdm-scope] .sdm-progress-text {
   font-size: 11px;
   color: #6B778C;
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
   white-space: nowrap;
 }
 
@@ -154,7 +154,7 @@
   background: transparent;
   color: #6B778C;
   font-size: 11px;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
@@ -175,7 +175,7 @@
   color: #2563EB;
   font-size: 12px;
   font-weight: 500;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s;
@@ -246,7 +246,7 @@
 
 /* Issue key */
 [data-sdm-scope] .sdm-child-key {
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
   font-size: 12px;
   color: #2563EB;
   font-weight: 500;
@@ -263,7 +263,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 [data-sdm-scope] .sdm-child-summary--done {
   text-decoration: line-through;
@@ -283,7 +283,7 @@
   letter-spacing: 0.03em;
   white-space: nowrap;
   flex-shrink: 0;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 [data-sdm-scope] .sdm-status-lozenge--grey {
   background: #DFE1E6;
@@ -394,7 +394,7 @@
   border: 1px solid #BFDBFE;
   border-radius: 4px;
   background: #FFFFFF;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   font-size: 13px;
   color: #172B4D;
   outline: none;
@@ -464,13 +464,13 @@
   font-size: 14px;
   font-weight: 500;
   color: #172B4D;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-child-empty-sub {
   font-size: 13px;
   color: #6B778C;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-child-empty-cta {
@@ -482,7 +482,7 @@
   background: #FFFFFF;
   color: #42526E;
   font-size: 13px;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s, color 0.12s;
 }
@@ -541,14 +541,14 @@
   font-style: italic;
   font-size: 13px;
   justify-content: center;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 [data-sdm-scope] .sdm-parent-field--empty:hover {
   color: #2563EB;
 }
 
 [data-sdm-scope] .sdm-parent-key {
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
   font-size: 12px;
   font-weight: 500;
   color: #2563EB;
@@ -562,7 +562,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-parent-chevron {
@@ -595,7 +595,7 @@
   padding: 0 8px;
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   font-size: 13px;
   color: #172B4D;
   outline: none;
@@ -628,7 +628,7 @@
 }
 
 [data-sdm-scope] .sdm-popover-result-key {
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
   font-size: 11px;
   font-weight: 600;
   color: #2563EB;
@@ -645,7 +645,7 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   line-height: 1.4;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-popover-none-option {
@@ -657,7 +657,7 @@
   font-size: 13px;
   color: #6B778C;
   border-bottom: 1px solid rgba(9, 30, 66, 0.08);
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   transition: background 0.12s;
 }
 [data-sdm-scope] .sdm-popover-none-option:hover {
@@ -680,7 +680,7 @@
   color: var(--sdm-ai-header-text);
   font-size: 12px;
   font-weight: 500;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -719,7 +719,7 @@
   color: var(--sdm-ai-header-text);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-ai-panel-body {
@@ -736,7 +736,7 @@
   color: #6B778C;
   margin-bottom: 4px;
   font-weight: 500;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-ai-select {
@@ -746,7 +746,7 @@
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
   background: #FFFFFF;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   font-size: 13px;
   color: #172B4D;
   cursor: pointer;
@@ -767,7 +767,7 @@
   padding: 0 8px;
   border: 1px solid rgba(9, 30, 66, 0.14);
   border-radius: 4px;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   font-size: 13px;
   color: #172B4D;
   outline: none;
@@ -788,7 +788,7 @@
   max-height: 80px;
   overflow-y: auto;
   line-height: 1.5;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
 }
 
 [data-sdm-scope] .sdm-ai-generate-btn {
@@ -803,7 +803,7 @@
   color: #FFFFFF;
   font-size: 13px;
   font-weight: 500;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -831,7 +831,7 @@
   max-height: 200px;
   overflow-y: auto;
   background: #FFFFFF;
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
 }
 
 [data-sdm-scope] .sdm-ai-output-content[contenteditable="true"]:focus {
@@ -865,7 +865,7 @@
   border-radius: 4px;
   font-size: 12px;
   font-weight: 500;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -918,7 +918,7 @@
   line-height: 1.6;
   cursor: text;
   min-height: 60px;
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
   transition: border-color 0.15s;
 }
 [data-sdm-scope] .sdm-ac-body:focus {
@@ -930,7 +930,7 @@
 [data-sdm-scope] .sdm-ac-empty {
   color: #8993A4;
   font-style: italic;
-  font-family: var(--cp-font-ui, Inter, system-ui, sans-serif);
+  font-family: var(--cp-font-body);
   font-size: 13px;
 }
 
@@ -939,7 +939,7 @@
    ════════════════════════════════════════════════════════════════ */
 
 [data-sdm-scope] .sdm-date-col {
-  font-family: var(--cp-font-mono, 'JetBrains Mono', monospace);
+  font-family: var(--cp-font-mono);
   font-size: 11px;
   color: #8993A4;
   flex-shrink: 0;
@@ -1068,7 +1068,7 @@
   padding: 12px 16px;
   margin: 8px 0;
   overflow-x: auto;
-  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-family: var(--cp-font-mono);
   font-size: 12px;
   line-height: 1.5;
   color: #172B4D;
@@ -1089,7 +1089,7 @@
   background: #F4F5F7;
   border-radius: 3px;
   padding: 2px 4px;
-  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-family: var(--cp-font-mono);
   font-size: 12px;
   color: #E5493A;
 }

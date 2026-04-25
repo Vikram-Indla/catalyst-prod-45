@@ -50,7 +50,7 @@ function Toggle({ checked, onChange, tk }: { checked: boolean; onChange: (v: boo
 function ToggleRow({ label, checked, onChange, tk }: { label: string; checked: boolean; onChange: (v: boolean) => void; tk: KanbanThemeTokens }) {
   return (
     <div className="flex items-center justify-between" style={{ padding: '6px 0' }}>
-      <span style={{ fontSize: 14, color: tk.textSecondary, fontFamily: "'Inter', sans-serif" }}>{label}</span>
+      <span style={{ fontSize: 14, color: tk.textSecondary, fontFamily: 'var(--cp-font-body)' }}>{label}</span>
       <Toggle checked={checked} onChange={onChange} tk={tk} />
     </div>
   );
@@ -63,7 +63,7 @@ function SectionHeader({ title, tk }: { title: string; tk: KanbanThemeTokens }) 
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase',
       color: tk.textMuted, letterSpacing: '0.06em',
       padding: '10px 0 4px',
-      fontFamily: "'Sora', sans-serif",
+      fontFamily: 'var(--cp-font-heading)',
     }}>
       {title}
     </div>
@@ -130,13 +130,13 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
         padding: '12px 16px',
         zIndex: 50,
         boxShadow: tk.cardDragShadow,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: 'var(--cp-font-body)',
       }}
     >
       {/* Header */}
       <div style={{
         fontSize: 14, fontWeight: 600, color: tk.textPrimary,
-        fontFamily: "'Sora', sans-serif", marginBottom: 4,
+        fontFamily: 'var(--cp-font-heading)', marginBottom: 4,
       }}>
         View settings
       </div>
@@ -184,7 +184,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
                     border: `1px solid ${selected ? tk.selectedAccent : tk.border}`,
                     borderRadius: 4,
                     cursor: 'pointer',
-                    fontFamily: "'Inter', sans-serif",
+                    fontFamily: 'var(--cp-font-body)',
                     textTransform: 'capitalize',
                     transition: 'background 120ms ease, color 120ms ease',
                   }}
@@ -207,7 +207,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
           style={{
             fontSize: 13, color: tk.selectedAccent, background: 'none',
             border: 'none', cursor: 'pointer', fontWeight: 500, padding: 0,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           Expand all
@@ -217,7 +217,7 @@ export function ViewSettingsPanel({ settings, onUpdate, onExpandAll, onCollapseA
           style={{
             fontSize: 13, color: tk.selectedAccent, background: 'none',
             border: 'none', cursor: 'pointer', fontWeight: 500, padding: 0,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
           Collapse all

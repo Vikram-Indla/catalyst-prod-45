@@ -66,7 +66,7 @@ export function TypeRow({ name, icon, color, level, isEnabled, isFeatureType, fe
       </span>
 
       {/* Item count or disabled label */}
-      <span className="flex-shrink-0 text-right" style={{ fontSize: 12, color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? "'Inter', sans-serif" : "'JetBrains Mono', monospace" }}>
+      <span className="flex-shrink-0 text-right" style={{ fontSize: 12, color: 'var(--fg-4)', minWidth: 100, fontFamily: isDisabledFeature ? 'var(--cp-font-body)' : 'var(--cp-font-mono)' }}>
         {isDisabledFeature ? (
           <span style={{ fontSize: 11, fontStyle: 'italic' }}>Disabled — enable Feature Layer</span>
         ) : (

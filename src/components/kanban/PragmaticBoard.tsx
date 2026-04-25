@@ -271,12 +271,12 @@ const PragmaticColumn = memo(function PragmaticColumn({
         }} />
         <span style={{
           fontSize: 12, fontWeight: 500, textTransform: 'uppercase',
-          color: tk.textMuted, fontFamily: "'Inter', sans-serif",
+          color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px', flex: 1,
         }}>{column.name}</span>
         <span style={{
           fontSize: 12, fontWeight: 500, color: tk.textPrimary,
-          fontFamily: "'Inter', sans-serif", lineHeight: '16px',
+          fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
         }}>{issueIds.length}</span>
       </div>
 
@@ -297,7 +297,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
         {issueIds.length === 0 && (
           <div className="flex flex-col items-center justify-center" style={{
             minHeight: 100, color: tk.textDisabled, fontSize: 12, gap: 6,
-            fontFamily: "'Inter', sans-serif",
+            fontFamily: 'var(--cp-font-body)',
           }}>
             {isOver ? (
               <span style={{ color: tk.selectedAccent, fontWeight: 600, fontSize: 13 }}>Drop here</span>

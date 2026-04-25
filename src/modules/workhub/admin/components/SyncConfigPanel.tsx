@@ -337,7 +337,7 @@ export function SyncConfigPanel() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               <label style={{
                 fontSize: 11, fontWeight: 600, color: 'var(--wh-tx3)', textTransform: 'uppercase' as const,
-                letterSpacing: '.4px', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 6,
+                letterSpacing: '.4px', fontFamily: 'var(--cp-font-body)', display: 'flex', alignItems: 'center', gap: 6,
               }}>
                 <Settings2 size={12} />
                 Per-Project Sync Criteria
@@ -399,7 +399,7 @@ export function SyncConfigPanel() {
                           <label style={{
                             fontSize: 10, fontWeight: 600, color: 'var(--wh-tx3)',
                             textTransform: 'uppercase' as const, letterSpacing: '.4px',
-                            fontFamily: 'Inter, sans-serif', display: 'block', marginBottom: 6,
+                            fontFamily: 'var(--cp-font-body)', display: 'block', marginBottom: 6,
                           }}>
                             Timeline Lookback
                           </label>

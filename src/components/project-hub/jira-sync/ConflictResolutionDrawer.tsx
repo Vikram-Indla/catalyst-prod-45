@@ -70,7 +70,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
           width: 720,
           boxShadow: '-8px 0 24px rgba(0,0,0,0.12)',
           display: 'flex', flexDirection: 'column',
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           transform: animating ? 'translateX(0)' : 'translateX(100%)',
           transition: animating ? 'transform 250ms ease-out' : 'transform 200ms ease-in',
         }}
@@ -82,7 +82,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
           display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
         }}>
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'Sora, sans-serif', margin: 0 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-heading)', margin: 0 }}>
               Resolve Conflict — {itemKey}
             </h2>
             <p style={{ fontSize: 12, color: 'var(--fg-3)', marginTop: 4 }}>
@@ -162,7 +162,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                         style={{
                           height: 32, padding: '0 14px', borderRadius: 4,
                           color: 'var(--cp-blue)', border: '0.75px solid var(--cp-primary-20)',
-                          fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+                          fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
                         }}
                       >
                         Keep Catalyst
@@ -173,7 +173,7 @@ export function ConflictResolutionDrawer({ open, onClose, itemKey, conflicts, on
                         style={{
                           height: 32, padding: '0 14px', borderRadius: 4,
                           color: 'var(--sem-warning-fg)', border: '0.75px solid var(--sem-warning-accent)',
-                          fontSize: 12, fontWeight: 600, fontFamily: 'Inter, sans-serif', cursor: 'pointer',
+                          fontSize: 12, fontWeight: 600, fontFamily: 'var(--cp-font-body)', cursor: 'pointer',
                         }}
                       >
                         Keep Jira

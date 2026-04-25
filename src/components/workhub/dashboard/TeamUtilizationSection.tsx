@@ -40,7 +40,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h2 style={{
-          fontFamily: 'Inter, system-ui, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           fontSize: 18,
           fontWeight: 600,
           color: 'var(--fg-1)',
@@ -51,7 +51,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
         <button
           onClick={() => navigate('/project-hub/resource360')}
           style={{
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             fontSize: 13,
             color: 'var(--cp-blue)',
             background: 'none',
@@ -97,7 +97,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
             }}>
               <AvatarChip name={resource.name} color={resource.color} size={28} />
               <span style={{
-                fontFamily: 'Inter, system-ui, sans-serif',
+                fontFamily: 'var(--cp-font-body)',
                 fontSize: 13,
                 fontWeight: 500,
                 color: 'var(--fg-1)',
@@ -143,7 +143,7 @@ export function TeamUtilizationSection({ resources }: TeamUtilizationSectionProp
             display: 'inline-flex',
             alignItems: 'center',
             gap: 4,
-            fontFamily: 'Inter, system-ui, sans-serif',
+            fontFamily: 'var(--cp-font-body)',
             fontSize: 11,
             color: 'var(--fg-4)',
           }}>

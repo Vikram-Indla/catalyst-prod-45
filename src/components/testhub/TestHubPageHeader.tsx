@@ -29,7 +29,7 @@ export function TestHubPageHeader({ title, subtitle, children }: TestHubPageHead
       <div>
         <h1
           style={{
-            fontFamily: 'Sora, sans-serif',
+            fontFamily: 'var(--cp-font-heading)',
             fontSize: 18,
             fontWeight: 700,
             color: 'var(--fg-1)',
@@ -43,7 +43,7 @@ export function TestHubPageHeader({ title, subtitle, children }: TestHubPageHead
         {subtitle && (
           <p
             style={{
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
               fontSize: 13,
               color: 'var(--fg-3)',
               margin: '2px 0 0 0',

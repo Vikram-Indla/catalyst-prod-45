@@ -114,12 +114,12 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
   const labelStyle: React.CSSProperties = {
     fontSize: '11px', fontWeight: 600, color: isDark ? '#A1A1A1' : '#475569',
     textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px', display: 'block',
-    fontFamily: 'Inter, sans-serif',
+    fontFamily: 'var(--cp-font-body)',
   };
   const inputStyle: React.CSSProperties = {
     width: '100%', border: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`, borderRadius: '8px',
     padding: '10px 12px', fontSize: '14px', color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
-    fontFamily: 'Inter, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
+    fontFamily: 'var(--cp-font-body)', background: isDark ? 'transparent' : '#FFFFFF',
   };
   const errorStyle: React.CSSProperties = {
     fontSize: '12px', color: '#EF4444', marginTop: '4px',
@@ -142,7 +142,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
       }}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'Inter, sans-serif' }}>
+          <h3 style={{ fontSize: '18px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', margin: 0, fontFamily: 'var(--cp-font-body)' }}>
             Create Innovation Drive
           </h3>
           <button
@@ -246,7 +246,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                         ? (isActive ? (isDark ? '#86EFAC' : '#15803D') : (isDark ? '#A1A1A1' : '#64748B'))
                         : (isDark ? '#878787' : '#94A3B8'),
                       transition: 'all 150ms ease',
-                      fontFamily: 'Inter, sans-serif',
+                      fontFamily: 'var(--cp-font-body)',
                     }}
                   >
                     <span style={{
@@ -330,7 +330,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
                   borderLeft: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`, borderRight: `1.5px solid ${isDark ? '#454545' : '#CBD5E1'}`,
                   borderTop: 'none', borderBottom: 'none',
                   textAlign: 'center', fontSize: '16px', fontWeight: 600, color: isDark ? '#EDEDED' : '#0F172A', outline: 'none',
-                  fontFamily: 'Inter, sans-serif', background: isDark ? 'transparent' : '#FFFFFF',
+                  fontFamily: 'var(--cp-font-body)', background: isDark ? 'transparent' : '#FFFFFF',
                 }}
               />
               <button
@@ -363,7 +363,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
             style={{
               padding: '10px 20px', fontSize: '14px', fontWeight: 500,
               color: isDark ? '#A1A1A1' : '#475569', background: 'transparent', border: 'none',
-              borderRadius: '8px', cursor: 'pointer', fontFamily: 'Inter, sans-serif',
+              borderRadius: '8px', cursor: 'pointer', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = isDark ? '#EDEDED' : '#0F172A'; }}
             onMouseLeave={(e) => { e.currentTarget.style.color = isDark ? '#A1A1A1' : '#475569'; }}
@@ -382,7 +382,7 @@ export default function CreateDriveModal({ open, onClose }: CreateDriveModalProp
               cursor: (!isValid || createMutation.isPending) ? 'not-allowed' : 'pointer',
               display: 'inline-flex', alignItems: 'center', gap: '6px',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-              transition: 'background 150ms ease', fontFamily: 'Inter, sans-serif',
+              transition: 'background 150ms ease', fontFamily: 'var(--cp-font-body)',
             }}
             onMouseEnter={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#1D4ED8'; }}
             onMouseLeave={(e) => { if (isValid && !createMutation.isPending) e.currentTarget.style.background = '#2563EB'; }}

@@ -149,7 +149,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               transition: 'box-shadow 180ms ease, transform 180ms ease',
               cursor: isForYou ? 'pointer' : 'not-allowed',
               opacity: isForYou ? 1 : 0.55,
-              fontFamily: "'Inter', system-ui, sans-serif",
+              fontFamily: 'var(--cp-font-body)',
               color: '#0F172A',
             }}
           >

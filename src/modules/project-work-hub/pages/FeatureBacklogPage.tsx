@@ -118,7 +118,7 @@ export default function FeatureBacklogPage({ projectId: propProjectId }: { proje
                       <div style={{ width: 38, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <WorkItemIcon type="feature" />
                       </div>
-                      <div style={{ width: 110, flexShrink: 0, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: feat.display_id ? tk.blueKey : tk.t3 }}>
+                      <div style={{ width: 110, flexShrink: 0, fontFamily: 'var(--cp-font-mono)', fontSize: 12, color: feat.display_id ? tk.blueKey : tk.t3 }}>
                         {feat.display_id || '—'}
                       </div>
                       <div style={{ flex: 1, minWidth: 0, fontSize: 13, fontWeight: 500, color: tk.t1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{feat.name}</div>

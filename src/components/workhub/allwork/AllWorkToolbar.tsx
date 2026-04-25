@@ -48,7 +48,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
           color: selected.length > 0 ? 'var(--cp-blue)' : 'var(--fg-2)',
           backgroundColor: selected.length > 0 ? 'rgba(37,99,235,0.08)' : 'var(--bg-app)',
           fontWeight: selected.length > 0 ? 500 : 400,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
         }}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -81,7 +81,7 @@ function FilterDropdown({ label, options, selected, onToggle, isLoading }: {
                 key={opt}
                 onClick={() => onToggle(opt)}
                 className="w-full flex items-center gap-2 px-3 py-1.5 text-[13px] hover:bg-[var(--hover, #1F1F1F)] text-left transition-colors duration-[80ms]"
-                style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+                style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
                 role="option"
                 aria-selected={selected.includes(opt)}
               >
@@ -187,7 +187,7 @@ export function AllWorkToolbar({
           onChange={(e) => setSearchValue(e.target.value)}
           placeholder="Search work items"
           className="text-[13px] border-none outline-none shadow-none bg-transparent w-full"
-          style={{ color: 'var(--fg-1)', fontFamily: 'Inter, sans-serif' }}
+          style={{ color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }}
           aria-label="Search work items"
         />
         {searchValue && (
@@ -234,7 +234,7 @@ export function AllWorkToolbar({
         </span>
       )}
 
-      <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: "'JetBrains Mono', monospace" }}>
+      <span className="text-[12px]" style={{ color: 'var(--fg-3)', fontFamily: 'var(--cp-font-mono)' }}>
         {totalCount.toLocaleString()} items
       </span>
 
@@ -254,7 +254,7 @@ export function AllWorkToolbar({
               fontWeight: viewMode === key ? 500 : 400,
               borderLeft: key === 'split' ? '1px solid var(--bd-default, #2E2E2E)' : 'none',
               boxShadow: viewMode === key ? 'inset 0 1px 2px rgba(0,0,0,0.06)' : 'none',
-              fontFamily: 'Inter, sans-serif',
+              fontFamily: 'var(--cp-font-body)',
             }}
             role="radio"
             aria-checked={viewMode === key}

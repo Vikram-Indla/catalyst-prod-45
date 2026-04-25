@@ -40,7 +40,7 @@ export function WikiAdminMetrics() {
           <div style={labelStyle}>{c.label}</div>
           <div style={valueStyle}>{c.value}</div>
           <div style={{
-            fontFamily: 'Inter, sans-serif', fontSize: 11, fontWeight: 500, marginTop: 4,
+            fontFamily: 'var(--cp-font-body)', fontSize: 11, fontWeight: 500, marginTop: 4,
             color: c.positive ? '#0D7331' : '#9A5402',
           }}>{c.delta}</div>
         </div>
@@ -59,7 +59,7 @@ const cardStyle: React.CSSProperties = {
 };
 
 const labelStyle: React.CSSProperties = {
-  fontFamily: 'Inter, sans-serif',
+  fontFamily: 'var(--cp-font-body)',
   fontSize: 11,
   fontWeight: 650,
   textTransform: 'uppercase',
@@ -69,7 +69,7 @@ const labelStyle: React.CSSProperties = {
 };
 
 const valueStyle: React.CSSProperties = {
-  fontFamily: 'JetBrains Mono, monospace',
+  fontFamily: 'var(--cp-font-mono)',
   fontSize: 28,
   fontWeight: 700,
   color: 'var(--cp-text-primary, #0F172A)',

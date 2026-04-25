@@ -25,7 +25,7 @@ export function RoadmapLegend({ isVisible, onToggle, isRTL = false }: RoadmapLeg
       <div
         className="w-64 bg-white rounded-lg shadow-lg border overflow-hidden"
         style={{ 
-          fontFamily: 'Inter, -apple-system, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
           borderColor: 'hsl(var(--roadmap-sandstone))'
         }}
       >

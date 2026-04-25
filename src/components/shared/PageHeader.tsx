@@ -43,7 +43,7 @@ export function PageHeader({
         <div className="flex items-center gap-3">
           <h1
             className="text-xl font-semibold text-foreground"
-            style={{ fontFamily: "'Sora', sans-serif", letterSpacing: '-0.02em' }}
+            style={{ fontFamily: 'var(--cp-font-heading)', letterSpacing: '-0.02em' }}
           >
             {title}
           </h1>

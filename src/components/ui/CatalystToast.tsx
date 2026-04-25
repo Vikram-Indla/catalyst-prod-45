@@ -70,7 +70,7 @@ export const showCatalystToast = (
           boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
           minWidth: 320,
           maxWidth: 420,
-          fontFamily: 'Inter, sans-serif',
+          fontFamily: 'var(--cp-font-body)',
         }}
       >
         <Icon size={20} style={{ color: config.iconColor, flexShrink: 0, marginTop: 1 }} />

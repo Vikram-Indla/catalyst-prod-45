@@ -63,7 +63,7 @@ export function InlineEditTitle({ value, onSave, fontSize = 13, fontWeight = 500
         onBlur={save}
         onClick={(e) => e.stopPropagation()}
         style={{
-          flex: 1, fontSize, fontWeight, color, fontFamily: "'Inter', sans-serif",
+          flex: 1, fontSize, fontWeight, color, fontFamily: 'var(--cp-font-body)',
           border: '1px solid #2563EB', borderRadius: 4, padding: '2px 6px',
           outline: 'none', background: 'var(--bg-app, #FFFFFF)', minWidth: 0,
           ...style,

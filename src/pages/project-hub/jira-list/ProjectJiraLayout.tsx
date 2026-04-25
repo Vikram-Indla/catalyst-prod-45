@@ -35,7 +35,7 @@ export default function ProjectJiraLayout() {
   });
 
   if (error) return (
-    <div style={{ padding: 48, textAlign: 'center', color: 'var(--cp-text-tertiary)', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ padding: 48, textAlign: 'center', color: 'var(--cp-text-tertiary)', fontFamily: 'var(--cp-font-body)' }}>
       Project not found. <a href="/project-hub/projects" style={{ color: 'var(--cp-text-link)' }}>← Back to projects</a>
     </div>
   );
