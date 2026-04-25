@@ -87,13 +87,9 @@ const PRIORITY_OPTIONS = [
   { value: 'Lowest', label: 'Lowest', icon: '↓↓', color: '#7A869A' },
 ];
 
-const ITEM_TYPES = [
-  { value: 'Epic', label: 'Epic' },
-  { value: 'Story', label: 'Story' },
-  { value: 'Bug', label: 'Bug' },
-  { value: 'Task', label: 'Task' },
-  { value: 'Sub-task', label: 'Sub-task' },
-];
+// ITEM_TYPES are fetched dynamically from ph_issues per project (see useQuery
+// in component body). Keeps filter values aligned with actual DB values and
+// scoped to the current project to prevent cross-project bleed-through.
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -145,6 +141,31 @@ export default function GadgetSettingsPanel({
       console.log('[GadgetSettingsPanel] rh_releases response:', res);
       return (res.data ?? []) as any[];
     },
+    staleTime: 60_000,
+  });
+
+  // Distinct issue types from ph_issues for THIS project (scoped — avoids
+  // bleed-through from other projects in multi-project Jira setups).
+  const { data: itemTypes = [] } = useQuery({
+    queryKey: ['gadget-panel-item-types', projectKey],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('ph_issues' as any)
+        .select('issue_type')
+        .eq('project_key', projectKey)
+        .not('issue_type', 'is', null)
+        .limit(1000);
+      const counts = new Map<string, number>();
+      (data ?? []).forEach((r: any) => {
+        const t = (r.issue_type ?? '').trim();
+        if (!t) return;
+        counts.set(t, (counts.get(t) ?? 0) + 1);
+      });
+      return Array.from(counts.entries())
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([value]) => ({ value, label: value }));
+    },
+    enabled: !!projectKey,
     staleTime: 60_000,
   });
 
@@ -412,10 +433,10 @@ export default function GadgetSettingsPanel({
             placeholder="All item types"
             value={draft.itemTypeFilter}
             onChange={(v) => setField('itemTypeFilter', v)}
-            options={ITEM_TYPES.map((t) => ({
+            options={itemTypes.map((t: any) => ({
               value: t.value,
               label: t.label,
-              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/-/g, '_')} size={12} />,
+              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/[\s-]+/g, '_')} size={12} />,
             }))}
             isOpen={openField === 'itemType'}
             onToggle={() => toggleField('itemType')}
