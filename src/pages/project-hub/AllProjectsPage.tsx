@@ -153,7 +153,7 @@ export default function AllProjectsPage() {
   const isSearchNoResults = !isLoading && !!filters.search && filtered.length === 0 && projects.length > 0;
 
   return (
-    <div className="flex flex-col h-full font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
+    <div className="flex flex-col h-full bg-white dark:!bg-[#0A0A0A] font-['Inter',-apple-system,system-ui,sans-serif] antialiased">
       <CatalystPageHeader
         title="All Projects"
         actions={
