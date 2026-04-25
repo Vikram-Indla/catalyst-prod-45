@@ -548,51 +548,107 @@ export default function StoryDetailModal({
 
   /* ── MUTATIONS ─────────────────────────────── */
 
+  // Source-aware table router. For catalyst items every mutation targets
+  // catalyst_* tables; trigger tg_catalyst_issue_audit handles activity logging.
+  const issueTable = workItemSource === 'catalyst' ? 'catalyst_issues' : 'ph_issues';
+  const commentsTable = workItemSource === 'catalyst' ? 'catalyst_comments' : 'ph_comments';
+  const attachmentsTable = workItemSource === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
+  const attachmentsBucket = workItemSource === 'catalyst' ? 'catalyst-attachments' : 'attachments';
+  // Field-name shim: catalyst_issues uses different column names.
+  const mapField = (f: string): string | null => {
+    if (workItemSource !== 'catalyst') return f;
+    const m: Record<string, string | null> = {
+      summary: 'title', description: 'description', description_text: 'description',
+      description_adf: 'description_adf_raw', labels: 'tags',
+      assignee_account_id: 'assignee_id', reporter_account_id: 'reporter_id',
+      status_category: null, fix_versions: null, acceptance_criteria: null, parent_key: null,
+    };
+    return f in m ? m[f] : f;
+  };
+  const remapPatch = (patch: Record<string, any>) => {
+    if (workItemSource !== 'catalyst') return patch;
+    const out: Record<string, any> = {};
+    for (const [k, v] of Object.entries(patch)) {
+      const mapped = mapField(k);
+      if (mapped) out[mapped] = v;
+    }
+    return out;
+  };
+
   const updateStatusMutation = useMutation({
     mutationFn: async (newStatus: string) => {
-      const { error } = await supabase.from('ph_issues').update({ status: newStatus, status_category: resolveStatusCategory(newStatus) }).eq('id', itemId);
+      const patch = workItemSource === 'catalyst'
+        ? { status: newStatus }
+        : { status: newStatus, status_category: resolveStatusCategory(newStatus) };
+      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
       if (error) throw error;
-      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'status', newValue: newStatus });
+      if (workItemSource === 'jira') {
+        await enqueueWriteBack({ phIssueId: itemId, fieldName: 'status', newValue: newStatus });
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+    },
     onError: () => toast.error('Failed to update status'),
   });
 
   const updateFieldMutation = useMutation({
     mutationFn: async ({ field, value, oldValue }: { field: string; value: string; oldValue: string }) => {
-      const { error } = await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
+      const patch = remapPatch({ [field]: value });
+      if (Object.keys(patch).length === 0) return; // field has no equivalent in this source
+      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
       if (error) throw error;
-      await supabase.from('ph_activity_log').insert({
-        work_item_id: itemId, action: 'field_updated', field_name: field,
-        old_value: oldValue, new_value: value, user_id: user!.id,
-      });
+      // ph_issues needs explicit activity rows (no DB trigger). Catalyst gets
+      // them automatically via tg_catalyst_issue_audit.
+      if (workItemSource === 'jira') {
+        await supabase.from('ph_activity_log').insert({
+          work_item_id: itemId, action: 'field_updated', field_name: field,
+          old_value: oldValue, new_value: value, user_id: user!.id,
+        });
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] });
+    },
     onError: () => toast.error('Failed to update'),
   });
 
   const updateAssigneeMutation = useMutation({
     mutationFn: async ({ userId, displayName }: { userId: string; displayName: string }) => {
-      const { error } = await supabase.from('ph_issues').update({ assignee_account_id: userId, assignee_display_name: displayName }).eq('id', itemId);
+      const patch = workItemSource === 'catalyst'
+        ? { assignee_id: userId }
+        : { assignee_account_id: userId, assignee_display_name: displayName };
+      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
       if (error) throw error;
-      await enqueueWriteBack({ phIssueId: itemId, fieldName: 'assignee', newValue: userId });
+      if (workItemSource === 'jira') {
+        await enqueueWriteBack({ phIssueId: itemId, fieldName: 'assignee', newValue: userId });
+      }
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+    },
     onError: () => toast.error('Failed to update assignee'),
   });
 
   const addCommentMutation = useMutation({
     mutationFn: async (body: string) => {
-      const { error } = await supabase.from('ph_comments').insert({ work_item_id: itemId, body, author_id: user!.id });
+      const { error } = await supabase.from(commentsTable).insert({ work_item_id: itemId, body, author_id: user!.id } as any);
       if (error) throw error;
     },
-    onSuccess: () => { setNewComment(''); toast.success('Comment added'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
-    onError: () => toast.error('Failed to add comment'),
+    onSuccess: () => { setNewComment(''); toast.success('Comment added'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] }); },
+    onError: (e: any) => toast.error(`Failed to add comment: ${e?.message ?? ''}`),
   });
 
   const deleteCommentMutation = useMutation({
     mutationFn: async (commentId: string) => {
-      const { error } = await supabase.from('ph_comments').delete().eq('id', commentId);
+      const { error } = await supabase.from(commentsTable).delete().eq('id', commentId);
       if (error) throw error;
     },
     onSuccess: () => { toast.success('Comment deleted'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
@@ -601,7 +657,7 @@ export default function StoryDetailModal({
 
   const editCommentMutation = useMutation({
     mutationFn: async ({ commentId, body }: { commentId: string; body: string }) => {
-      const { error } = await supabase.from('ph_comments').update({ body }).eq('id', commentId);
+      const { error } = await supabase.from(commentsTable).update({ body }).eq('id', commentId);
       if (error) throw error;
     },
     onSuccess: () => { setEditingCommentId(null); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); },
@@ -610,10 +666,14 @@ export default function StoryDetailModal({
 
   const deleteIssueMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
+      const { error } = await supabase.from(issueTable).update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
       if (error) throw error;
     },
-    onSuccess: () => { toast.success('Ticket deleted'); onClose(); queryClient.invalidateQueries({ queryKey: ['ph_issues'] }); },
+    onSuccess: () => {
+      toast.success('Ticket deleted'); onClose();
+      queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
+      queryClient.invalidateQueries({ queryKey: ['catalyst_issues'] });
+    },
     onError: () => toast.error('Failed to delete'),
   });
 
@@ -621,13 +681,13 @@ export default function StoryDetailModal({
     mutationFn: async (file: File) => {
       const ext = file.name.split('.').pop();
       const path = `attachments/${itemId}/${Date.now()}.${ext}`;
-      const { error: uploadError } = await supabase.storage.from('attachments').upload(path, file);
+      const { error: uploadError } = await supabase.storage.from(attachmentsBucket).upload(path, file);
       if (uploadError) throw uploadError;
-      const { error: dbError } = await supabase.from('ph_attachments').insert({ work_item_id: itemId, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id });
+      const { error: dbError } = await supabase.from(attachmentsTable).insert({ work_item_id: itemId, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id } as any);
       if (dbError) throw dbError;
     },
     onSuccess: () => { toast.success('Attachment uploaded'); queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] }); },
-    onError: () => toast.error('Failed to upload'),
+    onError: (e: any) => toast.error(`Failed to upload: ${e?.message ?? ''}`),
   });
 
   const handleCommentSubmit = (html: string) => { if (html.trim()) addCommentMutation.mutate(html); };
