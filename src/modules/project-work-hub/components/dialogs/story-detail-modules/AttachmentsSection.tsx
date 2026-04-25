@@ -92,7 +92,12 @@ function validateFile(file: File): string | null {
   return null;
 }
 
-export function AttachmentsSection({ attachments, itemId, userId, projectKey }: AttachmentsSectionProps) {
+export function AttachmentsSection({ attachments, itemId, userId, projectKey, source = 'jira' }: AttachmentsSectionProps) {
+  // Source-aware bucket + table routing — Catalyst items live in
+  // catalyst-attachments bucket + catalyst_attachments table; Jira items
+  // continue to use the legacy `attachments` bucket + ph_attachments table.
+  const BUCKET = source === 'catalyst' ? 'catalyst-attachments' : 'attachments';
+  const ATTACHMENTS_TABLE = source === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
   const queryClient = useQueryClient();
   const [collapsed, setCollapsed] = useState(attachments.length === 0);
   const [sortKey, setSortKey] = useState<SortKey>('dateAdded');
