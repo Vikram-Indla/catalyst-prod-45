@@ -1435,10 +1435,17 @@ function DemandRowItem({
 // Main gadget
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function DemandFulfilmentGadget({ projectKey, collapsed, onToggleCollapse }: WidgetProps) {
+export default function DemandFulfilmentGadget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const navigate = useNavigate();
   const { openUWV } = useUWV();
-  const { settings, save } = useGadgetSettings();
+  const { settings: legacySettings, save } = useGadgetSettings();
+  // Per-gadget panel settings (Layer 2) — at-risk threshold now lives here.
+  const { settings: panelSettings } = usePanelGadgetSettings('demand', projectKey);
+  const atRiskDays = Number(panelSettings.gadgetSpecific?.atRiskDays ?? legacySettings.rag_threshold ?? 7);
+  const settings = useMemo(
+    () => ({ ...legacySettings, rag_threshold: atRiskDays }),
+    [legacySettings, atRiskDays],
+  );
   const { data: rows = [], isLoading } = useDemandData(projectKey, settings);
   const { data: unlinkedEpics = [] } = useUnlinkedEpics(projectKey, settings);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
