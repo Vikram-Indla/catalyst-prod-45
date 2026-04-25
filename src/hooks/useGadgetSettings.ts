@@ -120,7 +120,8 @@ export function isDefaultSettings(s: GadgetSettings): boolean {
     s.assigneeFilter.length === 0 &&
     s.itemTypeFilter.length === 0 &&
     s.priorityFilter.length === 0 &&
-    Object.keys(s.gadgetSpecific ?? {}).length === 0
+    Object.keys(s.gadgetSpecific ?? {}).length === 0 &&
+    (s.datePreset ?? 'thisQuarter') === 'thisQuarter'
   );
 }
 
