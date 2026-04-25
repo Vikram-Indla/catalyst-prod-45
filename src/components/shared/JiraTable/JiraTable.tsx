@@ -78,6 +78,33 @@ const DENSITY = {
   },
 };
 
+/**
+ * CellRenderer — wraps a column's `cell` factory in its own component instance
+ * so that cells which call hooks (useState/useMemo, e.g. ParentEditCell,
+ * AssigneeEditCell) get their own stable hook list. Without this wrapper the
+ * cell factories were invoked as plain functions inside JiraTable's render,
+ * which violated Rules of Hooks and (silently) aborted subtree updates —
+ * notably preventing the bulk Delete confirmation modal from mounting on the
+ * project backlog screen.
+ */
+function CellRenderer<TRow>({
+  cell,
+  row,
+  value,
+  isFocused,
+  isSelected,
+  commit,
+}: {
+  cell: (args: { row: TRow; value: unknown; isFocused: boolean; isSelected: boolean; commit: (next: unknown) => void }) => React.ReactNode;
+  row: TRow;
+  value: unknown;
+  isFocused: boolean;
+  isSelected: boolean;
+  commit: (next: unknown) => void;
+}) {
+  return <>{cell({ row, value, isFocused, isSelected, commit })}</>;
+}
+
 export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
   const {
     columns,
