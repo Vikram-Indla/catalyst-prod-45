@@ -127,7 +127,7 @@ export default function ReleaseHealthWidget({
         />
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          {(releases ?? []).slice(0, 6).map((rel: any) => {
+          {(releases ?? []).slice(0, maxRows).map((rel: any) => {
             const pct = rel.completionPct ?? 0;
             const isDone = pct >= 100;
             const fill = isDone ? '#006644' : '#0052CC';
