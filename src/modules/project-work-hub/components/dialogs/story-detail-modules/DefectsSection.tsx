@@ -1,5 +1,10 @@
 /**
  * DefectsSection — extracted from StoryDetailModal
+ *
+ * Phase 5 (Apr 2026): source-aware create. When the parent story is a
+ * Catalyst-native item, new defects land in catalyst_issues with parent_key
+ * set. When the parent is Jira-synced, new defects land in ph_issues for
+ * back-compat with the Jira write-back pipeline.
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { CornerDownLeft, Loader2, Plus } from 'lucide-react';
@@ -11,8 +16,20 @@ import { DEFAULT_COLUMNS } from './constants';
 import { nextPos } from './helpers';
 import { SectionBlock, IssueRow, ColumnPicker, SkeletonRows, EmptyState } from './shared-components';
 import { ConfirmDialog } from './ConfirmDialog';
+import { createChildIssue, type WorkItemSource } from '../../../lib/workItemRepo';
+import { toast } from 'sonner';
 
-export function DefectsSection({ storyKey, projectKey }: { storyKey: string; projectKey: string }) {
+export function DefectsSection({
+  storyKey,
+  projectKey,
+  parentSource = 'jira',
+  parentProjectId = null,
+}: {
+  storyKey: string;
+  projectKey: string;
+  parentSource?: WorkItemSource;
+  parentProjectId?: string | null;
+}) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [columns, setColumns] = useState<ColumnConfig>(DEFAULT_COLUMNS);
