@@ -220,9 +220,11 @@ export default function StoryDetailModal({
         }
       }
 
-      // Resolve parent (catalyst uses parent_id uuid → look up issue_key)
-      let parentKey: string | null = null;
-      if (cat.parent_id) {
+      // Resolve parent — prefer the native parent_key text column (Phase 2
+      // parity); fall back to parent_id uuid lookup; finally fall back to
+      // ph_issue_links 'parent' edge (cross-source parents).
+      let parentKey: string | null = (cat as any).parent_key ?? null;
+      if (!parentKey && cat.parent_id) {
         const { data: par } = await supabase
           .from('catalyst_issues')
           .select('issue_key')
@@ -230,11 +232,19 @@ export default function StoryDetailModal({
           .maybeSingle();
         parentKey = par?.issue_key ?? null;
       }
+      if (!parentKey && cat.issue_key) {
+        const { data: linkRow } = await supabase
+          .from('ph_issue_links')
+          .select('target_id')
+          .eq('source_id', cat.issue_key)
+          .eq('link_type', 'child of')
+          .maybeSingle();
+        parentKey = (linkRow as any)?.target_id ?? null;
+      }
 
-      // Acceptance criteria — preserved as a JSON extension key when the editor
-      // saves it (see handleApplyAC). Read it back from description_adf_raw.
-      const acExt = (cat.description_adf_raw && typeof cat.description_adf_raw === 'object'
-        && (cat.description_adf_raw as any).__catalyst_extensions?.acceptance_criteria) ?? null;
+      // Acceptance criteria — native jsonb column on catalyst_issues
+      // (parity migration 20260425185838).
+      const acExt = (cat as any).acceptance_criteria ?? null;
 
       const assignee = cat.assignee_id ? profileMap.get(cat.assignee_id) : undefined;
       const reporter = cat.reporter_id ? profileMap.get(cat.reporter_id) : undefined;
@@ -264,8 +274,12 @@ export default function StoryDetailModal({
         jira_updated_at: cat.updated_at,
         parent_key: parentKey,
         acceptance_criteria: acExt,
-        labels: cat.tags ?? null,
-        fix_versions: null,
+        // Catalyst stores user-facing labels in `labels` (text[]); legacy
+        // `tags` is preserved for back-compat but UI reads from labels.
+        labels: ((cat as any).labels && (cat as any).labels.length > 0)
+          ? (cat as any).labels
+          : ((cat as any).tags ?? null),
+        fix_versions: (cat as any).fix_versions ?? null,
         // Marker so downstream code can detect source without re-querying.
         __catalyst_source: true,
       } as unknown as PhIssue;
@@ -324,23 +338,26 @@ export default function StoryDetailModal({
   );
 
   const { data: comments = [] } = useQuery({
-    queryKey: ['ph-comments', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
+    queryKey: ['ph-comments', itemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!itemId && isOpen && !!issue,
     queryFn: async () => {
-      // 1) Catalyst-native comments (ph_comments)
-      const { data: phData } = await supabase.from('ph_comments').select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
+      const isCatalyst = !!(issue as any)?.__catalyst_source;
+      const tbl = isCatalyst ? 'catalyst_comments' : 'ph_comments';
+      // 1) Native comments (source-aware table)
+      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
       const phRows = phData ?? [];
-      const authorIds = [...new Set(phRows.map(c => c.author_id).filter(Boolean))];
+      const authorIds = [...new Set(phRows.map((c: any) => c.author_id).filter(Boolean))];
       // §19 chokepoint: select full_name only, resolve avatar locally.
       const { data: profiles } = authorIds.length
         ? await supabase.from('profiles').select('id, full_name, email').in('id', authorIds)
         : { data: [] as any[] };
       const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, localizeAvatar(p)]));
-      const phMapped = phRows.map(c => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
+      const phMapped = phRows.map((c: any) => ({ ...c, author: profileMap.get(c.author_id) ?? null }));
 
       // 2) Jira-synced comments (jira_sync_comments) — read-only, keyed by issue_key.
-      // §19 chokepoint: drop author_avatar_url from SELECT, resolve via display_name.
+      // Only relevant for Jira-sourced items; Catalyst items have no jira_sync rows.
       let jiraMapped: any[] = [];
-      if (issue?.issue_key) {
+      if (!isCatalyst && issue?.issue_key) {
         const { data: jiraRows } = await supabase
           .from('jira_sync_comments')
           .select('id, jira_comment_id, author_display_name, author_account_id, body, jira_created_at, created_at')
@@ -368,23 +385,26 @@ export default function StoryDetailModal({
   });
 
   const { data: activityLog = [] } = useQuery({
-    queryKey: ['ph-activity-log', itemId, issue?.issue_key], enabled: !!itemId && isOpen,
+    queryKey: ['ph-activity-log', itemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!itemId && isOpen && !!issue,
     queryFn: async () => {
-      // 1) Catalyst-native activity (ph_activity_log)
-      const { data: phData } = await supabase.from('ph_activity_log').select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const isCatalyst = !!(issue as any)?.__catalyst_source;
+      const tbl = isCatalyst ? 'catalyst_activity_log' : 'ph_activity_log';
+      // 1) Native activity log (source-aware table)
+      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
       const phRows = phData ?? [];
-      const userIds = [...new Set(phRows.map(e => e.user_id).filter(Boolean))];
+      const userIds = [...new Set(phRows.map((e: any) => e.user_id).filter(Boolean))];
       // §19 chokepoint: select full_name only, resolve avatar locally.
       const { data: profiles } = userIds.length
         ? await supabase.from('profiles').select('id, full_name, email').in('id', userIds)
         : { data: [] as any[] };
       const profileMap = new Map((profiles ?? []).map((p: any) => [p.id, localizeAvatar(p)]));
-      const phMapped = phRows.map(e => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
+      const phMapped = phRows.map((e: any) => ({ ...e, actor: profileMap.get(e.user_id) ?? null }));
 
       // 2) Jira-synced changelog (jira_sync_changelog) — read-only, keyed by issue_key.
-      // §19 chokepoint: drop author_avatar_url from SELECT, resolve via display_name.
+      // Only relevant for Jira-sourced items.
       let jiraMapped: any[] = [];
-      if (issue?.issue_key) {
+      if (!isCatalyst && issue?.issue_key) {
         const { data: jiraRows } = await supabase
           .from('jira_sync_changelog')
           .select('id, author_display_name, author_account_id, field_name, from_value, to_value, from_string, to_string, jira_created_at, created_at')
@@ -424,9 +444,12 @@ export default function StoryDetailModal({
   });
 
   const { data: attachments = [] } = useQuery({
-    queryKey: ['ph-attachments', itemId], enabled: !!itemId && isOpen,
+    queryKey: ['ph-attachments', itemId, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!itemId && isOpen && !!issue,
     queryFn: async () => {
-      const { data } = await supabase.from('ph_attachments').select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const isCatalyst = !!(issue as any)?.__catalyst_source;
+      const tbl = isCatalyst ? 'catalyst_attachments' : 'ph_attachments';
+      const { data } = await supabase.from(tbl).select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
       return (data ?? []) as unknown as PhAttachment[];
     },
   });
@@ -559,7 +582,11 @@ export default function StoryDetailModal({
     if (workItemSource !== 'catalyst') return f;
     const m: Record<string, string | null> = {
       summary: 'title', description: 'description', description_text: 'description',
-      description_adf: 'description_adf_raw', labels: 'tags',
+      description_adf: 'description_adf_raw',
+      // Catalyst stores user-facing labels in `labels` (text[]) — parity column
+      // added by migration 20260425185838. Legacy `tags` column is no longer
+      // written by the modal (kept in DB for back-compat reads).
+      labels: 'labels',
       assignee_account_id: 'assignee_id', reporter_account_id: 'reporter_id',
       // Catalyst now has parity columns added in migration 20260425185838
       status_category: 'status_category',
@@ -1563,6 +1590,7 @@ export default function StoryDetailModal({
                       itemId={itemId}
                       userId={user.id}
                       projectKey={issue?.project_key}
+                      source={workItemSource}
                     />
                   )}
 
