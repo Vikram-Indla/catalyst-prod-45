@@ -80,13 +80,35 @@ export function useFuzzyChildSearch({
           q = q.not('id', 'in', excludeList);
         }
 
-        const { data, error } = await q;
+        // Catalyst-native items: scoped via projects.key join
+        const catQ = supabase
+          .from('catalyst_issues')
+          .select('id,issue_key,title,issue_type,status,projects!inner(key)')
+          .eq('projects.key', projectKey)
+          .or(`issue_key.ilike.%${needle}%,title.ilike.%${needle}%`)
+          .order('updated_at', { ascending: false })
+          .limit(RESULT_LIMIT);
+
+        const [phRes, catRes] = await Promise.all([q, catQ]);
         if (rid !== requestIdRef.current) return; // stale
-        if (error) {
+        if (phRes.error) {
           setResults([]);
           return;
         }
-        setResults((data ?? []) as FuzzyChildResult[]);
+        const ph = (phRes.data ?? []) as FuzzyChildResult[];
+        const seenKeys = new Set(ph.map((r) => r.issue_key));
+        const seenIds = new Set([...(excludedIds ?? []), ...ph.map((r) => r.id)]);
+        const cat: FuzzyChildResult[] = (catRes.data ?? [])
+          .filter((r: any) => r.issue_key && !seenKeys.has(r.issue_key) && !seenIds.has(r.id))
+          .map((r: any) => ({
+            id: r.id,
+            issue_key: r.issue_key,
+            summary: r.title,
+            issue_type: r.issue_type,
+            status: r.status,
+            status_category: 'todo',
+          }));
+        setResults([...ph, ...cat].slice(0, RESULT_LIMIT));
       } finally {
         if (rid === requestIdRef.current) setIsLoading(false);
       }
