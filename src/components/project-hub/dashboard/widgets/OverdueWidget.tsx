@@ -17,7 +17,11 @@ import { EmptyState, Lozenge } from '@/components/ads';
 import WidgetGearButton from '../WidgetGearButton';
 
 export default function OverdueWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
-  const { data: items, isLoading } = useDashboardOverdueItems(projectId);
+  const { settings } = useGadgetSettings('overdue', projectKey);
+  const { data: items, isLoading } = useDashboardOverdueItems(projectId, {
+    dateFrom: settings.dateFrom,
+    dateTo: settings.dateTo,
+  });
   const count = items?.length ?? 0;
   const { openUWV } = useUWV();
 
