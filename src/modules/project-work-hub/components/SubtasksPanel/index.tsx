@@ -442,21 +442,19 @@ export function SubtasksPanel({
       if (!parsed.success) {
         throw new Error(parsed.error.issues.map((i) => i.message).join('; '));
       }
-      const tempKey = `${projectKey}-NEW-${Date.now()}`;
-      const { error } = await supabase.from('ph_issues').insert({
-        issue_key: tempKey,
+      // Phase 5 (Apr 2026): source-aware insert. Catalyst-parent → catalyst_issues
+      // with parent_key set; Jira-parent → ph_issues (legacy write-back path).
+      // generateIssueKey queries BOTH tables → no Jira collisions.
+      await createChildIssue({
+        parent: { source: parentSource, id: '', issueKey: storyKey, projectKey },
         summary: parsed.data.summary,
-        issue_type: parsed.data.issue_type,
-        parent_key: parsed.data.parent_key,
-        project_key: parsed.data.project_key,
-        status: 'To Do',
-        status_category: 'todo',
+        issueType: parsed.data.issue_type,
+        projectKey: parsed.data.project_key,
+        projectId: parentProjectId,
+        reporterId: user?.id ?? null,
         priority: parsed.data.priority,
         position: nextPos(children),
-        reporter_account_id: user?.id,
-        source: 'catalyst',
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['childIssues', storyKey] });
