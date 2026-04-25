@@ -96,8 +96,15 @@ export function DefectsSection({
     onError: (err) => toast.error('Failed to log defect', { description: (err as Error).message }),
   });
 
+  // Source-aware soft-delete: try ph_issues first; if no row, try catalyst_issues.
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => { const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', id); if (error) throw error; },
+    mutationFn: async (id: string) => {
+      const ts = new Date().toISOString();
+      const phRes = await supabase.from('ph_issues').update({ deleted_at: ts }).eq('id', id).select('id');
+      if (phRes.data && phRes.data.length > 0) return;
+      const catRes = await supabase.from('catalyst_issues').update({ deleted_at: ts }).eq('id', id).select('id');
+      if (catRes.error) throw catRes.error;
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['defects', storyKey] }),
   });
 
