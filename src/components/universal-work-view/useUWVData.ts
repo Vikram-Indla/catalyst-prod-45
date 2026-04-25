@@ -180,6 +180,16 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
             if (params.dateTo) q = q.lte('jira_created_at', params.dateTo);
           }
 
+          // fix_versions filter — restrict to items linked to any of the named releases.
+          // fix_versions is a JSONB array of objects with a 'name' field; ilike on the
+          // serialised JSON catches the embedded "name":"<release>" substring.
+          if (params.fixVersions && params.fixVersions.length > 0) {
+            const orClause = params.fixVersions
+              .map((n: string) => `fix_versions.ilike.%${n}%`)
+              .join(',');
+            q = q.or(orClause);
+          }
+
           const sortMap: Record<string, string> = {
             key: 'issue_key',
             summary: 'summary',
