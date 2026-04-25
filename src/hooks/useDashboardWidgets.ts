@@ -226,7 +226,7 @@ export function useDashboardOnHoldItems(
         .select('id, issue_key, summary, status, assignee_display_name, issue_type')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .ilike('status', '%hold%');
+        .or('status.ilike.%hold%,status.ilike.%block%,status.ilike.%awaiting%,status.ilike.%impediment%');
 
       if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
       if (dateTo) q = q.lte('jira_updated_at', dateTo);

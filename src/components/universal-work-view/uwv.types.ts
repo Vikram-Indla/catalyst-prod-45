@@ -26,6 +26,14 @@ export interface UWVParams {
   projectId?: string;
   /** Optional list of fix_version names to filter ph_issues by (JSONB containment). */
   fixVersions?: string[];
+  /** Gadget-forwarded filters (Layer 2 settings). All AND-combined when present. */
+  statusFilter?: string[];
+  assigneeFilter?: string[];
+  itemTypeFilter?: string[];
+  priorityFilter?: string[];
+  releaseFilter?: string[];
+  /** Human-readable label for the active date preset (e.g. "Q2 2026"). */
+  dateLabel?: string;
 }
 
 export type ColumnType =

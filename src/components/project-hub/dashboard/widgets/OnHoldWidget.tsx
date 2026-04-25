@@ -39,7 +39,16 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
         project: projectKey,
         hubSource: ['projecthub'],
         dataType: 'onhold',
-        title: `On Hold Items · ${projectKey}`,
+        title: `On Hold · ${projectKey}`,
+        scope: settings.dateFrom ? 'custom' : 'all',
+        dateFrom: settings.dateFrom ?? null,
+        dateTo: settings.dateTo ?? null,
+        dateLabel: settings.dateLabel,
+        statusFilter: settings.statusFilter,
+        assigneeFilter: settings.assigneeFilter,
+        itemTypeFilter: settings.itemTypeFilter,
+        priorityFilter: settings.priorityFilter,
+        releaseFilter: settings.releaseFilter,
       })}
       style={{
         background: 'transparent',
@@ -81,11 +90,11 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
           description="No blocked or paused items."
         />
       ) : (
-        <div className="space-y-0">
+        <div className="space-y-0 w-full min-w-0 overflow-hidden">
           {items!.slice(0, 8).map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full min-w-0"
               style={{
                 height: 36,
                 borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}`,
@@ -104,12 +113,35 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
                 {item.issue_key}
               </span>
               <span
-                className="truncate flex-1"
+                className="truncate flex-1 min-w-0"
                 style={{ color: token('color.text.subtle', '#42526E') }}
               >
                 {item.summary}
               </span>
-              <StatusLozenge status="todo">ON HOLD</StatusLozenge>
+              <span
+                className="flex-shrink-0"
+                style={{
+                  display: 'inline-flex',
+                  maxWidth: '45%',
+                  overflow: 'hidden',
+                }}
+                title={(item.status ?? 'ON HOLD').toUpperCase()}
+              >
+                <StatusLozenge status="todo">
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      verticalAlign: 'bottom',
+                    }}
+                  >
+                    {(item.status ?? 'ON HOLD').toUpperCase()}
+                  </span>
+                </StatusLozenge>
+              </span>
             </div>
           ))}
         </div>

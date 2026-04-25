@@ -23,13 +23,33 @@ export function UniversalWorkView({ params, onClose }: Props) {
   const [assigneeFilter, setAssigneeFilter] = useState<string[]>([]);
   const [searchText, setSearchText] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [sort, setSort] = useState<UWVSort[]>([{ fieldId: 'key', direction: 'asc' }]);
+  const [sort, setSort] = useState<UWVSort[]>(
+    params.dataType === 'overdue'
+      ? [{ fieldId: 'dueDate', direction: 'asc' }]
+      : [{ fieldId: 'key', direction: 'asc' }],
+  );
   const [typeFilter, setTypeFilter] = useState<'all' | 'epic' | 'feature' | 'story' | 'bug' | 'task'>('all');
   const [groupBy, setGroupBy] = useState<UWVGroupBy>('none');
 
   const viewKey = `uwv:${params.project}:${[...params.hubSource].sort().join(',')}`;
   const { columns, savePrefs, prefs } = useUWVPrefs(viewKey);
-  const visibleColumns = useMemo(() => columns.filter((c) => c.visible), [columns]);
+  const visibleColumns = useMemo(() => {
+    let cols = columns.filter((c) => c.visible);
+    if (params.dataType === 'overdue' && !cols.find((c) => c.fieldId === 'dueDate')) {
+      cols = [
+        ...cols,
+        {
+          fieldId: 'dueDate',
+          label: 'Due Date',
+          width: 110,
+          visible: true,
+          sortable: true,
+          type: 'date' as const,
+        },
+      ];
+    }
+    return cols;
+  }, [columns, params.dataType]);
 
   const { data, fetchNextPage, hasNextPage, isFetching, isLoading } = useUWVData(
     params,
@@ -91,6 +111,22 @@ export function UniversalWorkView({ params, onClose }: Props) {
 
   const title = params.title ?? `${params.project} · Work items`;
 
+  // Build filter summary chips from gadget-forwarded settings.
+  const filterChips = useMemo(() => {
+    const chips: { label: string; value: string }[] = [];
+    if (params.dateLabel && (params.dateFrom || params.dateTo)) {
+      chips.push({ label: 'Date', value: params.dateLabel });
+    } else if (params.dateFrom || params.dateTo) {
+      chips.push({ label: 'Date', value: `${params.dateFrom ?? '…'} – ${params.dateTo ?? '…'}` });
+    }
+    if (params.statusFilter?.length) chips.push({ label: 'Status', value: params.statusFilter.join(', ') });
+    if (params.assigneeFilter?.length) chips.push({ label: 'Assignee', value: params.assigneeFilter.join(', ') });
+    if (params.itemTypeFilter?.length) chips.push({ label: 'Type', value: params.itemTypeFilter.join(', ') });
+    if (params.priorityFilter?.length) chips.push({ label: 'Priority', value: params.priorityFilter.join(', ') });
+    if (params.releaseFilter?.length) chips.push({ label: 'Release', value: params.releaseFilter.join(', ') });
+    return chips;
+  }, [params]);
+
   return (
     <div
       role="dialog"
@@ -130,6 +166,41 @@ export function UniversalWorkView({ params, onClose }: Props) {
         groupBy={groupBy}
         onGroupByChange={setGroupBy}
       />
+
+      {filterChips.length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '8px 16px',
+            borderBottom: '1px solid #E2E8F0',
+            background: '#F8FAFC',
+            fontSize: 12,
+            flexWrap: 'wrap',
+          }}
+        >
+          <span style={{ color: '#64748B', fontWeight: 600 }}>Filtered:</span>
+          {filterChips.map((c) => (
+            <span
+              key={c.label}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '2px 8px',
+                background: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: 3,
+                color: '#0F172A',
+              }}
+            >
+              <span style={{ color: '#64748B' }}>{c.label}:</span>
+              <span style={{ fontWeight: 500 }}>{c.value}</span>
+            </span>
+          ))}
+        </div>
+      )}
 
       {isLoading ? (
         <div

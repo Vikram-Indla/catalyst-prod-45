@@ -86,7 +86,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
           priority: r.priority,
           created: r.jira_created_at,
           updated: r.jira_updated_at,
-          dueDate: r.due_date,
+          dueDate: r.effective_due_date ?? r.due_date,
           commentCount: 0,
           hubSource: 'projecthub',
           level: levelOverride !== undefined ? levelOverride : (r.parent_key ? 1 : 0),
@@ -95,7 +95,7 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
 
       const PROJECT_SELECT = `id, issue_key, summary, status, status_category, issue_type,
              assignee_user_id, assignee_display_name, parent_key, project_key,
-             jira_created_at, jira_updated_at, due_date, priority`;
+             jira_created_at, jira_updated_at, due_date, effective_due_date, priority`;
 
       // ─── ProjectHub source ────────────────────────────────────────────────
       if (params.hubSource.includes('projecthub')) {
@@ -161,7 +161,42 @@ export function useUWVData(params: UWVParams, statusFilter: string[], sort: UWVS
             .is('jira_removed_at', null)
             .is('deleted_at', null);
 
+          // dataType-specific filters — must match the dashboard gadget logic
+          // so that "View all" in the gadget surfaces the same set of items.
+          if (params.dataType === 'overdue') {
+            const today = new Date().toISOString().split('T')[0];
+            q = q
+              .lt('effective_due_date', today)
+              .neq('status_category', 'Done')
+              .not('effective_due_date', 'is', null);
+          }
+          if (params.dataType === 'onhold') {
+            q = q.or(
+              'status.ilike.%hold%,status.ilike.%block%,status.ilike.%awaiting%,status.ilike.%impediment%',
+            );
+          }
+
           if (statusFilter.length > 0) q = q.in('status', statusFilter);
+
+          // Gadget-forwarded filters (Layer 2). All AND-combined.
+          if (params.statusFilter && params.statusFilter.length > 0) {
+            q = q.in('status', params.statusFilter);
+          }
+          if (params.assigneeFilter && params.assigneeFilter.length > 0) {
+            q = q.in('assignee_display_name', params.assigneeFilter);
+          }
+          if (params.itemTypeFilter && params.itemTypeFilter.length > 0) {
+            q = q.in('issue_type', params.itemTypeFilter);
+          }
+          if (params.priorityFilter && params.priorityFilter.length > 0) {
+            q = q.in('priority', params.priorityFilter);
+          }
+          if (params.releaseFilter && params.releaseFilter.length > 0) {
+            const orClause = params.releaseFilter
+              .map((name: string) => `fix_versions.cs.${JSON.stringify([{ name }])}`)
+              .join(',');
+            q = q.or(orClause);
+          }
 
           if (params.issueTypes && params.issueTypes.length > 0) {
             q = q.in('issue_type', params.issueTypes);

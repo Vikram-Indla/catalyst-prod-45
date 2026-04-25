@@ -83,9 +83,11 @@ export default function WidgetWrapper({
     <div
       role="region"
       aria-label={title}
-      className="overflow-hidden flex flex-col"
+      className="overflow-hidden flex flex-col min-w-0 w-full max-w-full"
       style={{
         gridColumn: `span ${span}`,
+        minWidth: 0,
+        maxWidth: '100%',
         background: token('elevation.surface', '#FFFFFF'),
         border: `1px solid ${token('color.border', '#E2E8F0')}`,
         borderRadius: token('border.radius.200', '8px'),
@@ -96,7 +98,7 @@ export default function WidgetWrapper({
           inside the collapse <button>. Nested interactives are invalid HTML
           and browsers route inner clicks to the outer button. */}
       <div
-        className="flex items-center justify-between gap-2"
+          className="flex items-center justify-between gap-2 min-w-0"
         style={{
           padding: '10px 14px',
           background: token('elevation.surface', '#FFFFFF'),
@@ -140,7 +142,7 @@ export default function WidgetWrapper({
           // their widths and TruncateCell's ellipsis actually kicks in.
           // (Caught Apr 19, 2026 — Production Incidents + QA Defects rows
           // were inflating past the 36px canonical height.)
-          className="flex-1 dashboard-widget-body"
+          className="flex-1 dashboard-widget-body min-w-0 w-full max-w-full overflow-hidden"
           style={{
             background: token('elevation.surface', '#FFFFFF'),
             padding: flushBody ? 0 : token('space.200', '16px'),
