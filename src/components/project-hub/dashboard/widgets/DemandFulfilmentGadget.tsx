@@ -62,6 +62,8 @@ import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 // CatalystOwnerAvatar removed — DemandRowItem uses Atlaskit Avatar size="xsmall" directly
 import { resolveAvatarUrl } from '@/lib/avatars';
 import WidgetWrapper from '../WidgetWrapper';
+import WidgetGearButton from '../WidgetGearButton';
+import { useGadgetSettings as usePanelGadgetSettings } from '@/hooks/useGadgetSettings';
 import type { WidgetProps } from '../widget-registry';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 
