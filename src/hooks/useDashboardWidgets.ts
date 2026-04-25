@@ -1,12 +1,38 @@
 /**
  * Dashboard V4 — TanStack Query hooks for widget data
  * All queries use REAL Supabase data — zero mocks.
+ *
+ * ═══════════════════════════════════════════════════════════════
+ * 🛡️  2026 GUARDRAIL — PLATFORM-WIDE DASHBOARD POLICY
+ * ═══════════════════════════════════════════════════════════════
+ * Every dashboard widget MUST scope to the 2026 fiscal window:
+ * any record created OR updated in 2026. Use YEAR_2026_START /
+ * YEAR_2026_END constants and the `or2026(createdCol, updatedCol)`
+ * helper. Do NOT remove or weaken these filters without an explicit
+ * guardrail-amendment note in this header. Owner: Vikram.
+ * ═══════════════════════════════════════════════════════════════
  */
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
+
+// 🛡️ 2026 GUARDRAIL — fiscal window boundaries
+export const YEAR_2026_START = '2026-01-01T00:00:00.000Z';
+export const YEAR_2026_END   = '2027-01-01T00:00:00.000Z';
+
+/** Supabase .or() expression: created OR updated within 2026. */
+function or2026(createdCol: string, updatedCol: string): string {
+  return `and(${createdCol}.gte.${YEAR_2026_START},${createdCol}.lt.${YEAR_2026_END}),and(${updatedCol}.gte.${YEAR_2026_START},${updatedCol}.lt.${YEAR_2026_END})`;
+}
+
+/** Resolve canonical projects.id from any incoming projectId (handles ph_projects.id case). */
+async function getCanonicalProjectId(projectId: string, pKey: string | null): Promise<string> {
+  if (!pKey) return projectId;
+  const { data } = await supabase.from('projects').select('id').eq('key', pKey).maybeSingle();
+  return data?.id ?? projectId;
+}
 
 // ─── Avatar resolver: maps display names → avatar URLs via resource_inventory + profiles ───
 let _avatarCache: Map<string, string | null> | null = null;
