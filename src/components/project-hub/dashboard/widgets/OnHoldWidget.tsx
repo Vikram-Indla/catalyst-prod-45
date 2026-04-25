@@ -83,11 +83,11 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
           description="No blocked or paused items."
         />
       ) : (
-        <div className="space-y-0">
+        <div className="space-y-0 w-full min-w-0 overflow-hidden">
           {items!.slice(0, 8).map((item) => (
             <div
               key={item.id}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 w-full min-w-0"
               style={{
                 height: 36,
                 borderBottom: `0.75px solid ${token('color.border', '#E2E8F0')}`,
@@ -106,12 +106,20 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
                 {item.issue_key}
               </span>
               <span
-                className="truncate flex-1"
+                className="truncate flex-1 min-w-0"
                 style={{ color: token('color.text.subtle', '#42526E') }}
               >
                 {item.summary}
               </span>
-              <StatusLozenge status="todo">{(item.status ?? 'ON HOLD').toUpperCase()}</StatusLozenge>
+              <span
+                className="flex-shrink-0 max-w-[40%] truncate"
+                style={{ display: 'inline-flex' }}
+                title={(item.status ?? 'ON HOLD').toUpperCase()}
+              >
+                <StatusLozenge status="todo">
+                  {(item.status ?? 'ON HOLD').toUpperCase()}
+                </StatusLozenge>
+              </span>
             </div>
           ))}
         </div>
