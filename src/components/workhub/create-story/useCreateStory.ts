@@ -239,7 +239,10 @@ export function useCreateStoryMutation() {
           assignee_id: uuid(form.assigneeId),
           reporter_id: uuid(form.reporterId),
           release_id: form.releaseId && form.releaseId.trim() !== '' ? form.releaseId : null,
-          parent_id: uuid(form.parentId),          // was dead — now wired
+          // parent_id FK is self-referential to catalyst_issues, but Epic parents
+          // live in ph_issues (Jira-synced). We always null this on insert and
+          // record the parent relationship in ph_issue_links below.
+          parent_id: null,
           // labels: column does not exist on catalyst_issues — removed
           tags: form.tags.length > 0 ? form.tags : [],
           last_modified_by_system: 'catalyst',
@@ -273,6 +276,24 @@ export function useCreateStoryMutation() {
         } as any);
       } catch (actErr) {
         console.warn('[CreateStory] Failed to log activity:', actErr);
+      }
+
+      // ── Parent link via ph_issue_links ────────────────────────────────────
+      // form.parentId now holds the parent Epic's issue_key (e.g. "BAU-123").
+      // We record the relationship as: <new story> child of <parent epic>.
+      if (form.parentId && form.parentId.trim()) {
+        try {
+          const { error: linkErr } = await supabase.from('ph_issue_links').insert({
+            source_id: issueKey,
+            target_id: form.parentId,
+            link_type: 'child of',
+          } as any);
+          if (linkErr) {
+            console.warn('[CreateStory] Failed to write parent link:', linkErr.message);
+          }
+        } catch (linkCatch) {
+          console.warn('[CreateStory] Parent link insert threw:', linkCatch);
+        }
       }
 
       return data;
