@@ -437,10 +437,10 @@ export default function GadgetSettingsPanel({
             placeholder="All item types"
             value={draft.itemTypeFilter}
             onChange={(v) => setField('itemTypeFilter', v)}
-            options={ITEM_TYPES.map((t) => ({
+            options={itemTypes.map((t: any) => ({
               value: t.value,
               label: t.label,
-              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/-/g, '_')} size={12} />,
+              icon: <JiraIssueTypeIcon type={t.value.toLowerCase().replace(/[\s-]+/g, '_')} size={12} />,
             }))}
             isOpen={openField === 'itemType'}
             onToggle={() => toggleField('itemType')}
