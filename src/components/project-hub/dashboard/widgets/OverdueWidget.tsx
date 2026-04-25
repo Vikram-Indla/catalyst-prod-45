@@ -40,6 +40,8 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
         hubSource: ['projecthub'],
         dataType: 'overdue',
         title: `Overdue Items · ${projectKey}`,
+        dateFrom: settings.dateFrom ?? null,
+        dateTo: settings.dateTo ?? null,
       })}
       style={{
         background: 'transparent',
