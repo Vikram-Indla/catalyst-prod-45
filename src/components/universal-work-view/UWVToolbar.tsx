@@ -228,6 +228,11 @@ export function UWVToolbar({
         >
           {title}
         </span>
+        {subtitle && (
+          <span style={{ fontSize: 11, color: '#7A869A', marginLeft: 8 }}>
+            {subtitle}
+          </span>
+        )}
         <span
           style={{
             fontSize: 12,
