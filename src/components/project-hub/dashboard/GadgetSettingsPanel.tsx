@@ -475,7 +475,19 @@ export default function GadgetSettingsPanel({
           </button>
           <button
             type="button"
-            onClick={() => onApply(draft)}
+            onClick={() => {
+              onApply(draft);
+              if (applyToAll) {
+                broadcastDateToAllGadgets(
+                  projectKey,
+                  draft.datePreset,
+                  draft.dateFrom,
+                  draft.dateTo,
+                  draft.dateLabel,
+                );
+              }
+              onClose();
+            }}
             style={{
               height: 28,
               padding: '0 12px',
