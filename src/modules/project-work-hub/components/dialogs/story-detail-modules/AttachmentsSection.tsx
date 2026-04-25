@@ -25,7 +25,6 @@ import {
 import { AttachmentPreviewModal } from './AttachmentPreviewModal';
 import './AttachmentsSection.css';
 
-const BUCKET = 'attachments';
 const MAX_ATTACHMENT_BYTES = 25 * 1024 * 1024; // 25MB
 const BLOCKED_EXTS = ['exe', 'bat', 'sh', 'msi', 'cmd', 'com', 'scr'];
 
@@ -40,11 +39,15 @@ export interface PhAttachment {
   created_at: string;
 }
 
+type WorkItemSource = 'jira' | 'catalyst';
+
 interface AttachmentsSectionProps {
   attachments: PhAttachment[];
   itemId: string;
   userId: string;
   projectKey?: string;
+  /** Routes table + storage bucket. Defaults to 'jira' for back-compat. */
+  source?: WorkItemSource;
 }
 
 type SortKey = 'name' | 'size' | 'dateAdded';
@@ -89,7 +92,12 @@ function validateFile(file: File): string | null {
   return null;
 }
 
-export function AttachmentsSection({ attachments, itemId, userId, projectKey }: AttachmentsSectionProps) {
+export function AttachmentsSection({ attachments, itemId, userId, projectKey, source = 'jira' }: AttachmentsSectionProps) {
+  // Source-aware bucket + table routing — Catalyst items live in
+  // catalyst-attachments bucket + catalyst_attachments table; Jira items
+  // continue to use the legacy `attachments` bucket + ph_attachments table.
+  const BUCKET = source === 'catalyst' ? 'catalyst-attachments' : 'attachments';
+  const ATTACHMENTS_TABLE = source === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
   const queryClient = useQueryClient();
   const [collapsed, setCollapsed] = useState(attachments.length === 0);
   const [sortKey, setSortKey] = useState<SortKey>('dateAdded');
@@ -180,14 +188,14 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey }: 
       clearInterval(progressTimer);
       if (uploadError) throw new Error(uploadError.message);
 
-      const { error: dbError } = await supabase.from('ph_attachments').insert({
+      const { error: dbError } = await supabase.from(ATTACHMENTS_TABLE as any).insert({
         work_item_id: itemId,
         file_name: file.name,
         file_size: file.size,
         mime_type: file.type || 'application/octet-stream',
         storage_path: path,
         uploaded_by: userId,
-      });
+      } as any);
       if (dbError) {
         // Best-effort cleanup of storage on DB failure
         await supabase.storage.from(BUCKET).remove([path]);
@@ -243,17 +251,26 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey }: 
     const att = pendingDelete;
     setPendingDelete(null);
     try {
-      const { data, error } = await supabase.functions.invoke('attachment-delete', {
-        body: { attachmentId: att.id },
-      });
-      if (error) throw error;
-      if (data && (data as any).error) throw new Error((data as any).error);
+      if (source === 'catalyst') {
+        // Catalyst path — inline delete (no dedicated edge function yet).
+        // RLS on catalyst_attachments enforces uploader-or-admin permission.
+        await supabase.storage.from(BUCKET).remove([att.storage_path]);
+        const { error: dbErr } = await supabase.from(ATTACHMENTS_TABLE as any).delete().eq('id', att.id);
+        if (dbErr) throw dbErr;
+      } else {
+        // Jira path — go through hardened edge function (handles signed cleanup).
+        const { data, error } = await supabase.functions.invoke('attachment-delete', {
+          body: { attachmentId: att.id },
+        });
+        if (error) throw error;
+        if (data && (data as any).error) throw new Error((data as any).error);
+      }
       toast.success('Attachment deleted');
       invalidate();
     } catch (e) {
       toast.error(`Delete failed: ${e instanceof Error ? e.message : 'Unknown'}`);
     }
-  }, [pendingDelete, invalidate]);
+  }, [pendingDelete, invalidate, source, BUCKET, ATTACHMENTS_TABLE]);
 
   /* ───── DOWNLOAD ALL (zip) ───── */
   const handleDownloadAll = useCallback(async () => {
@@ -445,6 +462,7 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey }: 
                     key={att.id}
                     attachment={att}
                     canDelete={canDelete(att)}
+                    bucket={BUCKET}
                     onPreview={() => setPreviewId(att.id)}
                     onDelete={() => setPendingDelete(att)}
                   />
@@ -487,9 +505,10 @@ export function AttachmentsSection({ attachments, itemId, userId, projectKey }: 
 }
 
 /* ── Row ── */
-function AttachmentRow({ attachment, canDelete, onPreview, onDelete }: {
+function AttachmentRow({ attachment, canDelete, bucket, onPreview, onDelete }: {
   attachment: PhAttachment;
   canDelete: boolean;
+  bucket: string;
   onPreview: () => void;
   onDelete: () => void;
 }) {
@@ -502,14 +521,14 @@ function AttachmentRow({ attachment, canDelete, onPreview, onDelete }: {
   // Sign URL for thumbnail (image) and download
   useEffect(() => {
     let cancelled = false;
-    supabase.storage.from(BUCKET).createSignedUrl(attachment.storage_path, 600).then(({ data }) => {
+    supabase.storage.from(bucket).createSignedUrl(attachment.storage_path, 600).then(({ data }) => {
       if (cancelled) return;
       const url = data?.signedUrl ?? null;
       setDownloadUrl(url);
       if (isImage) setThumbUrl(url);
     });
     return () => { cancelled = true; };
-  }, [attachment.storage_path, isImage]);
+  }, [attachment.storage_path, isImage, bucket]);
 
   return (
     <tr className="att-row">
