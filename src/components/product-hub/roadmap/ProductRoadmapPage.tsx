@@ -33,7 +33,6 @@ export function ProductRoadmapPage() {
   const toggleStar = useToggleRoadmapStar();
   const {
     search, setSearch,
-    typeFilter, setTypeFilter,
     quickFilter, setQuickFilter,
     groupBy, setGroupBy,
     zoom, setZoom,
