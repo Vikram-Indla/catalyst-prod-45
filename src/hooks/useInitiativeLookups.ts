@@ -7,13 +7,13 @@ import { supabase } from '@/integrations/supabase/client';
 
 export function useDepartmentOptions() {
   return useQuery({
-    queryKey: ['departments-lookup'],
+    queryKey: ['ph-departments-lookup'],
     queryFn: async () => {
+      // FK target: ph_initiatives.department_id -> ph_departments.id
       const { data, error } = await supabase
-        .from('departments')
+        .from('ph_departments')
         .select('id, name')
-        .eq('is_active', true)
-        .order('sort_order');
+        .order('name');
       if (error) throw new Error(error.message);
       return (data || []).map(d => ({ value: d.id, label: d.name }));
     },
