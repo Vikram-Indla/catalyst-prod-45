@@ -28,7 +28,7 @@ const statusColor = (s: string) => STATUS_COLORS[s?.toLowerCase()] || 'var(--idp
 const fmtSAR = (n: number) => `SAR ${n.toLocaleString('en-US')}`;
 const TOAST_OPTS = { duration: 2200, style: { background: '#18181B', color: '#fff' } as const, position: 'bottom-center' as const };
 
-/* ── Custom Dropdown ── */
+/* ── Custom Dropdown (string options) ── */
 function CustomSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -58,6 +58,45 @@ function CustomSelect({ value, options, onChange }: { value: string; options: st
     </div>
   );
 }
+
+/* ── Id-keyed Dropdown (for FK fields like owner_id) — bulletproof against name collisions ── */
+function IdSelect({ value, options, placeholder, onChange }: { value: string; options: { id: string; label: string }[]; placeholder: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, []);
+  const display = options.find(o => o.id === value)?.label || placeholder;
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button type="button" onClick={() => setOpen(!open)} className="idp-form-input"
+        style={{ width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{display}</span>
+        <span style={{ fontSize: 10, color: 'var(--idp-ink-muted)', marginLeft: 4 }}>▾</span>
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20, background: 'var(--idp-surface)', border: '1px solid var(--idp-border)', borderRadius: 6, marginTop: 2, maxHeight: 200, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div onClick={() => { onChange(''); setOpen(false); }}
+            style={{ padding: '7px 12px', fontSize: 12, cursor: 'pointer', color: 'var(--idp-ink-muted)', background: value === '' ? 'var(--idp-surface-secondary)' : undefined }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'var(--idp-surface-secondary)')}
+            onMouseLeave={e => (e.currentTarget.style.background = value === '' ? 'var(--idp-surface-secondary)' : 'transparent')}>
+            {placeholder}
+          </div>
+          {options.map(opt => (
+            <div key={opt.id} onClick={() => { onChange(opt.id); setOpen(false); }}
+              style={{ padding: '7px 12px', fontSize: 12, cursor: 'pointer', color: 'var(--idp-ink)', background: opt.id === value ? 'var(--idp-surface-secondary)' : undefined }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--idp-surface-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.background = opt.id === value ? 'var(--idp-surface-secondary)' : 'transparent')}>
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initiativeId }) => {
   const queryClient = useQueryClient();
@@ -240,6 +279,9 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
                 {(m.budget_release || 0) > 0 && (
                   <span style={{ color: 'var(--idp-primary)' }}>Budget: {fmtSAR(m.budget_release)}</span>
                 )}
+                {m.owner?.full_name && (
+                  <span style={{ color: 'var(--idp-ink-muted)' }}>Owner: {m.owner.full_name}</span>
+                )}
               </div>
             </div>
             {/* Status badge */}
@@ -296,13 +338,11 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="idp-form-field" style={{ marginBottom: 0 }}>
                   <label className="idp-form-label">Owner</label>
-                  <CustomSelect
-                    value={profiles.find((p: any) => p.id === form.owner_id)?.full_name || 'Unassigned'}
-                    options={['Unassigned', ...profiles.map((p: any) => p.full_name)]}
-                    onChange={v => {
-                      const p = profiles.find((pr: any) => pr.full_name === v);
-                      setForm(f => ({ ...f, owner_id: p?.id || '' }));
-                    }}
+                  <IdSelect
+                    value={form.owner_id}
+                    placeholder="Unassigned"
+                    options={profiles.map((p: any) => ({ id: p.id, label: p.full_name || p.email || p.id }))}
+                    onChange={(id) => setForm(f => ({ ...f, owner_id: id }))}
                   />
                 </div>
                 <div className="idp-form-field" style={{ marginBottom: 0 }}>
