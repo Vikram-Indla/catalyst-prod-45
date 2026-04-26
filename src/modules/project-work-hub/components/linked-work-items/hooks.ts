@@ -107,6 +107,37 @@ export function useLinkedWorkItems(issueKey: string) {
         });
       }
 
+      // Final fallback: resolve missing keys from ph_initiatives so links to
+      // MIM-* / MDT-* initiatives (created via the InitiativeLinkedItemsTab)
+      // surface on the epic / story side of the relationship too. Initiatives
+      // map to "issue_type=Initiative" for icon/lozenge rendering.
+      const stillMissing = targetKeys.filter((k) => !targetMap.has(k));
+      if (stillMissing.length > 0) {
+        const { data: initTargets } = await supabase
+          .from('ph_initiatives')
+          .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
+          .in('initiative_key', stillMissing)
+          .eq('is_deleted', false);
+        (initTargets ?? []).forEach((it: any) => {
+          const status = String(it.status ?? '');
+          const status_category: StatusCategory =
+            status === 'closed' ? 'done' : status === 'in_progress' ? 'in_progress' : 'todo';
+          targetMap.set(it.initiative_key, {
+            id: it.id,
+            issue_key: it.initiative_key,
+            summary: it.title,
+            issue_type: 'Initiative',
+            status,
+            status_category,
+            assignee_account_id: it.assignee_id ?? null,
+            assignee_display_name: null,
+            assignee_avatar_url: null,
+            priority: it.priority ?? null,
+            jira_updated_at: it.updated_at ?? null,
+          });
+        });
+      }
+
       // Resolve assignee avatars from jira_identity_map (canonical pattern,
       // matches SubtasksPanelV2 / IssueListPanel).
       const assigneeAccountIds = Array.from(
