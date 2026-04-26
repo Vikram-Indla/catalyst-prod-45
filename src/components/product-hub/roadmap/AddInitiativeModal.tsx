@@ -159,6 +159,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
+                    <SourceBadge source={item.source} size="xs" />
                     <span className="truncate" style={{ fontSize: 13, fontWeight: 500, color: INK[1] }}>{item.title}</span>
                   </div>
                   <div className="flex items-center gap-2" style={{ marginTop: 2 }}>
