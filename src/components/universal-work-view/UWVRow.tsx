@@ -180,7 +180,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: '#42526E',
+            color: 'var(--ds-text-subtle, #505258)',
             fontSize: 13,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -225,7 +225,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: '#42526E',
+            color: 'var(--ds-text-subtle, #505258)',
             fontSize: 13,
             fontFamily: 'var(--cp-font-mono)',
             overflow: 'hidden',
@@ -240,7 +240,7 @@ function renderCell(
       const display = item.assigneeName ?? null;
       if (!display) {
         return (
-          <span style={{ color: '#6B778C', fontSize: 12, fontStyle: 'italic' }}>
+          <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)', fontSize: 12, fontStyle: 'italic' }}>
             Unassigned
           </span>
         );
@@ -275,7 +275,7 @@ function renderCell(
             display: 'flex',
             alignItems: 'center',
             gap: 6,
-            color: '#6B778C',
+            color: 'var(--ds-text-subtlest, #6B6E76)',
             fontSize: 13,
           }}
         >
@@ -296,7 +296,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: overdue ? 'var(--sem-danger)' : '#42526E',
+            color: overdue ? 'var(--sem-danger)' : 'var(--ds-text-subtle, #505258)',
             fontSize: 13,
           }}
         >
@@ -306,7 +306,7 @@ function renderCell(
     }
     case 'created':
       return (
-        <span style={{ color: '#42526E', fontSize: 13 }}>
+        <span style={{ color: 'var(--ds-text-subtle, #505258)', fontSize: 13 }}>
           {formatDate(item.created)}
         </span>
       );
@@ -314,7 +314,7 @@ function renderCell(
       return (
         <span
           style={{
-            color: '#42526E',
+            color: 'var(--ds-text-subtle, #505258)',
             fontSize: 12,
             fontFamily: 'var(--cp-font-mono)',
             maxWidth: 260,
@@ -327,7 +327,7 @@ function renderCell(
         </span>
       );
     default:
-      return <span style={{ color: '#6B778C' }}>—</span>;
+      return <span style={{ color: 'var(--ds-text-subtlest, #6B6E76)' }}>—</span>;
   }
 }
 

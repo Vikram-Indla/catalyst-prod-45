@@ -15,6 +15,9 @@ import Popup from '@atlaskit/popup';
 import Checkbox from '@atlaskit/checkbox';
 import AvatarGroup from '@atlaskit/avatar-group';
 import DropdownMenu, { DropdownItem } from '@atlaskit/dropdown-menu';
+import Select from '@atlaskit/select';
+import Lozenge from '@atlaskit/lozenge';
+import { X as XIcon } from 'lucide-react';
 import { UWVExport } from './UWVExport';
 import { UWVColumnPicker } from './UWVColumnPicker';
 import { UWVBulkActions } from './UWVBulkActions';
@@ -49,34 +52,33 @@ interface Props {
 }
 
 // Inline icons — keep toolbar fully Atlaskit otherwise.
-function CloseIcon({ label }: { label?: string }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label={label} role="img">
-      <path d="M6 6l12 12M18 6L6 18" stroke="var(--fg-3)" strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
+// Close glyph adapts Lucide's <X> to the IconButton glyph contract:
+// IconButton passes { label } when it renders the icon — we forward it
+// to the SVG's aria-label so screen readers announce the right thing.
+function CloseGlyph({ label }: { label?: string }) {
+  return <XIcon size={16} aria-label={label} />;
 }
 function SearchIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="11" cy="11" r="6" stroke="var(--fg-3)" strokeWidth="1.6" />
-      <path d="M20 20l-4-4" stroke="var(--fg-3)" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="11" cy="11" r="6" stroke="var(--ds-text-subtle, #505258)" strokeWidth="1.6" />
+      <path d="M20 20l-4-4" stroke="var(--ds-text-subtle, #505258)" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
 }
 function ChevronDown() {
   return (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path d="M6 9l6 6 6-6" stroke="var(--fg-3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 9l6 6 6-6" stroke="var(--ds-text-subtle, #505258)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 function MoreIcon({ label }: { label?: string }) {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-label={label} role="img">
-      <circle cx="5" cy="12" r="1.6" fill="var(--fg-3)" />
-      <circle cx="12" cy="12" r="1.6" fill="var(--fg-3)" />
-      <circle cx="19" cy="12" r="1.6" fill="var(--fg-3)" />
+      <circle cx="5" cy="12" r="1.6" fill="var(--ds-text-subtle, #505258)" />
+      <circle cx="12" cy="12" r="1.6" fill="var(--ds-text-subtle, #505258)" />
+      <circle cx="19" cy="12" r="1.6" fill="var(--ds-text-subtle, #505258)" />
     </svg>
   );
 }
@@ -147,6 +149,10 @@ export function UWVToolbar({
     );
   };
 
+  // Filter popup body — Atlaskit Popup already supplies the surface
+  // (background + border + elevation shadow), so the wrapper here only
+  // needs to constrain width / scroll. Tokens for borders + text colours
+  // keep us inside ADS without touching hex literals.
   const FilterContent = () => (
     <div
       style={{
@@ -154,14 +160,10 @@ export function UWVToolbar({
         maxHeight: 420,
         overflowY: 'auto',
         padding: 12,
-        background: 'var(--bg-app)',
-        border: '1px solid #DFE1E6',
-        borderRadius: 6,
-        boxShadow: '0 8px 24px rgba(9,30,66,0.16)',
       }}
     >
       {statusGroups.length === 0 ? (
-        <div style={{ fontSize: 13, color: 'var(--fg-3)' }}>No statuses available</div>
+        <div style={{ fontSize: 13, color: 'var(--ds-text-subtle, #505258)' }}>No statuses available</div>
       ) : (
         statusGroups.map((group: any) => (
           <div key={group.label} style={{ marginBottom: 12 }}>
@@ -169,7 +171,7 @@ export function UWVToolbar({
               style={{
                 fontSize: 11,
                 fontWeight: 700,
-                color: 'var(--fg-3)',
+                color: 'var(--ds-text-subtle, #505258)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 marginBottom: 6,
@@ -191,7 +193,13 @@ export function UWVToolbar({
         ))
       )}
       {statusFilter.length > 0 && (
-        <div style={{ paddingTop: 8, borderTop: '1px solid #EBECF0', marginTop: 4 }}>
+        <div
+          style={{
+            paddingTop: 8,
+            borderTop: '1px solid var(--ds-border, #DFE1E6)',
+            marginTop: 4,
+          }}
+        >
           <Button appearance="subtle" spacing="compact" onClick={() => onStatusFilterChange([])}>
             Clear all
           </Button>
@@ -210,34 +218,30 @@ export function UWVToolbar({
           alignItems: 'center',
           padding: '0 16px',
           borderBottom: '1px solid #DFE1E6',
-          background: 'var(--bg-app)',
+          background: 'var(--ds-surface, #FFFFFF)',
           flexShrink: 0,
         }}
       >
-        <IconButton icon={CloseIcon as any} label="Close" appearance="subtle" onClick={onClose} />
+        <IconButton icon={CloseGlyph as any} label="Close" appearance="subtle" onClick={onClose} />
         <span
           style={{
             fontSize: 15,
             fontWeight: 600,
-            color: 'var(--fg-1)',
+            color: 'var(--ds-text, #292A2E)',
             marginLeft: 8,
             fontFamily: '"Atlassian Sans", -apple-system, sans-serif',
           }}
         >
           {title}
         </span>
-        <span
-          style={{
-            fontSize: 12,
-            background: 'var(--bg-2)',
-            color: 'var(--fg-3)',
-            padding: '2px 8px',
-            borderRadius: 10,
-            marginLeft: 8,
-            fontWeight: 500,
-          }}
-        >
-          {filteredCount}
+        {/* Count badge — Atlaskit Lozenge replaces the bespoke pill so
+            colour, height, and typography come from ADS tokens. When the
+            user has narrowed the view (filteredCount < totalCount) we show
+            "filtered/total" so the scope of the filter is obvious. */}
+        <span style={{ marginLeft: 8, display: 'inline-flex' }}>
+          <Lozenge appearance="default">
+            {filteredCount < totalCount ? `${filteredCount} of ${totalCount}` : `${filteredCount}`}
+          </Lozenge>
         </span>
       </div>
 
@@ -265,7 +269,7 @@ export function UWVToolbar({
               padding: '8px 16px',
               display: 'flex',
               gap: 6,
-              background: 'var(--bg-app)',
+              background: 'var(--ds-surface, #FFFFFF)',
               borderBottom: '1px solid #DFE1E6',
               flexShrink: 0,
               flexWrap: 'wrap',
@@ -285,9 +289,9 @@ export function UWVToolbar({
                     height: 26,
                     padding: '0 10px',
                     borderRadius: 13,
-                    border: `1px solid ${active ? '#0C66E4' : '#DFE1E6'}`,
+                    border: `1px solid ${active ? '#0C66E4' : 'var(--ds-border, #DFE1E6)'}`,
                     background: active ? '#E9F2FF' : '#FFFFFF',
-                    color: active ? '#0C66E4' : '#42526E',
+                    color: active ? '#0C66E4' : 'var(--ds-text-subtle, #505258)',
                     fontSize: 12,
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -375,20 +379,49 @@ export function UWVToolbar({
               </Button>
             )}
           />
-          <label style={{ fontSize: 12, color: '#6B778C', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <label
+            style={{
+              fontSize: 12,
+              color: 'var(--ds-text-subtle, #505258)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              minWidth: 220,
+            }}
+          >
             Group by:
-            <select
-              value={groupBy}
-              onChange={(e) => onGroupByChange(e.target.value as UWVGroupBy)}
-              style={{ height: 28, padding: '0 6px', fontSize: 13, border: '1px solid #DFE1E6', borderRadius: 3, background: '#FFFFFF', color: '#172B4D', fontFamily: 'inherit' }}
-            >
-              <option value="none">None</option>
-              <option value="status">Status</option>
-              <option value="parent">Parent</option>
-              <option value="assignee">Assignee</option>
-              <option value="priority">Priority</option>
-              <option value="type">Type</option>
-            </select>
+            <div style={{ minWidth: 160 }}>
+              {(() => {
+                const GROUP_OPTIONS: { label: string; value: UWVGroupBy }[] = [
+                  { label: 'None', value: 'none' },
+                  { label: 'Status', value: 'status' },
+                  { label: 'Parent', value: 'parent' },
+                  { label: 'Assignee', value: 'assignee' },
+                  { label: 'Priority', value: 'priority' },
+                  { label: 'Type', value: 'type' },
+                ];
+                return (
+                  <Select
+                    inputId="uwv-groupby"
+                    spacing="compact"
+                    appearance="default"
+                    isSearchable={false}
+                    options={GROUP_OPTIONS}
+                    value={GROUP_OPTIONS.find((o) => o.value === groupBy) ?? GROUP_OPTIONS[0]}
+                    onChange={(opt: any) => opt && onGroupByChange(opt.value as UWVGroupBy)}
+                    aria-label="Group by"
+                    // Portal to body so the menu escapes the Drawer's
+                    // stacking context — otherwise it renders below the
+                    // table rows, overlapping them visibly.
+                    menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+                    menuPosition="fixed"
+                    styles={{
+                      menuPortal: (base: any) => ({ ...base, zIndex: 9999 }),
+                    }}
+                  />
+                );
+              })()}
+            </div>
           </label>
 
           <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}>

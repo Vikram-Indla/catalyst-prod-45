@@ -1,28 +1,36 @@
 /**
  * UserAvatar — canonical Catalyst face component for dashboard rows.
  *
- * Resolves a display name → committed PNG via `src/lib/avatars.ts`, falls
- * back to a Jira-style colored-circle-with-initials when no PNG matches.
+ * Apr 26, 2026 — ADS compliance rewrite.
+ *   The previous build emitted a hand-rolled <span> for the initials
+ *   fallback, which violated the ADS guardrail (Avatar must come from
+ *   @atlaskit/avatar so the consistent chrome — ring, focus state,
+ *   hover, presence dot, status dot, click handler, accessible name —
+ *   stays uniform across every surface).
  *
- * This is the single source of truth for "show a person's face" in the
- * dashboard widgets. Replaces direct `<Avatar size="..." name={...}/>`
- * calls that produced gray-silhouette empty states.
+ *   New strategy: ALWAYS render Atlaskit's <Avatar>. When neither a
+ *   committed PNG nor a Jira-synced URL is available, we synthesize a
+ *   tiny SVG data URL containing the colored initials and pass it to
+ *   Avatar's `src` prop. The Atlaskit primitive supplies all the
+ *   chrome; we just provide the bitmap.
  *
- * Color scheme: deterministic hash → one of 8 ADS accent token families
- * (blue / purple / red / orange / yellow / green / teal / magenta), so the
- * same person always gets the same color across the app — same pattern
- * Atlassian's own avatar fallback uses.
+ *   For system actors ("System", "Bot", "Anonymous", "Jira sync") we
+ *   feed a cog-glyph SVG instead of initials so transition rows don't
+ *   render as "SY".
+ *
+ *   Sizes are forwarded verbatim to Atlaskit:
+ *     xxsmall → 16  ·  xsmall → 20  ·  small → 24  ·  medium → 32
+ *     large    → 40  ·  xlarge → 96
  */
-import { type CSSProperties } from 'react';
 import { Avatar } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 
 export type UserAvatarSize =
-  | 'xxsmall'   // 16
-  | 'xsmall'    // 20
-  | 'small'     // 24
-  | 'medium'    // 32
-  | 'large'     // 40
+  | 'xxsmall'
+  | 'xsmall'
+  | 'small'
+  | 'medium'
+  | 'large'
   | 'xlarge';
 
 interface UserAvatarProps {
@@ -34,6 +42,7 @@ interface UserAvatarProps {
   className?: string;
 }
 
+/** Atlaskit Avatar size → pixel size used to size our generated SVG. */
 const SIZE_PX: Record<UserAvatarSize, number> = {
   xxsmall: 16,
   xsmall: 20,
@@ -43,26 +52,19 @@ const SIZE_PX: Record<UserAvatarSize, number> = {
   xlarge: 96,
 };
 
-const FONT_SIZE: Record<UserAvatarSize, number> = {
-  xxsmall: 8,
-  xsmall: 9,
-  small: 11,
-  medium: 13,
-  large: 16,
-  xlarge: 32,
-};
-
-// 8 accent palettes — the colored-circle look matches Atlassian's
-// canonical pattern. Each entry uses ADS accent tokens with hex fallbacks.
+// 8 ADS-canonical accent palettes, hex-resolved (CSS variables don't
+// resolve inside an SVG data URL — we'd get black text on transparent).
+// These hex values are the same fallbacks used by the bolder/subtler
+// Atlaskit tokens, so the SVG matches the design system at paint time.
 const PALETTE: Array<{ bg: string; fg: string }> = [
-  { bg: 'var(--ds-background-accent-blue-subtler, #CCE0FF)',    fg: 'var(--ds-text-accent-blue-bolder, #09326C)' },
-  { bg: 'var(--ds-background-accent-purple-subtler, #DFD8FD)',  fg: 'var(--ds-text-accent-purple-bolder, #352C63)' },
-  { bg: 'var(--ds-background-accent-red-subtler, #FFD5D2)',     fg: 'var(--ds-text-accent-red-bolder, #5D1F1A)' },
-  { bg: 'var(--ds-background-accent-orange-subtler, #FFE2BD)',  fg: 'var(--ds-text-accent-orange-bolder, #5F3811)' },
-  { bg: 'var(--ds-background-accent-yellow-subtler, #F8E6A0)',  fg: 'var(--ds-text-accent-yellow-bolder, #533F04)' },
-  { bg: 'var(--ds-background-accent-green-subtler, #BAF3DB)',   fg: 'var(--ds-text-accent-green-bolder, #164B35)' },
-  { bg: 'var(--ds-background-accent-teal-subtler, #C1F0F5)',    fg: 'var(--ds-text-accent-teal-bolder, #1D474B)' },
-  { bg: 'var(--ds-background-accent-magenta-subtler, #FDD0EC)', fg: 'var(--ds-text-accent-magenta-bolder, #50253F)' },
+  { bg: '#CCE0FF', fg: '#09326C' }, // blue
+  { bg: '#DFD8FD', fg: '#352C63' }, // purple
+  { bg: '#FFD5D2', fg: '#5D1F1A' }, // red
+  { bg: '#FFE2BD', fg: '#5F3811' }, // orange
+  { bg: '#F8E6A0', fg: '#533F04' }, // yellow
+  { bg: '#BAF3DB', fg: '#164B35' }, // green
+  { bg: '#C1F0F5', fg: '#1D474B' }, // teal
+  { bg: '#FDD0EC', fg: '#50253F' }, // magenta
 ];
 
 /** Stable string-hash → palette index. Same name → same color always. */
@@ -83,52 +85,83 @@ function initialsOf(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
+/** Detect non-person actors that should render as a cog, not initials. */
+function isSystemActor(name: string): boolean {
+  const v = name.trim().toLowerCase();
+  return (
+    v === 'system' ||
+    v === 'bot' ||
+    v === 'anonymous' ||
+    v === 'automation' ||
+    v === 'jira' ||
+    v === 'jira sync' ||
+    v.endsWith('-bot') ||
+    v.startsWith('bot ')
+  );
+}
+
+/** Build an SVG data URL containing colored initials. */
+function initialsSvgDataUrl(name: string, size: number): string {
+  const { bg, fg } = paletteFor(name);
+  const initials = initialsOf(name);
+  // Atlaskit Avatar clips to a circle; we paint a flat color rect since
+  // the round corners come from the wrapper, not the bitmap.
+  const fontSize = Math.round(size * 0.44);
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${size} ${size}' ` +
+    `width='${size}' height='${size}'>` +
+    `<rect width='${size}' height='${size}' fill='${bg}'/>` +
+    `<text x='50%' y='50%' dy='0.35em' text-anchor='middle' ` +
+    `font-family='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif' ` +
+    `font-size='${fontSize}' font-weight='600' fill='${fg}'>${initials}</text>` +
+    `</svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
+/** Build an SVG data URL containing a neutral cog glyph for system actors. */
+function cogSvgDataUrl(size: number): string {
+  const fg = '#505258';
+  const bg = '#F1F2F4';
+  const inner = Math.round(size * 0.55);
+  const offset = (size - inner) / 2;
+  const svg =
+    `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 ${size} ${size}' ` +
+    `width='${size}' height='${size}'>` +
+    `<rect width='${size}' height='${size}' fill='${bg}'/>` +
+    `<g transform='translate(${offset} ${offset}) scale(${inner / 24})' ` +
+    `fill='none' stroke='${fg}' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>` +
+    `<circle cx='12' cy='12' r='3'/>` +
+    `<path d='M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z'/>` +
+    `</g></svg>`;
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 export default function UserAvatar({
   name,
   size = 'small',
   src,
   className,
 }: UserAvatarProps) {
-  if (!name) {
-    return <Avatar size={size} className={className} />;
-  }
   // Caller-supplied src wins; otherwise consult the on-disk resolver.
-  const resolvedSrc = src ?? resolveAvatarUrl(name) ?? null;
+  const explicitSrc = src ?? (name ? resolveAvatarUrl(name) : null) ?? null;
 
-  if (resolvedSrc) {
-    return <Avatar size={size} name={name} src={resolvedSrc} className={className} />;
-  }
-
-  // Fallback: colored circle with initials (Jira-canonical look).
+  // Pick a generated bitmap when nothing else is available so Atlaskit's
+  // Avatar always has something to render (no gray silhouette).
   const px = SIZE_PX[size];
-  const fontSize = FONT_SIZE[size];
-  const { bg, fg } = paletteFor(name);
-  const style: CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: px,
-    height: px,
-    borderRadius: '50%',
-    background: bg,
-    color: fg,
-    fontSize,
-    fontWeight: 600,
-    fontFamily:
-      '"Atlassian Sans", ui-sans-serif, -apple-system, system-ui, sans-serif',
-    flexShrink: 0,
-    userSelect: 'none',
-    lineHeight: 1,
-  };
+  const fallbackSrc = !explicitSrc
+    ? !name
+      ? cogSvgDataUrl(px)
+      : isSystemActor(name)
+        ? cogSvgDataUrl(px)
+        : initialsSvgDataUrl(name, px)
+    : null;
+
   return (
-    <span
-      role="img"
-      aria-label={name}
-      title={name}
+    <Avatar
+      size={size}
+      name={name ?? undefined}
+      src={explicitSrc ?? fallbackSrc ?? undefined}
       className={className}
-      style={style}
-    >
-      {initialsOf(name)}
-    </span>
+    />
   );
 }

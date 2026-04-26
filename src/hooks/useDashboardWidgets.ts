@@ -3,13 +3,23 @@
  * All queries use REAL Supabase data — zero mocks.
  *
  * ═══════════════════════════════════════════════════════════════
- * 🛡️  2026 GUARDRAIL — PLATFORM-WIDE DASHBOARD POLICY
+ * 🛡️  FISCAL SCOPE — PLATFORM-WIDE DASHBOARD POLICY (Apr 26, 2026)
  * ═══════════════════════════════════════════════════════════════
- * Every dashboard widget MUST scope to the 2026 fiscal window:
- * any record created OR updated in 2026. Use YEAR_2026_START /
- * YEAR_2026_END constants and the `or2026(createdCol, updatedCol)`
- * helper. Do NOT remove or weaken these filters without an explicit
- * guardrail-amendment note in this header. Owner: Vikram.
+ * Every dashboard widget MUST scope to the project's CURRENT fiscal
+ * surface, defined as the union of three conditions:
+ *   1. Item created in 2026, OR
+ *   2. Item updated in 2026, OR
+ *   3. Item is in an active release (fix_versions contains the name
+ *      of any release whose status is not archived/released/shipped).
+ *
+ * The third condition catches carry-in work assigned to active 2026
+ * releases whose Jira sync hasn't ticked the updated_at column.
+ * Without it, dashboards under-count active scope.
+ *
+ * Use YEAR_2026_START / YEAR_2026_END constants and the async
+ * `fiscalScopeFor(pKey, createdCol, updatedCol)` helper. Do NOT
+ * remove or weaken these filters without an explicit guardrail-
+ * amendment note in this header. Owner: Vikram.
  * ═══════════════════════════════════════════════════════════════
  */
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
@@ -22,7 +32,67 @@ const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
 export const YEAR_2026_START = '2026-01-01T00:00:00.000Z';
 export const YEAR_2026_END   = '2027-01-01T00:00:00.000Z';
 
-/** Supabase .or() expression: created OR updated within 2026. */
+// Module-level cache for active release names per project_key. Many
+// widget hooks fire concurrently and would otherwise each issue an
+// identical SELECT against `releases`. 60s TTL — releases rarely
+// change mid-session.
+const _activeReleaseNamesCache = new Map<string, { names: string[]; ts: number }>();
+const ACTIVE_RELEASE_TTL_MS = 60_000;
+
+async function getActiveReleaseNamesForKey(pKey: string | null | undefined): Promise<string[]> {
+  if (!pKey) return [];
+  const cached = _activeReleaseNamesCache.get(pKey);
+  if (cached && Date.now() - cached.ts < ACTIVE_RELEASE_TTL_MS) return cached.names;
+  // Translate pKey → canonical projects.id (releases.project_id targets this).
+  const { data: proj } = await supabase
+    .from('projects')
+    .select('id')
+    .eq('key', pKey)
+    .maybeSingle();
+  if (!proj?.id) {
+    _activeReleaseNamesCache.set(pKey, { names: [], ts: Date.now() });
+    return [];
+  }
+  const { data } = await supabase
+    .from('releases')
+    .select('name')
+    .eq('project_id', proj.id)
+    .not('status', 'in', `(${INACTIVE_STATUSES.join(',')})`);
+  const names = ((data ?? []) as any[]).map((r) => r.name).filter(Boolean);
+  _activeReleaseNamesCache.set(pKey, { names, ts: Date.now() });
+  return names;
+}
+
+/**
+ * Build a Supabase .or() expression that scopes a ph_issues query to
+ * the canonical fiscal surface: 2026 created/updated OR currently in
+ * an active release.
+ *
+ * Returns a string ready for `q.or(...)`. Async because we need to
+ * fetch the active release names — caller's queryFn is already async.
+ *
+ * Backwards-compat alias `or2026(createdCol, updatedCol)` is kept for
+ * call sites that have NOT yet been migrated; it returns the legacy
+ * 2-clause OR (no release scope). New code should prefer
+ * fiscalScopeFor(pKey, ...).
+ */
+async function fiscalScopeFor(
+  pKey: string | null | undefined,
+  createdCol: string,
+  updatedCol: string,
+): Promise<string> {
+  const releaseNames = await getActiveReleaseNamesForKey(pKey);
+  const baseClauses = [
+    `and(${createdCol}.gte.${YEAR_2026_START},${createdCol}.lt.${YEAR_2026_END})`,
+    `and(${updatedCol}.gte.${YEAR_2026_START},${updatedCol}.lt.${YEAR_2026_END})`,
+  ];
+  const releaseClauses = releaseNames.map(
+    (name) => `fix_versions.cs.${JSON.stringify([{ name }])}`,
+  );
+  return [...baseClauses, ...releaseClauses].join(',');
+}
+
+/** @deprecated Use fiscalScopeFor(pKey, ...) — broader scope (also matches active releases). */
 function or2026(createdCol: string, updatedCol: string): string {
   return `and(${createdCol}.gte.${YEAR_2026_START},${createdCol}.lt.${YEAR_2026_END}),and(${updatedCol}.gte.${YEAR_2026_START},${updatedCol}.lt.${YEAR_2026_END})`;
 }
@@ -193,7 +263,7 @@ export function useDashboardStatusCounts(
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo)   q = q.lte('jira_created_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
 
       // Apply Release / Assignee / Item Type / Priority / Status filters
       // from the gadget settings panel (Layer 2). Same helper used by all
@@ -263,7 +333,7 @@ export function useDashboardOverdueItems(
 
       if (dateFrom) q = q.gte('effective_due_date', dateFrom);
       if (dateTo) q = q.lte('effective_due_date', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(or2026('effective_due_date', 'effective_due_date'));
+      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'effective_due_date', 'effective_due_date'));
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
@@ -302,7 +372,7 @@ export function useDashboardOnHoldItems(
 
       if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
       if (dateTo) q = q.lte('jira_updated_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
@@ -339,22 +409,51 @@ export function useDashboardTeamWorkload(
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
 
       q = applyPhIssuesLayer2Filters(q, filters);
 
       const { data: issues, error } = await q;
       if (error) throw error;
 
-      const map = new Map<string, { assignee: string; total: number; stories: number; bugs: number }>();
+      type WorkloadEntry = {
+        assignee: string;
+        total: number;
+        stories: number;
+        bugs: number;
+        subtasks: number;
+      };
+      const map = new Map<string, WorkloadEntry>();
+      // Three-way partition (Apr 26, 2026) — total = stories + bugs + subtasks.
+      //   bugs     = defect family (bug / defect / production incident)
+      //   subtasks = sub-task / subtask (any casing / hyphen variant)
+      //   stories  = everything else (story / task / epic / feature / business request)
+      // Subtasks were previously bucketed into stories, hiding the granular
+      // load each engineer carries (most teams break stories into 5–10 subtasks,
+      // so the subtask count dwarfs the story count).
+      const isBugType = (t: string) => {
+        const v = t.toLowerCase();
+        return v === 'bug' || v === 'defect' || v === 'production incident' || v.includes('incident');
+      };
+      const isSubtaskType = (t: string) => {
+        const v = t.toLowerCase().replace(/[-_\s]/g, '');
+        return v === 'subtask';
+      };
       for (const issue of issues ?? []) {
         const name = issue.assignee_display_name || 'Unassigned';
-        if (!map.has(name)) map.set(name, { assignee: name, total: 0, stories: 0, bugs: 0 });
+        if (!map.has(name)) {
+          map.set(name, { assignee: name, total: 0, stories: 0, bugs: 0, subtasks: 0 });
+        }
         const entry = map.get(name)!;
         entry.total++;
-        const type = (issue.issue_type || '').toLowerCase();
-        if (type === 'story' || type === 'task') entry.stories++;
-        if (type === 'bug') entry.bugs++;
+        const it = issue.issue_type ?? '';
+        if (isBugType(it)) {
+          entry.bugs++;
+        } else if (isSubtaskType(it)) {
+          entry.subtasks++;
+        } else {
+          entry.stories++;
+        }
       }
 
       return Array.from(map.values()).sort((a, b) => b.total - a.total);
@@ -432,7 +531,7 @@ export function useDashboardScopeChange(
         .select('id, fix_versions, jira_created_at, status_category, assignee_display_name, issue_type, priority')
         .eq('project_key', pKey)
         .is('deleted_at', null)
-        .or(or2026('jira_created_at', 'jira_updated_at'));
+        .or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
 
       issueQ = applyPhIssuesLayer2Filters(issueQ, {
         statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter,
@@ -580,7 +679,7 @@ export function useDashboardIncidents(
 
       if (dateFrom) q = q.gte('jira_created_at', dateFrom);
       if (dateTo) q = q.lte('jira_created_at', dateTo);
-      if (!dateFrom && !dateTo) q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+      if (!dateFrom && !dateTo) q = q.or(await fiscalScopeFor(pKey,'jira_created_at', 'jira_updated_at'));
 
       // Layer 2 filters — note: itemType is fixed to 'Production Incident' for
       // this widget so itemTypeFilter is intentionally ignored here.
@@ -719,7 +818,17 @@ export interface DashboardActivityItem {
   issue_key: string | null;
   summary: string | null;
   status: string | null;
+  // Actor proxy fields. None of our three sources (ph_issues,
+  // catalyst_status_history, tm_defects) capture the Jira changelog
+  // author, so we fall back to the issue's assignee — the most likely
+  // person to have triggered the update. When neither is known (truly
+  // automated transitions), actor_name stays null and the widget
+  // renders the "System" cog avatar.
+  actor_name: string | null;
+  actor_avatar_url: string | null;
 }
+
+const ACTIVITY_PAGE_SIZE = 10;
 
 export function useDashboardRecentActivity(
   projectId: string | null | undefined,
@@ -728,12 +837,15 @@ export function useDashboardRecentActivity(
   const { dateFrom = null, dateTo = null,
     statusFilter = [], releaseFilter = [], assigneeFilter = [],
     itemTypeFilter = [], priorityFilter = [] } = filters;
-  return useQuery<DashboardActivityItem[]>({
-    queryKey: ['ph-dashboard-recent-activity-v2', projectId, dateFrom, dateTo,
+  return useInfiniteQuery({
+    queryKey: ['ph-dashboard-recent-activity-v5', projectId, dateFrom, dateTo,
       statusFilter, releaseFilter, assigneeFilter, itemTypeFilter, priorityFilter],
-    queryFn: async () => {
+    initialPageParam: 0,
+    getNextPageParam: (last: any) => last?.nextOffset ?? null,
+    queryFn: async ({ pageParam = 0 }) => {
+      const offset = pageParam as number;
       const pKey = await getProjectKey(projectId!);
-      if (!pKey) return [];
+      if (!pKey) return { items: [] as DashboardActivityItem[], nextOffset: null };
 
       // ─── DEFAULT: last 14 days. The previous implementation read from
       // `work_item_activity` which is RLS-locked per user_id (not project-
@@ -750,6 +862,15 @@ export function useDashboardRecentActivity(
 
       const events: DashboardActivityItem[] = [];
 
+      // Avatar map shared across all three sources. Same pattern as
+      // useDashboardIncidents / useDashboardDefects.
+      const avatarMap = await getAvatarMap();
+
+      // Track issue_keys we've seen on ph_issues so we can join their
+      // assignees onto status_history rows below (saves a second round-trip
+      // for transitions whose issue we already loaded).
+      const phAssigneeByKey = new Map<string, string | null>();
+
       // 1. ph_issues — updates within the window
       try {
         let iq = supabase
@@ -765,6 +886,8 @@ export function useDashboardRecentActivity(
           const created = i.jira_created_at ? new Date(i.jira_created_at).getTime() : 0;
           const updated = i.jira_updated_at ? new Date(i.jira_updated_at).getTime() : 0;
           const isCreated = updated && created && Math.abs(updated - created) < 60_000;
+          const assignee = i.assignee_display_name ?? null;
+          if (assignee) phAssigneeByKey.set(i.issue_key, assignee);
           events.push({
             id: `ph:${i.issue_key}:${i.jira_updated_at}`,
             work_item_id: i.issue_key,
@@ -772,10 +895,12 @@ export function useDashboardRecentActivity(
             activity_type: isCreated ? 'created' : 'updated',
             activity_label: isCreated ? 'Created' : 'Updated',
             occurred_at: i.jira_updated_at,
-            metadata: { assignee: i.assignee_display_name },
+            metadata: { assignee },
             issue_key: i.issue_key,
             summary: i.summary,
             status: i.status,
+            actor_name: assignee,
+            actor_avatar_url: resolveAvatarUrl(avatarMap, assignee),
           });
         }
       } catch {
@@ -786,26 +911,63 @@ export function useDashboardRecentActivity(
       try {
         const { data: trans } = await supabase
           .from('catalyst_status_history')
-          .select('issue_key, from_status, to_status, changed_at')
+          .select('issue_key, from_status, to_status, changed_at, actor_name, actor_account_id')
           .eq('project_key', pKey)
           .gte('changed_at', fromIso)
           .lte('changed_at', toIso)
           .order('changed_at', { ascending: false })
           .limit(50);
+
+        // Backfill assignees for transition issue_keys we DIDN'T already
+        // load via ph_issues above. One round-trip, batched IN clause.
+        const missingKeys = Array.from(
+          new Set(
+            (trans ?? [])
+              .map((t: any) => t.issue_key as string)
+              .filter((k) => k && !phAssigneeByKey.has(k)),
+          ),
+        );
+        if (missingKeys.length) {
+          try {
+            const { data: extra } = await supabase
+              .from('ph_issues')
+              .select('issue_key, assignee_display_name')
+              .in('issue_key', missingKeys);
+            for (const r of extra ?? []) {
+              phAssigneeByKey.set(r.issue_key, r.assignee_display_name ?? null);
+            }
+          } catch {
+            /* assignee enrichment is best-effort */
+          }
+        }
+
         for (const t of trans ?? []) {
+          const assignee = phAssigneeByKey.get(t.issue_key) ?? null;
+          // Prefer the real Jira changelog actor (populated by the
+          // wh-jira-changelog-backfill edge function) and fall back to the
+          // current assignee only when actor is unknown — e.g. transitions
+          // recorded by the live trigger before the backfill catches up.
+          const actor = (t as any).actor_name ?? assignee;
           events.push({
             id: `csh:${t.issue_key}:${t.changed_at}:${t.to_status}`,
             work_item_id: t.issue_key,
             work_item_type: 'task',
             activity_type: 'status_changed',
             activity_label: t.from_status
-              ? `Status: ${t.from_status} → ${t.to_status}`
-              : `Status set: ${t.to_status}`,
+              ? `transitioned to ${t.to_status}`
+              : `set status to ${t.to_status}`,
             occurred_at: t.changed_at,
-            metadata: { from_status: t.from_status, to_status: t.to_status },
+            metadata: {
+              from_status: t.from_status,
+              to_status: t.to_status,
+              assignee,
+              actor_account_id: (t as any).actor_account_id ?? null,
+            },
             issue_key: t.issue_key,
             summary: null,
             status: t.to_status,
+            actor_name: actor,
+            actor_avatar_url: resolveAvatarUrl(avatarMap, actor),
           });
         }
       } catch {
@@ -823,24 +985,30 @@ export function useDashboardRecentActivity(
           .order('updated_at', { ascending: false })
           .limit(50);
         for (const d of defects ?? []) {
+          const assignee = d.jira_assignee_name ?? null;
           events.push({
             id: `def:${d.defect_key ?? d.jira_key}:${d.updated_at}`,
             work_item_id: d.jira_key ?? d.defect_key,
             work_item_type: 'bug',
             activity_type: 'updated',
-            activity_label: 'Defect updated',
+            // Verb reads naturally with the assignee as actor:
+            // "Yazeed updated BAU-4510". Falls back to "updated" cleanly
+            // when actor is null and the widget renders "System updated".
+            activity_label: 'updated',
             occurred_at: d.updated_at,
-            metadata: { severity: d.severity, assignee: d.jira_assignee_name },
+            metadata: { severity: d.severity, assignee },
             issue_key: d.jira_key ?? d.defect_key,
             summary: d.title,
             status: d.status,
+            actor_name: assignee,
+            actor_avatar_url: resolveAvatarUrl(avatarMap, assignee),
           });
         }
       } catch {
         /* soft-fail */
       }
 
-      // Sort merged events by recency desc, dedupe by id, cap at 20
+      // Sort merged events by recency desc, dedupe by id
       const seen = new Set<string>();
       const merged = events
         .filter((e) => {
@@ -852,10 +1020,16 @@ export function useDashboardRecentActivity(
           const ta = a.occurred_at ? new Date(a.occurred_at).getTime() : 0;
           const tb = b.occurred_at ? new Date(b.occurred_at).getTime() : 0;
           return tb - ta;
-        })
-        .slice(0, 20);
+        });
 
-      return merged;
+      // Page slice — return PAGE_SIZE rows starting at offset
+      const page = merged.slice(offset, offset + ACTIVITY_PAGE_SIZE);
+      const hasMore = merged.length > offset + ACTIVITY_PAGE_SIZE;
+      return {
+        items: page,
+        nextOffset: hasMore ? offset + ACTIVITY_PAGE_SIZE : null,
+        total: merged.length,
+      };
     },
     enabled: !!projectId,
     staleTime: 30_000,
@@ -1095,6 +1269,11 @@ export function useTimeInStatusMatrix(
       }
 
       // 2. Tickets — try with full select, fall back on column errors.
+      // Pre-resolve the fiscal scope (created/updated 2026 OR active release)
+      // outside the closures below so we don't `await` inside a sync arrow.
+      const fiscalOrClause = (!dateFrom && !dateTo)
+        ? await fiscalScopeFor(projectKey, 'jira_created_at', 'jira_updated_at')
+        : null;
       let tickets: any[] | null = null;
       let count = 0;
       const buildQuery = () => {
@@ -1109,7 +1288,7 @@ export function useTimeInStatusMatrix(
 
         if (dateFrom) tq = tq.gte('jira_updated_at', dateFrom);
         if (dateTo) tq = tq.lte('jira_updated_at', dateTo);
-        if (!dateFrom && !dateTo) tq = tq.or(or2026('jira_created_at', 'jira_updated_at'));
+        if (fiscalOrClause) tq = tq.or(fiscalOrClause);
         if (assigneeFilter.length) tq = tq.in('assignee_display_name', assigneeFilter);
         if (priorityFilter.length) tq = tq.in('priority', priorityFilter);
 
@@ -1130,7 +1309,7 @@ export function useTimeInStatusMatrix(
           .eq('issue_type', issueType);
         if (dateFrom) tq2 = tq2.gte('jira_updated_at', dateFrom);
         if (dateTo) tq2 = tq2.lte('jira_updated_at', dateTo);
-        if (!dateFrom && !dateTo) tq2 = tq2.or(or2026('jira_created_at', 'jira_updated_at'));
+        if (fiscalOrClause) tq2 = tq2.or(fiscalOrClause);
         if (assigneeFilter.length) tq2 = tq2.in('assignee_display_name', assigneeFilter);
         const r2 = await tq2
           .order('jira_updated_at', { ascending: false })
@@ -1429,11 +1608,13 @@ export function useDashboardTimeInStatus(
         q = q.not('status_category', 'in', '("done","closed")');
       }
 
-      // Date window — page-level filter, with 2026 guardrail fallback
+      // Date window — page-level filter, with 2026 + active-release fallback.
+      // This hook receives `projectKey` (not `pKey`); fiscalScopeFor accepts
+      // either since both resolve to the same release-name lookup.
       if (dateFrom) q = q.gte('jira_updated_at', dateFrom);
       if (dateTo) q = q.lte('jira_updated_at', dateTo);
       if (!dateFrom && !dateTo) {
-        q = q.or(or2026('jira_created_at', 'jira_updated_at'));
+        q = q.or(await fiscalScopeFor(projectKey, 'jira_created_at', 'jira_updated_at'));
       }
 
       // Layer-2 filters

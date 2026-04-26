@@ -23,7 +23,7 @@ import { useMemo, useState } from 'react';
 import { X, ChevronRight, ChevronDown, Settings } from 'lucide-react';
 import Spinner from '@atlaskit/spinner';
 import { StatusLozenge, EmptyState, ProgressBar, Avatar } from '@/components/ads';
-import WorkItemIcon, { type WorkItemIconType } from '@/components/shared/WorkItemIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useDashboardReleaseHealth } from '@/hooks/useDashboardWidgets';
 import { useReleaseItems } from './useReleaseItems';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
@@ -72,18 +72,11 @@ function itemStatusCategoryFor(cat?: string | null): 'default' | 'inProgress' | 
   return 'default';
 }
 
-function iconTypeFor(issueType?: string | null): WorkItemIconType {
-  const t = (issueType ?? '').toLowerCase();
-  if (t.includes('epic')) return 'epic';
-  if (t.includes('bug') || t.includes('defect')) return 'bug';
-  if (t.includes('incident')) return 'production_incident';
-  if (t.includes('sub')) return 'subtask';
-  if (t.includes('feature')) return 'feature';
-  if (t.includes('change')) return 'change_request';
-  if (t.includes('story')) return 'story';
-  if (t.includes('task')) return 'task';
-  return 'story';
-}
+// Bespoke iconTypeFor() removed Apr 26, 2026 — JiraIssueTypeIcon's
+// internal resolveJiraTypeConfig() already does fuzzy type matching with
+// the canonical Jira mapping, so callers should pass the raw issue_type
+// string. Adding our own mapper here would diverge from the source of
+// truth.
 
 // ─── Level 2 row: lazy-loaded items for one expanded release ───────────────
 function ReleaseItemsRows({
@@ -153,7 +146,7 @@ function ReleaseItemsRows({
         >
           <div /> {/* indent column */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <WorkItemIcon type={iconTypeFor(it.issueType)} size={16} />
+            <JiraIssueTypeIcon type={it.issueType ?? 'Task'} size={16} />
           </div>
           <button
             type="button"

@@ -14,6 +14,7 @@
  * from these primitives — Avatar + name + verb + linked issue key +
  * status lozenge + relative time. This file mirrors that recipe exactly.
  */
+import { useEffect, useMemo, useRef } from 'react';
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
 import WidgetGearButton from '../WidgetGearButton';
@@ -22,6 +23,7 @@ import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { Box, Stack, Inline, xcss } from '@atlaskit/primitives';
 import Tooltip from '@atlaskit/tooltip';
+import Spinner from '@atlaskit/spinner';
 import {
   EmptyState,
   StatusLozenge,
@@ -87,7 +89,13 @@ export default function RecentActivityWidget({
   onToggleCollapse,
 }: WidgetProps) {
   const { settings } = useGadgetSettings('activity', projectKey);
-  const { data: items, isLoading } = useDashboardRecentActivity(projectId, {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useDashboardRecentActivity(projectId, {
     dateFrom: settings.dateFrom,
     dateTo: settings.dateTo,
     statusFilter: settings.statusFilter,
@@ -96,6 +104,29 @@ export default function RecentActivityWidget({
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
   });
+  const items = useMemo(
+    () => (data?.pages ?? []).flatMap((p: any) => p.items ?? []),
+    [data],
+  );
+  const total = (data?.pages?.[0] as any)?.total ?? items.length;
+
+  // Bounded scroll container with IntersectionObserver sentinel — auto
+  // loads next 10 when scrolled near the bottom. 10 rows / page.
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting) && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: '120px 0px' },
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
   const { openUWV } = useUWV();
   const handleExpand = () => openUWV({
     project: projectKey,

@@ -21,15 +21,16 @@
  *     - LEFT (edit mode): grip-vertical drag handle (24×24)
  *     - RIGHT: Narrower / Wider / Collapse chevron (edit mode) + headerBadges
  */
-import { Component, type ReactNode, type ErrorInfo, useEffect, useRef } from 'react';
+import { Component, type ReactNode, type ErrorInfo, useEffect, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
-import { GripVertical, ChevronDown, ChevronRight, Minus, Plus, Maximize2 } from 'lucide-react';
+import { GripVertical, ChevronDown, ChevronRight, Minus, Plus, Maximize2, Download } from 'lucide-react';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import { Heading, SectionMessage } from '@/components/ads';
 import { useWidgetEditState } from './DashboardWidgetGrid';
+import { downloadWidgetAsPdf } from '@/lib/widget-pdf';
 
 interface WidgetWrapperProps {
   title: string;
@@ -91,6 +92,8 @@ export default function WidgetWrapper({
   onExpand,
 }: WidgetWrapperProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const editState = useWidgetEditState();
   const isEditing = editState.isEditing;
   const widgetId = editState.widgetId;
@@ -251,6 +254,38 @@ export default function WidgetWrapper({
               )}
             </Tooltip>
           )}
+          {/* Download as PDF — html2canvas + jsPDF, project-tagged filename.
+              Lives next to the executive-view button so the two read/share
+              actions sit together. Disabled while a capture is in flight to
+              prevent double-render. */}
+          <Tooltip content="Download as PDF" position="top">
+            {(tp) => (
+              <span {...tp} style={{ display: 'inline-flex' }}>
+                <AkIconButton
+                  label="Download as PDF"
+                  icon={() => <Download size={14} />}
+                  appearance="subtle"
+                  spacing="compact"
+                  isDisabled={isExporting || collapsed}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    if (!bodyRef.current) return;
+                    setIsExporting(true);
+                    try {
+                      await downloadWidgetAsPdf(bodyRef.current, {
+                        title,
+                        subtitle,
+                      });
+                    } catch (err) {
+                      console.error('[WidgetWrapper] PDF export failed', err);
+                    } finally {
+                      setIsExporting(false);
+                    }
+                  }}
+                />
+              </span>
+            )}
+          </Tooltip>
           <AkIconButton
             label={collapsed ? 'Expand widget' : 'Collapse widget'}
             icon={() =>
@@ -267,6 +302,7 @@ export default function WidgetWrapper({
       {/* Body */}
       {!collapsed && (
         <div
+          ref={bodyRef}
           className="flex-1 dashboard-widget-body min-w-0 w-full max-w-full overflow-hidden"
           style={{
             background: token('elevation.surface', '#FFFFFF'),

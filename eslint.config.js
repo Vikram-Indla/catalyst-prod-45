@@ -35,6 +35,22 @@ import tseslint from "typescript-eslint";
  */
 const makeAdsForbidAtlaskit = (severity) => ({
   "no-restricted-imports": [severity, {
+    paths: [
+      // Canonical issue-type icon guardrail — non-negotiable, always "error".
+      // The dashboard suffered months of icon drift because product code
+      // imported the bespoke WorkItemIcon shim instead of the canonical
+      // Jira registry. WorkItemIcon now delegates internally so existing
+      // call sites still render correctly, but new code MUST import the
+      // canonical component directly. The shim file itself is exempted
+      // via the `ignores` glob in the consuming config block.
+      {
+        name: "@/components/shared/WorkItemIcon",
+        message:
+          "Use `JiraIssueTypeIcon` from '@/lib/jira-issue-type-icons' instead. " +
+          "WorkItemIcon is a deprecated shim — new code must import the canonical " +
+          "Jira icon component directly so no further glyph drift accumulates.",
+      },
+    ],
     patterns: [
       {
         // Forbid every @atlaskit/* component/primitive package. The token
@@ -85,6 +101,17 @@ const makeAdsForbidAtlaskit = (severity) => ({
           "Direct @radix-ui/* imports are BANNED (CLAUDE.md §20.2). Use the " +
           "Catalyst ADS wrapper at '@/components/ads' — Atlaskit wraps Radix " +
           "internally and the ADS wrapper isolates both version-bump surfaces.",
+      },
+      // Canonical issue-type icon guardrail — bespoke per-feature icon
+      // modules ban. Catches future *IssueTypeIcon-named modules
+      // (PHIssueTypeIcon, JiraIssueTypeIcon clones, etc.) anywhere in
+      // src/ except the canonical one at @/lib/jira-issue-type-icons.
+      {
+        group: ["**/*IssueTypeIcon", "!@/lib/jira-issue-type-icons"],
+        message:
+          "Canonical issue-type icons live at '@/lib/jira-issue-type-icons'. " +
+          "Bespoke icon modules drift from Atlassian's glyph set — if a new " +
+          "type is needed, add it to CONFIGS in jira-issue-type-icons.tsx.",
       },
     ],
   }],
@@ -156,11 +183,40 @@ const dashboardMigratedRules = {
 };
 
 /**
- * Catalyst design-system colour guardrails.
- * Flags banned Golden Hour palette, yellow/amber badges, and raw HSL.
+ * Catalyst design-system colour, typography & asset guardrails.
+ *
+ * ═══════════════════════════════════════════════════════════════════════
+ * 🛡️  ADS-ONLY DIRECTIVE (Apr 26, 2026 — owner Vikram)
+ * ═══════════════════════════════════════════════════════════════════════
+ * Catalyst is committed to Atlassian Design System (ADS). All colours,
+ * typography, and visual assets in product code MUST come from:
+ *   - Colours    →  `token('color.*', fallbackHex)` from @atlaskit/tokens
+ *                   or `var(--ds-*)` CSS variables
+ *   - Typography →  `<Heading>`, `<Text>` from @atlaskit/heading +
+ *                   primitives, OR `token('font.*')`. No bespoke
+ *                   `fontFamily` literals.
+ *   - Icons      →  Canonical Jira icon registry at
+ *                   '@/lib/jira-issue-type-icons' (work-item types) or
+ *                   @atlaskit/icon (everything else)
+ *   - Assets     →  /admin/icons/jira/* SVGs or @atlaskit/* asset
+ *                   modules. No bespoke per-feature SVG files in product
+ *                   code.
+ *
+ * The rules below flag drift back to bespoke / legacy palettes and
+ * fonts. Severity = "warn" so 12,000+ pre-existing call sites don't
+ * break the build during the migration window. To override on a
+ * specific line:
+ *
+ *   // eslint-disable-next-line no-restricted-syntax -- {reason}
+ *   style={{ color: '#FF0000' }}
+ *
+ * Override usage requires a justification comment. Code reviewers gate
+ * the override.
+ * ═══════════════════════════════════════════════════════════════════════
  */
 const catalystBannedColors = {
   "no-restricted-syntax": ["warn",
+    // ── BANNED legacy palette (Golden Hour) ────────────────────────────
     {
       selector: "Literal[value=/^#[Cc]69[Cc]6[Dd]/]",
       message: "Banned: Golden Hour color #C69C6D. Use design tokens from src/theme/tokens.ts.",
@@ -177,9 +233,60 @@ const catalystBannedColors = {
       selector: "Literal[value=/^#[Dd]4[Bb]896/]",
       message: "Banned: Golden Hour color #D4B896. Use design tokens from src/theme/tokens.ts.",
     },
+    // ── Raw HSL literals — Atlaskit doesn't ship HSL fallbacks ─────────
     {
       selector: "Literal[value=/^hsl\\(/]",
       message: "Avoid raw HSL values. Use hex literals or CSS variables. See CLAUDE.md L38.",
+    },
+    // ── Raw rgb()/rgba() literals — must come from token() fallbacks ───
+    {
+      selector: "Literal[value=/^rgba?\\(/]",
+      message:
+        "Raw rgb()/rgba() literals are banned in product code. Use `token('color.*', '#fallback')` " +
+        "from @atlaskit/tokens or a `var(--ds-*)` reference. If a transparent overlay is genuinely " +
+        "needed, document the exception with `// eslint-disable-next-line` + reason.",
+    },
+    // ── Bespoke fontFamily literals — Atlaskit owns typography ─────────
+    // Catches `style={{ fontFamily: '"Helvetica Neue", sans-serif' }}` and
+    // similar. Atlaskit Heading / Text primitives + `token('font.*')` are
+    // the canonical surface. Atlassian Sans / monospace variants are
+    // exempt because they ARE the canonical stacks.
+    {
+      selector:
+        "JSXAttribute[name.name='style'] Property[key.name='fontFamily'] " +
+        "Literal[value!=/Atlassian Sans|JetBrains Mono|ui-monospace|SF Mono|Menlo|Consolas|var\\(--ds-/]",
+      message:
+        "Bespoke fontFamily literals are banned. Use Atlaskit `<Heading>` / `<Text>` primitives " +
+        "or `token('font.*')`. Allowed exceptions: 'Atlassian Sans' (Catalyst default) and the " +
+        "monospace stack used for issue keys + tabular numerics.",
+    },
+  ],
+};
+
+/**
+ * Tailwind colour-utility ban (Apr 26, 2026).
+ *
+ * Tailwind utility classes (`bg-red-500`, `text-blue-600`, `border-amber-200`)
+ * sidestep the ADS token system entirely — their colours come from the
+ * Tailwind palette, not Atlaskit's. Catalyst is committed to ADS; new code
+ * must use Atlaskit `token('color.*')` or `var(--ds-*)` instead.
+ *
+ * Pattern matches:
+ *   bg-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,
+ *       indigo,violet,purple,fuchsia,pink,rose}-{50..950}
+ *   text-, border-, ring-, divide-, fill-, stroke- with the same
+ *
+ * Severity = "warn". Migrate per-file as widgets get redesigned.
+ */
+const catalystBannedTailwindColors = {
+  "no-restricted-syntax": ["warn",
+    {
+      selector:
+        "Literal[value=/(^|[\\s\"])(bg|text|border|ring|divide|fill|stroke|from|to|via)-(red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-(50|100|200|300|400|500|600|700|800|900|950)\\b/]",
+      message:
+        "Tailwind colour utilities (bg-blue-500, text-red-600, etc.) are banned in product code — " +
+        "they bypass the ADS token system. Use `token('color.*', '#fallback')` from " +
+        "@atlaskit/tokens or `var(--ds-*)` instead. See CLAUDE.md ADS-only directive.",
     },
   ],
 };
@@ -202,20 +309,29 @@ export default tseslint.config(
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
       "@typescript-eslint/no-unused-vars": "off",
       ...catalystBannedColors,
+      ...catalystBannedTailwindColors,
     },
   },
   /**
-   * Product code — forbid direct @atlaskit/* imports.
-   * The exemption patterns below re-enable them for the ADS layer itself.
+   * Product code — forbid direct @atlaskit/* imports + bespoke icon shims.
+   * The exemption patterns below re-enable them for the ADS layer itself
+   * and for the WorkItemIcon shim (which delegates to the canonical
+   * registry internally — its single allowed import of itself).
    *
-   * Severity is "warn" here so the 40+ legacy direct-import sites don't
-   * break the build. Per-file "error" upgrade lives in the next block.
+   * Severity is "warn" here for atlaskit imports so the 40+ legacy
+   * direct-import sites don't break the build. The canonical-icon ban
+   * inside makeAdsForbidAtlaskit is at "error" via the migrated-files
+   * block below — but at this top level it stays "warn" until the last
+   * legacy shim callers are swept.
    */
   {
     files: ["src/**/*.{ts,tsx}"],
     ignores: [
       "src/components/ads/**",
       "src/theme/ads/**",
+      // The shim itself imports the canonical lib internally; exempting
+      // its own file from the import ban so the deprecation chain works.
+      "src/components/shared/WorkItemIcon.tsx",
     ],
     rules: {
       ...adsForbidAtlaskit,

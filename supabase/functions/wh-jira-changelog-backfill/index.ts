@@ -177,6 +177,8 @@ Deno.serve(async (req) => {
             if (item.field !== 'status') continue;
             const toStatus = item.toString ?? item.to ?? '';
             if (!toStatus) continue;
+            const actorName = h.author?.displayName ?? null;
+            const actorAccountId = h.author?.accountId ?? null;
             transitionsForIssue.push({
               source: 'jira',
               issue_key: tk.issue_key,
@@ -184,11 +186,16 @@ Deno.serve(async (req) => {
               from_status: item.fromString ?? item.from ?? null,
               to_status: toStatus,
               changed_at: h.created,
+              // First-class actor columns (Apr 26, 2026) — the Recent
+              // Activity widget reads these directly. Metadata copy kept
+              // for backwards-compat with anything that still parses JSON.
+              actor_name: actorName,
+              actor_account_id: actorAccountId,
               metadata: {
                 backfilled: true,
                 jira_history_id: h.id,
-                jira_actor: h.author?.displayName ?? null,
-                jira_actor_account_id: h.author?.accountId ?? null,
+                jira_actor: actorName,
+                jira_actor_account_id: actorAccountId,
               },
             });
           }

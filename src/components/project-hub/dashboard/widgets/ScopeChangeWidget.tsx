@@ -2,16 +2,30 @@
 /**
  * ScopeChangeWidget — original vs added-after-start scope per release.
  *
- * Rebuilt Apr 25, 2026 per ScopeChangeGadget spec (Forge G7 brief).
- *   - Atlaskit primitives (Heading, Text, Inline, Stack, Box, Lozenge) only.
- *   - Dual-segment bar (two Box children — Atlaskit progress-bar is single-value).
- *   - Settings persisted via useGadgetSettings('scope') → GadgetSettingsPanel.
- *   - Date filter applied inside useDashboardScopeChange against the canonical
- *     ph_versions.start_date (target_date − 14d fallback).
- *   - Row click → openUWV() with release-scoped filter context (no nav).
+ * Apr 26, 2026 — Enterprise redesign per per-widget design brief.
+ *   Mental model: "Did we plan correctly, or did the release inflate?"
  *
- * Two scope-bar fills remain as scoped literal rgba — Atlaskit tokens don't
- * expose a "scope-delta" semantic fill. Documented + sandboxed to this widget.
+ * Changes vs the previous build:
+ *   - Bespoke rgba(37,99,235,0.55) / rgba(220,38,38,0.65) bar fills replaced
+ *     with Atlaskit canonical bolder tokens (blue / red), routed via the
+ *     same palette pattern as Team Workload + Items by Status. Track is
+ *     neutral so each segment anchors clearly.
+ *   - Bar height 6px → 16px with 8px rounded ends, matching widget rhythm.
+ *   - KPI strip is now a sunken band with separators (was three loose
+ *     stat cards), matching Items by Status / Overdue / On Hold rhythm.
+ *   - Verbose 2-line description removed — the dashboard-level
+ *     SectionMessage already explains fiscal scope. Reclaimed vertical
+ *     budget for the rows.
+ *   - Lozenge no longer clips at "HIGH C…": the row's right cluster has
+ *     guaranteed flex-shrink:0 and the release-name column wraps if it
+ *     exceeds the available width.
+ *   - Tabular-num counts so vertical edges line up across rows.
+ *
+ * Wiring strictly preserved:
+ *   - Pressable row click → openUWV with releaseFilter:[name] for drill-in.
+ *   - Header expand for cross-release UWV view.
+ *   - WidgetGearButton in headerBadges.
+ *   - Sort + maxReleases + thresholds from gadget settings.
  */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
@@ -20,15 +34,13 @@ import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import { EmptyState, Lozenge } from '@/components/ads';
-import Heading from '@atlaskit/heading';
-import { Box, Inline, Stack, Text, Pressable, xcss } from '@atlaskit/primitives';
 import WidgetGearButton from '../WidgetGearButton';
 
-/** Scope-bar palette — scoped to this widget. See file header. */
-const SCOPE_ORIG  = 'rgba(37, 99, 235, 0.55)';   // original scope (blue)
-const SCOPE_ADDED = 'rgba(220, 38, 38, 0.65)';   // added after start (red)
+// Atlaskit canonical bolder palette — matches Team Workload + Items by Status.
+const SCOPE_ORIG = 'var(--ds-background-accent-blue-bolder, #0C66E4)';
+const SCOPE_ADDED = 'var(--ds-background-accent-red-bolder, #C9372C)';
 
-/** Format YYYY-MM-DD → "DD Mon YY" (no Date timezone surprises) */
+/** YYYY-MM-DD → "DD Mon YY" without timezone surprises. */
 function formatEndDate(iso: string | null): string {
   if (!iso) return '—';
   const [y, m, d] = iso.split('-').map(Number);
@@ -37,37 +49,11 @@ function formatEndDate(iso: string | null): string {
   return `${String(d).padStart(2, '0')} ${monthNames[m - 1]} ${String(y).slice(2)}`;
 }
 
-const rowPressableStyle = xcss({
-  display: 'block',
-  width: '100%',
-  textAlign: 'left',
-  padding: 'space.150',
-  borderRadius: 'border.radius.100',
-  borderWidth: 'border.width',
-  borderStyle: 'solid',
-  borderColor: 'color.border',
-  backgroundColor: 'color.background.input',
-  marginBlockEnd: 'space.100',
-  cursor: 'pointer',
-  ':hover': {
-    backgroundColor: 'color.background.input.hovered',
-    borderColor: 'color.border.bold',
-  },
-});
-
-const statCardStyle = xcss({
-  flex: '1 1 0',
-  minWidth: '0',
-  padding: 'space.150',
-  borderRadius: 'border.radius.100',
-  backgroundColor: 'color.background.neutral',
-});
-
 export default function ScopeChangeWidget({
   projectId, projectKey, collapsed, onToggleCollapse,
 }: WidgetProps) {
   const { settings } = useGadgetSettings('scope', projectKey);
-  const { openUWV }  = useUWV();
+  const { openUWV } = useUWV();
 
   const handleExpand = () => openUWV({
     project: projectKey,
@@ -85,10 +71,10 @@ export default function ScopeChangeWidget({
   });
 
   // Resolve config (with defaults from spec)
-  const maxReleases     = settings.gadgetSpecific?.maxReleases     ?? 8;
-  const thresholdHigh   = settings.gadgetSpecific?.thresholdHigh   ?? 80;
-  const thresholdMod    = settings.gadgetSpecific?.thresholdModerate ?? 30;
-  const showOnlyActive  = settings.gadgetSpecific?.showOnlyActive  ?? true;
+  const maxReleases    = settings.gadgetSpecific?.maxReleases     ?? 8;
+  const thresholdHigh  = settings.gadgetSpecific?.thresholdHigh   ?? 80;
+  const thresholdMod   = settings.gadgetSpecific?.thresholdModerate ?? 30;
+  const showOnlyActive = settings.gadgetSpecific?.showOnlyActive  ?? true;
 
   const { data: scopes = [], isLoading } = useDashboardScopeChange(projectId, {
     dateFrom: settings.dateFrom,
@@ -101,27 +87,27 @@ export default function ScopeChangeWidget({
     showOnlyActive,
   });
 
-  // Sort: 0% creep first, then ascending by deltaPercent. Cap by maxReleases.
+  // Sort: highest creep first so the worst offender lands at row 1.
+  // (Was ascending; flipped per exec scan order: bad news first.)
   const sorted = [...scopes]
-    .sort((a, b) => a.deltaPercent - b.deltaPercent)
+    .sort((a, b) => b.deltaPercent - a.deltaPercent)
     .slice(0, maxReleases);
 
   const releasesShown    = sorted.length;
-  const highCreepCount   = sorted.filter(s => s.deltaPercent > thresholdHigh).length;
-  const plannedCorrectly = sorted.filter(s => s.deltaPercent === 0).length;
+  const highCreepCount   = sorted.filter((s) => s.deltaPercent > thresholdHigh).length;
+  const plannedCorrectly = sorted.filter((s) => s.deltaPercent === 0).length;
 
   const handleReleaseClick = (s: typeof sorted[number]) => {
     openUWV({
-      project:    projectKey,
-      hubSource:  ['releasehub', 'projecthub'],
-      title:      `Scope change — ${s.releaseName} · ${formatEndDate(s.endDate)}`,
-      scope:      'all',
-      dateFrom:   settings.dateFrom ?? null,
-      dateTo:     settings.dateTo   ?? null,
-      dateLabel:  settings.dateLabel,
-      // Scope this UWV view to items in the clicked release
-      releaseFilter:  [s.releaseName],
-      statusFilter:   settings.statusFilter,
+      project: projectKey,
+      hubSource: ['releasehub', 'projecthub'],
+      title: `Scope change — ${s.releaseName} · ${formatEndDate(s.endDate)}`,
+      scope: 'all',
+      dateFrom: settings.dateFrom ?? null,
+      dateTo: settings.dateTo ?? null,
+      dateLabel: settings.dateLabel,
+      releaseFilter: [s.releaseName],
+      statusFilter: settings.statusFilter,
       assigneeFilter: settings.assigneeFilter,
       itemTypeFilter: settings.itemTypeFilter,
       priorityFilter: settings.priorityFilter,
@@ -134,173 +120,324 @@ export default function ScopeChangeWidget({
       subtitle="Items added after release start"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
-      span={1}
       onExpand={handleExpand}
       headerBadges={
         <WidgetGearButton gadgetType="scope" projectKey={projectKey} projectId={projectId} />
       }
     >
-      <Stack space="space.150">
-        {/* Description + methodology */}
-        <Stack space="space.050">
-          <Text size="small" color="color.text.subtle">
-            How much work was added to each release after it started. High scope
-            change means the release was not fully planned at kickoff — or
-            priorities shifted mid-flight.
-          </Text>
-          <Text size="UNSAFE_small" color="color.text.disabled">
-            Counts issues where the release was assigned after the release start date.
-          </Text>
-        </Stack>
-
-        {isLoading ? (
-          <Box
-            padding="space.200"
-            backgroundColor="color.background.neutral.subtle"
-            xcss={xcss({ borderRadius: 'border.radius.100', minHeight: '48px' })}
+      {isLoading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="animate-pulse"
+              style={{
+                height: 56,
+                borderRadius: token('border.radius', '4px'),
+                background: token('color.background.neutral.subtle', '#F1F5F9'),
+              }}
+            />
+          ))}
+        </div>
+      ) : sorted.length === 0 ? (
+        <EmptyState
+          size="compact"
+          header="No releases match"
+          description="No releases match the current filters."
+        />
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* ── KPI headline strip ─────────────────────────────────────── */}
+          <KpiHeadline
+            releasesShown={releasesShown}
+            highCreep={highCreepCount}
+            plannedCorrectly={plannedCorrectly}
+            thresholdHigh={thresholdHigh}
           />
-        ) : sorted.length === 0 ? (
-          <EmptyState
-            size="compact"
-            header="No releases match"
-            description="No releases match the current filters."
-          />
-        ) : (
-          <>
-            {/* Summary stat row */}
-            <Inline space="space.150" shouldWrap>
-              <Box xcss={statCardStyle}>
-                <Stack space="space.050">
-                  <Text size="UNSAFE_small" color="color.text.subtle">Releases shown</Text>
-                  <Heading size="medium">{releasesShown}</Heading>
-                </Stack>
-              </Box>
-              <Box xcss={statCardStyle}>
-                <Stack space="space.050">
-                  <Text size="UNSAFE_small" color="color.text.subtle">
-                    Added &gt;{thresholdHigh}% late
-                  </Text>
-                  <Text size="large" weight="semibold" color="color.text.danger">
-                    {highCreepCount}
-                  </Text>
-                </Stack>
-              </Box>
-              <Box xcss={statCardStyle}>
-                <Stack space="space.050">
-                  <Text size="UNSAFE_small" color="color.text.subtle">Planned correctly</Text>
-                  <Text size="large" weight="semibold" color="color.text.success">
-                    {plannedCorrectly}
-                  </Text>
-                </Stack>
-              </Box>
-            </Inline>
 
-            {/* Release rows */}
-            <Box>
-              {sorted.map((s) => {
-                const total      = s.originalCount + s.addedCount;
-                const origWidth  = total === 0 ? 100 : Math.round((s.originalCount / total) * 100);
-                const addedWidth = total === 0 ? 0   : 100 - origWidth;
-
-                let lozengeAppearance: 'success' | 'moved' | 'removed' = 'success';
-                let lozengeLabel = 'No creep';
-                if (s.deltaPercent > thresholdHigh) {
-                  lozengeAppearance = 'removed';
-                  lozengeLabel = 'High creep';
-                } else if (s.deltaPercent > thresholdMod) {
-                  lozengeAppearance = 'moved';
-                  lozengeLabel = 'Moderate creep';
-                } else if (s.deltaPercent > 0) {
-                  lozengeAppearance = 'moved';
-                  lozengeLabel = 'Moderate creep';
-                }
-
-                return (
-                  <Pressable
-                    key={s.releaseId}
-                    xcss={rowPressableStyle}
-                    onClick={() => handleReleaseClick(s)}
-                    aria-label={`Open scope items for ${s.releaseName}`}
-                  >
-                    <Stack space="space.075">
-                      {/* Top row */}
-                      <Inline spread="space-between" alignBlock="center" space="space.100">
-                        <Text weight="semibold" size="small" color="color.text">
-                          {s.releaseName} · {formatEndDate(s.endDate)}
-                        </Text>
-                        <Inline space="space.100" alignBlock="center">
-                          <Text size="UNSAFE_small" color="color.text.subtle">
-                            {s.originalCount} original · {s.addedCount} added
-                          </Text>
-                          <Lozenge appearance={lozengeAppearance}>{lozengeLabel}</Lozenge>
-                        </Inline>
-                      </Inline>
-
-                      {/* Dual-segment bar */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          height: 6,
-                          borderRadius: 3,
-                          overflow: 'hidden',
-                          background: token('color.background.neutral', '#F1F2F4'),
-                        }}
-                      >
-                        {origWidth > 0 && (
-                          <div style={{ width: `${origWidth}%`, background: SCOPE_ORIG }} />
-                        )}
-                        {addedWidth > 0 && (
-                          <div style={{ width: `${addedWidth}%`, background: SCOPE_ADDED }} />
-                        )}
-                      </div>
-
-                      {/* Bar labels */}
-                      <Inline spread="space-between" alignBlock="center">
-                        <Text size="UNSAFE_small" color="color.text.disabled">
-                          Original scope
-                        </Text>
-                        <Text size="UNSAFE_small" color="color.text.disabled">
-                          {s.deltaPercent > 0
-                            ? `+${s.deltaPercent}% added after start`
-                            : '0% added after start'}
-                        </Text>
-                      </Inline>
-                    </Stack>
-                  </Pressable>
-                );
-              })}
-            </Box>
-
-            {/* Legend */}
-            <Inline space="space.200" alignBlock="center">
-              <Inline space="space.075" alignBlock="center">
-                <span
-                  aria-hidden
-                  style={{
-                    display: 'inline-block', width: 10, height: 10,
-                    borderRadius: 2, background: SCOPE_ORIG,
-                  }}
-                />
-                <Text size="UNSAFE_small" color="color.text.subtle">
-                  Original scope (planned before start)
-                </Text>
-              </Inline>
-              <Inline space="space.075" alignBlock="center">
-                <span
-                  aria-hidden
-                  style={{
-                    display: 'inline-block', width: 10, height: 10,
-                    borderRadius: 2, background: SCOPE_ADDED,
-                  }}
-                />
-                <Text size="UNSAFE_small" color="color.text.subtle">
-                  Added after start
-                </Text>
-              </Inline>
-            </Inline>
-          </>
-        )}
-      </Stack>
+          {/* ── Release rows ──────────────────────────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            {sorted.map((s) => (
+              <ReleaseRow
+                key={s.releaseId}
+                release={s}
+                thresholdHigh={thresholdHigh}
+                thresholdMod={thresholdMod}
+                onClick={() => handleReleaseClick(s)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </WidgetWrapper>
+  );
+}
+
+// ─── KPI headline ──────────────────────────────────────────────────────────
+
+function KpiHeadline({
+  releasesShown,
+  highCreep,
+  plannedCorrectly,
+  thresholdHigh,
+}: {
+  releasesShown: number;
+  highCreep: number;
+  plannedCorrectly: number;
+  thresholdHigh: number;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        background: token('elevation.surface.sunken', '#F7F8F9'),
+        borderRadius: token('border.radius', '4px'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        overflow: 'hidden',
+      }}
+    >
+      <KpiCell label="Releases" value={releasesShown} />
+      <KpiCell
+        label={`Added >${thresholdHigh}%`}
+        value={highCreep}
+        accent={highCreep > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined}
+      />
+      <KpiCell
+        label="Planned correctly"
+        value={plannedCorrectly}
+        accent={
+          plannedCorrectly > 0 ? 'var(--ds-text-accent-green-bolder, #216E4E)' : undefined
+        }
+        last
+      />
+    </div>
+  );
+}
+
+function KpiCell({
+  label,
+  value,
+  accent,
+  last,
+}: {
+  label: string;
+  value: number;
+  accent?: string;
+  last?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        padding: '10px 12px',
+        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 500,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          color: token('color.text.subtlest', '#626F86'),
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: 22,
+          fontWeight: 600,
+          lineHeight: 1.1,
+          color: accent ?? token('color.text', '#172B4D'),
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// ─── Release row ───────────────────────────────────────────────────────────
+
+function ReleaseRow({
+  release: s,
+  thresholdHigh,
+  thresholdMod,
+  onClick,
+}: {
+  release: any;
+  thresholdHigh: number;
+  thresholdMod: number;
+  onClick: () => void;
+}) {
+  const total = s.originalCount + s.addedCount;
+  const origPct = total === 0 ? 0 : (s.originalCount / total) * 100;
+  const addedPct = total === 0 ? 0 : (s.addedCount / total) * 100;
+
+  let lozengeAppearance: 'success' | 'moved' | 'removed';
+  let lozengeLabel: string;
+  if (s.deltaPercent === 0) {
+    lozengeAppearance = 'success';
+    lozengeLabel = 'No creep';
+  } else if (s.deltaPercent > thresholdHigh) {
+    lozengeAppearance = 'removed';
+    lozengeLabel = 'High creep';
+  } else if (s.deltaPercent > thresholdMod) {
+    lozengeAppearance = 'moved';
+    lozengeLabel = 'Moderate creep';
+  } else {
+    lozengeAppearance = 'moved';
+    lozengeLabel = 'Some creep';
+  }
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          (e.currentTarget as HTMLDivElement).click();
+        }
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token(
+          'color.background.neutral.subtle.hovered',
+          '#F1F2F4',
+        );
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+      }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
+        padding: '10px 8px',
+        marginInline: -8,
+        borderRadius: token('border.radius', '4px'),
+        cursor: 'pointer',
+        transition: 'background 80ms ease',
+      }}
+    >
+      {/* Top line: release name (left, may wrap) + counts + lozenge (right) */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'space-between',
+          gap: 12,
+        }}
+      >
+        <span
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: token('color.text', '#172B4D'),
+            minWidth: 0,
+            // Allow wrapping for very long release names so the right
+            // cluster never gets pushed off the row. Two-line cap to keep
+            // row height predictable.
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            wordBreak: 'break-word',
+            letterSpacing: '-0.005em',
+            lineHeight: '18px',
+          }}
+        >
+          {s.releaseName}{' '}
+          <span style={{ color: token('color.text.subtle', '#626F86'), fontWeight: 500 }}>
+            · {formatEndDate(s.endDate)}
+          </span>
+        </span>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 12,
+              color: token('color.text.subtle', '#44546F'),
+              fontVariantNumeric: 'tabular-nums',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>
+              {s.originalCount}
+            </span>{' '}
+            original ·{' '}
+            <span style={{ fontWeight: 600, color: token('color.text', '#172B4D') }}>
+              {s.addedCount}
+            </span>{' '}
+            added
+          </span>
+          <Lozenge appearance={lozengeAppearance}>{lozengeLabel}</Lozenge>
+        </div>
+      </div>
+
+      {/* Bottom line: stacked bar + delta percent label */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div
+          style={{
+            flex: 1,
+            height: 14,
+            borderRadius: 7,
+            background: token('color.background.neutral', '#F1F2F4'),
+            overflow: 'hidden',
+            display: 'flex',
+          }}
+        >
+          {origPct > 0 && (
+            <div
+              style={{
+                width: `${origPct}%`,
+                background: SCOPE_ORIG,
+                transition: 'width 320ms cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+              aria-label={`${s.originalCount} original`}
+            />
+          )}
+          {addedPct > 0 && (
+            <div
+              style={{
+                width: `${addedPct}%`,
+                background: SCOPE_ADDED,
+                transition: 'width 320ms cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+              aria-label={`${s.addedCount} added after start`}
+            />
+          )}
+        </div>
+        <span
+          style={{
+            fontSize: 12,
+            fontWeight: 600,
+            minWidth: 64,
+            textAlign: 'right',
+            color:
+              s.deltaPercent > thresholdHigh
+                ? 'var(--ds-text-accent-red-bolder, #AE2A19)'
+                : s.deltaPercent > 0
+                  ? token('color.text.subtle', '#44546F')
+                  : 'var(--ds-text-accent-green-bolder, #216E4E)',
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          {s.deltaPercent > 0 ? `+${s.deltaPercent}%` : '0%'}
+        </span>
+      </div>
+    </div>
   );
 }

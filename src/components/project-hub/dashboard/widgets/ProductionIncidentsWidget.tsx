@@ -22,13 +22,13 @@ import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
-  DynamicTable,
   Lozenge,
   StatusLozenge,
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
-import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import { ResizableDynamicTable } from '../ResizableDynamicTable';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import RelativeTime from '@/components/shared/RelativeTime';
 import UserAvatar from '@/components/shared/UserAvatar';
@@ -134,8 +134,8 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
                 whiteSpace: 'nowrap',
               }}
             >
-              <WorkItemIcon
-                type={normalizeIconType((inc as any).issue_type ?? 'production_incident')}
+              <JiraIssueTypeIcon
+                type={(inc as any).issue_type ?? 'Production Incident'}
                 size={14}
               />
               {inc.issue_key ?? ''}
@@ -257,12 +257,38 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               );
             })()}
           </div>
-          <DynamicTable
+          <div
+            // Identical fixed-height scroll container as QA Defects so the
+            // two widgets sit at exact same chrome height in the 12-col grid.
+            // 10 rows × 36px + table head 36px = 396px.
+            style={{ maxHeight: 396, overflowY: 'auto', overflowX: 'auto' }}
+          >
+          <ResizableDynamicTable
+            widgetKey={`prod-incidents-v2:${projectKey}`}
             head={head}
             rows={rows}
-            aria-label="Production incidents"
-            rowsPerPage={0}
+            ariaLabel="Production incidents"
+            // Apr 26, 2026 — defaults rebalanced for full-width (12-of-12)
+            // stacked layout. Mirror QA Defects so the two stacked widgets
+            // line up vertically with identical column rhythm.
+            defaultWidths={{
+              priority: 56,
+              key: 140,
+              title: 740,
+              status: 130,
+              assignee: 150,
+              started: 100,
+            }}
+            minWidths={{
+              priority: 40,
+              key: 96,
+              title: 200,
+              status: 80,
+              assignee: 80,
+              started: 60,
+            }}
           />
+          </div>
         </>
       )}
     </WidgetWrapper>

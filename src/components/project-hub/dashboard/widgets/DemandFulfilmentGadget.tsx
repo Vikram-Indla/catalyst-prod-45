@@ -939,6 +939,67 @@ const lozengeAppearance = (
   return 'default';
 };
 
+// ─── KpiCell ───────────────────────────────────────────────────────────────
+//
+// Local helper for the executive KPI strip at the top of the widget. Same
+// rhythm as Items by Status / Overdue / On Hold / Scope Change / Team
+// Workload / Release Health — uppercase mini-label + 22px tabular number,
+// vertical separator between cells, sunken-band parent provides the
+// surface tone. Kept local (not extracted yet) until we promote it into
+// a shared `<DashboardKpiStrip>` primitive.
+
+function KpiCell({
+  label,
+  value,
+  accent,
+  last,
+}: {
+  label: string;
+  value: React.ReactNode;
+  accent?: string;
+  last?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        padding: '10px 12px',
+        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+        minWidth: 0,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 500,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          color: token('color.text.subtlest', '#626F86'),
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: 22,
+          fontWeight: 600,
+          lineHeight: 1.1,
+          color: accent ?? token('color.text', '#172B4D'),
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
 function DemandRowItem({
   row,
   threshold,
@@ -1600,44 +1661,43 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         </span>
       }
     >
-      {/* Counts strip — clickable filters (Production Incidents pattern) */}
+      {/* KPI headline strip + clickable filter pills.
+          Apr 26 2026 — bespoke hex palette (#DEEBFF/#0747A6/#FFF7D6/...)
+          replaced with Atlaskit canonical Lozenge appearances:
+            Active  → inprogress (blue)
+            Overdue → moved      (amber)
+            Done    → success    (green)
+          The Lozenge is presentational, so we wrap it in a button-shaped
+          span that owns the click + selected-ring chrome via Atlaskit
+          tokens. Keeps the existing tab-filter behaviour intact. */}
       {(() => {
         const totalCount = mergedActive.length + delivered.length;
         const activeCount = mergedActive.filter((r) => !overdueRows.includes(r)).length;
         const overdueCount = overdueRows.length;
         const doneCount = delivered.length;
+        const fulfilledPct = totalCount > 0
+          ? Math.round((doneCount / totalCount) * 100)
+          : 0;
 
-        const pillBase: React.CSSProperties = {
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 4,
-          padding: '2px 8px',
-          borderRadius: 3,
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: '0.03em',
-          textTransform: 'uppercase',
-          fontFamily: ATLAS_SANS,
-          cursor: 'pointer',
-          border: '1px solid transparent',
-          userSelect: 'none',
-        };
-        const palette = {
-          active:  { bg: '#DEEBFF', fg: '#0747A6', ring: '#0C66E4' },
-          overdue: { bg: '#FFF7D6', fg: '#7F5F01', ring: '#B38600' },
-          done:    { bg: '#E3FCEF', fg: '#006644', ring: '#1F845A' },
-        } as const;
+        type FilterKey = 'active' | 'overdue' | 'done';
         const renderPill = (
-          key: 'active' | 'overdue' | 'done',
+          key: FilterKey,
           label: string,
           count: number,
+          appearance: 'inprogress' | 'moved' | 'success',
         ) => {
           const isOn = tab === key;
-          const c = palette[key];
+          const ringToken =
+            appearance === 'inprogress'
+              ? 'var(--ds-border-information, #0C66E4)'
+              : appearance === 'moved'
+                ? 'var(--ds-border-warning, #B38600)'
+                : 'var(--ds-border-success, #1F845A)';
           return (
             <span
               role="button"
               tabIndex={0}
+              aria-pressed={isOn}
               onClick={() => setTab(isOn ? 'all' : key)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -1646,64 +1706,105 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
                 }
               }}
               style={{
-                ...pillBase,
-                background: c.bg,
-                color: c.fg,
-                borderColor: isOn ? c.ring : 'transparent',
-                boxShadow: isOn ? `0 0 0 1px ${c.ring}` : 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+                userSelect: 'none',
+                borderRadius: token('border.radius', '4px'),
+                padding: 2,
+                outline: isOn ? `1px solid ${ringToken}` : '1px solid transparent',
+                outlineOffset: 0,
+                transition: 'outline-color 80ms ease',
               }}
             >
-              {label} {count}
+              <Lozenge appearance={appearance}>
+                {label} {count}
+              </Lozenge>
             </span>
           );
         };
 
         return (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 10,
-              padding: `8px ${token('space.200', '16px')}`,
-              borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
-              fontFamily: ATLAS_SANS,
-            }}
-          >
-            <span
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {/* ── Top KPI band ───────────────────────────────────────── */}
+            <div
               style={{
-                fontSize: 13,
-                fontWeight: 600,
-                color: token('color.text', '#172B4D'),
+                display: 'flex',
+                background: token('elevation.surface.sunken', '#F7F8F9'),
+                borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+                fontFamily: ATLAS_SANS,
               }}
             >
-              {totalCount} demand{totalCount === 1 ? '' : 's'}
-            </span>
-            {renderPill('active', 'Active', activeCount)}
-            {renderPill('overdue', 'Overdue', overdueCount)}
-            {renderPill('done', 'Done', doneCount)}
-            {tab !== 'all' && (
+              <KpiCell label="Total demands" value={totalCount} />
+              <KpiCell
+                label="Fulfilled"
+                value={`${fulfilledPct}%`}
+                accent={
+                  fulfilledPct >= 80
+                    ? 'var(--ds-text-accent-green-bolder, #216E4E)'
+                    : undefined
+                }
+              />
+              <KpiCell
+                label="Overdue"
+                value={overdueCount}
+                accent={
+                  overdueCount > 0
+                    ? 'var(--ds-text-accent-orange-bolder, #974F0C)'
+                    : undefined
+                }
+                last
+              />
+            </div>
+
+            {/* ── Clickable filter pills (preserved behaviour) ──────── */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: `8px ${token('space.200', '16px')}`,
+                borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+                fontFamily: ATLAS_SANS,
+              }}
+            >
               <span
-                role="button"
-                tabIndex={0}
-                onClick={() => setTab('all')}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    setTab('all');
-                  }
-                }}
                 style={{
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: 500,
-                  color: token('color.link', '#0C66E4'),
-                  cursor: 'pointer',
-                  marginLeft: 'auto',
+                  color: token('color.text.subtle', '#44546F'),
+                  marginRight: 4,
                 }}
               >
-                Clear filter
+                Filter:
               </span>
-            )}
+              {renderPill('active', 'Active', activeCount, 'inprogress')}
+              {renderPill('overdue', 'Overdue', overdueCount, 'moved')}
+              {renderPill('done', 'Done', doneCount, 'success')}
+              {tab !== 'all' && (
+                <span
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setTab('all')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setTab('all');
+                    }
+                  }}
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: token('color.link', '#0C66E4'),
+                    cursor: 'pointer',
+                    marginLeft: 'auto',
+                  }}
+                >
+                  Clear filter
+                </span>
+              )}
+            </div>
           </div>
         );
       })()}

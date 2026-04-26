@@ -2,10 +2,29 @@
 /**
  * OnHoldWidget — blocked / paused items list.
  *
- * Rewritten Apr 19, 2026 per docs/design/BAU-Dashboard-Atlaskit-Conversion.md §5 Commit 6.
- *   - Header count badge + per-row ON HOLD pill → <StatusLozenge status="todo">
- *   - Bespoke empty-state → <EmptyState>
- *   - var(--cp-*) → token()
+ * Apr 26, 2026 — Enterprise redesign per per-widget design brief.
+ *   Mental model: "What's blocked and why?"
+ *
+ * Changes vs the previous truncated-status-pill layout:
+ *   - KPI headline strip: total · awaiting info · blocked. The latter two
+ *     categories are the actionable buckets — awaiting-info needs a
+ *     stakeholder ping, blocked needs an unblocker.
+ *   - Each row: WorkItemIcon + key (mono link blue) + title (bold) +
+ *     UserAvatar (size="xsmall") + reason-category Lozenge.
+ *   - Reason category derived from the status text into a normalized
+ *     bucket so noisy variants ("AWAITING INFORMATION FROM CLIENT" vs
+ *     "Awaiting info") collapse to one canonical "Awaiting Info" pill.
+ *   - Lozenge appearance="moved" (amber) for actionable buckets and
+ *     "default" (gray) for plain "On Hold". Awaiting Info and Impediment
+ *     get amber so the eye lands there first.
+ *   - Whole row click → ticket via UWV; hover row tint.
+ *
+ * Wiring strictly preserved:
+ *   - openUWV row click-through opens the ticket scope.
+ *   - openUWV header/footer expand for "all on hold".
+ *   - WidgetGearButton in headerBadges.
+ *   - All settings filters forwarded to the hook + click-through.
+ *   - Loading skeleton + EmptyState fallback.
  */
 import type { WidgetProps } from '../widget-registry';
 import WidgetWrapper from '../WidgetWrapper';
@@ -13,9 +32,36 @@ import { useDashboardOnHoldItems } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
-import { EmptyState, StatusLozenge } from '@/components/ads';
-import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import { EmptyState, Lozenge, StatusLozenge } from '@/components/ads';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
+import UserAvatar from '@/components/shared/UserAvatar';
 import WidgetGearButton from '../WidgetGearButton';
+
+type Reason = 'Awaiting Info' | 'On Hold' | 'Blocked' | 'Impediment' | 'Other';
+
+function classifyReason(rawStatus: string | null | undefined): Reason {
+  const s = (rawStatus ?? '').toLowerCase();
+  if (s.includes('await')) return 'Awaiting Info';
+  if (s.includes('imped')) return 'Impediment';
+  if (s.includes('block')) return 'Blocked';
+  if (s.includes('hold')) return 'On Hold';
+  return 'Other';
+}
+
+type LozengeAppearance = 'default' | 'moved' | 'removed' | 'success' | 'inprogress';
+
+function reasonAppearance(r: Reason): LozengeAppearance {
+  switch (r) {
+    case 'Blocked':
+    case 'Impediment':
+      return 'removed';
+    case 'Awaiting Info':
+      return 'moved';
+    case 'On Hold':
+    default:
+      return 'default';
+  }
+}
 
 export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggleCollapse }: WidgetProps) {
   const { settings } = useGadgetSettings('onhold', projectKey);
@@ -28,15 +74,17 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
     itemTypeFilter: settings.itemTypeFilter,
     priorityFilter: settings.priorityFilter,
   });
-  const count = items?.length ?? 0;
   const { openUWV } = useUWV();
 
-  const badge = (
-    <>
-      <StatusLozenge status="todo">{String(count)}</StatusLozenge>
-      <WidgetGearButton gadgetType="onhold" projectKey={projectKey} projectId={projectId} />
-    </>
-  );
+  const all = items ?? [];
+  const enriched = all.map((it: any) => ({
+    ...it,
+    _reason: classifyReason(it.status),
+  }));
+
+  const total = enriched.length;
+  const awaitingInfo = enriched.filter((i) => i._reason === 'Awaiting Info').length;
+  const blocked = enriched.filter((i) => i._reason === 'Blocked' || i._reason === 'Impediment').length;
 
   const handleExpand = () => openUWV({
     project: projectKey,
@@ -53,6 +101,21 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
     priorityFilter: settings.priorityFilter,
     releaseFilter: settings.releaseFilter,
   });
+
+  const handleRowClick = (item: any) => openUWV({
+    project: projectKey,
+    hubSource: ['projecthub'],
+    dataType: 'issue',
+    title: `${item.issue_key} · ${item.summary ?? ''}`,
+    issueKey: item.issue_key,
+  });
+
+  const badge = (
+    <>
+      <StatusLozenge status="todo">{String(total)}</StatusLozenge>
+      <WidgetGearButton gadgetType="onhold" projectKey={projectKey} projectId={projectId} />
+    </>
+  );
 
   const footer = (
     <button
@@ -80,84 +143,221 @@ export default function OnHoldWidget({ projectId, projectKey, collapsed, onToggl
       subtitle="Blocked items"
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
-      span={1}
       headerBadges={badge}
       footer={footer}
       onExpand={handleExpand}
     >
       {isLoading ? (
-        <div className="animate-pulse">
-          <div
-            className="h-12 rounded"
-            style={{ background: token('color.background.neutral.subtle', '#F1F5F9') }}
-          />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="animate-pulse"
+              style={{
+                height: 36,
+                borderRadius: token('border.radius', '4px'),
+                background: token('color.background.neutral.subtle', '#F1F5F9'),
+              }}
+            />
+          ))}
         </div>
-      ) : count === 0 ? (
+      ) : total === 0 ? (
         <EmptyState
           size="compact"
           header="No items on hold"
           description="No blocked or paused items."
         />
       ) : (
-        <div className="space-y-0 w-full min-w-0 overflow-hidden">
-          {items!.slice(0, 8).map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-2 w-full min-w-0"
-              style={{
-                height: 36,
-                borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
-                fontSize: 12,
-              }}
-            >
-              <span style={{ flexShrink: 0, display: 'inline-flex' }}>
-                <WorkItemIcon type={normalizeIconType((item as any).issue_type)} size={14} />
-              </span>
-              <span
-                style={{
-                  color: token('color.link', '#0C66E4'),
-                  fontWeight: 500,
-                  fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                  fontSize: 11,
-                  flexShrink: 0,
-                }}
-              >
-                {item.issue_key}
-              </span>
-              <span
-                className="truncate flex-1 min-w-0"
-                style={{ color: token('color.text.subtle', '#42526E') }}
-              >
-                {item.summary}
-              </span>
-              <span
-                className="flex-shrink-0"
-                style={{
-                  display: 'inline-flex',
-                  maxWidth: '45%',
-                  overflow: 'hidden',
-                }}
-                title={(item.status ?? 'ON HOLD').toUpperCase()}
-              >
-                <StatusLozenge status="todo">
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      maxWidth: '100%',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                      verticalAlign: 'bottom',
-                    }}
-                  >
-                    {(item.status ?? 'ON HOLD').toUpperCase()}
-                  </span>
-                </StatusLozenge>
-              </span>
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {/* ── KPI headline strip ─────────────────────────────────────── */}
+          <KpiHeadline total={total} awaitingInfo={awaitingInfo} blocked={blocked} />
+
+          {/* ── On-hold rows ──────────────────────────────────────────── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {enriched.slice(0, 8).map((item) => (
+              <OnHoldRow
+                key={item.id}
+                item={item}
+                onClick={() => handleRowClick(item)}
+              />
+            ))}
+          </div>
         </div>
       )}
     </WidgetWrapper>
+  );
+}
+
+// ─── KPI headline ──────────────────────────────────────────────────────────
+
+function KpiHeadline({
+  total,
+  awaitingInfo,
+  blocked,
+}: {
+  total: number;
+  awaitingInfo: number;
+  blocked: number;
+}) {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        background: token('elevation.surface.sunken', '#F7F8F9'),
+        borderRadius: token('border.radius', '4px'),
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        overflow: 'hidden',
+      }}
+    >
+      <KpiCell label="On hold" value={total} />
+      <KpiCell
+        label="Awaiting info"
+        value={awaitingInfo}
+        accent={awaitingInfo > 0 ? 'var(--ds-text-accent-orange-bolder, #974F0C)' : undefined}
+      />
+      <KpiCell
+        label="Blocked"
+        value={blocked}
+        accent={blocked > 0 ? 'var(--ds-text-accent-red-bolder, #AE2A19)' : undefined}
+        last
+      />
+    </div>
+  );
+}
+
+function KpiCell({
+  label,
+  value,
+  accent,
+  last,
+}: {
+  label: string;
+  value: number;
+  accent?: string;
+  last?: boolean;
+}) {
+  return (
+    <div
+      style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        padding: '10px 12px',
+        borderRight: last ? 'none' : `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}
+    >
+      <span
+        style={{
+          fontSize: 11,
+          fontWeight: 500,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          color: token('color.text.subtlest', '#626F86'),
+        }}
+      >
+        {label}
+      </span>
+      <span
+        style={{
+          fontSize: 22,
+          fontWeight: 600,
+          lineHeight: 1.1,
+          color: accent ?? token('color.text', '#172B4D'),
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// ─── On-hold row ───────────────────────────────────────────────────────────
+
+function OnHoldRow({
+  item,
+  onClick,
+}: {
+  item: any;
+  onClick: () => void;
+}) {
+  const reason: Reason = item._reason ?? classifyReason(item.status);
+  const appearance = reasonAppearance(reason);
+  const reasonLabel = reason === 'Other' ? (item.status ?? 'On Hold') : reason;
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          (e.currentTarget as HTMLDivElement).click();
+        }
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token(
+          'color.background.neutral.subtle.hovered',
+          '#F1F2F4',
+        );
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+      }}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        padding: '8px',
+        marginInline: -8,
+        borderRadius: token('border.radius', '4px'),
+        cursor: 'pointer',
+        transition: 'background 80ms ease',
+        minHeight: 36,
+      }}
+    >
+      <span style={{ display: 'inline-flex', flexShrink: 0 }}>
+        <JiraIssueTypeIcon type={(item as any).issue_type ?? 'Task'} size={16} />
+      </span>
+      <span
+        style={{
+          color: token('color.link', '#0C66E4'),
+          fontWeight: 500,
+          fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
+          fontSize: 12,
+          flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums',
+        }}
+      >
+        {item.issue_key}
+      </span>
+      <span
+        style={{
+          flex: 1,
+          minWidth: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          color: token('color.text', '#172B4D'),
+          fontSize: 13,
+          fontWeight: 500,
+        }}
+      >
+        {item.summary}
+      </span>
+      {item.assignee_display_name && (
+        <span style={{ flexShrink: 0 }}>
+          <UserAvatar
+            size="xsmall"
+            name={item.assignee_display_name}
+            src={(item as any).assignee_avatar_url}
+          />
+        </span>
+      )}
+      <span style={{ flexShrink: 0 }}>
+        <Lozenge appearance={appearance}>{reasonLabel}</Lozenge>
+      </span>
+    </div>
   );
 }

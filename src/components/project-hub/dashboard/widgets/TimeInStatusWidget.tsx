@@ -36,9 +36,10 @@ import {
   StatusLozenge,
   toStatusCategory,
 } from '@/components/ads';
-import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import UserAvatar from '@/components/shared/UserAvatar';
+import TimeInStatusFullscreenModal from './TimeInStatusFullscreenModal';
 
 const ISSUE_TYPES = ['Story', 'Epic', 'Sub-task', 'Defect', 'Business Request', 'Task'];
 
@@ -140,6 +141,12 @@ export default function TimeInStatusWidget({
   const [windowPreset, setWindowPreset] = useState<WindowPreset>('Q2');
   const [pageSize] = useState(50);
   const [offset, setOffset] = useState(0);
+  // Fullscreen modal for the executive view. Replaces the previous
+  // openUWV() route, which collapsed the matrix into a flat issue list
+  // (UWV is a flat-list viewer; it has no notion of status columns +
+  // durations, so the "expand" action effectively destroyed the widget's
+  // value-add).
+  const [fullscreen, setFullscreen] = useState(false);
 
   const { settings } = useGadgetSettings('workload', projectKey);
   const { dateFrom, dateTo } = resolveWindow(windowPreset);
@@ -183,21 +190,7 @@ export default function TimeInStatusWidget({
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       flushBody
-      onExpand={() =>
-        openUWV({
-          project: projectKey,
-          hubSource: ['projecthub'],
-          dataType: 'all',
-          title: `Time in Status · ${issueType} · ${projectKey}`,
-          scope: 'all',
-          dateFrom,
-          dateTo,
-          dateLabel: WINDOW_LABELS[windowPreset],
-          itemTypeFilter: [issueType],
-          assigneeFilter: settings.assigneeFilter,
-          priorityFilter: settings.priorityFilter,
-        })
-      }
+      onExpand={() => setFullscreen(true)}
       headerBadges={
         <>
           <Lozenge appearance="default">{String(total)}</Lozenge>
@@ -205,6 +198,15 @@ export default function TimeInStatusWidget({
             gadgetType="workload"
             projectKey={projectKey}
             projectId={projectId}
+          />
+          <TimeInStatusFullscreenModal
+            isOpen={fullscreen}
+            onClose={() => setFullscreen(false)}
+            projectKey={projectKey}
+            initialIssueType={issueType}
+            initialWindowPreset={windowPreset}
+            assigneeFilter={settings.assigneeFilter}
+            priorityFilter={settings.priorityFilter}
           />
         </>
       }
@@ -246,7 +248,7 @@ export default function TimeInStatusWidget({
                   whiteSpace: 'nowrap',
                 }}
               >
-                <WorkItemIcon type={normalizeIconType(t)} size={14} />
+                <JiraIssueTypeIcon type={t} size={14} />
                 {t}
               </button>
             );
@@ -418,7 +420,7 @@ export default function TimeInStatusWidget({
                           flexShrink: 0,
                         }}
                       >
-                        <WorkItemIcon type={normalizeIconType(r.issue_type)} size={14} />
+                        <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={14} />
                         {r.issue_key}
                       </span>
                       <span
@@ -433,7 +435,7 @@ export default function TimeInStatusWidget({
                         {r.title}
                       </span>
                       {r.assignee_display_name && (
-                        <UserAvatar size="xsmall" name={r.assignee_display_name} src={r.assignee_avatar_url} />
+                        <UserAvatar size="small" name={r.assignee_display_name} src={r.assignee_avatar_url} />
                       )}
                     </div>
                   </td>

@@ -21,7 +21,7 @@ import { Plus, LayoutGrid, RotateCcw, Tv, TvMinimal } from 'lucide-react';
 import { token } from '@atlaskit/tokens';
 
 import { supabase } from '@/integrations/supabase/client';
-import { AtlaskitPageShell, Button, Flag, FlagGroup } from '@/components/ads';
+import { AtlaskitPageShell, Button, Flag, FlagGroup, SectionMessage } from '@/components/ads';
 import DashboardWidgetGrid, {
   useDashboardWidgetConfig,
   type ResolvedWidget,
@@ -29,6 +29,7 @@ import DashboardWidgetGrid, {
 import WidgetGalleryModal from '@/components/project-hub/dashboard/WidgetGalleryModal';
 import { nextSpan, type WidgetSpan } from '@/components/project-hub/dashboard/widget-registry';
 import { DashboardFilterProvider } from '@/contexts/DashboardFilterContext';
+import { useDashboardRealtime } from '@/hooks/useDashboardRealtime';
 
 export default function ProjectDashboardPage() {
   return (
@@ -97,6 +98,11 @@ function ProjectDashboardPageInner() {
 
   const projectId = (project as any)?.id ?? null;
   const pKey = (project as any)?.key || key?.toUpperCase() || '';
+
+  // Realtime invalidation — collapses the 15-min staleTime window to ~zero
+  // for ph_issues / tm_defects / catalyst_status_history changes scoped to
+  // this project. One channel total, mounted at the page level.
+  useDashboardRealtime({ projectId, projectKey: pKey, enabled: !!pKey });
 
   const {
     widgets: persistedWidgets,
@@ -358,6 +364,22 @@ function ProjectDashboardPageInner() {
         </div>
       ) : (
         <div style={{ padding: '12px 16px 16px' }}>
+          {/* Fiscal-scope disclaimer — sits above the widget grid so any
+              count discrepancy ("why does this say 33 when Jira shows 257?")
+              is answered before the user has to ask. Always-on; lives at the
+              page level so every dashboard widget inherits the same banner. */}
+          <div style={{ marginBottom: 16 }}>
+            <SectionMessage
+              appearance="information"
+              title="Showing 2026 fiscal scope"
+            >
+              All widgets on this dashboard count items <strong>created in 2026</strong>,
+              <strong> updated in 2026</strong>, or assigned to a currently
+              <strong> active release</strong>. Items outside this scope (e.g. archived
+              or pre-2026 closed work) are intentionally excluded so totals
+              reflect what the team is actively delivering this year.
+            </SectionMessage>
+          </div>
           <DashboardWidgetGrid
             projectId={projectId || pKey}
             projectKey={pKey}

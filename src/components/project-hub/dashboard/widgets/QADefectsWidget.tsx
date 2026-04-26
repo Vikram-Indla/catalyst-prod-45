@@ -22,13 +22,13 @@ import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
-  DynamicTable,
   Lozenge,
   StatusLozenge,
   EmptyState,
   toStatusCategory,
 } from '@/components/ads';
-import WorkItemIcon, { normalizeIconType } from '@/components/shared/WorkItemIcon';
+import { ResizableDynamicTable } from '../ResizableDynamicTable';
+import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import PriorityIcon from '@/components/shared/PriorityIcon';
 import RelativeTime from '@/components/shared/RelativeTime';
 import UserAvatar from '@/components/shared/UserAvatar';
@@ -132,7 +132,7 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
                 whiteSpace: 'nowrap',
               }}
             >
-              <WorkItemIcon type={normalizeIconType((d as any).issue_type ?? 'bug')} size={14} />
+              <JiraIssueTypeIcon type={(d as any).issue_type ?? 'Defect'} size={14} />
               {displayKey}
             </span>
           ),
@@ -243,12 +243,40 @@ export default function QADefectsWidget({ projectId, projectKey, collapsed, onTo
               );
             })()}
           </div>
-          <DynamicTable
+          <div
+            // Fixed-height scrollable body — keeps QA Defects + Production
+            // Incidents at identical chrome height regardless of data volume.
+            // 10 rows × 36px + table head 36px = 396px.
+            style={{ maxHeight: 396, overflowY: 'auto', overflowX: 'auto' }}
+          >
+          <ResizableDynamicTable
+            widgetKey={`qa-defects-v2:${projectKey}`}
             head={head}
             rows={rows}
-            aria-label="QA defects"
-            rowsPerPage={0}
+            ariaLabel="QA defects"
+            // Apr 26, 2026 — defaults rebalanced for full-width (12-of-12)
+            // stacked layout. Sum ~1216px so the table fits a typical
+            // dashboard body (~1240px) without horizontal scroll. Title
+            // soaks up the new space so long defect summaries no longer
+            // overlap the status lozenge.
+            defaultWidths={{
+              priority: 56,
+              key: 140,
+              title: 740,
+              status: 130,
+              assignee: 150,
+              age: 100,
+            }}
+            minWidths={{
+              priority: 40,
+              key: 96,
+              title: 200,
+              status: 80,
+              assignee: 80,
+              age: 60,
+            }}
           />
+          </div>
         </>
       )}
     </WidgetWrapper>
