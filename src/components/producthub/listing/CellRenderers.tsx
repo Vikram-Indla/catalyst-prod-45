@@ -137,12 +137,11 @@ export const IDCell = React.memo(function IDCell({ value }: { value: string }) {
   return <span className="pb-id">{value}</span>;
 });
 
-/* ── Type Icon Cell — canonical Jira SVGs ── */
-export const TypeIconCell = React.memo(function TypeIconCell({ typeKey }: { typeKey?: string | null }) {
-  const config = TYPE_SVG_MAP[typeKey || ''];
+/* ── Type Icon Cell — single Business Request icon ── */
+export const TypeIconCell = React.memo(function TypeIconCell() {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, width: 16, height: 16 }} title={config?.label || typeKey?.replace(/_/g, ' ') || 'Unknown'}>
-      {config?.svg || DEFAULT_TYPE_SVG}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title="Business Request">
+      <JiraIssueTypeIcon issueType="Feature" size={14} />
     </span>
   );
 });
