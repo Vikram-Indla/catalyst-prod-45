@@ -760,51 +760,8 @@ function DetailsContent({ initiative, onQuickEdit, onStatusChange }: {
   const { data: profileOptions } = useProfileOptions();
   const avatarsByName = useProfileAvatarsByName();
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
-  const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(null);
-
-  useEffect(() => { setSelectedTypeKey(null); }, [initiative.id]);
-
-  const TYPE_OPTIONS = [
-    { key: 'project', label: 'Project', Icon: FolderKanban, color: 'var(--pb-teal)' },
-    { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: 'var(--pb-primary)' },
-    { key: 'improvement', label: 'Improvement', Icon: Wrench, color: 'var(--pb-warning)' },
-    { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: 'var(--pb-purple)' },
-  ];
-
   return (
     <>
-      {/* Initiative Type */}
-      <div style={{ marginBottom: 20 }}>
-        <div className="pb-field-label">Initiative Type</div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          {TYPE_OPTIONS.map(opt => {
-            const isActive = selectedTypeKey === opt.key;
-            return (
-              <button key={opt.key} onClick={async () => {
-                if (opt.key === selectedTypeKey) return;
-                try {
-                  const { data: typeRow, error: typeError } = await typedQuery('initiative_types').select('id').eq('key', opt.key).single();
-                  if (typeError) throw typeError;
-                  const now = new Date().toISOString();
-                  if (isNativeInitiative(initiative.id)) {
-                    await typedQuery('ph_initiatives').update({ initiative_type_id: typeRow.id, updated_at: now }).eq('id', initiative.id);
-                  } else {
-                    await typedQuery('ph_issue_initiative_type_overrides').upsert({ issue_key: initiative.initiative_key, initiative_type_id: typeRow.id, updated_at: now }, { onConflict: 'issue_key' });
-                  }
-                  setSelectedTypeKey(opt.key);
-                  onQuickEdit('initiative_type_key', opt.key);
-                  catalystToast.success('Initiative type updated');
-                } catch (err: any) { catalystToast.error('Failed: ' + (err?.message || 'Unknown error')); }
-              }}
-              className={`pb-type-card ${isActive ? 'pb-type-card-active' : ''}`}>
-                <opt.Icon size={16} style={{ color: opt.color, marginBottom: 2 }} />
-                <span style={{ fontSize: 10, fontWeight: 600, color: isActive ? opt.color : 'var(--pb-ink-muted)' }}>{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <RoadmapToggleInline initiative={initiative} />
 
       {/* Field Grid — all inline editable */}
