@@ -79,6 +79,7 @@ const TABS = [
   { key: 'risks', label: 'Risks' },
   { key: 'milestones', label: 'Milestones' },
   { key: 'attachments', label: 'Attachments' },
+  { key: 'linked_items', label: 'Linked Items' },
   { key: 'activity', label: 'Activity' },
 ] as const;
 
