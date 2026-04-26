@@ -298,6 +298,7 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/textfield',
       '@atlaskit/tokens',
       '@atlaskit/tooltip',
+      '@atlaskit/toggle',
       'react-window',
       // JiraTable canonical adopted @tanstack/react-virtual on 2026-04-26 for
       // opt-in row virtualization (enableVirtualization prop). Pre-bundling
