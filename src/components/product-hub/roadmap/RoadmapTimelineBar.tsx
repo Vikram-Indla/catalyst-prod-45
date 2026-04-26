@@ -204,7 +204,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: barColor }} />
             <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>
-              {typeConfig?.label || item.type}
+              Business Request
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
