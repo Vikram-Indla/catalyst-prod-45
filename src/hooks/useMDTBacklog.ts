@@ -153,7 +153,13 @@ export function useMDTBacklog() {
           business_ask_date: row.business_ask_date || null,
           kickoff_date: row.kickoff_date || null,
           target_complete: row.target_complete || null,
-          progress: row.progress ?? 0,
+          // `progress` is now driven by the linked-items roll-up computed in
+          // ph_backlog_initiatives_view. Falls back to the legacy column for
+          // older rows that have no linked work items yet.
+          progress: row.linked_items_progress ?? row.progress ?? 0,
+          linked_items_total: row.linked_items_total ?? 0,
+          linked_items_done: row.linked_items_done ?? 0,
+          linked_items_progress: row.linked_items_progress ?? 0,
           sort_order: row.sort_order ?? idx,
           risk_count: row.risk_count ?? 0,
           milestone_count: milestoneCountMap.get(row.id) ?? 0,
