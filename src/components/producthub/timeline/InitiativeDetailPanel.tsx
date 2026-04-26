@@ -6,10 +6,10 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import type { LucideIcon } from 'lucide-react';
 import {
-  ArrowLeft, X, Building2, Zap, Wrench, Link2, Archive, Copy, Trash2,
+  ArrowLeft, X, Archive, Copy, Trash2,
 } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
