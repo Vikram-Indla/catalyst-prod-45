@@ -7,7 +7,7 @@ import { RoadmapTimelineBar } from './RoadmapTimelineBar';
 import { ChevronDown } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
-import { TYPE_COLORS, SURFACE, SURFACE_DARK, INK, INK_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
+import { SURFACE, SURFACE_DARK, INK, INK_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
 import {
   startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek,
   addMonths, addQuarters, addWeeks, format, isWithinInterval,
