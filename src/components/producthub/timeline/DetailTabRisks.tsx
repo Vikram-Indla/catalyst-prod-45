@@ -351,6 +351,15 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
                   <CustomSelect value={form.status} options={STATUS_OPTS} onChange={v => setForm(f => ({ ...f, status: v }))} />
                 </div>
               </div>
+              <div className="idp-form-field" style={{ marginBottom: 0 }}>
+                <label className="idp-form-label">Owner</label>
+                <IdSelect
+                  value={form.owner_id}
+                  placeholder="Unassigned"
+                  options={profiles.map((p: any) => ({ id: p.id, label: p.full_name || p.email || p.id }))}
+                  onChange={(id) => setForm(f => ({ ...f, owner_id: id }))}
+                />
+              </div>
               {/* Probability & Impact Sliders */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
