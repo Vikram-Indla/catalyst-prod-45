@@ -261,7 +261,8 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/checkbox',
       '@atlaskit/drawer',
       '@atlaskit/dropdown-menu',
-      '@atlaskit/dynamic-table',
+      // @atlaskit/dynamic-table retired 2026-04-26 — last importer
+      // (SubtasksPanel) migrated to canonical JiraTable.
       '@atlaskit/empty-state',
       '@atlaskit/flag',
       '@atlaskit/form',
@@ -443,7 +444,6 @@ export default defineConfig(({ mode, command }) => {
           if (
             id.includes('node_modules/@atlaskit/user-picker') ||
             id.includes('node_modules/@atlaskit/form') ||
-            id.includes('node_modules/@atlaskit/dynamic-table') ||
             id.includes('node_modules/@atlaskit/inline-edit') ||
             id.includes('node_modules/@atlaskit/modal-dialog') ||
             id.includes('node_modules/@atlaskit/calendar') ||
