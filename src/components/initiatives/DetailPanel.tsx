@@ -274,7 +274,7 @@ export function DetailPanel({ initiative, isOpen, onClose, onStatusChange, onSco
   const UUID_FK_FIELDS = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
   const handleQuickEdit = useCallback(async (field: string, value: any, label?: string) => {
     if (!initiative) return;
-    if (!isNativeInitiative(initiative.id)) { if (field === 'initiative_type_key') queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] }); return; }
+    if (!isNativeInitiative(initiative.id)) return;
     // Sanitize: empty strings on UUID FK columns must be null to avoid FK constraint violations
     let sanitized = value;
     if (UUID_FK_FIELDS.includes(field) && (value === '' || value === undefined)) sanitized = null;
