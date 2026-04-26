@@ -156,6 +156,7 @@ export function useMDTBacklog() {
           progress: row.progress ?? 0,
           sort_order: row.sort_order ?? idx,
           risk_count: row.risk_count ?? 0,
+          milestone_count: milestoneCountMap.get(row.id) ?? 0,
           is_archived: row.is_archived ?? false,
           is_favorited: favSet.has(row.id),
           score_strategic_alignment: scores?.strategic_alignment ?? null,
