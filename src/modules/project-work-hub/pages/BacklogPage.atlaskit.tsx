@@ -410,9 +410,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     epics.forEach((e) => {
       epicSeen.add(e.id);
       // If this epic's own parent_key resolves to an initiative, link it up
-      // so the tree builder nests the epic under the initiative row.
+      // so the tree builder nests the epic under the initiative row. As a
+      // fallback, honor ph_issue_links rows from the InitiativeLinkedItemsTab.
       const epicParentKey = (e as any).parent_key as string | null;
-      const parentInit = epicParentKey ? initiativesByKey?.get(epicParentKey) : undefined;
+      const linkedInitKey = epicLinkedInitiativeByKey?.get(e.epic_key) ?? null;
+      const resolvedParentKey = epicParentKey ?? linkedInitKey;
+      const parentInit = resolvedParentKey ? initiativesByKey?.get(resolvedParentKey) : undefined;
       out.push({
         id: e.id,
         type: 'epic',
