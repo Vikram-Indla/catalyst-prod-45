@@ -54,7 +54,7 @@ export function RoadmapListPanel({
       style={{ color: '#2563EB', borderTop: '1px solid #F1F5F9' }}
     >
       <Plus className="w-4 h-4" />
-      Add Initiative to Roadmap
+      Add Business Request to Roadmap
     </button>
   );
 
