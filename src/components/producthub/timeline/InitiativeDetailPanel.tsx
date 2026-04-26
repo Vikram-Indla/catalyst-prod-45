@@ -104,9 +104,6 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   const di = isDark ? 1 : 0;
   const pillColors = { text: rawPill.text[di], bg: rawPill.bg[di], bdr: rawPill.bdr[di] };
   const statusLabel = STATUS_LABELS[dbStatus] || initiative.status;
-  const typeKey = initiative.initiative_type_key || '';
-  const typeColors = TYPE_COLORS[typeKey];
-  const TypeIcon = TYPE_ICON_MAP[typeKey];
   const priority = (initiative as any).priority || 'medium';
   const priorityBars = PRIORITY_LEVELS[priority.toLowerCase()] || 2;
 
