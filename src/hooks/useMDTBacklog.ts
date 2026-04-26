@@ -120,6 +120,13 @@ export function useMDTBacklog() {
         });
       });
 
+      // Tally milestones per initiative_id
+      const milestoneCountMap = new Map<string, number>();
+      (milestonesResult.data || []).forEach((m: any) => {
+        if (!m.initiative_id) return;
+        milestoneCountMap.set(m.initiative_id, (milestoneCountMap.get(m.initiative_id) || 0) + 1);
+      });
+
       const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
         const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
