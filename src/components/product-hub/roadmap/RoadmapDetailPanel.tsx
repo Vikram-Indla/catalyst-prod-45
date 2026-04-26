@@ -279,37 +279,6 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
                 </p>
               </div>
 
-              {/* Initiative Type — segmented control with icons */}
-              <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.05em] mb-2" style={{ color: '#334155' }}>
-                  Initiative Type
-                </div>
-                <div className="flex items-center gap-2">
-                  {TYPE_OPTIONS.map(opt => {
-                    const isActive = item.type === opt.key;
-                    return (
-                      <button
-                        key={opt.key}
-                        disabled={updatingType}
-                        onClick={() => handleTypeChange(opt.key)}
-                        className="flex flex-col items-center p-2 rounded-md cursor-pointer transition-all border-2"
-                        style={{
-                          borderColor: isActive ? opt.color : 'transparent',
-                          background: isActive ? '#FFFFFF' : 'transparent',
-                          boxShadow: isActive ? '0 1px 3px rgba(0,0,0,.08)' : 'none',
-                          opacity: updatingType ? 0.6 : 1,
-                        }}
-                      >
-                        <opt.Icon className="w-4 h-4 mb-0.5" style={{ color: opt.color }} />
-                        <span className="text-[10px] font-semibold" style={{ color: isActive ? opt.color : '#64748B' }}>
-                          {opt.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
               {/* Roadmap toggle */}
               <div className="border border-border rounded-lg p-3">
                 <div className="flex items-center justify-between">
