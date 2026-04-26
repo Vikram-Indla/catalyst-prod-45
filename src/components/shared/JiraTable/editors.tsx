@@ -20,6 +20,7 @@ import { createPortal } from 'react-dom';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
+import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
 import { token } from '@atlaskit/tokens';
 import { Search as SearchIcon, MoreHorizontal } from 'lucide-react';
@@ -451,6 +452,11 @@ export function makeSummaryInlineEditCell<T>({
         style={{ display: 'block', width: '100%' }}
       >
         <InlineEdit<string>
+          // Fix #2 (iter-9): Atlaskit InlineEdit defaults to fit-content
+          // sizing on its readView container. Without this prop the inner
+          // span's max-width: 100% resolves against a shrunk wrapper and
+          // "Test, 25 April." renders as "Test, 25 A...".
+          readViewFitContainerWidth
           defaultValue={summary}
           editView={({ errorMessage, ...fieldProps }) => (
             <Textfield {...fieldProps} autoFocus />
@@ -458,7 +464,7 @@ export function makeSummaryInlineEditCell<T>({
           readView={() => (
             <span
               style={{
-                display: 'inline-block',
+                display: 'block',
                 padding: '2px 6px',
                 margin: '-2px -6px',
                 borderRadius: 3,
@@ -466,7 +472,7 @@ export function makeSummaryInlineEditCell<T>({
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                maxWidth: '100%',
+                width: '100%',
               }}
             >
               {summary || (
@@ -720,37 +726,19 @@ export interface ParentChoice {
 //   font-weight: 400
 function ParentChip({ choice }: { choice: { key: string | null; label: string; icon?: React.ReactNode } }) {
   const display = choice.key ? `${choice.key} ${choice.label}` : choice.label;
-  // Re-skinned 2026-04-26 to match Jira's parent (Epic) reference pill —
-  // soft mint green Atlaskit lozenge with dark text. Was previously dirty
-  // teal #227D9B / white. Stays in sync with cells.tsx makeParentCell.
+  // Fix #3 (iter-9, hard rule): Atlaskit Lozenge default appearance —
+  // neutral grey, token-clean, no hex literals (CLAUDE.md §4). The prior
+  // hardcoded #B3DF72 mint-green was both off-token and off-tone vs Jira.
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        maxWidth: 260,
-        padding: '2px 6px',
-        borderRadius: 3,
-        background: '#B3DF72',
-        color: '#292A2E',
-        fontSize: 12,
-        fontWeight: 500,
-        lineHeight: '16px',
-        overflow: 'hidden',
-        whiteSpace: 'nowrap',
-      }}
-      title={display}
-    >
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, maxWidth: 260 }} title={display}>
       {choice.icon && (
         <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
           {choice.icon}
         </span>
       )}
-      {choice.key && <strong style={{ fontWeight: 700 }}>{choice.key}</strong>}
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {choice.label}
-      </span>
+      <Lozenge appearance="default" maxWidth={240}>
+        {display}
+      </Lozenge>
     </span>
   );
 }
