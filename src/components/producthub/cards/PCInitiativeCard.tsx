@@ -1,15 +1,23 @@
 import React from 'react';
-import { Star, MoreHorizontal, Flag, Activity, Target } from 'lucide-react';
+import { Star, MoreHorizontal, Target } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
-import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
+import { STATUS_DISPLAY } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow, format, isValid } from 'date-fns';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
-import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
+import { Avatar } from '@/components/ads';
+
+/** Format a date string as "DD MMM YYYY" — returns null if missing/invalid. */
+function formatCardDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  if (!isValid(d)) return null;
+  return format(d, 'dd MMM yyyy');
+}
 
 interface PCInitiativeCardProps {
   initiative: Initiative;
