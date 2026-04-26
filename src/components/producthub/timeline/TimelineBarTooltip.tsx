@@ -6,6 +6,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { STATUS_CONFIG, getPriorityFromScore, hashColor, getInitialsFromName } from '@/types/producthub/initiative';
+import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { format } from 'date-fns';
 
 interface TimelineBarTooltipProps {
@@ -42,7 +43,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
     >
       <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', flexWrap: 'wrap' }}>
           <span
             style={{
               flexShrink: 0,
@@ -57,6 +58,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
           >
             {initiative.initiative_key}
           </span>
+          <SourceBadge source={initiative.source} />
           <span
             style={{
               fontSize: '14px',
@@ -67,6 +69,7 @@ export const TimelineBarTooltip: React.FC<TimelineBarTooltipProps> = ({ initiati
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
+              flexBasis: '100%',
             }}
           >
             {initiative.title}
