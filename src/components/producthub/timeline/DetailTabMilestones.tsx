@@ -279,6 +279,9 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
                 {(m.budget_release || 0) > 0 && (
                   <span style={{ color: 'var(--idp-primary)' }}>Budget: {fmtSAR(m.budget_release)}</span>
                 )}
+                {m.owner?.full_name && (
+                  <span style={{ color: 'var(--idp-ink-muted)' }}>Owner: {m.owner.full_name}</span>
+                )}
               </div>
             </div>
             {/* Status badge */}
