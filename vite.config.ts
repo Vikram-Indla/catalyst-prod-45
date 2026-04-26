@@ -261,13 +261,10 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/checkbox',
       '@atlaskit/drawer',
       '@atlaskit/dropdown-menu',
-<<<<<<< HEAD
       // @atlaskit/dynamic-table — kept until ProductionIncidentsWidget +
       // QADefectsWidget migrate off ResizableDynamicTable. SubtasksPanel +
       // EpicBacklogTable + ads/DynamicTable have all moved to JiraTable;
       // these dashboard widgets are the last consumers.
-=======
->>>>>>> aa031cf84fc5e0684d43d28930ea841179369752
       '@atlaskit/dynamic-table',
       '@atlaskit/empty-state',
       '@atlaskit/flag',
