@@ -51,13 +51,7 @@ function darkPill(pill: { color: string; bg: string; border: string }): { color:
   };
 }
 
-const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIcon }> = {
-  project: { label: 'Project', color: '#0D9488', Icon: FolderKanban },
-  enhancement: { label: 'Enhancement', color: '#2563EB', Icon: Zap },
-  improvement: { label: 'Improvement', color: '#D97706', Icon: Wrench },
-  entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
-  business_request: { label: 'Business Request', color: '#B45309', Icon: Lightbulb },
-};
+// Type concept removed — every Product Hub item is a Business Request.
 
 const PRIORITY_STYLE: Record<string, { color: string; bg: string }> = {
   critical: { color: '#B91C1C', bg: '#FEE2E2' },
