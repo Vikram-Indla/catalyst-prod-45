@@ -1,10 +1,11 @@
 /**
- * Product Roadmap — Search, Filter Pills, Type Tabs, Legend
+ * Product Roadmap — Search, Filter Pills, Business Request indicator
+ * Type system removed (single Business Request type).
  */
 import React, { useRef, useEffect } from 'react';
-import { Search } from 'lucide-react';
-import type { InitiativeType, QuickFilter } from './types/roadmap.types';
-import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
+import { Search, Lightbulb } from 'lucide-react';
+import type { QuickFilter } from './types/roadmap.types';
+import { INK, INK_DARK, SURFACE, SURFACE_DARK, BUSINESS_REQUEST_COLOR } from './constants/roadmap.constants';
 import { useTheme } from '@/hooks/useTheme';
 
 interface RoadmapFiltersProps {
@@ -12,8 +13,6 @@ interface RoadmapFiltersProps {
   onSearchChange: (v: string) => void;
   quickFilter: QuickFilter;
   onQuickFilterChange: (f: QuickFilter) => void;
-  typeFilter: InitiativeType | 'all';
-  onTypeFilterChange: (t: InitiativeType | 'all') => void;
 }
 
 const QUICK_FILTERS: { key: QuickFilter; label: string }[] = [
@@ -26,19 +25,8 @@ const QUICK_FILTERS: { key: QuickFilter; label: string }[] = [
   { key: 'starred', label: '★ Starred' },
 ];
 
-const TYPE_TABS: { key: InitiativeType | 'all'; label: string; dot: string | null }[] = [
-  { key: 'all', label: 'All', dot: null },
-];
-
-const LEGEND = [
-  { label: 'Project', gradient: TYPE_COLORS.project.gradient },
-  { label: 'Enhancement', gradient: TYPE_COLORS.enhancement.gradient },
-  { label: 'Entity Integration', gradient: TYPE_COLORS.entity_integration.gradient },
-  { label: 'Improvement', gradient: TYPE_COLORS.improvement.gradient },
-];
-
 export function RoadmapFilters({
-  search, onSearchChange, quickFilter, onQuickFilterChange, typeFilter, onTypeFilterChange,
+  search, onSearchChange, quickFilter, onQuickFilterChange,
 }: RoadmapFiltersProps) {
   const { isDark } = useTheme();
   const ink = isDark ? INK_DARK : INK;
