@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import type { RoadmapStats } from './types/roadmap.types';
-import { INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, TYPE_COLORS } from './constants/roadmap.constants';
+import { INK, INK_DARK, SURFACE, SURFACE_DARK, FONT } from './constants/roadmap.constants';
 import { useTheme } from '@/hooks/useTheme';
 
 interface RoadmapKPIStripProps {
