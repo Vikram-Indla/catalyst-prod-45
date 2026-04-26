@@ -8,6 +8,7 @@ import { DistributionBar } from './DistributionBar';
 import { STATUS_CATEGORY_DISPLAY } from '@/types/projecthub';
 import { PanelTeamTab } from './PanelTeamTab';
 import { PanelOverviewTab } from './PanelOverviewTab';
+import { PanelScoreTab } from './PanelScoreTab';
 import { useState } from 'react';
 
 interface Props {
@@ -32,7 +33,7 @@ function getAvatarGradient(key: string) {
 }
 
 export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav }: Props) {
-  const [tab, setTab] = useState<'team' | 'overview'>('team');
+  const [tab, setTab] = useState<'team' | 'overview' | 'score'>('team');
   const { data: members = [], isLoading: teamLoading } = useProjectTeam(project?.id ?? null);
 
   if (!project) return null;
@@ -88,7 +89,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
 
           {/* Tabs */}
           <div className="flex gap-0 mt-3" style={{ borderBottom: '1px solid var(--divider)' }}>
-            {(['team', 'overview'] as const).map(t => (
+            {(['team', 'overview', 'score'] as const).map(t => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -106,7 +107,7 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
                   cursor: 'pointer',
                 }}
               >
-                {t === 'team' ? `Team (${members.length})` : 'Overview'}
+                {t === 'team' ? `Team (${members.length})` : t === 'overview' ? 'Overview' : 'Score'}
               </button>
             ))}
           </div>
@@ -116,8 +117,10 @@ export function ProjectDetailPanel({ project, open, onClose, isFav, onToggleFav 
         <div className="flex-1 overflow-y-auto">
           {tab === 'team' ? (
             <PanelTeamTab members={members} isLoading={teamLoading} projectId={project?.id ?? null} />
-          ) : (
+          ) : tab === 'overview' ? (
             <PanelOverviewTab project={project} members={members} />
+          ) : (
+            <PanelScoreTab projectId={project.id} />
           )}
         </div>
 
