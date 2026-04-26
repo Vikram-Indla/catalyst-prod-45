@@ -143,20 +143,18 @@ function CatalystShellContent() {
     let closeTimer: number | null = null;
     const inOpenZone = (target: EventTarget | null): boolean => {
       if (!(target instanceof Element)) return false;
-      // Header chevron — covers all three aria-label variants the header uses.
-      if (target.closest(
-        'button[aria-label="Expand sidebar"], button[aria-label="Collapse sidebar"], button[aria-label="Hide sidebar"]'
-      )) return true;
+      // Header chevron — Atlaskit's <IconButton label="…"> does NOT put the
+      // label on the <button> as aria-label; it renders a visually-hidden
+      // <span> instead. The reliable selector is the aria-controls attribute
+      // we set in CatalystHeader (always points at "catalyst-sidebar"). This
+      // single selector covers Expand/Collapse/Hide variants regardless of
+      // which Atlaskit version is rendering.
+      if (target.closest('button[aria-controls="catalyst-sidebar"]')) return true;
       // SidebarEdgeReveal — the 8px left-edge handle rendered when the
       // sidebar is in `sidebarHidden=true` state (e.g. on the Home page).
       // On routes that don't render a header chevron, this is the user's
-      // ONLY hover entry point to the sidebar, so we treat it as part of
-      // the open zone. Matches by aria-label prefix because the full label
-      // includes a platform-specific shortcut hint ("⌘ [" or "Ctrl [").
+      // ONLY hover entry point to the sidebar.
       if (target.closest('button[aria-label^="Show sidebar"]')) return true;
-      // HubSwitcher trigger — sits adjacent to the chevron, treated as the
-      // same trigger so a quick wobble between the two doesn't drop the peek.
-      if (target.closest('[data-hub-switcher]')) return true;
       return false;
     };
     const inKeepOpenZone = (target: EventTarget | null): boolean => {
@@ -165,6 +163,12 @@ function CatalystShellContent() {
       // Sidebar body — keeps the sidebar open while the cursor is inside,
       // but does NOT trigger open by itself.
       if (target.closest('[data-catalyst-sidebar]')) return true;
+      // HubSwitcher — hovering it does NOT open the sidebar (it's a hub
+      // picker, unrelated to sidebar visibility), but if the sidebar is
+      // already open and the cursor wobbles onto the HubSwitcher next to
+      // the chevron, we don't want the sidebar to slam shut. So it's a
+      // keep-open-only zone, never an open trigger.
+      if (target.closest('[data-hub-switcher]')) return true;
       return false;
     };
     const handleMove = (e: MouseEvent) => {

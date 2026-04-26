@@ -1,0 +1,56 @@
+{
+  "iteration": 8,
+  "phase": "post-L20",
+  "side": "catalyst",
+  "url": "http://localhost:8080/project-hub/BAU/backlog",
+  "timestamp": "2026-04-26T19:00:00Z",
+  "viteState": "fresh — cold start at 325ms after pkill+rm .vite+touch+npm run dev",
+  "viewport": { "tableWidthPx": 1180 },
+  "summaryHeader": {
+    "color": "rgb(80, 82, 88)",
+    "colorHex": "#505258",
+    "fontWeight": "700",
+    "letterSpacing": "normal",
+    "textTransform": "none",
+    "fontSize": "12px",
+    "width_px": 294,
+    "summary_pct_of_table": 24.9
+  },
+  "allColumnWidths_px": [
+    { "text": "(__caret)", "w": 48 },
+    { "text": "(__type)",  "w": 43 },
+    { "text": "(__sel?)",  "w": 43 },
+    { "text": "Key",       "w": 95 },
+    { "text": "Summary",   "w": 294 },
+    { "text": "Status",    "w": 158 },
+    { "text": "Parent",    "w": 147 },
+    { "text": "Assignee",  "w": 137 },
+    { "text": "Priority",  "w": 53 },
+    { "text": "Updated",   "w": 74 },
+    { "text": "(actions)", "w": 43 },
+    { "text": "(actions)", "w": 48 }
+  ],
+  "diffVsIter7Stuck": {
+    "color":          { "before": "#6B778C", "after": "#505258", "delta": "landed" },
+    "fontWeight":     { "before": "600",     "after": "700",     "delta": "landed" },
+    "letterSpacing":  { "before": "0.48px",  "after": "normal",  "delta": "landed" },
+    "textTransform":  { "before": "uppercase","after": "none",   "delta": "landed" },
+    "summary_pct":    { "before": "25.2",    "after": "24.9",    "delta": "now percent-based" }
+  },
+  "remainingDiffVsJira": [
+    {
+      "field": "color",
+      "catalyst": "#505258 (--ds-text-subtle)",
+      "jira": "#6B6E76 (--ds-text-subtlest)",
+      "verdict": "P1 [CLAUDE CODE] — single-line patch line 495 of JiraTable.tsx",
+      "spec": "https://atlassian.design/tokens (DS color tokens)"
+    },
+    {
+      "field": "summary_pct_of_table",
+      "catalyst": "24.9%",
+      "jira": "21.0% (399px / 1900px)",
+      "verdict": "P2 — 4-point overshoot; needs Vikram judgment on whether 21% is the right target for Catalyst's narrower table or if the algorithm should differ",
+      "action": "defer to next iteration after F8 (drop __caret) which will redistribute width"
+    }
+  ]
+}
