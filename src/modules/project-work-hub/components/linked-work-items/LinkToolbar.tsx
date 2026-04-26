@@ -138,6 +138,10 @@ export function LinkToolbar({
   );
 
   const loadOptions = async (input: string): Promise<PickerOption[]> => {
+    if (loadOptionsOverride) {
+      const opts = await loadOptionsOverride(input);
+      return opts.filter(filterRow);
+    }
     const q = input.trim();
     if (!q) {
       return defaultOptions.filter(filterRow);
