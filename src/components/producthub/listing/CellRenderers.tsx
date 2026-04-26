@@ -8,7 +8,7 @@ import { format, differenceInDays } from 'date-fns';
 import type { InitiativeStatus } from '@/types/initiative';
 import { STATUS_DISPLAY, getPriorityLevel, getAvatarColor, getInitials } from '@/types/initiative';
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
 
 
 /* ── Status Cell ── */
@@ -141,7 +141,7 @@ export const IDCell = React.memo(function IDCell({ value }: { value: string }) {
 export const TypeIconCell = React.memo(function TypeIconCell() {
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title="Business Request">
-      <JiraIssueTypeIcon issueType="Feature" size={14} />
+      <BusinessRequestIcon size={14} />
     </span>
   );
 });

@@ -161,10 +161,10 @@ function makeInitiativeToCanonicalIssue(
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Initiative type icon — single Business Request icon.
+   Initiative type icon — single Business Request icon (Atlaskit lightbulb).
    ═══════════════════════════════════════════════════════════════════════ */
 export function resolveInitiativeIcon(_card: BoardIssue): ReactNode | null {
-  return <JiraIssueTypeIcon issueType="Feature" size={14} />;
+  return <BusinessRequestIcon size={14} />;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

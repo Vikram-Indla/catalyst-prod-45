@@ -9,7 +9,7 @@ import { createPortal } from 'react-dom';
 import {
   ArrowLeft, X, Archive, Copy, Trash2,
 } from 'lucide-react';
-import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
@@ -282,10 +282,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               <div className="idp-status-dot" style={{ background: pillColors.text }} />
               <span style={{ color: pillColors.text }}>{statusLabel}</span>
             </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <JiraIssueTypeIcon issueType="Feature" size={16} />
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
-            </div>
+            <BusinessRequestBadge iconSize={16} fontSize={12} />
             <div className="idp-priority-bars">
               {[1, 2, 3, 4].map(i => (
                 <div
