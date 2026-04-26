@@ -26722,6 +26722,7 @@ export type Database = {
           is_archived: boolean | null
           key: string
           name: string
+          priority: string | null
           start_date: string | null
           status: string
           updated_at: string | null
@@ -26743,6 +26744,7 @@ export type Database = {
           is_archived?: boolean | null
           key: string
           name: string
+          priority?: string | null
           start_date?: string | null
           status?: string
           updated_at?: string | null
@@ -26764,6 +26766,7 @@ export type Database = {
           is_archived?: boolean | null
           key?: string
           name?: string
+          priority?: string | null
           start_date?: string | null
           status?: string
           updated_at?: string | null
