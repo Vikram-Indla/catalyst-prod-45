@@ -12,8 +12,6 @@ interface RoadmapKPIStripProps {
   stats: RoadmapStats;
 }
 
-const BUSINESS_REQUEST_COLOR = '#B38600';
-
 export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
   const { isDark } = useTheme();
   const ink = isDark ? INK_DARK : INK;
@@ -48,7 +46,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
 
   return (
     <div
-      className="grid grid-cols-4 gap-3 px-6 py-3"
+      className="grid grid-cols-3 gap-3 px-6 py-3"
       style={{ background: surface.page, borderBottom: `1px solid ${surface.borderLight}` }}
     >
       {/* On Roadmap */}
@@ -73,16 +71,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>This Quarter</div>
         <div style={valueStyle}>{stats.currentQuarter}</div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>Active initiatives</div>
-      </div>
-
-      {/* Business Request indicator */}
-      <div style={cardStyle}>
-        <div style={labelStyle}>Work Item Type</div>
-        <div className="flex items-center gap-2" style={{ marginTop: 6 }}>
-          <span style={{ width: 10, height: 10, borderRadius: '50%', background: BUSINESS_REQUEST_COLOR, display: 'inline-block', flexShrink: 0 }} />
-          <span style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, color: BUSINESS_REQUEST_COLOR }}>Business Request</span>
-        </div>
+        <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>Active business requests</div>
       </div>
     </div>
   );
