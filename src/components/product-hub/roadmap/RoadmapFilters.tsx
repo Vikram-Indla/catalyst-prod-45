@@ -98,46 +98,13 @@ export function RoadmapFilters({
         </div>
       </div>
 
-      {/* Type Tabs + Legend */}
-      <div className="flex items-center justify-between px-4 py-2" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
-        <div className="flex items-center gap-1">
-          {TYPE_TABS.map(t => {
-            const isActive = typeFilter === t.key;
-            return (
-              <button
-                key={t.key}
-                onClick={() => onTypeFilterChange(t.key)}
-                className="inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
-                style={{
-                  borderRadius: 6,
-                  background: isActive ? (isDark ? '#292929' : '#F8FAFC') : 'transparent',
-                  color: isActive ? ink[1] : ink[2],
-                  borderBottom: isActive ? '2px solid #2563EB' : '2px solid transparent',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = isDark ? '#292929' : surface.page; }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
-              >
-                {t.dot && (
-                  <span style={{
-                    width: 8, height: 8, borderRadius: '50%',
-                    background: t.dot, display: 'inline-block', flexShrink: 0,
-                  }} />
-                )}
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <span style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[4] }}>Legend</span>
-          {LEGEND.map(l => (
-            <div key={l.label} className="flex items-center gap-1.5">
-              <div style={{ width: 16, height: 6, borderRadius: 4, background: l.gradient }} />
-              <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>{l.label}</span>
-            </div>
-          ))}
+      {/* Single Business Request indicator */}
+      <div className="flex items-center justify-end px-4 py-2" style={{ borderBottom: `1px solid ${surface.border}`, background: surface.card }}>
+        <div className="inline-flex items-center gap-1.5">
+          <Lightbulb className="w-3.5 h-3.5" style={{ color: BUSINESS_REQUEST_COLOR }} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: ink[2], textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Business Request
+          </span>
         </div>
       </div>
     </>
