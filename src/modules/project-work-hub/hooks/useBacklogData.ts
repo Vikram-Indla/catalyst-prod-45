@@ -16,11 +16,6 @@ export interface InitiativeRow {
   id: string;
   initiative_key: string;
   title: string;
-  initiative_type_key: string | null;
-  initiative_type_label: string | null;
-  initiative_type_icon: string | null;
-  initiative_type_color_token: string | null;
-  initiative_type_color_hex: string | null;
 }
 
 /**
@@ -48,7 +43,7 @@ export function useInitiativesByKeys(keys: string[]) {
       if (keys.length === 0) return out;
       const { data, error } = await supabase
         .from('ph_backlog_initiatives_view')
-        .select('id, initiative_key, title, initiative_type_key, initiative_type_label, initiative_type_icon, initiative_type_color_token, initiative_type_color_hex')
+        .select('id, initiative_key, title')
         .in('initiative_key', keys);
       if (error) throw error;
       for (const row of (data || []) as any[]) {
