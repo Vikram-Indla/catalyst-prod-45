@@ -206,7 +206,7 @@ export function useRoadmapInitiatives() {
           title: row.title || '',
           titleAr,
           titleEn: titleEn || row.title || '',
-          type: TYPE_MAP[row.initiative_type_key] || 'project',
+          type: 'business_request',
           priority: row.roadmap_priority === 1 ? 'P0' : row.roadmap_priority === 2 ? 'P1' : 'P2',
           status: STATUS_MAP[row.status] || 'Planned',
           progress: row.progress ?? 0,
@@ -271,7 +271,7 @@ export function useBacklogItemsNotOnRoadmap() {
     queryFn: async () => {
       const [{ data, error }, profiles] = await Promise.all([
         typedQuery('ph_backlog_initiatives_view')
-          .select('id, initiative_key, title, status, priority, assignee_id, source, on_roadmap, is_deleted, initiative_type_key')
+          .select('id, initiative_key, title, status, priority, assignee_id, source, on_roadmap, is_deleted')
           .eq('is_deleted', false)
           .eq('on_roadmap', false)
           .order('initiative_key', { ascending: true })
@@ -292,7 +292,7 @@ export function useBacklogItemsNotOnRoadmap() {
           status: row.status || '',
           owner: ownerName,
           source: row.source || 'catalyst',
-          type: (row.initiative_type_key || 'project') as RoadmapInitiative['type'],
+          type: 'business_request' as RoadmapInitiative['type'],
           alreadyOnRoadmap: false, // filtered out at query level
         };
       });
