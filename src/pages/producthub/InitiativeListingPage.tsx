@@ -48,8 +48,7 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
     score_business_impact: i.score_business_impact, score_time_urgency: i.score_time_urgency,
     score_resource_feasibility: i.score_resource_feasibility, computed_score: i.computed_score,
     created_at: i.created_at, updated_at: i.updated_at,
-    initiative_type_key: i.initiative_type_key ?? null, initiative_type_label: i.initiative_type_label ?? null,
-    initiative_type_color_hex: i.initiative_type_color_hex ?? null, health_status: i.health_status ?? null,
+    health_status: i.health_status ?? null,
     business_value: i.business_value ?? null, ea_review: (i as any).ea_review ?? null,
     priority: (i as any).priority ?? null, on_roadmap: i.on_roadmap ?? false,
     source: (i as any).source ?? 'catalyst', jira_issue_key: (i as any).jira_issue_key ?? null,
@@ -60,12 +59,6 @@ const TERMINAL_STATUSES: InitiativeStatus[] = ['done', 'cancelled'];
 const COLUMN_STORAGE_KEY = 'ph-backlog-columns';
 const DENSITY_STORAGE_KEY = 'ph-backlog-density';
 
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project', color: '#2563EB' },
-  { key: 'enhancement', label: 'Enhancement', color: '#0EA5E9' },
-  { key: 'improvement', label: 'Improvement', color: '#D97706' },
-  { key: 'entity_integration', label: 'Entity Integration', color: '#64748B' },
-];
 
 function loadColumns(): ColumnConfig[] {
   try {
@@ -112,9 +105,6 @@ function applyAdvancedFilters(data: Initiative[], filters: Record<string, string
   }
 
   const af = filters;
-  if (af.type?.length) {
-    result = result.filter(i => af.type.includes(i.initiative_type_key ?? ''));
-  }
   if (af.priority?.length) {
     result = result.filter(i => {
       const level = getPriorityLevel(i.computed_score).level;
