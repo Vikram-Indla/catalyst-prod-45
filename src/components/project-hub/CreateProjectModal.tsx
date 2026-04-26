@@ -61,6 +61,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
       });
       if (error) throw new Error(error.message);
 
+      // Persist priority on the new ph_projects row (separate from RPC)
+      if (details.priority && projectId) {
+        const { error: prErr } = await (supabase as any)
+          .from('ph_projects')
+          .update({ priority: details.priority })
+          .eq('id', projectId);
+        if (prErr) console.warn('Failed to set priority:', prErr.message);
+      }
+
       // Add lead as member with role 'lead'
       if (details.lead_id && projectId) {
         const { error: leadErr } = await supabase.from('ph_project_members').insert({
