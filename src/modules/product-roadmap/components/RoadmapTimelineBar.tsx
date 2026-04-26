@@ -29,8 +29,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const typeKey = (item as any).initiative_type_key || 'project';
-  const barColor = TYPE_COLORS[typeKey] || '#2563EB';
+  const barColor = BUSINESS_REQUEST_COLOR;
 
   // Check overdue
   const isOverdue = (() => {
@@ -41,7 +40,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   })();
 
   const finalColor = isOverdue ? '#EF4444' : barColor;
-  const hoverGradient = isOverdue ? 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)' : (TYPE_HOVER_GRADIENTS[typeKey] || TYPE_HOVER_GRADIENTS.project);
+  const hoverGradient = isOverdue ? 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)' : BUSINESS_REQUEST_HOVER_GRADIENT;
 
   const formatDate = (d: string | null) => {
     if (!d) return 'Not set';
