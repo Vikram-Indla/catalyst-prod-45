@@ -20,11 +20,7 @@ interface RoadmapListPanelProps {
   listWidth?: number;
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  project: '#2563EB',
-  enhancement: '#0D9488',
-  improvement: '#D97706',
-};
+const BUSINESS_REQUEST_COLOR = '#B38600';
 
 export function RoadmapListPanel({
   items, groups, focusedIndex, selectedItemId, onItemClick, onToggleGroup, listWidth = 340,
