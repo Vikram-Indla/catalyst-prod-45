@@ -60,7 +60,7 @@ export function useMDTBacklog() {
       // 2026 GUARDRAIL — only show items created or updated in 2026+
       const YEAR_2026 = '2026-01-01T00:00:00Z';
 
-      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult] = await Promise.all([
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult, milestonesResult] = await Promise.all([
         typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
@@ -76,6 +76,8 @@ export function useMDTBacklog() {
           .not('parent_key', 'is', null)
           .is('archived_at', null)
           .limit(5000),
+        // Milestone counts per initiative — minimal projection for tally only
+        typedQuery('ph_initiative_milestones').select('initiative_id').limit(10000),
       ]);
 
       if (initResult.error) throw initResult.error;
