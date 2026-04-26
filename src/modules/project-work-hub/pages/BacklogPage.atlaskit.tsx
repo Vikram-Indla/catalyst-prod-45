@@ -63,7 +63,7 @@ import type {
   RowAction,
 } from '@/components/shared/JiraTable';
 
-import { useStoryBacklog, useEpicBacklog, useInitiativesByKeys } from '../hooks/useBacklogData';
+import { useStoryBacklog, useEpicBacklog, useInitiativesByKeys, useInitiativeLinksByEpicKeys } from '../hooks/useBacklogData';
 import type { InitiativeRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel } from '../utils/backlog.utils';
