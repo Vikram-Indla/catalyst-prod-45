@@ -19,6 +19,7 @@ import { DetailTabRisks } from './DetailTabRisks';
 import { DetailTabMilestones } from './DetailTabMilestones';
 import { DetailTabAttachments } from './DetailTabAttachments';
 import { DetailTabActivity } from './DetailTabActivity';
+import { InitiativeLinkedItemsTab } from '@/components/producthub/InitiativeLinkedItemsTab';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
