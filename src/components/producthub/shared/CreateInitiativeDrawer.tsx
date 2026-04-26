@@ -11,12 +11,10 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
-import { useInitiativeTypes } from '@/hooks/useInitiativeTypes';
 import { StatusSelect } from './StatusSelect';
 import { QuarterSelect } from './QuarterSelect';
 import { PeopleSelect } from './PeopleSelect';
 import { DepartmentSelect } from './DepartmentSelect';
-import { InitiativeTypeSelect } from './InitiativeTypeSelect';
 
 /* ── Token constants ── */
 const T = {
@@ -153,17 +151,17 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
-  const { data: initiativeTypes } = useInitiativeTypes();
+  
 
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [titleError, setTitleError] = useState(false);
-  const [selectedType, setSelectedType] = useState('project');
+  
   const [closing, setClosing] = useState(false);
 
   const resetForm = useCallback(() => {
     setForm({ ...EMPTY_FORM });
     setTitleError(false);
-    setSelectedType('project');
+    
   }, []);
 
   useEffect(() => {
@@ -236,11 +234,9 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const handleCreate = async (addAnother: boolean) => {
     if (!form.title.trim()) { setTitleError(true); return; }
     const key = nextKey || 'MIM-001';
-    const typeId = initiativeTypes?.find((t: any) => t.key === selectedType)?.id || null;
     await createMutation.mutateAsync({
       ...form,
       initiative_key: key,
-      initiative_type_id: typeId,
     });
     onCreated?.(key);
     if (addAnother) {
@@ -359,11 +355,6 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             />
           </FieldWrapper>
 
-          {/* §2 CLASSIFICATION */}
-          <SectionHeader icon={<Tag className="w-4 h-4" />} label="CLASSIFICATION" />
-          <FieldWrapper label="Initiative Type">
-            <InitiativeTypeSelect value={selectedType} onChange={setSelectedType} />
-          </FieldWrapper>
           <div className="grid grid-cols-2 gap-4">
             <FieldWrapper label="Status">
               <StatusSelect value={form.status} onChange={v => updateField('status', v)} />

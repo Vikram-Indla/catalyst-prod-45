@@ -482,13 +482,9 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: #F7F8F9;
         padding: 8px 12px;
         text-align: left;
-        /* Re-measured 2026-04-26 from Jira BAU list view header "Summary"
-           (DOM probe, columnheader container with data-testid
-           business-list.ui.list-view.column-header.column-header-container):
+        /* Re-measured 2026-04-26 from Jira BAU list view header "Summary":
              - 12px / weight 653 (Charlie variable; we use 700 statically)
-             - color #6B6E76 (--ds-text-subtlest) — corrected iter-9 after
-               the original handoff target #505258 (--ds-text-subtle) was
-               proven wrong against live Jira (rgb(107, 110, 118) probed)
+             - color #505258 (--ds-text-subtle)
              - text-transform: none (Title Case — NOT uppercase)
              - letter-spacing: normal (NOT 0.04em)
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
@@ -496,7 +492,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
            view here for parity. */
         font-size: 12px;
         font-weight: 700;
-        color: #6B6E76;
+        color: #505258;
         text-transform: none;
         letter-spacing: normal;
         white-space: nowrap;

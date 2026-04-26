@@ -19,16 +19,11 @@ import ReactDOM from 'react-dom';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { jiraSyncService } from '@/services/jira-sync.service';
 
 import EmptyState from '@atlaskit/empty-state';
 import SectionMessage from '@atlaskit/section-message';
 import Spinner from '@atlaskit/spinner';
 import Textfield from '@atlaskit/textfield';
-// F10 (iter-9): Group-by toolbar primitive — replacing the legacy native
-// <select> (CLAUDE.md §7 ban) with @atlaskit/select for parity with Jira's
-// list-view toolbar primitives. See atlassian.design/components/select.
-import Select from '@atlaskit/select';
 import { Box, xcss } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
@@ -354,53 +349,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const pageSize = 25;
 
   // ── Mutations ──
-  // F14 (iter-9, hard rule per Vikram 2026-04-26):
-  //   ALL rows are editable on Catalyst, regardless of source. Writes always
-  //   land in `ph_issues` (the canonical mirror that useBacklogData reads
-  //   from), so the optimistic UI is immediately backed by the same row the
-  //   page re-fetches. For source='jira' rows we ALSO call
-  //   jiraSyncService.queueWriteBack(...) per field — that drops a row into
-  //   `jira_write_back_queue` for moderator approval and stamps
-  //   ph_issues.pending_write_back_at so the UI can show pending-sync state.
-  //
-  //   Field-name translation: Catalyst's `title` is Jira's `summary`. Status,
-  //   priority, assignee, parent_key map 1:1.
-  //
-  //   See .catalyst/audits/jira-compare/2026-04-26-bau-backlog audit P0 #14
-  //   for the rationale and re-probe history.
-  const JIRA_FIELD_MAP: Record<string, string> = {
-    title: 'summary',
-  };
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
-      // Step 1 — local cache write to ph_issues. Both source='catalyst' and
-      // source='jira' rows live in this table; the column the patch carries
-      // (e.g. `title`) matches the column name on ph_issues, so no
-      // translation is needed for the local write.
-      const { error: cacheError } = await supabase
-        .from('ph_issues')
+      if (source !== 'catalyst') throw new Error('Jira-synced items must be edited in Jira.');
+      const { error } = await supabase
+        .from('catalyst_issues')
         .update({ ...patch, updated_at: new Date().toISOString() })
         .eq('id', id);
-      if (cacheError) throw cacheError;
-
-      // Step 2 — for Jira-sourced rows, queue write-back so the change syncs
-      // back to the Atlassian tenant on approval. Translate Catalyst field
-      // names to their Jira equivalents (e.g. title → summary).
-      if (source === 'jira') {
-        for (const [field, value] of Object.entries(patch)) {
-          const jiraField = JIRA_FIELD_MAP[field] || field;
-          await jiraSyncService.queueWriteBack(id, jiraField, String(value));
-        }
-      }
+      if (error) throw error;
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-      if (variables.source === 'jira') {
-        flag.success('Updated', 'Change queued for Jira sync approval');
-      } else {
-        flag.success('Updated');
-      }
+      flag.success('Updated');
     },
     onError: (e: Error) => flag.error('Update failed', e.message),
   });
@@ -819,21 +780,22 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
   // ── Column schema ──
   const columns = useMemo<Column<BacklogItem>[]>(() => ([
-    // F8 (iter-9): the structural __caret column duplicated the expand/
-    // collapse affordance that Jira renders inline within the Type icon
-    // cell. Audit row P1 #8 in 2026-04-26-bau-backlog. Caret rendering is
-    // now folded into the Type column's own cell renderer (see makeCaretCell
-    // wired below) so we drop one redundant column from the schema.
     {
-      // F9 (iter-9): Type col width 3 (≈40px at 1200px viewport) → 9
-      // (≈108px). Target 110px per handoff for Type-icon column parity
-      // with Jira's BAU list view (Jira shows ~77px at its wider viewport,
-      // Vikram approved 110px to better fit Catalyst's narrower layout).
-      // JiraTable treats width<=100 as a percent; pixel-exact targeting
-      // would require columnWidths userOverride state — deferred.
+      id: '__caret',
+      label: '',
+      width: 3,
+      alwaysVisible: true,
+      align: 'center',
+      cell: makeCaretCell({
+        hasChildren,
+        isExpanded: (it) => expandedIds.has(it.id),
+        toggle: toggleExpanded,
+      }),
+    },
+    {
       id: 'type',
       label: '',
-      width: 9,
+      width: 3,
       align: 'center',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
@@ -890,11 +852,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       alwaysVisible: true,
       cell: makeSummaryInlineEditCell<BacklogItem>({
         getSummary: (r) => r.title,
-        // F14 (hard rule): all rows are editable. Jira-sourced rows
-        // optimistically update the local ph_issues cache and queue a
-        // write-back for moderator approval before the change syncs to the
-        // Atlassian tenant.
-        canEdit: () => true,
+        canEdit: (r) => r.source === 'catalyst',
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
       }),
     },
@@ -1203,42 +1161,31 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             labels={[]}
           />
         </div>
-        {/* F10 (iter-9): Group by — @atlaskit/select primitive replaces the
-            previous native <select>. Keeps the same shape (5 options feeding
-            JiraTable.groups). Spec: atlassian.design/components/select.
-            Audit row P0 #10 in 2026-04-26-bau-backlog. */}
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 220 }}>
-          <span style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>Group by:</span>
-          <div style={{ minWidth: 140 }}>
-            <Select<{ label: string; value: GroupByKey }>
-              inputId="backlog-group-by"
-              isSearchable={false}
-              spacing="compact"
-              value={(() => {
-                const map: Record<GroupByKey, string> = {
-                  none: 'None',
-                  status: 'Status',
-                  parent: 'Parent',
-                  assignee: 'Assignee',
-                  priority: 'Priority',
-                };
-                return { label: map[groupBy], value: groupBy };
-              })()}
-              options={[
-                { label: 'None', value: 'none' },
-                { label: 'Status', value: 'status' },
-                { label: 'Parent', value: 'parent' },
-                { label: 'Assignee', value: 'assignee' },
-                { label: 'Priority', value: 'priority' },
-              ]}
-              onChange={(opt) => {
-                if (!opt) return;
-                setGroupBy(opt.value);
-                setCollapsedGroups(new Set());
-              }}
-            />
-          </div>
-        </div>
+        {/* Group by — native select kept local; small surface, Atlaskit Select
+            is heavier than needed here. The result feeds JiraTable.groups. */}
+        <label style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
+          Group by:{' '}
+          <select
+            value={groupBy}
+            onChange={(e) => { setGroupBy(e.target.value as typeof groupBy); setCollapsedGroups(new Set()); }}
+            style={{
+              height: 28,
+              padding: '0 6px',
+              fontSize: 13,
+              border: `1px solid ${token('color.border', '#DFE1E6')}`,
+              borderRadius: 3,
+              background: token('elevation.surface', '#FFFFFF'),
+              color: token('color.text', '#172B4D'),
+              fontFamily: 'inherit',
+            }}
+          >
+            <option value="none">None</option>
+            <option value="status">Status</option>
+            <option value="parent">Parent</option>
+            <option value="assignee">Assignee</option>
+            <option value="priority">Priority</option>
+          </select>
+        </label>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 13, color: token('color.text.subtlest', '#6B778C') }}>
           {total} item{total === 1 ? '' : 's'}

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, Flag, Activity, Target, type LucideIcon } from 'lucide-react';
+import { Star, MoreHorizontal, Flag, Activity, Target } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -50,13 +51,7 @@ function darkPill(pill: { color: string; bg: string; border: string }): { color:
   };
 }
 
-const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIcon }> = {
-  project: { label: 'Project', color: '#0D9488', Icon: FolderKanban },
-  enhancement: { label: 'Enhancement', color: '#2563EB', Icon: Zap },
-  improvement: { label: 'Improvement', color: '#D97706', Icon: Wrench },
-  entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
-  business_request: { label: 'Business Request', color: '#B45309', Icon: Lightbulb },
-};
+// Type concept removed — every Product Hub item is a Business Request.
 
 const PRIORITY_STYLE: Record<string, { color: string; bg: string }> = {
   critical: { color: '#B91C1C', bg: '#FEE2E2' },
@@ -82,8 +77,6 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
   const rawPill = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
   const pillStyle = isDark ? darkPill(rawPill) : rawPill;
   
-  const typeKey = initiative.initiative_type_key || '';
-  const typeConf = TYPE_CONFIG[typeKey];
 
   const handleStar = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -134,13 +127,11 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       {/* Title */}
       <div className="pc-card-title">{initiative.title}</div>
 
-      {/* Type badge — SVG icon + colored text */}
-      {typeConf && (
-        <div className="pc-type-badge" style={{ color: typeConf.color }}>
-          <typeConf.Icon size={13} />
-          {typeConf.label}
-        </div>
-      )}
+      {/* Business Request label — single canonical type */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+        <JiraIssueTypeIcon issueType="Feature" size={14} />
+        <span style={{ fontSize: 11, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
+      </div>
 
       {/* Priority + Health chips */}
       {(initiative.priority || initiative.health_status) && (() => {
