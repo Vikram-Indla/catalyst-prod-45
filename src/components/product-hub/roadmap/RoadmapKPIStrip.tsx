@@ -45,12 +45,6 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
     lineHeight: 1.1,
   };
 
-  const typeCounts: Record<string, number> = {
-    project: stats.projectCount,
-    enhancement: stats.enhancementCount,
-    entity: stats.entityIntegrationCount || 0,
-    improvement: stats.improvementCount,
-  };
 
   return (
     <div
