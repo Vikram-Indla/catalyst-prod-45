@@ -287,8 +287,6 @@ export function ProductRoadmapPage() {
                 onSearchChange={setSearch}
                 quickFilter={quickFilter}
                 onQuickFilterChange={setQuickFilter}
-                typeFilter={typeFilter}
-                onTypeFilterChange={setTypeFilter}
               />
             </>
           )}
