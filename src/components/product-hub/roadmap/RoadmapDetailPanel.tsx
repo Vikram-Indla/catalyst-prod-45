@@ -36,12 +36,6 @@ const ACTIONS = [
   { icon: Trash2, label: 'Delete', variant: 'danger' },
 ] as const;
 
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
-  { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
-  { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
-  { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: '#8B5CF6' },
-] as const;
 
 const STATUS_OPTIONS = [
   { value: 'new_demand', label: 'New' },
