@@ -115,6 +115,7 @@ export interface ProjectListItem {
   lead_id: string | null;
   lead_name: string | null;
   lead_avatar_url: string | null;
+  computed_score?: number | null;
 }
 
 // get_project_team RPC row shape
