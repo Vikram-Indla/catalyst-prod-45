@@ -175,7 +175,7 @@ function InitiativeRow({
   selectedBg: string;
   hoverBg: string;
 }) {
-  const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
+  const typeColor = BUSINESS_REQUEST_COLOR;
 
   return (
     <div
