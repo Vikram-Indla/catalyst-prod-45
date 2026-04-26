@@ -37,9 +37,27 @@ export function useProjects() {
       // Exclude non-ProjectHub/legacy keys from the ProjectHub listing
       const excludedProjectKeys = new Set(['TH-DEFAULT', 'MDT']);
 
-      return ((data ?? []) as ProjectListItem[]).filter(
+      const projectData = ((data ?? []) as ProjectListItem[]).filter(
         (p) => !excludedProjectKeys.has(p.project_key)
       );
+
+      // Parallel fetch of project_scores; merge by project_id
+      const scoreMap = new Map<string, number>();
+      if (projectData.length > 0) {
+        const ids = projectData.map((p) => p.id);
+        const { data: scoreRows } = await (supabase as any)
+          .from('project_scores')
+          .select('project_id, computed_score')
+          .in('project_id', ids);
+        for (const row of (scoreRows ?? []) as Array<{ project_id: string; computed_score: number | null }>) {
+          if (row.computed_score != null) scoreMap.set(row.project_id, Number(row.computed_score));
+        }
+      }
+
+      return projectData.map((row) => ({
+        ...row,
+        computed_score: scoreMap.get(row.id) ?? null,
+      }));
     },
     staleTime: 60_000,
     refetchOnWindowFocus: false,
@@ -184,6 +202,7 @@ export function useCreateProject() {
           health_status: 'on_track',
           program_id: '00000000-0000-0000-0000-000000000001',
           project_type: 'kanban',
+          priority: input.priority ?? null,
           total_epics: 0,
           total_stories: 0,
           total_tasks: 0,

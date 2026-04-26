@@ -115,6 +115,7 @@ export interface ProjectListItem {
   lead_id: string | null;
   lead_name: string | null;
   lead_avatar_url: string | null;
+  computed_score?: number | null;
 }
 
 // get_project_team RPC row shape
@@ -160,4 +161,5 @@ export interface CreateProjectInput {
   status_category?: string;
   lead_id?: string;
   jira_key?: string;
+  priority?: 'critical' | 'high' | 'medium' | 'low' | null;
 }
