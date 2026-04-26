@@ -8,6 +8,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
+import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 
 interface PCInitiativeCardProps {
   initiative: Initiative;
@@ -108,7 +109,10 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           <span className="pc-status-dot" style={{ background: pillStyle.color }} />
           {status?.label || initiative.status}
         </span>
-        <span className="pc-card-id">{initiative.initiative_key}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <SourceBadge source={initiative.source} />
+          <span className="pc-card-id">{initiative.initiative_key}</span>
+        </div>
       </div>
 
       {/* Title */}
