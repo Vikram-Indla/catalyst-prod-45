@@ -36,7 +36,11 @@ const ProjectBoardCanvasPageLazy = lazy(() => import("../pages/project-hub/Proje
 const KanbanBoardPageLazy = lazy(() => import("../pages/project-hub/KanbanBoardPage"));
 const MapStatusesPageLazy = lazy(() => import("../pages/project-hub/MapStatusesPage"));
 const AllProjectsPageLazy = lazy(() => import("../pages/project-hub/AllProjectsPage"));
-const NativeEpicBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeEpicBacklogPage"));
+// EpicBacklogPage chain retired 2026-04-26 — all per-type backlog routes
+// (epic / feature / story) now redirect to the unified /backlog (which mounts
+// BacklogPage.atlaskit on JiraTable canonical). The Native* lazy imports are
+// kept for FeatureBacklog and StoryBacklog only because their files are still
+// in tree and reachable via /program/* aliases — see lines 642-650 below.
 const NativeFeatureBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeFeatureBacklogPage"));
 const NativeStoryBacklogPageLazy = lazy(() => import("../pages/project-hub/NativeStoryBacklogPage"));
 const UnifiedBacklogPageLazy = lazy(() => import("../modules/project-work-hub/pages/BacklogPage.atlaskit"));

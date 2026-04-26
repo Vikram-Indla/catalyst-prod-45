@@ -295,6 +295,12 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/tokens',
       '@atlaskit/tooltip',
       'react-window',
+      // JiraTable canonical adopted @tanstack/react-virtual on 2026-04-26 for
+      // opt-in row virtualization (enableVirtualization prop). Pre-bundling
+      // here avoids the optimize-deps cold-restart 500 that hits dynamic
+      // imports of BacklogPage / SubtasksPanel right after the dependency
+      // first appears in the import graph.
+      '@tanstack/react-virtual',
       // Force-pre-bundle the popper chain pulled in transitively by
       // @atlaskit/select + @atlaskit/user-picker. Without explicit entries,
       // vite's hot re-optimize (triggered when a new @atlaskit/* dep lands

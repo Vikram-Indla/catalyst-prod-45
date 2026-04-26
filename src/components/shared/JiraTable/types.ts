@@ -146,4 +146,27 @@ export interface JiraTableProps<TRow> {
     disabled?: (row: TRow) => boolean;
     onClick: (row: TRow) => void;
   }>;
+
+  /**
+   * Enable column reorder via drag-and-drop on header cells. When `true`,
+   * non-structural columns (id NOT starting with `__`) gain a grab cursor on
+   * their header and can be dragged to a new position. Order is held in
+   * internal state by default; pass `columnOrder` + `onColumnOrderChange` for
+   * controlled use (e.g. URL or workspace persistence).
+   *
+   * Default: false. Existing consumers see no behaviour change.
+   */
+  enableColumnReorder?: boolean;
+  /** Controlled column order (array of column ids in render order). */
+  columnOrder?: ReadonlyArray<string>;
+  onColumnOrderChange?: (next: string[]) => void;
+
+  /**
+   * Enable row virtualization via @tanstack/react-virtual. Recommended for
+   * data sets ≥500 rows. Auto-disabled when `groups` are provided (group
+   * headers have variable heights that don't fit a single rowHeight).
+   *
+   * Default: false. Existing consumers render every row as before.
+   */
+  enableVirtualization?: boolean;
 }
