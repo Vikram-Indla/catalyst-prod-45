@@ -282,14 +282,10 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               <div className="idp-status-dot" style={{ background: pillColors.text }} />
               <span style={{ color: pillColors.text }}>{statusLabel}</span>
             </div>
-            {typeColors && TypeIcon && (
-              <div className="idp-type-badge">
-                <TypeIcon size={13} className="idp-type-icon" />
-                <span className="idp-type-label" style={{ color: typeColors.textColor }}>
-                  {initiative.initiative_type_label || initiative.initiative_type_key}
-                </span>
-              </div>
-            )}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <JiraIssueTypeIcon issueType="Feature" size={16} />
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
+            </div>
             <div className="idp-priority-bars">
               {[1, 2, 3, 4].map(i => (
                 <div
