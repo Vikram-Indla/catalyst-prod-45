@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, type LucideIcon } from 'lucide-react';
+import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, Flag, Activity, Target, type LucideIcon } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
