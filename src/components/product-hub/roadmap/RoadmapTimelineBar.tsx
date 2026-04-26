@@ -8,7 +8,7 @@ import { Calendar } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapInitiative } from './types/roadmap.types';
-import { TYPE_COLORS, FONT, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
+import { BUSINESS_REQUEST_COLOR, FONT, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 
 interface RoadmapTimelineBarProps {
   item: RoadmapInitiative;
