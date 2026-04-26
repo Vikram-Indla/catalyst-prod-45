@@ -1,24 +1,20 @@
 /**
  * Product Roadmap — Filter & search state management
+ * Type system removed (single Business Request type) — no typeFilter, no group-by-type.
  */
 import { useState, useMemo, useCallback } from 'react';
-import type { RoadmapInitiative, InitiativeType, QuickFilter, GroupBy, ZoomLevel, ViewMode, RoadmapGroup } from '../types/roadmap.types';
-import { TYPE_COLORS } from '../constants/roadmap.constants';
+import type { RoadmapInitiative, QuickFilter, GroupBy, ZoomLevel, ViewMode, RoadmapGroup } from '../types/roadmap.types';
 
 export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
   const [search, setSearch] = useState('');
-  const [typeFilter, setTypeFilter] = useState<InitiativeType | 'all'>('all');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
-  const [groupBy, setGroupBy] = useState<GroupBy>('type');
+  const [groupBy, setGroupBy] = useState<GroupBy>('priority');
   const [zoom, setZoom] = useState<ZoomLevel>('Month');
   const [viewMode, setViewMode] = useState<ViewMode>('Timeline');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     let result = allItems;
-    if (typeFilter !== 'all') {
-      result = result.filter(i => i.type === typeFilter);
-    }
     if (search.trim()) {
       const s = search.toLowerCase();
       result = result.filter(i =>
@@ -34,37 +30,33 @@ export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
       result = result.filter(i => i.status !== 'Completed' && new Date(i.endDate) < now);
     }
     return result;
-  }, [allItems, typeFilter, search, quickFilter]);
+  }, [allItems, search, quickFilter]);
 
   const groups = useMemo<RoadmapGroup[]>(() => {
-    if (groupBy === 'none') return [{ key: 'all', label: 'All Initiatives', color: '#64748B', items: filtered, isExpanded: true }];
+    if (groupBy === 'none') return [{ key: 'all', label: 'All Business Requests', color: '#64748B', items: filtered, isExpanded: true }];
 
     const map = new Map<string, RoadmapInitiative[]>();
     for (const item of filtered) {
-      let key: string;
-      if (groupBy === 'type') key = item.type;
-      else if (groupBy === 'priority') key = item.priority;
-      else key = item.ownerName;
+      const key = groupBy === 'priority' ? item.priority : item.ownerName;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(item);
     }
 
     return Array.from(map.entries()).map(([key, items]) => ({
       key,
-      label: groupBy === 'type' ? (TYPE_COLORS[key]?.label || key) : key,
-      color: groupBy === 'type' ? (TYPE_COLORS[key]?.solid || '#94A3B8') : '#64748B',
+      label: key,
+      color: '#64748B',
       items,
       isExpanded: true,
     }));
   }, [filtered, groupBy]);
 
-  const toggleGroup = useCallback((key: string) => {
-    // For simplicity groups are always expanded in mock mode
+  const toggleGroup = useCallback((_key: string) => {
+    // Groups are always expanded in current mode
   }, []);
 
   return {
     search, setSearch,
-    typeFilter, setTypeFilter,
     quickFilter, setQuickFilter,
     groupBy, setGroupBy,
     zoom, setZoom,
