@@ -109,7 +109,7 @@ export function useEpicBacklog(projectId: string) {
       // query replaces the previous two-table parallel + JS merge.
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at, source')
+        .select('issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at, source')
         .eq('project_key', projectKey)
         .eq('issue_type', 'Epic')
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
@@ -180,7 +180,7 @@ export function useStoryBacklog(projectId: string) {
       // synced rows still respect the YEAR_2026_START boundary).
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source')
+        .select('issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source')
         .eq('project_key', projectKey)
         .eq('issue_type', 'Story')
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
@@ -218,7 +218,7 @@ export function useStoryBacklog(projectId: string) {
       if (parentKeys.length > 0) {
         const { data: epics } = await supabase
           .from('ph_issues')
-          .select('id, issue_key, summary, status, priority, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at')
+          .select('issue_key, summary, status, priority, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at')
           .in('issue_key', parentKeys)
           .is('archived_at', null);
         if (epics) {

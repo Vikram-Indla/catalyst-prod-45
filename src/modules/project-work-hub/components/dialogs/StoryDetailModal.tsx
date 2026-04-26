@@ -193,13 +193,13 @@ export default function StoryDetailModal({
     queryKey: ['ph-issue-detail', itemId], enabled: !!itemId && isOpen,
     queryFn: async () => {
       // Try ph_issues first (Jira-synced items)
-      const { data } = await supabase.from('ph_issues').select('*').eq('id', itemId).is('deleted_at', null).maybeSingle();
+      const { data } = await supabase.from('ph_issues').select('*').eq('issue_key', itemId).is('deleted_at', null).maybeSingle();
       if (data) return data as unknown as PhIssue;
       // Fallback: catalyst_issues (locally-created items like BAU-1)
       const { data: cat } = await supabase
         .from('catalyst_issues')
         .select('*')
-        .eq('id', itemId)
+        .eq('issue_key', itemId)
         .is('deleted_at', null)
         .maybeSingle();
       if (!cat) return null;
@@ -611,7 +611,7 @@ export default function StoryDetailModal({
       const patch = workItemSource === 'catalyst'
         ? { status: newStatus }
         : { status: newStatus, status_category: resolveStatusCategory(newStatus) };
-      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
+      const { error } = await supabase.from(issueTable).update(patch).eq('issue_key', itemId);
       if (error) throw error;
       if (workItemSource === 'jira') {
         await enqueueWriteBack({ phIssueId: itemId, fieldName: 'status', newValue: newStatus });
@@ -629,7 +629,7 @@ export default function StoryDetailModal({
     mutationFn: async ({ field, value, oldValue }: { field: string; value: string; oldValue: string }) => {
       const patch = remapPatch({ [field]: value });
       if (Object.keys(patch).length === 0) return; // field has no equivalent in this source
-      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
+      const { error } = await supabase.from(issueTable).update(patch).eq('issue_key', itemId);
       if (error) throw error;
       // ph_issues needs explicit activity rows (no DB trigger). Catalyst gets
       // them automatically via tg_catalyst_issue_audit.
@@ -654,7 +654,7 @@ export default function StoryDetailModal({
       const patch = workItemSource === 'catalyst'
         ? { assignee_id: userId }
         : { assignee_account_id: userId, assignee_display_name: displayName };
-      const { error } = await supabase.from(issueTable).update(patch).eq('id', itemId);
+      const { error } = await supabase.from(issueTable).update(patch).eq('issue_key', itemId);
       if (error) throw error;
       if (workItemSource === 'jira') {
         await enqueueWriteBack({ phIssueId: itemId, fieldName: 'assignee', newValue: userId });
@@ -697,7 +697,7 @@ export default function StoryDetailModal({
 
   const deleteIssueMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from(issueTable).update({ deleted_at: new Date().toISOString() }).eq('id', itemId);
+      const { error } = await supabase.from(issueTable).update({ deleted_at: new Date().toISOString() }).eq('issue_key', itemId);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -747,7 +747,7 @@ export default function StoryDetailModal({
 
   const handleApplyAC = useCallback(async (newAC: string, _prev: string) => {
     setAcceptanceCriteria(newAC);
-    await supabase.from(issueTable).update({ acceptance_criteria: newAC } as any).eq('id', itemId);
+    await supabase.from(issueTable).update({ acceptance_criteria: newAC } as any).eq('issue_key', itemId);
     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
   }, [itemId, queryClient, issueTable]);
 
@@ -782,7 +782,7 @@ export default function StoryDetailModal({
   }, [aiGenerating, aiEdited, aiOutput, doAiGenerate]);
 
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
-    await supabase.from(issueTable).update({ parent_key: newParentKey } as any).eq('id', itemId);
+    await supabase.from(issueTable).update({ parent_key: newParentKey } as any).eq('issue_key', itemId);
     if (workItemSource === 'jira') {
       await enqueueWriteBack({ phIssueId: itemId, fieldName: 'parent', newValue: newParentKey ?? '' });
     }
@@ -817,7 +817,7 @@ export default function StoryDetailModal({
     }
     // Save as array of {name} objects to match Jira JSONB format
     const jsonValue = updated.map(n => ({ name: n }));
-    supabase.from(issueTable).update({ fix_versions: jsonValue } as any).eq('id', itemId).then(async () => {
+    supabase.from(issueTable).update({ fix_versions: jsonValue } as any).eq('issue_key', itemId).then(async () => {
       // For Jira items, log to ph_activity_log manually. Catalyst items get
       // activity rows automatically via tg_catalyst_issue_audit trigger.
       if (workItemSource === 'jira') {
@@ -1450,7 +1450,7 @@ export default function StoryDetailModal({
                                   if (!itemId) { setDescEditMode(false); return; }
                                   const parsed = adfJson ? JSON.parse(adfJson) : null;
                                    const descCol = workItemSource === 'catalyst' ? 'description_adf_raw' : 'description_adf';
-                                   supabase.from(issueTable).update({ [descCol]: parsed } as any).eq('id', itemId).then(() => {
+                                   supabase.from(issueTable).update({ [descCol]: parsed } as any).eq('issue_key', itemId).then(() => {
                                     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
                                     queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
                                     queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
@@ -1523,7 +1523,7 @@ export default function StoryDetailModal({
                                   onSave={(adfJson) => {
                                     const parsed = adfJson ? JSON.parse(adfJson) : null;
                                     setAcceptanceCriteria(adfJson);
-                                    supabase.from(issueTable).update({ acceptance_criteria: parsed } as any).eq('id', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
+                                    supabase.from(issueTable).update({ acceptance_criteria: parsed } as any).eq('issue_key', itemId).then(() => { queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] }); });
                                     setAcEditMode(false);
                                     setAcUnsaved(false);
                                   }}

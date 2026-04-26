@@ -24,41 +24,23 @@ const isMacPlatform = () =>
 export function CatalystHeader() {
   const {
     sidebarHidden, sidebarPinned, sidebarHoverOpen,
-    cycleSidebarState, setSidebarHoverOpen,
+    cycleSidebarState,
   } = useCatalystContext();
 
-  // Jira parity — the chevron's POSITION/ICON is driven by stickiness
-  // (sidebarPinned), NOT by visibility. When the sidebar is in hover-peek,
-  // the chevron stays at x=12 with the Expand icon so the user can click
-  // to promote the peek into a pinned expansion (Jira behaviour from the
-  // reference screenshot). Only a real pinned-visible state moves the
-  // chevron to the right edge (x=240) with the Collapse icon.
+  // The chevron's POSITION/ICON is driven by stickiness (sidebarPinned),
+  // NOT by visibility. Pinned-visible → chevron at right edge (x=240) with
+  // Collapse icon. Otherwise → chevron at left (x=12) with Expand icon.
   const isPinnedOpen = sidebarPinned && !sidebarHidden;
   const sidebarLabel = isPinnedOpen ? 'Collapse sidebar' : 'Expand sidebar';
   const shortcutLabel = isMacPlatform() ? '⌘ [' : 'Ctrl [';
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
 
-  // Hover-peek contract (Jira parity):
-  //   - Chevron ENTER opens the peek immediately so users see the sidebar
-  //     the moment they hover.
-  //   - Chevron LEAVE is a NO-OP on purpose. Closing on chevron-leave was
-  //     killing the peek the moment the user tried to move from the
-  //     chevron INTO the sidebar to click an item. The document-level
-  //     mousemove handler in CatalystShell owns close: it watches the
-  //     entire hover zone (chevron + HubSwitcher + sidebar body) and
-  //     closes after a 300ms grace once the cursor leaves ALL of them.
-  //     That single source of truth is the only thing that should ever
-  //     set sidebarHoverOpen=false — never a local handler on one corner
-  //     of the zone.
-  //   - When pinned, hover is a no-op (always open).
-  const handleChevronEnter = () => {
-    if (!sidebarPinned) setSidebarHoverOpen(true);
-  };
-  const handleChevronLeave = () => {
-    // Intentionally empty — see comment above. The document mousemove
-    // handler will close the sidebar with a 300ms grace if and only if
-    // the cursor has left every region of the hover zone.
-  };
+  // Click-only sidebar (April 2026, final): hover handlers removed. The
+  // chevron toggles state via onClick={cycleSidebarState} only. Empty
+  // no-op handlers retained as variables purely so JSX below doesn't need
+  // to change shape — both fire nothing.
+  const handleChevronEnter = () => {};
+  const handleChevronLeave = () => {};
 
   // Divider visibility — show whenever the sidebar body is visible on
   // screen (pinned OR hover-peek), so the ceiling extension aligns with

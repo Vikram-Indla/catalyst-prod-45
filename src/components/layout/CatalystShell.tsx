@@ -115,81 +115,17 @@ function CatalystShellContent() {
   const page = derivePageFromPath(location.pathname);
   const navigate = useNavigate();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string; projectId?: string }>();
-  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, setSidebarHoverOpen, cycleSidebarState } = useCatalystContext();
+  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter, sidebarExpanded, setSidebarExpanded, sidebarHidden, setSidebarHidden, sidebarPinned, setSidebarPinned, sidebarHoverOpen, cycleSidebarState } = useCatalystContext();
 
-  // ─── Hover-peek on the chevron (Jira parity) ──────────────────────────
-  // Two-zone state machine:
-  //
-  //   OPEN ZONE     = chevron button + HubSwitcher trigger
-  //                   ONLY hovering these triggers the sidebar to open.
-  //                   Hovering the sidepanel area itself does NOT open it.
-  //
-  //   KEEP-OPEN ZONE = chevron + HubSwitcher + sidebar body
-  //                   Once the sidebar is open, the cursor can travel from
-  //                   the chevron INTO the sidebar to click items without
-  //                   the sidebar collapsing. Hovering inside the sidebar
-  //                   simply prevents the close timer from firing.
-  //
-  // Close timer:
-  //   When the cursor leaves the KEEP-OPEN zone, we wait 300ms in case the
-  //   cursor is mid-traversal between chevron and sidebar (small physical
-  //   gap because chevron is in the 56px top-nav and the sidebar body
-  //   starts below it). If the cursor re-enters either zone within 300ms
-  //   the close is cancelled.
-  //
-  // Pinned mode (set via click → cycleSidebarState) bypasses this entirely.
-  useEffect(() => {
-    if (sidebarPinned) return;
-    let closeTimer: number | null = null;
-    const inOpenZone = (target: EventTarget | null): boolean => {
-      if (!(target instanceof Element)) return false;
-      // Header chevron — covers all three aria-label variants the header uses.
-      if (target.closest(
-        'button[aria-label="Expand sidebar"], button[aria-label="Collapse sidebar"], button[aria-label="Hide sidebar"]'
-      )) return true;
-      // SidebarEdgeReveal — the 8px left-edge handle rendered when the
-      // sidebar is in `sidebarHidden=true` state (e.g. on the Home page).
-      // On routes that don't render a header chevron, this is the user's
-      // ONLY hover entry point to the sidebar, so we treat it as part of
-      // the open zone. Matches by aria-label prefix because the full label
-      // includes a platform-specific shortcut hint ("⌘ [" or "Ctrl [").
-      if (target.closest('button[aria-label^="Show sidebar"]')) return true;
-      // HubSwitcher trigger — sits adjacent to the chevron, treated as the
-      // same trigger so a quick wobble between the two doesn't drop the peek.
-      if (target.closest('[data-hub-switcher]')) return true;
-      return false;
-    };
-    const inKeepOpenZone = (target: EventTarget | null): boolean => {
-      if (!(target instanceof Element)) return false;
-      if (inOpenZone(target)) return true;
-      // Sidebar body — keeps the sidebar open while the cursor is inside,
-      // but does NOT trigger open by itself.
-      if (target.closest('[data-catalyst-sidebar]')) return true;
-      return false;
-    };
-    const handleMove = (e: MouseEvent) => {
-      if (inOpenZone(e.target)) {
-        // Chevron / HubSwitcher: open the peek + cancel any pending close.
-        if (closeTimer) { window.clearTimeout(closeTimer); closeTimer = null; }
-        setSidebarHoverOpen(true);
-      } else if (inKeepOpenZone(e.target)) {
-        // Inside the sidebar body — only cancel close timer; never trigger
-        // open from here. If the sidebar is already closed, hovering the
-        // area where it WOULD render is a no-op.
-        if (closeTimer) { window.clearTimeout(closeTimer); closeTimer = null; }
-      } else {
-        // Outside every zone — schedule close (300ms grace bridges any
-        // small gap between chevron and sidebar body during traversal).
-        if (closeTimer) window.clearTimeout(closeTimer);
-        closeTimer = window.setTimeout(() => setSidebarHoverOpen(false), 300);
-      }
-    };
-    document.addEventListener('mousemove', handleMove);
-    return () => {
-      document.removeEventListener('mousemove', handleMove);
-      if (closeTimer) window.clearTimeout(closeTimer);
-    };
-  }, [sidebarPinned, setSidebarHoverOpen]);
+  // ─── Sidebar is CLICK-ONLY (April 2026, final) ────────────────────────
+  // Per user direction: hover-peek is fully disabled across every route.
+  // The sidebar opens / closes ONLY via:
+  //   • Click on the header chevron → cycleSidebarState
+  //   • Click on the SidebarEdgeReveal handle → pin sidebar open
+  //   • Cmd/Ctrl + [ keyboard shortcut → cycleSidebarState
+  // No mousemove listener, no hover triggers, no peek. sidebarHoverOpen
+  // stays in context (other surfaces still read it) but nothing in this
+  // shell ever sets it to true anymore.
 
   // Effective visibility (Jira parity):
   //   - Pinned + not hidden → solid sidebar panel (pushes content right)
