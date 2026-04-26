@@ -127,6 +127,15 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
     },
   });
 
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['idp-profiles-risks'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
+      return data || [];
+    },
+    staleTime: 60_000,
+  });
+
   const sevCounts = useMemo(() => {
     const c = { Critical: 0, High: 0, Medium: 0, Low: 0 };
     risks.forEach((r: any) => { c[sevLabel(r.risk_score || 0) as keyof typeof c]++; });
