@@ -142,6 +142,42 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
         </div>
       )}
 
+      {/* Priority + Health chips */}
+      {(initiative.priority || initiative.health_status) && (() => {
+        const prioKey = (initiative.priority || '').toLowerCase();
+        const prio = PRIORITY_STYLE[prioKey];
+        const healthKey = (initiative.health_status || '').toLowerCase();
+        const health = HEALTH_STYLE[healthKey];
+        return (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+            {prio && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '2px 8px', borderRadius: 4,
+                fontSize: 10.5, fontWeight: 600, letterSpacing: '0.02em',
+                color: prio.color, background: prio.bg,
+                fontFamily: 'var(--cp-font-body)',
+              }}>
+                <Flag size={10} />
+                {initiative.priority}
+              </span>
+            )}
+            {health && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '2px 8px', borderRadius: 4,
+                fontSize: 10.5, fontWeight: 600, letterSpacing: '0.02em',
+                color: health.color, background: health.bg,
+                fontFamily: 'var(--cp-font-body)',
+              }}>
+                <Activity size={10} />
+                {health.label}
+              </span>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Score + Priority */}
       <div style={{ marginBottom: 10 }}>
         <InitiativeMetrics score={initiative.computed_score} />
