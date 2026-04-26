@@ -5,7 +5,64 @@ import type { ProjectListItem } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { Avatar, Tooltip } from '@/components/ads';
+import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { cn } from '@/lib/utils';
+
+const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
+  critical: { bg: '#FFF1F2', text: '#BE123C', border: '#FECDD3', label: 'Critical' },
+  high:     { bg: '#FFF7ED', text: '#C2410C', border: '#FED7AA', label: 'High' },
+  medium:   { bg: '#FEFCE8', text: '#A16207', border: '#FEF08A', label: 'Medium' },
+  low:      { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0', label: 'Low' },
+};
+
+const HEALTH_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  on_track:  { bg: '#F0FDF4', text: '#15803D', label: 'On Track' },
+  at_risk:   { bg: '#FEFCE8', text: '#A16207', label: 'At Risk' },
+  off_track: { bg: '#FFF1F2', text: '#BE123C', label: 'Off Track' },
+};
+
+function PriorityChip({ priority }: { priority: string | null }) {
+  if (!priority) return null;
+  const style = PRIORITY_STYLES[priority.toLowerCase()];
+  if (!style) return null;
+  return (
+    <span
+      style={{
+        fontSize: 10,
+        fontWeight: 600,
+        padding: '2px 7px',
+        borderRadius: 4,
+        background: style.bg,
+        color: style.text,
+        border: `1px solid ${style.border}`,
+        lineHeight: '14px',
+      }}
+    >
+      {style.label}
+    </span>
+  );
+}
+
+function HealthChip({ health }: { health: string | null }) {
+  if (!health) return null;
+  const style = HEALTH_STYLES[health];
+  if (!style) return null;
+  return (
+    <span
+      style={{
+        fontSize: 10,
+        fontWeight: 600,
+        padding: '2px 7px',
+        borderRadius: 4,
+        background: style.bg,
+        color: style.text,
+        lineHeight: '14px',
+      }}
+    >
+      {style.label}
+    </span>
+  );
+}
 
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
 
