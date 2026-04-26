@@ -5,19 +5,14 @@
  */
 import React from 'react';
 import type { RoadmapStats } from './types/roadmap.types';
-import { INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, TYPE_COLORS } from './constants/roadmap.constants';
+import { INK, INK_DARK, SURFACE, SURFACE_DARK, FONT } from './constants/roadmap.constants';
 import { useTheme } from '@/hooks/useTheme';
 
 interface RoadmapKPIStripProps {
   stats: RoadmapStats;
 }
 
-const TYPE_DOTS = [
-  { key: 'project', label: 'Proj', color: TYPE_COLORS.project.solid },
-  { key: 'enhancement', label: 'Enh', color: TYPE_COLORS.enhancement.solid },
-  { key: 'entity', label: 'Ent', color: TYPE_COLORS.entity_integration.solid },
-  { key: 'improvement', label: 'Imp', color: TYPE_COLORS.improvement.solid },
-];
+const BUSINESS_REQUEST_COLOR = '#B38600';
 
 export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
   const { isDark } = useTheme();
@@ -50,12 +45,6 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
     lineHeight: 1.1,
   };
 
-  const typeCounts: Record<string, number> = {
-    project: stats.projectCount,
-    enhancement: stats.enhancementCount,
-    entity: stats.entityIntegrationCount || 0,
-    improvement: stats.improvementCount,
-  };
 
   return (
     <div
@@ -87,17 +76,12 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
         <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>Active initiatives</div>
       </div>
 
-      {/* By Type — with colored dots */}
+      {/* Business Request indicator */}
       <div style={cardStyle}>
-        <div style={labelStyle}>By Type</div>
-        <div className="flex items-center gap-3 flex-wrap" style={{ marginTop: 6 }}>
-          {TYPE_DOTS.map(t => (
-            <div key={t.key} className="flex items-center gap-1.5">
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.color, display: 'inline-block', flexShrink: 0 }} />
-              <span style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, color: t.color }}>{typeCounts[t.key]}</span>
-              <span style={{ fontSize: 10, fontWeight: 500, color: ink[3] }}>{t.label}</span>
-            </div>
-          ))}
+        <div style={labelStyle}>Work Item Type</div>
+        <div className="flex items-center gap-2" style={{ marginTop: 6 }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: BUSINESS_REQUEST_COLOR, display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, color: BUSINESS_REQUEST_COLOR }}>Business Request</span>
         </div>
       </div>
     </div>
