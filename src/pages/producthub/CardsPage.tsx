@@ -179,7 +179,7 @@ const CardsPage: React.FC = () => {
       {/* Header */}
       <div className="pc-header">
         <h1 className="pc-header-title">Product Cards</h1>
-        <p className="pc-header-subtitle">Visual initiative gallery for quick scanning — {processed.length} initiatives</p>
+        <p className="pc-header-subtitle">Visual gallery for quick scanning — {processed.length} business requests</p>
       </div>
 
       {/* Toolbar */}
@@ -231,7 +231,7 @@ const CardsPage: React.FC = () => {
           <input
             type="text"
             className="pc-search-input"
-            placeholder="Search initiatives…"
+            placeholder="Search business requests…"
             value={searchRaw}
             onChange={e => setSearchRaw(e.target.value)}
           />
@@ -244,7 +244,7 @@ const CardsPage: React.FC = () => {
           <Download size={14} /> Export
         </button>
         <button className="pc-btn-primary" onClick={() => setShowCreateDrawer(true)}>
-          <Plus size={14} /> New Initiative
+          <Plus size={14} /> New Business Request
         </button>
       </div>
 
@@ -295,7 +295,7 @@ const CardsPage: React.FC = () => {
           ) : processed.length === 0 ? (
             <div className="pc-empty">
               <Package className="pc-empty-icon" />
-              <div className="pc-empty-text">No initiatives match your filters</div>
+              <div className="pc-empty-text">No business requests match your filters</div>
               <button className="pc-empty-reset" onClick={() => { setActiveFilter('all'); setSearchRaw(''); }}>
                 Reset filters
               </button>
