@@ -11,12 +11,10 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { catalystToast } from '@/lib/catalystToast';
 import { useDepartmentOptions, useProfileOptions } from '@/hooks/useInitiativeLookups';
-import { useInitiativeTypes } from '@/hooks/useInitiativeTypes';
 import { StatusSelect } from './StatusSelect';
 import { QuarterSelect } from './QuarterSelect';
 import { PeopleSelect } from './PeopleSelect';
 import { DepartmentSelect } from './DepartmentSelect';
-import { InitiativeTypeSelect } from './InitiativeTypeSelect';
 
 /* ── Token constants ── */
 const T = {
