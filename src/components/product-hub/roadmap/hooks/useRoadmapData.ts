@@ -17,13 +17,13 @@ const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
   cancelled: 'Cancelled',
 };
 
-// ── Type mapping: DB key → UI type ──
+// ── Type mapping (single business_request type) ──
 const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
-  project: 'project',
-  enhancement: 'enhancement',
-  improvement: 'improvement',
-  
-  entity_integration: 'entity_integration',
+  project: 'business_request',
+  enhancement: 'business_request',
+  improvement: 'business_request',
+  entity_integration: 'business_request',
+  business_request: 'business_request',
 };
 
 // ── Color fallback for owners — deterministic from name ──
