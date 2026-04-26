@@ -186,6 +186,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
     }
     setShowModal(false);
     refetch();
+    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
   };
 
   const handleComplete = async (m: any) => {
