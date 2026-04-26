@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom';
 import { X, Search, Plus, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { INK, SURFACE, FONT, TYPE_COLORS } from './constants/roadmap.constants';
 import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmapData';
+import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { toast } from 'sonner';
 
 interface AddInitiativeModalProps {
