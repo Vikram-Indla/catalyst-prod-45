@@ -486,7 +486,7 @@ export default function HomeSidebar({
             // Path is a placeholder — onClick takes precedence and opens
             // the universal detail drawer instead of navigating.
             path: `#recent-${issue.id}`,
-            icon: getWorkItemIconComponent(iconType),
+            icon: getWorkItemIconComponent(iconType as WorkItemIconType),
             onClick: () =>
               openDetail({
                 id: issue.id,
