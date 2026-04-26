@@ -33,7 +33,7 @@ export function RoadmapListPanel({
     >
       <div className="flex items-center gap-2">
         <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748B' }}>
-          Initiatives
+          Business Requests
         </span>
         <span
           style={{
