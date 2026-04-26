@@ -77,8 +77,6 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
   const rawPill = STATUS_PILL_STYLES[initiative.status] || DEFAULT_STATUS_PILL;
   const pillStyle = isDark ? darkPill(rawPill) : rawPill;
   
-  const typeKey = initiative.initiative_type_key || '';
-  const typeConf = TYPE_CONFIG[typeKey];
 
   const handleStar = async (e: React.MouseEvent) => {
     e.stopPropagation();
