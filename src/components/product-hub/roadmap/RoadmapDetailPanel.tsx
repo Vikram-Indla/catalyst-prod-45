@@ -96,7 +96,6 @@ interface RoadmapDetailPanelProps {
 export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('details');
   const [isVisible, setIsVisible] = useState(false);
-  const [updatingType, setUpdatingType] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
