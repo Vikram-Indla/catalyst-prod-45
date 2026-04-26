@@ -335,13 +335,11 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div className="idp-form-field" style={{ marginBottom: 0 }}>
                   <label className="idp-form-label">Owner</label>
-                  <CustomSelect
-                    value={profiles.find((p: any) => p.id === form.owner_id)?.full_name || 'Unassigned'}
-                    options={['Unassigned', ...profiles.map((p: any) => p.full_name)]}
-                    onChange={v => {
-                      const p = profiles.find((pr: any) => pr.full_name === v);
-                      setForm(f => ({ ...f, owner_id: p?.id || '' }));
-                    }}
+                  <IdSelect
+                    value={form.owner_id}
+                    placeholder="Unassigned"
+                    options={profiles.map((p: any) => ({ id: p.id, label: p.full_name || p.email || p.id }))}
+                    onChange={(id) => setForm(f => ({ ...f, owner_id: id }))}
                   />
                 </div>
                 <div className="idp-form-field" style={{ marginBottom: 0 }}>
