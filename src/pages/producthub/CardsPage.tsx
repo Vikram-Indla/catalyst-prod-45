@@ -12,7 +12,7 @@ import type { Initiative } from '@/types/initiative';
 import type { FilterChip, TimelineInitiative } from '@/types/producthub/initiative';
 import { FILTER_CHIPS } from '@/types/producthub/initiative';
 import { getPriorityLevel, STATUS_DISPLAY } from '@/types/initiative';
-import { getTypeLabel } from '@/utils/initiative-type-utils';
+const getTypeLabel = (_key?: string | null) => 'Business Request';
 import { formatDistanceToNow } from 'date-fns';
 import '@/styles/product-cards.css';
 import '@/styles/product-kanban.css';

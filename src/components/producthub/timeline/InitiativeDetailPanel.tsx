@@ -6,10 +6,10 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import type { LucideIcon } from 'lucide-react';
 import {
-  ArrowLeft, X, Building2, Zap, Wrench, Link2, Archive, Copy, Trash2,
+  ArrowLeft, X, Archive, Copy, Trash2,
 } from 'lucide-react';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
@@ -56,19 +56,8 @@ const STATUS_LABELS: Record<string, string> = {
   closed: 'Done', cancelled: 'Cancelled',
 };
 
-const TYPE_ICON_MAP: Record<string, LucideIcon> = {
-  project: Building2,
-  enhancement: Zap,
-  improvement: Wrench,
-  entity_integration: Link2,
-};
+// Type concept removed — every Product Hub item is a Business Request.
 
-const TYPE_COLORS: Record<string, { textColor: string; fillColor: string }> = {
-  project:             { textColor: '#08736B', fillColor: '#0D9488' },
-  enhancement:         { textColor: '#2563EB', fillColor: '#2563EB' },
-  improvement:         { textColor: '#9A5402', fillColor: '#D97706' },
-  entity_integration:  { textColor: '#7C3AED', fillColor: '#7C3AED' },
-};
 
 const PRIORITY_LEVELS: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
 
@@ -115,9 +104,6 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   const di = isDark ? 1 : 0;
   const pillColors = { text: rawPill.text[di], bg: rawPill.bg[di], bdr: rawPill.bdr[di] };
   const statusLabel = STATUS_LABELS[dbStatus] || initiative.status;
-  const typeKey = initiative.initiative_type_key || '';
-  const typeColors = TYPE_COLORS[typeKey];
-  const TypeIcon = TYPE_ICON_MAP[typeKey];
   const priority = (initiative as any).priority || 'medium';
   const priorityBars = PRIORITY_LEVELS[priority.toLowerCase()] || 2;
 
@@ -181,7 +167,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      toast.success('Initiative deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      toast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
       handleClose();
     },
     onError: () => toast.error('Failed to delete'),
@@ -208,7 +194,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       });
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-      toast.success('Initiative cloned', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      toast.success('Business Request cloned', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     } catch { toast.error('Clone failed'); }
   };
 
@@ -260,7 +246,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           {initiative.is_archived && (
             <div className="idp-archived-banner">
               <Archive size={14} />
-              <span>This initiative has been archived</span>
+              <span>This business request has been archived</span>
             </div>
           )}
           {/* Key + Title on same line */}
@@ -296,14 +282,10 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               <div className="idp-status-dot" style={{ background: pillColors.text }} />
               <span style={{ color: pillColors.text }}>{statusLabel}</span>
             </div>
-            {typeColors && TypeIcon && (
-              <div className="idp-type-badge">
-                <TypeIcon size={13} className="idp-type-icon" />
-                <span className="idp-type-label" style={{ color: typeColors.textColor }}>
-                  {initiative.initiative_type_label || initiative.initiative_type_key}
-                </span>
-              </div>
-            )}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <JiraIssueTypeIcon issueType="Feature" size={16} />
+              <span style={{ fontSize: 12, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
+            </div>
             <div className="idp-priority-bars">
               {[1, 2, 3, 4].map(i => (
                 <div
@@ -365,7 +347,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Initiative</AlertDialogTitle>
+            <AlertDialogTitle>Delete Business Request</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete <strong>{initiative.initiative_key}</strong>? This action uses soft-delete and can be reversed.
             </AlertDialogDescription>

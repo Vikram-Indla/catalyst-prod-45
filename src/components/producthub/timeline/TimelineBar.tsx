@@ -9,7 +9,8 @@ import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
 import { TimelineContextMenu } from './TimelineContextMenu';
-import { getTypeColor } from '@/utils/initiative-type-utils';
+// Type concept removed — Business Request uses single brand color.
+const getTypeColor = (_key?: string | null) => ({ hex: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', border: '#1D4ED8', gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)' });
 
 interface TimelineBarProps {
   initiative: TimelineInitiative;

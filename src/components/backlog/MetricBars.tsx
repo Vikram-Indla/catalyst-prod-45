@@ -83,6 +83,20 @@ export function InitiativeMetrics({ score }: { score?: number | null }) {
           </span>
         </div>
       </div>
+      <div>
+        <div style={{
+          fontFamily: 'var(--cp-font-body)',
+          fontSize: '10px',
+          fontWeight: 600,
+          color: '#71717A',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          marginBottom: '4px',
+        }}>
+          PRIORITY
+        </div>
+        <InitiativePriorityBars score={score} />
+      </div>
     </div>
   );
 }
