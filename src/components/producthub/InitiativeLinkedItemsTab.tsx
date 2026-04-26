@@ -28,7 +28,11 @@ export const InitiativeLinkedItemsTab: React.FC<InitiativeLinkedItemsTabProps> =
     const like = q ? `%${q}%` : '%';
     const keyLike = q ? `${q}%` : '%';
 
-    const [epicsCatRes, epicsPhRes, projectsRes] = await Promise.all([
+    // Picker only surfaces Epics. Projects were removed (Apr 2026) — they
+    // had no rendering consumer in any detail view, so linking to a Project
+    // produced an orphan row. Re-add only when a Project surface consumes
+    // ph_issue_links.
+    const [epicsCatRes, epicsPhRes] = await Promise.all([
       supabase
         .from('catalyst_issues')
         .select('issue_key, title, issue_type')
@@ -41,11 +45,6 @@ export const InitiativeLinkedItemsTab: React.FC<InitiativeLinkedItemsTabProps> =
         .eq('issue_type', 'Epic')
         .is('jira_removed_at', null)
         .or(`issue_key.ilike.${keyLike},summary.ilike.${like}`)
-        .limit(10),
-      supabase
-        .from('projects')
-        .select('id, name, key')
-        .or(`key.ilike.${keyLike},name.ilike.${like}`)
         .limit(10),
     ]);
 
@@ -64,14 +63,8 @@ export const InitiativeLinkedItemsTab: React.FC<InitiativeLinkedItemsTabProps> =
         summary: r.summary,
         issue_type: 'Epic',
       }));
-    const projects: PickerOption[] = (projectsRes.data ?? []).map((r: any) => ({
-      value: r.key || r.id,
-      label: `${r.key} ${r.name}`,
-      summary: r.name,
-      issue_type: 'Project',
-    }));
 
-    return [...epicsCat, ...epicsPh, ...projects];
+    return [...epicsCat, ...epicsPh];
   }, []);
 
   if (!initiative?.initiative_key) {
