@@ -36,6 +36,7 @@
     "@atlaskit/dynamic-table": "^15.2.0",
     "@atlaskit/editor-common": "^112.19.0",
     "@atlaskit/editor-core": "^217.12.4",
+    "@atlaskit/editor-toolbar": "^1.0.8",
     "@atlaskit/empty-state": "^10.2.0",
     "@atlaskit/flag": "^17.9.8",
     "@atlaskit/form": "^10",
