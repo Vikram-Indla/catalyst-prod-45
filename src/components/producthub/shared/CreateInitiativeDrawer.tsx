@@ -234,11 +234,9 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const handleCreate = async (addAnother: boolean) => {
     if (!form.title.trim()) { setTitleError(true); return; }
     const key = nextKey || 'MIM-001';
-    const typeId = initiativeTypes?.find((t: any) => t.key === selectedType)?.id || null;
     await createMutation.mutateAsync({
       ...form,
       initiative_key: key,
-      initiative_type_id: typeId,
     });
     onCreated?.(key);
     if (addAnother) {
