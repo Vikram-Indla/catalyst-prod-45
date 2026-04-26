@@ -68,6 +68,8 @@ export interface LinkToolbarProps {
   onCreateNew?: (linkType: string) => void;
   onCancel: () => void;
   isPending?: boolean;
+  /** Optional override for the AsyncSelect loadOptions (e.g. initiative → epic/project search). */
+  loadOptionsOverride?: (input: string) => Promise<PickerOption[]>;
 }
 
 export function LinkToolbar({
@@ -77,6 +79,7 @@ export function LinkToolbar({
   onCreateNew,
   onCancel,
   isPending,
+  loadOptionsOverride,
 }: LinkToolbarProps) {
   const [linkType, setLinkType] = useState<LinkTypeOption>(
     LINK_TYPES.find((lt) => lt.value === DEFAULT_LINK_TYPE) ?? LINK_TYPES[0],
@@ -135,6 +138,10 @@ export function LinkToolbar({
   );
 
   const loadOptions = async (input: string): Promise<PickerOption[]> => {
+    if (loadOptionsOverride) {
+      const opts = await loadOptionsOverride(input);
+      return opts.filter(filterRow);
+    }
     const q = input.trim();
     if (!q) {
       return defaultOptions.filter(filterRow);

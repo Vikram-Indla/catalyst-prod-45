@@ -44,12 +44,15 @@ export interface LinkedWorkItemsSectionProps {
   issueKey?: string;
   /** Used by the create-linked-work-item flow to resolve projectId. */
   projectKey?: string;
+  /** Optional override for the link picker AsyncSelect loadOptions. */
+  loadOptionsOverride?: (input: string) => Promise<any[]>;
 }
 
 export function LinkedWorkItemsSection({
   issueId,
   issueKey,
   projectKey,
+  loadOptionsOverride,
 }: LinkedWorkItemsSectionProps) {
   // Early-render guard: some detail views render the section while the
   // primary issue query is still loading. Matches legacy behaviour —
@@ -67,6 +70,7 @@ export function LinkedWorkItemsSection({
         issueId={issueId}
         issueKey={issueKey}
         projectKey={projectKey}
+        loadOptionsOverride={loadOptionsOverride}
       />
     </AtlaskitBoundary>
   );

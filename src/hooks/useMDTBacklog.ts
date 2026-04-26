@@ -60,7 +60,7 @@ export function useMDTBacklog() {
       // 2026 GUARDRAIL — only show items created or updated in 2026+
       const YEAR_2026 = '2026-01-01T00:00:00Z';
 
-      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult] = await Promise.all([
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult, milestonesResult] = await Promise.all([
         typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
@@ -76,6 +76,8 @@ export function useMDTBacklog() {
           .not('parent_key', 'is', null)
           .is('archived_at', null)
           .limit(5000),
+        // Milestone counts per initiative — minimal projection for tally only
+        typedQuery('ph_initiative_milestones').select('initiative_id').limit(10000),
       ]);
 
       if (initResult.error) throw initResult.error;
@@ -118,6 +120,13 @@ export function useMDTBacklog() {
         });
       });
 
+      // Tally milestones per initiative_id
+      const milestoneCountMap = new Map<string, number>();
+      (milestonesResult.data || []).forEach((m: any) => {
+        if (!m.initiative_id) return;
+        milestoneCountMap.set(m.initiative_id, (milestoneCountMap.get(m.initiative_id) || 0) + 1);
+      });
+
       const initiatives: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
         const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
@@ -147,6 +156,7 @@ export function useMDTBacklog() {
           progress: row.progress ?? 0,
           sort_order: row.sort_order ?? idx,
           risk_count: row.risk_count ?? 0,
+          milestone_count: milestoneCountMap.get(row.id) ?? 0,
           is_archived: row.is_archived ?? false,
           is_favorited: favSet.has(row.id),
           score_strategic_alignment: scores?.strategic_alignment ?? null,

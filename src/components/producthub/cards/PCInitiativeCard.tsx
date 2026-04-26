@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, type LucideIcon } from 'lucide-react';
+import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, Flag, Activity, Target, type LucideIcon } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
@@ -56,6 +56,22 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIc
   improvement: { label: 'Improvement', color: '#D97706', Icon: Wrench },
   entity_integration: { label: 'Entity Integration', color: '#7C3AED', Icon: Link },
   business_request: { label: 'Business Request', color: '#B45309', Icon: Lightbulb },
+};
+
+const PRIORITY_STYLE: Record<string, { color: string; bg: string }> = {
+  critical: { color: '#B91C1C', bg: '#FEE2E2' },
+  high:     { color: '#C2410C', bg: '#FFEDD5' },
+  medium:   { color: '#A16207', bg: '#FEF3C7' },
+  low:      { color: '#15803D', bg: '#DCFCE7' },
+};
+
+const HEALTH_STYLE: Record<string, { color: string; bg: string; label: string }> = {
+  green:    { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
+  on_track: { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
+  amber:    { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
+  at_risk:  { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
+  red:      { color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
+  off_track:{ color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
 };
 
 
@@ -126,6 +142,42 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
         </div>
       )}
 
+      {/* Priority + Health chips */}
+      {(initiative.priority || initiative.health_status) && (() => {
+        const prioKey = (initiative.priority || '').toLowerCase();
+        const prio = PRIORITY_STYLE[prioKey];
+        const healthKey = (initiative.health_status || '').toLowerCase();
+        const health = HEALTH_STYLE[healthKey];
+        return (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+            {prio && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '2px 8px', borderRadius: 4,
+                fontSize: 10.5, fontWeight: 600, letterSpacing: '0.02em',
+                color: prio.color, background: prio.bg,
+                fontFamily: 'var(--cp-font-body)',
+              }}>
+                <Flag size={10} />
+                {initiative.priority}
+              </span>
+            )}
+            {health && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '2px 8px', borderRadius: 4,
+                fontSize: 10.5, fontWeight: 600, letterSpacing: '0.02em',
+                color: health.color, background: health.bg,
+                fontFamily: 'var(--cp-font-body)',
+              }}>
+                <Activity size={10} />
+                {health.label}
+              </span>
+            )}
+          </div>
+        );
+      })()}
+
       {/* Score + Priority */}
       <div style={{ marginBottom: 10 }}>
         <InitiativeMetrics score={initiative.computed_score} />
@@ -170,8 +222,17 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
               </>
             )}
           </div>
-          <div className="pc-card-updated">
-            Updated {formatDistanceToNow(new Date(initiative.updated_at), { addSuffix: true })}
+          <div className="pc-card-updated" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>Updated {formatDistanceToNow(new Date(initiative.updated_at), { addSuffix: true })}</span>
+            {!!initiative.milestone_count && initiative.milestone_count > 0 && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 3,
+                fontSize: 10.5, fontWeight: 600, color: '#475569',
+              }}>
+                <Target size={10} />
+                {initiative.milestone_count}
+              </span>
+            )}
           </div>
         </div>
         {initiative.assignee_name && (
