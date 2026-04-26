@@ -542,12 +542,12 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
             if (insertError) throw insertError;
             initiativeId = inserted.id;
           }
-          await promoteMutation.mutateAsync({ initiative_id: initiativeId, initiative_type_key: initiative.initiative_type_key || 'project' });
+          await promoteMutation.mutateAsync({ initiative_id: initiativeId });
         }
         queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       } else {
         if (!newValue) await removeMutation.mutateAsync(initiative.id);
-        else await promoteMutation.mutateAsync({ initiative_id: initiative.id, initiative_type_key: initiative.initiative_type_key || 'project' });
+        else await promoteMutation.mutateAsync({ initiative_id: initiative.id });
       }
     } catch (err) {
       console.error('Roadmap toggle failed:', err);
@@ -760,9 +760,9 @@ function DetailsContent({ initiative, onQuickEdit, onStatusChange }: {
   const { data: profileOptions } = useProfileOptions();
   const avatarsByName = useProfileAvatarsByName();
   const getAvatar = (name: string | null) => name ? avatarsByName.get(name.toLowerCase()) : undefined;
-  const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(initiative.initiative_type_key ?? null);
+  const [selectedTypeKey, setSelectedTypeKey] = useState<string | null>(null);
 
-  useEffect(() => { setSelectedTypeKey(initiative.initiative_type_key ?? null); }, [initiative.id, initiative.initiative_type_key]);
+  useEffect(() => { setSelectedTypeKey(null); }, [initiative.id]);
 
   const TYPE_OPTIONS = [
     { key: 'project', label: 'Project', Icon: FolderKanban, color: 'var(--pb-teal)' },
