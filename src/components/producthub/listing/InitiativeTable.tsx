@@ -59,7 +59,7 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import {
   StatusCell, PriorityCell, ScoreCell, AssigneeCell,
-  DateCell, ProgressCell, EACell, QuarterCell, IDCell, TypeIconCell,
+  DateCell, ProgressCell, EACell, QuarterCell, IDCell,
 } from './CellRenderers';
 import type { ColumnConfig } from './ColumnManager';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
@@ -216,14 +216,6 @@ export function InitiativeTable({
         >
           <MapIcon size={16} style={{ color: (row as any).on_roadmap ? 'var(--pb-primary)' : 'var(--pb-ink-muted)', opacity: (row as any).on_roadmap ? 1 : 0.4 }} />
         </button>
-      ),
-    },
-    {
-      id: 'type', label: 'TY', width: 4,
-      cell: ({ row }) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-          <TypeIconCell typeKey={(row as any).initiative_type_key} />
-        </div>
       ),
     },
     {
