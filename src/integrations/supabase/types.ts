@@ -26722,6 +26722,7 @@ export type Database = {
           is_archived: boolean | null
           key: string
           name: string
+          priority: string | null
           start_date: string | null
           status: string
           updated_at: string | null
@@ -26743,6 +26744,7 @@ export type Database = {
           is_archived?: boolean | null
           key: string
           name: string
+          priority?: string | null
           start_date?: string | null
           status?: string
           updated_at?: string | null
@@ -26764,6 +26766,7 @@ export type Database = {
           is_archived?: boolean | null
           key?: string
           name?: string
+          priority?: string | null
           start_date?: string | null
           status?: string
           updated_at?: string | null
@@ -33904,6 +33907,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      project_scores: {
+        Row: {
+          business_impact: number | null
+          computed_score: number | null
+          created_at: string
+          id: string
+          project_id: string
+          resource_feasibility: number | null
+          scored_by: string | null
+          strategic_alignment: number | null
+          time_urgency: number | null
+          updated_at: string
+        }
+        Insert: {
+          business_impact?: number | null
+          computed_score?: number | null
+          created_at?: string
+          id?: string
+          project_id: string
+          resource_feasibility?: number | null
+          scored_by?: string | null
+          strategic_alignment?: number | null
+          time_urgency?: number | null
+          updated_at?: string
+        }
+        Update: {
+          business_impact?: number | null
+          computed_score?: number | null
+          created_at?: string
+          id?: string
+          project_id?: string
+          resource_feasibility?: number | null
+          scored_by?: string | null
+          strategic_alignment?: number | null
+          time_urgency?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       project_sequences: {
         Row: {

@@ -26,7 +26,15 @@ export interface StepDetailsData {
   lead_id: string;
   linkJira: boolean;
   jiraKey: string;
+  priority: 'critical' | 'high' | 'medium' | 'low' | '';
 }
+
+const PRIORITY_OPTIONS: Array<{ value: 'critical' | 'high' | 'medium' | 'low'; label: string }> = [
+  { value: 'critical', label: 'Critical' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+];
 
 interface StepDetailsProps {
   data: StepDetailsData;
@@ -198,6 +206,44 @@ export function StepDetails({ data, onChange, isValid, onValidChange }: StepDeta
           className={inputClassName}
           style={inputStyle}
         />
+      </div>
+
+      {/* Priority */}
+      <div>
+        <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--fg-2)', display: 'block', marginBottom: 4 }}>
+          Priority
+        </label>
+        <div className="grid grid-cols-4 gap-2">
+          {PRIORITY_OPTIONS.map(opt => {
+            const selected = data.priority === opt.value;
+            const colorMap: Record<string, { bg: string; text: string; border: string }> = {
+              critical: { bg: '#FFF1F2', text: '#BE123C', border: '#FECDD3' },
+              high:     { bg: '#FFF7ED', text: '#C2410C', border: '#FED7AA' },
+              medium:   { bg: '#FEFCE8', text: '#A16207', border: '#FEF08A' },
+              low:      { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0' },
+            };
+            const c = colorMap[opt.value];
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => onChange({ ...data, priority: selected ? '' : opt.value })}
+                style={{
+                  height: 36,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  borderRadius: 6,
+                  background: selected ? c.bg : 'transparent',
+                  color: selected ? c.text : 'var(--fg-2)',
+                  border: `1px solid ${selected ? c.border : 'var(--divider)'}`,
+                  cursor: 'pointer',
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Lead Picker */}

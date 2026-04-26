@@ -5,7 +5,64 @@ import type { ProjectListItem } from '@/types/projecthub';
 import { MemberStack } from './MemberStack';
 import { ProjectStatusBadge } from './ProjectStatusBadge';
 import { Avatar, Tooltip } from '@/components/ads';
+import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { cn } from '@/lib/utils';
+
+const PRIORITY_STYLES: Record<string, { bg: string; text: string; border: string; label: string }> = {
+  critical: { bg: '#FFF1F2', text: '#BE123C', border: '#FECDD3', label: 'Critical' },
+  high:     { bg: '#FFF7ED', text: '#C2410C', border: '#FED7AA', label: 'High' },
+  medium:   { bg: '#FEFCE8', text: '#A16207', border: '#FEF08A', label: 'Medium' },
+  low:      { bg: '#F0FDF4', text: '#15803D', border: '#BBF7D0', label: 'Low' },
+};
+
+const HEALTH_STYLES: Record<string, { bg: string; text: string; label: string }> = {
+  on_track:  { bg: '#F0FDF4', text: '#15803D', label: 'On Track' },
+  at_risk:   { bg: '#FEFCE8', text: '#A16207', label: 'At Risk' },
+  off_track: { bg: '#FFF1F2', text: '#BE123C', label: 'Off Track' },
+};
+
+function PriorityChip({ priority }: { priority: string | null }) {
+  if (!priority) return null;
+  const style = PRIORITY_STYLES[priority.toLowerCase()];
+  if (!style) return null;
+  return (
+    <span
+      style={{
+        fontSize: 10,
+        fontWeight: 600,
+        padding: '2px 7px',
+        borderRadius: 4,
+        background: style.bg,
+        color: style.text,
+        border: `1px solid ${style.border}`,
+        lineHeight: '14px',
+      }}
+    >
+      {style.label}
+    </span>
+  );
+}
+
+function HealthChip({ health }: { health: string | null }) {
+  if (!health) return null;
+  const style = HEALTH_STYLES[health];
+  if (!style) return null;
+  return (
+    <span
+      style={{
+        fontSize: 10,
+        fontWeight: 600,
+        padding: '2px 7px',
+        borderRadius: 4,
+        background: style.bg,
+        color: style.text,
+        lineHeight: '14px',
+      }}
+    >
+      {style.label}
+    </span>
+  );
+}
 
 const BADGE_COLORS = ['#3B82F6', '#6366F1', '#0891B2', '#475569', '#0D9488', '#78716C'];
 
@@ -102,7 +159,11 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
 
             {/* Status + Lead row */}
             <div className="flex items-center justify-between mt-3">
-              <ProjectStatusBadge status={p.status} />
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <ProjectStatusBadge status={p.status} />
+                <PriorityChip priority={p.priority} />
+                <HealthChip health={p.health_status} />
+              </div>
               {p.lead_name ? (
                 <div className="flex items-center gap-1.5">
                   <Avatar src={p.lead_avatar_url || undefined} name={p.lead_name || '??'} size="xxsmall" />
@@ -113,6 +174,11 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               ) : (
                 <span className="text-xs text-slate-400 dark:text-[#A1A1A1]">—</span>
               )}
+            </div>
+
+            {/* Score + Priority bars */}
+            <div className="mt-3">
+              <InitiativeMetrics score={p.computed_score ?? null} />
             </div>
 
             {/* E/S/T stats — flex-1 fills space */}
@@ -134,6 +200,31 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   <div className="text-[10px] font-medium tracking-widest uppercase text-slate-400 dark:text-[#A1A1A1] mt-1">{s.l}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Progress bar */}
+            <div className="mt-3">
+              <div
+                style={{
+                  width: '100%',
+                  height: 4,
+                  background: '#F4F4F5',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    width: `${Math.min(p.completion_percentage ?? 0, 100)}%`,
+                    height: '100%',
+                    background: '#2563EB',
+                    transition: 'width 200ms ease',
+                  }}
+                />
+              </div>
+              <div style={{ fontSize: 10, color: '#71717A', marginTop: 4 }}>
+                {p.completion_percentage ?? 0}% complete
+              </div>
             </div>
 
             {/* Footer: sync + members + updated — pinned bottom */}

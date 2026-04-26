@@ -23,7 +23,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
 
   const [details, setDetails] = useState<StepDetailsData>({
     name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB',
-    lead_id: '', linkJira: false, jiraKey: '',
+    lead_id: '', linkJira: false, jiraKey: '', priority: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
     useDefault: true, copyFromProject: null, featureLayer: false,
@@ -33,7 +33,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (open) {
       setStep(0);
-      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB', lead_id: '', linkJira: false, jiraKey: '' });
+      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
       setWorkflow({ useDefault: true, copyFromProject: null, featureLayer: false });
       setMembers([]);
       setStep1Valid(false);
@@ -60,6 +60,15 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
         p_feature_layer: workflow.featureLayer, p_user_id: user.id,
       });
       if (error) throw new Error(error.message);
+
+      // Persist priority on the new ph_projects row (separate from RPC)
+      if (details.priority && projectId) {
+        const { error: prErr } = await (supabase as any)
+          .from('ph_projects')
+          .update({ priority: details.priority })
+          .eq('id', projectId);
+        if (prErr) console.warn('Failed to set priority:', prErr.message);
+      }
 
       // Add lead as member with role 'lead'
       if (details.lead_id && projectId) {
