@@ -261,8 +261,7 @@ export default defineConfig(({ mode, command }) => {
       '@atlaskit/checkbox',
       '@atlaskit/drawer',
       '@atlaskit/dropdown-menu',
-      // @atlaskit/dynamic-table retired 2026-04-26 — last importer
-      // (SubtasksPanel) migrated to canonical JiraTable.
+      '@atlaskit/dynamic-table',
       '@atlaskit/empty-state',
       '@atlaskit/flag',
       '@atlaskit/form',
