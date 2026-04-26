@@ -365,7 +365,7 @@ export function InitiativeTable({
   const emptyView = (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '64px 0' }}>
       <LayoutGrid size={48} style={{ color: 'var(--pb-border-strong)' }} />
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--pb-ink)' }}>No initiatives match your filters</h3>
+      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--pb-ink)' }}>No business requests match your filters</h3>
       <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)' }}>Try adjusting your search or filter criteria</p>
     </div>
   );
