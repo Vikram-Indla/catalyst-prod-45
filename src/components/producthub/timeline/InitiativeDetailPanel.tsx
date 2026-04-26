@@ -56,19 +56,8 @@ const STATUS_LABELS: Record<string, string> = {
   closed: 'Done', cancelled: 'Cancelled',
 };
 
-const TYPE_ICON_MAP: Record<string, LucideIcon> = {
-  project: Building2,
-  enhancement: Zap,
-  improvement: Wrench,
-  entity_integration: Link2,
-};
+// Type concept removed — every Product Hub item is a Business Request.
 
-const TYPE_COLORS: Record<string, { textColor: string; fillColor: string }> = {
-  project:             { textColor: '#08736B', fillColor: '#0D9488' },
-  enhancement:         { textColor: '#2563EB', fillColor: '#2563EB' },
-  improvement:         { textColor: '#9A5402', fillColor: '#D97706' },
-  entity_integration:  { textColor: '#7C3AED', fillColor: '#7C3AED' },
-};
 
 const PRIORITY_LEVELS: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
 
