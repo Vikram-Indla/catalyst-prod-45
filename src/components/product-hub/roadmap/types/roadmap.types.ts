@@ -43,10 +43,8 @@ export interface RoadmapInitiative {
   hasRealEndDate: boolean;
   rawDbId: string;
   rawStatus: string;
-  rawTypeKey: string;
   rawAssigneeId: string | null;
   rawBusinessOwnerId: string | null;
-  rawInitiativeTypeId: string | null;
 }
 
 export interface RoadmapStats {
@@ -54,10 +52,6 @@ export interface RoadmapStats {
   totalInitiatives: number;
   activeCount: number;
   validationCount: number;
-  projectCount: number;
-  enhancementCount: number;
-  improvementCount: number;
-  entityIntegrationCount: number;
   currentQuarter: string;
 }
 

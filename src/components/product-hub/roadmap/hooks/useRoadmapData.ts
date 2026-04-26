@@ -220,10 +220,8 @@ export function useRoadmapInitiatives() {
           hasRealEndDate,
           rawDbId: row.id,
           rawStatus: row.status || 'new_demand',
-          rawTypeKey: row.initiative_type_key || 'project',
           rawAssigneeId: row.assignee_id || null,
           rawBusinessOwnerId: row.business_owner_id || null,
-          rawInitiativeTypeId: row.initiative_type_id || null,
         };
       });
     },
@@ -251,10 +249,6 @@ export function useRoadmapStats() {
         totalInitiatives: Number(data.total_initiatives) || 0,
         activeCount: Number(data.active_count) || 0,
         validationCount: Number(data.validation_count) || 0,
-        projectCount: Number(data.roadmap_projects) || 0,
-        enhancementCount: Number(data.roadmap_enhancements) || 0,
-        improvementCount: Number(data.roadmap_improvements) || 0,
-        entityIntegrationCount: Number(data.roadmap_entity_integrations) || 0,
         currentQuarter: `Q${q} ${now.getFullYear()}`,
       };
     },

@@ -87,7 +87,6 @@ function useCreateInitiative() {
           business_ask_date: newInit.business_ask_date || null,
           initiative_key: newInit.initiative_key,
           progress: 0, sort_order: 0, is_archived: false,
-          initiative_type_id: newInit.initiative_type_id || null,
           on_roadmap: false,
         })
         .select().single();

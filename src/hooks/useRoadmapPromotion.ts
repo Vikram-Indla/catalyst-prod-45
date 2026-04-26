@@ -6,15 +6,13 @@ export function usePromoteToRoadmap() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ initiative_id, initiative_type_key, roadmap_priority }: {
+    mutationFn: async ({ initiative_id, roadmap_priority }: {
       initiative_id: string;
-      initiative_type_key?: string;
       roadmap_priority?: number;
     }) => {
       const { data, error } = await typedRpc('promote_to_roadmap', {
         p_initiative_id: initiative_id,
         p_user_id: null,
-        p_initiative_type_key: initiative_type_key || null,
         p_roadmap_priority: roadmap_priority || null,
       });
       if (error) throw error;
