@@ -126,7 +126,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       status: form.status.toLowerCase(),
       probability: form.probability,
       impact: form.impact,
-      risk_score: form.probability * form.impact,
+      // risk_score is a GENERATED column (probability * impact) — DB computes it
       mitigation_plan: form.mitigation_plan.trim() || null,
       contingency_plan: form.contingency_plan.trim() || null,
     };
