@@ -11,17 +11,8 @@ import { Calendar } from 'lucide-react';
 import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
-const TYPE_COLORS: Record<string, string> = {
-  project: '#2563EB',
-  enhancement: '#0D9488',
-  improvement: '#D97706',
-};
-
-const TYPE_HOVER_GRADIENTS: Record<string, string> = {
-  project: 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)',
-  enhancement: 'linear-gradient(135deg, #0D9488 0%, #14B8A6 100%)',
-  improvement: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
-};
+const BUSINESS_REQUEST_COLOR = '#B38600';
+const BUSINESS_REQUEST_HOVER_GRADIENT = 'linear-gradient(135deg, #B38600 0%, #D9A300 100%)';
 
 interface RoadmapTimelineBarProps {
   item: RoadmapDemand;
