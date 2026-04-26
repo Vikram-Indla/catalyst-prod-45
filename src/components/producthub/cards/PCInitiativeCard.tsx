@@ -58,6 +58,22 @@ const TYPE_CONFIG: Record<string, { label: string; color: string; Icon: LucideIc
   business_request: { label: 'Business Request', color: '#B45309', Icon: Lightbulb },
 };
 
+const PRIORITY_STYLE: Record<string, { color: string; bg: string }> = {
+  critical: { color: '#B91C1C', bg: '#FEE2E2' },
+  high:     { color: '#C2410C', bg: '#FFEDD5' },
+  medium:   { color: '#A16207', bg: '#FEF3C7' },
+  low:      { color: '#15803D', bg: '#DCFCE7' },
+};
+
+const HEALTH_STYLE: Record<string, { color: string; bg: string; label: string }> = {
+  green:    { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
+  on_track: { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
+  amber:    { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
+  at_risk:  { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
+  red:      { color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
+  off_track:{ color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
+};
+
 
 export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
   const queryClient = useQueryClient();
