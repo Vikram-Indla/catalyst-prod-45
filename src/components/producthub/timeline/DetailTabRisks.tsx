@@ -101,7 +101,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
 
   const openAdd = () => {
     setEditingRisk(null);
-    setForm({ title: '', description: '', category: 'Technical', status: 'Open', probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '' });
+    setForm({ title: '', description: '', category: 'Technical', status: 'Open', probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '', owner_id: '' });
     setShowModal(true);
   };
   const openEdit = (r: any) => {
