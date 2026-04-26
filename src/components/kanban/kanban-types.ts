@@ -20,6 +20,12 @@ export interface BoardIssue {
   isFlagged: boolean;
   updatedAt: string | null;
   createdAt: string | null;
+  /**
+   * Optional hub-scoped source indicator (e.g., 'catalyst' | 'jira').
+   * When set, hub-scoped renderers (ProductHub kanban) render a SourceBadge.
+   * Other hubs simply ignore it.
+   */
+  sourceTag?: 'catalyst' | 'jira' | null;
 }
 
 export type GroupByMode = 'none' | 'assignee' | 'epic' | 'priority' | 'fixVersion';
