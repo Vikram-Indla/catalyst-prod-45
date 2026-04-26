@@ -1,7 +1,7 @@
 import React from 'react';
 import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, Target } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
-import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
+import { STATUS_DISPLAY } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { Lozenge, Avatar, Tooltip } from '@/components/ads';
 import type { LozengeAppearance } from '@/components/ads';
