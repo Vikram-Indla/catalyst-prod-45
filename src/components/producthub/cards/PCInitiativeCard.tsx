@@ -222,8 +222,17 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
               </>
             )}
           </div>
-          <div className="pc-card-updated">
-            Updated {formatDistanceToNow(new Date(initiative.updated_at), { addSuffix: true })}
+          <div className="pc-card-updated" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span>Updated {formatDistanceToNow(new Date(initiative.updated_at), { addSuffix: true })}</span>
+            {!!initiative.milestone_count && initiative.milestone_count > 0 && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: 3,
+                fontSize: 10.5, fontWeight: 600, color: '#475569',
+              }}>
+                <Target size={10} />
+                {initiative.milestone_count}
+              </span>
+            )}
           </div>
         </div>
         {initiative.assignee_name && (
