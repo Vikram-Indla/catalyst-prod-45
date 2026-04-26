@@ -60,8 +60,7 @@ function toTimelineInitiative(i: Initiative): TimelineInitiative {
     score_strategic_alignment: i.score_strategic_alignment, score_business_impact: i.score_business_impact,
     score_time_urgency: i.score_time_urgency, score_resource_feasibility: i.score_resource_feasibility,
     computed_score: i.computed_score, created_at: i.created_at, updated_at: i.updated_at,
-    initiative_type_key: i.initiative_type_key ?? null, initiative_type_label: i.initiative_type_label ?? null,
-    initiative_type_color_hex: i.initiative_type_color_hex ?? null, health_status: i.health_status ?? null,
+    health_status: i.health_status ?? null,
     business_value: i.business_value ?? null, ea_review: (i as any).ea_review ?? null,
     priority: (i as any).priority ?? null, on_roadmap: i.on_roadmap ?? false,
   };
@@ -106,7 +105,7 @@ function groupItems<T extends Initiative>(items: T[], groupBy: GroupByOption): {
     let key: string;
     switch (groupBy) {
       case 'status': key = STATUS_DISPLAY[item.status]?.label || item.status; break;
-      case 'type': key = getTypeLabel(item.initiative_type_key); break;
+      case 'type': key = 'Business Request'; break;
       case 'quarter': key = item.target_quarter || 'No Quarter'; break;
       case 'department': key = item.department_name || 'No Department'; break;
       case 'priority': key = getPriorityLevel(item.computed_score).level; break;
