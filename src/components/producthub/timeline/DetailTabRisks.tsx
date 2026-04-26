@@ -112,6 +112,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       status: (r.status || 'open').charAt(0).toUpperCase() + (r.status || 'open').slice(1),
       probability: r.probability || 3, impact: r.impact || 3,
       mitigation_plan: r.mitigation_plan || '', contingency_plan: r.contingency_plan || '',
+      owner_id: r.owner_id || '',
     });
     setShowModal(true);
   };
