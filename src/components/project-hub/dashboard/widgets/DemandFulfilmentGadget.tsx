@@ -323,7 +323,27 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
         .not('status_category', 'eq', 'Done')
         .limit(500);
 
-      const unlinked = (epics ?? []).filter((e: any) => !linkedIds.has(e.id));
+      // Also exclude epics linked via ph_issue_links → MIM/MDT initiatives
+      // (Apr 2026 InitiativeLinkedItemsTab path). Without this an epic
+      // linked from Product Hub appears in BOTH the linked rollup and the
+      // "unlinked" tab.
+      const { data: phLinks2 } = await (supabase as any)
+        .from('ph_issue_links')
+        .select('source_id, target_id')
+        .or('source_id.like.MIM-%,source_id.like.MDT-%,target_id.like.MIM-%,target_id.like.MDT-%');
+      const linkedEpicKeys = new Set<string>();
+      for (const r of (phLinks2 ?? []) as any[]) {
+        const s = String(r.source_id ?? '');
+        const t = String(r.target_id ?? '');
+        const sIsInit = s.startsWith('MIM-') || s.startsWith('MDT-');
+        const tIsInit = t.startsWith('MIM-') || t.startsWith('MDT-');
+        if (sIsInit && !tIsInit) linkedEpicKeys.add(t);
+        else if (tIsInit && !sIsInit) linkedEpicKeys.add(s);
+      }
+
+      const unlinked = (epics ?? []).filter(
+        (e: any) => !linkedIds.has(e.id) && !linkedEpicKeys.has(e.issue_key),
+      );
       if (unlinked.length === 0) return [];
 
       // Fetch child stories/bugs for these epics to compute roll-up counts.
@@ -410,12 +430,78 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
   return useQuery({
     queryKey: ['demand-fulfilment', projectKey, settings],
     queryFn: async (): Promise<DemandRow[]> => {
-      // 1) Fetch epic↔initiative links (es_initiative_epics — canonical join table).
-      const { data: links } = await (supabase as any)
+      // 1a) Fetch epic↔initiative links from es_initiative_epics (legacy join).
+      const { data: linksA } = await (supabase as any)
         .from('es_initiative_epics')
         .select('initiative_id, epic_id');
 
-      if (!links || links.length === 0) return [];
+      // 1b) Union with ph_issue_links rows that pair an initiative_key
+      // (MIM-* / MDT-*) with an Epic issue_key. The InitiativeLinkedItemsTab
+      // (Apr 2026) writes only to ph_issue_links, so without this union
+      // anything linked from a Product Hub initiative is invisible here.
+      const { data: phLinks } = await (supabase as any)
+        .from('ph_issue_links')
+        .select('source_id, target_id')
+        .or('source_id.like.MIM-%,source_id.like.MDT-%,target_id.like.MIM-%,target_id.like.MDT-%');
+
+      const synthesizedLinks: { initiative_id: string; epic_id: string }[] = [];
+      if (phLinks && phLinks.length > 0) {
+        // Collect candidate initiative_keys + the paired (potential epic) keys.
+        const initKeys = new Set<string>();
+        const epicCandidateKeys = new Set<string>();
+        const pairs: { initKey: string; otherKey: string }[] = [];
+        for (const r of phLinks as any[]) {
+          const s = String(r.source_id ?? '');
+          const t = String(r.target_id ?? '');
+          const sIsInit = s.startsWith('MIM-') || s.startsWith('MDT-');
+          const tIsInit = t.startsWith('MIM-') || t.startsWith('MDT-');
+          if (sIsInit && !tIsInit) {
+            initKeys.add(s); epicCandidateKeys.add(t);
+            pairs.push({ initKey: s, otherKey: t });
+          } else if (tIsInit && !sIsInit) {
+            initKeys.add(t); epicCandidateKeys.add(s);
+            pairs.push({ initKey: t, otherKey: s });
+          }
+        }
+        if (pairs.length > 0) {
+          const [{ data: initRows }, { data: epicRows }] = await Promise.all([
+            (supabase as any)
+              .from('ph_initiatives')
+              .select('id, initiative_key')
+              .in('initiative_key', Array.from(initKeys)),
+            (supabase as any)
+              .from('ph_issues')
+              .select('id, issue_key, issue_type, project_key')
+              .in('issue_key', Array.from(epicCandidateKeys))
+              .eq('issue_type', 'Epic')
+              .eq('project_key', projectKey)
+              .is('jira_removed_at', null),
+          ]);
+          const initIdByKey = new Map<string, string>(
+            (initRows ?? []).map((r: any) => [r.initiative_key, r.id]),
+          );
+          const epicIdByKey = new Map<string, string>(
+            (epicRows ?? []).map((r: any) => [r.issue_key, r.id]),
+          );
+          for (const p of pairs) {
+            const initiative_id = initIdByKey.get(p.initKey);
+            const epic_id = epicIdByKey.get(p.otherKey);
+            if (initiative_id && epic_id) synthesizedLinks.push({ initiative_id, epic_id });
+          }
+        }
+      }
+
+      // De-dupe across both sources.
+      const linkSet = new Set<string>();
+      const links: { initiative_id: string; epic_id: string }[] = [];
+      for (const l of [...((linksA as any[]) ?? []), ...synthesizedLinks]) {
+        const k = `${l.initiative_id}|${l.epic_id}`;
+        if (linkSet.has(k)) continue;
+        linkSet.add(k);
+        links.push(l);
+      }
+
+      if (links.length === 0) return [];
 
       const initiativeIds = Array.from(new Set(links.map((l: any) => l.initiative_id)));
       const epicIds = Array.from(new Set(links.map((l: any) => l.epic_id)));

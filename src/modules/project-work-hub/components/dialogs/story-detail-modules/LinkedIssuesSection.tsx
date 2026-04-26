@@ -395,6 +395,34 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
         });
       }
 
+      // Final fallback: resolve missing keys from ph_initiatives so links to
+      // MIM-* / MDT-* initiatives (created via InitiativeLinkedItemsTab)
+      // appear on the linked epic / story / defect side of the relationship.
+      const stillMissing = targetKeys.filter(k => !targetMap.has(k));
+      if (stillMissing.length > 0) {
+        const { data: initTargets } = await supabase.from('ph_initiatives')
+          .select('id, initiative_key, title, status, assignee_id, priority, updated_at')
+          .in('initiative_key', stillMissing)
+          .eq('is_deleted', false);
+        (initTargets ?? []).forEach((it: any) => {
+          const status = String(it.status ?? '');
+          const status_category =
+            status === 'closed' ? 'Done' : status === 'in_progress' ? 'In Progress' : 'To Do';
+          targetMap.set(it.initiative_key, {
+            id: it.id,
+            issue_key: it.initiative_key,
+            summary: it.title,
+            status,
+            status_category,
+            issue_type: 'Initiative',
+            assignee_account_id: it.assignee_id ?? null,
+            assignee_display_name: null,
+            priority: it.priority ?? null,
+            jira_updated_at: it.updated_at ?? null,
+          });
+        });
+      }
+
       return rawLinks.map(l => {
         const key = l.source_id === issueKey ? l.target_id : l.source_id;
         return { ...l, target: targetMap.get(key) };
