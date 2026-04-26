@@ -61,21 +61,10 @@ function darkPill(pill: { color: string; bg: string; border: string }): { color:
 
 // Type concept removed — every Product Hub item is a Business Request.
 
-const PRIORITY_STYLE: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#B91C1C', bg: '#FEE2E2' },
-  high:     { color: '#C2410C', bg: '#FFEDD5' },
-  medium:   { color: '#A16207', bg: '#FEF3C7' },
-  low:      { color: '#15803D', bg: '#DCFCE7' },
-};
-
-const HEALTH_STYLE: Record<string, { color: string; bg: string; label: string }> = {
-  green:    { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
-  on_track: { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
-  amber:    { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
-  at_risk:  { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
-  red:      { color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
-  off_track:{ color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
-};
+// PRIORITY_STYLE / HEALTH_STYLE removed — Priority and Health pills no
+// longer render on the card per the Apr 2026 simplification pass. The
+// PRIORITY bar (rendered by InitiativeMetrics) remains the canonical
+// priority indicator.
 
 
 export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
