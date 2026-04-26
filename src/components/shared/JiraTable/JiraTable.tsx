@@ -448,16 +448,32 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          Sticky header + resize handle. The scroll container is the table
          viewport (.jira-table-viewport); position: sticky references
          that nearest scrolling ancestor. */
+      /* Responsive shell — viewport scrolls horizontally on narrow viewports
+         instead of overflowing the page. The colgroup keeps a stable
+         minimum total width via min-width on each <col>; the wrapping
+         table also pins a min-width so it never collapses below ~800px
+         (the point below which Jira itself starts horizontal scrolling). */
       .jira-table-viewport {
         position: relative;
-        overflow: auto;
+        overflow-x: auto;
+        overflow-y: auto;
         max-height: 100%;
+        width: 100%;
+        /* Smooth horizontal scroll on touchpads / mobile */
+        -webkit-overflow-scrolling: touch;
       }
       .jira-table-grid table {
         width: 100%;
+        min-width: 800px;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
+      }
+      /* When the viewport is narrow, allow individual columns to shrink
+         only up to their min-width (set on the col elements via the
+         colgroup). Below the table min-width the viewport scrolls. */
+      @media (max-width: 1024px) {
+        .jira-table-grid table { min-width: 900px; }
       }
       .jira-table-grid thead th {
         position: sticky;
@@ -466,11 +482,19 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: #F7F8F9;
         padding: 8px 12px;
         text-align: left;
+        /* Re-measured 2026-04-26 from Jira BAU list view header "Summary":
+             - 12px / weight 653 (Charlie variable; we use 700 statically)
+             - color #505258 (--ds-text-subtle)
+             - text-transform: none (Title Case — NOT uppercase)
+             - letter-spacing: normal (NOT 0.04em)
+           Catalyst's previous UPPERCASE / wide-tracked / muted-grey
+           treatment was a Catalyst opinion. Matching Jira's actual list
+           view here for parity. */
         font-size: 12px;
-        font-weight: 600;
-        color: #6B778C;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
+        font-weight: 700;
+        color: #505258;
+        text-transform: none;
+        letter-spacing: normal;
         white-space: nowrap;
         user-select: none;
       }
@@ -644,12 +668,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         key: col.id,
         content: (
           <span
+            // Header label — Jira parity (2026-04-26 re-probe from
+            // BAU list view "Summary"): 12px / 700 / #505258 /
+            // textTransform none / letterSpacing normal. NO uppercase.
             style={{
               fontSize: d.headerFontSize,
-              fontWeight: 600,
-              color: '#6B778C',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
+              fontWeight: 700,
+              color: '#505258',
+              textTransform: 'none',
+              letterSpacing: 'normal',
               whiteSpace: 'nowrap',
             }}
           >
@@ -979,22 +1006,56 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
   // ── Cell-width calculation for THEAD + TBODY ───────────────────────────
   // Each column gets a `colgroup` entry so widths are stable across header
-  // AND body cells. Structural columns have fixed widths; data columns use
-  // the user's resized width when set, else the schema's natural width.
-  const colWidthEntries: Array<{ id: string; width: number; resizable: boolean; sortable: boolean }> = [];
+  // AND body cells.
+  //
+  // Sizing strategy (2026-04-26 update — fixes summary-column truncation
+  // observed in narrow viewports):
+  //   - Structural columns (__select, __column-manager) → fixed pixel width.
+  //   - Data columns the user has resized → pixel width from columnWidths.
+  //   - Data columns with a schema `width` (fractional, out of 100) →
+  //     percentage width. With table-layout: fixed + width: 100% on the
+  //     <table>, percentage <col> elements distribute the available space
+  //     proportionally, so the table flexes with viewport changes and the
+  //     Summary column expands to fill the row instead of clipping at a
+  //     fixed pixel size.
+  //   - Data columns without a schema width → fall back to 140px.
+  //
+  // `width` (number) on each entry is the resolved PIXEL width — used by
+  // resize logic. `widthCss` is the CSS value applied to the <col> element
+  // (string with `px` or `%`).
+  const colWidthEntries: Array<{
+    id: string;
+    width: number;
+    widthCss: string;
+    resizable: boolean;
+    sortable: boolean;
+  }> = [];
   if (selectable) {
-    colWidthEntries.push({ id: '__select', width: effectiveWidthFor('__select', 40), resizable: false, sortable: false });
+    const px = effectiveWidthFor('__select', 40);
+    colWidthEntries.push({ id: '__select', width: px, widthCss: `${px}px`, resizable: false, sortable: false });
   }
   for (const col of visibleColumns) {
+    const userOverride = columnWidths[col.id];
+    const naturalPx = naturalWidthFor(col);
+    // When the user has resized this column, lock to pixel. Otherwise
+    // prefer percentage so the table flexes with viewport. Data columns
+    // without a schema width default to the natural pixel value.
+    const widthCss = userOverride != null
+      ? `${userOverride}px`
+      : col.width != null
+        ? `${col.width}%`
+        : `${naturalPx}px`;
     colWidthEntries.push({
       id: col.id,
-      width: effectiveWidthFor(col.id, naturalWidthFor(col)),
+      width: userOverride ?? naturalPx,
+      widthCss,
       resizable: !col.id.startsWith('__'),
       sortable: !!col.sortable,
     });
   }
   if (showColumnManager) {
-    colWidthEntries.push({ id: '__column-manager', width: effectiveWidthFor('__column-manager', 40), resizable: false, sortable: false });
+    const px = effectiveWidthFor('__column-manager', 40);
+    colWidthEntries.push({ id: '__column-manager', width: px, widthCss: `${px}px`, resizable: false, sortable: false });
   }
 
   // ── Row virtualization (staged — see import-block comment above) ───────
@@ -1047,7 +1108,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         <table role="grid">
           <colgroup>
             {colWidthEntries.map((e) => (
-              <col key={e.id} style={{ width: e.width, minWidth: 48 }} />
+              <col key={e.id} style={{ width: e.widthCss, minWidth: 48 }} />
             ))}
           </colgroup>
           <thead>

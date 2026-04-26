@@ -30,6 +30,7 @@ import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateIni
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
+import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
 import { supabase } from '@/integrations/supabase/client';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
@@ -81,6 +82,13 @@ export default function ProductHubKanbanPage() {
   const { data, isLoading } = useMDTBacklog();
   const initiatives = useMemo<Initiative[]>(() => data?.data ?? [], [data]);
   const avatarsByName = useProfileAvatarsByName();
+
+  /* ═════ Workflow-driven columns. The 'Business Request' scheme governs
+     every initiative on this board (per the Phase 1 seed). Editing a
+     status name in /admin/workflows updates the column header here on
+     next refetch. ═════ */
+  const { statuses: workflowStatuses, isLoading: workflowLoading } =
+    useCatalystWorkflow('Business Request');
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
@@ -166,6 +174,7 @@ export default function ProductHubKanbanPage() {
   const adapter = useMemo(() => buildProductHubBoardAdapter({
     initiatives,
     avatarsByName,
+    workflowStatuses,
     search,
     onSearchChange: setSearch,
     selAssignees,
@@ -179,13 +188,13 @@ export default function ProductHubKanbanPage() {
     onToggleFavorite,
     onCardClick,
   }), [
-    initiatives, avatarsByName,
+    initiatives, avatarsByName, workflowStatuses,
     search, selAssignees, filterSelected, groupBy,
     onFilterChange, onClearFilters,
     onStatusChange, onToggleFavorite, onCardClick,
   ]);
 
-  if (isLoading) {
+  if (isLoading || workflowLoading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
         <div style={{

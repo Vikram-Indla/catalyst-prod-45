@@ -1,6 +1,6 @@
 # Business Request Workflow + ProductHub Kanban Parity — Integrated Plan
 
-**Owner:** Vikram · **Drafted:** 2026-04-26 · **Status:** Approved — Option 3 (both kanbans, shared workflow), generic tables, transitions to be confirmed against annotated diagram
+**Owner:** Vikram · **Drafted:** 2026-04-26 · **Last revision:** 2026-04-26 (BR↔Initiative reassessment) · **Status:** Approved — single scheme on `ph_initiatives` named "Business Request", universal across all initiative types
 
 ---
 
@@ -24,31 +24,21 @@ catalyst_workflow_transitions    (id, scheme_id FK, from_status_id FK nullable, 
 
 This **diverges from your "New table: business_request_statuses" answer** — flagging deliberately. If you want a separate table for governance/audit reasons (e.g. you don't want Story admins editing BR transitions), say so and I'll add a row-level RLS policy on the existing tables instead, which gets you the same isolation without forking schema.
 
-### Finding B — Which board does the workflow drive?
+### Finding B (revised 2026-04-26) — One board, polymorphic types, one scheme
 
-The diagram's 13 statuses match `ph_initiatives.status` 1:1 (NEW, PORTFOLIO REVIEW, TECHNICAL VALIDATION, ESTIMATE, DEMAND APPROVED, ANALYSIS, READY FOR DEVELOPMENT, UNDER IMPLEMENTATION, IMPLEMENTATION REVIEW, IN SUPPORT, DONE, ON HOLD, CANCELED).
+The diagram's 13 statuses match `ph_initiatives.status` 1:1.
 
-There are **two** kanban surfaces in the repo:
+After re-audit, the data model is:
 
-| Surface | Route | Backing table | Status field | Admin lookup |
-|---------|-------|---------------|--------------|--------------|
-| **ProductHub Kanban** | `/producthub/kanban` | `ph_initiatives` | `status` (enum-like text, 11 values) | none today — hardcoded in adapter |
-| **Catalyst Demand Kanban** | `/kanban` (or similar) | `business_requests` | `process_step` (free text, 10 values) | `demand_process_steps` table |
+- **`ph_initiatives`** — polymorphic. Holds initiatives of multiple types via `initiative_type_id` FK to `initiative_types` (recently added in migration `20260308125127_*`). Types include `business_request`, `enhancement`, `entity_integration`, `project`, `improvement`. Every Jira-MDT-sourced row is tagged `initiative_type='business_request'`.
+- **`business_requests`** — legacy parallel table with its own `process_step` and Demand Kanban surface. **No FK** to `ph_initiatives`. Out of scope for this workstream — separate consolidate-or-retire decision later.
 
-You said "business requests" but pointed at `/producthub/kanban`. Three options — **I need you to pick**:
+**Decision (2026-04-26):**
 
-1. **Workflow drives `ph_initiatives` (the ProductHub board you pointed to).** Statuses match the diagram already. The `business_requests` table stays on its current `process_step` system, untouched. We rename the workflow scheme from "Business Request" to "Initiative" or "Product Demand" so the label stops misleading. *This is the cleanest option.*
-2. **Workflow drives `business_requests`.** We migrate the 10 `process_step` values into the new 13-status set, retire `demand_process_steps`, and rewire the Demand Kanban to read from `catalyst_workflow_statuses`. ProductHub kanban (which uses `ph_initiatives`) is untouched on the data side but still gets the Atlaskit UI migration. *This contradicts the URL you gave.*
-3. **Both.** Two schemes (`Initiative` and `Business Request`) sharing the same 13-status template. Each kanban reads its own scheme. *Most flexible, most work.*
-
-**Decision: Option 3.** Two scheme rows reference a shared 13-status template. Each kanban reads its own scheme via `useCatalystWorkflow(issueType)`:
-
-- `useCatalystWorkflow('Initiative')` → drives `/producthub/kanban` (`ph_initiatives`)
-- `useCatalystWorkflow('Business Request')` → drives Demand Kanban (`business_requests`)
-
-Status definitions and transitions are identical between the two schemes at seed time. Admins can drift them later via `/admin/workflows` if business needs diverge.
-
-This means **two seed schemes in Phase 1**, **two adapter rewrites in Phase 3** (one each for `productHubBoardAdapter.tsx` and the Demand Kanban), and the `business_requests.process_step` migration from Section 9 Option 2 is folded into the Phase 3 work. The Atlaskit migration in Phase 4 still runs against `/producthub/kanban` as the primary surface; the Demand Kanban gets a follow-up Atlaskit pass.
+1. **Single scheme** in `catalyst_workflow_schemes` with `issue_type='Business Request'`, `is_default=true`. The label "Business Request" reflects the dominant initiative type on the board today.
+2. **Universal application** — the same 13 statuses + 21 transitions apply to every initiative type on `ph_initiatives`, not only `business_request`. Other types (enhancement, project, etc.) follow the same lifecycle.
+3. **Drives `/producthub/kanban` only** via `ph_initiatives.status`. Type-based filtering is orthogonal and stays as a board chip filter.
+4. **Legacy `business_requests` table is OUT OF SCOPE.** No changes to Demand Kanban, `process_step`, or `demand_process_steps` table in this workstream. Section 9 retains a documented branch in case we later want to retire it.
 
 ---
 
@@ -74,7 +64,7 @@ This means **two seed schemes in Phase 1**, **two adapter rewrites in Phase 3** 
 
 Categories follow the StatusLozenge 3-colour guardrail: GREY (todo) / BLUE (in_progress) / GREEN (done). Pre-cleared with §5.
 
-### Transitions (22 edges — confirmed 2026-04-26)
+### Transitions (21 edges — confirmed 2026-04-26; PR → CANCELED is a forward escape, not double-counted)
 
 User decision: keep escape-hatch ambiguous edges (to ON HOLD / CANCELED), drop forward-skip and back-routes to earlier statuses. No backward routing except the ON HOLD resume path and the rework-from-TV path.
 
@@ -123,17 +113,18 @@ IMPLEMENTATION REVIEW → CANCELED
 
 Eight phases, designed to be shippable in sequence. Each phase is its own G7→G9 cycle (Forge gate language).
 
-### Phase 1 — Schema seed (1 migration file)
+### Phase 1 — Schema seed (1 migration file, 1 scheme)
 
 **Files touched:**
 - `supabase/migrations/<ts>_business_request_workflow_seed.sql` (new)
 
 **Work:**
-- Insert one row into `catalyst_workflow_schemes` with `issue_type='Business Request'`, `is_default=true`.
-- Insert 13 rows into `catalyst_workflow_statuses` (table above).
-- Insert 24 rows into `catalyst_workflow_transitions`.
+- Insert one row into `catalyst_workflow_schemes` with `issue_type='Business Request'`, `is_default=true`, `is_active=true`.
+- Insert 13 rows into `catalyst_workflow_statuses` (table in §1).
+- Insert 22 rows into `catalyst_workflow_transitions` (list in §1).
+- All wrapped in a single `DO $$ ... END $$;` block with `id` capture variables for FK references.
 
-**Acceptance:** Manual seed verification via Supabase SQL editor — `SELECT * FROM catalyst_workflow_statuses WHERE scheme_id = (SELECT id FROM catalyst_workflow_schemes WHERE issue_type='Business Request')` returns 13 rows in the correct order.
+**Acceptance:** Manual seed verification via Supabase SQL editor — `SELECT count(*) FROM catalyst_workflow_statuses WHERE scheme_id = (SELECT id FROM catalyst_workflow_schemes WHERE issue_type='Business Request')` returns `13`. Transitions count returns `22`.
 
 ### Phase 2 — Admin entry visible
 
@@ -144,7 +135,7 @@ Eight phases, designed to be shippable in sequence. Each phase is its own G7→G
 
 **Risk:** if the existing tab uses a different `issue_type` literal (e.g. `'business_request'` vs `'Business Request'`), Phase 1 needs to match it. Verify in the WorkflowAdminPage before writing the migration.
 
-### Phase 3 — Status sync to `ph_initiatives` (Option 1 path)
+### Phase 3 — Status sync to `ph_initiatives`
 
 **Files touched:**
 - `src/components/kanban/adapters/productHubBoardAdapter.tsx` (rewrite column generation)
@@ -152,14 +143,16 @@ Eight phases, designed to be shippable in sequence. Each phase is its own G7→G
 - `supabase/migrations/<ts>_normalize_ph_initiatives_status.sql` (data hygiene only — coerce existing values to canonical slugs)
 
 **Work:**
-- Replace the hardcoded `PRODUCTHUB_BOARD_COLUMNS` array with a hook that reads `useCatalystWorkflow('Business Request')` and groups statuses into board columns by category (or by a `column_group` field if we add one).
-- Audit existing `ph_initiatives.status` values against the 13 canonical slugs. Any orphan rows get coerced via the migration.
+- Replace the hardcoded `PRODUCTHUB_BOARD_COLUMNS` array with a hook that reads `useCatalystWorkflow('Business Request')` and groups statuses into board columns. Columns may collapse multiple statuses (e.g. ESTIMATE + DEMAND APPROVED → one "Approval" column) via a `column_group` extension on `catalyst_workflow_statuses` or a fixed adapter map.
+- Audit existing `ph_initiatives.status` values against the 13 canonical slugs. Any orphan rows get coerced via the data-hygiene migration.
 - Drag-drop mutation continues to write `ph_initiatives.status` (text) — but only valid slugs are allowed because the dropdown source is now the workflow.
+- All initiative types (business_request, enhancement, project, etc.) use the same column layout — type is shown as a card-level icon/lozenge, not as a separate board.
 
 **Acceptance:**
 - `/producthub/kanban` renders columns dynamically from the workflow scheme.
 - Drag a card from PORTFOLIO REVIEW → TECHNICAL VALIDATION; reload; card stays in TECHNICAL VALIDATION.
 - Edit a status name in `/admin/workflows` → reload `/producthub/kanban` → column header updates.
+- A non-business_request initiative (e.g. type=enhancement) renders on the same board with the same column structure.
 
 ### Phase 4 — Atlaskit migration of the Kanban surface
 
@@ -360,31 +353,28 @@ Per CLAUDE.md §3 / §11 / §12:
 
 ---
 
-## 9. Branches if you pick Option 2 or Option 3 instead of Option 1
+## 9. Out-of-scope branch — retiring the legacy `business_requests` table
 
-### Option 2 — workflow drives `business_requests` (the actual table)
+The legacy `business_requests` table and its Demand Kanban are **not** touched by this workstream. If we later decide to retire the duplication, here's the shape that work would take:
 
-- Replace Phase 3 with a `business_requests.process_step → business_requests.workflow_status_id (FK)` migration.
-- Map all 10 existing `process_step` values to one of the 13 new slugs (data audit + manual mapping).
-- Retire `demand_process_steps` table.
-- Phase 4 Atlaskit migration runs against `CatalystDemandKanban.tsx` instead of `ProductHub` (or in addition).
-- 10+ consumer files (drawer, table view, audit log, etc.) need updates per the schema audit.
-- **Effort: +60% over Option 1** because of consumer count and audit-log preservation.
+- Audit active `business_requests` rows; any not already mirrored as `ph_initiatives` get migrated with `initiative_type='business_request'`.
+- Map the 10 `process_step` values to the 13 canonical slugs (data audit + manual mapping for orphans).
+- Update or retire 10+ consumers (drawer, table view, audit log, Demand Kanban itself).
+- Preserve audit history via a one-time copy from `business_request_audit_logs` into a unified `ph_initiatives_audit_logs` (or keep both pointers during a transition window).
+- **Effort: ~2x Phase 1–4 combined** because of consumer count and audit-log preservation. Track as a separate plan.
 
-### Option 3 — both kanbans share the same workflow
-
-- Two scheme rows (`Initiative` and `Business Request`) referencing the same 13-status template OR a shared template table.
-- Both kanbans read their own scheme via `useCatalystWorkflow(issueType)`.
-- Phase 4 migration runs against both surfaces.
-- **Effort: +40% over Option 1**, but unifies the mental model long-term.
+This is parked deliberately. The current workstream's success criteria do not depend on it.
 
 ---
 
-## 10. Approvals locked in (2026-04-26)
+## 10. Approvals locked in (2026-04-26, post-reassessment)
 
-1. ✅ Finding B → Option 3 (both kanbans share the workflow; two schemes referencing the same 13-status template).
-2. ✅ Finding A → Generic `catalyst_workflow_*` tables, no per-type fork.
-3. ✅ Transitions → 22 edges confirmed (Section 1). Three ambiguous edges dropped per user direction; no backward routing except resume from ON HOLD and rework from TECHNICAL VALIDATION.
-4. ⏳ Open: confirm scheme labels — proposing `issue_type='Business Request'` and `issue_type='Initiative'` for the two schemes. Speak up if you want different labels.
+1. ✅ **Finding A** → Generic `catalyst_workflow_*` tables, no per-type fork.
+2. ✅ **Finding B (revised)** → Single scheme on `ph_initiatives`. The legacy `business_requests` table and Demand Kanban are out of scope.
+3. ✅ **Scheme label** → `issue_type='Business Request'` (matches the dominant initiative type and the existing tab placeholder in `WorkflowAdminPage.tsx`).
+4. ✅ **Type scope** → Universal. Same 13-status workflow applies to all initiative types (business_request, enhancement, project, etc.).
+5. ✅ **Transitions** → 22 edges (Section 1). Three back-routes dropped (ESTIMATE→PR, DA→TV, PR→ESTIMATE).
 
-Phase 1 starts on next confirmation. Migration writes a single SQL file inserting both schemes in one transaction with the same 13 statuses + 22 transitions per scheme.
+**Net effect of the reassessment:** Phase 1 writes ONE scheme (was two). Phase 3 touches one adapter (was two). Demand Kanban migration deferred to a separate plan. ECLIPSE Hub-3 dark-mode regression still resolves as a side effect of Phase 4 Atlaskit migration.
+
+Phase 1 ready to start. Migration is a single transactional SQL file: 1 scheme + 13 statuses + 21 transitions.

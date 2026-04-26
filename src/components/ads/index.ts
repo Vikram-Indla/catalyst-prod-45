@@ -77,6 +77,11 @@ export {
 } from './Modal';
 export type { ModalProps, ModalWidth } from './Modal';
 
+// DynamicTable wrapper kept alive for ResizableDynamicTable
+// (ProductionIncidentsWidget + QADefectsWidget) — the only remaining
+// consumers. All other surfaces have migrated to the canonical JiraTable
+// in @/components/shared/JiraTable. New consumers should use JiraTable
+// directly. The two dashboard widgets will migrate in a follow-up pass.
 export { DynamicTable } from './DynamicTable';
 export type {
   DynamicTableProps,

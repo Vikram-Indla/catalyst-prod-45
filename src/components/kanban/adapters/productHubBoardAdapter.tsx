@@ -4,6 +4,20 @@
  * Produces the canonical BoardAdapter<Initiative> contract that
  * KanbanBoardShell consumes.
  *
+ * ───────────────────────────────────────────────────────────────────
+ * Phase 3 (2026-04-26): WORKFLOW-DRIVEN COLUMNS.
+ *
+ * The previous static `PRODUCTHUB_BOARD_COLUMNS` array has been retired.
+ * Columns are now derived from `WorkflowStatus[]` provided by the page
+ * (which calls `useCatalystWorkflow('Business Request')`). One column
+ * per status, in workflow `position` order. Column header label =
+ * `WorkflowStatus.name`. Column category = `WorkflowStatus.category`.
+ *
+ * Effect: renaming a status in /admin/workflows updates the kanban
+ * column header on next refetch. Adding/removing a status in the admin
+ * editor adds/removes a column. No code change required for either.
+ * ───────────────────────────────────────────────────────────────────
+ *
  * Contract highlights:
  *   - Cards are CanonicalBoardIssue (extends BoardIssue).
  *   - Filter categories use ProjectHub's shared FilterCategory shape so
@@ -24,6 +38,7 @@ import {
   INITIATIVE_TYPE_COLORS,
   type InitiativeTypeKey,
 } from '@/types/initiative-enhancements';
+import type { WorkflowStatus } from '@/hooks/useCatalystWorkflow';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
 import type {
@@ -36,30 +51,48 @@ import type {
 import type { FilterCategory } from '@/components/shared/JiraBasicFilter';
 import type { GroupByOption } from '@/components/shared/GroupByPopover';
 
-/* ═══ Column lifecycle — identical to the legacy adapter. ═══ */
-export const PRODUCTHUB_BOARD_COLUMNS: KanbanColumnDef[] = [
-  { id: 'col-new',          name: 'NEW',                  category: 'todo',        statuses: ['new'] },
-  { id: 'col-portfolio',    name: 'PORTFOLIO REVIEW',     category: 'in_progress', statuses: ['portfolio_review'] },
-  { id: 'col-technical',    name: 'TECHNICAL VALIDATION', category: 'in_progress', statuses: ['technical_validation', 'analysis'] },
-  { id: 'col-estimate',     name: 'ESTIMATE',             category: 'in_progress', statuses: ['estimate'] },
-  { id: 'col-approved',     name: 'DEMAND APPROVED',      category: 'in_progress', statuses: ['demand_approved', 'ready_for_development'] },
-  { id: 'col-implementing', name: 'IN IMPLEMENTATION',    category: 'in_progress', statuses: ['under_implementation', 'implementation_review', 'in_support'] },
-  { id: 'col-done',         name: 'DONE',                 category: 'done',        statuses: ['done', 'cancelled', 'on_hold'] },
-];
+/* ═══════════════════════════════════════════════════════════════════════
+   Workflow → columns.
 
-const STATUS_TO_COL = new Map<string, string>();
-PRODUCTHUB_BOARD_COLUMNS.forEach(col => col.statuses.forEach(s => STATUS_TO_COL.set(s, col.id)));
+   One column per workflow status, sorted by `position`. The column id
+   format `col-${slug}` is preserved for compatibility with any persisted
+   UI state (URL query params, localStorage column-collapse prefs).
+   ═══════════════════════════════════════════════════════════════════════ */
 
-export function productHubStatusToColumnId(status: string): string | null {
-  return STATUS_TO_COL.get(status) ?? null;
+export function buildColumnsFromWorkflowStatuses(
+  statuses: WorkflowStatus[],
+): KanbanColumnDef[] {
+  return statuses
+    .slice()
+    .sort((a, b) => a.position - b.position)
+    .map((status) => ({
+      id: `col-${status.slug}`,
+      name: status.name.toUpperCase(),
+      category: status.category,
+      statuses: [status.slug],
+    }));
 }
 
-export function productHubColumnIdToStatus(columnId: string): InitiativeStatus | null {
-  const col = PRODUCTHUB_BOARD_COLUMNS.find(c => c.id === columnId);
-  return (col?.statuses[0] as InitiativeStatus) ?? null;
+function buildStatusToColumnId(
+  columns: KanbanColumnDef[],
+): (status: string) => string | null {
+  const map = new Map<string, string>();
+  columns.forEach((col) => col.statuses.forEach((s) => map.set(s, col.id)));
+  return (status) => map.get(status) ?? null;
 }
 
-/* ═══ Priority — initiative score band → Jira-flavored bucket. ═══ */
+function buildColumnIdToStatus(
+  columns: KanbanColumnDef[],
+): (columnId: string) => InitiativeStatus | null {
+  return (columnId) => {
+    const col = columns.find((c) => c.id === columnId);
+    return (col?.statuses[0] as InitiativeStatus) ?? null;
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Priority — initiative score band → Jira-flavored bucket.
+   ═══════════════════════════════════════════════════════════════════════ */
 function mapPriority(initiative: Initiative): string {
   const explicit = (initiative as { priority?: string | null }).priority;
   if (explicit) return explicit;
@@ -71,50 +104,70 @@ function mapPriority(initiative: Initiative): string {
   return 'Lowest';
 }
 
-/* ═══ Status-category bucket used by PragmaticBoard. ═══ */
-function statusCategory(status: InitiativeStatus): 'todo' | 'in_progress' | 'done' {
-  if (status === 'done' || status === 'cancelled') return 'done';
-  if (status === 'new') return 'todo';
-  return 'in_progress';
-}
-
-/* ═══ Initiative → CanonicalBoardIssue adapter. ═══ */
-export function initiativeToCanonicalIssue(initiative: Initiative): CanonicalBoardIssue {
-  const primary: BoardLozenge | null = initiative.department_name
-    ? { label: initiative.department_name, appearance: 'default' }
-    : null;
-  const secondary: BoardLozenge | null = initiative.target_quarter
-    ? { label: initiative.target_quarter, appearance: 'inprogress' }
-    : null;
-  const sourceTag: 'catalyst' | 'jira' = initiative.source === 'jira' ? 'jira' : 'catalyst';
-  const issue: CanonicalBoardIssue = {
-    id: initiative.id,
-    issueKey: initiative.initiative_key,
-    summary: initiative.title,
-    issueType: initiative.initiative_type_key ?? 'initiative',
-    priority: mapPriority(initiative),
-    status: initiative.status,
-    statusCategory: statusCategory(initiative.status),
-    assigneeName: initiative.assignee_name,
-    labels: [],
-    sprintName: null,
-    storyPoints: null,
-    parentKey: null,
-    parentSummary: null,
-    fixVersion: null,
-    isFlagged: initiative.is_favorited,
-    updatedAt: initiative.updated_at,
-    createdAt: initiative.created_at,
-    sourceTag,
-    primaryLozenge: primary,
-    secondaryLozenge: secondary,
-    metaText: null,
-    raw: initiative,
+/* ═══════════════════════════════════════════════════════════════════════
+   Status-category bucket — workflow-driven, with a heuristic fallback
+   for the brief render window before workflow data resolves.
+   ═══════════════════════════════════════════════════════════════════════ */
+function buildStatusCategoryResolver(
+  statuses: WorkflowStatus[],
+): (status: InitiativeStatus) => 'todo' | 'in_progress' | 'done' {
+  const map = new Map<string, 'todo' | 'in_progress' | 'done'>();
+  statuses.forEach((s) => map.set(s.slug, s.category));
+  return (status) => {
+    const found = map.get(status);
+    if (found) return found;
+    // Fallback heuristic — only reached if statuses haven't loaded yet.
+    if (status === 'done' || status === 'cancelled') return 'done';
+    if (status === 'new') return 'todo';
+    return 'in_progress';
   };
-  return issue;
 }
 
-/* ═══ Initiative type icon — the reason this adapter exists. ═══ */
+/* ═══════════════════════════════════════════════════════════════════════
+   Initiative → CanonicalBoardIssue adapter.
+   ═══════════════════════════════════════════════════════════════════════ */
+function makeInitiativeToCanonicalIssue(
+  resolveCategory: (status: InitiativeStatus) => 'todo' | 'in_progress' | 'done',
+): (initiative: Initiative) => CanonicalBoardIssue {
+  return (initiative) => {
+    const primary: BoardLozenge | null = initiative.department_name
+      ? { label: initiative.department_name, appearance: 'default' }
+      : null;
+    const secondary: BoardLozenge | null = initiative.target_quarter
+      ? { label: initiative.target_quarter, appearance: 'inprogress' }
+      : null;
+    const sourceTag: 'catalyst' | 'jira' = initiative.source === 'jira' ? 'jira' : 'catalyst';
+    const issue: CanonicalBoardIssue = {
+      id: initiative.id,
+      issueKey: initiative.initiative_key,
+      summary: initiative.title,
+      issueType: initiative.initiative_type_key ?? 'initiative',
+      priority: mapPriority(initiative),
+      status: initiative.status,
+      statusCategory: resolveCategory(initiative.status),
+      assigneeName: initiative.assignee_name,
+      labels: [],
+      sprintName: null,
+      storyPoints: null,
+      parentKey: null,
+      parentSummary: null,
+      fixVersion: null,
+      isFlagged: initiative.is_favorited,
+      updatedAt: initiative.updated_at,
+      createdAt: initiative.created_at,
+      sourceTag,
+      primaryLozenge: primary,
+      secondaryLozenge: secondary,
+      metaText: null,
+      raw: initiative,
+    };
+    return issue;
+  };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Initiative type icon — the reason this adapter exists.
+   ═══════════════════════════════════════════════════════════════════════ */
 export function resolveInitiativeIcon(card: BoardIssue): ReactNode | null {
   const raw = (card as CanonicalBoardIssue).raw as Initiative | undefined;
   const typeKey = raw?.initiative_type_key ?? null;
@@ -216,7 +269,9 @@ export function buildFilterCategories(
   ];
 }
 
-/* ═══ Group-by options (match the ProductHub lineup from the legacy adapter). ═══ */
+/* ═══════════════════════════════════════════════════════════════════════
+   Group-by options (match the ProductHub lineup from the legacy adapter).
+   ═══════════════════════════════════════════════════════════════════════ */
 export const PRODUCTHUB_GROUP_OPTIONS: GroupByOption<string>[] = [
   { key: 'none',       label: 'None' },
   { key: 'department', label: 'Department' },
@@ -233,6 +288,15 @@ export interface BuildProductHubAdapterArgs {
   initiatives: Initiative[];
   /** `displayName`.toLowerCase() → avatar URL. */
   avatarsByName: Map<string, string>;
+
+  /**
+   * Workflow statuses from useCatalystWorkflow('Business Request').
+   * Drives column structure, header labels, categories, and order.
+   * Pass an empty array while loading — the adapter renders zero columns
+   * in that window; the page should gate adapter construction on
+   * `!workflowLoading` to avoid the empty-board flash.
+   */
+  workflowStatuses: WorkflowStatus[];
 
   /* ── Filter state (page-owned so it drives TanStack Query keys) ── */
   search: string;
@@ -257,7 +321,7 @@ export function buildProductHubBoardAdapter(
   args: BuildProductHubAdapterArgs,
 ): BoardAdapter<Initiative> {
   const {
-    initiatives, avatarsByName,
+    initiatives, avatarsByName, workflowStatuses,
     search, onSearchChange,
     selAssignees, onSelAssigneesChange,
     filterSelected, onFilterChange, onClearFilters,
@@ -265,6 +329,13 @@ export function buildProductHubBoardAdapter(
     onStatusChange, onToggleFavorite,
     onCardClick,
   } = args;
+
+  /* ── Workflow-derived structures. ── */
+  const columns = buildColumnsFromWorkflowStatuses(workflowStatuses);
+  const statusToColumnId = buildStatusToColumnId(columns);
+  const columnIdToStatus = buildColumnIdToStatus(columns);
+  const resolveCategory = buildStatusCategoryResolver(workflowStatuses);
+  const initiativeToCanonicalIssue = makeInitiativeToCanonicalIssue(resolveCategory);
 
   /* Filtered cards — mirrors the legacy adapter's filter order. */
   const filtered = initiatives.filter((i) => {
@@ -303,7 +374,7 @@ export function buildProductHubBoardAdapter(
   const persistence: BoardPersistence = {
     onDrop: (event) => {
       if (event.destColId !== event.sourceColId) {
-        const newStatus = productHubColumnIdToStatus(event.destColId);
+        const newStatus = columnIdToStatus(event.destColId);
         if (newStatus) return onStatusChange(event.cardId, newStatus);
       }
     },
@@ -320,9 +391,9 @@ export function buildProductHubBoardAdapter(
     contextKey: 'producthub',
 
     cards,
-    columns: PRODUCTHUB_BOARD_COLUMNS,
-    statusToColumnId: productHubStatusToColumnId,
-    columnIdToStatus: productHubColumnIdToStatus,
+    columns,
+    statusToColumnId,
+    columnIdToStatus,
     fromHubRow: initiativeToCanonicalIssue,
 
     filterCategories: buildFilterCategories(initiatives, avatarsByName),

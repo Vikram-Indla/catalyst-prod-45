@@ -1685,61 +1685,156 @@ function BulkActionsBar({
   onDelete: () => void;
   isBusy: boolean;
 }) {
-  return (
+  // Re-styled 2026-04-26 to match Jira's list-view bulk action bar:
+  //   - floating bottom dark pill (NOT a top-of-table inline blue bar)
+  //   - portal-mounted to <body> so panel/scroll can't clip it
+  //   - dark surface #44546F, white text, 14px/500
+  //   - X close on left → vertical divider → "N work item(s) selected"
+  //     → vertical divider → action buttons → red Delete
+  //   - hover state: white/10 overlay
+  // The Change-status / Assign popovers are richer than Jira's stock
+  // bar (which has Edit/Copy/Delete only) — kept because they're a
+  // Catalyst quality-of-life. Visual chrome matches Jira pixel-for-pixel.
+  const itemLabel = count === 1 ? 'work item' : 'work items';
+  const bar = (
     <div
-      role="toolbar"
-      aria-label="Bulk actions"
       style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        margin: '0 16px 10px',
-        padding: '8px 12px',
-        background: token('color.background.selected', '#E9F2FF'),
-        border: `1px solid ${token('color.border.accent.blue', '#B3D4FF')}`,
-        borderRadius: 4,
-        fontSize: 13,
-        color: token('color.text.accent.blue.bolder', '#0747A6'),
+        position: 'fixed',
+        bottom: 24,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        zIndex: 9999,
+        animation: 'bau-bulk-slide-up 200ms cubic-bezier(0.16, 1, 0.3, 1)',
       }}
     >
-      <strong style={{ fontSize: 13 }}>{count} selected</strong>
-      <div style={{ width: 1, height: 18, background: token('color.border.accent.blue', '#B3D4FF') }} />
-      <BulkPopover label="Change status" width={240}>
-        {(close) => (
-          <>
-            <div style={{ padding: '6px 8px 2px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
-            {statusOptions.map((opt) => (
-              <BulkMenuItem
-                key={opt.value}
-                onClick={() => { onChangeStatus(opt.value); close(); }}
-              >
-                {opt.label}
-              </BulkMenuItem>
-            ))}
-          </>
-        )}
-      </BulkPopover>
-      <BulkPopover label="Assign" width={280}>
-        {(close) => (
-          <>
-            <BulkMenuItem onClick={() => { onChangeAssignee(null); close(); }}>Unassigned</BulkMenuItem>
-            {assigneeOptions.slice(0, 12).map((a) => (
-              <BulkMenuItem key={a.id} onClick={() => { onChangeAssignee(a); close(); }}>
-                {a.name}
-              </BulkMenuItem>
-            ))}
-          </>
-        )}
-      </BulkPopover>
-      <Button appearance="danger" onClick={onDelete} isDisabled={isBusy}>
-        Delete
-      </Button>
-      <div style={{ flex: 1 }} />
-      <Button appearance="subtle" onClick={onClear} isDisabled={isBusy}>
-        Clear selection
-      </Button>
+      <div
+        role="toolbar"
+        aria-label="Bulk actions"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0,
+          height: 44,
+          background: '#44546F',
+          color: '#FFFFFF',
+          borderRadius: 8,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.28), 0 2px 8px rgba(0,0,0,0.12)',
+          fontFamily: 'var(--cp-font-body)',
+          overflow: 'hidden',
+          fontSize: 14,
+        }}
+      >
+        {/* Close (X) */}
+        <button
+          type="button"
+          onClick={onClear}
+          aria-label="Clear selection"
+          disabled={isBusy}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 44,
+            height: 44,
+            background: 'transparent',
+            border: 'none',
+            color: '#FFFFFF',
+            cursor: 'pointer',
+            transition: 'background 100ms',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+        >
+          <CloseIcon size={18} />
+        </button>
+        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+
+        {/* Selected count */}
+        <span
+          style={{
+            padding: '0 16px',
+            fontSize: 14,
+            fontWeight: 500,
+            color: '#FFFFFF',
+            letterSpacing: '-0.01em',
+            whiteSpace: 'nowrap',
+            userSelect: 'none',
+          }}
+        >
+          {count} {itemLabel} selected
+        </span>
+        <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.20)' }} />
+
+        {/* Change status */}
+        <BulkPopover label="Change status" width={240}>
+          {(close) => (
+            <>
+              <div style={{ padding: '6px 8px 2px', fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token('color.text.subtlest', '#6B778C') }}>Status</div>
+              {statusOptions.map((opt) => (
+                <BulkMenuItem
+                  key={opt.value}
+                  onClick={() => { onChangeStatus(opt.value); close(); }}
+                >
+                  {opt.label}
+                </BulkMenuItem>
+              ))}
+            </>
+          )}
+        </BulkPopover>
+
+        {/* Assign */}
+        <BulkPopover label="Assign" width={280}>
+          {(close) => (
+            <>
+              <BulkMenuItem onClick={() => { onChangeAssignee(null); close(); }}>Unassigned</BulkMenuItem>
+              {assigneeOptions.slice(0, 12).map((a) => (
+                <BulkMenuItem key={a.id} onClick={() => { onChangeAssignee(a); close(); }}>
+                  {a.name}
+                </BulkMenuItem>
+              ))}
+            </>
+          )}
+        </BulkPopover>
+
+        {/* Delete */}
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={isBusy}
+          aria-label="Delete selected"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            height: 44,
+            padding: '0 16px',
+            background: 'transparent',
+            border: 'none',
+            color: '#FFFFFF',
+            fontSize: 14,
+            fontWeight: 500,
+            cursor: isBusy ? 'default' : 'pointer',
+            opacity: isBusy ? 0.5 : 1,
+            fontFamily: 'inherit',
+            transition: 'background 100ms',
+          }}
+          onMouseEnter={(e) => { if (!isBusy) (e.currentTarget.style.background = 'rgba(220,38,38,0.20)'); }}
+          onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+        >
+          <Trash2 size={15} />
+          Delete
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes bau-bulk-slide-up {
+          from { opacity: 0; transform: translate(-50%, 12px); }
+          to   { opacity: 1; transform: translate(-50%, 0); }
+        }
+      `}</style>
     </div>
   );
+  return ReactDOM.createPortal(bar, document.body);
 }
 
 // Minimal popover used by the bulk bar — same portal trick as editors.tsx.
@@ -1758,12 +1853,23 @@ function BulkPopover({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popRef = useRef<HTMLDivElement>(null);
 
+  // Anchor flip: when the trigger lives in the lower half of the viewport
+  // (i.e. inside the floating bottom bulk bar), open the popover ABOVE so
+  // it doesn't render off-screen.
+  const [openAbove, setOpenAbove] = useState(false);
   useEffect(() => {
     if (!isOpen) return;
     const update = () => {
       const r = triggerRef.current?.getBoundingClientRect();
       if (!r) return;
-      setAnchor({ top: r.bottom + 4, left: r.left });
+      const above = r.top > window.innerHeight / 2;
+      setOpenAbove(above);
+      if (above) {
+        // Anchor by `bottom` so we can grow upward from the trigger top
+        setAnchor({ top: r.top, left: r.left });
+      } else {
+        setAnchor({ top: r.bottom + 4, left: r.left });
+      }
     };
     update();
     window.addEventListener('resize', update);
@@ -1785,10 +1891,9 @@ function BulkPopover({
     };
   }, [isOpen]);
 
-  // Use a raw button here instead of Atlaskit Button — the bulk-bar context
-  // is an action bar styled with a blue tint, and Atlaskit Button's default
-  // background is neutral; matching the surrounding chrome is more important
-  // than adopting the primitive here. Token colours keep it theme-aware.
+  // Trigger styled to live INSIDE Jira's dark floating bulk-action bar
+  // (re-skinned 2026-04-26). White text on transparent bg; hover white/10
+  // overlay; chevron suffix retained for affordance.
   return (
     <>
       <button
@@ -1799,15 +1904,20 @@ function BulkPopover({
           display: 'inline-flex',
           alignItems: 'center',
           gap: 4,
-          padding: '4px 10px',
-          borderRadius: 3,
-          background: token('elevation.surface', '#FFFFFF'),
-          border: `1px solid ${token('color.border.accent.blue', '#B3D4FF')}`,
-          color: token('color.text.accent.blue.bolder', '#0747A6'),
-          fontSize: 13,
+          height: 44,
+          padding: '0 14px',
+          background: 'transparent',
+          border: 'none',
+          color: '#FFFFFF',
+          fontSize: 14,
+          fontWeight: 500,
           cursor: 'pointer',
           fontFamily: 'inherit',
+          transition: 'background 100ms',
+          whiteSpace: 'nowrap',
         }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.10)')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {label} ▾
       </button>
@@ -1818,9 +1928,13 @@ function BulkPopover({
           onClick={(e) => e.stopPropagation()}
           style={{
             position: 'fixed',
-            top: anchor.top,
+            // When opening above (trigger in lower half of viewport), use
+            // `bottom` so the popover grows upward from just above the bar.
+            ...(openAbove
+              ? { bottom: window.innerHeight - anchor.top + 4 }
+              : { top: anchor.top }),
             left: anchor.left,
-            zIndex: 1000,
+            zIndex: 10000,
             minWidth: width,
             background: token('elevation.surface', '#FFFFFF'),
             border: `1px solid ${token('color.border', '#DFE1E6')}`,

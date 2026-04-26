@@ -1,3 +1,4 @@
+/* hmr-bust-2026-04-26 */
 /**
  * ProjectHubSidebar — /project-hub sidebar using SidebarBase
  *

@@ -720,6 +720,9 @@ export interface ParentChoice {
 //   font-weight: 400
 function ParentChip({ choice }: { choice: { key: string | null; label: string; icon?: React.ReactNode } }) {
   const display = choice.key ? `${choice.key} ${choice.label}` : choice.label;
+  // Re-skinned 2026-04-26 to match Jira's parent (Epic) reference pill —
+  // soft mint green Atlaskit lozenge with dark text. Was previously dirty
+  // teal #227D9B / white. Stays in sync with cells.tsx makeParentCell.
   return (
     <span
       style={{
@@ -729,11 +732,11 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         maxWidth: 260,
         padding: '2px 6px',
         borderRadius: 3,
-        background: '#227D9B',
-        color: '#FFFFFF',
+        background: '#B3DF72',
+        color: '#292A2E',
         fontSize: 12,
         fontWeight: 500,
-        lineHeight: '18px',
+        lineHeight: '16px',
         overflow: 'hidden',
         whiteSpace: 'nowrap',
       }}
@@ -745,7 +748,7 @@ function ParentChip({ choice }: { choice: { key: string | null; label: string; i
         </span>
       )}
       {choice.key && <strong style={{ fontWeight: 700 }}>{choice.key}</strong>}
-      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.92 }}>
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {choice.label}
       </span>
     </span>

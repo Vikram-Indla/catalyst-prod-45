@@ -144,16 +144,38 @@ export type LozengeAppearance =
   | 'new';
 
 /**
- * StatusPill — Jira-faithful status lozenge.
+ * StatusPill — Jira-faithful status lozenge. CANONICAL across Catalyst.
  *
- * Measured directly from Jira production DOM on 2026-04-18:
- *   - bg (to-do family):     rgb(221, 222, 225)  / #DDDEE1
- *   - bg (in-progress fam.): rgb(223, 237, 255)  / #DFEDFF  (estimated; Atlaskit inprogress)
- *   - bg (done family):      rgb(179, 223, 114)  / #B3DF72
- *   - text color:            rgb(41, 42, 46)     / #292A2E  (all families)
- *   - text is SENTENCE CASE — not uppercase
- *   - font-weight 400 — NOT bold
- *   - font-size 14 / padding 0 4px / border-radius 3px
+ * RE-MEASURED 2026-04-26 (Jira BAU-5650 list view, "Ready for QA"):
+ *   - font-size       11px           (NOT 14px — earlier reading was the
+ *                                      outer wrapper span, not the lozenge)
+ *   - font-weight     700            (Jira's Charlie variable axis is 653;
+ *                                      we round to the nearest static weight)
+ *   - text-transform  UPPERCASE      (NOT sentence case)
+ *   - letter-spacing  0.015em        (Jira measured 0.165px / 11px)
+ *   - line-height     16px           (rendered box height 16px)
+ *   - padding         0 4px
+ *   - border-radius   3px
+ *   - bg / fg colors per appearance below.
+ *
+ * Why this matters: Catalyst's 14px-sentence-case-400 rendering is what
+ * the user sees as "washed out" vs Jira. The correct rendering is small,
+ * tight, uppercase, and bold — exactly what Atlaskit's @atlaskit/lozenge
+ * default produces and what every Jira surface uses. This is the single
+ * canonical pill consumed by every Catalyst hub (ProjectHub, IncidentHub,
+ * TestHub, TaskHub, ProductHub) — see CLAUDE.md §5.
+ *
+ * Color families (measured live from Jira's DOM, verified against
+ * Atlaskit @atlaskit/lozenge source):
+ *   default     to-do, backlog, on-hold        bg #DDDEE1  fg #292A2E
+ *   inprogress  in progress, in review, active  bg #DFEDFF  fg #0747A6
+ *   success     done, approved, completed       bg #B3DF72  fg #292A2E
+ *   removed     cancelled, rejected, blocked   bg #FFD2CC  fg #5D1F1A
+ *   moved       same family as inprogress       (same as inprogress)
+ *   new         same family as inprogress       (same as inprogress)
+ *
+ * NEVER override font-size, weight, casing, or letter-spacing per consumer.
+ * The pill is canonical — adjustments go in this file, applied everywhere.
  */
 export function StatusPill({
   appearance,
@@ -162,13 +184,12 @@ export function StatusPill({
   appearance: LozengeAppearance;
   children: React.ReactNode;
 }) {
-  // Map the 6-value vocabulary to the 3 Jira color families.
   const palette = (() => {
     switch (appearance) {
       case 'inprogress':
       case 'new':
       case 'moved':
-        return { bg: '#DFEDFF', fg: '#0055CC' };
+        return { bg: '#DFEDFF', fg: '#0747A6' };
       case 'success':
         return { bg: '#B3DF72', fg: '#292A2E' };
       case 'removed':
@@ -178,9 +199,8 @@ export function StatusPill({
         return { bg: '#DDDEE1', fg: '#292A2E' };
     }
   })();
-  // Re-measured 2026-04-26 (Jira BAU-5650, "Ready for QA" lozenge):
-  //   - font-size 14px / weight 400 / radius 3px / padding 0 4px
-  //   - rendered box height 16px (line-height 16px, tight against text)
+  // hmr-bust 2026-04-26 v2 — second pass to force Vite to reread this file
+  // after the cross-mount FS watcher missed an earlier StatusPill edit.
   return (
     <span
       style={{
@@ -189,11 +209,11 @@ export function StatusPill({
         borderRadius: 3,
         background: palette.bg,
         color: palette.fg,
-        fontSize: 14,
-        fontWeight: 400,
+        fontSize: 11,
+        fontWeight: 700,
         lineHeight: '16px',
-        letterSpacing: 0,
-        textTransform: 'none',
+        letterSpacing: '0.015em',
+        textTransform: 'uppercase',
         whiteSpace: 'nowrap',
       }}
     >
@@ -274,6 +294,18 @@ export function makeParentCell(getParent: (row: any) => ParentCellInput | null) 
     // Measured directly from Jira production DOM 2026-04-18:
     //   bg #227D9B, white text, 2px 4px padding, 3px radius.
     return (
+      // Re-measured 2026-04-26 (Jira list view, Epic parent ref like
+      // "IRP-81 M4 - Profiles"): Jira renders the parent ref as an
+      // Atlaskit lozenge with appearance="success" — soft mint green bg,
+      // dark text, with the parent's type icon (purple lightning for
+      // Epic) prepended in its native color. NOT the previous teal
+      // (#227D9B/white) which was a Catalyst opinion.
+      //
+      //   bg: #B3DF72 (matches StatusPill 'success' family)
+      //   color: #292A2E (primary text)
+      //   font-size: 12px / weight 500 / line-height 16px
+      //   padding: 2px 6px / radius 3px
+      //   icon retains native color (e.g. Epic = purple)
       <span
         style={{
           display: 'inline-flex',
@@ -282,11 +314,11 @@ export function makeParentCell(getParent: (row: any) => ParentCellInput | null) 
           maxWidth: 260,
           padding: '2px 6px',
           borderRadius: 3,
-          background: '#227D9B',
-          color: '#FFFFFF',
+          background: '#B3DF72',
+          color: '#292A2E',
           fontSize: 12,
           fontWeight: 500,
-          lineHeight: '18px',
+          lineHeight: '16px',
           overflow: 'hidden',
           whiteSpace: 'nowrap',
         }}
@@ -298,7 +330,7 @@ export function makeParentCell(getParent: (row: any) => ParentCellInput | null) 
           </span>
         )}
         {p.key && <strong style={{ fontWeight: 700 }}>{p.key}</strong>}
-        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.92 }}>
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           {p.label}
         </span>
       </span>
