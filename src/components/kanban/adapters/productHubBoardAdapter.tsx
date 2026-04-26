@@ -32,7 +32,7 @@
 import type { ReactNode } from 'react';
 import { CircleDashed } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
-import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { BusinessRequestIcon } from '@/components/producthub/shared/BusinessRequestBadge';
 import type { WorkflowStatus } from '@/hooks/useCatalystWorkflow';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
