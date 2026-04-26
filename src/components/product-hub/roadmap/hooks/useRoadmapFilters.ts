@@ -37,7 +37,7 @@ export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
   }, [allItems, typeFilter, search, quickFilter]);
 
   const groups = useMemo<RoadmapGroup[]>(() => {
-    if (groupBy === 'none') return [{ key: 'all', label: 'All Initiatives', color: '#64748B', items: filtered, isExpanded: true }];
+    if (groupBy === 'none') return [{ key: 'all', label: 'All Business Requests', color: '#64748B', items: filtered, isExpanded: true }];
 
     const map = new Map<string, RoadmapInitiative[]>();
     for (const item of filtered) {

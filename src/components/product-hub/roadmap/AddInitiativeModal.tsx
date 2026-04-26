@@ -98,7 +98,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.borderLight}` }}>
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: INK[1], margin: 0 }}>Add Initiative to Roadmap</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: INK[1], margin: 0 }}>Add Business Request to Roadmap</h2>
             <p style={{ fontSize: 12, fontWeight: 500, color: INK[3], margin: 0, marginTop: 2 }}>Select from existing backlog initiatives</p>
           </div>
           <button

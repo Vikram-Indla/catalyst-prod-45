@@ -69,7 +69,7 @@ tr:hover { background: #FAFAFA }
   </div>
   <div style="text-align:right">
     <span style="font-family:monospace;font-size:36px;font-weight:700;color:#2563EB">${items.length}</span>
-    <div style="font-size:11px;color:#71717A;font-weight:500">INITIATIVES</div>
+    <div style="font-size:11px;color:#71717A;font-weight:500">BUSINESS REQUESTS</div>
   </div>
 </div>
 <table>

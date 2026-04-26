@@ -72,7 +72,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
       >
         <div className="flex items-center gap-2">
           <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
-            Initiatives
+            Business Requests
           </span>
           <span style={{
             fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
@@ -153,7 +153,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <Plus className="w-4 h-4" />
-          Add Initiative to Roadmap
+          Add Business Request to Roadmap
         </button>
       </div>
     </div>

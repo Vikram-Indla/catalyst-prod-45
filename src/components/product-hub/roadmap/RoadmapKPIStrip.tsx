@@ -55,7 +55,7 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
       <div style={cardStyle}>
         <div style={labelStyle}>On Roadmap</div>
         <div style={valueStyle}>{stats.totalOnRoadmap}</div>
-        <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>of {stats.totalInitiatives} total initiatives</div>
+        <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>of {stats.totalInitiatives} total business requests</div>
       </div>
 
       {/* By Status */}
