@@ -759,7 +759,6 @@ export default function InitiativeListingPage() {
         initiative={promoteTarget ? {
           id: promoteTarget.id,
           title: promoteTarget.title,
-          initiative_type_key: promoteTarget.initiative_type_key,
         } : null}
       />
     </div>
