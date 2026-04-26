@@ -160,4 +160,5 @@ export interface CreateProjectInput {
   status_category?: string;
   lead_id?: string;
   jira_key?: string;
+  priority?: 'critical' | 'high' | 'medium' | 'low' | null;
 }
