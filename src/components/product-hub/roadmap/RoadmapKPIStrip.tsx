@@ -76,17 +76,12 @@ export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
         <div style={{ fontSize: 11, fontWeight: 500, color: ink[4], marginTop: 2 }}>Active initiatives</div>
       </div>
 
-      {/* By Type — with colored dots */}
+      {/* Business Request indicator */}
       <div style={cardStyle}>
-        <div style={labelStyle}>By Type</div>
-        <div className="flex items-center gap-3 flex-wrap" style={{ marginTop: 6 }}>
-          {TYPE_DOTS.map(t => (
-            <div key={t.key} className="flex items-center gap-1.5">
-              <span style={{ width: 8, height: 8, borderRadius: '50%', background: t.color, display: 'inline-block', flexShrink: 0 }} />
-              <span style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, color: t.color }}>{typeCounts[t.key]}</span>
-              <span style={{ fontSize: 10, fontWeight: 500, color: ink[3] }}>{t.label}</span>
-            </div>
-          ))}
+        <div style={labelStyle}>Work Item Type</div>
+        <div className="flex items-center gap-2" style={{ marginTop: 6 }}>
+          <span style={{ width: 10, height: 10, borderRadius: '50%', background: BUSINESS_REQUEST_COLOR, display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ fontFamily: FONT.heading, fontSize: 16, fontWeight: 700, color: BUSINESS_REQUEST_COLOR }}>Business Request</span>
         </div>
       </div>
     </div>
