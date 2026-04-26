@@ -151,7 +151,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
   const createMutation = useCreateInitiative();
   const { data: departmentOptions } = useDepartmentOptions();
   const { data: profileOptions } = useProfileOptions();
-  const { data: initiativeTypes } = useInitiativeTypes();
+  
 
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [titleError, setTitleError] = useState(false);
@@ -357,11 +357,6 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             />
           </FieldWrapper>
 
-          {/* §2 CLASSIFICATION */}
-          <SectionHeader icon={<Tag className="w-4 h-4" />} label="CLASSIFICATION" />
-          <FieldWrapper label="Initiative Type">
-            <InitiativeTypeSelect value={selectedType} onChange={setSelectedType} />
-          </FieldWrapper>
           <div className="grid grid-cols-2 gap-4">
             <FieldWrapper label="Status">
               <StatusSelect value={form.status} onChange={v => updateField('status', v)} />
