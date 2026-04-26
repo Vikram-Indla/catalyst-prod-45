@@ -909,14 +909,13 @@ export function useDashboardRecentActivity(
 
       // 2. catalyst_status_history — status transitions within the window
       try {
-        const { data: trans } = await supabase
-          .from('catalyst_status_history')
+        const { data: trans } = await typedQuery('catalyst_status_history')
           .select('issue_key, from_status, to_status, changed_at, actor_name, actor_account_id')
           .eq('project_key', pKey)
           .gte('changed_at', fromIso)
           .lte('changed_at', toIso)
           .order('changed_at', { ascending: false })
-          .limit(50);
+          .limit(50) as { data: any[] | null };
 
         // Backfill assignees for transition issue_keys we DIDN'T already
         // load via ph_issues above. One round-trip, batched IN clause.
@@ -1339,12 +1338,11 @@ export function useTimeInStatusMatrix(
       // 3. Transitions — soft-fail (RLS denial / missing table both ok).
       let transitions: any[] | null = [];
       try {
-        const { data, error } = await supabase
-          .from('catalyst_status_history')
+        const { data, error } = await typedQuery('catalyst_status_history')
           .select('issue_key, from_status, to_status, changed_at')
           .eq('project_key', projectKey!)
           .in('issue_key', issueKeys)
-          .order('changed_at', { ascending: true });
+          .order('changed_at', { ascending: true }) as { data: any[] | null; error: any };
         if (error) {
           // eslint-disable-next-line no-console
           console.warn('[TimeInStatus] history fetch failed (likely RLS or empty table)', error);
