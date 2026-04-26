@@ -1,6 +1,7 @@
 import React from 'react';
-import { Star, MoreHorizontal, FolderKanban, Zap, Wrench, Link, Lightbulb, Flag, Activity, Target, type LucideIcon } from 'lucide-react';
+import { Star, MoreHorizontal, Flag, Activity, Target } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format } from 'date-fns';
