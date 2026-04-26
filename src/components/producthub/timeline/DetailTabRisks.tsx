@@ -130,6 +130,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       // risk_score is a GENERATED column (probability * impact) — DB computes it
       mitigation_plan: form.mitigation_plan.trim() || null,
       contingency_plan: form.contingency_plan.trim() || null,
+      owner_id: form.owner_id || null,
     };
     if (editingRisk) {
       const { error } = await typedQuery('ph_initiative_risks').update(payload).eq('id', editingRisk.id);
