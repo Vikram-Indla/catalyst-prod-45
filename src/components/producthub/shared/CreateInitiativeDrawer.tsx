@@ -155,13 +155,13 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
 
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [titleError, setTitleError] = useState(false);
-  const [selectedType, setSelectedType] = useState('project');
+  
   const [closing, setClosing] = useState(false);
 
   const resetForm = useCallback(() => {
     setForm({ ...EMPTY_FORM });
     setTitleError(false);
-    setSelectedType('project');
+    
   }, []);
 
   useEffect(() => {
