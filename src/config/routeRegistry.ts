@@ -66,8 +66,8 @@ export const ROUTE_REGISTRY: Record<string, RouteConfig> = {
   // Ideas routes
   '/producthub/ideas': { section: 'IDEAS', pageTitle: 'Ideas Hub' },
   '/producthub/ideas/all': { section: 'IDEAS', pageTitle: 'All Ideas' },
-  '/producthub/ideas/initiatives': { section: 'IDEAS', pageTitle: 'Initiatives' },
-  '/producthub/ideas/initiatives/:id': { section: 'IDEAS', pageTitle: 'Initiative Details' },
+  '/producthub/ideas/initiatives': { section: 'IDEAS', pageTitle: 'Business Requests' },
+  '/producthub/ideas/initiatives/:id': { section: 'IDEAS', pageTitle: 'Business Request Details' },
   '/producthub/ideas/matrix': { section: 'IDEAS', pageTitle: 'Priority Matrix' },
   '/producthub/ideas/scoring': { section: 'IDEAS', pageTitle: 'Scoring Queue' },
   '/producthub/ideas/submit': { section: 'IDEAS', pageTitle: 'Submit Idea' },

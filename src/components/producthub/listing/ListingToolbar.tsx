@@ -172,7 +172,7 @@ export function ListingToolbar({
             className="h-8 px-3 flex items-center gap-1.5 text-[13px] font-medium rounded-md bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors"
           >
             <Plus size={14} />
-            New Initiative
+           New Business Request
           </button>
         </div>
       </div>
@@ -187,7 +187,7 @@ export function ListingToolbar({
             type="text"
             value={localSearch}
             onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search initiatives…"
+            placeholder="Search business requests…"
             className="w-full h-8 pl-8 pr-8 text-[13px] bg-white dark:bg-[#1A1A1A] dark:text-[#EDEDED] border border-zinc-300 dark:border-[#2E2E2E] rounded-md outline-none transition-all placeholder:text-zinc-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
           />
           {localSearch && (
