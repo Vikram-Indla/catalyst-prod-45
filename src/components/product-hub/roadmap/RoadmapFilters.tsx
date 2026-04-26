@@ -27,11 +27,7 @@ const QUICK_FILTERS: { key: QuickFilter; label: string }[] = [
 ];
 
 const TYPE_TABS: { key: InitiativeType | 'all'; label: string; dot: string | null }[] = [
-  { key: 'all', label: 'All Types', dot: null },
-  { key: 'project', label: 'Projects', dot: TYPE_COLORS.project.solid },
-  { key: 'enhancement', label: 'Enhancements', dot: TYPE_COLORS.enhancement.solid },
-  { key: 'entity_integration', label: 'Entity Integration', dot: TYPE_COLORS.entity_integration.solid },
-  { key: 'improvement', label: 'Improvements', dot: TYPE_COLORS.improvement.solid },
+  { key: 'all', label: 'All', dot: null },
 ];
 
 const LEGEND = [

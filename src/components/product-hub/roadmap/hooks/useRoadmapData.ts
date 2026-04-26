@@ -17,13 +17,13 @@ const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
   cancelled: 'Cancelled',
 };
 
-// ── Type mapping: DB key → UI type ──
+// ── Type mapping (single business_request type) ──
 const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
-  project: 'project',
-  enhancement: 'enhancement',
-  improvement: 'improvement',
-  
-  entity_integration: 'entity_integration',
+  project: 'business_request',
+  enhancement: 'business_request',
+  improvement: 'business_request',
+  entity_integration: 'business_request',
+  business_request: 'business_request',
 };
 
 // ── Color fallback for owners — deterministic from name ──
@@ -206,7 +206,7 @@ export function useRoadmapInitiatives() {
           title: row.title || '',
           titleAr,
           titleEn: titleEn || row.title || '',
-          type: TYPE_MAP[row.initiative_type_key] || 'project',
+          type: 'business_request',
           priority: row.roadmap_priority === 1 ? 'P0' : row.roadmap_priority === 2 ? 'P1' : 'P2',
           status: STATUS_MAP[row.status] || 'Planned',
           progress: row.progress ?? 0,
@@ -220,10 +220,8 @@ export function useRoadmapInitiatives() {
           hasRealEndDate,
           rawDbId: row.id,
           rawStatus: row.status || 'new_demand',
-          rawTypeKey: row.initiative_type_key || 'project',
           rawAssigneeId: row.assignee_id || null,
           rawBusinessOwnerId: row.business_owner_id || null,
-          rawInitiativeTypeId: row.initiative_type_id || null,
         };
       });
     },
@@ -251,10 +249,6 @@ export function useRoadmapStats() {
         totalInitiatives: Number(data.total_initiatives) || 0,
         activeCount: Number(data.active_count) || 0,
         validationCount: Number(data.validation_count) || 0,
-        projectCount: Number(data.roadmap_projects) || 0,
-        enhancementCount: Number(data.roadmap_enhancements) || 0,
-        improvementCount: Number(data.roadmap_improvements) || 0,
-        entityIntegrationCount: Number(data.roadmap_entity_integrations) || 0,
         currentQuarter: `Q${q} ${now.getFullYear()}`,
       };
     },
@@ -271,7 +265,7 @@ export function useBacklogItemsNotOnRoadmap() {
     queryFn: async () => {
       const [{ data, error }, profiles] = await Promise.all([
         typedQuery('ph_backlog_initiatives_view')
-          .select('id, initiative_key, title, status, priority, assignee_id, source, on_roadmap, is_deleted, initiative_type_key')
+          .select('id, initiative_key, title, status, priority, assignee_id, source, on_roadmap, is_deleted')
           .eq('is_deleted', false)
           .eq('on_roadmap', false)
           .order('initiative_key', { ascending: true })
@@ -292,7 +286,7 @@ export function useBacklogItemsNotOnRoadmap() {
           status: row.status || '',
           owner: ownerName,
           source: row.source || 'catalyst',
-          type: (row.initiative_type_key || 'project') as RoadmapInitiative['type'],
+          type: 'business_request' as RoadmapInitiative['type'],
           alreadyOnRoadmap: false, // filtered out at query level
         };
       });
@@ -409,7 +403,6 @@ export function useRoadmapData() {
 
   const defaultStats: RoadmapStats = {
     totalOnRoadmap: 0, totalInitiatives: 0, activeCount: 0, validationCount: 0,
-    projectCount: 0, enhancementCount: 0, improvementCount: 0, entityIntegrationCount: 0,
     currentQuarter: `Q${Math.ceil((new Date().getMonth() + 1) / 3)} ${new Date().getFullYear()}`,
   };
 

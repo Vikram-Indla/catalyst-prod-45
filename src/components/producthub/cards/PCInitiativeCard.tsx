@@ -1,7 +1,7 @@
 import React from 'react';
 import { Star, MoreHorizontal, Flag, Activity, Target } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
-import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
 import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format } from 'date-fns';
@@ -128,9 +128,8 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       <div className="pc-card-title">{initiative.title}</div>
 
       {/* Business Request label — single canonical type */}
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
-        <JiraIssueTypeIcon issueType="Feature" size={14} />
-        <span style={{ fontSize: 11, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
+      <div style={{ marginBottom: 10 }}>
+        <BusinessRequestBadge iconSize={14} fontSize={11} />
       </div>
 
       {/* Priority + Health chips */}

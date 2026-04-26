@@ -1,15 +1,34 @@
 /**
  * Initiative Detail Panel — V3.1 MARAM + Catalyst V11 Carbon Precision
- * 62% width slide-out drawer with 7 tabs
- * Uses idp- namespaced CSS from initiative-detail-panel.css
+ * 62% width slide-out drawer with 7 tabs.
+ *
+ * Atlaskit migration (Apr 2026): internal primitives swapped to ADS where
+ * direct equivalents exist. Drawer shell + slide animations remain on the
+ * `idp-*` CSS namespace because no Atlaskit primitive provides a 62%-width
+ * right-side slide-out. Migrated:
+ *   - Tab bar         → @atlaskit/tabs
+ *   - Status pill     → @ads StatusLozenge
+ *   - Title editor    → @ads InlineEdit + @ads Textfield
+ *   - Delete confirm  → @ads Modal (replaces shadcn AlertDialog)
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { ArrowLeft, X, Archive } from 'lucide-react';
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import {
-  ArrowLeft, X, Archive, Copy, Trash2,
-} from 'lucide-react';
-import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
+  Modal,
+  ModalHeader,
+  ModalTitle,
+  ModalBody,
+  ModalFooter,
+  Button,
+  StatusLozenge,
+  InlineEdit,
+  Textfield,
+  toStatusCategory,
+} from '@/components/ads';
+import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { useTimelineState } from '@/hooks/producthub/useTimelineState';
 import { DetailTabDetails } from './DetailTabDetails';
@@ -20,27 +39,10 @@ import { DetailTabMilestones } from './DetailTabMilestones';
 import { DetailTabAttachments } from './DetailTabAttachments';
 import { DetailTabActivity } from './DetailTabActivity';
 import { InitiativeLinkedItemsTab } from '@/components/producthub/InitiativeLinkedItemsTab';
-import { supabase, typedQuery } from '@/integrations/supabase/client';
+import { typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useTheme } from '@/hooks/useTheme';
 import '@/styles/initiative-detail-panel.css';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-
-/* ── Status color map (MARAM V3.1 Dual Token) — light + dark ── */
-const STATUS_PILL_COLORS: Record<string, { text: [string, string]; bg: [string, string]; bdr: [string, string] }> = {
-  new_demand:    { text: ['#2563EB', '#7DB8FC'], bg: ['#EFF6FF', 'rgba(37,99,235,0.10)'],  bdr: ['rgba(37,99,235,0.2)', 'rgba(37,99,235,0.25)'] },
-  under_review:  { text: ['#9A5402', '#FDE68A'], bg: ['#FFFBEB', 'rgba(251,191,36,0.10)'], bdr: ['rgba(217,119,6,0.2)', 'rgba(251,191,36,0.25)'] },
-  approved:      { text: ['#0D7331', '#4ADE80'], bg: ['#F0FDF4', 'rgba(74,222,128,0.10)'], bdr: ['rgba(22,163,74,0.2)', 'rgba(74,222,128,0.25)'] },
-  in_progress:   { text: ['#08736B', '#5EEAD4'], bg: ['#F0FDFA', 'rgba(13,148,136,0.10)'], bdr: ['rgba(13,148,136,0.2)', 'rgba(13,148,136,0.25)'] },
-  on_hold:       { text: ['#6F6F78', '#A1A1A1'], bg: ['#F1F5F9', '#2E2E2E'],               bdr: ['rgba(113,113,122,0.2)', '#454545'] },
-  delivered:     { text: ['#7C3AED', '#C4B5FD'], bg: ['#F5F3FF', 'rgba(124,58,237,0.10)'], bdr: ['rgba(124,58,237,0.2)', 'rgba(124,58,237,0.25)'] },
-  closed:        { text: ['#0D7331', '#4ADE80'], bg: ['#F0FDF4', 'rgba(74,222,128,0.10)'], bdr: ['rgba(22,163,74,0.2)', 'rgba(74,222,128,0.25)'] },
-  cancelled:     { text: ['#D92525', '#FCA5A5'], bg: ['#FEF2F2', 'rgba(239,68,68,0.10)'],  bdr: ['rgba(220,38,38,0.2)', 'rgba(239,68,68,0.25)'] },
-};
 
 /* UI status to DB status mapping */
 const UI_TO_DB: Record<string, string> = {
@@ -57,7 +59,6 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 // Type concept removed — every Product Hub item is a Business Request.
-
 
 const PRIORITY_LEVELS: Record<string, number> = { critical: 4, high: 3, medium: 2, low: 1 };
 
@@ -85,33 +86,26 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   initiatives,
   onClose,
 }) => {
-  const { isDark } = useTheme();
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const [isVisible, setIsVisible] = useState(false);
   const [closing, setClosing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  
-  const [editingTitle, setEditingTitle] = useState(false);
-  const [titleDraft, setTitleDraft] = useState(initiative.title);
-  const titleRef = useRef<HTMLInputElement>(null);
+
   const panelRef = useRef<HTMLDivElement>(null);
   const { openDetail } = useTimelineState();
   const queryClient = useQueryClient();
 
-  // Get DB status for the initiative
+  // Status → StatusLozenge category
   const dbStatus = UI_TO_DB[initiative.status] || initiative.status;
-  const rawPill = STATUS_PILL_COLORS[dbStatus] || STATUS_PILL_COLORS.new_demand;
-  const di = isDark ? 1 : 0;
-  const pillColors = { text: rawPill.text[di], bg: rawPill.bg[di], bdr: rawPill.bdr[di] };
   const statusLabel = STATUS_LABELS[dbStatus] || initiative.status;
+  const statusCategory = toStatusCategory(dbStatus);
+
   const priority = (initiative as any).priority || 'medium';
   const priorityBars = PRIORITY_LEVELS[priority.toLowerCase()] || 2;
 
   useEffect(() => {
     requestAnimationFrame(() => setIsVisible(true));
   }, []);
-
-  useEffect(() => { setTitleDraft(initiative.title); }, [initiative.title]);
 
   const handleClose = useCallback(() => {
     setClosing(true);
@@ -140,10 +134,9 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     return () => document.removeEventListener('keydown', handler);
   }, [initiative.id, initiatives, openDetail]);
 
-  // Title save
-  const saveTitle = useCallback(async () => {
-    setEditingTitle(false);
-    const trimmed = titleDraft.trim();
+  // Title save (commit from InlineEdit)
+  const saveTitle = useCallback(async (next: string) => {
+    const trimmed = (next ?? '').trim();
     if (!trimmed || trimmed === initiative.title) return;
     try {
       const { error } = await typedQuery('ph_initiatives')
@@ -154,7 +147,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
     } catch { toast.error('Failed to save title'); }
-  }, [titleDraft, initiative.title, initiative.id, queryClient]);
+  }, [initiative.title, initiative.id, queryClient]);
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -168,6 +161,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
       queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
       toast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+      setShowDeleteConfirm(false);
       handleClose();
     },
     onError: () => toast.error('Failed to delete'),
@@ -198,6 +192,21 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     } catch { toast.error('Clone failed'); }
   };
 
+  const handleArchiveToggle = async () => {
+    try {
+      const { error } = await typedQuery('ph_initiatives')
+        .update({ is_archived: !initiative.is_archived, updated_at: new Date().toISOString() })
+        .eq('id', initiative.id);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+      toast.success(initiative.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+    } catch { toast.error('Failed to archive'); }
+  };
+
+  // Tab index sync (Atlaskit Tabs uses index, we keep TabKey for content switch)
+  const activeTabIndex = TABS.findIndex(t => t.key === activeTab);
+
   const portalContent = (
     <div data-module="initiative-detail-panel">
       {/* Backdrop */}
@@ -222,19 +231,9 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           </button>
           <div className="idp-action-group">
             <button className="idp-action-btn" onClick={handleClone}>Clone</button>
-            <button className="idp-action-btn idp-action-btn--archive" onClick={() => {
-              (async () => {
-                try {
-                  const { error } = await typedQuery('ph_initiatives')
-                    .update({ is_archived: !initiative.is_archived, updated_at: new Date().toISOString() })
-                    .eq('id', initiative.id);
-                  if (error) throw error;
-                  queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
-                  queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
-                  toast.success(initiative.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
-                } catch { toast.error('Failed to archive'); }
-              })();
-            }}>{initiative.is_archived ? 'Restore' : 'Archive'}</button>
+            <button className="idp-action-btn idp-action-btn--archive" onClick={handleArchiveToggle}>
+              {initiative.is_archived ? 'Restore' : 'Archive'}
+            </button>
             <button className="idp-action-btn idp-action-btn--delete" onClick={() => setShowDeleteConfirm(true)}>Delete</button>
             <div className="idp-divider" />
             <button className="idp-close-btn" onClick={handleClose}><X size={16} /></button>
@@ -249,43 +248,37 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               <span>This business request has been archived</span>
             </div>
           )}
-          {/* Key + Title on same line */}
+          {/* Key + Title — Title uses Atlaskit InlineEdit */}
           <div className="idp-key-title-row">
             <span className="idp-key-pill">{initiative.initiative_key}</span>
-            {editingTitle ? (
-              <input
-                ref={titleRef}
-                className="idp-title-editable"
-                value={titleDraft}
-                onChange={e => setTitleDraft(e.target.value)}
-                onBlur={saveTitle}
-                onKeyDown={e => { if (e.key === 'Enter') saveTitle(); if (e.key === 'Escape') setEditingTitle(false); }}
-                autoFocus
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <InlineEdit<string>
+                label="Title"
+                value={initiative.title}
+                defaultValue=""
+                hideActionButtons
+                readView={() => (
+                  <div className="idp-title-editable">
+                    {initiative.title}
+                  </div>
+                )}
+                editView={({ value, onChange, onBlur, ...rest }) => (
+                  <Textfield
+                    autoFocus
+                    value={value ?? ''}
+                    onChange={(e) => onChange((e.target as HTMLInputElement).value)}
+                    onBlur={onBlur}
+                    aria-label={rest['aria-label']}
+                  />
+                )}
+                onConfirm={(next) => saveTitle(next)}
               />
-            ) : (
-              <div
-                className="idp-title-editable"
-                onClick={() => { setTitleDraft(initiative.title); setEditingTitle(true); }}
-                role="button"
-                tabIndex={0}
-              >
-                {initiative.title}
-              </div>
-            )}
+            </div>
           </div>
-          {/* Meta row: status pill + type badge + priority bars */}
+          {/* Meta row: status lozenge + business request badge + priority bars */}
           <div className="idp-meta-row">
-            <div
-              className="idp-status-pill"
-              style={{ background: pillColors.bg, border: `1px solid ${pillColors.bdr}` }}
-            >
-              <div className="idp-status-dot" style={{ background: pillColors.text }} />
-              <span style={{ color: pillColors.text }}>{statusLabel}</span>
-            </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <JiraIssueTypeIcon issueType="Feature" size={16} />
-              <span style={{ fontSize: 12, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
-            </div>
+            <StatusLozenge status={statusCategory}>{statusLabel}</StatusLozenge>
+            <BusinessRequestBadge iconSize={16} fontSize={12} />
             <div className="idp-priority-bars">
               {[1, 2, 3, 4].map(i => (
                 <div
@@ -295,7 +288,6 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               ))}
               <span className="idp-priority-label" style={{ textTransform: 'capitalize' }}>{priority}</span>
             </div>
-            {/* Subtle origin tag */}
             {(initiative as any).source === 'catalyst' && (
               <span style={{
                 fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
@@ -317,17 +309,19 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           </div>
         </div>
 
-        {/* Tab Bar */}
+        {/* Tabs — Atlaskit @atlaskit/tabs */}
         <div className="idp-tabs">
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`idp-tab${activeTab === tab.key ? ' idp-tab--active' : ''}`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          <Tabs
+            id="initiative-detail-tabs"
+            selected={activeTabIndex < 0 ? 0 : activeTabIndex}
+            onChange={(idx) => setActiveTab(TABS[idx].key)}
+          >
+            <TabList>
+              {TABS.map(tab => (
+                <Tab key={tab.key}>{tab.label}</Tab>
+              ))}
+            </TabList>
+          </Tabs>
         </div>
 
         {/* Content */}
@@ -343,23 +337,25 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
         </div>
       </div>
 
-      {/* Delete confirmation */}
-      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete Business Request</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete <strong>{initiative.initiative_key}</strong>? This action uses soft-delete and can be reversed.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteMutation.mutate()} style={{ backgroundColor: 'var(--sem-danger)' }}>
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Delete confirmation — Atlaskit Modal */}
+      <Modal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        width="small"
+      >
+        <ModalHeader>
+          <ModalTitle>Delete Business Request</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+          Are you sure you want to delete <strong>{initiative.initiative_key}</strong>? This action uses soft-delete and can be reversed.
+        </ModalBody>
+        <ModalFooter>
+          <Button appearance="subtle" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+          <Button appearance="danger" onClick={() => deleteMutation.mutate()} isDisabled={deleteMutation.isPending}>
+            Delete
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 

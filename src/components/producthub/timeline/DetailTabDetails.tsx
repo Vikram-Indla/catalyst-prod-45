@@ -1,18 +1,32 @@
 /**
  * Detail Tab — Overview (MARAM V3.1 + Catalyst V11 Carbon Precision)
- * Type selector cards, roadmap toggle, 2-col field grid, description, comments
- * All fields persist to Supabase ph_initiatives
+ *
+ * Atlaskit migration (Apr 2026): all form controls swapped to ADS / Atlaskit
+ * primitives. autoSave(field, value, label) wiring preserved EXACTLY — every
+ * call signature, every optimistic-update path, every invalidation key.
+ *
+ *   Status / EA / BV / Priority / Quarter / Department  → @ads Select
+ *   Reporter / Assignee / Business Owner                → @ads Select (avatar option labels)
+ *   Business Ask / Kickoff / Target Complete            → @atlaskit/datetime-picker
+ *   Description                                          → @atlaskit/textarea
+ *   Roadmap toggle                                       → @atlaskit/toggle
+ *   Comment input + post button                          → @ads Textfield + @ads Button
  */
 
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import type { TimelineInitiative } from '@/types/producthub/initiative';
 import { format } from 'date-fns';
-import { Check, Pencil, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { usePromoteToRoadmap, useRemoveFromRoadmap } from '@/hooks/useRoadmapPromotion';
 import { getInitialsFromName, hashColor } from '@/types/producthub/initiative';
+import { Select, Textfield, Button, Avatar } from '@/components/ads';
+import type { SelectOption } from '@/components/ads';
+import { DatePicker } from '@atlaskit/datetime-picker';
+import TextArea from '@atlaskit/textarea';
+import Toggle from '@atlaskit/toggle';
 
 /* ═══ Constants ═══ */
 const STATUS_OPTIONS = [
@@ -31,13 +45,6 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled', group: 'Closure', db: 'cancelled' },
 ];
 
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project', icon: '🏗', color: '#0D9488', textColor: '#08736B' },
-  { key: 'enhancement', label: 'Enhancement', icon: '⚡', color: '#2563EB', textColor: '#2563EB' },
-  { key: 'improvement', label: 'Improvement', icon: '🔧', color: '#D97706', textColor: '#9A5402' },
-  { key: 'entity_integration', label: 'Entity Integration', icon: '🔗', color: '#7C3AED', textColor: '#7C3AED' },
-];
-
 const EA_OPTS = ['Not Required', 'Pending', 'In Review', 'Approved', 'Rejected'];
 const BV_OPTS = ['High', 'Medium', 'Low'];
 const PRIO_OPTS = ['Critical', 'High', 'Medium', 'Low'];
@@ -46,86 +53,11 @@ interface DetailTabDetailsProps {
   initiative: TimelineInitiative;
 }
 
-/* ═══ Custom Dropdown ═══ */
-function DD({ value, options, grouped, onChange, ph = 'Select...' }: {
-  value: string | null | undefined;
-  options: any[];
-  grouped?: boolean;
-  onChange: (v: any) => void;
-  ph?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, []);
-
-  let label = ph;
-  if (grouped) {
-    const f = options.find(o => o.db === value);
-    if (f) label = f.label;
-  } else {
-    const f = options.find(o => {
-      const ov = typeof o === 'string' ? o : o.value;
-      return ov === value || (typeof ov === 'string' && typeof value === 'string' && ov.toLowerCase() === value.toLowerCase());
-    });
-    if (f) label = typeof f === 'string' ? f : f.label;
-    else if (value) label = value;
-  }
-
-  const groups = grouped ? [...new Set(options.map(o => o.group))] : null;
-
-  return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button onClick={() => setOpen(!open)} className={`idp-dd-trigger${!value ? ' idp-dd-trigger--empty' : ''}`}>
-        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, opacity: 0.35 }}>
-          <path d="M3 5L6 8L9 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      </button>
-      {open && (
-        <div className="idp-dd-panel">
-          {grouped && groups ? groups.map(g => (
-            <div key={g}>
-              <div className="idp-dd-group-header">{g}</div>
-              {options.filter(o => o.group === g).map(o => (
-                <button key={o.value} onClick={() => { onChange(o); setOpen(false); }}
-                  className={`idp-dd-option${o.db === value ? ' idp-dd-option--selected' : ''}`}>
-                  {o.db === value && <span className="idp-dd-check">✓</span>}
-                  <span>{o.label}</span>
-                </button>
-              ))}
-            </div>
-          )) : options.map(o => {
-            const v = typeof o === 'string' ? o : o.value;
-            const l = typeof o === 'string' ? o : o.label;
-            return (
-              <button key={v} onClick={() => { onChange(v); setOpen(false); }}
-                className={`idp-dd-option${(typeof v === 'string' && typeof value === 'string' ? v.toLowerCase() === value.toLowerCase() : v === value) ? ' idp-dd-option--selected' : ''}`}>
-                {(typeof v === 'string' && typeof value === 'string' ? v.toLowerCase() === value.toLowerCase() : v === value) && <span className="idp-dd-check">✓</span>}
-                <span>{l}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/* ═══ People Select ═══ */
-function PS({ value, onChange }: { value: string | null | undefined; onChange: (id: string | null) => void }) {
-  const [open, setOpen] = useState(false);
-  const [q, setQ] = useState('');
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, []);
-
+/* ═══════════════════════════════════════════════════════════════════
+   People Select — uses @ads Select with avatar-rendered option labels.
+   onChange returns the profile id (or null when cleared).
+   ═══════════════════════════════════════════════════════════════════ */
+function PeoplePicker({ value, onChange }: { value: string | null | undefined; onChange: (id: string | null) => void }) {
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles-list-with-avatars'],
     queryFn: async () => {
@@ -135,53 +67,35 @@ function PS({ value, onChange }: { value: string | null | undefined; onChange: (
     staleTime: 5 * 60_000,
   });
 
-  const selected = profiles.find(p => p.id === value);
-  const filtered = profiles.filter(p => p.name.toLowerCase().includes(q.toLowerCase()));
+  const options: SelectOption<string>[] = useMemo(() => profiles.map((p) => ({
+    value: p.id,
+    label: (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Avatar src={p.avatar_url ?? undefined} name={p.name} size="xsmall" />
+        <span>{p.name}</span>
+      </div>
+    ),
+    data: p,
+  })), [profiles]);
+
+  const selectedProfile = profiles.find((p) => p.id === value);
+  const selectedOption = selectedProfile
+    ? options.find((o) => o.value === value) ?? null
+    : null;
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button className="idp-ps-trigger" onClick={() => { setOpen(!open); setQ(''); }}>
-        {selected ? (
-          <>
-            <div className="idp-avatar" style={{ width: 22, height: 22, minWidth: 22, borderRadius: '50%', background: hashColor(selected.name), display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-              {selected.avatar_url ? (
-                <img src={selected.avatar_url} alt={selected.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display = 'none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display = 'flex'; }} />
-              ) : null}
-              <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, lineHeight: 1, display: selected.avatar_url ? 'none' : 'flex' }}>{getInitialsFromName(selected.name)}</span>
-            </div>
-            <span className="idp-ps-name">{selected.name}</span>
-          </>
-        ) : (
-          <span className="idp-ps-empty">—</span>
-        )}
-      </button>
-      {open && (
-        <div className="idp-ps-panel">
-          <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search people..."
-            autoFocus className="idp-ps-search" />
-          <div style={{ maxHeight: 220, overflowY: 'auto' }}>
-            <button onClick={() => { onChange(null); setOpen(false); }}
-              className={`idp-dd-option${!value ? ' idp-dd-option--selected' : ''}`}
-              style={{ color: 'var(--idp-ink-muted-strong)', fontStyle: 'italic' }}>
-              Unassigned
-            </button>
-            {filtered.map(p => (
-              <button key={p.id} onClick={() => { onChange(p.id); setOpen(false); }}
-                className={`idp-dd-option${p.id === value ? ' idp-dd-option--selected' : ''}`}
-                style={{ gap: 8 }}>
-                <div style={{ width: 22, height: 22, minWidth: 22, borderRadius: '50%', background: hashColor(p.name), display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  {p.avatar_url ? (
-                    <img src={p.avatar_url} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={e => { e.currentTarget.style.display = 'none'; const fb = e.currentTarget.nextElementSibling as HTMLElement; if (fb) fb.style.display = 'flex'; }} />
-                  ) : null}
-                  <span style={{ color: '#fff', fontSize: 9, fontWeight: 700, lineHeight: 1, display: p.avatar_url ? 'none' : 'flex' }}>{getInitialsFromName(p.name)}</span>
-                </div>
-                <span>{p.name}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
+    <Select<string>
+      options={options}
+      value={selectedOption}
+      onChange={(opt) => onChange(opt?.value ?? null)}
+      placeholder="Unassigned"
+      isClearable
+      isSearchable
+      usePortal
+      menuPlacement="auto"
+      width="large"
+      aria-label="Person picker"
+    />
   );
 }
 
@@ -196,18 +110,91 @@ function DeptSelect({ value, onChange }: { value: string | null | undefined; onC
     staleTime: 5 * 60_000,
   });
 
-  const opts = depts.map((d: any) => d.name);
-  const selected = depts.find((d: any) => d.id === value);
+  const options: SelectOption<string>[] = depts.map((d: any) => ({ value: d.id, label: d.name }));
+  const selectedOption = options.find((o) => o.value === value) ?? null;
 
   return (
-    <DD
-      value={selected?.name || null}
-      options={opts}
-      onChange={(v: string) => {
-        const d = depts.find((dd: any) => dd.name === v);
-        onChange(d?.id || null);
+    <Select<string>
+      options={options}
+      value={selectedOption}
+      onChange={(opt) => onChange(opt?.value ?? null)}
+      placeholder="Select department"
+      isClearable
+      isSearchable
+      usePortal
+      menuPlacement="auto"
+      width="large"
+      aria-label="Department"
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   Status Select — grouped options. Maps DB status ↔ UI option.
+   onChange receives the chosen STATUS_OPTIONS entry (with .db key) so the
+   parent's handleStatusChange(opt) signature stays identical.
+   ═══════════════════════════════════════════════════════════════════ */
+function StatusSelect({ dbValue, onChange }: { dbValue: string | null | undefined; onChange: (opt: typeof STATUS_OPTIONS[number]) => void }) {
+  const groups = useMemo(() => Array.from(new Set(STATUS_OPTIONS.map(o => o.group))), []);
+  const groupedOptions = groups.map((g) => ({
+    label: g,
+    options: STATUS_OPTIONS.filter(o => o.group === g).map((o) => ({
+      value: o.value,
+      label: o.label,
+      data: o,
+    })),
+  }));
+  const selected = STATUS_OPTIONS.find(o => o.db === dbValue);
+  const selectedOption = selected ? { value: selected.value, label: selected.label, data: selected } : null;
+
+  return (
+    <Select<string>
+      // grouped options pass through @ads Select via the same array shape
+      // (react-select supports group objects). Cast is safe — Catalyst's
+      // SelectOption is a flat shape but the underlying AkSelect handles it.
+      options={groupedOptions as any}
+      value={selectedOption as any}
+      onChange={(opt: any) => {
+        if (opt?.data) onChange(opt.data);
       }}
-      ph="Select department"
+      placeholder="Select status"
+      isSearchable
+      usePortal
+      menuPlacement="auto"
+      width="large"
+      aria-label="Status"
+    />
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   String-options Select — for EA / BV / Priority / Target Quarter.
+   Preserves the exact onChange(string) signature autoSave expects.
+   ═══════════════════════════════════════════════════════════════════ */
+function StringSelect({ value, options, onChange, placeholder }: {
+  value: string | null | undefined;
+  options: string[];
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const opts: SelectOption<string>[] = options.map((o) => ({ value: o, label: o }));
+  // Match case-insensitively, preserving the original DD's behaviour.
+  const selectedOption = opts.find((o) =>
+    o.value === value ||
+    (typeof o.value === 'string' && typeof value === 'string' && o.value.toLowerCase() === value.toLowerCase())
+  ) ?? null;
+
+  return (
+    <Select<string>
+      options={opts}
+      value={selectedOption}
+      onChange={(opt) => { if (opt?.value) onChange(opt.value); }}
+      placeholder={placeholder ?? 'Select...'}
+      isSearchable
+      usePortal
+      menuPlacement="auto"
+      width="large"
+      aria-label={placeholder}
     />
   );
 }
@@ -301,25 +288,38 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
                 </div>
                 <div className="idp-comment-body">{c.body}</div>
               </div>
-              <button onClick={() => handleDelete(c.id)} className="idp-comment-delete">
+              <button onClick={() => handleDelete(c.id)} className="idp-comment-delete" aria-label="Delete comment">
                 <Trash2 size={12} />
               </button>
             </div>
           ))}
         </div>
       )}
-      <div className="idp-comment-input-row">
-        <input
-          value={newComment}
-          onChange={e => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          className="idp-comment-input"
-          disabled={submitting}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
-        />
-        <button onClick={handleSubmit} disabled={submitting || !newComment.trim()} className="idp-comment-send">
+      <div className="idp-comment-input-row" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div style={{ flex: 1 }}>
+          <Textfield
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Add a comment..."
+            isDisabled={submitting}
+            spacing="compact"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
+            aria-label="Add a comment"
+          />
+        </div>
+        <Button
+          appearance="primary"
+          spacing="compact"
+          isDisabled={submitting || !newComment.trim()}
+          onClick={handleSubmit}
+        >
           Post
-        </button>
+        </Button>
       </div>
     </div>
   );
@@ -328,7 +328,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
 /* ═══ MAIN COMPONENT ═══ */
 export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }) => {
   const queryClient = useQueryClient();
-  const [updatingType, setUpdatingType] = useState(false);
+
   const [editDesc, setEditDesc] = useState(false);
   const [desc, setDesc] = useState(initiative.description || '');
 
@@ -399,44 +399,17 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     await autoSave('status', opt.db, 'Status');
   }, [autoSave]);
 
-  const handleTypeChange = useCallback(async (typeKey: string) => {
-    if (typeKey === initiative.initiative_type_key) return;
-    setUpdatingType(true);
-    try {
-      const { data: typeRow, error: lookupErr } = await typedQuery('initiative_types').select('id').eq('key', typeKey).single();
-      if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
-
-      let query = supabase
-        .from('ph_initiatives')
-        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() } as any);
-
-      if (isUuid(initiative.id)) {
-        query = query.eq('id', initiative.id);
-      } else if (initiative.initiative_key) {
-        query = query.eq('initiative_key', initiative.initiative_key);
-      } else {
-        throw new Error('Missing valid persistence identifier');
-      }
-
-      const { error } = await query;
-      if (error) throw error;
-      invalidateAll();
-    } catch (err: any) { toast.error(`Failed to update type: ${err?.message || 'unknown error'}`); }
-    finally { setUpdatingType(false); }
-  }, [initiative.id, initiative.initiative_key, initiative.initiative_type_key, invalidateAll, isUuid]);
-
   const handleRoadmapToggle = useCallback(async () => {
     if (initiative.on_roadmap) {
       await removeMutation.mutateAsync(initiative.id);
     } else {
       await promoteMutation.mutateAsync({
         initiative_id: initiative.id,
-        initiative_type_key: initiative.initiative_type_key || 'project',
       });
     }
-  }, [initiative.id, initiative.on_roadmap, initiative.initiative_type_key, promoteMutation, removeMutation]);
+  }, [initiative.id, initiative.on_roadmap, promoteMutation, removeMutation]);
 
-  // DB status for dropdown matching
+  // DB status for Select matching
   const UI_TO_DB: Record<string, string> = {
     new: 'new_demand', portfolio_review: 'under_review', technical_validation: 'under_review',
     estimate: 'under_review', demand_approved: 'approved', analysis: 'approved',
@@ -444,6 +417,13 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     implementation_review: 'in_progress', in_support: 'delivered', done: 'closed', cancelled: 'cancelled',
   };
   const dbStatus = UI_TO_DB[initiative.status] || initiative.status;
+
+  // Normalize date values to YYYY-MM-DD for @atlaskit/datetime-picker
+  const dateValue = (v: any): string => {
+    if (!v) return '';
+    if (typeof v === 'string') return v.length >= 10 ? v.slice(0, 10) : v;
+    return '';
+  };
 
   return (
     <div className="idp-overview">
@@ -453,68 +433,105 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
           <div className="idp-roadmap-label">{initiative.on_roadmap ? 'On Roadmap' : 'Not on Roadmap'}</div>
           <div className="idp-roadmap-help">Visible on Product Roadmap timeline</div>
         </div>
-        <button
-          onClick={handleRoadmapToggle}
-          className={`idp-switch ${initiative.on_roadmap ? 'idp-switch--on' : 'idp-switch--off'}`}
-        >
-          <div className="idp-switch-thumb" style={{ left: initiative.on_roadmap ? 20 : 2 }} />
-        </button>
+        <Toggle
+          isChecked={!!initiative.on_roadmap}
+          onChange={handleRoadmapToggle}
+          label="Toggle roadmap visibility"
+        />
       </div>
 
       {/* 2-Column Field Grid */}
       <div className="idp-field-grid">
-        <Cell label="Initiative Type" odd>
-          <DD value={initiative.initiative_type_key || 'project'} options={TYPE_OPTIONS.map(t => ({ value: t.key, label: t.label }))} onChange={(v: string) => handleTypeChange(v)} />
-        </Cell>
         <Cell label="Status">
-          <DD value={getField('status', dbStatus)} options={STATUS_OPTIONS} grouped onChange={handleStatusChange} />
+          <StatusSelect
+            dbValue={getField('status', dbStatus)}
+            onChange={handleStatusChange}
+          />
         </Cell>
         <Cell label="EA Review" odd>
-          <DD value={getField('ea_review', (initiative as any).ea_review)} options={EA_OPTS} onChange={(v: string) => autoSave('ea_review', v, 'EA Review')} />
+          <StringSelect
+            value={getField('ea_review', (initiative as any).ea_review)}
+            options={EA_OPTS}
+            onChange={(v) => autoSave('ea_review', v, 'EA Review')}
+            placeholder="Select EA review"
+          />
         </Cell>
         <Cell label="Business Value">
-          <DD value={getField('business_value', (initiative as any).business_value)} options={BV_OPTS} onChange={(v: string) => autoSave('business_value', v.toLowerCase(), 'Business Value')} />
+          <StringSelect
+            value={getField('business_value', (initiative as any).business_value)}
+            options={BV_OPTS}
+            onChange={(v) => autoSave('business_value', v.toLowerCase(), 'Business Value')}
+            placeholder="Select business value"
+          />
         </Cell>
         <Cell label="Priority" odd>
-          <DD value={getField('priority', (initiative as any).priority)} options={PRIO_OPTS} onChange={(v: string) => autoSave('priority', v, 'Priority')} />
+          <StringSelect
+            value={getField('priority', (initiative as any).priority)}
+            options={PRIO_OPTS}
+            onChange={(v) => autoSave('priority', v, 'Priority')}
+            placeholder="Select priority"
+          />
         </Cell>
         <Cell label="Target Quarter" odd>
-          <DD value={getField('target_quarter', initiative.target_quarter)} options={quarters} onChange={(v: string) => autoSave('target_quarter', v, 'Target Quarter')} />
+          <StringSelect
+            value={getField('target_quarter', initiative.target_quarter)}
+            options={quarters}
+            onChange={(v) => autoSave('target_quarter', v, 'Target Quarter')}
+            placeholder="Select quarter"
+          />
         </Cell>
         <Cell label="Reporter">
-          <PS value={getField('reporter_id', initiative.reporter_id)} onChange={(id) => autoSave('reporter_id', id, 'Reporter')} />
+          <PeoplePicker
+            value={getField('reporter_id', initiative.reporter_id)}
+            onChange={(id) => autoSave('reporter_id', id, 'Reporter')}
+          />
         </Cell>
         <Cell label="Assignee" odd>
-          <PS value={getField('assignee_id', initiative.assignee_id)} onChange={(id) => autoSave('assignee_id', id, 'Assignee')} />
+          <PeoplePicker
+            value={getField('assignee_id', initiative.assignee_id)}
+            onChange={(id) => autoSave('assignee_id', id, 'Assignee')}
+          />
         </Cell>
         <Cell label="Department">
-          <DeptSelect value={getField('department_id', initiative.department_id)} onChange={(id) => autoSave('department_id', id, 'Department')} />
+          <DeptSelect
+            value={getField('department_id', initiative.department_id)}
+            onChange={(id) => autoSave('department_id', id, 'Department')}
+          />
         </Cell>
         <Cell label="Business Owner" odd>
-          <PS value={getField('business_owner_id', initiative.business_owner_id)} onChange={(id) => autoSave('business_owner_id', id, 'Business Owner')} />
+          <PeoplePicker
+            value={getField('business_owner_id', initiative.business_owner_id)}
+            onChange={(id) => autoSave('business_owner_id', id, 'Business Owner')}
+          />
         </Cell>
         <Cell label="Business Ask Date">
-          <input
-            type="date"
-            value={getField('business_ask_date', initiative.business_ask_date) || ''}
-            onChange={e => autoSave('business_ask_date', e.target.value || null, 'Business Ask Date')}
-            className="idp-date-input"
+          <DatePicker
+            value={dateValue(getField('business_ask_date', initiative.business_ask_date))}
+            onChange={(v) => autoSave('business_ask_date', v || null, 'Business Ask Date')}
+            weekStartDay={0}
+            locale="en-GB"
+            placeholder="DD/MM/YYYY"
+            shouldShowCalendarButton
           />
         </Cell>
         <Cell label="Kickoff Date" odd>
-          <input
-            type="date"
-            value={getField('kickoff_date', initiative.kickoff_date) || ''}
-            onChange={e => autoSave('kickoff_date', e.target.value || null, 'Kickoff Date')}
-            className="idp-date-input"
+          <DatePicker
+            value={dateValue(getField('kickoff_date', initiative.kickoff_date))}
+            onChange={(v) => autoSave('kickoff_date', v || null, 'Kickoff Date')}
+            weekStartDay={0}
+            locale="en-GB"
+            placeholder="DD/MM/YYYY"
+            shouldShowCalendarButton
           />
         </Cell>
         <Cell label="Target Complete">
-          <input
-            type="date"
-            value={getField('target_complete', initiative.target_complete) || ''}
-            onChange={e => autoSave('target_complete', e.target.value || null, 'Target Complete')}
-            className="idp-date-input"
+          <DatePicker
+            value={dateValue(getField('target_complete', initiative.target_complete))}
+            onChange={(v) => autoSave('target_complete', v || null, 'Target Complete')}
+            weekStartDay={0}
+            locale="en-GB"
+            placeholder="DD/MM/YYYY"
+            shouldShowCalendarButton
           />
         </Cell>
       </div>
@@ -523,15 +540,17 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
       <div>
         <div className="idp-section-header">Description</div>
         {editDesc ? (
-          <textarea
+          <TextArea
             value={desc}
-            onChange={e => setDesc(e.target.value)}
-            autoFocus
+            onChange={(e) => setDesc((e.target as HTMLTextAreaElement).value)}
+            isCompact={false}
+            minimumRows={4}
+            maxHeight="240px"
+            placeholder="Add a description…"
             onBlur={() => {
               setEditDesc(false);
               autoSave('description', desc || null, 'Description');
             }}
-            className="idp-desc-textarea"
           />
         ) : (
           <div

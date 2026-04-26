@@ -51,11 +51,8 @@ export interface Initiative {
   computed_score: number | null;
   created_at: string;
   updated_at: string;
-  // Roadmap & type fields
+  // Roadmap fields
   on_roadmap?: boolean;
-  initiative_type_key?: string | null;
-  initiative_type_label?: string | null;
-  initiative_type_color_hex?: string | null;
   health_status?: string | null;
   business_value?: string | null;
   ea_review?: string | null;

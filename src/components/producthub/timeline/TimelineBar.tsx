@@ -10,7 +10,7 @@ import { getBarPosition, isOverdue } from './timelineUtils';
 import { TimelineBarTooltip } from './TimelineBarTooltip';
 import { TimelineContextMenu } from './TimelineContextMenu';
 // Type concept removed — Business Request uses single brand color.
-const getTypeColor = (_key?: string | null) => ({ hex: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', border: '#1D4ED8', gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)' });
+const getTypeColor = () => ({ hex: '#2563EB', bg: '#EFF6FF', text: '#1E40AF', border: '#1D4ED8', gradient: 'linear-gradient(90deg, #2563EB, #3B82F6)' });
 
 interface TimelineBarProps {
   initiative: TimelineInitiative;
@@ -29,7 +29,7 @@ export const TimelineBar: React.FC<TimelineBarProps> = ({ initiative, rowIndex }
   const { left, width } = getBarPosition(initiative, granularity);
   const overdue = isOverdue(initiative);
   const statusCfg = STATUS_CONFIG[initiative.status];
-  const typeColor = getTypeColor(initiative.initiative_type_key);
+  const typeColor = getTypeColor();
 
   const topOffset = (rowHeight - barHeight) / 2;
 

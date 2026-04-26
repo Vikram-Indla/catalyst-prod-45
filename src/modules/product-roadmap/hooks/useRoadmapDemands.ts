@@ -64,9 +64,6 @@ export function useRoadmapDemands(filters: RoadmapFilters) {
         created_at: item.created_at,
         updated_at: item.updated_at,
         // Extra fields
-        initiative_type_key: item.initiative_type_key || null,
-        initiative_type_label: item.initiative_type_label || null,
-        initiative_type_color_hex: item.initiative_type_color_hex || null,
         business_value: item.business_value || null,
         owner_name: ownerMap[item.assignee_id] || null,
       })) as RoadmapDemand[];

@@ -59,7 +59,7 @@ import { STATUS_DISPLAY, getPriorityLevel } from '@/types/initiative';
 import type { GroupByField } from '@/components/producthub/listing/ListingToolbar';
 import {
   StatusCell, PriorityCell, ScoreCell, AssigneeCell,
-  DateCell, ProgressCell, EACell, QuarterCell, IDCell, TypeIconCell,
+  DateCell, ProgressCell, EACell, QuarterCell, IDCell,
 } from './CellRenderers';
 import type { ColumnConfig } from './ColumnManager';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
@@ -219,14 +219,6 @@ export function InitiativeTable({
       ),
     },
     {
-      id: 'type', label: 'TY', width: 4,
-      cell: ({ row }) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-          <TypeIconCell typeKey={(row as any).initiative_type_key} />
-        </div>
-      ),
-    },
-    {
       id: 'initiative_key', label: 'ID', width: 8, sortable: true, alwaysVisible: true,
       accessor: (r: any) => r.initiative_key,
       cell: ({ row }) => {
@@ -373,7 +365,7 @@ export function InitiativeTable({
   const emptyView = (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '64px 0' }}>
       <LayoutGrid size={48} style={{ color: 'var(--pb-border-strong)' }} />
-      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--pb-ink)' }}>No initiatives match your filters</h3>
+      <h3 style={{ fontSize: 14, fontWeight: 600, color: 'var(--pb-ink)' }}>No business requests match your filters</h3>
       <p style={{ fontSize: 13, color: 'var(--pb-ink-muted)' }}>Try adjusting your search or filter criteria</p>
     </div>
   );

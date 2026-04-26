@@ -9,8 +9,6 @@ import { useEffect, useRef } from 'react';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
-const BUSINESS_REQUEST_TYPE_ID = '0bd8d5df-70e1-4f1c-8db1-f9b217fac1de';
-
 /**
  * HARD GUARDRAIL — Only these 5 Jira account IDs are allowed into the Product Backlog.
  * Abdullah Alshamari, Neda/Nada, Yahya, Vikram, Yazid
@@ -113,7 +111,6 @@ export function useSyncMDTToInitiatives() {
           status: mapJiraStatus(issue.status, issue.status_category),
           source: 'jira',
           jira_issue_key: issue.issue_key,
-          initiative_type_id: BUSINESS_REQUEST_TYPE_ID,
           priority: issue.priority?.toLowerCase() || null,
           assignee_id: assigneeMap.get(issue.assignee_account_id) || null,
         }));
