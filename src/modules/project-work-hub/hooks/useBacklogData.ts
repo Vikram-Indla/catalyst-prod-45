@@ -58,6 +58,45 @@ export function useInitiativesByKeys(keys: string[]) {
     },
   });
 }
+
+/**
+ * useInitiativeLinksByEpicKeys — resolves epic→initiative associations that
+ * live in `ph_issue_links` (the canonical link table written by the Apr 2026
+ * InitiativeLinkedItemsTab). This is the SECOND hierarchy path alongside
+ * `ph_issues.parent_key`. Returns a Map<epic_issue_key, initiative_key>.
+ *
+ * Without this, a Product Hub initiative (MIM-* / MDT-*) linked to an Epic
+ * never surfaces in the Project backlog tree because `parent_key` on the
+ * epic stays NULL.
+ */
+export function useInitiativeLinksByEpicKeys(epicKeys: string[]) {
+  const stableKey = epicKeys.slice().sort().join('|');
+  return useQuery({
+    queryKey: ['backlog-initiative-links-by-epic-keys', stableKey],
+    enabled: epicKeys.length > 0,
+    queryFn: async (): Promise<Map<string, string>> => {
+      const out = new Map<string, string>();
+      if (epicKeys.length === 0) return out;
+      const { data, error } = await supabase
+        .from('ph_issue_links')
+        .select('source_id, target_id')
+        .or(
+          `source_id.in.(${epicKeys.join(',')}),target_id.in.(${epicKeys.join(',')})`,
+        );
+      if (error) return out;
+      const epicSet = new Set(epicKeys);
+      for (const row of (data || []) as any[]) {
+        const s = String(row.source_id ?? '');
+        const t = String(row.target_id ?? '');
+        const sIsInit = s.startsWith('MIM-') || s.startsWith('MDT-');
+        const tIsInit = t.startsWith('MIM-') || t.startsWith('MDT-');
+        if (sIsInit && epicSet.has(t)) out.set(t, s);
+        else if (tIsInit && epicSet.has(s)) out.set(s, t);
+      }
+      return out;
+    },
+  });
+}
 /**
  * Epic Backlog — pulls from ph_issues where issue_type = 'Epic',
  * project_key resolved from project UUID, filtered to 2026.
