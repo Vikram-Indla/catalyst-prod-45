@@ -109,27 +109,25 @@ export function useEpicBacklog(projectId: string) {
     queryKey: ['backlog-epics', projectId, projectKey],
     queryFn: async (): Promise<BacklogEpic[]> => {
       if (!projectKey) return [];
-      const [jiraRes, catRes] = await Promise.all([
-        supabase
-          .from('ph_issues')
-          .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at')
-          .eq('project_key', projectKey)
-          .eq('issue_type', 'Epic')
-          .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
-          .is('jira_removed_at', null)
-          .is('archived_at', null)
-          .order('jira_updated_at', { ascending: false }),
-        supabase
-          .from('catalyst_issues')
-          .select('id, issue_key, title, status, priority, assignee_id, created_at, updated_at')
-          .eq('project_id', projectId)
-          .eq('issue_type', 'Epic')
-          .order('created_at', { ascending: false }),
-      ]);
-      if (jiraRes.error) throw jiraRes.error;
+      // F-iter9 unification: ph_issues now holds BOTH Jira-synced and
+      // Catalyst-native rows (distinguished by `source` column). Single
+      // query replaces the previous two-table parallel + JS merge.
+      const { data, error } = await supabase
+        .from('ph_issues')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at, source')
+        .eq('project_key', projectKey)
+        .eq('issue_type', 'Epic')
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+        .is('jira_removed_at', null)
+        .is('archived_at', null)
+        .order('jira_updated_at', { ascending: false });
+      if (error) throw error;
 
-      const jiraEpics: BacklogEpic[] = (jiraRes.data || []).map((row: any) => ({
-        id: row.id,
+      const epics: BacklogEpic[] = (data || []).map((row: any) => ({
+        // F-iter9 PK fix: ph_issues PK is issue_key (text), not id. We populate
+        // BacklogItem.id with the issue_key so all downstream lookups (panel,
+        // mutations) match the actual DB key.
+        id: row.issue_key,
         epic_key: row.issue_key,
         name: row.summary,
         description: null,
@@ -142,7 +140,7 @@ export function useEpicBacklog(projectId: string) {
         primary_program_id: null,
         jira_created_at: row.jira_created_at,
         jira_updated_at: row.jira_updated_at,
-        source: 'jira' as const,
+        source: (row.source === 'catalyst' ? 'catalyst' : 'jira') as 'jira' | 'catalyst',
         priority: row.priority ?? null,
         parent_key: row.parent_key ?? null,
         parent_summary: row.parent_summary ?? null,
@@ -150,32 +148,7 @@ export function useEpicBacklog(projectId: string) {
         comment_count: typeof row.comment_count === 'number' ? row.comment_count : null,
       })) as BacklogEpic[];
 
-      const seen = new Set(jiraEpics.map((e) => e.epic_key).filter(Boolean) as string[]);
-      const catEpics: BacklogEpic[] = (catRes.data || [])
-        .filter((row: any) => !(row.issue_key && seen.has(row.issue_key)))
-        .map((row: any) => ({
-          id: row.id,
-          epic_key: row.issue_key,
-          name: row.title,
-          description: null,
-          status: row.status,
-          assignee_id: row.assignee_id,
-          assignee_name: null,
-          end_date: null,
-          health: null,
-          deleted_at: null,
-          primary_program_id: null,
-          jira_created_at: row.created_at,
-          jira_updated_at: row.updated_at,
-          source: 'catalyst' as const,
-          priority: row.priority ?? null,
-          parent_key: null,
-          parent_summary: null,
-          issue_type: 'Epic',
-          comment_count: null,
-        })) as BacklogEpic[];
-
-      return [...catEpics, ...jiraEpics];
+      return epics;
     },
     enabled: !!projectId && !!projectKey,
   });
@@ -207,26 +180,22 @@ export function useStoryBacklog(projectId: string) {
     queryKey: ['backlog-stories', projectId, projectKey],
     queryFn: async (): Promise<BacklogStory[]> => {
       if (!projectKey) return [];
+      // F-iter9 unification: single query against ph_issues — Catalyst-native
+      // rows are filtered by `source='catalyst'` (year-window OR'd so Jira-
+      // synced rows still respect the YEAR_2026_START boundary).
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('id, issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at')
+        .select('id, issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source')
         .eq('project_key', projectKey)
         .eq('issue_type', 'Story')
-        .or(`jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
+        .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
         .order('jira_updated_at', { ascending: false });
       if (error) throw error;
-      // Also fetch Catalyst-native stories for this project
-      const { data: catData } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, status, priority, assignee_id, created_at, updated_at')
-        .eq('project_id', projectId)
-        .in('issue_type', ['Story', 'Feature', 'Epic', 'Task', 'QA Bug', 'Production Incident', 'Change Request', 'Business Gap', 'API Requirement'])
-        .order('created_at', { ascending: false });
 
       const jiraRows = data || [];
-      const catRows = catData || [];
+      const catRows: any[] = [];  // F-iter9: legacy catalyst_issues fetch removed (table consolidated into ph_issues with source='catalyst')
 
       // Resolve parent epic keys to get epic info for ParentEpicChip AND
       // for the unified Backlog view's synthesized epic rows.
@@ -260,7 +229,8 @@ export function useStoryBacklog(projectId: string) {
         if (epics) {
           for (const e of epics) {
             epicMap[e.issue_key] = {
-              id: e.id,
+              // F-iter9 PK fix: id <- issue_key
+              id: e.issue_key,
               epic_key: e.issue_key,
               name: e.summary,
               status: e.status ?? null,
@@ -275,7 +245,8 @@ export function useStoryBacklog(projectId: string) {
       }
 
       const jiraStories: BacklogStory[] = jiraRows.map((row: any) => ({
-        id: row.id,
+        // F-iter9 PK fix: id <- issue_key (no `id` column on ph_issues).
+        id: row.issue_key,
         story_key: row.issue_key,
         title: row.summary,
         name: row.summary,
@@ -292,7 +263,8 @@ export function useStoryBacklog(projectId: string) {
         deleted_at: null,
         jira_created_at: row.jira_created_at,
         jira_updated_at: row.jira_updated_at,
-        source: 'jira' as const,
+        // F-iter9: source comes from the unified ph_issues row (jira | catalyst)
+        source: (row.source === 'catalyst' ? 'catalyst' : 'jira') as 'jira' | 'catalyst',
         feature: row.parent_key && epicMap[row.parent_key] ? {
           id: epicMap[row.parent_key].id,
           display_id: null,

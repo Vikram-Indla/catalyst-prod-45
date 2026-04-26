@@ -41,7 +41,10 @@ export default function CatalystDetailRouter({
   panelMode, fullPageMode, onTogglePanelMode, navigationItems, onNavigate,
 }: CatalystDetailRouterProps) {
 
-  // Only query if itemType is not provided
+  // F-iter9 PK fix: ph_issues' primary key is `issue_key` (text), not `id`.
+  // The codebase had been silently no-op'ing on .eq('id', ...) since there's
+  // no `id` column. itemId here is the row's issue_key (e.g. "BAU-5485")
+  // — see BacklogPage.openDetail wiring and useBacklogData population.
   const { data: lookedUpType } = useQuery({
     queryKey: ['cv-item-type-lookup', itemId],
     enabled: !!itemId && isOpen && !itemType,
@@ -49,7 +52,7 @@ export default function CatalystDetailRouter({
       const { data } = await supabase
         .from('ph_issues')
         .select('issue_type')
-        .eq('id', itemId)
+        .eq('issue_key', itemId)
         .is('deleted_at', null)
         .maybeSingle();
       return data?.issue_type ?? null;

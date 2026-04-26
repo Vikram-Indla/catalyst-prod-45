@@ -173,22 +173,32 @@ export function useWorkflowStatuses(workType: string, _projectId?: string) {
   });
 }
 
-// Fetch parent candidates (epics/stories) for a project
-export function useParentCandidates(projectId: string) {
+// Fetch parent candidates (epics/stories) for a project.
+// F-iter9 unification: queries ph_issues for Catalyst-native epics
+// (source='catalyst'); ph_issues uses project_key (not project_id) and
+// `summary` (not `title`).
+export function useParentCandidates(projectId: string, projectKey?: string) {
   return useQuery({
-    queryKey: ['create-story-parents', projectId],
+    queryKey: ['create-story-parents', projectKey || projectId],
     queryFn: async () => {
-      if (!projectId) return [];
+      if (!projectKey) return [];
       const { data, error } = await supabase
-        .from('catalyst_issues')
-        .select('id, issue_key, title, issue_type')
-        .eq('project_id', projectId)
+        .from('ph_issues')
+        .select('id, issue_key, summary, issue_type')
+        .eq('project_key', projectKey)
+        .eq('source', 'catalyst')
         .in('issue_type', ['Epic'])
         .order('issue_key');
       if (error) return [];
-      return data ?? [];
+      // Re-shape to {title} so existing consumers keep their field names.
+      return (data ?? []).map((r: any) => ({
+        id: r.id,
+        issue_key: r.issue_key,
+        title: r.summary,
+        issue_type: r.issue_type,
+      }));
     },
-    enabled: !!projectId,
+    enabled: !!projectKey,
     staleTime: 2 * 60 * 1000,
   });
 }
@@ -215,26 +225,35 @@ export function useCreateStoryMutation() {
       // Guard: convert any empty strings to null for UUID columns
       const uuid = (v: string | null | undefined) => (v && v.trim() ? v : null);
 
+      // F-iter9 unification: insert into ph_issues with source='catalyst'.
+      // Field map vs the legacy catalyst_issues shape:
+      //   project_id (uuid)         → project_key (text)
+      //   title                     → summary
+      //   description_adf_raw       → description_adf
+      //   assignee_id               → assignee_account_id
+      //   reporter_id               → reporter_account_id
+      //   tags                      → labels (array)
+      //   parent_id (uuid self-FK)  → parent_key (text key, set by ph_issue_links below)
+      //   last_modified_by_system   → DROPPED (no equivalent on ph_issues)
+      //   sync_enabled              → DROPPED (Jira-synced state derived from source/jira_*)
+      //   release_id                → DROPPED (use ph_releases linkage instead)
+      const nowIso = new Date().toISOString();
       const insertData: Record<string, any> = {
-          project_id: form.projectId,
+          project_key: projectKey,
           issue_key: issueKey,
-          title: form.summary.trim(),
+          summary: form.summary.trim(),
           description: form.description || null,
-          description_adf_raw: form.descriptionAdf || null,
+          description_adf: form.descriptionAdf || null,
           issue_type: issueType || 'Story',
           status: form.status,
           priority: form.priority,
-          assignee_id: uuid(form.assigneeId),
-          reporter_id: uuid(form.reporterId),
-          release_id: form.releaseId && form.releaseId.trim() !== '' ? form.releaseId : null,
-          // parent_id FK is self-referential to catalyst_issues, but Epic parents
-          // live in ph_issues (Jira-synced). We always null this on insert and
-          // record the parent relationship in ph_issue_links below.
-          parent_id: null,
-          // labels: column does not exist on catalyst_issues — removed
-          tags: form.tags.length > 0 ? form.tags : [],
-          last_modified_by_system: 'catalyst',
-          sync_enabled: false,
+          assignee_account_id: uuid(form.assigneeId),
+          reporter_account_id: uuid(form.reporterId),
+          parent_key: null, // set via ph_issue_links below
+          labels: form.tags.length > 0 ? form.tags : [],
+          source: 'catalyst',
+          jira_created_at: nowIso,
+          jira_updated_at: nowIso,
       };
 
       // Strip any remaining empty-string values for UUID columns
@@ -243,18 +262,19 @@ export function useCreateStoryMutation() {
       }
 
       const { data, error } = await supabase
-        .from('catalyst_issues')
+        .from('ph_issues')
         .insert(insertData as any)
         .select()
         .single();
 
       if (error) throw error;
 
-      // Log initial "created" activity so the item has activity from birth
+      // Log initial "created" activity so the item has activity from birth.
+      // F-iter9 PK fix: ph_issues PK is issue_key (no id column). Use it.
       try {
         const { data: { user } } = await supabase.auth.getUser();
         await supabase.from('ph_activity_log').insert({
-          work_item_id: data.id,
+          work_item_id: data.issue_key ?? issueKey,
           user_id: user?.id ?? null,
           action: 'created',
           field_name: null,

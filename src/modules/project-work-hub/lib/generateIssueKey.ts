@@ -47,23 +47,16 @@ export async function generateIssueKey(projectKey: string): Promise<string> {
   if (!projectKey) throw new Error('generateIssueKey: projectKey is required');
   const re = keyRegex(projectKey);
 
-  const [phRes, catRes] = await Promise.all([
-    supabase
-      .from('ph_issues')
-      .select('issue_key')
-      .like('issue_key', `${projectKey}-%`)
-      .order('issue_key', { ascending: false })
-      .limit(500),
-    supabase
-      .from('catalyst_issues')
-      .select('issue_key')
-      .like('issue_key', `${projectKey}-%`)
-      .order('issue_key', { ascending: false })
-      .limit(500),
-  ]);
+  // F-iter9 unification: ph_issues holds BOTH Jira-synced and Catalyst-native
+  // rows now. Single query replaces the previous two-table parallel fetch.
+  const phRes = await supabase
+    .from('ph_issues')
+    .select('issue_key')
+    .like('issue_key', `${projectKey}-%`)
+    .order('issue_key', { ascending: false })
+    .limit(500);
 
   const phMax = maxFrom((phRes.data ?? []) as any[], re);
-  const catMax = maxFrom((catRes.data ?? []) as any[], re);
-  const next = Math.max(phMax, catMax) + 1;
+  const next = phMax + 1;
   return `${projectKey}-${next}`;
 }

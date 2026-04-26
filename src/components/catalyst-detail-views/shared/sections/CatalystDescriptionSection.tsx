@@ -216,7 +216,7 @@ export function CatalystDescriptionSection({ issue, label = 'Description', defau
       await supabase
         .from('ph_issues')
         .update({ description_adf: parsed })
-        .eq('id', issue!.id);
+        .eq('issue_key', issue!.issue_key);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', issue?.id] });

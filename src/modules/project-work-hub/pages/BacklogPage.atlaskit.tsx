@@ -70,6 +70,8 @@ import { STORY_STATUS_LOZENGE, getPriorityLabel } from '../utils/backlog.utils';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { useAtlaskitThemeSync } from '../components/SubtasksPanel/atlaskitTheme';
 import { writeTicketOrigin } from '../hooks/useTicketOrigin';
+import { generateIssueKey } from '@/modules/project-work-hub/lib/generateIssueKey';
+import { jiraSyncService } from '@/services/jira-sync.service';
 import { JiraFilterAtlaskit, emptyFilterValue } from '@/components/shared/JiraFilterAtlaskit';
 import type {
   JiraFilterValue,
@@ -349,19 +351,59 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const pageSize = 25;
 
   // ── Mutations ──
+  // F-iter9 unification + F14 hard rule: ALL rows (Jira + Catalyst) are
+  // editable. Writes always land in ph_issues. For source='jira' rows we
+  // additionally queue a write-back to the Atlassian tenant (moderator-
+  // approved). Field map: Catalyst's `title` → ph_issues' `summary` for
+  // the queueWriteBack hand-off. `updated_at` on the patch is renamed to
+  // `jira_updated_at` to match ph_issues.
+  const JIRA_FIELD_MAP: Record<string, string> = {
+    title: 'summary',
+  };
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
-      if (source !== 'catalyst') throw new Error('Jira-synced items must be edited in Jira.');
-      const { error } = await supabase
-        .from('catalyst_issues')
-        .update({ ...patch, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (error) throw error;
+      // Step 1 — local cache write to ph_issues (canonical source of truth).
+      // Map any catalyst-style field names in the patch to their ph_issues
+      // equivalents (title→summary). updated_at→jira_updated_at.
+      const phPatch: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(patch)) {
+        if (k === 'updated_at') continue;
+        phPatch[JIRA_FIELD_MAP[k] || k] = v;
+      }
+      phPatch.jira_updated_at = new Date().toISOString();
+      // F-iter9 PK fix: ph_issues PK is issue_key, not id. The `id` parameter
+      // is actually the row's issue_key (BacklogItem.id is populated from
+      // issue_key per useBacklogData).
+      const { error: cacheError } = await supabase
+        .from('ph_issues')
+        .update(phPatch)
+        .eq('issue_key', id);
+      if (cacheError) throw cacheError;
+
+      // Step 2 — for Jira-sourced rows, queue write-back per field.
+      // Best-effort: if the jira_write_back_queue infra is missing/broken,
+      // swallow the error so the user's local edit still persists. Track via
+      // console.warn so we surface this in Sentry/logs without breaking UX.
+      if (source === 'jira') {
+        for (const [field, value] of Object.entries(patch)) {
+          if (field === 'updated_at') continue;
+          const jiraField = JIRA_FIELD_MAP[field] || field;
+          try {
+            await jiraSyncService.queueWriteBack(id, jiraField, String(value));
+          } catch (qErr) {
+            console.warn('[updateField] queueWriteBack failed (non-fatal)', { id, field: jiraField, qErr });
+          }
+        }
+      }
     },
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-      flag.success('Updated');
+      if (variables.source === 'jira') {
+        flag.success('Updated', 'Change queued for Jira sync approval');
+      } else {
+        flag.success('Updated');
+      }
     },
     onError: (e: Error) => flag.error('Update failed', e.message),
   });
@@ -779,23 +821,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   ]), [openDetail]);
 
   // ── Column schema ──
+  // F8 (iter-9): __caret column dropped — caret affordance folded into the
+  // Type col cell renderer instead (matches Jira's inline expand pattern).
+  // F9 (iter-9): Type col widened from width:3 (~40px) to width:9 (~108px).
   const columns = useMemo<Column<BacklogItem>[]>(() => ([
-    {
-      id: '__caret',
-      label: '',
-      width: 3,
-      alwaysVisible: true,
-      align: 'center',
-      cell: makeCaretCell({
-        hasChildren,
-        isExpanded: (it) => expandedIds.has(it.id),
-        toggle: toggleExpanded,
-      }),
-    },
     {
       id: 'type',
       label: '',
-      width: 3,
+      width: 9,
       align: 'center',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
@@ -993,7 +1026,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (item.source !== 'catalyst') {
         throw new Error('Jira-synced items must be deleted in Jira.');
       }
-      const { error } = await supabase.from('catalyst_issues').delete().eq('id', item.id);
+      // F-iter9 unification: Catalyst-native rows live in ph_issues with
+      // source='catalyst'. Delete by id (PK) — id values are unique across
+      // sources so the source filter is belt-and-suspenders.
+      // F-iter9 PK fix: ph_issues PK is issue_key (item.id is populated from issue_key).
+      const { error } = await supabase.from('ph_issues').delete().eq('issue_key', item.id).eq('source', 'catalyst');
       if (error) throw error;
     },
     onSuccess: (_data, item) => {
@@ -1016,10 +1053,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (editable.length === 0) {
         throw new Error('All selected items are Jira-synced and must be edited in Jira.');
       }
+      // F-iter9 unification: Catalyst-native rows are in ph_issues, source='catalyst'.
+      // Map catalyst-only `updated_at` to ph_issues `jira_updated_at`.
+      // PK fix: ph_issues PK is issue_key — BacklogItem.id is populated from issue_key.
       const { error } = await supabase
-        .from('catalyst_issues')
-        .update({ ...patch, updated_at: new Date().toISOString() })
-        .in('id', editable.map((it) => it.id));
+        .from('ph_issues')
+        .update({ ...patch, jira_updated_at: new Date().toISOString() })
+        .in('issue_key', editable.map((it) => it.id))
+        .eq('source', 'catalyst');
       if (error) throw error;
       return { applied: editable.length, skipped };
     },
@@ -1040,10 +1081,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (editable.length === 0) {
         throw new Error('All selected items are Jira-synced and must be deleted in Jira.');
       }
+      // F-iter9 unification + PK fix: ph_issues PK is issue_key.
       const { error } = await supabase
-        .from('catalyst_issues')
+        .from('ph_issues')
         .delete()
-        .in('id', editable.map((it) => it.id));
+        .in('issue_key', editable.map((it) => it.id))
+        .eq('source', 'catalyst');
       if (error) throw error;
       return { applied: editable.length, skipped };
     },
@@ -1305,6 +1348,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 <InlineCreateRow
                   key={`create-${g.id}`}
                   projectId={projectId}
+                  projectKey={projectKey}
                   typeFilter={typeFilter === 'all' ? 'story' : typeFilter}
                   seedPatch={seed}
                   placeholder={`+ Create in ${g.label}`}
@@ -1318,6 +1362,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           ) : (
             <InlineCreateRow
               projectId={projectId}
+              projectKey={projectKey}
               typeFilter={typeFilter === 'all' ? 'story' : typeFilter}
               onCreated={() => {
                 queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
@@ -1570,12 +1615,17 @@ function TypeChip({
 
 function InlineCreateRow({
   projectId,
+  projectKey,
   typeFilter,
   seedPatch,
   placeholder,
   onCreated,
 }: {
   projectId: string;
+  /** ph_issues uses project_key (text), not project_id (uuid). Threaded
+   *  through from BacklogPage so the create insert can target ph_issues
+   *  with source='catalyst' (per F-iter9 unification). */
+  projectKey: string;
   typeFilter: BacklogType;
   /** Extra fields pre-applied on create — e.g. `{ status: 'In Progress' }`
    *  when this row lives under the "In Progress" group so new items land in
@@ -1592,15 +1642,26 @@ function InlineCreateRow({
   const reset = () => { setSummary(''); setIsEditing(false); };
   const create = async () => {
     const title = summary.trim();
-    if (!title || !projectId) { reset(); return; }
+    if (!title || !projectKey) { reset(); return; }
     try {
       const issueType = typeFilter === 'epic' ? 'Epic' : typeFilter === 'feature' ? 'Feature' : 'Story';
-      const { error } = await supabase.from('catalyst_issues').insert({
-        project_id: projectId,
-        title,
+      // F-iter9 unification: write Catalyst-native rows directly into ph_issues
+      // with source='catalyst'. Field map: title → summary, project_id (uuid)
+      // → project_key (text). Issue_key is generated up-front so the row has
+      // a stable key from creation and matches Jira-synced peers in the same
+      // project.
+      const issueKey = await generateIssueKey(projectKey);
+      const nowIso = new Date().toISOString();
+      const { error } = await supabase.from('ph_issues').insert({
+        issue_key: issueKey,
+        project_key: projectKey,
+        summary: title,
         issue_type: issueType,
         status: 'To Do',
         priority: 'medium',
+        source: 'catalyst',
+        jira_created_at: nowIso,
+        jira_updated_at: nowIso,
         ...(seedPatch || {}),
       });
       if (error) throw error;

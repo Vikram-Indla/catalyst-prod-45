@@ -172,7 +172,7 @@ export function CatalystSidebarDetails({
     const displayName = (currentProfile as any)?.full_name ?? user.email ?? 'Me';
     await (supabase as any).from('ph_issues')
       .update({ assignee_account_id: user.id, assignee_display_name: displayName })
-      .eq('id', itemId);
+      .eq('issue_key', itemId);
     invalidateIssue();
   }, [user, currentProfile, itemId, invalidateIssue]);
 
@@ -316,7 +316,7 @@ export function CatalystSidebarDetails({
                     const { error } = await (supabase as any)
                       .from('ph_issues')
                       .update({ due_date: date })
-                      .eq('id', issue.id);
+                      .eq('issue_key', issue.issue_key);
                     if (error) {
                       toast.error('Failed to save due date');
                       throw error;

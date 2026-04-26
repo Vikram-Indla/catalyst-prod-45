@@ -29,7 +29,7 @@ export function ParentAndLabels({ issue, itemId, projectKey }: ParentAndLabelsPr
 
   const updateParent = useMutation({
     mutationFn: async (newParentKey: string | null) => {
-      await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', itemId);
+      await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('issue_key', itemId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] });

@@ -38,132 +38,63 @@ export interface ResolvedSource {
 }
 
 /**
- * Resolve which table owns this id. Cheap: two parallel HEAD-style queries.
- * Caller is expected to memoize via React Query.
+ * Resolve which source owns this id.
+ *
+ * F-iter9 unification: ph_issues now holds BOTH Jira-synced and Catalyst-
+ * native rows, distinguished by the `source` column. Single query replaces
+ * the previous two-table lookup.
  */
 export async function resolveWorkItemSource(id: string): Promise<ResolvedSource | null> {
-  const [phRes, catRes] = await Promise.all([
-    supabase.from('ph_issues').select('id, issue_key, project_key').eq('id', id).maybeSingle(),
-    supabase.from('catalyst_issues').select('id, issue_key, project_id').eq('id', id).maybeSingle(),
-  ]);
-  if (phRes.data) {
-    return { source: 'jira', id, issueKey: phRes.data.issue_key ?? null, projectKey: (phRes.data as any).project_key ?? null };
-  }
-  if (catRes.data) {
-    const projectKey = catRes.data.issue_key?.split('-')[0] ?? null;
-    return { source: 'catalyst', id, issueKey: catRes.data.issue_key ?? null, projectKey };
-  }
-  return null;
-}
-
-// ─── Field mapping ────────────────────────────────────────────────
-const PH_TO_CATALYST_FIELD: Record<string, string | null> = {
-  summary: 'title',
-  description: 'description',
-  description_text: 'description',
-  description_adf: 'description_adf_raw',
-  status: 'status',
-  status_category: null, // catalyst_issues has no status_category column; derived from status
-  priority: 'priority',
-  story_points: 'story_points',
-  assignee_account_id: 'assignee_id',
-  assignee_display_name: null, // joined from profiles at read time
-  reporter_account_id: 'reporter_id',
-  reporter_display_name: null,
-  labels: 'tags',
-  sprint_name: 'sprint_name',
-  // parent_key handled specially — needs lookup to parent_id uuid
-  parent_key: null,
-  // acceptance_criteria — no native column; preserved in extension JSON for now
-  acceptance_criteria: null,
-  fix_versions: null, // catalyst uses release_id (single) for now; future: array
-  deleted_at: 'deleted_at',
-};
-
-function mapPhPatchToCatalyst(patch: Record<string, any>): Record<string, any> {
-  const out: Record<string, any> = {};
-  for (const [k, v] of Object.entries(patch)) {
-    const mapped = PH_TO_CATALYST_FIELD[k];
-    if (mapped === undefined) {
-      // Unknown field — pass through (catalyst may have it natively)
-      out[k] = v;
-    } else if (mapped === null) {
-      // Intentionally dropped (no equivalent column)
-      continue;
-    } else {
-      out[mapped] = v;
-    }
-  }
-  return out;
+  // F-iter9 PK fix: ph_issues PK is `issue_key` (text). The `id` parameter
+  // throughout this module is treated as the issue_key (BacklogItem.id is
+  // populated from issue_key in useBacklogData).
+  const { data } = await supabase
+    .from('ph_issues')
+    .select('issue_key, project_key, source')
+    .eq('issue_key', id)
+    .maybeSingle();
+  if (!data) return null;
+  const src = (data as any).source === 'catalyst' ? 'catalyst' : 'jira';
+  return {
+    source: src,
+    id,
+    issueKey: data.issue_key ?? null,
+    projectKey: (data as any).project_key ?? null,
+  };
 }
 
 // ─── Issue updates ───────────────────────────────────────────────
+// F-iter9 unification + PK fix: BOTH Jira-synced and Catalyst-native rows
+// live in ph_issues, keyed by issue_key.
 export async function updateWorkItem(
   resolved: ResolvedSource,
   patch: Record<string, any>,
 ): Promise<void> {
-  if (resolved.source === 'jira') {
-    const { error } = await supabase.from('ph_issues').update(patch).eq('id', resolved.id);
-    if (error) throw error;
-    return;
-  }
-  // catalyst
-  const catalystPatch = mapPhPatchToCatalyst(patch);
-  if (Object.keys(catalystPatch).length === 0) return;
-  const { error } = await supabase.from('catalyst_issues').update(catalystPatch).eq('id', resolved.id);
+  const { error } = await supabase.from('ph_issues').update(patch).eq('issue_key', resolved.id);
   if (error) throw error;
 }
 
 /**
- * Set parent. ph_issues uses parent_key (text); catalyst_issues uses parent_id (uuid).
- * For catalyst we look up the new parent's id by issue_key (in either table).
+ * Set parent.
+ * F-iter9 unification + PK fix: both sources share `parent_key` (text);
+ * lookup keyed by issue_key.
  */
 export async function setParent(
   resolved: ResolvedSource,
   newParentKey: string | null,
 ): Promise<void> {
-  if (resolved.source === 'jira') {
-    const { error } = await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('id', resolved.id);
-    if (error) throw error;
-    return;
-  }
-  // catalyst — resolve key → uuid in catalyst_issues
-  let parentUuid: string | null = null;
-  if (newParentKey) {
-    const { data } = await supabase
-      .from('catalyst_issues')
-      .select('id')
-      .eq('issue_key', newParentKey)
-      .maybeSingle();
-    parentUuid = data?.id ?? null;
-    // If the parent is a Jira-synced item, catalyst.parent_id can't reference
-    // it (FK to catalyst_issues only). In that case, store the relationship
-    // via ph_issue_links instead. For now we no-op and surface a warning so
-    // the picker can guard. A future enhancement adds a parent_key column to
-    // catalyst_issues for cross-source parents.
-    if (!parentUuid) {
-      // Fallback: write the parent as a ph_issue_link of type 'parent'
-      await supabase.from('ph_issue_links').insert({
-        source_issue_key: resolved.issueKey,
-        target_issue_key: newParentKey,
-        link_type: 'parent',
-      } as any);
-      return;
-    }
-  }
-  const { error } = await supabase.from('catalyst_issues').update({ parent_id: parentUuid }).eq('id', resolved.id);
+  const { error } = await supabase.from('ph_issues').update({ parent_key: newParentKey }).eq('issue_key', resolved.id);
   if (error) throw error;
 }
 
 // ─── Soft delete ─────────────────────────────────────────────────
+// F-iter9 unification + PK fix: keyed by issue_key.
 export async function softDelete(resolved: ResolvedSource): Promise<void> {
-  if (resolved.source === 'jira') {
-    const { error } = await supabase.from('ph_issues').update({ deleted_at: new Date().toISOString() }).eq('id', resolved.id);
-    if (error) throw error;
-  } else {
-    const { error } = await supabase.from('catalyst_issues').update({ deleted_at: new Date().toISOString() }).eq('id', resolved.id);
-    if (error) throw error;
-  }
+  const { error } = await supabase
+    .from('ph_issues')
+    .update({ deleted_at: new Date().toISOString() })
+    .eq('issue_key', resolved.id);
+  if (error) throw error;
 }
 
 // ─── Comments ────────────────────────────────────────────────────
@@ -316,33 +247,37 @@ export async function createChildIssue(input: CreateChildInput): Promise<Created
         reporter_account_id: reporterId,
         source: 'catalyst',
       } as any)
-      .select('id, issue_key')
+      .select('issue_key')
       .single();
     if (error) throw error;
-    return { id: data!.id as string, issue_key: data!.issue_key as string, source: 'jira' };
+    // F-iter9 PK fix: id <- issue_key
+    return { id: data!.issue_key as string, issue_key: data!.issue_key as string, source: 'jira' };
   }
 
-  // Catalyst-parent children → catalyst_issues with parent_key set.
-  if (!projectId) {
-    throw new Error('createChildIssue: projectId is required for Catalyst children');
-  }
+  // F-iter9 unification: Catalyst-parent children also land in ph_issues
+  // with source='catalyst'. Field map: title→summary, project_id→project_key,
+  // reporter_id→reporter_account_id. last_modified_by_system / sync_enabled
+  // dropped (no equivalent on ph_issues).
+  const nowIso = new Date().toISOString();
   const { data, error } = await supabase
-    .from('catalyst_issues')
+    .from('ph_issues')
     .insert({
-      project_id: projectId,
+      project_key: projectKey,
       issue_key: issueKey,
-      title: summary.trim(),
+      summary: summary.trim(),
       issue_type: issueType,
       status,
       status_category: statusCategory,
       priority,
-      reporter_id: reporterId,
+      reporter_account_id: reporterId,
       parent_key: parent.issueKey,
-      last_modified_by_system: 'catalyst',
-      sync_enabled: false,
+      source: 'catalyst',
+      jira_created_at: nowIso,
+      jira_updated_at: nowIso,
     } as any)
     .select('id, issue_key')
     .single();
   if (error) throw error;
-  return { id: data!.id as string, issue_key: data!.issue_key as string, source: 'catalyst' };
+  // F-iter9 PK fix: id <- issue_key
+  return { id: data!.issue_key as string, issue_key: data!.issue_key as string, source: 'catalyst' };
 }

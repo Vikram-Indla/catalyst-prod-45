@@ -21,7 +21,7 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
       await supabase
         .from('ph_issues')
         .update({ status: newStatus, status_category: cat })
-        .eq('id', itemId);
+        .eq('issue_key', itemId) /* F-iter9 PK fix */;
     },
     onSuccess: invalidate,
   });
@@ -35,7 +35,7 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
       value: string | null;
       oldValue?: string | null;
     }) => {
-      await supabase.from('ph_issues').update({ [field]: value }).eq('id', itemId);
+      await supabase.from('ph_issues').update({ [field]: value }).eq('issue_key', itemId) /* F-iter9 PK fix */;
     },
     onSuccess: invalidate,
   });
@@ -45,7 +45,7 @@ export function useCatalystIssueMutations(itemId: string, onClose: () => void) {
       await supabase
         .from('ph_issues')
         .update({ deleted_at: new Date().toISOString() })
-        .eq('id', itemId);
+        .eq('issue_key', itemId) /* F-iter9 PK fix */;
     },
     onSuccess: () => {
       toast.success('Item deleted');
