@@ -356,6 +356,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           {activeTab === 'risks' && <DetailTabRisks initiativeId={initiative.id} />}
           {activeTab === 'milestones' && <DetailTabMilestones initiativeId={initiative.id} />}
           {activeTab === 'attachments' && <DetailTabAttachments initiativeId={initiative.id} />}
+          {activeTab === 'linked_items' && <InitiativeLinkedItemsTab initiative={{ id: initiative.id, initiative_key: initiative.initiative_key }} />}
           {activeTab === 'activity' && <DetailTabActivity initiativeId={initiative.id} />}
         </div>
       </div>
