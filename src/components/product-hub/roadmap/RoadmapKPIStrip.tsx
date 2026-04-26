@@ -12,12 +12,7 @@ interface RoadmapKPIStripProps {
   stats: RoadmapStats;
 }
 
-const TYPE_DOTS = [
-  { key: 'project', label: 'Proj', color: TYPE_COLORS.project.solid },
-  { key: 'enhancement', label: 'Enh', color: TYPE_COLORS.enhancement.solid },
-  { key: 'entity', label: 'Ent', color: TYPE_COLORS.entity_integration.solid },
-  { key: 'improvement', label: 'Imp', color: TYPE_COLORS.improvement.solid },
-];
+const BUSINESS_REQUEST_COLOR = '#B38600';
 
 export function RoadmapKPIStrip({ stats }: RoadmapKPIStripProps) {
   const { isDark } = useTheme();
