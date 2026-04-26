@@ -5,14 +5,12 @@ import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { CreateInitiativeDrawer } from '@/components/producthub/shared/CreateInitiativeDrawer';
 import { PCInitiativeCard } from '@/components/producthub/cards/PCInitiativeCard';
-import type { MDTInitiative } from '@/hooks/useMDTBacklog';
 import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
 import type { Initiative } from '@/types/initiative';
 import type { FilterChip, TimelineInitiative } from '@/types/producthub/initiative';
 import { FILTER_CHIPS } from '@/types/producthub/initiative';
 import { getPriorityLevel, STATUS_DISPLAY } from '@/types/initiative';
-const getTypeLabel = (_key?: string | null) => 'Business Request';
 import { formatDistanceToNow } from 'date-fns';
 import '@/styles/product-cards.css';
 import '@/styles/product-kanban.css';
@@ -21,13 +19,12 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-type GroupByOption = 'none' | 'status' | 'type' | 'quarter' | 'department' | 'priority';
+type GroupByOption = 'none' | 'status' | 'quarter' | 'department' | 'priority';
 type SortOption = 'score' | 'priority' | 'title' | 'target' | 'updated';
 
 const GROUP_OPTIONS: { value: GroupByOption; label: string }[] = [
   { value: 'none', label: 'None' },
   { value: 'status', label: 'Status' },
-  { value: 'type', label: 'Type' },
   { value: 'quarter', label: 'Quarter' },
   { value: 'department', label: 'Department' },
   { value: 'priority', label: 'Priority' },
@@ -98,7 +95,6 @@ function groupItems<T extends Initiative>(items: T[], groupBy: GroupByOption): {
     let key: string;
     switch (groupBy) {
       case 'status': key = STATUS_DISPLAY[item.status]?.label || item.status; break;
-      case 'type': key = 'Business Request'; break;
       case 'quarter': key = item.target_quarter || 'No Quarter'; break;
       case 'department': key = item.department_name || 'No Department'; break;
       case 'priority': key = getPriorityLevel(item.computed_score).level; break;

@@ -72,7 +72,7 @@ export function BacklogStatusBar({
       {/* Total summary — right-aligned */}
       <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--cp-t3)', marginLeft: 'auto' }}>
         <strong style={{ color: 'var(--cp-t1)', fontWeight: 600 }}>{items.length}</strong>
-        {' '}initiatives
+        {' '}business requests
       </span>
     </>
   );

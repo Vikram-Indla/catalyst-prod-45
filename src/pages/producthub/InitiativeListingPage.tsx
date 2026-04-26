@@ -466,7 +466,7 @@ export default function InitiativeListingPage() {
         const active = document.activeElement;
         if (active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement) return;
         e.preventDefault();
-        if (confirm(`Delete ${selectedIds.length} initiative(s)? This cannot be undone.`)) {
+        if (confirm(`Delete ${selectedIds.length} business request(s)? This cannot be undone.`)) {
           handleBulkAction('delete');
         }
       }
@@ -650,7 +650,7 @@ export default function InitiativeListingPage() {
             if (item) { setDetailInitiative(item); setDetailOpen(true); }
           }}
           onDelete={(ids) => handleBulkAction('delete')}
-          entityLabel="initiative"
+          entityLabel="business request"
         />
       )}
 
@@ -660,8 +660,8 @@ export default function InitiativeListingPage() {
           {overdueActive ? (
             <>
               <Clock size={40} color="#94A3B8" strokeWidth={1.5} />
-              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No overdue initiatives</p>
-              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>All initiatives are on track with their target dates</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No overdue business requests</p>
+              <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>All business requests are on track with their target dates</p>
               <button
                 onClick={() => { setOverdueActive(false); setPage(1); }}
                 style={{ marginTop: 16, fontSize: 13, fontWeight: 500, color: '#2563EB', cursor: 'pointer', background: 'none', border: 'none', padding: '6px 12px', borderRadius: 6 }}
@@ -672,7 +672,7 @@ export default function InitiativeListingPage() {
           ) : (
             <>
               <LayoutGrid size={40} color="#94A3B8" strokeWidth={1.5} />
-              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No initiatives match your filters</p>
+              <p style={{ fontSize: 15, fontWeight: 600, color: '#0F172A', marginTop: 16 }}>No business requests match your filters</p>
               <p style={{ fontSize: 13, color: '#94A3B8', marginTop: 4 }}>Try adjusting your search or filter criteria</p>
             </>
           )}

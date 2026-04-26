@@ -10,7 +10,7 @@ export type Priority = 'P0' | 'P1' | 'P2';
 
 export type ZoomLevel = 'Week' | 'Month' | 'Quarter';
 
-export type GroupBy = 'type' | 'priority' | 'owner' | 'none';
+export type GroupBy = 'priority' | 'owner' | 'none';
 
 export type ViewMode = 'Table' | 'Board' | 'Timeline' | 'Cards';
 
