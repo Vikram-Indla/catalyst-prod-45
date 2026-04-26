@@ -11,8 +11,17 @@ import { Calendar } from 'lucide-react';
 import type { RoadmapDemand } from '../types/roadmap';
 import { format, parseISO } from 'date-fns';
 
-const BUSINESS_REQUEST_COLOR = '#B38600';
-const BUSINESS_REQUEST_HOVER_GRADIENT = 'linear-gradient(135deg, #B38600 0%, #D9A300 100%)';
+const TYPE_COLORS: Record<string, string> = {
+  project: '#2563EB',
+  enhancement: '#0D9488',
+  improvement: '#D97706',
+};
+
+const TYPE_HOVER_GRADIENTS: Record<string, string> = {
+  project: 'linear-gradient(135deg, #2563EB 0%, #3B82F6 100%)',
+  enhancement: 'linear-gradient(135deg, #0D9488 0%, #14B8A6 100%)',
+  improvement: 'linear-gradient(135deg, #D97706 0%, #F59E0B 100%)',
+};
 
 interface RoadmapTimelineBarProps {
   item: RoadmapDemand;
@@ -29,7 +38,8 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const barColor = BUSINESS_REQUEST_COLOR;
+  const typeKey = (item as any).initiative_type_key || 'project';
+  const barColor = TYPE_COLORS[typeKey] || '#2563EB';
 
   // Check overdue
   const isOverdue = (() => {
@@ -40,7 +50,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
   })();
 
   const finalColor = isOverdue ? '#EF4444' : barColor;
-  const hoverGradient = isOverdue ? 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)' : BUSINESS_REQUEST_HOVER_GRADIENT;
+  const hoverGradient = isOverdue ? 'linear-gradient(135deg, #EF4444 0%, #F87171 100%)' : (TYPE_HOVER_GRADIENTS[typeKey] || TYPE_HOVER_GRADIENTS.project);
 
   const formatDate = (d: string | null) => {
     if (!d) return 'Not set';
@@ -187,7 +197,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, onClick, end
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: finalColor }} />
             <span style={{ fontSize: 11, fontWeight: 500, color: '#334155' }}>
-              Business Request
+              {(item as any).initiative_type_label || typeKey}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">

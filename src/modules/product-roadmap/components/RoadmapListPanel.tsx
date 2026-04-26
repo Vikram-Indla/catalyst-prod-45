@@ -20,7 +20,11 @@ interface RoadmapListPanelProps {
   listWidth?: number;
 }
 
-const BUSINESS_REQUEST_COLOR = '#B38600';
+const TYPE_COLORS: Record<string, string> = {
+  project: '#2563EB',
+  enhancement: '#0D9488',
+  improvement: '#D97706',
+};
 
 export function RoadmapListPanel({
   items, groups, focusedIndex, selectedItemId, onItemClick, onToggleGroup, listWidth = 340,
@@ -66,7 +70,8 @@ export function RoadmapListPanel({
         <ScrollArea className="flex-1">
           <div role="table">
             {groups.map(group => {
-              const color = group.color || BUSINESS_REQUEST_COLOR;
+              const typeKey = group.key;
+              const color = TYPE_COLORS[typeKey] || group.color || '#94A3B8';
               return (
                 <div key={group.key} style={{ borderBottom: '1px solid #F1F5F9' }}>
                   <button

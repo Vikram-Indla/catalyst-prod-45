@@ -12,9 +12,11 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
-  X, Pencil, Copy, Star, Trash2, Map,
+  X, Pencil, Copy, Star, Trash2,
+  FolderKanban, Zap, Wrench, Network, Map,
 } from 'lucide-react';
 import type { RoadmapInitiative } from './types/roadmap.types';
+import { TYPE_COLORS } from './constants/roadmap.constants';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 // ── Constants ──
@@ -36,6 +38,12 @@ const ACTIONS = [
   { icon: Trash2, label: 'Delete', variant: 'danger' },
 ] as const;
 
+const TYPE_OPTIONS = [
+  { key: 'project', label: 'Project', Icon: FolderKanban, color: '#2563EB' },
+  { key: 'enhancement', label: 'Enhancement', Icon: Zap, color: '#0D9488' },
+  { key: 'improvement', label: 'Improvement', Icon: Wrench, color: '#D97706' },
+  { key: 'entity_integration', label: 'Entity Integration', Icon: Network, color: '#8B5CF6' },
+] as const;
 
 const STATUS_OPTIONS = [
   { value: 'new_demand', label: 'New' },
@@ -96,6 +104,7 @@ interface RoadmapDetailPanelProps {
 export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanelProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('details');
   const [isVisible, setIsVisible] = useState(false);
+  const [updatingType, setUpdatingType] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
@@ -134,6 +143,22 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
     }
   }, [item, queryClient]);
 
+  const handleTypeChange = useCallback(async (typeKey: string) => {
+    if (!item || typeKey === item.type) return;
+    setUpdatingType(true);
+    try {
+      const { data: typeRow, error: lookupErr } = await typedQuery('initiative_types')
+        .select('id')
+        .eq('key', typeKey)
+        .single();
+      if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
+      await saveField({ initiative_type_id: typeRow.id }, 'Type');
+    } catch {
+      toast.error('Failed to update type');
+    } finally {
+      setUpdatingType(false);
+    }
+  }, [item, saveField]);
 
   const handleRoadmapToggle = useCallback(async () => {
     if (!item) return;

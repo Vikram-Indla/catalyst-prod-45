@@ -5,7 +5,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Plus, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { INK, SURFACE, FONT, BUSINESS_REQUEST_COLOR } from './constants/roadmap.constants';
+import { INK, SURFACE, FONT, TYPE_COLORS } from './constants/roadmap.constants';
 import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmapData';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { toast } from 'sonner';
@@ -98,7 +98,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.borderLight}` }}>
           <div>
-            <h2 style={{ fontSize: 16, fontWeight: 700, color: INK[1], margin: 0 }}>Add Initiative to Roadmap</h2>
+            <h2 style={{ fontSize: 16, fontWeight: 700, color: INK[1], margin: 0 }}>Add Business Request to Roadmap</h2>
             <p style={{ fontSize: 12, fontWeight: 500, color: INK[3], margin: 0, marginTop: 2 }}>Select from existing backlog initiatives</p>
           </div>
           <button
@@ -145,7 +145,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
           )}
 
           {!isLoading && !error && filtered.map((item: any) => {
-            const typeColor = BUSINESS_REQUEST_COLOR;
+            const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
             const isOnRoadmap = item.alreadyOnRoadmap;
             return (
               <div

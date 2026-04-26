@@ -33,6 +33,7 @@ export function ProductRoadmapPage() {
   const toggleStar = useToggleRoadmapStar();
   const {
     search, setSearch,
+    typeFilter, setTypeFilter,
     quickFilter, setQuickFilter,
     groupBy, setGroupBy,
     zoom, setZoom,
@@ -263,7 +264,7 @@ export function ProductRoadmapPage() {
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >
-            <Plus className="w-4 h-4" /> Add Initiative
+            <Plus className="w-4 h-4" /> Add Business Request
           </button>
         </div>
       ) : (
@@ -287,6 +288,8 @@ export function ProductRoadmapPage() {
                 onSearchChange={setSearch}
                 quickFilter={quickFilter}
                 onQuickFilterChange={setQuickFilter}
+                typeFilter={typeFilter}
+                onTypeFilterChange={setTypeFilter}
               />
             </>
           )}

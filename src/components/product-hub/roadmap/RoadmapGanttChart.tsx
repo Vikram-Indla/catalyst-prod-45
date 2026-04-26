@@ -7,7 +7,7 @@ import { RoadmapTimelineBar } from './RoadmapTimelineBar';
 import { ChevronDown } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapGroup, ZoomLevel, TimelinePeriod } from './types/roadmap.types';
-import { SURFACE, SURFACE_DARK, INK, INK_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
+import { TYPE_COLORS, SURFACE, SURFACE_DARK, INK, INK_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT } from './constants/roadmap.constants';
 import {
   startOfMonth, endOfMonth, startOfQuarter, endOfQuarter, startOfWeek, endOfWeek,
   addMonths, addQuarters, addWeeks, format, isWithinInterval,
@@ -199,7 +199,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
 
             {/* Groups + Rows */}
             {groups.map((group, gi) => {
-              const typeColor = group.color || '#64748B';
+              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
               const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>

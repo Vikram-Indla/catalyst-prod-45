@@ -6,7 +6,7 @@ import React from 'react';
 import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Lightbulb, Star } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapInitiative, RoadmapGroup } from './types/roadmap.types';
-import { BUSINESS_REQUEST_COLOR, INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';
+import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';
 
 interface RoadmapInitiativeListProps {
   groups: RoadmapGroup[];
@@ -72,7 +72,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
       >
         <div className="flex items-center gap-2">
           <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: ink[2] }}>
-            Initiatives
+            Business Requests
           </span>
           <span style={{
             fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: ink[4],
@@ -87,7 +87,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
 
       <div ref={scrollRef as any} onScroll={onScroll} className="flex-1 overflow-y-auto roadmap-scroll">
         {groups.map((group, gi) => {
-          const typeColor = group.color || '#64748B';
+          const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
           const isCollapsed = collapsedGroups.has(group.key);
           return (
             <div key={group.key}>
@@ -153,7 +153,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
           onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
         >
           <Plus className="w-4 h-4" />
-          Add Initiative to Roadmap
+          Add Business Request to Roadmap
         </button>
       </div>
     </div>
@@ -175,7 +175,7 @@ function InitiativeRow({
   selectedBg: string;
   hoverBg: string;
 }) {
-  const typeColor = BUSINESS_REQUEST_COLOR;
+  const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
 
   return (
     <div

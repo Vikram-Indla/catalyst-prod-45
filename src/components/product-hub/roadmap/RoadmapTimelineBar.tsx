@@ -8,7 +8,7 @@ import { Calendar } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapInitiative } from './types/roadmap.types';
-import { BUSINESS_REQUEST_COLOR, FONT, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
+import { TYPE_COLORS, FONT, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 
 interface RoadmapTimelineBarProps {
   item: RoadmapInitiative;
@@ -28,8 +28,9 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const tooltipTimer = useRef<ReturnType<typeof setTimeout>>();
 
-  const barGradient = `linear-gradient(135deg, ${BUSINESS_REQUEST_COLOR}, #8A6800)`;
-  const barColor = BUSINESS_REQUEST_COLOR;
+  const typeConfig = TYPE_COLORS[item.type];
+  const barGradient = typeConfig?.gradient || 'linear-gradient(135deg, #475569, #334155)';
+  const barColor = typeConfig?.solid || '#475569';
   const isOverdue = item.status !== 'Completed' && item.progress < 100 && item.hasRealEndDate && new Date(item.endDate) < new Date();
   const isFallbackEnd = !item.hasRealEndDate;
 
@@ -204,7 +205,7 @@ export function RoadmapTimelineBar({ item, left, width, isSelected, isHovered, o
           <div className="flex items-center gap-2">
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: barColor }} />
             <span style={{ fontSize: 11, fontWeight: 500, color: ink[2] }}>
-              Business Request
+              {typeConfig?.label || item.type}
             </span>
             {item.progress > 0 && (
               <div className="flex items-center gap-1 ml-auto">
