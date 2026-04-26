@@ -52,8 +52,7 @@ interface RoadmapListRowProps {
 
 export function RoadmapListRow({ item, index, isFocused, isSelected, onClick, isDragging, ownerName }: RoadmapListRowProps) {
   const { isDark } = useTheme();
-  const typeKey = (item as any).initiative_type_key || 'project';
-  const typeColor = TYPE_COLORS[typeKey] || '#94A3B8';
+  const typeColor = BUSINESS_REQUEST_COLOR;
   const isCritical = item.priority_tier === 'P0' || item.priority_tier === 'critical';
 
   const name = ownerName || null;
