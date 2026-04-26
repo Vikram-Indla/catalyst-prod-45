@@ -159,7 +159,11 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
 
             {/* Status + Lead row */}
             <div className="flex items-center justify-between mt-3">
-              <ProjectStatusBadge status={p.status} />
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <ProjectStatusBadge status={p.status} />
+                <PriorityChip priority={p.priority} />
+                <HealthChip health={p.health_status} />
+              </div>
               {p.lead_name ? (
                 <div className="flex items-center gap-1.5">
                   <Avatar src={p.lead_avatar_url || undefined} name={p.lead_name || '??'} size="xxsmall" />
@@ -170,6 +174,11 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
               ) : (
                 <span className="text-xs text-slate-400 dark:text-[#A1A1A1]">—</span>
               )}
+            </div>
+
+            {/* Score + Priority bars */}
+            <div className="mt-3">
+              <InitiativeMetrics score={p.computed_score ?? null} />
             </div>
 
             {/* E/S/T stats — flex-1 fills space */}
@@ -191,6 +200,31 @@ export function AllProjectsCardGrid({ projects, favoriteIds, onToggleFav, onSele
                   <div className="text-[10px] font-medium tracking-widest uppercase text-slate-400 dark:text-[#A1A1A1] mt-1">{s.l}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Progress bar */}
+            <div className="mt-3">
+              <div
+                style={{
+                  width: '100%',
+                  height: 4,
+                  background: '#F4F4F5',
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    width: `${Math.min(p.completion_percentage ?? 0, 100)}%`,
+                    height: '100%',
+                    background: '#2563EB',
+                    transition: 'width 200ms ease',
+                  }}
+                />
+              </div>
+              <div style={{ fontSize: 10, color: '#71717A', marginTop: 4 }}>
+                {p.completion_percentage ?? 0}% complete
+              </div>
             </div>
 
             {/* Footer: sync + members + updated — pinned bottom */}
