@@ -33,7 +33,11 @@
     "@atlaskit/datetime-picker": "^17.7.0",
     "@atlaskit/drawer": "^12.0.7",
     "@atlaskit/dropdown-menu": "^13.1.0",
+<<<<<<< HEAD
     "@atlaskit/dynamic-table": "^15.2.0",
+=======
+    "@atlaskit/dynamic-table": "^18.4.0",
+>>>>>>> aa031cf84fc5e0684d43d28930ea841179369752
     "@atlaskit/editor-common": "^112.19.0",
     "@atlaskit/editor-core": "^217.12.4",
     "@atlaskit/editor-toolbar": "^1.0.8",
