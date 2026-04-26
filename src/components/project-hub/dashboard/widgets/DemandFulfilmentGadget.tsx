@@ -323,7 +323,27 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
         .not('status_category', 'eq', 'Done')
         .limit(500);
 
-      const unlinked = (epics ?? []).filter((e: any) => !linkedIds.has(e.id));
+      // Also exclude epics linked via ph_issue_links → MIM/MDT initiatives
+      // (Apr 2026 InitiativeLinkedItemsTab path). Without this an epic
+      // linked from Product Hub appears in BOTH the linked rollup and the
+      // "unlinked" tab.
+      const { data: phLinks2 } = await (supabase as any)
+        .from('ph_issue_links')
+        .select('source_id, target_id')
+        .or('source_id.like.MIM-%,source_id.like.MDT-%,target_id.like.MIM-%,target_id.like.MDT-%');
+      const linkedEpicKeys = new Set<string>();
+      for (const r of (phLinks2 ?? []) as any[]) {
+        const s = String(r.source_id ?? '');
+        const t = String(r.target_id ?? '');
+        const sIsInit = s.startsWith('MIM-') || s.startsWith('MDT-');
+        const tIsInit = t.startsWith('MIM-') || t.startsWith('MDT-');
+        if (sIsInit && !tIsInit) linkedEpicKeys.add(t);
+        else if (tIsInit && !sIsInit) linkedEpicKeys.add(s);
+      }
+
+      const unlinked = (epics ?? []).filter(
+        (e: any) => !linkedIds.has(e.id) && !linkedEpicKeys.has(e.issue_key),
+      );
       if (unlinked.length === 0) return [];
 
       // Fetch child stories/bugs for these epics to compute roll-up counts.
