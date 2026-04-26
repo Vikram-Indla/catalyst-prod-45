@@ -210,6 +210,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ initia
     logInitiativeAudit({ initiative_id: initiativeId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success('Milestone deleted', TOAST_OPTS);
     refetch();
+    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
   };
 
   const statusLabel = (s: string) => {
