@@ -122,6 +122,7 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) =>
     setSaving(true);
     try {
       // Upsert into ph_initiative_scores
+      const { data: { user } } = await supabase.auth.getUser();
       const { error } = await typedQuery('ph_initiative_scores')
         .upsert({
           initiative_id: initiative.id,
@@ -129,8 +130,8 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ initiative }) =>
           business_impact: scores.bi,
           time_urgency: scores.tu,
           resource_feasibility: scores.rf,
-          composite_score: composite,
-          updated_at: new Date().toISOString(),
+          scored_by: user?.id ?? null,
+          scored_at: new Date().toISOString(),
         }, { onConflict: 'initiative_id' });
       if (error) throw error;
       // Silent auto-save
