@@ -93,7 +93,7 @@ function PeoplePicker({ value, onChange }: { value: string | null | undefined; o
       isSearchable
       usePortal
       menuPlacement="auto"
-      width="100%"
+      width="large"
       aria-label="Person picker"
     />
   );
@@ -123,7 +123,7 @@ function DeptSelect({ value, onChange }: { value: string | null | undefined; onC
       isSearchable
       usePortal
       menuPlacement="auto"
-      width="100%"
+      width="large"
       aria-label="Department"
     />
   );
@@ -161,7 +161,7 @@ function StatusSelect({ dbValue, onChange }: { dbValue: string | null | undefine
       isSearchable
       usePortal
       menuPlacement="auto"
-      width="100%"
+      width="large"
       aria-label="Status"
     />
   );
@@ -193,7 +193,7 @@ function StringSelect({ value, options, onChange, placeholder }: {
       isSearchable
       usePortal
       menuPlacement="auto"
-      width="100%"
+      width="large"
       aria-label={placeholder}
     />
   );
