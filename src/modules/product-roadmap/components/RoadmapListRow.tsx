@@ -9,12 +9,8 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import type { RoadmapDemand } from '../types/roadmap';
 
-// ── Initiative type color map ──
-const TYPE_COLORS: Record<string, string> = {
-  project: '#2563EB',
-  enhancement: '#0D9488',
-  improvement: '#D97706',
-};
+// ── Business Request type color (single canonical type) ──
+const BUSINESS_REQUEST_COLOR = '#B38600';
 
 // ── Avatar color — deterministic from initials ──
 const AVATAR_COLORS = [
