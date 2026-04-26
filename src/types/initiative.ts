@@ -41,6 +41,7 @@ export interface Initiative {
   progress: number;
   sort_order: number;
   risk_count: number;
+  milestone_count?: number;
   is_archived: boolean;
   is_favorited: boolean;
   score_strategic_alignment: number | null;
