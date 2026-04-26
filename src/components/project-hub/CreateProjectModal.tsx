@@ -23,7 +23,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
 
   const [details, setDetails] = useState<StepDetailsData>({
     name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB',
-    lead_id: '', linkJira: false, jiraKey: '',
+    lead_id: '', linkJira: false, jiraKey: '', priority: '',
   });
   const [workflow, setWorkflow] = useState<StepWorkflowData>({
     useDefault: true, copyFromProject: null, featureLayer: false,
@@ -33,7 +33,7 @@ export function CreateProjectModal({ open, onClose }: CreateProjectModalProps) {
   useEffect(() => {
     if (open) {
       setStep(0);
-      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB', lead_id: '', linkJira: false, jiraKey: '' });
+      setDetails({ name: '', key: '', department: '', description: '', icon: 'rocket', color: '#2563EB', lead_id: '', linkJira: false, jiraKey: '', priority: '' });
       setWorkflow({ useDefault: true, copyFromProject: null, featureLayer: false });
       setMembers([]);
       setStep1Valid(false);
