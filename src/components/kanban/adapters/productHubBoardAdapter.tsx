@@ -30,14 +30,9 @@
  * is a pure function. Side effects live in the page mutations.
  */
 import type { ReactNode } from 'react';
-import {
-  FolderKanban, Zap, Wrench, Lightbulb, Link as LinkIcon, CircleDashed,
-} from 'lucide-react';
+import { CircleDashed } from 'lucide-react';
 import type { Initiative, InitiativeStatus } from '@/types/initiative';
-import {
-  INITIATIVE_TYPE_COLORS,
-  type InitiativeTypeKey,
-} from '@/types/initiative-enhancements';
+import { JiraIssueTypeIcon } from '@/components/shared/JiraIssueTypeIcon';
 import type { WorkflowStatus } from '@/hooks/useCatalystWorkflow';
 import type { KanbanColumnDef } from '../kanban-tokens';
 import type { BoardIssue } from '../kanban-types';
@@ -141,7 +136,7 @@ function makeInitiativeToCanonicalIssue(
       id: initiative.id,
       issueKey: initiative.initiative_key,
       summary: initiative.title,
-      issueType: initiative.initiative_type_key ?? 'initiative',
+      issueType: 'Feature',
       priority: mapPriority(initiative),
       status: initiative.status,
       statusCategory: resolveCategory(initiative.status),
@@ -166,23 +161,10 @@ function makeInitiativeToCanonicalIssue(
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Initiative type icon — the reason this adapter exists.
+   Initiative type icon — single Business Request icon.
    ═══════════════════════════════════════════════════════════════════════ */
-export function resolveInitiativeIcon(card: BoardIssue): ReactNode | null {
-  const raw = (card as CanonicalBoardIssue).raw as Initiative | undefined;
-  const typeKey = raw?.initiative_type_key ?? null;
-  const color = (typeKey && INITIATIVE_TYPE_COLORS[typeKey as InitiativeTypeKey]?.hex) ?? INITIATIVE_TYPE_COLORS.project.hex;
-  const Icon = (() => {
-    switch (typeKey) {
-      case 'project': return FolderKanban;
-      case 'enhancement': return Zap;
-      case 'improvement': return Wrench;
-      case 'business_request': return Lightbulb;
-      case 'entity_integration': return LinkIcon;
-      default: return CircleDashed;
-    }
-  })();
-  return <Icon size={14} strokeWidth={2} style={{ color }} />;
+export function resolveInitiativeIcon(_card: BoardIssue): ReactNode | null {
+  return <JiraIssueTypeIcon issueType="Feature" size={14} />;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
