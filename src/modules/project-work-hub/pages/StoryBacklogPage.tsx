@@ -151,6 +151,9 @@ const V2_TABLE_ENABLED =
   typeof window !== 'undefined' && window.localStorage?.getItem('catalyst.table.v2') === '1';
 
 // ── @atlaskit/* full rebuild — opt in with localStorage.setItem('catalyst.story-backlog.atlaskit', '1') ──
+// NOTE 2026-04-27: this StoryBacklogPage path is reached via /program/* aliases
+// only. The unified /project-hub/:key/backlog route mounts BacklogPage.atlaskit
+// directly (see FullAppRoutes UnifiedBacklogPageLazy). Keep flag opt-in here.
 const ATLASKIT_BACKLOG_ENABLED =
   typeof window !== 'undefined' && window.localStorage?.getItem('catalyst.story-backlog.atlaskit') === '1';
 const AtlaskitStoryBacklogPage = ATLASKIT_BACKLOG_ENABLED

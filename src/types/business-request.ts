@@ -91,6 +91,89 @@ export const ENVIRONMENT_DEPENDENCY_OPTIONS = ['Development', 'QA', 'UAT', 'Pre-
 export const RESOLUTION_CATEGORY_OPTIONS = ['Completed Successfully', 'Partially Completed', 'Cancelled', 'Rolled Back'];
 export const IMPLEMENTATION_OUTCOME_OPTIONS = ['Live in Production', 'Pending Go-Live', 'Failed', 'Decommissioned'];
 
+// =============================================================================
+// NOTION FEATURES UNIFICATION (2026-04-27) — added by migration
+// 20260427120000_business_request_feature_unification.sql
+// =============================================================================
+
+/**
+ * Strategic themes — sourced from Notion ⭐ Features (18 values, mostly Arabic).
+ * Stored on `business_requests.theme` as freeform TEXT.
+ * Atlaskit Select uses { value, label } where label renders Arabic for RTL fields.
+ */
+export const THEME_OPTIONS: { value: string; label: string; labelEn?: string }[] = [
+  { value: 'digitization_new_procedure',     label: 'رقمنة إجراء جديد',          labelEn: 'Digitize new procedure' },
+  { value: 'improve_existing_procedure',     label: 'تحسين إجراء قائم',          labelEn: 'Improve existing procedure' },
+  { value: 'digital_maturity_2026',          label: 'Digital Maturity 2026' },
+  { value: 'industrial_market',              label: 'السوق الصناعي',             labelEn: 'Industrial market' },
+  { value: 'enable_services',                label: 'اتاحة خدمات',               labelEn: 'Enable services' },
+  { value: 'embed_sector_service',           label: 'تضمين خدمة قطاعية',        labelEn: 'Embed sector service' },
+  { value: 'services_for_sbc',               label: 'Provide Services for SBC' },
+  { value: 'internal_employee_services',     label: 'خدمات الموظف الداخلية',     labelEn: 'Internal employee services' },
+  { value: 'reports_and_indicators',         label: 'تقارير ومؤشرات',            labelEn: 'Reports & indicators' },
+  { value: 'website_efficiency',             label: 'كفاءة الموقع',              labelEn: 'Website efficiency' },
+  { value: 'improve_partner_service',        label: 'تحسين خدمة الشركاء',       labelEn: 'Improve partner service' },
+  { value: 'verification_inquiry',           label: 'استعلام تحققي',             labelEn: 'Verification inquiry' },
+  { value: 'ux',                             label: 'UX' },
+  { value: 'industrial_survey',              label: 'المسح الصناعي',            labelEn: 'Industrial survey' },
+  { value: 'marketplace',                    label: 'Marketplace' },
+  { value: 'internal_tasks',                 label: 'مهام داخلية',               labelEn: 'Internal tasks' },
+  { value: 'data_quality',                   label: 'جودة بيانات',               labelEn: 'Data quality' },
+  { value: 'operational_issues',             label: 'مشاكل تشغيلية',             labelEn: 'Operational issues' },
+];
+
+/**
+ * Stakeholders — Saudi MoIM ministry agencies and partner entities.
+ * Stored on `business_requests.stakeholders` as JSONB array of value strings.
+ * Starter list — additional values populated from Notion data import. The
+ * Atlaskit picker is creatable so freeform append is supported.
+ */
+export const STAKEHOLDER_OPTIONS: { value: string; label: string }[] = [
+  { value: 'moim',                  label: 'وزارة الصناعة والثروة المعدنية' },
+  { value: 'modon',                 label: 'مدن — هيئة المدن الصناعية' },
+  { value: 'monshaat',              label: 'منشآت — هيئة المنشآت الصغيرة والمتوسطة' },
+  { value: 'sidf',                  label: 'صندوق التنمية الصناعية السعودي' },
+  { value: 'industrial_development',label: 'هيئة تنمية الصادرات السعودية' },
+  { value: 'export_authority',      label: 'الهيئة العامة للصادرات' },
+  { value: 'gosi',                  label: 'المؤسسة العامة للتأمينات الاجتماعية' },
+  { value: 'hrdf',                  label: 'صندوق تنمية الموارد البشرية' },
+  { value: 'investment_ministry',   label: 'وزارة الاستثمار' },
+  { value: 'commerce_ministry',     label: 'وزارة التجارة' },
+  { value: 'misa',                  label: 'هيئة الاستثمار' },
+  { value: 'sfda',                  label: 'الهيئة العامة للغذاء والدواء' },
+  { value: 'saso',                  label: 'الهيئة السعودية للمواصفات والمقاييس' },
+  { value: 'kacst',                 label: 'مدينة الملك عبدالعزيز للعلوم والتقنية' },
+  { value: 'sabic',                 label: 'سابك' },
+  { value: 'aramco',                label: 'أرامكو السعودية' },
+  { value: 'maaden',                label: 'معادن' },
+  { value: 'rcrc',                  label: 'الهيئة الملكية للجبيل وينبع' },
+  { value: 'najm',                  label: 'نجم لخدمات التأمين' },
+  { value: 'monsha_at',             label: 'منصة الابتكار' },
+  { value: 'tahomma',               label: 'طموحنا' },
+  { value: 'compass',               label: 'البوصلة' },
+  { value: 'investor_journey',      label: 'رحلة المستثمر' },
+  { value: 'rhq_services',          label: 'خدمات المقر الإقليمي' },
+  { value: 'mini_apps',             label: 'التطبيقات المصغرة' },
+  { value: 'ministry_website',      label: 'موقع الوزارة' },
+  { value: 'industrial_partners',   label: 'الشركاء الصناعيون' },
+  { value: 'investors',             label: 'المستثمرون' },
+  { value: 'sbc',                   label: 'Saudi Business Center' },
+  { value: 'private_sector',        label: 'القطاع الخاص' },
+  { value: 'government',            label: 'الجهات الحكومية' },
+];
+
+/**
+ * Notion request type values — mirrors the 4 new initiative_types rows
+ * seeded by the same migration. Use this when filtering/displaying
+ * BR records by their initiative_type.key.
+ */
+export const REQUEST_TYPE_OPTIONS = [
+  { value: 'feature',      label: 'Feature' },
+  { value: 'gap',          label: 'Gap' },
+  { value: 'integration',  label: 'Integration' },
+  { value: 'data_request', label: 'Data Request' },
+] as const;
+
 // Readiness Checklist Interface
 export interface ReadinessChecklist {
   requirements_documented: boolean;
@@ -224,6 +307,16 @@ export interface BusinessRequest {
   funding_assumptions: string | null;
   capacity_risks: string | null;
   
+  // Notion Features unification (2026-04-27)
+  // Migration: 20260427120000_business_request_feature_unification.sql
+  arabic_title: string | null;
+  theme: string | null;
+  stakeholders: string[];        // JSONB array — DB default '[]' (NOT NULL)
+  targeted_feature: boolean;     // DB default false (NOT NULL)
+  po_user_id: string | null;     // FK auth.users — DM remains on project_manager_user_id
+  import_source: string | null;  // 'notion' for imported rows; null for native
+  import_ref: string | null;     // Notion page URL — conflict key for upsert idempotency
+
   // Metadata
   created_at: string;
   updated_at: string;

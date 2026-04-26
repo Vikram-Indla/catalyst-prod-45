@@ -18,7 +18,12 @@ import {
   useBusinessRequest, useUpdateBusinessRequest,
   useDeleteBusinessRequest, useDuplicateBusinessRequest,
 } from '@/hooks/useBusinessRequests';
-import { BusinessRequest } from '@/types/business-request';
+import { BusinessRequest, THEME_OPTIONS, STAKEHOLDER_OPTIONS } from '@/types/business-request';
+// 2026-04-27 — Notion Features unification (migration 20260427120000)
+// All new editors are @atlaskit/* per ADS-only rule.
+import AKSelect, { CreatableSelect as AKCreatableSelect } from '@atlaskit/select';
+import AKTextfield from '@atlaskit/textfield';
+import AKToggle from '@atlaskit/toggle';
 // 2026-04-20 — StoryRichTextEditor import REMOVED (TipTap). Its StarterKit
 // eagerly evaluates prosemirror-gapcursor at module load, which collides
 // with @atlaskit/editor-core's internal copy and crashes the Atlaskit
@@ -67,6 +72,10 @@ const AUDIT_FIELD_LABELS: Record<string, string> = {
   urgency: 'Urgency', complexity: 'Complexity', risk_rating: 'Risk Rating',
   estimated_effort: 'Estimated Effort', start_date: 'Start Date', end_date: 'End Date',
   priority_tier: 'Priority', health: 'Health', acceptance_criteria: 'Acceptance Criteria',
+  // 2026-04-27 — Notion Features unification
+  arabic_title: 'Arabic Title', theme: 'Theme', stakeholders: 'Stakeholders',
+  targeted_feature: 'Targeted Feature', po_user_id: 'Product Owner',
+  project_manager_user_id: 'Delivery Manager',
 };
 
 /** Jira-native priority SVG icons */
@@ -562,6 +571,26 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                 onMouseLeave={e => { if (!titleFocused) e.currentTarget.style.background = 'transparent'; }}
               >{request.title ?? '—'}</h1>
 
+              {/* 1b. ARABIC TITLE — Notion Features unification (2026-04-27) */}
+              {/* RTL-aware bilingual pair to the English title above. */}
+              <div style={{ marginBottom: 16 }} dir="rtl">
+                <AKTextfield
+                  value={formData.arabic_title ?? ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleFieldChange('arabic_title', e.target.value || null)
+                  }
+                  placeholder="اسم الميزة بالعربية"
+                  isCompact
+                  style={{
+                    fontFamily: 'var(--cp-font-body)',
+                    fontSize: 18,
+                    fontWeight: 600,
+                    textAlign: 'right',
+                    color: '#172B4D',
+                  }}
+                />
+              </div>
+
               {/* 2. DESCRIPTION — Rich text with view/edit toggle */}
               <div style={{ marginBottom: 24 }}>
                 <h2 style={{ fontSize: 14, fontWeight: 500, color: 'rgb(80, 82, 88)', lineHeight: '18.67px', margin: '0 0 4px', fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}>Description</h2>
@@ -906,6 +935,25 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   </div>
                 </div>
 
+                {/* Theme — Notion Features unification (2026-04-27) */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Theme</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <AKSelect
+                      inputId="br-theme"
+                      isClearable
+                      options={THEME_OPTIONS.map(t => ({ value: t.value, label: t.labelEn ? `${t.label} · ${t.labelEn}` : t.label }))}
+                      value={formData.theme ? { value: formData.theme, label: (() => {
+                        const m = THEME_OPTIONS.find(t => t.value === formData.theme);
+                        return m ? (m.labelEn ? `${m.label} · ${m.labelEn}` : m.label) : formData.theme;
+                      })() } : null}
+                      onChange={(opt: any) => handleFieldChange('theme', opt?.value ?? null)}
+                      placeholder="Select theme"
+                      spacing="compact"
+                    />
+                  </div>
+                </div>
+
                 {/* Projects (linked ProjectHub projects) */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Projects</div>
@@ -952,6 +1000,32 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                   </div>
                 </div>
 
+                {/* Delivery Manager — Notion Features unification (alias on project_manager_user_id) */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Delivery Manager</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <BRAssigneePicker
+                      value={formData.project_manager_user_id || null}
+                      saveAs="id"
+                      onChange={(v) => handleFieldChange('project_manager_user_id', v)}
+                      placeholder="Unassigned"
+                    />
+                  </div>
+                </div>
+
+                {/* Product Owner — Notion Features unification (po_user_id) */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Product Owner</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <BRAssigneePicker
+                      value={formData.po_user_id || null}
+                      saveAs="id"
+                      onChange={(v) => handleFieldChange('po_user_id', v)}
+                      placeholder="Unassigned"
+                    />
+                  </div>
+                </div>
+
                 {/* Department */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Department</div>
@@ -961,6 +1035,30 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                       onChange={handleDepartmentChange}
                       placeholder="Select department"
                       className="h-8 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Stakeholders — Notion Features unification (JSONB array, creatable) */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Stakeholders</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <AKCreatableSelect
+                      inputId="br-stakeholders"
+                      isMulti
+                      isClearable
+                      options={STAKEHOLDER_OPTIONS}
+                      value={(formData.stakeholders ?? []).map((v: string) => {
+                        const m = STAKEHOLDER_OPTIONS.find(o => o.value === v);
+                        return { value: v, label: m?.label ?? v };
+                      })}
+                      onChange={(opts: any) => {
+                        const next = Array.isArray(opts) ? opts.map((o: any) => o.value) : [];
+                        handleFieldChange('stakeholders', next);
+                      }}
+                      placeholder="Add stakeholders…"
+                      spacing="compact"
+                      formatCreateLabel={(input: string) => `Add "${input}"`}
                     />
                   </div>
                 </div>
@@ -995,6 +1093,21 @@ export function BusinessRequestDetailModal({ isOpen, onClose, requestId, onReque
                       onCheckedChange={(checked) => handleFieldChange('ea_review_required', checked)}
                     />
                     <span style={{ fontSize: 13, color: '#42526E' }}>{formData.ea_review_required ? 'Yes' : 'No'}</span>
+                  </div>
+                </div>
+
+                {/* Targeted Feature — Notion Features unification (Atlaskit Toggle, distinct from is_force_ranked) */}
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: '#42526E', width: 110, flexShrink: 0, paddingTop: 6 }}>Targeted Feature</div>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, paddingTop: 2 }}>
+                    <AKToggle
+                      id="br-targeted-feature"
+                      isChecked={formData.targeted_feature ?? false}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldChange('targeted_feature', e.target.checked)
+                      }
+                    />
+                    <span style={{ fontSize: 13, color: '#42526E' }}>{formData.targeted_feature ? 'Yes' : 'No'}</span>
                   </div>
                 </div>
               </div>
