@@ -234,6 +234,7 @@ export function LinkedWorkItems({
                   onCreateNew={projectData ? handleCreateNew : undefined}
                   onCancel={() => setShowToolbar(false)}
                   isPending={linkMutation.isPending}
+                  loadOptionsOverride={loadOptionsOverride}
                 />
               ) : null
             }
