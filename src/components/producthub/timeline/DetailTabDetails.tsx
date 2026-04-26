@@ -31,12 +31,6 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled', group: 'Closure', db: 'cancelled' },
 ];
 
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project', icon: '🏗', color: '#0D9488', textColor: '#08736B' },
-  { key: 'enhancement', label: 'Enhancement', icon: '⚡', color: '#2563EB', textColor: '#2563EB' },
-  { key: 'improvement', label: 'Improvement', icon: '🔧', color: '#D97706', textColor: '#9A5402' },
-  { key: 'entity_integration', label: 'Entity Integration', icon: '🔗', color: '#7C3AED', textColor: '#7C3AED' },
-];
 
 const EA_OPTS = ['Not Required', 'Pending', 'In Review', 'Approved', 'Rejected'];
 const BV_OPTS = ['High', 'Medium', 'Low'];
@@ -328,7 +322,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
 /* ═══ MAIN COMPONENT ═══ */
 export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }) => {
   const queryClient = useQueryClient();
-  const [updatingType, setUpdatingType] = useState(false);
+  
   const [editDesc, setEditDesc] = useState(false);
   const [desc, setDesc] = useState(initiative.description || '');
 
@@ -399,31 +393,6 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     await autoSave('status', opt.db, 'Status');
   }, [autoSave]);
 
-  const handleTypeChange = useCallback(async (typeKey: string) => {
-    if (typeKey === initiative.initiative_type_key) return;
-    setUpdatingType(true);
-    try {
-      const { data: typeRow, error: lookupErr } = await typedQuery('initiative_types').select('id').eq('key', typeKey).single();
-      if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
-
-      let query = supabase
-        .from('ph_initiatives')
-        .update({ initiative_type_id: typeRow.id, updated_at: new Date().toISOString() } as any);
-
-      if (isUuid(initiative.id)) {
-        query = query.eq('id', initiative.id);
-      } else if (initiative.initiative_key) {
-        query = query.eq('initiative_key', initiative.initiative_key);
-      } else {
-        throw new Error('Missing valid persistence identifier');
-      }
-
-      const { error } = await query;
-      if (error) throw error;
-      invalidateAll();
-    } catch (err: any) { toast.error(`Failed to update type: ${err?.message || 'unknown error'}`); }
-    finally { setUpdatingType(false); }
-  }, [initiative.id, initiative.initiative_key, initiative.initiative_type_key, invalidateAll, isUuid]);
 
   const handleRoadmapToggle = useCallback(async () => {
     if (initiative.on_roadmap) {
@@ -463,9 +432,6 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
 
       {/* 2-Column Field Grid */}
       <div className="idp-field-grid">
-        <Cell label="Initiative Type" odd>
-          <DD value={initiative.initiative_type_key || 'project'} options={TYPE_OPTIONS.map(t => ({ value: t.key, label: t.label }))} onChange={(v: string) => handleTypeChange(v)} />
-        </Cell>
         <Cell label="Status">
           <DD value={getField('status', dbStatus)} options={STATUS_OPTIONS} grouped onChange={handleStatusChange} />
         </Cell>
