@@ -28,7 +28,7 @@ export const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'source', label: 'Source', visible: true },
   { id: 'title', label: 'Title', visible: true, locked: true },
   { id: 'status', label: 'Status', visible: true },
-  { id: 'type', label: 'Type', visible: true },
+  
   { id: 'priority', label: 'Priority', visible: true },
   { id: 'score', label: 'Score', visible: true },
   { id: 'assignee', label: 'Assignee', visible: true },
