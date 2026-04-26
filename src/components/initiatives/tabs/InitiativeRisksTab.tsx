@@ -77,7 +77,7 @@ export function InitiativeRisksTab({ initiativeId }: InitiativeRisksTabProps) {
       category: riskForm.category,
       probability: riskForm.probability,
       impact: riskForm.impact,
-      risk_score: riskForm.probability * riskForm.impact,
+      // risk_score is a GENERATED column — DB computes it as (probability * impact)
       mitigation_plan: riskForm.mitigation_plan.trim() || null,
       contingency_plan: riskForm.contingency_plan.trim() || null,
       owner_id: riskForm.owner_id || null,
