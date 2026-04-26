@@ -134,22 +134,6 @@ export function RoadmapDetailPanel({ item, isOpen, onClose }: RoadmapDetailPanel
     }
   }, [item, queryClient]);
 
-  const handleTypeChange = useCallback(async (typeKey: string) => {
-    if (!item || typeKey === item.type) return;
-    setUpdatingType(true);
-    try {
-      const { data: typeRow, error: lookupErr } = await typedQuery('initiative_types')
-        .select('id')
-        .eq('key', typeKey)
-        .single();
-      if (lookupErr || !typeRow) throw lookupErr || new Error('Type not found');
-      await saveField({ initiative_type_id: typeRow.id }, 'Type');
-    } catch {
-      toast.error('Failed to update type');
-    } finally {
-      setUpdatingType(false);
-    }
-  }, [item, saveField]);
 
   const handleRoadmapToggle = useCallback(async () => {
     if (!item) return;
