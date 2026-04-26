@@ -23,7 +23,7 @@
  * ═══════════════════════════════════════════════════════════════
  */
 import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, typedQuery } from '@/integrations/supabase/client';
 
 // "Active" releases = not archived/released/shipped
 const INACTIVE_STATUSES = ['archived', 'released', 'shipped'] as const;
