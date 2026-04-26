@@ -4,7 +4,7 @@
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Loader2, FileText, Tag, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
+import { X, Loader2, FileText, Users, Calendar, RefreshCw, GitMerge } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -105,13 +105,6 @@ function useCreateInitiative() {
     onError: (err: Error) => { catalystToast.error('Failed to create: ' + err.message); },
   });
 }
-
-const TYPE_OPTIONS = [
-  { key: 'project', label: 'Project' },
-  { key: 'enhancement', label: 'Enhancement' },
-  { key: 'improvement', label: 'Improvement' },
-  { key: 'entity_integration', label: 'Entity Integration' },
-];
 
 const EMPTY_FORM = {
   title: '', description: '', status: 'new',
@@ -280,7 +273,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
         <div style={{ padding: '20px 24px 16px', flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Initiative</div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: T.ink, fontFamily: 'var(--cp-font-heading)', letterSpacing: '-.02em' }}>New Business Request</div>
               {nextKey && (
                 <div style={{
                   display: 'inline-block', marginTop: 6, fontSize: 12, fontWeight: 600,
@@ -305,7 +298,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           {conversionSource?.type === 'single' && (
             <div className="p-3 rounded-lg mb-3" style={{ background: isDark ? 'rgba(74,222,128,0.08)' : '#F0FDF4', border: `1px solid ${isDark ? 'rgba(74,222,128,0.2)' : '#BBF7D0'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
-                <RefreshCw className="w-3.5 h-3.5" /> Converting idea to initiative
+                <RefreshCw className="w-3.5 h-3.5" /> Converting idea to business request
               </div>
               <div className="text-[12px] mt-1" style={{ color: 'var(--fg-2)' }}>
                 <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
@@ -316,7 +309,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
           {conversionSource?.type === 'merge' && conversionSource.mergeIdea && (
             <div className="p-3 rounded-lg mb-3" style={{ background: isDark ? 'rgba(59,130,246,0.08)' : '#EFF6FF', border: `1px solid ${isDark ? 'rgba(59,130,246,0.2)' : '#BFDBFE'}` }}>
               <div className="text-[13px] font-bold flex items-center gap-1.5" style={{ color: T.ink }}>
-                <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 initiative
+                <GitMerge className="w-3.5 h-3.5" /> Merging 2 ideas into 1 business request
               </div>
               <div className="text-[12px] mt-1" style={{ color: 'var(--fg-2)' }}>
                 Primary: <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600, color: T.primary }}>{conversionSource.primaryIdea.key}</span>
@@ -347,7 +340,7 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
             <textarea
               value={form.description}
               onChange={e => updateField('description', e.target.value)}
-              placeholder="Brief description of the initiative scope and objectives..."
+              placeholder="Brief description of the business request scope and objectives..."
               rows={3}
               className="w-full px-3 py-2 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none transition-shadow placeholder:text-[#71717A]"
               style={{ borderColor: T.border }}
