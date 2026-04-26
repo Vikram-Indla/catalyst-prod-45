@@ -59,6 +59,10 @@ export interface Initiative {
   priority?: string | null;
   source?: string | null;
   jira_issue_key?: string | null;
+  // Linked work-item progress (computed in ph_backlog_initiatives_view)
+  linked_items_total: number;
+  linked_items_done: number;
+  linked_items_progress: number;
 }
 
 export interface FilterCondition {

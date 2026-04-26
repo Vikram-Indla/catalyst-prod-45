@@ -209,7 +209,7 @@ export function useRoadmapInitiatives() {
           type: 'business_request',
           priority: row.roadmap_priority === 1 ? 'P0' : row.roadmap_priority === 2 ? 'P1' : 'P2',
           status: STATUS_MAP[row.status] || 'Planned',
-          progress: row.progress ?? 0,
+          progress: row.linked_items_progress ?? row.progress ?? 0,
           startDate,
           endDate,
           ownerName,
