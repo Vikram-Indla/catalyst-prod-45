@@ -192,6 +192,18 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     } catch { toast.error('Clone failed'); }
   };
 
+  const handleArchiveToggle = async () => {
+    try {
+      const { error } = await typedQuery('ph_initiatives')
+        .update({ is_archived: !initiative.is_archived, updated_at: new Date().toISOString() })
+        .eq('id', initiative.id);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiatives'] });
+      toast.success(initiative.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
+    } catch { toast.error('Failed to archive'); }
+  };
+
   // Tab index sync (Atlaskit Tabs uses index, we keep TabKey for content switch)
   const activeTabIndex = TABS.findIndex(t => t.key === activeTab);
 
@@ -265,7 +277,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           </div>
           {/* Meta row: status lozenge + business request badge + priority bars */}
           <div className="idp-meta-row">
-            <StatusLozenge category={statusCategory}>{statusLabel}</StatusLozenge>
+            <StatusLozenge status={statusCategory}>{statusLabel}</StatusLozenge>
             <BusinessRequestBadge iconSize={16} fontSize={12} />
             <div className="idp-priority-bars">
               {[1, 2, 3, 4].map(i => (
