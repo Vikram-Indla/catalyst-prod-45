@@ -400,6 +400,6 @@ export function buildProductHubBoardAdapter(
     interactions,
 
     resolveIcon: resolveInitiativeIcon,
-    createLabel: 'New initiative',
+    createLabel: 'New business request',
   };
 }
