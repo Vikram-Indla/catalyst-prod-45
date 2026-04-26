@@ -5,33 +5,22 @@
  * Avatar=Blue ALWAYS. No purple (AI reserved).
  */
 
-// ── Type Colors (AUDIT #4: distinct per type) ──
-export const TYPE_COLORS: Record<string, { 
-  solid: string; 
-  light: string; 
-  label: string; 
+// ── Business Request type color (single canonical type — lightbulb amber) ──
+export const BUSINESS_REQUEST_COLOR = '#B38600';
+
+export const TYPE_COLORS: Record<string, {
+  solid: string;
+  light: string;
+  label: string;
   gradient: string;
   hover: string;
 }> = {
-  project: { 
-    solid: '#475569', light: 'var(--bg-1, #F8FAFC)', label: 'Project',
-    gradient: 'linear-gradient(135deg, #475569, #334155)',
-    hover: '#334155',
-  },
-  enhancement: { 
-    solid: '#0D9488', light: '#F0FDFA', label: 'Enhancement',
-    gradient: 'linear-gradient(135deg, #0D9488, #0F766E)',
-    hover: '#0F766E',
-  },
-  improvement: { 
-    solid: '#16A34A', light: '#F0FDF4', label: 'Improvement',
-    gradient: 'linear-gradient(135deg, #16A34A, #15803D)',
-    hover: '#15803D',
-  },
-  entity_integration: { 
-    solid: '#D97706', light: '#FFFBEB', label: 'Entity Integration',
-    gradient: 'linear-gradient(135deg, #D97706, #B45309)',
-    hover: '#B45309',
+  business_request: {
+    solid: BUSINESS_REQUEST_COLOR,
+    light: '#FEF7E6',
+    label: 'Business Request',
+    gradient: 'linear-gradient(135deg, #B38600, #8A6800)',
+    hover: '#8A6800',
   },
 };
 
