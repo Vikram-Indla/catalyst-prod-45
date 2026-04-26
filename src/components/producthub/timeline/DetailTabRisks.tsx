@@ -76,7 +76,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: '', description: '', category: 'Technical', status: 'Open',
-    probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '',
+    probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '', owner_id: '',
   });
 
   const { data: risks = [], refetch } = useQuery({
