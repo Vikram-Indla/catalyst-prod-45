@@ -5,7 +5,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Search, Plus, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { INK, SURFACE, FONT, TYPE_COLORS } from './constants/roadmap.constants';
+import { INK, SURFACE, FONT } from './constants/roadmap.constants';
 import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmapData';
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { toast } from 'sonner';
@@ -84,7 +84,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
         ref={modalRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Add initiative to roadmap"
+        aria-label="Add business request to roadmap"
         className="animate-scale-in"
         style={{
           position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
@@ -99,7 +99,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
         <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${SURFACE.borderLight}` }}>
           <div>
             <h2 style={{ fontSize: 16, fontWeight: 700, color: INK[1], margin: 0 }}>Add Business Request to Roadmap</h2>
-            <p style={{ fontSize: 12, fontWeight: 500, color: INK[3], margin: 0, marginTop: 2 }}>Select from existing backlog initiatives</p>
+            <p style={{ fontSize: 12, fontWeight: 500, color: INK[3], margin: 0, marginTop: 2 }}>Select from existing backlog business requests</p>
           </div>
           <button
             onClick={onClose}
@@ -120,7 +120,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
             <input
               ref={searchRef}
               type="text"
-              placeholder="Search backlog initiatives..."
+              placeholder="Search backlog business requests..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full h-9 pl-10 pr-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-blue-500"
@@ -145,7 +145,6 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
           )}
 
           {!isLoading && !error && filtered.map((item: any) => {
-            const typeColor = TYPE_COLORS[item.type]?.solid || '#94A3B8';
             const isOnRoadmap = item.alreadyOnRoadmap;
             return (
               <div
@@ -155,7 +154,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
                 onMouseEnter={e => (e.currentTarget.style.backgroundColor = SURFACE.page)}
                 onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <div className="w-1 rounded" style={{ height: 32, background: typeColor }} />
+                <div className="w-1 rounded" style={{ height: 32, background: '#B38600' }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span style={{ fontFamily: FONT.mono, fontSize: 11, fontWeight: 600, color: '#2563EB' }}>{item.key}</span>
@@ -201,7 +200,7 @@ export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps)
             <div className="flex flex-col items-center justify-center py-12">
               <Search size={32} style={{ color: INK[4], marginBottom: 8 }} />
               <span style={{ fontSize: 13, fontWeight: 500, color: INK[3] }}>
-                {backlogItems.length === 0 ? 'All initiatives are already on the roadmap' : 'No matching initiatives found'}
+                {backlogItems.length === 0 ? 'All business requests are already on the roadmap' : 'No matching business requests found'}
               </span>
             </div>
           )}
