@@ -400,10 +400,9 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ initiative }
     } else {
       await promoteMutation.mutateAsync({
         initiative_id: initiative.id,
-        initiative_type_key: initiative.initiative_type_key || 'project',
       });
     }
-  }, [initiative.id, initiative.on_roadmap, initiative.initiative_type_key, promoteMutation, removeMutation]);
+  }, [initiative.id, initiative.on_roadmap, promoteMutation, removeMutation]);
 
   // DB status for dropdown matching
   const UI_TO_DB: Record<string, string> = {
