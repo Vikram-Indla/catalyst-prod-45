@@ -86,6 +86,7 @@ export function initiativeToCanonicalIssue(initiative: Initiative): CanonicalBoa
   const secondary: BoardLozenge | null = initiative.target_quarter
     ? { label: initiative.target_quarter, appearance: 'inprogress' }
     : null;
+  const sourceTag: 'catalyst' | 'jira' = initiative.source === 'jira' ? 'jira' : 'catalyst';
   const issue: CanonicalBoardIssue = {
     id: initiative.id,
     issueKey: initiative.initiative_key,
@@ -104,6 +105,7 @@ export function initiativeToCanonicalIssue(initiative: Initiative): CanonicalBoa
     isFlagged: initiative.is_favorited,
     updatedAt: initiative.updated_at,
     createdAt: initiative.created_at,
+    sourceTag,
     primaryLozenge: primary,
     secondaryLozenge: secondary,
     metaText: null,
