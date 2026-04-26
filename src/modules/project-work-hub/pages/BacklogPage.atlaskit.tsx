@@ -212,11 +212,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // rows surface. When linkage gets created (Catalyst sets parent_key on an
   // epic to an initiative_key, or Jira sync starts populating it), the UI
   // picks it up on the next render with no code change.
+  // Resolve initiative links via ph_issue_links (Apr 2026 InitiativeLinkedItemsTab
+  // path). Map<epic_issue_key, initiative_key>. This is the SECOND linkage path
+  // alongside ph_issues.parent_key.
+  const epicKeysForLinks = useMemo(
+    () => epics.map((e) => e.epic_key).filter(Boolean) as string[],
+    [epics],
+  );
+  const { data: epicLinkedInitiativeByKey } = useInitiativeLinksByEpicKeys(epicKeysForLinks);
+
   const initiativeCandidateKeys = useMemo(() => {
     const keys = new Set<string>();
     epics.forEach((e) => {
       const pk = (e as any).parent_key;
       if (pk) keys.add(pk);
+      // Also include initiatives linked via ph_issue_links.
+      const linkedInit = epicLinkedInitiativeByKey?.get(e.epic_key);
+      if (linkedInit) keys.add(linkedInit);
     });
     stories.forEach((s) => {
       // Story parents are epics — but occasionally a story's parent_key
@@ -226,7 +238,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (ek) keys.add(ek);
     });
     return Array.from(keys);
-  }, [epics, stories]);
+  }, [epics, stories, epicLinkedInitiativeByKey]);
   const { data: initiativesByKey } = useInitiativesByKeys(initiativeCandidateKeys);
 
   // ── URL deep-link ──────────────────────────────────────────────────────
