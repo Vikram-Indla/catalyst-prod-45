@@ -51,12 +51,14 @@ export interface LinkedWorkItemsProps {
   issueId: string;
   issueKey?: string;
   projectKey?: string;
+  loadOptionsOverride?: (input: string) => Promise<any[]>;
 }
 
 export function LinkedWorkItems({
   issueId,
   issueKey: issueKeyProp,
   projectKey,
+  loadOptionsOverride,
 }: LinkedWorkItemsProps) {
   useAtlaskitThemeSync();
   const navigate = useNavigate();
@@ -232,6 +234,7 @@ export function LinkedWorkItems({
                   onCreateNew={projectData ? handleCreateNew : undefined}
                   onCancel={() => setShowToolbar(false)}
                   isPending={linkMutation.isPending}
+                  loadOptionsOverride={loadOptionsOverride}
                 />
               ) : null
             }
