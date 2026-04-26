@@ -26,7 +26,15 @@ export interface StepDetailsData {
   lead_id: string;
   linkJira: boolean;
   jiraKey: string;
+  priority: 'critical' | 'high' | 'medium' | 'low' | '';
 }
+
+const PRIORITY_OPTIONS: Array<{ value: 'critical' | 'high' | 'medium' | 'low'; label: string }> = [
+  { value: 'critical', label: 'Critical' },
+  { value: 'high', label: 'High' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'low', label: 'Low' },
+];
 
 interface StepDetailsProps {
   data: StepDetailsData;
