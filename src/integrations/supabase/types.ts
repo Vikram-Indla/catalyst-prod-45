@@ -67159,7 +67159,11 @@ export type Database = {
           initiative_key: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
+          jira_issue_key: string | null
           kickoff_date: string | null
+          linked_items_done: number | null
+          linked_items_progress: number | null
+          linked_items_total: number | null
           on_roadmap: boolean | null
           priority: string | null
           progress: number | null
@@ -67167,80 +67171,18 @@ export type Database = {
           risk_count: number | null
           roadmap_added_at: string | null
           roadmap_added_by: string | null
+          roadmap_end_date: string | null
           roadmap_priority: number | null
+          roadmap_sort_order: number | null
+          roadmap_start_date: string | null
           sort_order: number | null
+          source: string | null
           status: Database["public"]["Enums"]["initiative_status"] | null
           tags: string[] | null
           target_complete: string | null
           target_quarter: string | null
           title: string | null
           updated_at: string | null
-        }
-        Insert: {
-          assignee_id?: string | null
-          budget_allocated?: number | null
-          business_ask_date?: string | null
-          business_owner_id?: string | null
-          business_value?: string | null
-          created_at?: string | null
-          department_id?: string | null
-          description?: string | null
-          ea_review?: string | null
-          estimated_budget?: number | null
-          health_status?: string | null
-          id?: string | null
-          initiative_key?: string | null
-          is_archived?: boolean | null
-          is_deleted?: boolean | null
-          kickoff_date?: string | null
-          on_roadmap?: boolean | null
-          priority?: string | null
-          progress?: number | null
-          reporter_id?: string | null
-          risk_count?: number | null
-          roadmap_added_at?: string | null
-          roadmap_added_by?: string | null
-          roadmap_priority?: number | null
-          sort_order?: number | null
-          status?: Database["public"]["Enums"]["initiative_status"] | null
-          tags?: string[] | null
-          target_complete?: string | null
-          target_quarter?: string | null
-          title?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          assignee_id?: string | null
-          budget_allocated?: number | null
-          business_ask_date?: string | null
-          business_owner_id?: string | null
-          business_value?: string | null
-          created_at?: string | null
-          department_id?: string | null
-          description?: string | null
-          ea_review?: string | null
-          estimated_budget?: number | null
-          health_status?: string | null
-          id?: string | null
-          initiative_key?: string | null
-          is_archived?: boolean | null
-          is_deleted?: boolean | null
-          kickoff_date?: string | null
-          on_roadmap?: boolean | null
-          priority?: string | null
-          progress?: number | null
-          reporter_id?: string | null
-          risk_count?: number | null
-          roadmap_added_at?: string | null
-          roadmap_added_by?: string | null
-          roadmap_priority?: number | null
-          sort_order?: number | null
-          status?: Database["public"]["Enums"]["initiative_status"] | null
-          tags?: string[] | null
-          target_complete?: string | null
-          target_quarter?: string | null
-          title?: string | null
-          updated_at?: string | null
         }
         Relationships: [
           {

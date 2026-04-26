@@ -3,13 +3,12 @@
  */
 import { useState, useMemo, useCallback } from 'react';
 import type { RoadmapInitiative, InitiativeType, QuickFilter, GroupBy, ZoomLevel, ViewMode, RoadmapGroup } from '../types/roadmap.types';
-import { TYPE_COLORS } from '../constants/roadmap.constants';
 
 export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<InitiativeType | 'all'>('all');
   const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
-  const [groupBy, setGroupBy] = useState<GroupBy>('type');
+  const [groupBy, setGroupBy] = useState<GroupBy>('none');
   const [zoom, setZoom] = useState<ZoomLevel>('Month');
   const [viewMode, setViewMode] = useState<ViewMode>('Timeline');
   const [hoveredId, setHoveredId] = useState<string | null>(null);
@@ -37,13 +36,12 @@ export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
   }, [allItems, typeFilter, search, quickFilter]);
 
   const groups = useMemo<RoadmapGroup[]>(() => {
-    if (groupBy === 'none') return [{ key: 'all', label: 'All Initiatives', color: '#64748B', items: filtered, isExpanded: true }];
+    if (groupBy === 'none') return [{ key: 'all', label: 'All Business Requests', color: '#64748B', items: filtered, isExpanded: true }];
 
     const map = new Map<string, RoadmapInitiative[]>();
     for (const item of filtered) {
       let key: string;
-      if (groupBy === 'type') key = item.type;
-      else if (groupBy === 'priority') key = item.priority;
+      if (groupBy === 'priority') key = item.priority;
       else key = item.ownerName;
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(item);
@@ -51,8 +49,8 @@ export function useRoadmapFilters(allItems: RoadmapInitiative[]) {
 
     return Array.from(map.entries()).map(([key, items]) => ({
       key,
-      label: groupBy === 'type' ? (TYPE_COLORS[key]?.label || key) : key,
-      color: groupBy === 'type' ? (TYPE_COLORS[key]?.solid || '#94A3B8') : '#64748B',
+      label: key,
+      color: '#64748B',
       items,
       isExpanded: true,
     }));

@@ -1,15 +1,23 @@
 import React from 'react';
-import { Star, MoreHorizontal, Flag, Activity, Target } from 'lucide-react';
+import { Star, MoreHorizontal, Target } from 'lucide-react';
 import type { Initiative } from '@/types/initiative';
 import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
-import { STATUS_DISPLAY, getAvatarColor, getInitials } from '@/types/initiative';
+import { STATUS_DISPLAY } from '@/types/initiative';
 import { InitiativeMetrics } from '@/components/backlog/MetricBars';
-import { formatDistanceToNow, format } from 'date-fns';
+import { formatDistanceToNow, format, isValid } from 'date-fns';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { useTheme } from '@/hooks/useTheme';
-import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
+import { Avatar } from '@/components/ads';
+
+/** Format a date string as "DD MMM YYYY" — returns null if missing/invalid. */
+function formatCardDate(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const d = new Date(value);
+  if (!isValid(d)) return null;
+  return format(d, 'dd MMM yyyy');
+}
 
 interface PCInitiativeCardProps {
   initiative: Initiative;
@@ -53,21 +61,10 @@ function darkPill(pill: { color: string; bg: string; border: string }): { color:
 
 // Type concept removed — every Product Hub item is a Business Request.
 
-const PRIORITY_STYLE: Record<string, { color: string; bg: string }> = {
-  critical: { color: '#B91C1C', bg: '#FEE2E2' },
-  high:     { color: '#C2410C', bg: '#FFEDD5' },
-  medium:   { color: '#A16207', bg: '#FEF3C7' },
-  low:      { color: '#15803D', bg: '#DCFCE7' },
-};
-
-const HEALTH_STYLE: Record<string, { color: string; bg: string; label: string }> = {
-  green:    { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
-  on_track: { color: '#15803D', bg: '#DCFCE7', label: 'On Track' },
-  amber:    { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
-  at_risk:  { color: '#A16207', bg: '#FEF3C7', label: 'At Risk' },
-  red:      { color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
-  off_track:{ color: '#B91C1C', bg: '#FEE2E2', label: 'Off Track' },
-};
+// PRIORITY_STYLE / HEALTH_STYLE removed — Priority and Health pills no
+// longer render on the card per the Apr 2026 simplification pass. The
+// PRIORITY bar (rendered by InitiativeMetrics) remains the canonical
+// priority indicator.
 
 
 export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, isSelected, onClick }) => {
@@ -99,29 +96,40 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       className={`pc-card ${isSelected ? 'pc-card--selected' : ''}`}
       onClick={onClick}
     >
-      {/* Hover actions */}
+      {/* Hover actions (more menu only — star moved into header per Apr 2026 layout fix) */}
       <div className="pc-card-actions">
-        <button className={`pc-action-btn ${initiative.is_favorited ? 'pc-action-btn--starred' : ''}`} onClick={handleStar}>
-          <Star size={14} fill={initiative.is_favorited ? 'currentColor' : 'none'} />
-        </button>
         <button className="pc-action-btn" onClick={e => e.stopPropagation()}>
           <MoreHorizontal size={14} />
         </button>
       </div>
 
-      {/* Header: Status pill + ID */}
-      <div className="pc-card-header">
-        <span
-          className="pc-status-pill"
-          style={{ color: pillStyle.color, background: pillStyle.bg, borderColor: pillStyle.border }}
-        >
-          <span className="pc-status-dot" style={{ background: pillStyle.color }} />
-          {status?.label || initiative.status}
-        </span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <SourceBadge source={initiative.source} />
+      {/*
+        Header: status lozenge + MIM key on the left, star pinned far right.
+        Step 7 — flex row, space-between, star uses margin-left: auto so it
+        never overlaps the key. Catalyst SourceBadge removed (Step 3).
+      */}
+      <div
+        className="pc-card-header"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+          <span
+            className="pc-status-pill"
+            style={{ color: pillStyle.color, background: pillStyle.bg, borderColor: pillStyle.border }}
+          >
+            <span className="pc-status-dot" style={{ background: pillStyle.color }} />
+            {status?.label || initiative.status}
+          </span>
           <span className="pc-card-id">{initiative.initiative_key}</span>
         </div>
+        <button
+          className={`pc-action-btn ${initiative.is_favorited ? 'pc-action-btn--starred' : ''}`}
+          onClick={handleStar}
+          style={{ marginLeft: 'auto', flexShrink: 0 }}
+          aria-label={initiative.is_favorited ? 'Unstar' : 'Star'}
+        >
+          <Star size={14} fill={initiative.is_favorited ? 'currentColor' : 'none'} />
+        </button>
       </div>
 
       {/* Title */}
@@ -132,53 +140,27 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
         <BusinessRequestBadge iconSize={14} fontSize={11} />
       </div>
 
-      {/* Priority + Health chips */}
-      {(initiative.priority || initiative.health_status) && (() => {
-        const prioKey = (initiative.priority || '').toLowerCase();
-        const prio = PRIORITY_STYLE[prioKey];
-        const healthKey = (initiative.health_status || '').toLowerCase();
-        const health = HEALTH_STYLE[healthKey];
-        return (
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
-            {prio && (
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '2px 8px', borderRadius: 4,
-                fontSize: 10.5, fontWeight: 600, letterSpacing: '0.02em',
-                color: prio.color, background: prio.bg,
-                fontFamily: 'var(--cp-font-body)',
-              }}>
-                <Flag size={10} />
-                {initiative.priority}
-              </span>
-            )}
-            {health && (
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '2px 8px', borderRadius: 4,
-                fontSize: 10.5, fontWeight: 600, letterSpacing: '0.02em',
-                color: health.color, background: health.bg,
-                fontFamily: 'var(--cp-font-body)',
-              }}>
-                <Activity size={10} />
-                {health.label}
-              </span>
-            )}
-          </div>
-        );
-      })()}
+      {/* Steps 4 + 5 — Priority and Health pills removed. Priority is
+          conveyed by the PRIORITY bar inside InitiativeMetrics below. */}
 
-      {/* Score + Priority */}
+      {/* Score + Priority bars */}
       <div style={{ marginBottom: 10 }}>
         <InitiativeMetrics score={initiative.computed_score} />
       </div>
 
-      {/* Progress */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+      {/*
+        Step 6 — Progress bar wired to linked_items_progress (computed in
+        ph_backlog_initiatives_view from real linked work items). Tooltip
+        shows "{done} / {total} items" so the number is auditable.
+      */}
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}
+        title={`${initiative.linked_items_done} / ${initiative.linked_items_total} items`}
+      >
         <div style={{ flex: 1, height: 4, background: '#F4F4F5', borderRadius: 4, overflow: 'hidden', border: 'none' }}>
           <div style={{
             height: '100%',
-            width: `${Math.min(initiative.progress, 100)}%`,
+            width: `${Math.min(initiative.linked_items_progress, 100)}%`,
             background: 'var(--cp-blue)',
             borderRadius: 4,
             border: 'none',
@@ -193,7 +175,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           minWidth: 28,
           textAlign: 'right' as const,
         }}>
-          {initiative.progress}%
+          {initiative.linked_items_progress}%
         </span>
       </div>
 
@@ -203,15 +185,24 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
           {initiative.department_name && (
             <div className="pc-card-dept">{initiative.department_name}</div>
           )}
-          <div className="pc-card-meta">
-            {initiative.target_quarter && <span className="pc-card-meta-bold">{initiative.target_quarter}</span>}
-            {initiative.target_complete && (
-              <>
-                {initiative.target_quarter && ' · '}
-                <span>📅 {format(new Date(initiative.target_complete), 'MMM dd, yyyy')}</span>
-              </>
-            )}
-          </div>
+          {/* Step 9 — emoji removed, dates formatted DD MMM YYYY, null = render nothing */}
+          {(initiative.target_quarter || initiative.target_complete) && (
+            <div className="pc-card-meta">
+              {initiative.target_quarter && (
+                <span className="pc-card-meta-bold">{initiative.target_quarter}</span>
+              )}
+              {(() => {
+                const targetStr = formatCardDate(initiative.target_complete);
+                if (!targetStr) return null;
+                return (
+                  <>
+                    {initiative.target_quarter && ' · '}
+                    <span>{targetStr}</span>
+                  </>
+                );
+              })()}
+            </div>
+          )}
           <div className="pc-card-updated" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span>Updated {formatDistanceToNow(new Date(initiative.updated_at), { addSuffix: true })}</span>
             {!!initiative.milestone_count && initiative.milestone_count > 0 && (
@@ -225,10 +216,13 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
             )}
           </div>
         </div>
+        {/* Step 8 — replace bespoke initials div with Atlaskit Avatar */}
         {initiative.assignee_name && (
-          <div className="pc-avatar" style={{ background: getAvatarColor(initiative.assignee_name) }}>
-            {getInitials(initiative.assignee_name)}
-          </div>
+          <Avatar
+            src={initiative.assignee_avatar || undefined}
+            name={initiative.assignee_name}
+            size="small"
+          />
         )}
       </div>
     </div>

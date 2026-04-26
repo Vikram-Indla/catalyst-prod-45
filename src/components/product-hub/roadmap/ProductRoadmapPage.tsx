@@ -253,9 +253,9 @@ export function ProductRoadmapPage() {
       {isEmpty ? (
         <div className="flex flex-col items-center justify-center flex-1 gap-4">
           <div style={{ fontSize: 48 }}>📋</div>
-          <div style={{ fontSize: 16, fontWeight: 600, color: ink[2] }}>No initiatives on the roadmap yet</div>
+          <div style={{ fontSize: 16, fontWeight: 600, color: ink[2] }}>No business requests on the roadmap yet</div>
           <p style={{ fontSize: 13, fontWeight: 500, color: ink[3], maxWidth: 360, textAlign: 'center' }}>
-            Add your first initiative from the product backlog to get started.
+            Add your first business request from the product backlog to get started.
           </p>
           <button
             onClick={() => setIsAddModalOpen(true)}
@@ -264,7 +264,7 @@ export function ProductRoadmapPage() {
             onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
             onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           >
-            <Plus className="w-4 h-4" /> Add Initiative
+            <Plus className="w-4 h-4" /> Add Business Request
           </button>
         </div>
       ) : (

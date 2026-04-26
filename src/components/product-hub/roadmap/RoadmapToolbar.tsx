@@ -73,7 +73,6 @@ export function RoadmapToolbar({ zoom, onZoomChange, groupBy, onGroupByChange, v
             <SelectValue />
           </SelectTrigger>
           <SelectContent className="bg-popover border-border z-50">
-            <SelectItem value="type">Group: Type</SelectItem>
             <SelectItem value="priority">Group: Priority</SelectItem>
             <SelectItem value="owner">Group: Owner</SelectItem>
             <SelectItem value="none">Group: None</SelectItem>
