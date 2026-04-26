@@ -13281,48 +13281,6 @@ export type Database = {
           },
         ]
       }
-      initiative_types: {
-        Row: {
-          color_hex: string
-          color_token: string
-          created_at: string
-          description: string | null
-          icon: string | null
-          id: string
-          is_active: boolean
-          key: string
-          label: string
-          sort_order: number
-          updated_at: string
-        }
-        Insert: {
-          color_hex: string
-          color_token: string
-          created_at?: string
-          description?: string | null
-          icon?: string | null
-          id?: string
-          is_active?: boolean
-          key: string
-          label: string
-          sort_order?: number
-          updated_at?: string
-        }
-        Update: {
-          color_hex?: string
-          color_token?: string
-          created_at?: string
-          description?: string | null
-          icon?: string | null
-          id?: string
-          is_active?: boolean
-          key?: string
-          label?: string
-          sort_order?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
       initiatives: {
         Row: {
           benefit_score: number | null
@@ -13332,7 +13290,6 @@ export type Database = {
           estimated_budget: number | null
           health_status: string | null
           id: string
-          initiative_type_id: string | null
           name: string
           on_roadmap: boolean
           owner_id: string | null
@@ -13354,7 +13311,6 @@ export type Database = {
           estimated_budget?: number | null
           health_status?: string | null
           id?: string
-          initiative_type_id?: string | null
           name: string
           on_roadmap?: boolean
           owner_id?: string | null
@@ -13376,7 +13332,6 @@ export type Database = {
           estimated_budget?: number | null
           health_status?: string | null
           id?: string
-          initiative_type_id?: string | null
           name?: string
           on_roadmap?: boolean
           owner_id?: string | null
@@ -13391,13 +13346,6 @@ export type Database = {
           wsjf_score?: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "initiatives_initiative_type_id_fkey"
-            columns: ["initiative_type_id"]
-            isOneToOne: false
-            referencedRelation: "initiative_types"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "initiatives_theme_id_fkey"
             columns: ["theme_id"]
@@ -25035,7 +24983,6 @@ export type Database = {
           health_status: string | null
           id: string
           initiative_key: string
-          initiative_type_id: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
           jira_issue_key: string | null
@@ -25074,7 +25021,6 @@ export type Database = {
           health_status?: string | null
           id?: string
           initiative_key: string
-          initiative_type_id?: string | null
           is_archived?: boolean | null
           is_deleted?: boolean | null
           jira_issue_key?: string | null
@@ -25113,7 +25059,6 @@ export type Database = {
           health_status?: string | null
           id?: string
           initiative_key?: string
-          initiative_type_id?: string | null
           is_archived?: boolean | null
           is_deleted?: boolean | null
           jira_issue_key?: string | null
@@ -25144,13 +25089,6 @@ export type Database = {
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_initiatives_initiative_type_id_fkey"
-            columns: ["initiative_type_id"]
-            isOneToOne: false
-            referencedRelation: "initiative_types"
             referencedColumns: ["id"]
           },
         ]
@@ -25315,38 +25253,6 @@ export type Database = {
           thumbnail_url?: string | null
         }
         Relationships: []
-      }
-      ph_issue_initiative_type_overrides: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          initiative_type_id: string
-          issue_key: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          initiative_type_id: string
-          issue_key: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          initiative_type_id?: string
-          issue_key?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ph_issue_initiative_type_overrides_initiative_type_id_fkey"
-            columns: ["initiative_type_id"]
-            isOneToOne: false
-            referencedRelation: "initiative_types"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       ph_issue_links: {
         Row: {
@@ -67251,15 +67157,8 @@ export type Database = {
           health_status: string | null
           id: string | null
           initiative_key: string | null
-          initiative_type_color_hex: string | null
-          initiative_type_color_token: string | null
-          initiative_type_icon: string | null
-          initiative_type_id: string | null
-          initiative_type_key: string | null
-          initiative_type_label: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
-          jira_issue_key: string | null
           kickoff_date: string | null
           on_roadmap: boolean | null
           priority: string | null
@@ -67270,7 +67169,6 @@ export type Database = {
           roadmap_added_by: string | null
           roadmap_priority: number | null
           sort_order: number | null
-          source: string | null
           status: Database["public"]["Enums"]["initiative_status"] | null
           tags: string[] | null
           target_complete: string | null
@@ -67278,19 +67176,78 @@ export type Database = {
           title: string | null
           updated_at: string | null
         }
+        Insert: {
+          assignee_id?: string | null
+          budget_allocated?: number | null
+          business_ask_date?: string | null
+          business_owner_id?: string | null
+          business_value?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          description?: string | null
+          ea_review?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
+          id?: string | null
+          initiative_key?: string | null
+          is_archived?: boolean | null
+          is_deleted?: boolean | null
+          kickoff_date?: string | null
+          on_roadmap?: boolean | null
+          priority?: string | null
+          progress?: number | null
+          reporter_id?: string | null
+          risk_count?: number | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_priority?: number | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["initiative_status"] | null
+          tags?: string[] | null
+          target_complete?: string | null
+          target_quarter?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          budget_allocated?: number | null
+          business_ask_date?: string | null
+          business_owner_id?: string | null
+          business_value?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          description?: string | null
+          ea_review?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
+          id?: string | null
+          initiative_key?: string | null
+          is_archived?: boolean | null
+          is_deleted?: boolean | null
+          kickoff_date?: string | null
+          on_roadmap?: boolean | null
+          priority?: string | null
+          progress?: number | null
+          reporter_id?: string | null
+          risk_count?: number | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_priority?: number | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["initiative_status"] | null
+          tags?: string[] | null
+          target_complete?: string | null
+          target_quarter?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
         Relationships: [
           {
             foreignKeyName: "ph_initiatives_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "ph_departments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "ph_initiatives_initiative_type_id_fkey"
-            columns: ["initiative_type_id"]
-            isOneToOne: false
-            referencedRelation: "initiative_types"
             referencedColumns: ["id"]
           },
         ]
@@ -67973,12 +67930,6 @@ export type Database = {
           health_status: string | null
           id: string | null
           initiative_key: string | null
-          initiative_type_color_hex: string | null
-          initiative_type_color_token: string | null
-          initiative_type_icon: string | null
-          initiative_type_id: string | null
-          initiative_type_key: string | null
-          initiative_type_label: string | null
           is_archived: boolean | null
           is_deleted: boolean | null
           kickoff_date: string | null
@@ -68000,6 +67951,74 @@ export type Database = {
           title: string | null
           updated_at: string | null
         }
+        Insert: {
+          assignee_id?: string | null
+          budget_allocated?: number | null
+          business_ask_date?: string | null
+          business_owner_id?: string | null
+          business_value?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          description?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
+          id?: string | null
+          initiative_key?: string | null
+          is_archived?: boolean | null
+          is_deleted?: boolean | null
+          kickoff_date?: string | null
+          on_roadmap?: boolean | null
+          progress?: number | null
+          reporter_id?: string | null
+          risk_count?: number | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_end_date?: string | null
+          roadmap_priority?: number | null
+          roadmap_sort_order?: number | null
+          roadmap_start_date?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["initiative_status"] | null
+          tags?: string[] | null
+          target_complete?: string | null
+          target_quarter?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          assignee_id?: string | null
+          budget_allocated?: number | null
+          business_ask_date?: string | null
+          business_owner_id?: string | null
+          business_value?: string | null
+          created_at?: string | null
+          department_id?: string | null
+          description?: string | null
+          estimated_budget?: number | null
+          health_status?: string | null
+          id?: string | null
+          initiative_key?: string | null
+          is_archived?: boolean | null
+          is_deleted?: boolean | null
+          kickoff_date?: string | null
+          on_roadmap?: boolean | null
+          progress?: number | null
+          reporter_id?: string | null
+          risk_count?: number | null
+          roadmap_added_at?: string | null
+          roadmap_added_by?: string | null
+          roadmap_end_date?: string | null
+          roadmap_priority?: number | null
+          roadmap_sort_order?: number | null
+          roadmap_start_date?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["initiative_status"] | null
+          tags?: string[] | null
+          target_complete?: string | null
+          target_quarter?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
         Relationships: [
           {
             foreignKeyName: "ph_initiatives_department_id_fkey"
@@ -68008,24 +68027,14 @@ export type Database = {
             referencedRelation: "ph_departments"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "ph_initiatives_initiative_type_id_fkey"
-            columns: ["initiative_type_id"]
-            isOneToOne: false
-            referencedRelation: "initiative_types"
-            referencedColumns: ["id"]
-          },
         ]
       }
       ph_roadmap_summary_view: {
         Row: {
           active_count: number | null
           roadmap_at_risk: number | null
-          roadmap_enhancements: number | null
-          roadmap_improvements: number | null
           roadmap_off_track: number | null
           roadmap_on_track: number | null
-          roadmap_projects: number | null
           total_initiatives: number | null
           total_not_on_roadmap: number | null
           total_on_roadmap: number | null
@@ -74639,7 +74648,6 @@ export type Database = {
       promote_to_roadmap: {
         Args: {
           p_initiative_id: string
-          p_initiative_type_key?: string
           p_roadmap_priority?: number
           p_user_id?: string
         }
