@@ -66,8 +66,7 @@ export function RoadmapListPanel({
         <ScrollArea className="flex-1">
           <div role="table">
             {groups.map(group => {
-              const typeKey = group.key;
-              const color = TYPE_COLORS[typeKey] || group.color || '#94A3B8';
+              const color = group.color || BUSINESS_REQUEST_COLOR;
               return (
                 <div key={group.key} style={{ borderBottom: '1px solid #F1F5F9' }}>
                   <button
