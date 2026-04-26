@@ -199,7 +199,7 @@ export function RoadmapGanttChart({ groups, timelineStart, timelineEnd, zoom, zo
 
             {/* Groups + Rows */}
             {groups.map((group, gi) => {
-              const typeColor = TYPE_COLORS[group.key]?.solid || group.color || '#64748B';
+              const typeColor = group.color || '#64748B';
               const isCollapsed = collapsedGroups.has(group.key);
               return (
                 <div key={group.key}>
