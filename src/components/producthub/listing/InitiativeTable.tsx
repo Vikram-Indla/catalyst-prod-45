@@ -23,6 +23,7 @@ import {
 import { InlineCellEditor, EDITABLE_COLUMNS, COLUMN_TO_FIELD } from './InlineCellEditor';
 import type { ColumnConfig } from './ColumnManager';
 import { RoadmapBadge } from '@/components/producthub/shared/RoadmapBadge';
+import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
@@ -240,6 +241,15 @@ export function InitiativeTable({
           </div>
         );
       },
+    }),
+    col.display({
+      id: 'source', size: 96, minSize: 88, maxSize: 120,
+      header: () => <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cp-text-muted)' }}>Source</span>,
+      cell: ({ row }) => (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <SourceBadge source={row.original.source} />
+        </div>
+      ),
     }),
     col.accessor('title', {
       id: 'title', size: 240, minSize: 200, header: 'Title',

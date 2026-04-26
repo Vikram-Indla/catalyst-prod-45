@@ -60,15 +60,25 @@ function useNextInitiativeKey() {
   });
 }
 
+// Map UI status keys → DB enum (initiative_status). Mirrors DetailTabDetails UI_TO_DB.
+const UI_STATUS_TO_DB: Record<string, string> = {
+  new: 'new_demand', portfolio_review: 'under_review', technical_validation: 'under_review',
+  estimate: 'under_review', demand_approved: 'approved', analysis: 'approved',
+  ready_for_development: 'approved', under_implementation: 'in_progress', on_hold: 'on_hold',
+  implementation_review: 'in_progress', in_support: 'delivered', done: 'closed', cancelled: 'cancelled',
+};
+
 function useCreateInitiative() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (newInit: Record<string, any>) => {
+      const uiStatus = newInit.status || 'new';
+      const dbStatus = UI_STATUS_TO_DB[uiStatus] || 'new_demand';
       const { data, error } = await typedQuery('ph_initiatives')
         .insert({
           title: newInit.title,
           description: newInit.description || null,
-          status: newInit.status || 'new',
+          status: dbStatus,
           department_id: newInit.department_id || null,
           assignee_id: newInit.assignee_id || null,
           business_owner_id: newInit.business_owner_id || null,

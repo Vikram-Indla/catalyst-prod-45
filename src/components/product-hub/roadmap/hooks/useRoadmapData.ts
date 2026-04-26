@@ -262,85 +262,56 @@ export function useRoadmapStats() {
 }
 
 // ══════════════════════════════════════════
-// useBacklogItemsNotOnRoadmap — queries ph_issues (Jira backlog)
+// useBacklogItemsNotOnRoadmap — queries ph_backlog_initiatives_view
+// (canonical source: includes BOTH catalyst-native and Jira-synced initiatives)
 // ══════════════════════════════════════════
 export function useBacklogItemsNotOnRoadmap() {
   return useQuery({
     queryKey: ['backlog-not-on-roadmap'],
     queryFn: async () => {
-      const { data: issues, error: issuesErr } = await typedQuery('ph_issues')
-        .select('issue_key, summary, status, priority, assignee_display_name')
-        .eq('issue_type', 'Business Request')
-        .order('issue_key', { ascending: true });
+      const [{ data, error }, profiles] = await Promise.all([
+        typedQuery('ph_backlog_initiatives_view')
+          .select('id, initiative_key, title, status, priority, assignee_id, source, on_roadmap, is_deleted, initiative_type_key')
+          .eq('is_deleted', false)
+          .eq('on_roadmap', false)
+          .order('initiative_key', { ascending: true })
+          .limit(5000),
+        fetchProfiles(),
+      ]);
 
-      if (issuesErr) throw issuesErr;
+      if (error) throw error;
 
-      const { data: onRoadmap, error: rmErr } = await typedQuery('ph_initiatives')
-        .select('initiative_key')
-        .eq('on_roadmap', true)
-        .eq('is_deleted', false);
-
-      if (rmErr) throw rmErr;
-
-      const onRoadmapKeys = new Set((onRoadmap || []).map((r: any) => r.initiative_key));
-
-      return (issues || [])
-        .map((row: any) => {
-          const { titleAr, titleEn } = splitTitle(row.summary || '');
-          return {
-            id: row.issue_key,
-            key: row.issue_key,
-            title: titleEn || row.summary,
-            titleAr,
-            status: row.status || '',
-            owner: row.assignee_display_name || '',
-            type: 'project' as RoadmapInitiative['type'],
-            alreadyOnRoadmap: onRoadmapKeys.has(row.issue_key),
-          };
-        });
+      return (data || []).map((row: any) => {
+        const { titleAr, titleEn } = splitTitle(row.title || '');
+        const ownerName = row.assignee_id ? (profiles.get(row.assignee_id)?.name || '') : '';
+        return {
+          id: row.id, // real UUID from ph_initiatives — used by useAddToRoadmap
+          key: row.initiative_key,
+          title: titleEn || row.title,
+          titleAr,
+          status: row.status || '',
+          owner: ownerName,
+          source: row.source || 'catalyst',
+          type: (row.initiative_type_key || 'project') as RoadmapInitiative['type'],
+          alreadyOnRoadmap: false, // filtered out at query level
+        };
+      });
     },
   });
 }
 
 // ══════════════════════════════════════════
-// useAddToRoadmap
+// useAddToRoadmap — accepts ph_initiatives.id (UUID)
+// Single UPDATE; no insert path (every backlog item already has a row).
 // ══════════════════════════════════════════
 export function useAddToRoadmap() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (issueKey: string) => {
-      const { data: existing } = await typedQuery('ph_initiatives')
-        .select('id')
-        .eq('initiative_key', issueKey)
-        .eq('is_deleted', false)
-        .maybeSingle();
-
-      if (existing) {
-        const { error } = await typedQuery('ph_initiatives')
-          .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
-          .eq('id', existing.id);
-        if (error) throw error;
-      } else {
-        const { data: issue, error: fetchErr } = await typedQuery('ph_issues')
-          .select('issue_key, summary, status, assignee_display_name')
-          .eq('issue_key', issueKey)
-          .maybeSingle();
-
-        if (fetchErr) throw fetchErr;
-        if (!issue) throw new Error('Issue not found');
-
-        const { error: insertErr } = await typedQuery('ph_initiatives')
-          .insert({
-            initiative_key: issue.issue_key,
-            title: issue.summary,
-            status: 'new_demand',
-            on_roadmap: true,
-            roadmap_added_at: new Date().toISOString(),
-            progress: 0,
-          });
-
-        if (insertErr) throw insertErr;
-      }
+    mutationFn: async (initiativeId: string) => {
+      const { error } = await typedQuery('ph_initiatives')
+        .update({ on_roadmap: true, roadmap_added_at: new Date().toISOString() })
+        .eq('id', initiativeId);
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roadmap-initiatives'] });

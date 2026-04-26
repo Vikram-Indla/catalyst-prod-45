@@ -157,11 +157,12 @@ export default function UserAvatar({
     : null;
 
   return (
-    <Avatar
-      size={size}
-      name={name ?? undefined}
-      src={explicitSrc ?? fallbackSrc ?? undefined}
-      className={className}
-    />
+    <span className={className}>
+      <Avatar
+        size={size}
+        name={name ?? undefined}
+        src={explicitSrc ?? fallbackSrc ?? undefined}
+      />
+    </span>
   );
 }

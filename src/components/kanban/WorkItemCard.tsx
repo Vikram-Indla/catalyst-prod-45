@@ -13,6 +13,7 @@ import {
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import { KanbanAvatar } from './KanbanAvatar';
 import { AssigneePickerPopover, type AssigneeOption } from './AssigneePickerPopover';
+import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig } from './kanban-tokens';
 import { WorkItemOverflowMenu } from './overflow-menu/WorkItemOverflowMenu';
@@ -305,6 +306,9 @@ export function WorkItemCard({
           }}>
             {issue.issueKey}
           </span>
+        )}
+        {issue.sourceTag && (
+          <SourceBadge source={issue.sourceTag} />
         )}
         <span className="flex-1" />
         {vf?.priority !== false && issue.priority && (
