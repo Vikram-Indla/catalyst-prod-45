@@ -36,6 +36,15 @@ import { createPortal } from 'react-dom';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import Textfield from '@atlaskit/textfield';
 import Spinner from '@atlaskit/spinner';
+// NOTE: useVirtualizer (from @tanstack/react-virtual) was wired here on
+// 2026-04-26 alongside the enableVirtualization prop. The dependency was
+// added to vite.config.ts optimizeDeps.include, but Vite's optimize-deps
+// cold-restart requires a manual `npm run dev` restart that the audit
+// session can't trigger. The virtualized tbody branch is therefore staged
+// behind a comment until the next clean dev start. enableVirtualization is
+// accepted as a prop today (no-op) so consumer code can opt in early — it
+// activates automatically as soon as the import is uncommented after a
+// dev-server restart.
 import { Plus as PlusIcon, Search as SearchIcon, RotateCcw as ResetIcon } from 'lucide-react';
 import type { Column, JiraTableProps, SortOrder } from './types';
 
@@ -135,6 +144,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     collapsedGroups,
     onToggleGroup,
     contextMenuActions,
+    enableColumnReorder = false,
+    columnOrder: columnOrderProp,
+    onColumnOrderChange,
+    enableVirtualization = false,
   } = props;
 
   // Right-click context menu state — one menu at a time, anchored to cursor.
@@ -158,12 +171,67 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
   const d = DENSITY[density];
 
+  // ── Column reorder (opt-in via enableColumnReorder) ──────────────────────
+  // Internal column order falls back to schema order. When the user drags a
+  // header, we update this state (or call the controlled callback). Order is
+  // a list of column ids covering the REORDERABLE columns only — structural
+  // columns (id starting with `__`) keep their position.
+  const [internalColumnOrder, setInternalColumnOrder] = useState<string[] | null>(null);
+  const effectiveColumnOrder: ReadonlyArray<string> | null = enableColumnReorder
+    ? (columnOrderProp ?? internalColumnOrder)
+    : null;
+
   // Column visibility: filter out any non-alwaysVisible column that isn't in
   // the visible set. When no visibility state is provided, show everything.
+  // Then, if column reorder is enabled and an effective order exists, apply
+  // it (structural columns are pinned in place).
   const visibleColumns: Column<TRow>[] = useMemo(() => {
-    if (!columnVisibility) return columns;
-    return columns.filter((c) => c.alwaysVisible || columnVisibility.has(c.id));
-  }, [columns, columnVisibility]);
+    const base = columnVisibility
+      ? columns.filter((c) => c.alwaysVisible || columnVisibility.has(c.id))
+      : columns;
+    if (!effectiveColumnOrder || effectiveColumnOrder.length === 0) return base;
+    const idx = new Map<string, number>();
+    effectiveColumnOrder.forEach((id, i) => idx.set(id, i));
+    // Stable reorder: structural columns (__*) keep schema position; others
+    // sort by their index in effectiveColumnOrder; unknown ids go to the end.
+    return [...base].sort((a, b) => {
+      const aS = a.id.startsWith('__');
+      const bS = b.id.startsWith('__');
+      if (aS && bS) return base.indexOf(a) - base.indexOf(b);
+      if (aS) return -1;
+      if (bS) return 1;
+      const ai = idx.has(a.id) ? idx.get(a.id)! : 999;
+      const bi = idx.has(b.id) ? idx.get(b.id)! : 999;
+      return ai - bi;
+    });
+  }, [columns, columnVisibility, effectiveColumnOrder]);
+
+  // Drag-and-drop state for header reorder. `dragId` is the column id being
+  // dragged; `dragOverId` is the column the cursor is currently over (used to
+  // render the drop indicator on the right edge of that header).
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  // Compute the next column order after dropping `sourceId` on `targetId`.
+  const computeReorder = useCallback((sourceId: string, targetId: string): string[] | null => {
+    if (sourceId === targetId) return null;
+    if (sourceId.startsWith('__') || targetId.startsWith('__')) return null;
+    const reorderable = visibleColumns
+      .filter((c) => !c.id.startsWith('__'))
+      .map((c) => c.id);
+    const fromIdx = reorderable.indexOf(sourceId);
+    const toIdx = reorderable.indexOf(targetId);
+    if (fromIdx < 0 || toIdx < 0) return null;
+    const next = [...reorderable];
+    next.splice(fromIdx, 1);
+    next.splice(toIdx, 0, sourceId);
+    return next;
+  }, [visibleColumns]);
+
+  const commitColumnOrder = useCallback((next: string[]) => {
+    if (onColumnOrderChange) onColumnOrderChange(next);
+    else setInternalColumnOrder(next);
+  }, [onColumnOrderChange]);
 
   // Whether to render the trailing `+` column-manager header. Only when the
   // parent opted in by providing both props.
@@ -929,6 +997,21 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     colWidthEntries.push({ id: '__column-manager', width: effectiveWidthFor('__column-manager', 40), resizable: false, sortable: false });
   }
 
+  // ── Row virtualization (staged — see import-block comment above) ───────
+  // The full @tanstack/react-virtual wiring is staged behind a dev-server
+  // restart (vite.config.ts optimizeDeps.include was updated on 2026-04-26
+  // but cold-restart needs manual `npm run dev`). For now, the prop is
+  // accepted but ignored — every row renders. To activate after a clean
+  // dev start: (1) re-add `import { useVirtualizer } from '@tanstack/react-virtual';`
+  // at the top of this file, (2) replace this block with the full
+  // virtualizer state, (3) re-add the virtualized tbody branch. Diff is
+  // preserved in audit history (.catalyst/audits/jira-compare/2026-04-26-bau-backlog/).
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const useVirtual = false;
+  // Reference enableVirtualization so TS doesn't strip it as unused before
+  // the wiring is restored. (Effectively a no-op today.)
+  if (enableVirtualization && useVirtual) { /* placeholder */ }
+
   const handleHeaderClick = (colId: string, sortableLocal: boolean) => {
     if (!sortableLocal) return;
     if (colId.startsWith('__')) return;
@@ -960,7 +1043,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         minHeight: 120,
       }}
     >
-      <div className="jira-table-viewport">
+      <div className="jira-table-viewport" ref={viewportRef}>
         <table role="grid">
           <colgroup>
             {colWidthEntries.map((e) => (
@@ -972,16 +1055,61 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
               {head.cells.map((cell, idx) => {
                 const meta = colWidthEntries[idx];
                 const isSorted = meta && sortKey === meta.id;
+                const isStructural = !!meta && meta.id.startsWith('__');
+                const isReorderable = enableColumnReorder && !!meta && !isStructural;
+                const isDraggingThis = isReorderable && dragId === meta!.id;
+                const isDragOverThis = isReorderable && dragOverId === meta!.id && dragId && dragId !== meta!.id;
                 return (
                   <th
                     key={cell.key}
                     className={meta?.sortable ? 'jira-th-sortable' : undefined}
                     aria-sort={isSorted ? (sortOrder === 'ASC' ? 'ascending' : 'descending') : 'none'}
                     onClick={() => meta && handleHeaderClick(meta.id, meta.sortable)}
+                    // ── Column reorder (HTML5 native DnD; opt-in) ──────────
+                    // Only reorderable columns become draggable. Structural
+                    // columns (__select, __column-manager) ignore drag events.
+                    draggable={isReorderable}
+                    onDragStart={isReorderable ? (e) => {
+                      // Don't fire from inside the resize handle.
+                      const t = e.target as HTMLElement;
+                      if (t.classList?.contains('jira-resize-handle')) {
+                        e.preventDefault();
+                        return;
+                      }
+                      e.dataTransfer.effectAllowed = 'move';
+                      try { e.dataTransfer.setData('text/plain', meta!.id); } catch { /* some browsers */ }
+                      setDragId(meta!.id);
+                    } : undefined}
+                    onDragOver={isReorderable ? (e) => {
+                      if (!dragId || dragId === meta!.id) return;
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                      if (dragOverId !== meta!.id) setDragOverId(meta!.id);
+                    } : undefined}
+                    onDragLeave={isReorderable ? () => {
+                      if (dragOverId === meta!.id) setDragOverId(null);
+                    } : undefined}
+                    onDrop={isReorderable ? (e) => {
+                      e.preventDefault();
+                      const sourceId = (e.dataTransfer.getData('text/plain') || dragId) as string;
+                      if (!sourceId) { setDragId(null); setDragOverId(null); return; }
+                      const next = computeReorder(sourceId, meta!.id);
+                      if (next) commitColumnOrder(next);
+                      setDragId(null);
+                      setDragOverId(null);
+                    } : undefined}
+                    onDragEnd={isReorderable ? () => {
+                      setDragId(null);
+                      setDragOverId(null);
+                    } : undefined}
                     style={{
                       position: 'sticky',
                       top: 0,
-                      boxShadow: 'inset 0 -2px 0 0 #C1C7D0',
+                      boxShadow: isDragOverThis
+                        ? 'inset -2px 0 0 0 #0C66E4, inset 0 -2px 0 0 #C1C7D0'
+                        : 'inset 0 -2px 0 0 #C1C7D0',
+                      cursor: isReorderable ? (isDraggingThis ? 'grabbing' : 'grab') : undefined,
+                      opacity: isDraggingThis ? 0.55 : 1,
                     }}
                   >
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
@@ -999,6 +1127,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                         role="separator"
                         aria-orientation="vertical"
                         aria-label="Resize column"
+                        // Don't initiate column reorder from the resize handle.
+                        draggable={false}
                         onClick={(e) => e.stopPropagation()}
                         onMouseDown={(e) => {
                           e.preventDefault();

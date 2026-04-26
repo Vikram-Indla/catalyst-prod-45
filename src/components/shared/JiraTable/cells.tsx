@@ -71,8 +71,23 @@ export function makeCaretCell({
 }
 
 // ─── Key (link) Cell ───────────────────────────────────────────────────────
-// Monospace, brand-blue. Click is handled by the row click; this is just the
-// visual chrome.
+// Jira-faithful key cell.
+//
+// Measured directly from Jira production DOM 2026-04-26 (BAU-5650 sample row,
+// digital-transformation.atlassian.net):
+//   - font-family:  "Atlassian Sans" (NOT monospace)
+//   - font-size:    14px
+//   - font-weight:  400 (regular, NOT bold)
+//   - color:        rgb(80, 82, 88)  /  #505258  — neutral subtle, NOT link-blue
+//   - text-decoration: none in rest state; underline + bg tint on hover
+//
+// The hover affordance lives in JiraTable.tsx:
+//   [data-jira-table-row-open]:hover { background:#E9F2FF; text-decoration: underline; }
+//
+// Previously this cell rendered as monospaced bold link-blue (Catalyst's
+// pre-2026-04 "opinionated" treatment). The 2026-04-26 audit confirmed Jira
+// has long since moved to neutral subtle for the rest state, with the link
+// affordance reserved for hover. The canonical now matches.
 export function makeKeyCell(getKey: (row: any) => string | null) {
   return function KeyCell({ row }: CellProps<any>) {
     const key = getKey(row);
@@ -83,11 +98,11 @@ export function makeKeyCell(getKey: (row: any) => string | null) {
           display: 'inline-block',
           padding: '2px 6px',
           margin: '-2px -6px',
-          fontFamily: 'var(--cp-font-mono)',
-          fontWeight: 600,
-          color: token('color.link', '#0C66E4'),
-          fontSize: 13,
-          letterSpacing: '0.01em',
+          fontFamily: 'inherit', // inherit "Atlassian Sans" from JiraTable root
+          fontWeight: 400,
+          color: token('color.text.subtle', '#505258'),
+          fontSize: 14,
+          letterSpacing: 0,
         }}
       >
         {key || '—'}
@@ -163,6 +178,9 @@ export function StatusPill({
         return { bg: '#DDDEE1', fg: '#292A2E' };
     }
   })();
+  // Re-measured 2026-04-26 (Jira BAU-5650, "Ready for QA" lozenge):
+  //   - font-size 14px / weight 400 / radius 3px / padding 0 4px
+  //   - rendered box height 16px (line-height 16px, tight against text)
   return (
     <span
       style={{
@@ -171,9 +189,9 @@ export function StatusPill({
         borderRadius: 3,
         background: palette.bg,
         color: palette.fg,
-        fontSize: 13,
+        fontSize: 14,
         fontWeight: 400,
-        lineHeight: '18px',
+        lineHeight: '16px',
         letterSpacing: 0,
         textTransform: 'none',
         whiteSpace: 'nowrap',

@@ -43,6 +43,42 @@ function CustomSelect({ value, options, onChange }: { value: string; options: st
   );
 }
 
+/* ── Id-keyed Dropdown (FK fields like owner_id) — bulletproof against name collisions ── */
+function IdSelect({ value, options, placeholder, onChange }: { value: string; options: { id: string; label: string }[]; placeholder: string; onChange: (id: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h);
+  }, []);
+  const display = options.find(o => o.id === value)?.label || placeholder;
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button type="button" onClick={() => setOpen(!open)} className="idp-form-input"
+        style={{ width: '100%', textAlign: 'left', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>{display}</span>
+        <span style={{ fontSize: 10, color: 'var(--idp-ink-muted)', marginLeft: 4 }}>▾</span>
+      </button>
+      {open && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 20, background: 'var(--idp-surface)', border: '1px solid var(--idp-border)', borderRadius: 6, marginTop: 2, maxHeight: 200, overflowY: 'auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div onClick={() => { onChange(''); setOpen(false); }}
+            style={{ padding: '7px 12px', fontSize: 12, cursor: 'pointer', color: 'var(--idp-ink-muted)', background: value === '' ? 'var(--idp-surface-secondary)' : undefined }}>
+            {placeholder}
+          </div>
+          {options.map(opt => (
+            <div key={opt.id} onClick={() => { onChange(opt.id); setOpen(false); }}
+              style={{ padding: '7px 12px', fontSize: 12, cursor: 'pointer', color: 'var(--idp-ink)', background: opt.id === value ? 'var(--idp-surface-secondary)' : undefined }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--idp-surface-secondary)')}
+              onMouseLeave={e => (e.currentTarget.style.background = opt.id === value ? 'var(--idp-surface-secondary)' : 'transparent')}>
+              {opt.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface DetailTabRisksProps {
   initiativeId: string;
 }
@@ -76,7 +112,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: '', description: '', category: 'Technical', status: 'Open',
-    probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '',
+    probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '', owner_id: '',
   });
 
   const { data: risks = [], refetch } = useQuery({
@@ -91,6 +127,15 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
     },
   });
 
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['idp-profiles-risks'],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
+      return data || [];
+    },
+    staleTime: 60_000,
+  });
+
   const sevCounts = useMemo(() => {
     const c = { Critical: 0, High: 0, Medium: 0, Low: 0 };
     risks.forEach((r: any) => { c[sevLabel(r.risk_score || 0) as keyof typeof c]++; });
@@ -101,7 +146,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
 
   const openAdd = () => {
     setEditingRisk(null);
-    setForm({ title: '', description: '', category: 'Technical', status: 'Open', probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '' });
+    setForm({ title: '', description: '', category: 'Technical', status: 'Open', probability: 3, impact: 3, mitigation_plan: '', contingency_plan: '', owner_id: '' });
     setShowModal(true);
   };
   const openEdit = (r: any) => {
@@ -112,6 +157,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       status: (r.status || 'open').charAt(0).toUpperCase() + (r.status || 'open').slice(1),
       probability: r.probability || 3, impact: r.impact || 3,
       mitigation_plan: r.mitigation_plan || '', contingency_plan: r.contingency_plan || '',
+      owner_id: r.owner_id || '',
     });
     setShowModal(true);
   };
@@ -129,6 +175,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
       // risk_score is a GENERATED column (probability * impact) — DB computes it
       mitigation_plan: form.mitigation_plan.trim() || null,
       contingency_plan: form.contingency_plan.trim() || null,
+      owner_id: form.owner_id || null,
     };
     if (editingRisk) {
       const { error } = await typedQuery('ph_initiative_risks').update(payload).eq('id', editingRisk.id);
@@ -303,6 +350,15 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ initiativeId }) 
                   <label className="idp-form-label">Status</label>
                   <CustomSelect value={form.status} options={STATUS_OPTS} onChange={v => setForm(f => ({ ...f, status: v }))} />
                 </div>
+              </div>
+              <div className="idp-form-field" style={{ marginBottom: 0 }}>
+                <label className="idp-form-label">Owner</label>
+                <IdSelect
+                  value={form.owner_id}
+                  placeholder="Unassigned"
+                  options={profiles.map((p: any) => ({ id: p.id, label: p.full_name || p.email || p.id }))}
+                  onChange={(id) => setForm(f => ({ ...f, owner_id: id }))}
+                />
               </div>
               {/* Probability & Impact Sliders */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>

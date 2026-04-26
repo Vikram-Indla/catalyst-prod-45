@@ -55,7 +55,15 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
-import DynamicTable from '@atlaskit/dynamic-table';
+// SubtasksPanel migrated off @atlaskit/dynamic-table on 2026-04-26 — the last
+// direct importer of that package. List view now uses the canonical JiraTable.
+// The board (Kanban) view above still renders via SubtasksKanban and is
+// untouched. DnD row-reorder (handleRankEnd) is staged behind a JiraTable
+// feature add (row drag-reorder) — kept in this file as `dndEnabled` /
+// `handleRankEnd` so the wiring is one prop away when the canonical exposes
+// it. For now the DnD flag is suppressed and rows render in `position` order.
+import { JiraTable } from '@/components/shared/JiraTable';
+import type { Column } from '@/components/shared/JiraTable';
 import { createChildIssue } from '../../lib/workItemRepo';
 import './SubtasksPanel.css';
 
@@ -790,200 +798,207 @@ export function SubtasksPanel({
             />
           )}
 
-          {/* ═══ List view — Atlaskit DynamicTable ═══ */}
-          {!isLoading && visibleRows.length > 0 && view === 'list' && (
-            <div className="sp-ak-table" onClick={(e) => e.stopPropagation()}>
-              <DynamicTable
-                head={{
-                  cells: [
-                    ...(bulkEditMode ? [{
-                      key: 'select',
-                      content: (
-                        <label className="sp-checkbox" aria-label="Select all">
-                          <input
-                            type="checkbox"
-                            checked={allVisibleSelected}
-                            ref={(el) => { if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected; }}
-                            onChange={toggleSelectAll}
-                          />
-                          <span className="sp-checkbox-box">
-                            {allVisibleSelected && <Check size={10} color="#fff" strokeWidth={3} />}
-                            {!allVisibleSelected && someVisibleSelected && <span className="sp-checkbox-dash" />}
-                          </span>
-                        </label>
-                      ),
-                      width: 4,
-                    }] : []),
-                    ...(columns.type ? [{ key: 'type', content: 'Type', isSortable: false, width: 5 }] : []),
-                    ...(columns.key ? [{ key: 'key', content: 'Key', isSortable: true, width: 9 }] : []),
-                    ...(columns.summary ? [{ key: 'summary', content: 'Summary', isSortable: false, shouldTruncate: true }] : []),
-                    ...(columns.assignee ? [{ key: 'assignee', content: 'Assignee', isSortable: true, width: 14 }] : []),
-                    ...(columns.status ? [{ key: 'status', content: 'Status', isSortable: true, width: 14 }] : []),
-                    ...(columns.fixVersions ? [{ key: 'fixVersions', content: 'Fix versions', isSortable: false, width: 12 }] : []),
-                    ...(columns.priority ? [{ key: 'priority', content: 'Priority', isSortable: true, width: 10 }] : []),
-                    { key: 'actions', content: '', width: 4 },
-                  ],
-                }}
-                rows={visibleRows.map((child) => {
-                  const checked = selectedIds.has(child.id);
-                  const focused = focusedRowId === child.id;
-                  const rowCells: Array<{ key: string | number; content: React.ReactNode }> = [];
+          {/* ═══ List view — canonical JiraTable ═══ */}
+          {!isLoading && visibleRows.length > 0 && view === 'list' && (() => {
+            // Build column schema once per render. `columns` (from props) is
+            // the visibility config; we filter the schema by it instead of
+            // emitting ternaries inside cells like the DynamicTable era did.
+            // Existing cell components (IssueTypeCell, AssigneeCell, StatusCell,
+            // FixVersionsCell, PriorityCell) are reused as-is — JiraTable
+            // doesn't care about the inner JSX, only the column schema.
+            const schema: Column<typeof visibleRows[number]>[] = [];
 
-                  if (bulkEditMode) {
-                    rowCells.push({
-                      key: 'select',
-                      content: (
-                        <label className="sp-checkbox" aria-label={`Select ${child.issue_key}`} onClick={(e) => e.stopPropagation()}>
-                          <input
-                            type="checkbox"
-                            checked={checked}
-                            onChange={() => toggleSelected(child.id)}
-                          />
-                          <span className="sp-checkbox-box">
-                            {checked && <Check size={10} color="#fff" strokeWidth={3} />}
-                          </span>
-                        </label>
-                      ),
-                    });
-                  }
+            if (columns.type) {
+              schema.push({
+                id: 'type', label: 'Type', width: 5, sortable: false,
+                cell: ({ row }) => <IssueTypeCell issueType={(row as any).issue_type} />,
+              });
+            }
+            if (columns.key) {
+              schema.push({
+                id: 'key', label: 'Key', width: 9, sortable: true,
+                accessor: (r: any) => r.issue_key,
+                cell: ({ row }) => (
+                  <a
+                    className="sp-issue-key"
+                    data-jira-table-row-open
+                    onClick={(e) => { e.stopPropagation(); onSubtaskClick?.((row as any).id); }}
+                  >
+                    {(row as any).issue_key}
+                  </a>
+                ),
+              });
+            }
+            if (columns.summary) {
+              schema.push({
+                id: 'summary', label: 'Summary', width: 30, sortable: false, alwaysVisible: true,
+                accessor: (r: any) => r.summary,
+                cell: ({ row }) => {
+                  const child = row as any;
+                  return editingId === child.id ? (
+                    <InlineSummaryEditor
+                      value={child.summary}
+                      onSave={handleSummarySave(child)}
+                      onCancel={() => setEditingId(null)}
+                    />
+                  ) : (
+                    <span className="sp-summary-wrap">
+                      <span
+                        className="sp-issue-summary"
+                        onClick={(e) => {
+                          if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
+                          onSubtaskClick?.(child.id);
+                          setFocusedRowId(child.id);
+                        }}
+                      >
+                        {child.summary}
+                      </span>
+                      {!bulkEditMode && (
+                        <DescriptionPopover
+                          subtaskId={child.id}
+                          subtaskKey={child.issue_key}
+                          parentKey={storyKey}
+                        />
+                      )}
+                    </span>
+                  );
+                },
+              });
+            }
+            if (columns.assignee) {
+              schema.push({
+                id: 'assignee', label: 'Assignee', width: 14, sortable: true,
+                accessor: (r: any) => r.assignee_display_name ?? '\uFFFF', // unassigned sorts last
+                cell: ({ row }) => {
+                  const child = row as any;
+                  return (
+                    <AssigneeCell
+                      displayName={child.assignee_display_name}
+                      accountId={child.assignee_account_id}
+                      avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
+                      onChange={handleAssigneeChange(child)}
+                      readOnly={bulkEditMode}
+                    />
+                  );
+                },
+              });
+            }
+            if (columns.status) {
+              schema.push({
+                id: 'status', label: 'Status', width: 14, sortable: true,
+                accessor: (r: any) => {
+                  const cat = (r.status_category ?? '').toLowerCase();
+                  if (cat === 'done') return 2;
+                  if (cat.includes('progress')) return 1;
+                  return 0;
+                },
+                cell: ({ row }) => {
+                  const child = row as any;
+                  return (
+                    <StatusCell
+                      status={child.status}
+                      statusCategory={child.status_category}
+                      onChange={handleStatusChange(child)}
+                      readOnly={bulkEditMode}
+                    />
+                  );
+                },
+              });
+            }
+            if (columns.fixVersions) {
+              schema.push({
+                id: 'fixVersions', label: 'Fix versions', width: 12, sortable: false,
+                cell: ({ row }) => <FixVersionsCell value={(row as any).fix_versions} />,
+              });
+            }
+            if (columns.priority) {
+              schema.push({
+                id: 'priority', label: 'Priority', width: 10, sortable: true,
+                accessor: (r: any) => {
+                  const p = (r.priority ?? 'medium').toLowerCase() as 'critical' | 'high' | 'medium' | 'low';
+                  return ({ critical: 1, high: 2, medium: 3, low: 4 } as const)[p] ?? 3;
+                },
+                cell: ({ row }) => {
+                  const child = row as any;
+                  return (
+                    <PriorityCell
+                      priority={child.priority}
+                      onChange={handlePriorityChange(child)}
+                      readOnly={bulkEditMode}
+                    />
+                  );
+                },
+              });
+            }
+            // Trailing actions column — shown when not in bulk edit mode. The
+            // RowActionsMenu was the per-row ⋯ trigger in the DynamicTable
+            // era. We surface the same actions via JiraTable's right-click
+            // contextMenuActions below; this trailing column keeps the click
+            // affordance for users who don't right-click.
+            if (!bulkEditMode) {
+              schema.push({
+                id: 'actions', label: '', width: 4, sortable: false,
+                cell: ({ row }) => {
+                  const child = row as any;
+                  return (
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <RowActionsMenu
+                        onOpen={() => onSubtaskClick?.(child.id)}
+                        onRename={() => setEditingId(child.id)}
+                        onDelete={() => handleDelete(child)}
+                      />
+                    </div>
+                  );
+                },
+              });
+            }
 
-                  if (columns.type) {
-                    rowCells.push({
-                      key: child.issue_type ?? '',
-                      content: <IssueTypeCell issueType={child.issue_type} />,
-                    });
-                  }
-                  if (columns.key) {
-                    rowCells.push({
-                      key: child.issue_key,
-                      content: (
-                        <a
-                          className="sp-issue-key"
-                          onClick={(e) => { e.stopPropagation(); onSubtaskClick?.(child.id); }}
-                        >
-                          {child.issue_key}
-                        </a>
-                      ),
-                    });
-                  }
-                  if (columns.summary) {
-                    rowCells.push({
-                      key: child.summary,
-                      content: editingId === child.id ? (
-                        <InlineSummaryEditor
-                          value={child.summary}
-                          onSave={handleSummarySave(child)}
-                          onCancel={() => setEditingId(null)}
-                        />
-                      ) : (
-                        <span className="sp-summary-wrap">
-                          <span
-                            className="sp-issue-summary"
-                            onClick={(e) => {
-                              if (bulkEditMode) { toggleSelected(child.id); e.stopPropagation(); return; }
-                              onSubtaskClick?.(child.id);
-                              setFocusedRowId(child.id);
-                            }}
-                          >
-                            {child.summary}
-                          </span>
-                          {!bulkEditMode && (
-                            <DescriptionPopover
-                              subtaskId={child.id}
-                              subtaskKey={child.issue_key}
-                              parentKey={storyKey}
-                            />
-                          )}
-                        </span>
-                      ),
-                    });
-                  }
-                  if (columns.assignee) {
-                    rowCells.push({
-                      key: child.assignee_display_name ?? '\uFFFF', // unassigned sorts last
-                      content: (
-                        <AssigneeCell
-                          displayName={child.assignee_display_name}
-                          accountId={child.assignee_account_id}
-                          avatarUrl={child.assignee_account_id ? avatarMap[child.assignee_account_id] : null}
-                          onChange={handleAssigneeChange(child)}
-                          readOnly={bulkEditMode}
-                        />
-                      ),
-                    });
-                  }
-                  if (columns.status) {
-                    const catRank = (child.status_category ?? '').toLowerCase() === 'done' ? 2
-                      : (child.status_category ?? '').toLowerCase().includes('progress') ? 1 : 0;
-                    rowCells.push({
-                      key: catRank,
-                      content: (
-                        <StatusCell
-                          status={child.status}
-                          statusCategory={child.status_category}
-                          onChange={handleStatusChange(child)}
-                          readOnly={bulkEditMode}
-                        />
-                      ),
-                    });
-                  }
-                  if (columns.fixVersions) {
-                    rowCells.push({
-                      key: 0,
-                      content: <FixVersionsCell value={child.fix_versions} />,
-                    });
-                  }
-                  if (columns.priority) {
-                    const pRank = { critical: 1, high: 2, medium: 3, low: 4 }[
-                      (child.priority ?? 'medium').toLowerCase() as 'critical' | 'high' | 'medium' | 'low'
-                    ] ?? 3;
-                    rowCells.push({
-                      key: pRank,
-                      content: (
-                        <PriorityCell
-                          priority={child.priority}
-                          onChange={handlePriorityChange(child)}
-                          readOnly={bulkEditMode}
-                        />
-                      ),
-                    });
-                  }
+            // The 3-state sort cycle (asc → desc → off) the DynamicTable era
+            // implemented via the local handleColumnHeaderSort lives natively
+            // in JiraTable — onSortChange fires with key='' to mean cleared.
+            const onSortChangeAdapter = (key: string, order: 'ASC' | 'DESC') => {
+              if (!key) { setSort({ field: null, dir: 'asc' }); return; }
+              setSort({ field: key as SortField, dir: order === 'DESC' ? 'desc' : 'asc' });
+            };
 
-                  rowCells.push({
-                    key: 'actions',
-                    content: !bulkEditMode ? (
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <RowActionsMenu
-                          onOpen={() => onSubtaskClick?.(child.id)}
-                          onRename={() => setEditingId(child.id)}
-                          onDelete={() => handleDelete(child)}
-                        />
-                      </div>
-                    ) : null,
-                  });
-
-                  return {
-                    key: child.id,
-                    cells: rowCells,
-                    // Custom CSS hooks for focused / selected row highlighting.
-                    // DynamicTable passes this through to the row's tr element.
-                    className: [
-                      checked ? 'sp-row--selected' : '',
-                      focused ? 'sp-row--focused' : '',
-                    ].filter(Boolean).join(' '),
-                  };
-                })}
-                rowsPerPage={undefined}
-                isLoading={false}
-                isRankable={dndEnabled}
-                onRankEnd={handleRankEnd}
-                defaultSortKey={sort.field ?? undefined}
-                defaultSortOrder={sort.dir === 'desc' ? 'DESC' : 'ASC'}
-                onSort={(e: { key: string; sortOrder: 'ASC' | 'DESC' }) => handleColumnHeaderSort(e.key, e.sortOrder)}
-                emptyView={null}
-              />
-            </div>
-          )}
+            return (
+              <div className="sp-ak-table" onClick={(e) => e.stopPropagation()}>
+                <JiraTable<typeof visibleRows[number]>
+                  columns={schema}
+                  data={visibleRows}
+                  getRowId={(r: any) => r.id}
+                  ariaLabel="Subtasks"
+                  selectable={bulkEditMode}
+                  selection={selectedIds}
+                  onSelectionChange={(next) => {
+                    // Replace the selection set wholesale when JiraTable
+                    // commits a checkbox toggle (single, shift-range, or
+                    // header select-all). The page's existing toggleSelected
+                    // / toggleSelectAll keyboard paths still drive the same
+                    // setSelectedIds setter so behaviour stays consistent.
+                    setSelectedIds(new Set(next));
+                  }}
+                  sortKey={sort.field ?? undefined}
+                  sortOrder={sort.dir === 'desc' ? 'DESC' : 'ASC'}
+                  onSortChange={onSortChangeAdapter}
+                  focusedRowId={focusedRowId ?? undefined}
+                  onFocusedRowChange={(id) => setFocusedRowId(id)}
+                  onRowClick={(r: any) => {
+                    if (bulkEditMode) { toggleSelected(r.id); return; }
+                    onSubtaskClick?.(r.id);
+                  }}
+                  enableColumnReorder
+                  rowsPerPage={0}
+                  emptyView={null}
+                />
+              </div>
+            );
+            // NOTE: DnD row-reorder via handleRankEnd is not wired here. The
+            // canonical does not yet expose row drag-reorder; this surface
+            // accepts the regression until the canonical adds it (one prop
+            // away). `dndEnabled` and `handleRankEnd` are retained above for
+            // a one-line re-enable when the feature lands.
+          })()}
 
           {/* ═══ Bulk edit bar ═══ */}
           {bulkEditMode && (
