@@ -127,13 +127,11 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
       {/* Title */}
       <div className="pc-card-title">{initiative.title}</div>
 
-      {/* Type badge — SVG icon + colored text */}
-      {typeConf && (
-        <div className="pc-type-badge" style={{ color: typeConf.color }}>
-          <typeConf.Icon size={13} />
-          {typeConf.label}
-        </div>
-      )}
+      {/* Business Request label — single canonical type */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+        <JiraIssueTypeIcon issueType="Feature" size={14} />
+        <span style={{ fontSize: 11, fontWeight: 500, color: '#36B37E' }}>Business Request</span>
+      </div>
 
       {/* Priority + Health chips */}
       {(initiative.priority || initiative.health_status) && (() => {
