@@ -12,11 +12,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
-  X, Pencil, Copy, Star, Trash2,
-  FolderKanban, Zap, Wrench, Network, Map,
+  X, Pencil, Copy, Star, Trash2, Map,
 } from 'lucide-react';
 import type { RoadmapInitiative } from './types/roadmap.types';
-import { TYPE_COLORS } from './constants/roadmap.constants';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 // ── Constants ──
