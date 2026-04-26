@@ -169,7 +169,9 @@ export default function OverdueWidget({ projectId, projectKey, collapsed, onTogg
 
           {/* ── Overdue rows ──────────────────────────────────────────── */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            {enriched.slice(0, 8).map((item) => (
+            {/* No slice cap — body has standardised height with internal
+                scroll, so the entire list is visible without truncation. */}
+            {enriched.map((item) => (
               <OverdueRow
                 key={item.id}
                 item={item}
@@ -254,7 +256,7 @@ function KpiCell({
       </span>
       <span
         style={{
-          fontSize: 22,
+          fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#172B4D'),
@@ -342,7 +344,7 @@ function OverdueRow({
       {item.assignee_display_name && (
         <span style={{ flexShrink: 0 }}>
           <UserAvatar
-            size="xsmall"
+            size="small"
             name={item.assignee_display_name}
             src={(item as any).assignee_avatar_url}
           />

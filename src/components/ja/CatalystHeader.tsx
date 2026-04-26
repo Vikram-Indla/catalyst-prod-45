@@ -39,15 +39,25 @@ export function CatalystHeader() {
   const sidebarTooltip = `${sidebarLabel} (${shortcutLabel})`;
 
   // Hover-peek contract (Jira parity):
-  //   - Only sidebarHoverOpen is toggled. We NEVER mutate sidebarHidden
-  //     on hover — that was causing the chevron to jump to the right-edge
-  //     position mid-peek because the old isCollapsed flag depended on it.
+  //   - Chevron ENTER opens the peek immediately so users see the sidebar
+  //     the moment they hover.
+  //   - Chevron LEAVE is a NO-OP on purpose. Closing on chevron-leave was
+  //     killing the peek the moment the user tried to move from the
+  //     chevron INTO the sidebar to click an item. The document-level
+  //     mousemove handler in CatalystShell owns close: it watches the
+  //     entire hover zone (chevron + HubSwitcher + sidebar body) and
+  //     closes after a 300ms grace once the cursor leaves ALL of them.
+  //     That single source of truth is the only thing that should ever
+  //     set sidebarHoverOpen=false — never a local handler on one corner
+  //     of the zone.
   //   - When pinned, hover is a no-op (always open).
   const handleChevronEnter = () => {
     if (!sidebarPinned) setSidebarHoverOpen(true);
   };
   const handleChevronLeave = () => {
-    if (!sidebarPinned) setSidebarHoverOpen(false);
+    // Intentionally empty — see comment above. The document mousemove
+    // handler will close the sidebar with a 300ms grace if and only if
+    // the cursor has left every region of the hover zone.
   };
 
   // Divider visibility — show whenever the sidebar body is visible on

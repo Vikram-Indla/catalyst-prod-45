@@ -242,12 +242,18 @@ export function SidebarBase({
             down on expand. Removed entirely — single source of truth. */}
         <div
           className={cn(
-            "border-b flex-shrink-0 flex items-center",
+            "flex-shrink-0 flex items-center",
             expanded ? "justify-start" : "justify-center"
           )}
+          // Header used to carry a `border-b` divider under the badge +
+          // hub label. Vikram's Apr 2026 directive: drop the divider on
+          // every hub rail — the 48px header height + section labels
+          // already give enough visual separation, and the rule was
+          // making the rail feel cluttered. Inter-section dividers
+          // below (rendered with `dividerColor`) and the rail's right
+          // edge (rendered with `sidebarBorder`) are unaffected.
           style={{
             minHeight: '48px',
-            borderColor: sidebarBorder,
             padding: expanded ? '12px 12px 12px 16px' : '12px 0',
             gap: expanded ? '10px' : '4px',
             background: 'transparent',

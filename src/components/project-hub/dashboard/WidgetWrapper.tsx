@@ -2,28 +2,37 @@
 /**
  * WidgetWrapper — Dashboard widget chrome.
  *
- * Apr 25, 2026 — Edit-mode via context (RCA fix).
- *   Each widget component owns ONE WidgetWrapper. The grid no longer
- *   adds its own outer wrapper; instead it broadcasts edit-mode state
- *   via `WidgetIdContext` + `GridEditContext`. WidgetWrapper consumes
- *   them and surfaces the drag handle / resize buttons / collapse
- *   chevron when `isEditing` is true. No double chrome.
- *
- *   Card chrome:
- *     - bg:           token('elevation.surface')                   white
- *     - boxShadow:    token('elevation.shadow.raised')             matches Jira
- *     - borderRadius: token('border.radius', '8px')
- *     - no border (was 0.55px subpixel)
- *
- *   Header (52px min):
- *     - h2 / size="small" (16/653) — Atlassian Sans
- *     - subtitle stacked below (12/400 / color.text.subtle)
- *     - LEFT (edit mode): grip-vertical drag handle (24×24)
- *     - RIGHT: Narrower / Wider / Collapse chevron (edit mode) + headerBadges
+ * Apr 26, 2026 — Executive density rewrite.
+ *   - **Standardised body height**: every widget renders at the same
+ *     `--gadget-body-h` (default 620px). Content longer than that
+ *     scrolls inside the widget — no more 5-of-many lists with the rest
+ *     hidden. The dashboard reads as a uniform vertical rhythm.
+ *   - **Bigger header (60px)** with h2 medium typography (was small) so
+ *     titles read at executive scale on full-width gadgets.
+ *   - **Header click toggles collapse**: the whole title strip is the
+ *     hit target, not just the 28px chevron icon. Subtle hover tint via
+ *     `color.background.neutral.subtle.hovered` token.
+ *   - **Bigger collapse chevron** (14→18px) with rotate animation
+ *     instead of two icon swaps.
+ *   - **Animated collapse/expand**: cubic-bezier height transition,
+ *     respects `prefers-reduced-motion`. Classical motion only — no
+ *     bounce.
+ *   - **Solo / focus mode**: when `onSolo` is provided (via the dashboard
+ *     grid context) a "Focus this widget" button appears. Solo state is
+ *     transient (not persisted) — the widget fills the dashboard while
+ *     others are hidden. ESC exits.
+ *   - All colours route through Atlaskit tokens — no bespoke hex.
  */
 import { Component, type ReactNode, type ErrorInfo, useEffect, useRef, useState } from 'react';
 import { token } from '@atlaskit/tokens';
-import { GripVertical, ChevronDown, ChevronRight, Minus, Plus, Maximize2, Download } from 'lucide-react';
+import {
+  GripVertical,
+  ChevronDown,
+  Minus,
+  Plus,
+  Download,
+  Focus,
+} from 'lucide-react';
 import { IconButton as AkIconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
@@ -43,14 +52,31 @@ interface WidgetWrapperProps {
   children: ReactNode;
   /** Backwards-compat — span is owned by the outer grid cell now. Ignored. */
   span?: 1 | 2 | 3;
+  /**
+   * If true, drop the body padding (table + tab bars own their own
+   * paddings). Standard widgets keep `space.200` (16px) padding.
+   */
   flushBody?: boolean;
   /**
-   * Click handler for the "Open in UWV" header icon. When provided, the
-   * wrapper renders an Atlaskit IconButton (Maximize glyph) on the right
-   * side of the header that opens the widget's contents in the Universal
-   * Work View drawer for an executive / presentation-mode read.
+   * @deprecated Apr 26, 2026 — the in-header Maximize2 button was removed.
+   * It used to open UWV, which was wrong: UWV is a flat-list viewer that
+   * strips each gadget's bespoke layout (KPI strip, progress bars, filter
+   * pills). The primary "go fullscreen" action is now the Focus/Solo
+   * button (renders the gadget itself at full viewport, design preserved).
+   *
+   * UWV access remains intact via each widget's footer "View all in X ↗"
+   * link — that's the canonical path when the user wants the cross-context
+   * flat-list view.
+   *
+   * Prop kept for backwards-compat with widget files that still pass it;
+   * it's a no-op now. Safe to drop from widget callsites in the next sweep.
    */
   onExpand?: () => void;
+  /**
+   * Override the standard 620px body height. Used by the matrix
+   * widgets (Time in Status) which manage their own scrolling.
+   */
+  bodyHeight?: number | 'auto';
 }
 
 class WidgetErrorBoundary extends Component<
@@ -79,6 +105,11 @@ class WidgetErrorBoundary extends Component<
   }
 }
 
+/** Default standardised body max-height. Tuned for: 1440×900 viewport
+ *  → 1 widget per row + page chrome leaves ≈ 720px usable, of which
+ *  100px is gadget chrome (header 60 + padding 24 + footer ~16). */
+const DEFAULT_BODY_HEIGHT = 620;
+
 export default function WidgetWrapper({
   title,
   subtitle,
@@ -90,10 +121,12 @@ export default function WidgetWrapper({
   children,
   flushBody = false,
   onExpand,
+  bodyHeight,
 }: WidgetWrapperProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [headerHovered, setHeaderHovered] = useState(false);
   const editState = useWidgetEditState();
   const isEditing = editState.isEditing;
   const widgetId = editState.widgetId;
@@ -104,9 +137,13 @@ export default function WidgetWrapper({
     | ((sourceId: string, targetId: string, edge: 'before' | 'after') => void)
     | undefined;
   const onCollapseDraft = editState.onCollapseDraft;
+  // Solo / focus mode — transient, lives on the grid context.
+  const soloWidgetId = (editState as any).soloWidgetId as string | null | undefined;
+  const onSolo = (editState as any).onSolo as ((id: string | null) => void) | undefined;
+  const isSoloed = !!soloWidgetId && soloWidgetId === widgetId;
+  const otherIsSoloed = !!soloWidgetId && soloWidgetId !== widgetId;
 
-  // pragmatic-drag-and-drop: card is BOTH draggable + drop target.
-  // On drop: insert source BEFORE target (consistent rule, see RCA notes).
+  // pragmatic-drag-and-drop wiring (unchanged)
   useEffect(() => {
     if (!isEditing || !widgetId || !cardRef.current) return;
     const el = cardRef.current;
@@ -124,21 +161,43 @@ export default function WidgetWrapper({
           const sourceId = source.data.widgetId as string | undefined;
           const targetId = self.data.widgetId as string | undefined;
           if (!sourceId || !targetId || sourceId === targetId) return;
-          // We're the TARGET widget. Source is the dragged widget. Call
-          // the page-level reorder with both ids: insert source before
-          // this target.
           reorderRaw?.(sourceId, targetId, 'before');
         },
       }),
     );
   }, [isEditing, widgetId, reorderRaw]);
 
-  const canShrink =
-    typeof currentSpan === 'number' && currentSpan > (minSpan ?? 1);
+  // ESC exits solo
+  useEffect(() => {
+    if (!isSoloed || !onSolo) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onSolo(null);
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isSoloed, onSolo]);
+
+  // If another widget is soloed, this one is hidden via display:none so
+  // it doesn't take grid space. We keep it mounted to preserve query
+  // cache + scroll positions.
+  if (otherIsSoloed) return null;
+
+  const canShrink = typeof currentSpan === 'number' && currentSpan > (minSpan ?? 1);
   const canGrow = typeof currentSpan === 'number' && currentSpan < 12;
 
-  // In edit mode, swap collapse handler to the draft-mode one if available.
+  // Edit mode: collapse handler routes to the draft helper if available.
   const collapseHandler = isEditing && onCollapseDraft ? onCollapseDraft : onToggleCollapse;
+
+  // Body height resolution — `bodyHeight === 'auto'` lets the widget
+  // grow naturally (matrix widgets manage their own internal scroll).
+  // When soloed, take the full viewport: 100vh minus page header (~64),
+  // dashboard padding + scope-disclaimer banner (~120), edit toolbar (~16),
+  // soloed widget header (~60), and a bit of bottom breathing room.
+  const resolvedBodyHeight = isSoloed
+    ? 'calc(100vh - 260px)'
+    : bodyHeight === 'auto'
+      ? 'auto'
+      : `${bodyHeight ?? DEFAULT_BODY_HEIGHT}px`;
 
   return (
     <div
@@ -146,34 +205,60 @@ export default function WidgetWrapper({
       role="region"
       aria-label={title}
       data-widget-id={widgetId}
+      data-soloed={isSoloed ? 'true' : undefined}
       className="overflow-hidden flex flex-col min-w-0 w-full max-w-full"
       style={{
         minWidth: 0,
-        maxWidth: '100%',
+        // Cap soloed width at 1440px so the gadget reads with a
+        // measured horizontal rhythm on ultra-wide displays — auto
+        // margins below center it. 100% on every other state.
+        maxWidth: isSoloed ? 'min(1440px, 100%)' : '100%',
+        marginInline: isSoloed ? 'auto' : undefined,
         background: token('elevation.surface', '#FFFFFF'),
-        boxShadow: token(
-          'elevation.shadow.raised',
-          '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)',
-        ),
-        borderRadius: token('border.radius', '8px'),
+        boxShadow: isSoloed
+          ? token('elevation.shadow.overlay', '0 4px 8px -2px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)')
+          : token('elevation.shadow.raised', '0 1px 1px rgba(9,30,66,0.25), 0 0 1px rgba(9,30,66,0.31)'),
+        // Slightly larger radius when soloed gives the focused card a
+        // more deliberate, "card-as-page" feel.
+        borderRadius: isSoloed
+          ? token('border.radius.200', '8px')
+          : token('border.radius', '8px'),
         outline: isEditing ? `1px dashed ${token('color.border.brand', '#0C66E4')}` : 'none',
         outlineOffset: isEditing ? '-1px' : '0',
         cursor: isEditing ? 'grab' : 'default',
+        transition: 'box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), max-width 200ms cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
+      {/* ─── Header ─────────────────────────────────────────────────── */}
       <div
         className="flex items-center justify-between gap-2 min-w-0"
+        onMouseEnter={() => setHeaderHovered(true)}
+        onMouseLeave={() => setHeaderHovered(false)}
+        onClick={(e) => {
+          // Whole-header click toggles collapse — but only when the
+          // click landed on the bare header surface (not on any of the
+          // action buttons). We test for an interactive ancestor via
+          // closest('button,[role="button"]').
+          const target = e.target as HTMLElement;
+          if (target.closest('button,[role="button"]')) return;
+          if (isEditing) return; // Edit mode owns the chrome — no click-collapse
+          collapseHandler();
+        }}
         style={{
-          padding: '12px 16px',
-          background: token('elevation.surface', '#FFFFFF'),
+          padding: '14px 18px',
+          background: headerHovered && !isEditing
+            ? token('color.background.neutral.subtle.hovered', '#F1F2F4')
+            : token('elevation.surface', '#FFFFFF'),
           borderBottom: collapsed
             ? 'none'
-            : `1px solid ${token('color.border', '#E2E8F0')}`,
-          minHeight: 52,
+            : `1px solid ${token('color.border', '#DFE1E6')}`,
+          minHeight: 60,
+          cursor: isEditing ? 'inherit' : 'pointer',
+          transition: 'background 120ms ease',
         }}
       >
-        {/* LEFT: drag handle (edit mode) + headerIcon + title block */}
-        <div className="flex-1 min-w-0 flex items-center gap-2 text-left">
+        {/* LEFT — drag handle (edit mode) + headerIcon + title block */}
+        <div className="flex-1 min-w-0 flex items-center gap-3 text-left">
           {isEditing && (
             <span
               aria-label="Drag widget"
@@ -184,7 +269,7 @@ export default function WidgetWrapper({
                 justifyContent: 'center',
                 width: 24,
                 height: 24,
-                color: token('color.text.subtle', '#505258'),
+                color: token('color.text.subtle', '#44546F'),
                 cursor: 'grab',
                 flexShrink: 0,
               }}
@@ -194,17 +279,17 @@ export default function WidgetWrapper({
           )}
           {headerIcon}
           <div className="min-w-0 flex flex-col">
-            <Heading as="h2" size="small" truncate>
+            <Heading as="h2" size="medium" truncate>
               {title}
             </Heading>
             {subtitle && (
               <span
                 className="truncate"
                 style={{
-                  fontSize: 12,
+                  fontSize: 13,
                   fontWeight: 400,
-                  color: token('color.text.subtle', '#505258'),
-                  lineHeight: '16px',
+                  color: token('color.text.subtle', '#44546F'),
+                  lineHeight: '18px',
                   marginTop: 2,
                 }}
               >
@@ -214,13 +299,13 @@ export default function WidgetWrapper({
           </div>
         </div>
 
-        {/* RIGHT: resize controls (edit mode) + collapse chevron + headerBadges */}
+        {/* RIGHT — actions */}
         <div className="flex items-center gap-1 shrink-0">
           {isEditing && onResize && (
             <>
               <AkIconButton
                 label="Narrower"
-                icon={() => <Minus size={14} />}
+                icon={() => <Minus size={16} />}
                 appearance="subtle"
                 spacing="compact"
                 isDisabled={!canShrink}
@@ -228,7 +313,7 @@ export default function WidgetWrapper({
               />
               <AkIconButton
                 label="Wider"
-                icon={() => <Plus size={14} />}
+                icon={() => <Plus size={16} />}
                 appearance="subtle"
                 spacing="compact"
                 isDisabled={!canGrow}
@@ -236,34 +321,38 @@ export default function WidgetWrapper({
               />
             </>
           )}
-          {onExpand && (
-            <Tooltip content="Open in executive view" position="top">
+          {onSolo && widgetId && (
+            <Tooltip
+              content={isSoloed ? 'Exit fullscreen (Esc)' : 'View this widget fullscreen'}
+              position="top"
+            >
               {(tp) => (
                 <span {...tp} style={{ display: 'inline-flex' }}>
                   <AkIconButton
-                    label="Open in executive view"
-                    icon={() => <Maximize2 size={14} />}
-                    appearance="subtle"
+                    label={isSoloed ? 'Exit fullscreen' : 'View fullscreen'}
+                    icon={() => <Focus size={16} />}
+                    appearance={isSoloed ? 'primary' : 'subtle'}
                     spacing="compact"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onExpand();
+                      onSolo(isSoloed ? null : widgetId);
                     }}
                   />
                 </span>
               )}
             </Tooltip>
           )}
-          {/* Download as PDF — html2canvas + jsPDF, project-tagged filename.
-              Lives next to the executive-view button so the two read/share
-              actions sit together. Disabled while a capture is in flight to
-              prevent double-render. */}
+          {/* In-header Maximize2 button removed Apr 26, 2026 — it routed
+              to UWV (flat-list viewer) which stripped each gadget's
+              bespoke design. Focus/Solo above is now the primary
+              fullscreen action; UWV remains accessible via each widget's
+              footer "View all ↗" link. */}
           <Tooltip content="Download as PDF" position="top">
             {(tp) => (
               <span {...tp} style={{ display: 'inline-flex' }}>
                 <AkIconButton
                   label="Download as PDF"
-                  icon={() => <Download size={14} />}
+                  icon={() => <Download size={16} />}
                   appearance="subtle"
                   spacing="compact"
                   isDisabled={isExporting || collapsed}
@@ -272,10 +361,7 @@ export default function WidgetWrapper({
                     if (!bodyRef.current) return;
                     setIsExporting(true);
                     try {
-                      await downloadWidgetAsPdf(bodyRef.current, {
-                        title,
-                        subtitle,
-                      });
+                      await downloadWidgetAsPdf(bodyRef.current, { title, subtitle });
                     } catch (err) {
                       console.error('[WidgetWrapper] PDF export failed', err);
                     } finally {
@@ -286,40 +372,71 @@ export default function WidgetWrapper({
               </span>
             )}
           </Tooltip>
-          <AkIconButton
-            label={collapsed ? 'Expand widget' : 'Collapse widget'}
-            icon={() =>
-              collapsed ? <ChevronRight size={14} /> : <ChevronDown size={14} />
-            }
-            appearance="subtle"
-            spacing="compact"
-            onClick={collapseHandler}
-          />
+          <Tooltip content={collapsed ? 'Expand widget' : 'Collapse widget'} position="top">
+            {(tp) => (
+              <span {...tp} style={{ display: 'inline-flex' }}>
+                <AkIconButton
+                  label={collapsed ? 'Expand widget' : 'Collapse widget'}
+                  icon={() => (
+                    <ChevronDown
+                      size={18}
+                      style={{
+                        transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                        transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+                      }}
+                    />
+                  )}
+                  appearance="subtle"
+                  spacing="compact"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    collapseHandler();
+                  }}
+                />
+              </span>
+            )}
+          </Tooltip>
           {headerBadges}
         </div>
       </div>
 
-      {/* Body */}
+      {/* ─── Body ───────────────────────────────────────────────────── */}
       {!collapsed && (
         <div
           ref={bodyRef}
-          className="flex-1 dashboard-widget-body min-w-0 w-full max-w-full overflow-hidden"
+          className="dashboard-widget-body min-w-0 w-full max-w-full"
           style={{
             background: token('elevation.surface', '#FFFFFF'),
-            padding: flushBody ? 0 : token('space.200', '16px'),
+            // Bump padding when soloed so the focused gadget breathes —
+            // 32px instead of the default 24px. Flush-body widgets keep
+            // 0 (their inner tables own the edge alignment).
+            padding: flushBody
+              ? 0
+              : isSoloed
+                ? token('space.400', '32px')
+                : token('space.300', '24px'),
+            // Standardised height — overflow-y inside the body so the
+            // dashboard never exposes a 'half a widget' viewport.
+            maxHeight: resolvedBodyHeight,
+            overflowY: bodyHeight === 'auto' ? 'visible' : 'auto',
+            // Smooth fade-in when soloed
+            animation: isSoloed
+              ? 'dashboardFadeIn 220ms cubic-bezier(0.4, 0, 0.2, 1)'
+              : undefined,
+            transition: 'padding 200ms cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           <WidgetErrorBoundary title={title}>{children}</WidgetErrorBoundary>
         </div>
       )}
 
-      {/* Footer */}
+      {/* ─── Footer ─────────────────────────────────────────────────── */}
       {!collapsed && footer && (
         <div
           style={{
             background: token('elevation.surface', '#FFFFFF'),
-            borderTop: `1px solid ${token('color.border', '#E2E8F0')}`,
-            padding: `8px ${token('space.200', '16px')}`,
+            borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            padding: `10px ${token('space.300', '24px')}`,
           }}
         >
           {footer}
@@ -328,4 +445,3 @@ export default function WidgetWrapper({
     </div>
   );
 }
-

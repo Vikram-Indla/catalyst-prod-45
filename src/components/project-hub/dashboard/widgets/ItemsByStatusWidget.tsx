@@ -229,7 +229,7 @@ function KpiHeadline({
       </span>
       <span
         style={{
-          fontSize: 22,
+          fontSize: 24,
           fontWeight: 600,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#172B4D'),
@@ -275,7 +275,7 @@ function KpiHeadline({
         </span>
         <span
           style={{
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: 600,
             lineHeight: 1.1,
             color:

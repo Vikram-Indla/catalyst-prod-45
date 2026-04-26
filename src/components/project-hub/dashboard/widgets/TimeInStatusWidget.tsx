@@ -190,6 +190,11 @@ export default function TimeInStatusWidget({
       collapsed={collapsed}
       onToggleCollapse={onToggleCollapse}
       flushBody
+      // Matrix manages its own internal scroll (sticky frozen-left
+      // ticket col, sticky right total col, sticky thead). Bypass the
+      // standardised 620px body height so both axes scroll inside the
+      // <table> instead of fighting the wrapper's overflow-y.
+      bodyHeight="auto"
       onExpand={() => setFullscreen(true)}
       headerBadges={
         <>
@@ -328,7 +333,9 @@ export default function TimeInStatusWidget({
               width: '100%',
               borderCollapse: 'separate',
               borderSpacing: 0,
-              fontSize: 12,
+              // Apr 26, 2026 — base table font 12→14 to match the rest
+              // of the dashboard. Cells with explicit fontSize still win.
+              fontSize: 14,
             }}
           >
             <thead>
@@ -339,11 +346,17 @@ export default function TimeInStatusWidget({
                     background: token('elevation.surface', '#FFFFFF'),
                     width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     textAlign: 'left',
-                    padding: '8px 12px',
-                    borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
-                    borderRight: `1px solid ${token('color.border', '#E2E8F0')}`,
-                    fontWeight: 600,
-                    color: token('color.text', '#172B4D'),
+                    padding: '10px 12px',
+                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    // Header style mirrors QA Defects / Production
+                    // Incidents header: 12px uppercase 700 letter-spaced
+                    // 0.04em color.text.subtle.
+                    fontSize: 12,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                    color: token('color.text.subtle', '#44546F'),
                   }}
                 >
                   Ticket
@@ -409,18 +422,22 @@ export default function TimeInStatusWidget({
                       width: FROZEN_LEFT_WIDTH, minWidth: FROZEN_LEFT_WIDTH,
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
-                      <PriorityIcon level={r.priority} size={14} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                      <PriorityIcon level={r.priority} size={16} />
                       <span
                         style={{
-                          display: 'inline-flex', alignItems: 'center', gap: 6,
+                          display: 'inline-flex', alignItems: 'center', gap: 8,
                           color: token('color.link', '#0C66E4'),
                           fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                          fontSize: 12, fontWeight: 500, whiteSpace: 'nowrap',
+                          // Apr 26, 2026 — 12→14 / 500→600 to match
+                          // Demand Fulfilment + QA Defects + Production
+                          // Incidents row typography. Same density across
+                          // every dashboard table.
+                          fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap',
                           flexShrink: 0,
                         }}
                       >
-                        <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={14} />
+                        <JiraIssueTypeIcon type={r.issue_type ?? 'Task'} size={16} />
                         {r.issue_key}
                       </span>
                       <span
@@ -429,6 +446,12 @@ export default function TimeInStatusWidget({
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
                           whiteSpace: 'nowrap',
+                          // Apr 26, 2026 — title now at 14/500 to match
+                          // the rest of the dashboard row titles. Was
+                          // unstyled (inheriting 12px from parent table).
+                          fontSize: 14,
+                          fontWeight: 500,
+                          lineHeight: '20px',
                           color: token('color.text', '#172B4D'),
                         }}
                       >

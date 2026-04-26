@@ -13,7 +13,7 @@
  *   max(span ?? defaultSpan, minSpan ?? 1), clamped to 12.
  * `gridAutoFlow: row dense` lets later cards backfill earlier gaps.
  */
-import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
 import { typedQuery } from '@/integrations/supabase/client';
@@ -90,6 +90,13 @@ interface GridEditContextValue {
   onResize?: (widgetId: string, direction: 'wider' | 'narrower') => void;
   onReorder?: (sourceId: string, targetId: string, edge: 'before' | 'after') => void;
   onToggleCollapseDraft?: (widgetId: string) => void;
+  /**
+   * Solo / focus mode — transient. When set, only that widget renders;
+   * every other widget unmounts via `display: none` (preserving query
+   * cache + scroll). null = no focus.
+   */
+  soloWidgetId?: string | null;
+  onSolo?: (id: string | null) => void;
 }
 export const GridEditContext = createContext<GridEditContextValue>({
   isEditing: false,
@@ -114,6 +121,10 @@ export function useWidgetEditState() {
     // to call onReorder(sourceId, thisWidgetId, edge) — neither argument is
     // implicit. Expose the unbound version so it can pass both ids itself.
     reorderRaw: grid.onReorder,
+    // Solo / focus passthrough — used by the wrapper to render the focus
+    // toggle button + ESC handler. null = no focus.
+    soloWidgetId: grid.soloWidgetId ?? null,
+    onSolo: grid.onSolo,
   };
 }
 
@@ -332,11 +343,18 @@ export default function DashboardWidgetGrid({
 
   const collapseHandler = isEditing ? onToggleCollapse : persistedToggleCollapse;
 
+  // Solo / focus mode — transient page-level state. Setting this hides
+  // every other widget so the focused one fills the viewport. ESC inside
+  // WidgetWrapper unsets it.
+  const [soloWidgetId, setSoloWidgetId] = useState<string | null>(null);
+
   const editCtxValue: GridEditContextValue = {
     isEditing: !!isEditing,
     onResize,
     onReorder,
     onToggleCollapseDraft: isEditing ? onToggleCollapse : undefined,
+    soloWidgetId,
+    onSolo: setSoloWidgetId,
   };
 
   return (

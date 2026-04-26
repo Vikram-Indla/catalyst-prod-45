@@ -628,7 +628,13 @@ const RagDot = ({ state }: { state: RagState }) => {
 const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: number | null; dateStr: string | null }) => {
   if (state === 'none' || !dateStr) {
     return (
-      <span style={{ fontSize: 11, color: token('color.text.subtlest', '#6B778C') }}>
+      <span
+        style={{
+          fontSize: 13,
+          fontWeight: 500,
+          color: token('color.text.subtle', '#44546F'),
+        }}
+      >
         No target date
       </span>
     );
@@ -643,20 +649,20 @@ const DatePill = ({ state, daysLeft, dateStr }: { state: RagState; daysLeft: num
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 4,
-        height: 20,
-        padding: '0 6px',
+        gap: 6,
+        height: 24,
+        padding: '0 8px',
         background: c.bg,
         color: c.fg,
         border: `1px solid ${c.border}`,
-        borderRadius: 3,
-        fontSize: 11,
-        fontWeight: 600,
+        borderRadius: 4,
+        fontSize: 12,
+        fontWeight: 700,
         letterSpacing: 0.02,
         whiteSpace: 'nowrap',
       }}
     >
-      {state === 'overdue' ? <AlertTriangle size={11} /> : <Calendar size={11} />}
+      {state === 'overdue' ? <AlertTriangle size={12} /> : <Calendar size={12} />}
       {label}
     </span>
   );
@@ -987,7 +993,7 @@ function KpiCell({
       </span>
       <span
         style={{
-          fontSize: 22,
+          fontSize: 28,
           fontWeight: 600,
           lineHeight: 1.1,
           color: accent ?? token('color.text', '#172B4D'),
@@ -1032,21 +1038,24 @@ function DemandRowItem({
     });
 
   return (
-    <div style={{ borderBottom: `1px solid ${token('color.border', '#DCDFE4')}` }}>
+    <div style={{ borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
       <div
         onClick={onToggle}
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 100px 1fr 160px 110px 28px',
+          // Apr 26, 2026 — column widths bumped to match the wider 14px
+          // typography in cells (key 100→130, progress 160→180, target
+          // 110→130). Header above uses identical grid so columns align.
+          gridTemplateColumns: '28px 20px 130px 1fr 180px 130px 32px',
           alignItems: 'center',
-          gap: 8,
-          padding: `0 ${token('space.200', '16px')}`,
-          minHeight: 40,
+          gap: 12,
+          padding: `0 ${token('space.300', '24px')}`,
+          minHeight: 48,
           background: 'transparent',
           transition: 'background 120ms',
           cursor: 'pointer',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'))}
+        onMouseEnter={(e) => (e.currentTarget.style.background = token('color.background.neutral.subtle.hovered', '#F1F2F4'))}
         onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
       >
         {/* Chevron */}
@@ -1068,17 +1077,19 @@ function DemandRowItem({
           <JiraIssueTypeIcon type={isUnlinkedEpic ? 'Epic' : 'Initiative'} size={16} />
         </span>
 
-        {/* Key (with leading RAG dot) */}
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+        {/* Key (with leading RAG dot) — Apr 26, 2026: bumped to match
+            QA Defects / Production Incidents row typography (14px mono
+            bold). Identical visual rhythm across all dashboard tables. */}
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
           <RagDot state={state} />
           <a
             href={detailUrl}
             onClick={(e) => e.stopPropagation()}
             style={{
-              fontSize: 12,
-              fontWeight: 500,
-              lineHeight: '16px',
-              fontFamily: ATLAS_SANS,
+              fontSize: 14,
+              fontWeight: 600,
+              lineHeight: '20px',
+              fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
               color: token('color.link', '#0C66E4'),
               textDecoration: 'none',
               whiteSpace: 'nowrap',
@@ -1090,13 +1101,15 @@ function DemandRowItem({
           </a>
         </span>
 
-        {/* Summary */}
+        {/* Summary — Apr 26, 2026: 13→14px, weight 400→500 to match
+            primary-text density in Overdue / On Hold / Production
+            Incidents row titles. Same color.text token, just bolder. */}
         <span
           title={row.title}
           style={{
-            fontSize: 13,
+            fontSize: 14,
             lineHeight: '20px',
-            fontWeight: 400,
+            fontWeight: 500,
             fontFamily: ATLAS_SANS,
             color: token('color.text', '#172B4D'),
             overflow: 'hidden',
@@ -1107,15 +1120,18 @@ function DemandRowItem({
           {row.title}
         </span>
 
-        {/* Progress + stat — inline (bar left, text right) */}
+        {/* Progress + stat — inline (bar left, text right). Apr 26, 2026:
+            bar 6→10px height, fill colours via Atlaskit canonical bolder
+            tokens (was bespoke #1F845A / #0C66E4 hex), text 12→13px
+            tabular-nums for column-edge alignment. */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div
             style={{
-              width: 72,
-              height: 6,
+              width: 80,
+              height: 10,
               flexShrink: 0,
-              borderRadius: 3,
-              background: token('color.background.accent.gray.subtler', '#DCDFE4'),
+              borderRadius: 5,
+              background: token('color.background.neutral', '#F1F2F4'),
               overflow: 'hidden',
             }}
           >
@@ -1123,20 +1139,28 @@ function DemandRowItem({
               style={{
                 width: `${pct}%`,
                 height: '100%',
-                borderRadius: 3,
+                borderRadius: 5,
                 transition: 'width 200ms ease',
                 background:
-                  pct === 100 ? '#1F845A' : pct > 0 ? '#0C66E4' : 'transparent',
+                  pct === 100
+                    ? 'var(--ds-background-accent-green-bolder, #1F845A)'
+                    : pct > 0
+                      ? 'var(--ds-background-accent-blue-bolder, #0C66E4)'
+                      : 'transparent',
               }}
             />
           </div>
           <span
             style={{
-              fontSize: 12,
-              lineHeight: '16px',
-              fontWeight: 400,
+              fontSize: 13,
+              lineHeight: '20px',
+              fontWeight: 500,
               fontFamily: ATLAS_SANS,
-              color: pct === 100 ? '#1F845A' : token('color.text.subtle', '#44546F'),
+              fontVariantNumeric: 'tabular-nums',
+              color:
+                pct === 100
+                  ? 'var(--ds-text-accent-green-bolder, #216E4E)'
+                  : token('color.text.subtle', '#44546F'),
               whiteSpace: 'nowrap',
             }}
           >
@@ -1601,7 +1625,10 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
       ? mergedActive.filter((r) => !overdueRows.includes(r))
       : [...mergedActive, ...delivered];
 
-  const visibleRows = visibleByTab.slice(0, 10);
+  // No slice cap (Apr 26, 2026) — WidgetWrapper now enforces a 620px
+  // standardised body height with internal scroll, so the dashboard
+  // never exposes a half-truncated list. Render the full visible set.
+  const visibleRows = visibleByTab;
 
 
 
@@ -1809,22 +1836,25 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         );
       })()}
 
-      {/* Key / Title sortable header bar */}
+      {/* Key / Title sortable header bar — Apr 26, 2026: bumped to
+          match QA Defects / Production Incidents header rhythm
+          (12px / 700 / 0.04em / color.text.subtle). Same hierarchy
+          across every dashboard table. */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '28px 20px 100px 1fr 160px 110px 28px',
+          gridTemplateColumns: '28px 20px 130px 1fr 180px 130px 32px',
           alignItems: 'center',
-          gap: 8,
-          padding: `6px ${token('space.200', '16px')}`,
-          borderBottom: `1px solid ${token('color.border', '#DCDFE4')}`,
+          gap: 12,
+          padding: `10px ${token('space.300', '24px')}`,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface.sunken', '#F7F8F9'),
           fontFamily: ATLAS_SANS,
-          fontSize: 11,
+          fontSize: 12,
           fontWeight: 700,
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
-          color: token('color.text.subtlest', '#626F86'),
+          color: token('color.text.subtle', '#44546F'),
         }}
       >
         <span />
@@ -1881,7 +1911,10 @@ export default function DemandFulfilmentGadget({ projectId, projectKey, collapse
         </div>
       ) : (
         <>
-          <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+          {/* Inner-scroll dropped Apr 26, 2026 — outer WidgetWrapper body
+              owns overflow-y now (standardised 620px height). Removes the
+              double-scrollbar that resulted from a 300px inner + outer body. */}
+          <div>
             {visibleRows.length === 0 ? (
               <div style={{ padding: 20, fontSize: 12, color: token('color.text.subtle', '#6B778C'), textAlign: 'center' }}>
                 Nothing in this filter.

@@ -174,6 +174,27 @@ export function ResizableDynamicTable({
       const px = widths[key] ?? defaultWidths[key] ?? 100;
       col.style.width = `${px}px`;
     });
+
+    // RESPONSIVE FIX (Apr 26, 2026) — the global .dashboard-widget-body
+    // CSS forces `white-space: nowrap` on every <td>/<th>, which made
+    // long titles overflow into adjacent columns whenever a column's
+    // colgroup width was narrower than the cell content. With
+    // `table-layout: fixed` the cell *box* obeys the colgroup width,
+    // but the inline content still spills past the right edge unless
+    // we clip it. Apply the clip + ellipsis on every TD so any cell's
+    // content is naturally truncated at its column boundary.
+    //
+    // Why JS-mutate vs. global CSS rule? The wider .dashboard-widget-body
+    // CSS deliberately pairs `nowrap` with horizontal scroll for
+    // table-layout: auto consumers. Mutating only the TDs of THIS
+    // specific table preserves that contract for any other consumer
+    // and avoids a CSS specificity battle.
+    const cells = table.querySelectorAll('td');
+    cells.forEach((cell) => {
+      (cell as HTMLElement).style.overflow = 'hidden';
+      (cell as HTMLElement).style.textOverflow = 'ellipsis';
+      (cell as HTMLElement).style.whiteSpace = 'nowrap';
+    });
   });
 
   const setWidth = useCallback(

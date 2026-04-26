@@ -20,6 +20,7 @@ import WidgetGearButton from '../WidgetGearButton';
 import { useDashboardIncidents } from '@/hooks/useDashboardWidgets';
 import { useGadgetSettings } from '@/hooks/useGadgetSettings';
 import { token } from '@atlaskit/tokens';
+import Tooltip from '@atlaskit/tooltip';
 import { useUWV } from '@/components/universal-work-view/UWVContext';
 import {
   Lozenge,
@@ -89,14 +90,30 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
   // horizontally when the row is wider than the container. This gives
   // users the full title text (no ellipsis) with comfortable margins.
   // 6-column layout (Apr 25, 2026): adds Priority + Started.
+  // Header cells wrap the label in a span with bumped typography so the
+  // column heads read at executive scale (matches the rest of the
+  // dashboard's 14px body / 28px KPI rhythm).
+  const headLabel = (label: string) => (
+    <span
+      style={{
+        fontSize: 12,
+        fontWeight: 700,
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+        color: token('color.text.subtle', '#44546F'),
+      }}
+    >
+      {label}
+    </span>
+  );
   const head = {
     cells: [
-      { key: 'priority', content: 'P',         isSortable: true },
-      { key: 'key',      content: 'Key',       isSortable: true },
-      { key: 'title',    content: 'Title',     isSortable: false },
-      { key: 'status',   content: 'Status',    isSortable: true },
-      { key: 'assignee', content: 'Assignee',  isSortable: false },
-      { key: 'started',  content: 'Started',   isSortable: true },
+      { key: 'priority', content: headLabel('P'),         isSortable: true },
+      { key: 'key',      content: headLabel('Key'),       isSortable: true },
+      { key: 'title',    content: headLabel('Title'),     isSortable: false },
+      { key: 'status',   content: headLabel('Status'),    isSortable: true },
+      { key: 'assignee', content: headLabel('Assignee'),  isSortable: false },
+      { key: 'started',  content: headLabel('Started'),   isSortable: true },
     ],
   };
 
@@ -105,7 +122,10 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
     return v === 'resolved' || v === 'closed' || v === 'done';
   };
 
-  const rows = (incidents ?? []).slice(0, 10).map((inc: any) => {
+  // No slice cap (Apr 26, 2026) — outer WidgetWrapper body provides a
+  // standardised 620px scroll container, so we render the full set
+  // and let the user scroll inside the widget instead of capping at 10.
+  const rows = (incidents ?? []).map((inc: any) => {
     const assigneeName = inc.assignee_display_name || '';
     const statusLabel = (inc.status || 'open').replace(/_/g, ' ');
     return {
@@ -115,7 +135,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           key: 'priority',
           content: (
             <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-              <PriorityIcon level={inc.priority ?? null} size={14} />
+              <PriorityIcon level={inc.priority ?? null} size={16} />
             </span>
           ),
         },
@@ -126,17 +146,17 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 8,
                 color: token('color.link', '#0C66E4'),
-                fontWeight: 500,
+                fontWeight: 600,
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
-                fontSize: 12,
+                fontSize: 14,
                 whiteSpace: 'nowrap',
               }}
             >
               <JiraIssueTypeIcon
                 type={(inc as any).issue_type ?? 'Production Incident'}
-                size={14}
+                size={16}
               />
               {inc.issue_key ?? ''}
             </span>
@@ -145,9 +165,29 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         {
           key: 'title',
           content: (
-            <span style={{ fontSize: 13, color: token('color.text', '#172B4D') }}>
-              {inc.summary ?? ''}
-            </span>
+            // Tooltip surfaces the full title on hover — cell truncates
+            // with ellipsis at its colgroup width (clipping applied by
+            // ResizableDynamicTable). Display:block makes the span fill
+            // the cell so ellipsis behaves predictably.
+            <Tooltip content={inc.summary ?? ''} position="top">
+              {(tp) => (
+                <span
+                  {...tp}
+                  style={{
+                    display: 'block',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: token('color.text', '#172B4D'),
+                    lineHeight: '20px',
+                  }}
+                >
+                  {inc.summary ?? ''}
+                </span>
+              )}
+            </Tooltip>
           ),
         },
         {
@@ -161,16 +201,17 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
         {
           key: 'assignee',
           content: assigneeName ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <UserAvatar
-                size="xsmall"
+                size="small"
                 name={assigneeName}
                 src={inc.assignee_avatar_url}
               />
               <span
                 style={{
-                  fontSize: 12,
-                  color: token('color.text.subtle', '#505258'),
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: token('color.text', '#172B4D'),
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                 }}
@@ -179,7 +220,7 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
               </span>
             </div>
           ) : (
-            <span style={{ color: token('color.text.subtlest', '#6B6E76') }}>—</span>
+            <span style={{ color: token('color.text.subtlest', '#6B6E76'), fontSize: 14 }}>—</span>
           ),
         },
         {
@@ -188,8 +229,9 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             <RelativeTime
               iso={inc.jira_created_at ?? inc.created_at ?? null}
               style={{
-                fontSize: 11,
-                color: token('color.text.subtle', '#505258'),
+                fontSize: 13,
+                fontWeight: 500,
+                color: token('color.text.subtle', '#44546F'),
                 fontFamily: 'ui-monospace, "SF Mono", Menlo, Consolas, monospace',
                 whiteSpace: 'nowrap',
               }}
@@ -230,16 +272,16 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
           {/* Status summary bar */}
           <div
             style={{
-              padding: '8px 16px',
+              padding: '12px 24px',
               display: 'flex',
               gap: 12,
               alignItems: 'center',
-              borderBottom: `1px solid ${token('color.border', '#E2E8F0')}`,
+              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
             }}
           >
             <span
               style={{
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: 600,
                 color: token('color.text', '#172B4D'),
               }}
@@ -258,34 +300,36 @@ export default function ProductionIncidentsWidget({ projectId, projectKey, colla
             })()}
           </div>
           <div
-            // Identical fixed-height scroll container as QA Defects so the
-            // two widgets sit at exact same chrome height in the 12-col grid.
-            // 10 rows × 36px + table head 36px = 396px.
-            style={{ maxHeight: 396, overflowY: 'auto', overflowX: 'auto' }}
+            // Inner-scroll dropped Apr 26, 2026 — WidgetWrapper now owns a
+            // standardised 620px body scroll for every widget. Keeping
+            // overflowX for wide-table horizontal scroll.
+            style={{ overflowX: 'auto' }}
           >
           <ResizableDynamicTable
-            widgetKey={`prod-incidents-v2:${projectKey}`}
+            widgetKey={`prod-incidents-v3:${projectKey}`}
             head={head}
             rows={rows}
             ariaLabel="Production incidents"
-            // Apr 26, 2026 — defaults rebalanced for full-width (12-of-12)
-            // stacked layout. Mirror QA Defects so the two stacked widgets
-            // line up vertically with identical column rhythm.
+            // Apr 26, 2026 — widths re-tuned for 14-15px executive
+            // typography (was 12-13px). Mirrors QA Defects so the two
+            // stacked widgets line up vertically with identical column
+            // rhythm. Bumped widgetKey suffix to v3 to discard any
+            // persisted user-customised widths from the previous pass.
             defaultWidths={{
-              priority: 56,
-              key: 140,
-              title: 740,
-              status: 130,
-              assignee: 150,
-              started: 100,
+              priority: 64,
+              key: 170,
+              title: 700,
+              status: 140,
+              assignee: 180,
+              started: 120,
             }}
             minWidths={{
-              priority: 40,
-              key: 96,
-              title: 200,
-              status: 80,
-              assignee: 80,
-              started: 60,
+              priority: 48,
+              key: 120,
+              title: 240,
+              status: 100,
+              assignee: 110,
+              started: 80,
             }}
           />
           </div>

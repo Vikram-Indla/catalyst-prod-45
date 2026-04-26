@@ -37,6 +37,21 @@
   }
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   DASHBOARD MOTION — classical keyframes used by WidgetWrapper.
+   Respects prefers-reduced-motion above (rule sets duration to 0.01ms).
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes dashboardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
