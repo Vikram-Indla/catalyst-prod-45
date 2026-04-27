@@ -70,6 +70,9 @@ import VidFullScreenOnIcon from '@atlaskit/icon/glyph/vid-full-screen-on';
 import VidFullScreenOffIcon from '@atlaskit/icon/glyph/vid-full-screen-off';
 import MoreIcon from '@atlaskit/icon/glyph/more';
 import { DatePicker } from '@atlaskit/datetime-picker';
+import DropdownMenu, { DropdownItemGroup, DropdownItem } from '@atlaskit/dropdown-menu';
+import Lozenge from '@atlaskit/lozenge';
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
