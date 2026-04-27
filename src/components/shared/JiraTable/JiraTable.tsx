@@ -822,7 +822,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     const out: Array<{
       key: string;
       onClick?: (e: React.MouseEvent) => void;
-      cells: Array<{ key: string; content: React.ReactNode }>;
+      cells: Array<{ key: string; content: React.ReactNode; colSpan?: number }>;
     }> = [];
 
     const renderDataRow = (row: TRow) => {
@@ -830,7 +830,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       const isSelected = selectedSet.has(id);
       const isFocused = focusedRowId === id;
 
-      const rowCells: Array<{ key: string; content: React.ReactNode }> = [];
+      const rowCells: Array<{ key: string; content: React.ReactNode; colSpan?: number }> = [];
 
       if (selectable) {
         rowCells.push({
@@ -1032,7 +1032,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
 
       for (const g of groups) {
         const collapsed = g.isCollapsed || !!collapsedGroups?.has(g.id);
-        const groupCells: Array<{ key: string; content: React.ReactNode }> = [];
+        const groupCells: Array<{ key: string; content: React.ReactNode; colSpan?: number }> = [];
 
         // Group select-all checkbox (catalog 088) — state mirrors the
         // selection Set. Only rendered when the table is selectable.
