@@ -437,7 +437,18 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
   const ref = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listboxRef = useRef<HTMLDivElement>(null);
-  const current = BR_STATUS_OPTIONS.find(o => o.value === status) ?? BR_STATUS_OPTIONS[0];
+
+  // Source statuses from /admin/workflows (Business Request scheme)
+  const { statuses, isLoading } = useCatalystWorkflow('Business Request');
+  const options = statuses.map((s: WorkflowStatus) => ({
+    value: s.slug,
+    label: s.name,
+    category: s.category,
+  }));
+
+  const current =
+    options.find(o => o.value === status) ??
+    options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', category: 'todo' as const };
 
   useEffect(() => {
     if (!open) return;
@@ -448,24 +459,25 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
 
   useEffect(() => {
     if (!open) return;
-    const idx = BR_STATUS_OPTIONS.findIndex(o => o.value === status);
+    const idx = options.findIndex(o => o.value === status);
     setActiveIdx(idx >= 0 ? idx : 0);
     requestAnimationFrame(() => listboxRef.current?.focus());
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const close = (ret = true) => { setOpen(false); setActiveIdx(-1); if (ret) triggerRef.current?.focus(); };
-  const pick = (idx: number) => { onChange(BR_STATUS_OPTIONS[idx].value); close(true); };
+  const pick = (idx: number) => { if (options[idx]) { onChange(options[idx].value); close(true); } };
 
   const onListKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => (i + 1) % BR_STATUS_OPTIONS.length); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(i => (i - 1 + BR_STATUS_OPTIONS.length) % BR_STATUS_OPTIONS.length); }
+    if (!options.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => (i + 1) % options.length); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(i => (i - 1 + options.length) % options.length); }
     else if (e.key === 'Enter') { e.preventDefault(); if (activeIdx >= 0) pick(activeIdx); }
     else if (e.key === 'Escape') { e.preventDefault(); close(true); }
     else if (e.key === 'Tab') close(false);
   };
 
-  const statusStyle = (val: string): React.CSSProperties => {
-    const app = brStatusAppearance(val);
+  const statusStyle = (cat: 'todo' | 'in_progress' | 'done'): React.CSSProperties => {
+    const app = brStatusAppearance(cat);
     return {
       display: 'inline-block', padding: '2px 6px', borderRadius: 3,
       fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
@@ -495,19 +507,24 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
       </button>
       {open && (
         <div ref={listboxRef} role="listbox" aria-label="Change status"
-          aria-activedescendant={activeIdx >= 0 ? `br-st-${BR_STATUS_OPTIONS[activeIdx]?.value}` : undefined}
+          aria-activedescendant={activeIdx >= 0 ? `br-st-${options[activeIdx]?.value}` : undefined}
           tabIndex={-1} onKeyDown={onListKey}
           style={{
             position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, outline: 'none',
             background: token('elevation.surface.overlay', '#FFF'),
             border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', padding: '4px 0', minWidth: 180,
+            borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', padding: '4px 0', minWidth: 200,
           }}
         >
           <div style={{ padding: '6px 12px 4px', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-body)', textTransform: 'uppercase', letterSpacing: '0.05em', color: token('color.text.subtlest', '#8590A2') }}>
             Change status
           </div>
-          {BR_STATUS_OPTIONS.map((opt, idx) => (
+          {options.length === 0 && (
+            <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#8590A2') }}>
+              {isLoading ? 'Loading…' : 'No statuses configured'}
+            </div>
+          )}
+          {options.map((opt, idx) => (
             <div key={opt.value} id={`br-st-${opt.value}`} role="option" aria-selected={status === opt.value}
               onClick={() => pick(idx)} onMouseEnter={() => setActiveIdx(idx)}
               style={{
@@ -517,7 +534,7 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
                 outline: 'none',
               }}
             >
-              <span style={statusStyle(opt.value)}>{opt.label}</span>
+              <span style={statusStyle(opt.category)}>{opt.label}</span>
             </div>
           ))}
         </div>
