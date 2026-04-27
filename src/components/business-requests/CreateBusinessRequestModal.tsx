@@ -429,19 +429,18 @@ function MoreActionsButton() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// StatusChip — @atlaskit/button/new + inline listbox, identical to CreateStoryModal
+// StatusChip — @atlaskit/dropdown-menu + Lozenge (portal-rendered, z-index safe)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BR_STATUS_CHIP_ID = 'br-status-chip-trigger';
+type LozengeAppearance = 'default' | 'inprogress' | 'success' | 'removed' | 'moved' | 'new';
+
+function categoryToLozenge(cat: 'todo' | 'in_progress' | 'done' | undefined): LozengeAppearance {
+  if (cat === 'done') return 'success';
+  if (cat === 'in_progress') return 'inprogress';
+  return 'default';
+}
 
 function BRStatusChip({ status, onChange }: { status: string; onChange: (s: string) => void }) {
-  const [open, setOpen] = useState(false);
-  const [activeIdx, setActiveIdx] = useState(-1);
-  const ref = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const listboxRef = useRef<HTMLDivElement>(null);
-
-  // Source statuses from /admin/workflows (Business Request scheme)
   const { statuses, isLoading } = useCatalystWorkflow('Business Request');
   const options = statuses.map((s: WorkflowStatus) => ({
     value: s.slug,
@@ -453,96 +452,54 @@ function BRStatusChip({ status, onChange }: { status: string; onChange: (s: stri
     options.find(o => o.value === status) ??
     options[0] ?? { value: '', label: isLoading ? 'Loading…' : 'No status', category: 'todo' as const };
 
-  useEffect(() => {
-    if (!open) return;
-    const h = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
-    document.addEventListener('mousedown', h);
-    return () => document.removeEventListener('mousedown', h);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return;
-    const idx = options.findIndex(o => o.value === status);
-    setActiveIdx(idx >= 0 ? idx : 0);
-    requestAnimationFrame(() => listboxRef.current?.focus());
-  }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const close = (ret = true) => { setOpen(false); setActiveIdx(-1); if (ret) triggerRef.current?.focus(); };
-  const pick = (idx: number) => { if (options[idx]) { onChange(options[idx].value); close(true); } };
-
-  const onListKey = (e: React.KeyboardEvent) => {
-    if (!options.length) return;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActiveIdx(i => (i + 1) % options.length); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActiveIdx(i => (i - 1 + options.length) % options.length); }
-    else if (e.key === 'Enter') { e.preventDefault(); if (activeIdx >= 0) pick(activeIdx); }
-    else if (e.key === 'Escape') { e.preventDefault(); close(true); }
-    else if (e.key === 'Tab') close(false);
-  };
-
-  const statusStyle = (cat: 'todo' | 'in_progress' | 'done'): React.CSSProperties => {
-    const app = brStatusAppearance(cat);
-    return {
-      display: 'inline-block', padding: '2px 6px', borderRadius: 3,
-      fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em',
-      background: app === 'success' ? '#E3FCEF' : app === 'inprogress' ? '#DEEBFF' : '#DFE1E6',
-      color: app === 'success' ? '#006644' : app === 'inprogress' ? '#0747A6' : '#253858',
-    };
-  };
-
   return (
-    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <button ref={triggerRef} id={BR_STATUS_CHIP_ID} type="button"
-        aria-haspopup="listbox" aria-expanded={open} aria-label={`${current.label} — Change status`}
-        onClick={() => setOpen(o => !o)}
-        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); setOpen(true); } }}
-        style={{
-          background: token('color.background.neutral', 'rgba(9,30,66,0.06)'),
-          border: `2px solid ${open ? token('color.border.focused', '#1868DB') : 'transparent'}`,
-          borderRadius: 3, minHeight: 40, padding: '0 10px', fontSize: 14, fontWeight: 500,
-          fontFamily: 'var(--cp-font-body)', color: token('color.text', '#172B4D'),
-          cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4, outline: 'none',
-        }}
-      >
-        {current.label}
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-          <path d="M2 3.5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
-      {open && (
-        <div ref={listboxRef} role="listbox" aria-label="Change status"
-          aria-activedescendant={activeIdx >= 0 ? `br-st-${options[activeIdx]?.value}` : undefined}
-          tabIndex={-1} onKeyDown={onListKey}
+    <DropdownMenu
+      placement="bottom-start"
+      shouldRenderToParent={false}
+      trigger={({ triggerRef, ...triggerProps }) => (
+        <button
+          {...triggerProps}
+          ref={triggerRef as React.Ref<HTMLButtonElement>}
+          type="button"
+          aria-label={`${current.label} — Change status`}
           style={{
-            position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 100, outline: 'none',
-            background: token('elevation.surface.overlay', '#FFF'),
-            border: `1px solid ${token('color.border', '#DFE1E6')}`,
-            borderRadius: 4, boxShadow: '0 4px 12px rgba(9,30,66,0.15)', padding: '4px 0', minWidth: 200,
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 4,
+            outline: 'none',
+            fontFamily: 'var(--cp-font-body)',
           }}
         >
-          <div style={{ padding: '6px 12px 4px', fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-body)', textTransform: 'uppercase', letterSpacing: '0.05em', color: token('color.text.subtlest', '#8590A2') }}>
-            Change status
-          </div>
-          {options.length === 0 && (
-            <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#8590A2') }}>
-              {isLoading ? 'Loading…' : 'No statuses configured'}
-            </div>
-          )}
-          {options.map((opt, idx) => (
-            <div key={opt.value} id={`br-st-${opt.value}`} role="option" aria-selected={status === opt.value}
-              onClick={() => pick(idx)} onMouseEnter={() => setActiveIdx(idx)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 8, padding: '6px 12px', cursor: 'pointer',
-                fontFamily: 'var(--cp-font-body)', fontSize: 14, color: token('color.text', '#172B4D'),
-                background: idx === activeIdx ? token('color.background.neutral.hovered', 'rgba(9,30,66,0.06)') : status === opt.value ? token('color.background.selected', 'rgba(37,99,235,0.08)') : 'transparent',
-                outline: 'none',
-              }}
-            >
-              <span style={statusStyle(opt.category)}>{opt.label}</span>
-            </div>
-          ))}
-        </div>
+          <Lozenge appearance={categoryToLozenge(current.category)} isBold>
+            {current.label}
+          </Lozenge>
+          <ChevronDownIcon label="" size="small" />
+        </button>
       )}
-    </div>
+    >
+      <DropdownItemGroup title="Change status">
+        {options.length === 0 && (
+          <div style={{ padding: '8px 12px', fontSize: 13, color: token('color.text.subtlest', '#8590A2') }}>
+            {isLoading ? 'Loading…' : 'No statuses configured'}
+          </div>
+        )}
+        {options.map(opt => (
+          <DropdownItem
+            key={opt.value}
+            isSelected={status === opt.value}
+            onClick={() => onChange(opt.value)}
+          >
+            <Lozenge appearance={categoryToLozenge(opt.category)} isBold>
+              {opt.label}
+            </Lozenge>
+          </DropdownItem>
+        ))}
+      </DropdownItemGroup>
+    </DropdownMenu>
   );
 }
 
