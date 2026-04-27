@@ -69,6 +69,10 @@ import type {
 
 import { useStoryBacklog, useEpicBacklog, useInitiativesByKeys, useInitiativeLinksByEpicKeys } from '../hooks/useBacklogData';
 import { useProject } from '@/hooks/useProjects';
+// Apr 28, 2026 (carryover #9): Star/Unstar persisted via the canonical
+// starred_items table chokepoint. Replaces the prior local useState toggle
+// that didn't persist.
+import { useStarredItems } from '@/hooks/useStarredItems';
 import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import type { InitiativeRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -485,7 +489,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // project background / Project settings / Archive project / Delete project.
   // Uses bespoke createPortal (L21).
   const [projectMenuAnchor, setProjectMenuAnchor] = useState<{ top: number; left: number } | null>(null);
-  const [isStarred, setIsStarred] = useState<boolean>(false);
+  // Apr 28, 2026 (carryover #9): Star/Unstar wired to the canonical
+  // starred_items table via useStarredItems. The prior local useState was
+  // a stub that didn't persist. room_type='project' + room_id=projectId
+  // (UUID) is the canonical key shape used everywhere else (HomeSidebar
+  // Pinned, ProjectTable, Starred page).
+  const { toggleStar: toggleStarredItem, isStarred: isStarredFn } = useStarredItems({ filterByRoomType: 'project' as const, limit: 100 });
+  const isStarred = isStarredFn('project' as const, projectId);
   const projectMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
@@ -541,6 +551,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const JIRA_FIELD_MAP: Record<string, string> = {
     title: 'summary',
   };
+  // Apr 28, 2026 (carryover P2): added onMutate for optimistic UI so the
+  // cell flips to the new value within ~10ms instead of waiting ~2-3s for
+  // the background refetch. onError reverts the snapshot if the PATCH
+  // fails. onSettled is the single invalidation point so the local
+  // optimistic write reconciles with the authoritative server response.
   const updateField = useMutation({
     mutationFn: async ({ id, source, patch }: { id: string; source?: string; patch: Record<string, unknown> }) => {
       // Step 1 — local cache write to ph_issues (canonical source of truth).
@@ -577,16 +592,83 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         }
       }
     },
+    onMutate: async ({ id, patch }) => {
+      // The actual cache keys used by useStoryBacklog / useEpicBacklog are
+      // 3-tuple: ['backlog-*', projectId, projectKey]. The first two
+      // elements are stable for this page; we use a partial-match
+      // predicate so we don't have to thread projectKey through here.
+      const storyPrefix = ['backlog-stories-v2', projectId] as const;
+      const epicPrefix = ['backlog-epics', projectId] as const;
+
+      // Cancel in-flight refetches so they don't race the optimistic write.
+      await queryClient.cancelQueries({ queryKey: storyPrefix });
+      await queryClient.cancelQueries({ queryKey: epicPrefix });
+
+      // Snapshot every matching query so we can revert on error.
+      const prevStories = queryClient.getQueriesData<any[]>({ queryKey: storyPrefix });
+      const prevEpics = queryClient.getQueriesData<any[]>({ queryKey: epicPrefix });
+
+      // Build the optimistic patch in BacklogItem shape. Caller passes
+      // catalyst-style names ('title') which the BacklogItem shape uses
+      // directly (BacklogItem.title is populated from row.summary in the
+      // hook's mapper, but downstream consumers read row.title /
+      // row.priority etc; we patch the same keys the renderer reads).
+      const optimisticPatch: Record<string, unknown> = {};
+      for (const [k, v] of Object.entries(patch)) {
+        if (k === 'updated_at') continue;
+        optimisticPatch[k] = v;
+      }
+      optimisticPatch.jira_updated_at = new Date().toISOString();
+
+      const applyPatch = (arr: any[] | undefined) => {
+        if (!arr) return arr;
+        return arr.map((row) => {
+          const matchesId =
+            row.id === id ||
+            row.issue_key === id ||
+            row.story_key === id ||
+            row.epic_key === id;
+          return matchesId ? { ...row, ...optimisticPatch } : row;
+        });
+      };
+
+      // Apply to every snapshotted query (handles the projectKey suffix).
+      for (const [key] of prevStories) {
+        queryClient.setQueryData(key, applyPatch);
+      }
+      for (const [key] of prevEpics) {
+        queryClient.setQueryData(key, applyPatch);
+      }
+
+      return { prevStories, prevEpics };
+    },
+    onError: (e: Error, _variables, context) => {
+      // Revert every snapshotted query on failure.
+      if (context?.prevStories) {
+        for (const [key, data] of context.prevStories) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+      if (context?.prevEpics) {
+        for (const [key, data] of context.prevEpics) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+      flag.error('Update failed', e.message);
+    },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
       if (variables.source === 'jira') {
         flag.success('Updated', 'Change queued for Jira sync approval');
       } else {
         flag.success('Updated');
       }
     },
-    onError: (e: Error) => flag.error('Update failed', e.message),
+    onSettled: () => {
+      // Reconcile against the server (partial-match invalidation covers
+      // every projectKey variant of the cache keys).
+      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+    },
   });
 
   // ── Normalize epics + stories into BacklogItem ──
@@ -2525,7 +2607,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           }}
         >
           {[
-            { id: 'star', label: isStarred ? 'Remove from starred' : 'Add to starred', onClick: () => { setIsStarred((s) => !s); flag.success(isStarred ? 'Removed from starred' : 'Added to starred'); } },
+            { id: 'star', label: isStarred ? 'Remove from starred' : 'Add to starred', onClick: () => {
+              toggleStarredItem({
+                room_type: 'project' as const,
+                room_id: projectId,
+                room_name: pageTitle,
+                room_subtitle: projectKey,
+                room_path: `/project-hub/${projectKey}`,
+                pi_label: null,
+              });
+            } },
             { id: 'teams', label: 'Linked teams', onClick: () => flag.info('Linked teams', 'Team management is coming soon.') },
             { id: 'bg', label: 'Set project background', onClick: () => flag.info('Set project background', 'Backgrounds are coming soon.') },
             { id: 'sep1', divider: true },

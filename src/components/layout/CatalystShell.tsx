@@ -1,5 +1,4 @@
 import { useState, useEffect, lazy, Suspense, ComponentType, useSyncExternalStore } from 'react';
-import { PanelLeftOpen } from 'lucide-react';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
@@ -67,55 +66,15 @@ function useIsDarkTheme(): boolean {
   );
 }
 
-/**
- * SidebarEdgeReveal — 8px-wide left-edge strip rendered in place of the
- * sidebar when `sidebarHidden` is true. Rest state is nearly invisible; on
- * hover it widens to 32px and fades in a PanelLeftOpen glyph so the user
- * knows where to click to restore the nav. Pattern matches Linear/Notion.
- * Click → set expanded=true, hidden=false (full return, not icon-rail).
- */
-function SidebarEdgeReveal({ onReveal }: { onReveal: () => void }) {
-  const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
-  const shortcutHint = isMac ? '⌘ [' : 'Ctrl [';
-  // Apr 27, 2026 (Vikram audit passes 6 + 9):
-  // Pass 6 removed the native `title=` attribute (was the source of an
-  //   OS-level ghost tooltip that floated unanchored over the table)
-  //   and wrapped the button in @atlaskit/tooltip for ADS positioning.
-  // Pass 9 reverted the @atlaskit/tooltip wrapper because it nested the
-  //   button inside a span that didn't propagate `h-full`, causing the
-  //   strip to collapse from full viewport height to a 16-pixel chevron
-  //   floating at y=56 — exactly the "leaking from structure" defect the
-  //   user surfaced. Tooltip is purely informational here; the visible
-  //   chevron-on-hover already signals affordance, so we drop the popup
-  //   entirely. aria-label remains for screen readers.
-  // Width animation lives in a CSS :hover rule (not direct DOM mutation),
-  //   so React stays in control of the inline `style` prop — the same
-  //   class of bug the TypeChip refactor uncovered earlier today.
-  return (
-    <button
-      onClick={onReveal}
-      aria-label={`Show sidebar (shortcut: ${shortcutHint})`}
-      className="group flex items-center justify-center h-full sidebar-edge-reveal"
-      style={{
-        width: '8px',
-        height: '100%',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        color: 'var(--cp-text-muted, #94A3B8)',
-        flexShrink: 0,
-        padding: 0,
-        alignSelf: 'stretch',
-        transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1), background 180ms cubic-bezier(0.2, 0, 0, 1)',
-      }}
-    >
-      <style>{`
-        .sidebar-edge-reveal:hover { width: 32px !important; background: rgba(0,0,0,0.03) !important; }
-      `}</style>
-      <PanelLeftOpen size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-    </button>
-  );
-}
+// Apr 28, 2026 (Vikram): SidebarEdgeReveal deprecated. The 8px-wide
+// edge-reveal strip + |> hover-handle tooltip was a redundant third
+// affordance for restoring the sidebar — the header chevron in the
+// top-nav and the ⌘/Ctrl + [ keyboard shortcut already cover the same
+// flow. The hover handle floated unanchored on certain layouts and the
+// aria-label "Show sidebar (shortcut: ⌘ [)" surfaced as a stray tooltip
+// on the table column edge. Removed. When sidebarHidden is true the
+// shell now renders the same zero-width placeholder used for the
+// intermediate state, so the layout stays stable.
 
 function CatalystShellContent() {
   // Dev-only instrumentation: prove shell doesn't remount on program navigation
@@ -139,11 +98,12 @@ function CatalystShellContent() {
   // Per user direction: hover-peek is fully disabled across every route.
   // The sidebar opens / closes ONLY via:
   //   • Click on the header chevron → cycleSidebarState
-  //   • Click on the SidebarEdgeReveal handle → pin sidebar open
   //   • Cmd/Ctrl + [ keyboard shortcut → cycleSidebarState
-  // No mousemove listener, no hover triggers, no peek. sidebarHoverOpen
-  // stays in context (other surfaces still read it) but nothing in this
-  // shell ever sets it to true anymore.
+  // No mousemove listener, no hover triggers, no peek. The Apr 27 2026
+  // SidebarEdgeReveal handle was deprecated Apr 28 2026 — see the
+  // comment above the shell render block. sidebarHoverOpen stays in
+  // context (other surfaces still read it) but nothing in this shell
+  // ever sets it to true anymore.
 
   // Effective visibility (Jira parity):
   //   - Pinned + not hidden → solid sidebar panel (pushes content right)
@@ -615,7 +575,7 @@ function CatalystShellContent() {
             // Without this, the overlay wrapper had no explicit width and
             // was collapsing to intrinsic child width, which drifted under
             // certain routes (e.g. TeamRoomSidebar uses 220px, not 240).
-            // When NOT visually open we let the child (SidebarEdgeReveal or
+            // When NOT visually open we let the child (zero-width placeholder or
             // zero-width placeholder) size itself — forcing a width here
             // would collapse the edge-reveal handle.
             ...(sidebarVisuallyOpen ? { width: 240 } : null),
@@ -631,20 +591,15 @@ function CatalystShellContent() {
           >
             {sidebarVisuallyOpen ? (
               // Visible — either pinned (solid panel) or hover-peek (overlay).
-              // Order matters: peek MUST win over the edge-reveal below so a
-              // user hovering the top-nav chevron from the edge-reveal state
-              // sees the sidebar rather than the 8px strip.
               <Suspense fallback={null}>
                 {renderSidebar()}
               </Suspense>
-            ) : sidebarHidden ? (
-              // Click pins the sidebar open (Jira parity — click = intent to stick).
-              // Previously only set hidden=false + expanded=true which left the
-              // sidebar in overlay/unpinned mode, so onMouseLeave re-hid it.
-              <SidebarEdgeReveal onReveal={() => { setSidebarHidden(false); setSidebarExpanded(true); setSidebarPinned(true); }} />
             ) : (
-              // Intermediate state: not hidden, not pinned, not peeking.
-              // Render a zero-width placeholder so the flex row stays stable.
+              // Apr 28, 2026: the SidebarEdgeReveal handle was deprecated;
+              // when the sidebar is hidden / unpinned / not peeking we
+              // render a zero-width placeholder so the flex row stays
+              // stable. Restoring the sidebar happens via the top-nav
+              // chevron or ⌘/Ctrl + [.
               <div style={{ width: 0, height: '100%' }} aria-hidden />
             )}
           </div>
