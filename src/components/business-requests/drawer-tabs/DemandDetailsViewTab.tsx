@@ -13,7 +13,12 @@ import { Lock, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CatalystDatePicker } from '@/components/ui/catalyst-date-picker';
 import { RichTextEditor } from '../RichTextEditor';
-import { BusinessRequest } from '@/types/business-request';
+import {
+  BusinessRequest,
+  THEME_OPTIONS,
+  STAKEHOLDER_OPTIONS,
+  REQUEST_TYPE_OPTIONS,
+} from '@/types/business-request';
 import { DepartmentSelect } from '@/components/business-requests/DepartmentSelect';
 import { UserSelect } from '@/components/business-requests/UserSelect';
 import { useDepartments, useBusinessOwners, useDepartmentOwnerMappings, getOwnerIdForDepartment } from '@/hooks/useDepartmentsAndOwners';
@@ -360,7 +365,116 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
         </div>
       </div>
 
-      {/* SECTION 6: Metadata Footer */}
+      {/* SECTION 6: Feature Unification Fields (Notion import + native creation) */}
+      {(data.arabic_title || data.scope_url || data.request_type || data.category || data.theme || (data.stakeholders && (data as any).stakeholders?.length > 0)) && (
+        <>
+          <hr className="border-gray-200" />
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
+              Feature Details
+            </p>
+            <div className="space-y-3">
+              {/* Arabic title */}
+              {data.arabic_title && (
+                <div>
+                  <FieldLabel>Feature name (Arabic)</FieldLabel>
+                  <div
+                    className="h-9 px-3 rounded-md border flex items-center text-sm"
+                    style={{ direction: 'rtl', textAlign: 'right', borderColor: 'var(--divider)' }}
+                  >
+                    {data.arabic_title}
+                  </div>
+                </div>
+              )}
+
+              {/* Type / Category / Theme in a 3-col row */}
+              {(data.request_type || data.category || data.theme) && (
+                <div className="grid grid-cols-3 gap-4">
+                  {data.request_type && (
+                    <div>
+                      <FieldLabel>Type</FieldLabel>
+                      <div className="h-9 px-3 rounded-md border flex items-center text-sm capitalize" style={{ borderColor: 'var(--divider)' }}>
+                        {REQUEST_TYPE_OPTIONS.find(o => o.value === data.request_type)?.label ?? data.request_type}
+                      </div>
+                    </div>
+                  )}
+                  {data.category && (
+                    <div>
+                      <FieldLabel>Category</FieldLabel>
+                      <div className="h-9 px-3 rounded-md border flex items-center text-sm" style={{ borderColor: 'var(--divider)' }}>
+                        {data.category}
+                      </div>
+                    </div>
+                  )}
+                  {data.theme && (
+                    <div>
+                      <FieldLabel>Theme</FieldLabel>
+                      <div className="h-9 px-3 rounded-md border flex items-center text-sm truncate" style={{ borderColor: 'var(--divider)' }}>
+                        {THEME_OPTIONS.find(o => o.value === data.theme)?.labelEn ?? THEME_OPTIONS.find(o => o.value === data.theme)?.label ?? data.theme}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Scope URL */}
+              {data.scope_url && (
+                <div>
+                  <FieldLabel>Scope reference</FieldLabel>
+                  <div className="h-9 px-3 rounded-md border flex items-center text-sm" style={{ borderColor: 'var(--divider)' }}>
+                    <a
+                      href={data.scope_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#0052CC] hover:underline truncate"
+                    >
+                      {data.scope_url}
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* Stakeholders */}
+              {(data as any).stakeholders?.length > 0 && (
+                <div>
+                  <FieldLabel>Stakeholders</FieldLabel>
+                  <div className="flex flex-wrap gap-1.5">
+                    {((data as any).stakeholders as string[]).map((v: string) => {
+                      const opt = STAKEHOLDER_OPTIONS.find(o => o.value === v);
+                      return (
+                        <span
+                          key={v}
+                          className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                          style={{ background: '#F4F5F7', color: '#344563', border: '1px solid #DFE1E6' }}
+                        >
+                          {opt?.label ?? v}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Targeted feature flag */}
+              {(data as any).targeted_feature === true && (
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded flex items-center justify-center"
+                    style={{ background: '#0052CC' }}
+                  >
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Targeted feature</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Metadata Footer */}
       <div className="flex items-center gap-6 pt-2 text-xs text-gray-400">
         <span>
           Created: <span className="text-gray-600">
