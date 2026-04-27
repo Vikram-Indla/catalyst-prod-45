@@ -24,7 +24,7 @@ export function useJiraSyncConfig() {
   const { data: config, isLoading, error } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async (): Promise<JiraSyncConfig | null> => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('jira_integration_config')
         .select('*')
         .limit(1)
@@ -52,7 +52,7 @@ export function useJiraSyncConfig() {
   const disableSync = useMutation({
     mutationFn: async (note?: string) => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await supabase.rpc('disable_jira_sync', {
+      const { data, error } = await (supabase.rpc as any)('disable_jira_sync', {
         p_triggered_by: user?.id ?? null,
         p_note: note ?? null,
       });
@@ -75,7 +75,7 @@ export function useJiraSyncConfig() {
   const enableSync = useMutation({
     mutationFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      const { data, error } = await supabase.rpc('enable_jira_sync', {
+      const { data, error } = await (supabase.rpc as any)('enable_jira_sync', {
         p_triggered_by: user?.id ?? null,
       });
       if (error) throw error;

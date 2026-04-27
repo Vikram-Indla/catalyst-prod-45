@@ -30,18 +30,12 @@ export interface SyncLogRow {
 
 export interface WriteBackRow {
   id: string;
-  /** Canonical row identifier (text PK on ph_issues). Added by migration
-   *  20260427083000_jira_write_back_queue_use_issue_key. Older rows that
-   *  predate the migration may have null here and a populated ph_issue_id. */
-  ph_issue_key: string | null;
-  /** Legacy UUID identifier — kept for backward compat; new writes prefer
-   *  ph_issue_key. Will be deprecated once all callers migrate. */
+  /** Legacy UUID identifier for the ph_issues row. */
   ph_issue_id: string | null;
   field_name: string;
   new_value: string;
-  /** Insert timestamp on jira_write_back_queue. Replaces the previously-
-   *  declared `queued_at` field that does not exist on the table. */
-  created_at: string;
+  /** Insert timestamp on jira_write_back_queue. */
+  queued_at: string;
   status: string | null;
 }
 
@@ -211,29 +205,14 @@ export const jiraSyncService = {
 
     const { data, error } = await supabase
       .from('jira_write_back_queue')
-      .select('id, ph_issue_key, ph_issue_id, field_name, new_value, created_at, status')
+      .select('id, ph_issue_id, field_name, new_value, queued_at, status')
       .eq('status', 'queued')
-      .order('created_at', { ascending: false })
+      .order('queued_at', { ascending: false })
       .limit(500);
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // Filter to project's issues by issue_key (canonical PK on ph_issues).
-    // Falls back to ph_issue_id for any legacy queue rows that predate the
-    // 2026-04-27 migration and still carry only the UUID.
-    const issueKeys = data
-      .map(q => q.ph_issue_key)
-      .filter((k): k is string => k !== null && k !== undefined);
-    if (issueKeys.length === 0) return [];
-
-    const { data: issues } = await supabase
-      .from('ph_issues')
-      .select('issue_key')
-      .eq('project_key', project.key)
-      .in('issue_key', issueKeys);
-    const validKeys = new Set((issues || []).map(i => i.issue_key));
-
-    return data.filter(q => q.ph_issue_key !== null && validKeys.has(q.ph_issue_key));
+    return data as WriteBackRow[];
   },
 
   /**
