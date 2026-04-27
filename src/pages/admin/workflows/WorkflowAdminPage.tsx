@@ -27,7 +27,7 @@ export default function WorkflowAdminPage() {
   const { data: schemes = [] } = useAllWorkflowSchemes();
 
   return (
-    <div className="space-y-0">
+    <div className="dark space-y-0 bg-[#0A0A0A] min-h-screen text-[#EDEDED]">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-[#2E2E2E] dark:border-[#2E2E2E]">
         <div className="flex items-center gap-3">
