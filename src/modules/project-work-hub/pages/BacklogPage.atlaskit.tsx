@@ -81,7 +81,7 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
-import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser } from 'lucide-react';
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -1548,11 +1548,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 ? { flex: 1 }       // compact — share remainder with fixed 400px panel
                 : { flex: 1 }),     // panel closed OR fullscreen modal — full width
             minWidth: 0,
+            // Apr 27, 2026 (L58 fix): switched the column to overflow:auto
+            // so vertical scroll happens HERE — and dropped flex:1 on the
+            // table viewport wrapper so it hugs its actual content height
+            // instead of stretching to fill. Was: viewport wrapper with
+            // flex:1 + minHeight:0 forced JiraTable to fill the column,
+            // creating a huge empty white area below the pagination
+            // (visible between BAU-5505 / "Page 1 of 33" and the floating
+            // "+ Create"). Now BottomCreateRow sits immediately after the
+            // table+pagination — Jira parity.
             overflow: 'auto',
-            padding: '4px 16px 16px',
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '4px 16px 0',
             transition: 'width 150ms ease, flex-basis 150ms ease',
           }}
         >
+          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
           <JiraTable<BacklogItem>
             columns={columns}
             data={groupedRows ? undefined : sortedRows}
@@ -1595,57 +1607,35 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               />
             }
           />
+          </div>
 
-          {/* Inline + Create — one row when no grouping, one per group when
-              grouping is active. Each group row is seeded with the group's
-              field value so new items land in the correct bucket. */}
-          {groupedRows ? (
-            groupedRows.map((g) => {
-              if (collapsedGroups.has(g.id)) return null;
-              const seed: Record<string, unknown> = (() => {
-                if (groupBy === 'status') {
-                  // Only seed status if the group id matches a real status.
-                  const match = STATUS_OPTIONS.find((o) => o.value === g.id || o.label === g.id.toUpperCase());
-                  return match ? { status: match.value } : {};
-                }
-                if (groupBy === 'priority') {
-                  return g.id.startsWith('No ') ? {} : { priority: g.id.toLowerCase() };
-                }
-                if (groupBy === 'parent') {
-                  const match = parentOptions.find((p) => p.label === g.id || (p.key && `${p.key} — ${p.label}` === g.id));
-                  return match ? { parent_id: match.id, parent_key: match.key } : {};
-                }
-                if (groupBy === 'assignee') {
-                  return g.id === 'Unassigned' ? {} : { assignee_name: g.id };
-                }
-                return {};
-              })();
-              return (
-                <InlineCreateRow
-                  key={`create-${g.id}`}
-                  projectId={projectId}
-                  projectKey={projectKey}
-                  typeFilter={typeFilter === 'all' ? 'story' : typeFilter}
-                  seedPatch={seed}
-                  placeholder={`+ Create in ${g.label}`}
-                  onCreated={() => {
-                    queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-                    queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-                  }}
-                />
-              );
-            })
-          ) : (
-            <InlineCreateRow
-              projectId={projectId}
-              projectKey={projectKey}
-              typeFilter={typeFilter === 'all' ? 'story' : typeFilter}
-              onCreated={() => {
-                queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
-                queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-              }}
-            />
-          )}
+          {/* Apr 27, 2026 (L54): single bottom-anchored "+ Create" row.
+              Smart default: Defects pill → QA Bug, Incidents pill →
+              Production Incident, Epics → Epic, Features → Feature,
+              everything else → Story (Jira's default). User can change
+              via the type picker — Jira's pattern. */}
+          <BottomCreateRow
+            projectKey={projectKey}
+            defaultIssueType={
+              typeFilter === 'epic' ? 'Epic'
+              : typeFilter === 'feature' ? 'Feature'
+              : typeFilter === 'bug' ? 'QA Bug'
+              : typeFilter === 'incident' ? 'Production Incident'
+              : 'Story'
+            }
+            // Right offset = rail width when open (400 compact, 60% expanded),
+            // 0 when closed. Left offset = 0 (let it span from page edge).
+            rightOffset={
+              isPanelOpen && panelMode === 'compact' ? 400
+              : isPanelOpen && panelMode === 'expanded' ? Math.round(window.innerWidth * 0.6)
+              : 0
+            }
+            leftOffset={0}
+            onCreated={() => {
+              queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+              queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+            }}
+          />
         </div>
 
         {/* Fullscreen backdrop — dim layer behind the modal panel.
@@ -1926,6 +1916,319 @@ function TypeChip({
         textAlign: 'center',
       }}>{count}</span>
     </button>
+  );
+}
+
+/**
+ * BottomCreateRow — Jira-parity bottom-of-table inline create row.
+ *
+ * Apr 27, 2026 (L54). Direct Chrome MCP probe of Jira's BAU list view
+ * (testid `business-issue-create.ui.inline-create-form.*`) confirmed the
+ * exact pattern:
+ *
+ *   Collapsed:  full-width row, "+ Create" subtle button, persistent at bottom
+ *   Expanded:   [type-picker icon | textarea | assignee | Create button + ↵]
+ *
+ * Replaces the per-group `<InlineCreateRow>` (kept below as legacy/deprecated).
+ *
+ * Key differences from legacy:
+ *   - Type is USER-CHOOSABLE via dropdown (not derived from active pill)
+ *   - All 9 work types from CLAUDE.md §11 are pickable
+ *   - Defaults to Story (Jira default)
+ *   - Uses @atlaskit/textarea per probe (Jira renders <TEXTAREA>, not <INPUT>)
+ *   - Persistent button at bottom of table (Jira pattern), not inside groups
+ *   - Esc dismisses; Enter submits; outside-click commits-or-resets
+ *
+ * Atlaskit primitives:
+ *   - @atlaskit/dropdown-menu  (type picker)
+ *   - @atlaskit/textarea       (summary input)
+ *   - @atlaskit/button         (Create submit, "+ Create" trigger)
+ *   - @atlaskit/avatar         (assignee placeholder, v1 just shows "Unassigned")
+ *   - lucide-react Plus + ArrowDown (icons)
+ */
+type CreatableIssueType =
+  | 'Story'
+  | 'Epic'
+  | 'Feature'
+  | 'Task'
+  | 'QA Bug'
+  | 'Production Incident'
+  | 'Business Gap'
+  | 'API Requirement'
+  | 'Change Request';
+
+const CREATABLE_TYPES: CreatableIssueType[] = [
+  'Story',
+  'Epic',
+  'Feature',
+  'Task',
+  'QA Bug',
+  'Production Incident',
+  'Business Gap',
+  'API Requirement',
+  'Change Request',
+];
+
+function BottomCreateRow({
+  projectKey,
+  defaultIssueType = 'Story',
+  rightOffset = 0,
+  leftOffset = 0,
+  onCreated,
+}: {
+  projectKey: string;
+  /** Smart default based on the active pill — when user's on "Defects"
+   *  the picker should pre-select QA Bug; on "Incidents" it pre-selects
+   *  Production Incident; on All/Stories it stays Story. Same Jira
+   *  behaviour where "+ Create" pre-fills the type from current view. */
+  defaultIssueType?: CreatableIssueType;
+  /** Apr 27, 2026 (L57): right-side offset so the fixed-bottom row
+   *  doesn't sit under the open rail. Pass rail width when open, 0
+   *  when closed. */
+  rightOffset?: number;
+  /** Left offset matching the global nav / page padding so the fixed
+   *  row aligns with the table column edge. */
+  leftOffset?: number;
+  onCreated: () => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [summary, setSummary] = useState('');
+  const [issueType, setIssueType] = useState<CreatableIssueType>(defaultIssueType);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Resync issueType if the user changes the active pill while the form
+  // is closed — so opening it later reflects the latest pill choice.
+  useEffect(() => {
+    if (!isOpen) setIssueType(defaultIssueType);
+  }, [defaultIssueType, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const t = setTimeout(() => textareaRef.current?.focus(), 50);
+      return () => clearTimeout(t);
+    }
+  }, [isOpen]);
+
+  const reset = () => {
+    setSummary('');
+    setIsOpen(false);
+    setIssueType('Story');
+  };
+
+  const create = async () => {
+    const title = summary.trim();
+    // Validation: required + max 255 chars (Jira's documented limit)
+    if (!title) { textareaRef.current?.focus(); return; }
+    if (title.length > 255) {
+      flag.error('Summary must be 255 characters or fewer');
+      return;
+    }
+    if (!projectKey) return;
+    setIsSubmitting(true);
+    try {
+      const issueKey = await generateIssueKey(projectKey);
+      const nowIso = new Date().toISOString();
+      const { error } = await supabase.from('ph_issues').insert({
+        issue_key: issueKey,
+        project_key: projectKey,
+        summary: title,
+        issue_type: issueType,
+        status: 'To Do',
+        priority: 'medium',
+        source: 'catalyst',
+        jira_created_at: nowIso,
+        jira_updated_at: nowIso,
+      });
+      if (error) throw error;
+      flag.success(`Created ${issueKey} — ${title}`);
+      reset();
+      onCreated();
+    } catch (e) {
+      flag.error('Failed to create');
+      setIsSubmitting(false);
+    }
+  };
+
+  // Collapsed state — full-width persistent "+ Create" trigger.
+  // Apr 27, 2026 (L57 → L58 fix): WAS position:fixed at viewport bottom,
+  // which created a huge empty gap between the table's last row /
+  // pagination and the floating Create bar at the viewport bottom (the
+  // user spotted this — the page chrome flex column had no content
+  // filling the void). Switched to INLINE flow — sits immediately below
+  // the table content (and pagination, if any), scrolls with the page.
+  // This matches Jira's actual pattern: "+ Create" lives at the END of
+  // the table content, not pinned to the viewport. left/right offset
+  // props are now ignored (no longer needed since we're in flow).
+  if (!isOpen) {
+    return (
+      <div
+        style={{
+          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+          background: token('elevation.surface', '#FFFFFF'),
+          flexShrink: 0,
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          aria-label="Create work item"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            width: '100%', padding: '10px 16px',
+            border: 'none', background: 'transparent',
+            color: token('color.text.subtle', '#42526E'),
+            fontSize: 14, fontWeight: 500, fontFamily: 'inherit',
+            cursor: 'pointer', textAlign: 'left',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.background =
+              token('color.background.neutral.subtle.hovered', '#F4F5F7');
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.background = 'transparent';
+          }}
+        >
+          <Plus size={14} />
+          Create
+        </button>
+      </div>
+    );
+  }
+
+  // Expanded state — Jira pattern: type picker | textarea | assignee | Create
+  // Apr 27, 2026 (L58): same fix as collapsed state — switched from
+  // position:fixed to inline flow so the expanded Create row sits
+  // immediately below the table content, not pinned to viewport bottom
+  // with a void gap.
+  return (
+    <div
+      style={{
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        background: token('elevation.surface', '#FFFFFF'),
+        padding: '10px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        flexShrink: 0,
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          reset();
+        }
+      }}
+    >
+      {/* Type picker dropdown — @atlaskit/dropdown-menu with icon trigger */}
+      <DropdownMenu
+        placement="top-start"
+        trigger={({ triggerRef, ...triggerProps }: any) => (
+          <button
+            {...triggerProps}
+            ref={triggerRef}
+            type="button"
+            aria-label={`Select work type. ${issueType} currently selected.`}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              width: 28, height: 28, padding: 0,
+              border: 'none', background: 'transparent', borderRadius: 3,
+              cursor: 'pointer',
+            }}
+          >
+            <JiraIssueTypeIcon type={issueType} size={16} />
+          </button>
+        )}
+      >
+        <DropdownItemRadioGroup id="bottom-create-type">
+          {CREATABLE_TYPES.map((t) => (
+            <DropdownItemRadio
+              key={t}
+              id={`type-${t}`}
+              isSelected={issueType === t}
+              onClick={() => setIssueType(t)}
+              elemBefore={<JiraIssueTypeIcon type={t} size={14} />}
+            >
+              {t}
+            </DropdownItemRadio>
+          ))}
+        </DropdownItemRadioGroup>
+      </DropdownMenu>
+
+      {/* Summary textarea — matches Jira's <TEXTAREA> probe */}
+      <textarea
+        ref={textareaRef}
+        value={summary}
+        onChange={(e) => setSummary(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            create();
+          }
+        }}
+        placeholder="What needs to be done?"
+        rows={1}
+        style={{
+          flex: 1, minHeight: 28, maxHeight: 120,
+          border: 'none', outline: 'none',
+          fontSize: 14, lineHeight: '20px',
+          color: token('color.text', '#172B4D'),
+          fontFamily: 'inherit', background: 'transparent',
+          resize: 'none', padding: '4px 0',
+        }}
+      />
+
+      {/* Assignee placeholder — v1 Unassigned. v2 wires @atlaskit/user-picker. */}
+      <Tooltip content="Unassigned">
+        <button
+          type="button"
+          aria-label="Unassigned"
+          style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 24, height: 24, padding: 0,
+            border: 'none', background: 'transparent', borderRadius: '50%',
+            color: token('color.text.subtlest', '#6B778C'),
+            cursor: 'not-allowed',
+          }}
+          disabled
+        >
+          <CircleUser size={20} />
+        </button>
+      </Tooltip>
+
+      {/* Cancel button — soft escape */}
+      <Button
+        appearance="subtle"
+        spacing="compact"
+        onClick={reset}
+        isDisabled={isSubmitting}
+      >
+        Cancel
+      </Button>
+
+      {/* Create submit — ↵ keycap as iconAfter */}
+      <Button
+        appearance="primary"
+        onClick={create}
+        isLoading={isSubmitting}
+        isDisabled={!summary.trim() || isSubmitting}
+        iconAfter={() => (
+          <span
+            aria-hidden
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              minWidth: 18, height: 16, marginLeft: 4,
+              padding: '0 4px', borderRadius: 3,
+              background: 'rgba(255,255,255,0.2)',
+              fontSize: 11, fontWeight: 600, lineHeight: '14px',
+            }}
+          >
+            ↵
+          </span>
+        )}
+      >
+        Create
+      </Button>
+    </div>
   );
 }
 

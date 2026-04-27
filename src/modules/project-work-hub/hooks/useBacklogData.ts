@@ -209,6 +209,13 @@ export function useStoryBacklog(projectId: string) {
       // This is additive — consumers that only read { id, epic_key, name }
       // continue to work.
       const parentKeys = [...new Set(jiraRows.map((s: any) => s.parent_key).filter(Boolean))];
+      // Apr 27, 2026 (L54): renamed map values to track ALL parent types
+      // (Epic, Feature, Story — anything that can be a parent). Backlog
+      // scope expansion brought Defects + Incidents which are commonly
+      // parented to Features or Stories, NOT Epics. The old assumption
+      // "parent is always an Epic" caused BAU-4466 to render with a
+      // hardcoded purple Epic icon in the Parent column even when its
+      // actual issue_type is Feature.
       const epicMap: Record<string, {
         id: string;
         epic_key: string | null;
@@ -219,11 +226,12 @@ export function useStoryBacklog(projectId: string) {
         reporter_name: string | null;
         jira_created_at: string | null;
         jira_updated_at: string | null;
+        issue_type: string | null;
       }> = {};
       if (parentKeys.length > 0) {
         const { data: epics } = await supabase
           .from('ph_issues')
-          .select('issue_key, summary, status, priority, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at')
+          .select('issue_key, summary, status, priority, assignee_display_name, reporter_display_name, jira_created_at, jira_updated_at, issue_type')
           .in('issue_key', parentKeys)
           .is('archived_at', null);
         if (epics) {
@@ -239,6 +247,12 @@ export function useStoryBacklog(projectId: string) {
               reporter_name: e.reporter_display_name ?? null,
               jira_created_at: e.jira_created_at ?? null,
               jira_updated_at: e.jira_updated_at ?? null,
+              // L54: parent's real issue_type — the Parent column reads
+              // this so it can render the correct icon (Feature checkbox
+              // for a Feature parent, Story bookmark for a Story parent,
+              // Epic lightning for an Epic parent — instead of hardcoding
+              // Epic for every parent).
+              issue_type: e.issue_type ?? null,
             };
           }
         }

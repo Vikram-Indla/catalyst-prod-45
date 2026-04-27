@@ -18,7 +18,8 @@ import React from 'react';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
 import Heading from '@atlaskit/heading';
-import { IssueIcon } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/shared-components';
+// IssueIcon import removed Apr 27, 2026 (L55) — see comment above the
+// return block for why the duplicate icon prefix was dropped.
 import type { PhIssue } from '../types';
 
 /* Visually hide Atlaskit InlineEdit's "Issue title" field-label above the
@@ -88,12 +89,16 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
   const summary = issue?.summary ?? '';
 
   return (
-    <div className="cv-title-edit-hide-label" style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
-      {issue?.issue_type && (
-        <div style={{ marginTop: 6, flexShrink: 0 }}>
-          <IssueIcon type={issue.issue_type} size={20} />
-        </div>
-      )}
+    // Apr 27, 2026 (L55): dropped the duplicate <IssueIcon> prefix that
+    // rendered before the H1. Jira's rail shows ONE icon — next to the
+    // issue key in the breadcrumb row (`[icon] BAU-5658`). The H1 below
+    // is plain text. Catalyst was rendering the icon TWICE (once in the
+    // breadcrumb, once before the H1). Probed live on BAU-5658:
+    // `<img alt="QA Bug">` at x=794 sat right of the H1 at x=824 — same
+    // baseline, looked like an icon prefix. Removing it matches Jira
+    // and reduces visual noise. The icon stays in the breadcrumb row
+    // (rendered by the parent component), so issue type is still clear.
+    <div className="cv-title-edit-hide-label" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12 }}>
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* key={issue.id} remounts InlineEdit when the user navigates to a
             different item so defaultValue picks up the new summary. */}

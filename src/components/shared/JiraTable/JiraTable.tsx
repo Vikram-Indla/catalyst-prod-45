@@ -542,6 +542,61 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody tr.jira-table-group-row > td {
         background: #F4F5F7 !important;
       }
+
+      /* ── Apr 27, 2026 (L59): Sticky Key-column prefix ──
+         Per Jira parity spec: when horizontal scroll occurs, the row
+         identifier (checkbox + type icon + Key) stays anchored on the
+         left edge so users never lose track of which row they're
+         reading. Implemented as three sticky columns forming a frozen
+         prefix. Hardcoded left offsets are approximations of
+         checkbox=48px and type=48px column widths — refine if column
+         widths drift. z-index stack:
+           - body sticky cells: z-index 1
+           - header sticky cells: z-index 3 (above body sticky)
+           - top-left intersection: z-index 4 (handled via thead overrides)
+
+         References:
+           https://atlassian.design/foundations/tokens (border + surface)
+      */
+      .jira-table-grid tbody td:nth-child(1),
+      .jira-table-grid tbody td:nth-child(2),
+      .jira-table-grid tbody td:nth-child(3) {
+        position: sticky;
+        z-index: 1;
+        background: #FFFFFF;
+      }
+      .jira-table-grid tbody td:nth-child(1) { left: 0; }
+      .jira-table-grid tbody td:nth-child(2) { left: 48px; }
+      .jira-table-grid tbody td:nth-child(3) { left: 96px; }
+      /* Header sticky cells inherit the existing top:0 sticky, but need
+         left:0 too in the frozen-prefix range and a higher z-index so
+         they paint above body sticky cells when horizontal scroll
+         intersects with vertical scroll. */
+      .jira-table-grid thead th:nth-child(1),
+      .jira-table-grid thead th:nth-child(2),
+      .jira-table-grid thead th:nth-child(3) {
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: #F7F8F9;
+      }
+      .jira-table-grid thead th:nth-child(1) { left: 0; }
+      .jira-table-grid thead th:nth-child(2) { left: 48px; }
+      .jira-table-grid thead th:nth-child(3) { left: 96px; }
+      /* Subtle right-side shadow on the sticky prefix so users see
+         the boundary when scrolled horizontally. Mirrors Jira's
+         frozen-column treatment. */
+      .jira-table-grid tbody td:nth-child(3),
+      .jira-table-grid thead th:nth-child(3) {
+        box-shadow: 1px 0 0 0 #DFE1E6;
+      }
+      /* Group rows (collapsed/group headers) need to keep their
+         lighter bg even on sticky cells — override the default white. */
+      .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(1),
+      .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(2),
+      .jira-table-grid tbody tr.jira-table-group-row > td:nth-child(3) {
+        background: #F4F5F7 !important;
+      }
       /* ── Critique fixes (2026-04) — ported from the retired legacy table ──
          Center the selection checkbox in its column.
          AkCheckbox renders a hidden <input> inside a <label> that normally
