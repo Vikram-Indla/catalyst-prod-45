@@ -111,6 +111,14 @@ export interface JiraTableProps<TRow> {
   emptyView?: ReactNode;
   /** ARIA label for the table region. */
   ariaLabel?: string;
+  /**
+   * Apr 27, 2026 (L70): bottom slot rendered INSIDE `.jira-table-viewport`
+   * after the table body — eliminates the visual gap between the table's
+   * last row and a "+ Create" row pinned underneath. Pass the inline
+   * BottomCreateRow JSX here. Horizontal scrollbar (if any) appears
+   * BELOW this slot, not between the table and the slot.
+   */
+  bottomSlot?: ReactNode;
 
   /**
    * Column visibility state. When provided alongside `onColumnVisibilityChange`,

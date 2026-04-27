@@ -1331,6 +1331,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             })}
           </tbody>
         </table>
+        {/* Apr 27, 2026 (L70): bottomSlot renders INSIDE the viewport
+            so the horizontal scrollbar appears BELOW it, not between
+            it and the table content. Lets a "+ Create" row sit flush
+            against the table's last row with zero visual gap. */}
+        {props.bottomSlot}
       </div>
 
       {/* Pagination footer — simple prev / next / page counter. Only shown

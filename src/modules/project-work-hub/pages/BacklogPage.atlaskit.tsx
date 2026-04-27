@@ -29,6 +29,7 @@ import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Tooltip from '@atlaskit/tooltip';
 import Button from '@atlaskit/button';
+import Badge from '@atlaskit/badge';
 import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
@@ -81,7 +82,7 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
-import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser } from 'lucide-react';
+import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, ChevronDown, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser } from 'lucide-react';
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -154,18 +155,46 @@ function statusLabel(status: string | null | undefined): string {
   if (!status) return '—';
   return status;
 }
+// Apr 27, 2026 — F1 fix: STATUS_OPTIONS was a 9-item subset of the
+// vocabulary that STORY_STATUS_LOZENGE already maps to lozenge colours
+// (17+ statuses). Rows whose current status was outside that subset
+// (notably "Ready for QA" — the most common BAU status) saw a popup
+// that did NOT include their own value, so any pick silently
+// downgraded the issue. Aligning the option list to the full Jira BAU
+// workflow + grouping by statusCategory key (new / indeterminate / done)
+// matches what the Jira list-view dropdown shows on
+// digital-transformation.atlassian.net/jira/software/c/projects/BAU/list.
 const STATUS_OPTIONS: StatusOption[] = [
+  // To Do family (statusCategory: new)
   { value: 'To Do', label: 'To Do', appearance: 'default', group: 'To Do' },
   { value: 'Backlog', label: 'Backlog', appearance: 'default', group: 'To Do' },
   { value: 'In Requirements', label: 'In Requirements', appearance: 'default', group: 'To Do' },
+  { value: 'Ready for Development', label: 'Ready for Development', appearance: 'default', group: 'To Do' },
+  // In Progress family (statusCategory: indeterminate)
+  { value: 'In Design', label: 'In Design', appearance: 'inprogress', group: 'In Progress' },
   { value: 'In Development', label: 'In Development', appearance: 'inprogress', group: 'In Progress' },
   { value: 'In Progress', label: 'In Progress', appearance: 'inprogress', group: 'In Progress' },
-  { value: 'In QA', label: 'In QA', appearance: 'inprogress', group: 'In Progress' },
-  { value: 'In UAT', label: 'In UAT', appearance: 'inprogress', group: 'In Progress' },
+  // Done family (statusCategory: done — Jira treats QA/UAT/BETA as "verifying", green)
+  { value: 'Ready for QA', label: 'Ready for QA', appearance: 'success', group: 'Done' },
+  { value: 'In QA', label: 'In QA', appearance: 'success', group: 'Done' },
+  { value: 'Ready for UAT', label: 'Ready for UAT', appearance: 'success', group: 'Done' },
+  { value: 'In UAT', label: 'In UAT', appearance: 'success', group: 'Done' },
+  { value: 'BETA READY', label: 'BETA READY', appearance: 'success', group: 'Done' },
+  { value: 'In BETA', label: 'In BETA', appearance: 'success', group: 'Done' },
   { value: 'Done', label: 'Done', appearance: 'success', group: 'Done' },
   { value: 'In Production', label: 'In Production', appearance: 'success', group: 'Done' },
+  // Blocked / On Hold (rendered red / yellow regardless of category)
+  { value: 'Blocked', label: 'Blocked', appearance: 'removed', group: 'Done' },
+  { value: 'On Hold', label: 'On Hold', appearance: 'moved', group: 'Done' },
 ];
-const PRIORITY_ORDER = ['critical', 'highest', 'high', 'medium', 'low', 'lowest'];
+const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
+
+// Apr 27, 2026 — F2 fix: BAU has rows with priority "Highest" (per the
+// Jira /rest/api/3/priority list — id=1 maps to Highest), but the editor
+// default options array in editors.tsx omits 'highest', so opening the
+// popup on a Highest row never highlights or preserves the value.
+// Pass explicit options (including 'highest') at the column wiring site.
+const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
 
 /* ─── Entry wrapper: resolves projectId from URL key ───────────────────── */
 
@@ -274,7 +303,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // `replaceState` so back-button navigation stays clean. Param names are
   // short to keep URLs readable.
   const [searchParams, setSearchParams] = useSearchParams();
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'parent', 'assignee', 'priority', 'updated'];
+  // Apr 27, 2026 — column order matches the Jira BAU list view (verified
+  // against Vikram's screenshot of digital-transformation.atlassian.net):
+  //   Type | Key | Summary | Status | Comments | Parent | Assignee | Priority | Updated
+  // 'comments' was previously excluded from defaults (only the column-def
+  // had defaultVisible:true) — this set is the source of truth for what
+  // renders without the user touching the column picker.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'priority', 'updated'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -910,7 +945,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'type',
       label: '',
-      width: 9,
+      // Apr 27, 2026: kept at width 5 — icon column needs ~64px breathing
+      // room so the JiraIssueTypeIcon (16px) sits centered with adequate
+      // padding and doesn't visually crowd the Key cell. width:3 (~38px,
+      // floored at 48px by minWidth) caused the icons to look misaligned
+      // because the icon's natural drop was bigger than the cell's free
+      // vertical space. width:9 (the original) over-allocated; width:5
+      // is the calibrated middle.
+      width: 5,
       align: 'center',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
@@ -965,7 +1007,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'key',
       label: 'Key',
-      width: 9,
+      width: 8,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.key || '',
@@ -1020,7 +1062,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'comments',
       label: 'Comments',
-      width: 9,
+      // 6% ≈ 77px — fits header text "Comments" without truncation. Width 4
+      // (~51px) was too narrow when this column is enabled via the picker.
+      width: 6,
       // Apr 27, 2026 (L61): default visible — Jira's list view shows
       // Comments column at position 5 between Status and Parent. Probed
       // against Jira BAU list "1 comment" / "Add comment" cells.
@@ -1089,17 +1133,34 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       defaultVisible: true,
       cell: makePriorityEditCell<BacklogItem>({
         getPriority: (r) => r.priority,
+        // F2: pass the full Jira BAU priority vocabulary including
+        // 'highest' so rows that load with priority='highest' stay
+        // editable without silent downgrades.
+        options: PRIORITY_OPTIONS,
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { priority: next } }),
       }),
     },
     {
+      id: 'created',
+      // Apr 27, 2026: Created added per export-spec parity. Toggle-on
+      // via the column picker; defaultVisible:false to keep the resting
+      // state aligned with Jira BAU list. Sortable for queue triage.
+      label: 'Created',
+      width: 9,
+      sortable: true,
+      defaultVisible: false,
+      accessor: (r: BacklogItem) => r.created_at || '',
+      cell: makeDateCell((r: BacklogItem) => r.created_at),
+    },
+    {
       id: 'updated',
-      // Apr 27, 2026 (L65): width bumped 7→12 to fit the new bordered
-      // calendar chip ("📅 27 Apr 26") without truncating to "27 A".
-      // 7% of 1280 = 89px which left only ~39px for text after the
-      // chip's icon+gap+padding+border (~50px). 12% = 154px is enough.
+      // Apr 27, 2026: width 12 → 10 (was bumped earlier to fit the
+      // calendar chip "📅 27 Apr 26"; the original 12 was over-generous
+      // but 9 was tight when the chip's icon+padding rendered. 10 is the
+      // calibrated middle: ~128px @ 1280min. Sum-target ≤100 with default
+      // visible cols.
       label: 'Updated',
-      width: 12,
+      width: 10,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.updated_at || '',
@@ -1416,6 +1477,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         alignItems: 'center',
         borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
       }}>
+        {/* Apr 27, 2026 — REVERTED toolbar Create button. Jira's list view
+            does NOT have a Create CTA in the table toolbar; the only
+            in-table Create is the sticky bottom-left "+ Create" row that
+            already exists via JiraTable.bottomSlot → BottomCreateRow.
+            The global-nav Create handles cross-hub creation. Adding a
+            third Create CTA on the toolbar was scope creep that broke
+            Jira parity. Removed cleanly; toolbar starts with Search. */}
         <div style={{ width: 280 }}>
           <Textfield
             isCompact
@@ -1466,17 +1534,26 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             priority: 'Priority',
           };
           const triggerText = groupBy === 'none' ? 'Group' : `Group: ${groupLabels[groupBy]}`;
-          // Apr 27, 2026 (L49):
-          // 1. Removed `shouldRenderToParent` — it forced the menu to render
-          //    inside the toolbar's flex container which has overflow:hidden,
-          //    causing the menu to flip ABOVE the trigger and clip into the
-          //    global nav. Default portal rendering positions correctly
-          //    against viewport.
-          // 2. Removed `title="Group by"` from the radio group — it was
-          //    rendering a small grey caps heading inside the menu that
-          //    duplicated the trigger label.
+          // Apr 27, 2026 (L69): switched the trigger from a string (which
+          // Atlaskit renders as a primary-blue button) to a render-prop
+          // returning a subtle Button — matches the Filter button next
+          // to it. Earlier (L49): removed shouldRenderToParent (was
+          // clipping the menu under toolbar overflow:hidden) and removed
+          // the redundant "Group by" radio-group title.
           return (
-            <DropdownMenu trigger={triggerText} placement="bottom-start">
+            <DropdownMenu
+              placement="bottom-start"
+              trigger={({ triggerRef, ...triggerProps }) => (
+                <Button
+                  {...triggerProps}
+                  ref={triggerRef}
+                  appearance="subtle"
+                  iconAfter={<ChevronDown size={14} />}
+                >
+                  {triggerText}
+                </Button>
+              )}
+            >
               <DropdownItemRadioGroup id="backlog-group-by">
                 {(['none', 'status', 'parent', 'assignee', 'priority'] as const).map((opt) => (
                   <DropdownItemRadio
@@ -1578,20 +1655,21 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 ? { flex: 1 }       // compact — share remainder with fixed 400px panel
                 : { flex: 1 }),     // panel closed OR fullscreen modal — full width
             minWidth: 0,
-            // Apr 27, 2026 (L66): bottom padding 60px reserves space for
-            // the fixed-positioned Create row at the viewport bottom (Create
-            // is height ~46 + 6px margin from footer + breathing room) —
-            // without this, the last table row gets hidden under the
-            // floating Create bar. Vertical scroll on the column lets the
-            // content above the fixed Create remain reachable.
-            overflow: 'auto',
+            // Apr 27, 2026: page-level overflow was eating the table's own
+            // .jira-table-viewport scroll. Switching to overflow:hidden +
+            // flex column with minHeight:0 lets the inner viewport's
+            // overflow-y:auto take over (sticky header + scrolling body).
+            // L70 note retained: bottomSlot Create row + horizontal scroll
+            // still sit inside the table viewport.
+            overflow: 'hidden',
             display: 'flex',
             flexDirection: 'column',
-            padding: '4px 16px 60px',
+            minHeight: 0,
+            padding: '4px 16px 0',
             transition: 'width 150ms ease, flex-basis 150ms ease',
           }}
         >
-          <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <JiraTable<BacklogItem>
             columns={columns}
             data={groupedRows ? undefined : sortedRows}
@@ -1633,36 +1711,31 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 description="Try clearing the search, filters, or chip."
               />
             }
+            // Apr 27, 2026 (L70): Create row now renders INSIDE the
+            // table viewport via JiraTable's `bottomSlot` prop —
+            // eliminates the visual gap that the horizontal scrollbar
+            // was creating between the last table row and the floating
+            // Create row. Sticks to the table; horizontal scroll sits
+            // BELOW Create. Smart-default issue type matches the
+            // active type-filter pill.
+            bottomSlot={
+              <BottomCreateRow
+                projectKey={projectKey}
+                defaultIssueType={
+                  typeFilter === 'epic' ? 'Epic'
+                  : typeFilter === 'feature' ? 'Feature'
+                  : typeFilter === 'bug' ? 'QA Bug'
+                  : typeFilter === 'incident' ? 'Production Incident'
+                  : 'Story'
+                }
+                onCreated={() => {
+                  queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                  queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                }}
+              />
+            }
           />
           </div>
-
-          {/* Apr 27, 2026 (L54): single bottom-anchored "+ Create" row.
-              Smart default: Defects pill → QA Bug, Incidents pill →
-              Production Incident, Epics → Epic, Features → Feature,
-              everything else → Story (Jira's default). User can change
-              via the type picker — Jira's pattern. */}
-          <BottomCreateRow
-            projectKey={projectKey}
-            defaultIssueType={
-              typeFilter === 'epic' ? 'Epic'
-              : typeFilter === 'feature' ? 'Feature'
-              : typeFilter === 'bug' ? 'QA Bug'
-              : typeFilter === 'incident' ? 'Production Incident'
-              : 'Story'
-            }
-            // Right offset = rail width when open (400 compact, 60% expanded),
-            // 0 when closed. Left offset = 0 (let it span from page edge).
-            rightOffset={
-              isPanelOpen && panelMode === 'compact' ? 400
-              : isPanelOpen && panelMode === 'expanded' ? Math.round(window.innerWidth * 0.6)
-              : 0
-            }
-            leftOffset={0}
-            onCreated={() => {
-              queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
-              queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
-            }}
-          />
         </div>
 
         {/* Fullscreen backdrop — dim layer behind the modal panel.
@@ -1904,44 +1977,59 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 
 /* ─── Sub-components ────────────────────────────────────────────────────── */
 
+// Apr 27, 2026 — TypeChip rewritten to be ADS-token-driven without
+// fighting @atlaskit/button v20.5's isSelected behaviour. Live probe of
+// BAU backlog showed Button + isSelected updated the className correctly
+// but the visual selected state didn't propagate (React/emotion cache),
+// so clicking a chip filtered the rows but the active chip didn't show
+// blue. The fix: native <button> styled exclusively with @atlaskit/tokens
+// (no hardcoded hex), aria-pressed for a11y, and @atlaskit/badge for the
+// count. This keeps full ADS token compliance and ADS-hosted Badge
+// rendering while guaranteeing the selected visual updates with every
+// click — the original parity goal.
 function TypeChip({
   active, count, onClick, children,
 }: { active: boolean; count: number; onClick: () => void; children: React.ReactNode }) {
+  // Hover state intentionally lives in the className-keyed CSS rule below
+  // (jira-typechip:hover) so React stays in full control of the inline
+  // `style` prop. The earlier version mutated `e.currentTarget.style` on
+  // mouseenter/leave, which left the DOM with a stale inline style that
+  // React's reconciler couldn't override on prop changes — clicking the
+  // chip flipped aria-pressed but the background colour was stuck on
+  // whatever the last mouse event wrote. Verified live via Chrome MCP DOM
+  // probe: aria-pressed updated, bg colour did not (CLAUDE.md §0
+  // guardrail caught this).
   return (
     <button
       type="button"
+      className="jira-typechip"
       onClick={onClick}
       aria-pressed={active}
       style={{
         display: 'inline-flex',
         alignItems: 'center',
-        gap: 6,
+        gap: 8,
         height: 32,
-        padding: '0 14px',
-        borderRadius: 16,
-        border: `1px solid ${active ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
-        background: active ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
-        color: active ? token('color.text.selected', '#0055CC') : token('color.text.subtle', '#42526E'),
-        fontSize: 13,
-        fontWeight: active ? 600 : 500,
+        padding: '0 12px',
+        borderRadius: 3,
+        border: 'none',
+        background: active
+          ? token('color.background.selected', '#E9F2FF')
+          : 'transparent',
+        color: active
+          ? token('color.text.selected', '#0C66E4')
+          : token('color.text.subtle', '#44546F'),
+        fontSize: 14,
+        fontWeight: active ? 500 : 400,
         cursor: 'pointer',
         fontFamily: 'inherit',
-        transition: 'all 120ms ease',
+        transition: 'background 100ms ease',
       }}
-      onMouseEnter={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = token('color.background.neutral.subtle.hovered', '#F4F5F7'); }}
-      onMouseLeave={(e) => { if (!active) (e.currentTarget as HTMLElement).style.background = token('elevation.surface', '#FFFFFF'); }}
     >
       <span>{children}</span>
-      <span style={{
-        padding: '0 6px',
-        borderRadius: 10,
-        background: active ? 'rgba(12,102,228,0.16)' : token('color.background.neutral', '#F1F2F4'),
-        color: active ? token('color.text.selected', '#0055CC') : token('color.text.subtle', '#42526E'),
-        fontSize: 11,
-        fontWeight: 700,
-        minWidth: 20,
-        textAlign: 'center',
-      }}>{count}</span>
+      <Badge appearance={active ? 'primary' : 'default'} max={9999}>
+        {count}
+      </Badge>
     </button>
   );
 }
@@ -2078,29 +2166,24 @@ function BottomCreateRow({
   };
 
   // Collapsed state — full-width persistent "+ Create" trigger.
-  // Apr 27, 2026 (L66): position:fixed at viewport bottom, 6px above
-  // the page footer per user spec. Right-offset accounts for the rail
-  // width when open. To prevent the fixed bar from hiding the last
-  // table row, the table column wrapper applies a bottom padding
-  // equal to ~52px (Create row height + 6px gap).
+  // Apr 27, 2026 (L70): inline flow inside JiraTable.bottomSlot —
+  // sticks flush to the table's last row with no visual gap. The
+  // horizontal scrollbar of the viewport now sits BELOW this row.
+  // Width: 100% of the table viewport (matches table's min-width),
+  // so it scrolls horizontally with the table on narrow viewports.
   if (!isOpen) {
     return (
       <div
         style={{
-          position: 'fixed',
-          bottom: 6,
-          left: leftOffset,
-          right: rightOffset,
-          zIndex: 50,
           borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface', '#FFFFFF'),
-          boxShadow: '0 -2px 8px rgba(9, 30, 66, 0.08)',
+          minWidth: '100%',
           flexShrink: 0,
         }}
       >
         <button
           type="button"
+          data-testid="backlog-bottom-create"
           onClick={() => setIsOpen(true)}
           aria-label="Create work item"
           style={{
@@ -2127,21 +2210,14 @@ function BottomCreateRow({
   }
 
   // Expanded state — Jira pattern: type picker | textarea | assignee | Create
-  // Apr 27, 2026 (L66): position:fixed at viewport bottom (6px above
-  // footer), same as the collapsed trigger. Pinned, not in flow.
+  // Apr 27, 2026 (L70): inline flow inside JiraTable.bottomSlot.
   return (
     <div
       style={{
-        position: 'fixed',
-        bottom: 6,
-        left: leftOffset,
-        right: rightOffset,
-        zIndex: 50,
         borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         background: token('elevation.surface', '#FFFFFF'),
-        boxShadow: '0 -2px 8px rgba(9, 30, 66, 0.08)',
         padding: '10px 16px',
+        minWidth: '100%',
         display: 'flex',
         alignItems: 'center',
         gap: 10,
