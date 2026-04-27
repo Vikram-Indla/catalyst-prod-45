@@ -197,14 +197,9 @@ const PRIORITY_OPTIONS: IconOption[] = [
   { value: 'Low',    label: 'Low',    icon: <PriorityIcon name="Low" /> },
 ];
 
-// Status options for process_step
-const BR_STATUS_OPTIONS = [
-  { value: 'new_request', label: 'Not Started' },
-  { value: 'in_review',   label: 'In Review' },
-  { value: 'analyse',     label: 'Analysis' },
-  { value: 'on_hold',     label: 'On Hold' },
-  { value: 'closed',      label: 'Completed' },
-];
+// Status options for process_step are sourced from /admin/workflows
+// (catalyst_workflow_schemes for issue_type='Business Request').
+// See useCatalystWorkflow — single source of truth.
 
 const STAKEHOLDER_SELECT_OPTIONS = STAKEHOLDER_OPTIONS.map(s => ({ value: s.value, label: s.label }));
 const THEME_SELECT_OPTIONS = THEME_OPTIONS.map(t => ({ value: t.value, label: t.labelEn ?? t.label }));
@@ -212,10 +207,11 @@ const TYPE_SELECT_OPTIONS = REQUEST_TYPE_OPTIONS.map(t => ({ value: t.value, lab
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Status lozenge appearance — 3-colour guardrail (CLAUDE.md §5)
+// Maps admin workflow category → lozenge appearance.
 // ─────────────────────────────────────────────────────────────────────────────
-function brStatusAppearance(step: string) {
-  if (step === 'closed') return 'success';
-  if (step === 'in_review' || step === 'analyse') return 'inprogress';
+function brStatusAppearance(category: 'todo' | 'in_progress' | 'done' | undefined) {
+  if (category === 'done') return 'success';
+  if (category === 'in_progress') return 'inprogress';
   return 'default';
 }
 
