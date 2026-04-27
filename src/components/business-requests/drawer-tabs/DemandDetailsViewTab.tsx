@@ -366,7 +366,7 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
       </div>
 
       {/* SECTION 6: Feature Unification Fields (Notion import + native creation) */}
-      {(data.arabic_title || data.scope_url || data.request_type || data.category || data.theme || (data.stakeholders && (data as any).stakeholders?.length > 0)) && (
+      {(data.arabic_title || data.scope_url || data.request_type || data.category || data.theme || (data as any).stakeholders?.length > 0 || (data as any).po_user_id || (data as any).project_manager_user_id) && (
         <>
           <hr className="border-gray-200" />
           <div>
@@ -452,6 +452,32 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
                       );
                     })}
                   </div>
+                </div>
+              )}
+
+              {/* DM + PO row */}
+              {((data as any).project_manager_user_id || (data as any).po_user_id) && (
+                <div className="grid grid-cols-2 gap-4">
+                  {(data as any).project_manager_user_id && (
+                    <div>
+                      <FieldLabel>Delivery Manager</FieldLabel>
+                      <UserSelect
+                        value={(data as any).project_manager_user_id}
+                        onChange={(userId) => handleChange('project_manager_user_id', userId)}
+                        placeholder="Unassigned"
+                      />
+                    </div>
+                  )}
+                  {(data as any).po_user_id && (
+                    <div>
+                      <FieldLabel>Product Owner</FieldLabel>
+                      <UserSelect
+                        value={(data as any).po_user_id}
+                        onChange={(userId) => handleChange('po_user_id', userId)}
+                        placeholder="Unassigned"
+                      />
+                    </div>
+                  )}
                 </div>
               )}
 
