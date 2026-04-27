@@ -116,6 +116,7 @@ const adminPockets = [
     icon: Cable,
     path: '/admin/workhub',
     children: [
+      { label: 'Jira Sync Control', path: '/admin/workhub/jira-sync-control' },
       { label: 'Jira Connection', path: '/admin/workhub/jira-connection' },
       { label: 'Hierarchy Mapping', path: '/admin/workhub/hierarchy-mapping' },
       { label: 'Scheduling Rules', path: '/admin/workhub/scheduling-rules' },
