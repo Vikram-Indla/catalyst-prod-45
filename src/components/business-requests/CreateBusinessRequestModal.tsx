@@ -75,6 +75,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { flag } from '@/components/shared/JiraTable/flags';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
+import { useCatalystWorkflow, type WorkflowStatus } from '@/hooks/useCatalystWorkflow';
 import {
   THEME_OPTIONS,
   STAKEHOLDER_OPTIONS,
