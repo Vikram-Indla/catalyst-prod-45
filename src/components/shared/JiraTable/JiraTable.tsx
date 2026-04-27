@@ -464,16 +464,27 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       .jira-table-grid table {
         width: 100%;
-        min-width: 800px;
+        /* Jira parity (2026-04-27, BAU list audit): bumped from 800px to
+           1280px because with the right-rail open (~40% of viewport) the
+           table area collapses to ~700–900px and EVERY column was being
+           crushed to truncated text — "BAU-" with no number, "IN PROGRES"
+           losing the "S", "Una..." for assignee. Jira's list view never
+           crushes columns; below the natural sum the viewport scrolls
+           horizontally. 1280px = roughly the natural sum of the default
+           column schema (10 cols × avg ~128px). The wrapping
+           .jira-table-viewport already has overflow-x: auto so narrower
+           containers (rail open, narrow window) scroll horizontally. */
+        min-width: 1280px;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
       }
-      /* When the viewport is narrow, allow individual columns to shrink
-         only up to their min-width (set on the col elements via the
-         colgroup). Below the table min-width the viewport scrolls. */
+      /* On narrow viewports the wrapping viewport scrolls horizontally
+         and the table keeps its natural min-width so columns don't crush.
+         Mirrors Jira's behaviour when the rail is open or the window is
+         narrow — never truncate, always scroll. */
       @media (max-width: 1024px) {
-        .jira-table-grid table { min-width: 900px; }
+        .jira-table-grid table { min-width: 1280px; }
       }
       .jira-table-grid thead th {
         position: sticky;

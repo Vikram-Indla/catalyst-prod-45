@@ -74,10 +74,18 @@ export const STORY_STATUS_LOZENGE: Record<string, LozengeConfig> = {
   'In Design':              { color: 'inprogress', label: 'IN DESIGN' },
   'Ready for Development':  { color: 'default',    label: 'READY FOR DEV' },
   'In Development':         { color: 'inprogress', label: 'IN DEVELOPMENT' },
-  'In QA':                  { color: 'inprogress', label: 'IN QA' },
-  'In UAT':                 { color: 'inprogress', label: 'IN UAT' },
+  // Jira parity (BAU project workflow): Ready for QA / In QA / Ready for UAT /
+  // In UAT / BETA READY / In BETA all live in the "Done" status category in
+  // Jira (dev work complete, awaiting verification) and render GREEN. Catalyst
+  // was mapping these to 'inprogress' (BLUE), causing every QA/UAT row to look
+  // wrong vs Jira's list view. Source of truth:
+  //   https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list
+  'Ready for QA':           { color: 'success',    label: 'READY FOR QA' },
+  'In QA':                  { color: 'success',    label: 'IN QA' },
+  'Ready for UAT':          { color: 'success',    label: 'READY FOR UAT' },
+  'In UAT':                 { color: 'success',    label: 'IN UAT' },
   'BETA READY':             { color: 'success',    label: 'BETA READY' },
-  'In BETA':                { color: 'inprogress', label: 'IN BETA' },
+  'In BETA':                { color: 'success',    label: 'IN BETA' },
   'In Production':          { color: 'success',    label: 'IN PRODUCTION' },
   'Backlog':                { color: 'default',    label: 'BACKLOG' },
   'To Do':                  { color: 'default',    label: 'TO DO' },

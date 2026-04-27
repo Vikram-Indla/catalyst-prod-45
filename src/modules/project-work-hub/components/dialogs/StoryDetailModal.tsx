@@ -18,7 +18,7 @@ import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Search, MessageSquare, Clock,
   GripVertical, Link2, Trash2, Check,
-  Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle,
+  Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle, Zap,
   SquarePen, Reply, ThumbsUp, Smile, Pencil, MoreHorizontal, Copy,
   Globe, Palette, CheckSquare,
 } from 'lucide-react';
@@ -485,6 +485,11 @@ export default function StoryDetailModal({
   const [localStatus, setLocalStatus] = useState<string>('');
   const [localPriority, setLocalPriority] = useState<string>('');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  // Jira parity: header-area status pill (rendered next to title in Quick
+  // Actions row). Independent state from the sidebar's `showStatusDropdown`
+  // so toggling one doesn't open the other.
+  const [showHeaderStatusDropdown, setShowHeaderStatusDropdown] = useState(false);
+  const headerStatusDropdownRef = useRef<HTMLDivElement>(null);
   const [showAddMenu, setShowAddMenu] = useState(false);
   const [addMenuSearch, setAddMenuSearch] = useState('');
   const [showAiMenu, setShowAiMenu] = useState(false);
@@ -871,13 +876,13 @@ export default function StoryDetailModal({
   useEffect(() => {
     if (!isOpen || !panelMode) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !showStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
+      if (e.key === 'Escape' && !showStatusDropdown && !showHeaderStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
         onClose();
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, panelMode, showStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+  }, [isOpen, panelMode, showStatusDropdown, showHeaderStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
 
   if (!isOpen) return null;
 
@@ -1145,8 +1150,60 @@ export default function StoryDetailModal({
                     />
                   </div>
 
-                  {/* 2. Quick actions */}
-                  <div style={{ display: 'flex', gap: 6, marginBottom: 20 }}>
+                  {/* 2. Quick actions
+                       Jira parity (2026-04-27): header status pill rendered
+                       FIRST, before the [+] and AI buttons, matching Jira's
+                       work-item rail (e.g. /jira/software/c/projects/BAU/list
+                       ?selectedIssue=BAU-5609). Click opens a status picker
+                       with the same STATUS_OPTION_GROUPS used in the sidebar.
+                       Sidebar pill remains for now to avoid blast radius;
+                       canonical position is the header per Jira. */}
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 20, alignItems: 'center' }}>
+                    <div ref={headerStatusDropdownRef} style={{ position: 'relative' }}>
+                      <button
+                        onClick={() => setShowHeaderStatusDropdown(!showHeaderStatusDropdown)}
+                        style={{
+                          background: 'transparent', border: '1px solid #DFE1E6', padding: '0 8px',
+                          height: 28, borderRadius: 4, cursor: 'pointer',
+                          display: 'inline-flex', alignItems: 'center', gap: 6,
+                          fontFamily: 'inherit', lineHeight: 1, transition: 'background 0.15s, border-color 0.15s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#F4F5F7'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
+                        title="Change status"
+                      >
+                        <Lozenge appearance={statusToLozenge(localStatus || 'Backlog')}>
+                          {localStatus || 'Backlog'}
+                        </Lozenge>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden>
+                          <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      {showHeaderStatusDropdown && (
+                        <div onKeyDown={e => { if (e.key === 'Escape') setShowHeaderStatusDropdown(false); }} style={{ position: 'absolute', left: 0, top: '100%', marginTop: 4, background: '#FFFFFF', borderRadius: 4, border: 'none', boxShadow: '0 8px 12px rgba(30,31,33,0.15), 0 0 1px rgba(30,31,33,0.31)', padding: '4px 0', zIndex: 9999, minWidth: 220, maxHeight: 340, overflowY: 'auto', animation: 'sdm-slide-down 0.15s ease-out' }}>
+                          {STATUS_OPTION_GROUPS.map(group => (
+                            <div key={group.category}>
+                              <div style={{ fontSize: 11, fontWeight: 700, color: '#6B778C', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '8px 12px 4px', marginTop: 4 }}>{group.groupLabel}</div>
+                              {group.statuses.map(st => {
+                                const isActive = localStatus === st;
+                                return (
+                                  <div key={st} onClick={() => { setLocalStatus(st); setShowHeaderStatusDropdown(false); updateStatusMutation.mutate(st); }} style={{
+                                    height: 36, padding: '0 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                                    cursor: 'pointer', background: isActive ? '#DEEBFF' : 'transparent', transition: 'background 80ms',
+                                  }}
+                                    onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = '#F4F5F7'; }}
+                                    onMouseLeave={e => { if (!isActive) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
+                                  >
+                                    <Lozenge appearance={statusToLozenge(st)}>{st}</Lozenge>
+                                    {isActive && <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                     <div ref={addMenuRef} style={{ position: 'relative' }}>
                       <button onClick={() => setShowAddMenu(!showAddMenu)} style={{
                         width: 28, height: 28, border: '1px solid #DFE1E6', background: '#FAFBFC',
@@ -1228,16 +1285,36 @@ export default function StoryDetailModal({
                       })()}
                       <input ref={fileInputRef} type="file" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadAttachmentMutation.mutate(f); e.target.value = ''; }} />
                     </div>
-                    <div ref={aiMenuRef} style={{ position: 'relative' }}>
-                      <button onClick={() => setShowAiMenu(o => !o)} style={{
-                        width: 28, height: 28, border: '1px solid #DEEBFF', background: '#EFF6FF',
+                    {/* Jira parity (2026-04-27): lightning bolt button —
+                        opens the workflow transitions panel directly. Mirrors
+                        Jira's rail header `⚡` shortcut between status and
+                        Improve Story. Wired to existing setShowWorkflow. */}
+                    <button
+                      onClick={() => setShowWorkflow(true)}
+                      style={{
+                        width: 28, height: 28, border: '1px solid #DFE1E6', background: '#FAFBFC',
                         borderRadius: 4, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: '#2563EB', transition: 'background 0.15s',
+                        color: '#5E6C84', transition: 'background 0.15s, border-color 0.15s',
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#EBECF0'; e.currentTarget.style.borderColor = '#C1C7D0'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '#FAFBFC'; e.currentTarget.style.borderColor = '#DFE1E6'; }}
+                      title="View workflow"
+                    ><Zap size={14} /></button>
+                    <div ref={aiMenuRef} style={{ position: 'relative' }}>
+                      {/* Jira parity (2026-04-27): "Improve Story" labeled
+                          button matches Jira's rail header CTA. Was an
+                          icon-only sparkle box; now shows the label so the
+                          affordance is discoverable. */}
+                      <button onClick={() => setShowAiMenu(o => !o)} style={{
+                        height: 28, padding: '0 10px', border: '1px solid #DEEBFF', background: '#EFF6FF',
+                        borderRadius: 4, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6,
+                        color: '#2563EB', fontSize: 12, fontWeight: 500, fontFamily: 'inherit',
+                        transition: 'background 0.15s',
                       }}
                         onMouseEnter={e => { e.currentTarget.style.background = '#DEEBFF'; }}
                         onMouseLeave={e => { e.currentTarget.style.background = '#EFF6FF'; }}
                         title="Catalyst Intelligence"
-                      ><Sparkles size={14} /></button>
+                      ><Sparkles size={14} /> Improve Story</button>
                       {showAiMenu && (
                         <div style={{
                           position: 'absolute', left: 0, top: 34, background: '#FFF',

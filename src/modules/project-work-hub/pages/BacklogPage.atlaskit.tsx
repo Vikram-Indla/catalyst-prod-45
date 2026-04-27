@@ -612,12 +612,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       out.push(it);
     };
 
+    // Jira parity (2026-04-27): when typeFilter='all', the list is FLAT
+     // (matches Jira's list view, e.g. /jira/software/c/projects/BAU/list).
+     // Catalyst's tree view only emitted children when the parent epic was
+     // in expandedIds — so with all 11 epics collapsed by default, the
+     // user saw "135 items" instead of the actual 243. Force-expand all
+     // parents on the "All" tab; other tabs preserve the manual tree.
+    const flattenAll = typeFilter === 'all';
     for (const top of topLevel) {
       const topVisible = matchesText(top) && matchesType(top) && matchesFilterBar(top);
       const kids = childrenOf.get(top.id) ?? [];
       const matchingKids = kids.filter((k) => matchesText(k) && matchesType(k) && matchesFilterBar(k));
       if (topVisible) tryPush(top);
-      if (expandedIds.has(top.id)) {
+      if (flattenAll || expandedIds.has(top.id)) {
         for (const k of matchingKids) tryPush(k);
       }
     }
