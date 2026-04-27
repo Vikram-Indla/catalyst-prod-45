@@ -64,7 +64,9 @@ import ShortcutIcon from '@atlaskit/icon/glyph/shortcut';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { catalystToast } from '@/lib/catalystToast';
+// Canonical Atlaskit flag wrapper (pure @atlaskit/flag + Atlaskit icons,
+// drop-in for catalystToast). Reset to Jira-canonical toast per audit.
+import { flag } from '@/components/shared/JiraTable/flags';
 import { useAuth } from '@/hooks/useAuth';
 import { JiraIssueTypeIcon } from '@/lib/jira-issue-type-icons';
 import {
@@ -921,7 +923,7 @@ export function CreateStoryModal({
             created_by: authUser.id,
           } as any);
         } catch (linkErr: any) {
-          catalystToast.warning(
+          flag.warning(
             `${result.issue_key} created, but linking failed`,
             linkErr?.message ?? 'Please link manually',
           );
@@ -932,7 +934,7 @@ export function CreateStoryModal({
         }
       }
 
-      catalystToast.success(`${result.issue_key} created`);
+      flag.success(`${result.issue_key} created`);
       onSuccess?.(result.issue_key);
 
       if (createAnother && !isCreateLinkedMode) {

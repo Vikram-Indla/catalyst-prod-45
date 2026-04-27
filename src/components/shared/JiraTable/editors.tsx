@@ -22,6 +22,7 @@ import Textfield from '@atlaskit/textfield';
 import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Popup from '@atlaskit/popup';
+import Tooltip from '@atlaskit/tooltip';
 import { token } from '@atlaskit/tokens';
 import { Search as SearchIcon, MoreHorizontal } from 'lucide-react';
 import { StatusPill } from './cells';
@@ -419,10 +420,25 @@ export function makeStatusEditCellAkPopup<T>({
 export function makeSummaryInlineEditCell<T>({
   getSummary,
   canEdit,
+  getReadOnlyTooltip,
   onChange,
 }: {
   getSummary: (row: T) => string;
   canEdit?: (row: T) => boolean;
+  /**
+   * Optional read-only affordance. When `canEdit(row) === false`, the cell
+   * is rendered as a non-editable display. Without an affordance the user
+   * has no signal that the cell is intentionally inert (audit P1, see
+   * .catalyst/audits/jira-compare/2026-04-26-bau-backlog/A-finding.md).
+   *
+   * If this returns a non-null string, the read-only branch wraps the
+   * summary in @atlaskit/tooltip with that text as `content`, and the
+   * span gets `cursor: not-allowed`. Returning null/undefined keeps the
+   * legacy bare-span behaviour.
+   *
+   * Spec: https://atlassian.design/components/tooltip
+   */
+  getReadOnlyTooltip?: (row: T) => string | null;
   onChange: (row: T, next: string) => void;
 }) {
   return function SummaryInlineEditCell({ row }: CellProps<T>) {
@@ -430,17 +446,37 @@ export function makeSummaryInlineEditCell<T>({
     const editable = canEdit ? canEdit(row) : true;
 
     if (!editable) {
-      return (
+      const readOnlyTooltip = getReadOnlyTooltip?.(row) ?? null;
+      const display = (
         <span
           style={{
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
             flex: 1,
+            // Affordance: when a tooltip explains the read-only state,
+            // pair it with cursor: not-allowed so the inert cell is
+            // discoverable on hover (not just via tooltip delay).
+            cursor: readOnlyTooltip ? 'not-allowed' : undefined,
           }}
         >
           {summary}
         </span>
+      );
+
+      if (!readOnlyTooltip) return display;
+
+      return (
+        <Tooltip content={readOnlyTooltip} position="top">
+          {(tooltipProps) => (
+            <span
+              {...tooltipProps}
+              style={{ display: 'block', width: '100%', cursor: 'not-allowed' }}
+            >
+              {display}
+            </span>
+          )}
+        </Tooltip>
       );
     }
 

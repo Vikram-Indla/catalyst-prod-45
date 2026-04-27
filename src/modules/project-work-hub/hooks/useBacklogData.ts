@@ -241,6 +241,10 @@ export function useStoryBacklog(projectId: string) {
 
       const jiraStories: BacklogStory[] = jiraRows.map((row: any) => ({
         // F-iter9 PK fix: id <- issue_key (no `id` column on ph_issues).
+        // Confirmed 2026-04-27 via Postgres information_schema dump
+        // (uploads/query-results-export-2026-04-27_08-15-02.csv): ph_issues
+        // has issue_key (text NOT NULL) as PK and no UUID id column.
+        // The supabase types.ts entry showing ph_issues.id is stale.
         id: row.issue_key,
         story_key: row.issue_key,
         title: row.summary,

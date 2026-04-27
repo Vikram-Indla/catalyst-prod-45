@@ -10,7 +10,9 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ChevronUp, ChevronDown, GripVertical, Pencil } from 'lucide-react';
+import { ChevronUp, ChevronDown, GripVertical, Pencil, Check } from 'lucide-react';
+// 2026-04-27 — Notion Features unification: theme label lookup
+import { THEME_OPTIONS } from '@/types/business-request';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { 
@@ -55,6 +57,10 @@ interface BusinessRequestRow {
   planned_quarter?: string[] | null;
   department?: string | null;
   created_at?: string | null;
+  // 2026-04-27 — Notion Features unification
+  theme?: string | null;
+  stakeholders?: string[] | null;
+  targeted_feature?: boolean | null;
 }
 
 interface BacklogTableViewProps {
@@ -137,6 +143,9 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         case 'business_owner': aVal = a.business_owner || ''; bVal = b.business_owner || ''; break;
         case 'delivery_platform': aVal = a.delivery_platform || ''; bVal = b.delivery_platform || ''; break;
         case 'quarter': aVal = a.planned_quarter?.[0] || ''; bVal = b.planned_quarter?.[0] || ''; break;
+        // 2026-04-27 — Notion Features unification (theme + targeted_feature sortable)
+        case 'theme': aVal = a.theme || ''; bVal = b.theme || ''; break;
+        case 'targeted_feature': aVal = a.targeted_feature ? 1 : 0; bVal = b.targeted_feature ? 1 : 0; break;
         default: aVal = a.rank || 999; bVal = b.rank || 999;
       }
       if (sortConfig.direction === 'asc') return aVal > bVal ? 1 : -1;
@@ -422,12 +431,42 @@ export function BacklogTableView({ data, isLoading, onRowClick }: BacklogTableVi
         );
       case 'quarter':
         return (
-          <EditableQuarterCell 
+          <EditableQuarterCell
             quarter={row.planned_quarter?.[0] || null}
             requestId={row.id}
             onSave={handleQuarterUpdate}
           />
         );
+      // 2026-04-27 — Notion Features unification cells (read-only for now;
+      // editing happens in BusinessRequestDetailModal where Atlaskit pickers live)
+      case 'theme': {
+        if (!row.theme) return <span style={{ color: 'var(--fg-3)', fontSize: 13 }}>—</span>;
+        const m = THEME_OPTIONS.find(t => t.value === row.theme);
+        return (
+          <span style={{ fontSize: 13, color: 'var(--fg-1)', fontFamily: 'var(--cp-font-body)' }} title={m?.labelEn || row.theme}>
+            {m?.label ?? row.theme}
+          </span>
+        );
+      }
+      case 'stakeholders': {
+        const count = Array.isArray(row.stakeholders) ? row.stakeholders.length : 0;
+        if (count === 0) return <span style={{ color: 'var(--fg-3)', fontSize: 13 }}>—</span>;
+        return (
+          <span
+            title={(row.stakeholders ?? []).join(', ')}
+            style={{
+              display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+              minWidth: 24, height: 20, padding: '0 8px', borderRadius: 10,
+              background: '#DEEBFF', color: '#0747A6',
+              fontSize: 11, fontWeight: 700, fontFamily: 'var(--cp-font-mono)',
+            }}
+          >{count}</span>
+        );
+      }
+      case 'targeted_feature':
+        return row.targeted_feature
+          ? <Check size={14} style={{ color: '#006644' }} aria-label="Targeted" />
+          : <span style={{ color: 'var(--fg-3)', fontSize: 13 }}>—</span>;
       default:
         return null;
     }

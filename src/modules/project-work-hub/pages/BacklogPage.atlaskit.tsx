@@ -885,7 +885,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       alwaysVisible: true,
       cell: makeSummaryInlineEditCell<BacklogItem>({
         getSummary: (r) => r.title,
-        canEdit: (r) => r.source === 'catalyst',
+        // Iron dome OPEN (2026-04-27 audit). Every row is inline-editable.
+        // The unified architecture is: catalyst rows write directly to
+        // ph_issues; jira-sourced rows write to ph_issues optimistically
+        // AND queue a write-back via jira_write_back_queue (the gate at
+        // BacklogPage.atlaskit.tsx:387 in updateField.mutate routes the
+        // queue insert on source==='jira'). The factory's optional
+        // canEdit / getReadOnlyTooltip props are kept available in
+        // editors.tsx for other surfaces that may want them, but BAU
+        // backlog deliberately does not constrain edits by source.
         onChange: (row, next) => updateField.mutate({ id: row.id, source: row.source, patch: { title: next } }),
       }),
     },

@@ -52,4 +52,8 @@ export const DEFAULT_COLUMNS: TableColumn[] = [
   { key: 'department', label: 'Department', width: 150, sortable: true, visible: true },
   { key: 'reporter', label: 'Reporter', width: 130, sortable: true, visible: true },
   { key: 'assignee', label: 'Assignee', width: 130, sortable: true, visible: true },
+  // 2026-04-27 — Notion Features unification (default-hidden; opt-in via column toggle)
+  { key: 'theme', label: 'Theme', width: 200, sortable: true, visible: false },
+  { key: 'stakeholders', label: 'Stakeholders', width: 120, sortable: false, visible: false, align: 'center' },
+  { key: 'targeted_feature', label: 'Targeted', width: 90, sortable: true, visible: false, align: 'center' },
 ];

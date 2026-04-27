@@ -6,7 +6,9 @@ import { useState, useCallback } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { catalystToast } from '@/lib/catalystToast';
+// Canonical Atlaskit flag wrapper (pure @atlaskit/flag + Atlaskit icons,
+// drop-in for catalystToast). Reset to Jira-canonical toast per audit.
+import { flag } from '@/components/shared/JiraTable/flags';
 
 export interface CreateStoryFormData {
   projectId: string;
@@ -242,7 +244,13 @@ export function useCreateStoryMutation() {
           project_key: projectKey,
           issue_key: issueKey,
           summary: form.summary.trim(),
-          description: form.description || null,
+          // ph_issues has no plain `description` column — the canonical plain
+          // mirror is `description_text` (see DescriptionPopover.tsx, which
+          // notes "mirrors plain text to description_text"). Writing to
+          // `description` returns PostgREST PGRST204: "Could not find the
+          // 'description' column of 'ph_issues' in the schema cache".
+          // Surfaced 2026-04-27 during jira-compare BAU Phase 8.
+          description_text: form.description || null,
           description_adf: form.descriptionAdf || null,
           issue_type: issueType || 'Story',
           status: form.status,
@@ -333,7 +341,7 @@ export function useCreateStoryMutation() {
     onError: (error: any) => {
       const message = error?.message ?? 'Failed to create work item';
       console.error('[useCreateStory] mutation error:', error);
-      catalystToast.error('Create failed', message);
+      flag.error('Create failed', message);
     },
   });
 }

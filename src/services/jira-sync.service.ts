@@ -30,10 +30,18 @@ export interface SyncLogRow {
 
 export interface WriteBackRow {
   id: string;
-  ph_issue_id: string;
+  /** Canonical row identifier (text PK on ph_issues). Added by migration
+   *  20260427083000_jira_write_back_queue_use_issue_key. Older rows that
+   *  predate the migration may have null here and a populated ph_issue_id. */
+  ph_issue_key: string | null;
+  /** Legacy UUID identifier — kept for backward compat; new writes prefer
+   *  ph_issue_key. Will be deprecated once all callers migrate. */
+  ph_issue_id: string | null;
   field_name: string;
   new_value: string;
-  queued_at: string;
+  /** Insert timestamp on jira_write_back_queue. Replaces the previously-
+   *  declared `queued_at` field that does not exist on the table. */
+  created_at: string;
   status: string | null;
 }
 
@@ -203,43 +211,62 @@ export const jiraSyncService = {
 
     const { data, error } = await supabase
       .from('jira_write_back_queue')
-      .select('id, ph_issue_id, field_name, new_value, queued_at, status')
+      .select('id, ph_issue_key, ph_issue_id, field_name, new_value, created_at, status')
       .eq('status', 'queued')
-      .order('queued_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(500);
     if (error) throw error;
     if (!data || data.length === 0) return [];
 
-    // Filter to project's issues
-    const issueIds = data.map(q => q.ph_issue_id);
+    // Filter to project's issues by issue_key (canonical PK on ph_issues).
+    // Falls back to ph_issue_id for any legacy queue rows that predate the
+    // 2026-04-27 migration and still carry only the UUID.
+    const issueKeys = data
+      .map(q => q.ph_issue_key)
+      .filter((k): k is string => k !== null && k !== undefined);
+    if (issueKeys.length === 0) return [];
+
     const { data: issues } = await supabase
       .from('ph_issues')
-      .select('id')
+      .select('issue_key')
       .eq('project_key', project.key)
-      .in('id', issueIds);
-    const validIds = new Set((issues || []).map(i => i.id));
+      .in('issue_key', issueKeys);
+    const validKeys = new Set((issues || []).map(i => i.issue_key));
 
-    return data.filter(q => validIds.has(q.ph_issue_id));
+    return data.filter(q => q.ph_issue_key !== null && validKeys.has(q.ph_issue_key));
   },
 
-  /** Queue a write-back edit for a Jira-sourced item */
-  async queueWriteBack(phIssueId: string, fieldName: string, newValue: string): Promise<void> {
+  /**
+   * Queue a write-back edit for a Jira-sourced item.
+   *
+   * Writes to `jira_write_back_queue.ph_issue_key` (TEXT, FK → ph_issues.issue_key).
+   * That column was added by migration 20260427083000_jira_write_back_queue_use_issue_key.sql
+   * after the /jira-compare 2026-04-27 audit discovered that the original
+   * audit-B `ph_issue_id UUID` column had no valid FK target (ph_issues PK
+   * is issue_key TEXT, no UUID id column exists).
+   *
+   * Status defaults to 'approved' so the background processor edge fn can
+   * pick the row up immediately — matches A-finding.md's "best-effort,
+   * never throws, status='approved'" pattern.
+   *
+   * Note: the old code also did a follow-up update to
+   * `ph_issues.pending_write_back_at` after the queue insert. That column
+   * does not exist on ph_issues (confirmed via information_schema dump
+   * 2026-04-27). The pending-state can be derived from the queue itself
+   * (latest queued/approved row per issue_key) so this update is dropped.
+   */
+  async queueWriteBack(issueKey: string, fieldName: string, newValue: string): Promise<void> {
     const userId = await getUserId();
     const { error } = await supabase
       .from('jira_write_back_queue')
       .insert({
-        ph_issue_id: phIssueId,
+        ph_issue_key: issueKey,
         field_name: fieldName,
         new_value: newValue,
         created_by: userId,
-      });
+        status: 'approved',
+      } as any);
     if (error) throw error;
-
-    // Mark the issue as having a pending write-back
-    await supabase
-      .from('ph_issues')
-      .update({ pending_write_back_at: new Date().toISOString() } as any)
-      .eq('id', phIssueId);
   },
 
   /** Approve a queued write-back */
