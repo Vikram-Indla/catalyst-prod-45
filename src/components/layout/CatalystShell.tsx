@@ -77,29 +77,41 @@ function useIsDarkTheme(): boolean {
 function SidebarEdgeReveal({ onReveal }: { onReveal: () => void }) {
   const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.userAgent);
   const shortcutHint = isMac ? '⌘ [' : 'Ctrl [';
+  // Apr 27, 2026 (Vikram audit passes 6 + 9):
+  // Pass 6 removed the native `title=` attribute (was the source of an
+  //   OS-level ghost tooltip that floated unanchored over the table)
+  //   and wrapped the button in @atlaskit/tooltip for ADS positioning.
+  // Pass 9 reverted the @atlaskit/tooltip wrapper because it nested the
+  //   button inside a span that didn't propagate `h-full`, causing the
+  //   strip to collapse from full viewport height to a 16-pixel chevron
+  //   floating at y=56 — exactly the "leaking from structure" defect the
+  //   user surfaced. Tooltip is purely informational here; the visible
+  //   chevron-on-hover already signals affordance, so we drop the popup
+  //   entirely. aria-label remains for screen readers.
+  // Width animation lives in a CSS :hover rule (not direct DOM mutation),
+  //   so React stays in control of the inline `style` prop — the same
+  //   class of bug the TypeChip refactor uncovered earlier today.
   return (
     <button
       onClick={onReveal}
       aria-label={`Show sidebar (shortcut: ${shortcutHint})`}
-      title={`Show sidebar  ${shortcutHint}`}
-      className="group flex items-center justify-center h-full"
+      className="group flex items-center justify-center h-full sidebar-edge-reveal"
       style={{
         width: '8px',
+        height: '100%',
         border: 'none',
         background: 'transparent',
         cursor: 'pointer',
         color: 'var(--cp-text-muted, #94A3B8)',
         flexShrink: 0,
         padding: 0,
-        // 2026-04-19: Explicit transition aligned with SidebarBase (180ms,
-        // Material emphasized decelerate) instead of Tailwind's
-        // `transition-all` default, so reveal timing matches the sidebar's
-        // own width animation and the header logo zone.
+        alignSelf: 'stretch',
         transition: 'width 180ms cubic-bezier(0.2, 0, 0, 1), background 180ms cubic-bezier(0.2, 0, 0, 1)',
       }}
-      onMouseEnter={e => { e.currentTarget.style.width = '32px'; e.currentTarget.style.background = 'rgba(0,0,0,0.03)'; }}
-      onMouseLeave={e => { e.currentTarget.style.width = '8px'; e.currentTarget.style.background = 'transparent'; }}
     >
+      <style>{`
+        .sidebar-edge-reveal:hover { width: 32px !important; background: rgba(0,0,0,0.03) !important; }
+      `}</style>
       <PanelLeftOpen size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
     </button>
   );

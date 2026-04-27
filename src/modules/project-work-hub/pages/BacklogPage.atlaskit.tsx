@@ -14,10 +14,10 @@
  * Canonical: this page is ~400 lines and designed to be the template for
  * ReleaseHub, TestHub, IncidentHub boards that want a Jira-style list view.
  */
-import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 import EmptyState from '@atlaskit/empty-state';
@@ -29,7 +29,9 @@ import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Tooltip from '@atlaskit/tooltip';
 import Button from '@atlaskit/button';
-import Badge from '@atlaskit/badge';
+import AkChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import Lozenge from '@atlaskit/lozenge';
+import Avatar from '@atlaskit/avatar';
 import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
@@ -82,13 +84,23 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
-import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, ChevronDown, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser } from 'lucide-react';
+import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, ChevronDown, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser, MoreHorizontal, SlidersHorizontal, RefreshCw, Download, MessageSquare, Share2, Zap } from 'lucide-react';
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
 // shared AtlaskitPageShell so this surface tracks the Dashboard's shell
 // padding (currently 8px) instead of carrying its own bespoke 24px.
 import { AtlaskitPageShell } from '@/components/ads';
+// Apr 27 2026 (jira-compare regression D-001/002/003): chrome-level project
+// header band (Spaces breadcrumb + project icon + H1) lifted out of the
+// white card to match Jira parity. Single import, scoped to project-work-hub.
+import { ProjectChromeBand } from '../components/ProjectChromeBand';
+// Apr 27 2026 (LOVABLE-01 landed in-session): AvatarGroup for the chrome-band
+// member strip + resolveAvatarUrl for local-asset photo lookups (avatars
+// chokepoint per CLAUDE.md §19).
+import AvatarGroup from '@atlaskit/avatar-group';
+import { resolveAvatarUrl } from '@/lib/avatars';
+import { toast } from 'sonner';
 
 const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
@@ -234,8 +246,57 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Roadmap, etc.) — see the L50 lesson note for the sweep target list.
   const { data: project } = useProject(projectId);
   const projectDisplayName = project?.name || projectKey;
-  const pageTitle = `${projectDisplayName} Backlog`;
+  // Apr 27, 2026 — jira-compare audit P1 #4: Jira's BAU list page header
+  // is the project name only ("Senaei BAU"), not "{Project} Backlog". The
+  // hub function (Backlog/Board/Roadmap) is communicated by the breadcrumb
+  // + sidebar entry, not duplicated in the H1. Drop the " Backlog" suffix
+  // on this surface to match Jira parity. L50's "{Project} {Hub Function}"
+  // pattern is rescinded for Project Hub list views; H1 = project name only.
+  const pageTitle = projectDisplayName;
   useAtlaskitThemeSync();
+  const navigate = useNavigate();
+
+  // ────────────────────────────────────────────────────────────────────
+  // Apr 27 2026 (LOVABLE-01 landed in-session): project members for the
+  // chrome-band avatar strip. Query mirrors the EditableAssignee pattern
+  // (project_members → profiles → resolveAvatarUrl). Cached at TanStack's
+  // default staleTime; the chrome band shows up to 7 avatars + a +N
+  // overflow chip with aria-label "N more people" (closes a11y row #13).
+  // The "Add people" button stubs to a sonner toast for now — real
+  // user-picker modal is a follow-on; per LOVABLE-01 wiring acceptance
+  // it just can't be DEAD.
+  // ────────────────────────────────────────────────────────────────────
+  const { data: chromeBandMembers = [] } = useQuery({
+    queryKey: ['chrome-band-members', projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('project_members')
+        .select('user_id, role')
+        .eq('project_id', projectId);
+      if (error) throw error;
+      if (!data?.length) return [];
+      const userIds = data.map((d) => d.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds);
+      const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+      return data
+        .map((d) => {
+          const full_name = profileMap.get(d.user_id)?.full_name ?? 'Unknown';
+          return {
+            key: d.user_id,
+            name: full_name,
+            // resolveAvatarUrl is the single avatar chokepoint (CLAUDE.md §19);
+            // returns null for unknown users, AvatarGroup falls back to initials.
+            src: resolveAvatarUrl(full_name) ?? undefined,
+          };
+        })
+        .filter((m) => m.name && m.name !== 'Unknown');
+    },
+    enabled: !!projectId,
+    staleTime: 5 * 60_000,
+  });
 
   const queryClient = useQueryClient();
   const {
@@ -305,11 +366,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [searchParams, setSearchParams] = useSearchParams();
   // Apr 27, 2026 — column order matches the Jira BAU list view (verified
   // against Vikram's screenshot of digital-transformation.atlassian.net):
-  //   Type | Key | Summary | Status | Comments | Parent | Assignee | Priority | Updated
-  // 'comments' was previously excluded from defaults (only the column-def
-  // had defaultVisible:true) — this set is the source of truth for what
-  // renders without the user touching the column picker.
-  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'priority', 'updated'];
+  //   Type | Key | Summary | Status | Comments | Parent | Assignee | Priority | Created | Updated
+  // 'comments' was previously excluded from defaults; 'created' was added
+  // as defaultVisible:false but Vikram wants it on by default for queue
+  // triage. Creating column-picker remains the way to hide either.
+  // Apr 27, 2026 — jira-compare audit P1 #6 (re-probe iter 2): Created
+  // and Updated REMOVED from defaults. Jira's BAU list hides both by
+  // default; including them in Catalyst's defaults squashed Summary
+  // and Parent below their parity targets (≥360 / ≥280px). Users opt
+  // in via the column picker `+` button when they need queue-triage
+  // dates. The column schema retains both with `defaultVisible: false`
+  // so they remain available; this array is the authoritative initial
+  // visibility set on first load.
+  const DEFAULT_VISIBLE_COLUMNS = ['key', 'summary', 'status', 'comments', 'parent', 'assignee', 'priority'];
   const parseSet = (raw: string | null): Set<string> =>
     raw ? new Set(raw.split(',').filter(Boolean)) : new Set();
 
@@ -361,15 +430,64 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     () => (searchParams.get('panel') as PanelMode) || 'compact',
   );
   // Column visibility — seeded from URL if present, else defaults.
+  // Apr 27, 2026: when a URL state is present we MERGE with the current
+  // DEFAULT_VISIBLE_COLUMNS so columns added to the defaults later (like
+  // `created` on this pass) auto-appear for users with bookmarked URLs.
+  // Without this, anyone with a saved `cols=…` query string would never
+  // see the new column until they manually toggled it via the picker.
   const [visibleColumns, setVisibleColumns] = useState<Set<string>>(() => {
     const raw = searchParams.get('cols');
-    return raw ? parseSet(raw) : new Set(DEFAULT_VISIBLE_COLUMNS);
+    if (!raw) return new Set(DEFAULT_VISIBLE_COLUMNS);
+    const fromUrl = parseSet(raw);
+    DEFAULT_VISIBLE_COLUMNS.forEach((c) => fromUrl.add(c));
+    return fromUrl;
   });
   // Group-by — matches catalog 076-095. 'none' disables grouping.
   type GroupByKey = 'none' | 'status' | 'parent' | 'assignee' | 'priority';
+  // Apr 27, 2026 (audit pass 10, IRP-518 alignment): URL param renamed
+  // 'group' → 'groupBy' to match Jira's list-view URL contract. Reads
+  // both for one release so bookmarked URLs from the old name keep
+  // working; writes only the new name.
   const [groupBy, setGroupBy] = useState<GroupByKey>(
-    () => (searchParams.get('group') as GroupByKey) || 'none',
+    () => (searchParams.get('groupBy') || searchParams.get('group')) as GroupByKey || 'none',
   );
+  // Apr 27 2026 (jira-compare regression F-NEW-2 functional fill):
+  // which group has the inline-create form open. Click "+" on a group
+  // header → setInlineCreateGroup(groupId). The form renders an extra
+  // row immediately below that group's header via JiraTable's
+  // renderGroupInlineRow prop. On submit / cancel / Esc → set back to null.
+  const [inlineCreateGroup, setInlineCreateGroup] = useState<string | null>(null);
+  const [inlineCreateSubmitting, setInlineCreateSubmitting] = useState(false);
+
+  // Apr 27 2026 (jira-compare regression iter 3 — View options menu
+  // parity with Jira). Toggling "Hide done work items" filters out any
+  // row whose status is in DONE_LIKE_STATUSES (Catalyst variants of
+  // Jira's "Done" column). When false (default), all rows render.
+  const [hideDoneItems, setHideDoneItems] = useState<boolean>(false);
+
+  // Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
+  // Catalyst's Add people CTA in the chrome band opens this modal,
+  // mirroring Jira's `invite-people.ui.navigation-add-people-button`
+  // behavior (probed at /jira/.../list — heading "Add people to {proj}",
+  // emails input, role select, suggestion chips, Cancel/Add). Catalyst
+  // version: emails Textfield, click-cycle role, click-to-add chips
+  // populated from non-members in the org. On Add, parse emails (comma
+  // /space separated) → look up profiles by email → insert
+  // project_members rows.
+  const [addPeopleOpen, setAddPeopleOpen] = useState<boolean>(false);
+  const [addPeopleEmails, setAddPeopleEmails] = useState<string>('');
+  const [addPeopleRole, setAddPeopleRole] = useState<'Admin' | 'Member' | 'Viewer'>('Member');
+  const [addPeopleSubmitting, setAddPeopleSubmitting] = useState<boolean>(false);
+
+  // Apr 27 2026 (jira-compare regression iter 4 — project ... menu).
+  // Mirrors Jira's project-menu-kebab next to the project header H1.
+  // Items per Vikram scope: Remove from starred / Linked teams / Set
+  // space background / Space settings / Archive space / Delete space.
+  // Uses bespoke createPortal (L21).
+  const [projectMenuAnchor, setProjectMenuAnchor] = useState<{ top: number; left: number } | null>(null);
+  const [isStarred, setIsStarred] = useState<boolean>(false);
+  const projectMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
+
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
     () => parseSet(searchParams.get('collapsed')),
   );
@@ -393,7 +511,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     if (page !== 1) params.set('page', String(page));
     if (detailItemId) params.set('selectedIssue', detailItemId);
     if (panelMode !== 'compact') params.set('panel', panelMode);
-    if (groupBy !== 'none') params.set('group', groupBy);
+    if (groupBy !== 'none') params.set('groupBy', groupBy);
     if (collapsedGroups.size) params.set('collapsed', Array.from(collapsedGroups).join(','));
     if (expandedIds.size) params.set('expanded', Array.from(expandedIds).join(','));
     // Only emit `cols` if it differs from defaults — so users who haven't
@@ -709,13 +827,26 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
      // in expandedIds — so with all 11 epics collapsed by default, the
      // user saw "135 items" instead of the actual 243. Force-expand all
      // parents on the "All" tab; other tabs preserve the manual tree.
+    //
+    // Apr 27 2026 (jira-compare regression F-NEW-3 functional fill):
+    // chevron click on a parent row ADDS that row's id to expandedIds.
+    // For typeFilter='all' we now invert the meaning of expandedIds:
+    // it's a set of EXPLICITLY-COLLAPSED parents. Children render unless
+    // the parent is in that set. For other typeFilters, expandedIds keeps
+    // its original "explicit-expand" semantics (manual tree). This way
+    // the chevron actually collapses children on the BAU list view —
+    // matching Jira's behaviour where clicking a parent's chevron
+    // toggles its children's visibility.
     const flattenAll = typeFilter === 'all';
     for (const top of topLevel) {
       const topVisible = matchesText(top) && matchesType(top) && matchesFilterBar(top);
       const kids = childrenOf.get(top.id) ?? [];
       const matchingKids = kids.filter((k) => matchesText(k) && matchesType(k) && matchesFilterBar(k));
       if (topVisible) tryPush(top);
-      if (flattenAll || expandedIds.has(top.id)) {
+      const showChildren = flattenAll
+        ? !expandedIds.has(top.id) // expandedIds = explicitly-collapsed when flattenAll
+        : expandedIds.has(top.id); // expandedIds = explicitly-expanded otherwise
+      if (showChildren) {
         for (const k of matchingKids) tryPush(k);
       }
     }
@@ -735,10 +866,20 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     return out;
   }, [topLevel, childrenOf, items, expandedIds, typeFilter, search, filterValue]);
 
+  // ── "Hide done work items" filter (Apr 27 2026 — Jira parity View
+  // options menu). When toggled on, rows whose status indicates a
+  // done/closed state are filtered out before sorting. Status names
+  // come from Catalyst's STATUS_OPTIONS — anything matching /done|closed/i
+  // is treated as done. ──
+  const filteredVisibleRows: BacklogItem[] = useMemo(() => {
+    if (!hideDoneItems) return visibleRows;
+    return visibleRows.filter((r) => !/^(done|closed)$/i.test((r.status || '').trim()));
+  }, [visibleRows, hideDoneItems]);
+
   // ── Sorting ──
   const sortedRows: BacklogItem[] = useMemo(() => {
-    if (!sortKey || !sortDir) return visibleRows;
-    const s = [...visibleRows];
+    if (!sortKey || !sortDir) return filteredVisibleRows;
+    const s = [...filteredVisibleRows];
     const getValue = (it: BacklogItem): string | number => {
       switch (sortKey) {
         case 'key': return it.key || '';
@@ -760,7 +901,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       return sortDir === 'ASC' ? cmp : -cmp;
     });
     return s;
-  }, [visibleRows, sortKey, sortDir]);
+  }, [filteredVisibleRows, sortKey, sortDir]);
 
   const total = sortedRows.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -793,8 +934,62 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       if (aOrphan !== bOrphan) return aOrphan ? 1 : -1;
       return a.localeCompare(b);
     });
-    return keys.map((k) => ({ id: k, label: k, rows: buckets.get(k)! }));
-  }, [groupBy, sortedRows]);
+    // Apr 27, 2026 (audit pass 10): build a rich labelNode per groupBy
+    // so the group header renders Atlaskit primitives instead of plain
+    // uppercase text — matches the spec the user shared (Lozenge for
+    // status, Avatar for assignee, PriorityBars for priority,
+    // JiraIssueTypeIcon for parent). The plain `label` string is kept
+    // so id/sort/persistence still work; JiraTable picks `labelNode`
+    // when present.
+    return keys.map((k) => {
+      const sample = buckets.get(k)![0];
+      let labelNode: React.ReactNode = null;
+      if (groupBy === 'status') {
+        const appearance = sample.status ? statusAppearance(sample.status) : 'default';
+        labelNode = <Lozenge appearance={appearance as LozengeAppearance}>{k}</Lozenge>;
+      } else if (groupBy === 'assignee') {
+        const isUnassigned = !sample.assignee_name;
+        const avatarUrl = sample.assignee_name ? avatarsByName?.get(sample.assignee_name) : null;
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Avatar size="small" name={k} src={avatarUrl || undefined} appearance={isUnassigned ? 'square' : 'circle'} />
+            <span>{k}</span>
+          </span>
+        );
+      } else if (groupBy === 'priority') {
+        // Compact bars + label, matching the Priority cell renderer
+        const p = (sample.priority || '').toLowerCase();
+        const PRIORITY_RANK: Record<string, { level: number; color: string }> = {
+          highest:  { level: 4, color: '#C9372C' }, critical: { level: 4, color: '#C9372C' },
+          high:     { level: 3, color: '#F59E0B' },
+          medium:   { level: 2, color: '#22C55E' },
+          low:      { level: 1, color: '#22C55E' },
+          lowest:   { level: 0, color: '#DFE1E6' },
+        };
+        const rank = PRIORITY_RANK[p] || { level: 0, color: '#DFE1E6' };
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} title={k}>
+            <span style={{ display: 'inline-flex', gap: 2 }}>
+              {[1, 2, 3, 4].map((i) => (
+                <span key={i} style={{ width: 4, height: 12, borderRadius: 1, background: i <= rank.level ? rank.color : '#DFE1E6' }} />
+              ))}
+            </span>
+            <span>{k}</span>
+          </span>
+        );
+      } else if (groupBy === 'parent') {
+        const isOrphan = /^(No parent|—)$/i.test(k);
+        const parentType = sample.parent_issue_type || (sample.type === 'epic' ? 'Epic' : 'Epic');
+        labelNode = (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            {!isOrphan && <JiraIssueTypeIcon type={parentType} size={14} />}
+            <span style={{ fontFamily: !isOrphan ? 'var(--cp-font-mono)' : 'inherit' }}>{k}</span>
+          </span>
+        );
+      }
+      return { id: k, label: k, labelNode, rows: buckets.get(k)! };
+    });
+  }, [groupBy, sortedRows, avatarsByName]);
 
   useEffect(() => { setPage(1); }, [typeFilter, search, filterValue, sortKey, sortDir]);
 
@@ -944,16 +1139,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const columns = useMemo<Column<BacklogItem>[]>(() => ([
     {
       id: 'type',
-      label: '',
-      // Apr 27, 2026: kept at width 5 — icon column needs ~64px breathing
-      // room so the JiraIssueTypeIcon (16px) sits centered with adequate
-      // padding and doesn't visually crowd the Key cell. width:3 (~38px,
-      // floored at 48px by minWidth) caused the icons to look misaligned
-      // because the icon's natural drop was bigger than the cell's free
-      // vertical space. width:9 (the original) over-allocated; width:5
-      // is the calibrated middle.
-      width: 5,
-      align: 'center',
+      // Apr 27, 2026 — jira-compare audit P1 #5 + P-A11Y #12: Jira's BAU
+      // list type column has a visible "Type" header (data-key=issuetype,
+      // ~110px wide). Catalyst was icon-only with `label: ''` which is
+      // both a parity gap and an a11y gap (screen readers read an empty
+      // header for the issue-type cell). Setting label to "Type" fixes
+      // both findings in one change — visible text doubles as the
+      // accessible name on the th element. Width bumped 3 → 8 to give
+      // the header text comfortable footprint (~88px @ 1100 minw)
+      // without overshooting Jira's 110px.
+      label: 'Type',
+      width: 8,
+      align: 'start',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
         // Initiatives render with their own pre-joined color/icon (from
@@ -1007,6 +1204,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'key',
       label: 'Key',
+      // 8% of 1180 minw = ~94px. Natural min for "BAU-####" is ~50px.
       width: 8,
       sortable: true,
       defaultVisible: true,
@@ -1015,8 +1213,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'summary',
+      // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Summary
+      // column renders at ~400px on a 1100-min table. Catalyst was 22%
+      // (~242px) — well below the audit's ≥360px acceptance target.
+      // Bumped 22 → 33 (~363px @ 1100 minw) to hit parity. Drops Updated
+      // from defaultVisible (see Updated col below) to make room — Jira
+      // hides Updated by default in the BAU list as well.
       label: 'Summary',
-      width: 28,
+      width: 33,
       sortable: true,
       alwaysVisible: true,
       cell: makeSummaryInlineEditCell<BacklogItem>({
@@ -1041,7 +1245,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // has horizontal padding that reduces usable width, and the cell
       // wrapper clips on overflow. 15 gives ~180px at typical container
       // widths — enough for every status in the STATUS_OPTIONS vocabulary.
-      width: 15,
+      width: 11,
       sortable: true,
       defaultVisible: true,
       // B.4 verdict: @atlaskit/popup portal mounts on this surface but
@@ -1062,9 +1266,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'comments',
       label: 'Comments',
-      // 6% ≈ 77px — fits header text "Comments" without truncation. Width 4
-      // (~51px) was too narrow when this column is enabled via the picker.
-      width: 6,
+      // Apr 27, 2026 (audit pass 8): 6→8. At 6% × 1133 / 1.14 (114%-sum
+      // squash) the header rendered at 53px while "Comments" needs 66px,
+      // so it bled into Parent. 8% × 1180 (new sum=100, new minw=1180) =
+      // ~94px — fits "Comments" + 1-comment count chip.
+      width: 8,
       // Apr 27, 2026 (L61): default visible — Jira's list view shows
       // Comments column at position 5 between Status and Parent. Probed
       // against Jira BAU list "1 comment" / "Add comment" cells.
@@ -1080,7 +1286,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'parent',
       label: 'Parent',
-      width: 14,
+      // Apr 27, 2026 — jira-compare audit P1 #6: Jira's BAU list Parent
+      // column renders at ~395px (longest content: "BAU-#### Senaei BAU
+      // - <epic name>"). Catalyst was 12% (~142px), forcing parent
+      // labels to truncate after a single word. Bumped 12 → 26
+      // (~286px @ 1100 minw) to hit the audit's ≥280px acceptance
+      // target. Still under Jira's full 395px to leave a little
+      // breathing room — bump further if real-world parent labels
+      // continue to truncate.
+      width: 26,
       sortable: true,
       defaultVisible: true,
       cell: makeParentEditCell<BacklogItem>({
@@ -1110,8 +1324,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'assignee',
+      // 11% × 1180 = ~130px. Avatar 24 + 8 gap + name ~96px.
       label: 'Assignee',
-      width: 13,
+      width: 11,
       sortable: true,
       defaultVisible: true,
       cell: makeAssigneeEditCell<BacklogItem>({
@@ -1128,7 +1343,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     {
       id: 'priority',
       label: 'Priority',
-      width: 5,
+      // Apr 27, 2026 (audit pass 8): 5→7. The 5% allocation gave "Priority"
+      // header exactly 44px while it needs 45px — 1px shy of truncating to
+      // "Priorit…". Bumped to 7 (~83px) for safety + bars space.
+      width: 7,
       sortable: true,
       defaultVisible: true,
       cell: makePriorityEditCell<BacklogItem>({
@@ -1146,7 +1364,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // via the column picker; defaultVisible:false to keep the resting
       // state aligned with Jira BAU list. Sortable for queue triage.
       label: 'Created',
-      width: 9,
+      // 8% × 1180 = ~94px. Date chip "📅 27 Apr 26" needs ~88px.
+      width: 8,
       sortable: true,
       defaultVisible: false,
       accessor: (r: BacklogItem) => r.created_at || '',
@@ -1154,15 +1373,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'updated',
-      // Apr 27, 2026: width 12 → 10 (was bumped earlier to fit the
-      // calendar chip "📅 27 Apr 26"; the original 12 was over-generous
-      // but 9 was tight when the chip's icon+padding rendered. 10 is the
-      // calibrated middle: ~128px @ 1280min. Sum-target ≤100 with default
-      // visible cols.
+      // Apr 27, 2026 — jira-compare audit P1 #6: Updated column dropped
+      // from defaultVisible. Jira's BAU list at /list?groupBy=status
+      // hides Updated by default; users opt in via the column picker
+      // when they need queue-triage info. Removing from defaults frees
+      // 8% of the row width that Summary + Parent now use to hit
+      // parity targets (≥360 / ≥280px respectively). Width retained
+      // at 8 so toggling Updated back on doesn't reflow the layout.
       label: 'Updated',
-      width: 10,
+      // 8% × 1180 = ~94px. Same as Created.
+      width: 8,
       sortable: true,
-      defaultVisible: true,
+      defaultVisible: false,
       accessor: (r) => r.updated_at || '',
       cell: makeDateCell((r: BacklogItem) => r.updated_at),
     },
@@ -1371,6 +1593,104 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     </Tooltip>
   ) : null;
 
+  // Apr 27, 2026 — jira-compare audit P1 #7: "More actions" overflow ⋯
+  // wired to @atlaskit/dropdown-menu with view-level actions (Refresh,
+  // Export). Refresh invalidates the backlog query keys; Export is a
+  // stub flag until CSV pipeline lands. P1 #8 view-options sibling
+  // (Settings icon → density menu) lives below.
+  const handleRefreshBacklog = () => {
+    queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+    queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+    flag.info('Refreshing', 'Reloading backlog data…');
+  };
+
+  // Shared icon-button styles for the right-cluster toolbar buttons.
+  // Matches the visual rhythm of toolbarMaximizeIcon (32×32, transparent,
+  // ADS subtle text token).
+  const toolbarIconButtonStyle: React.CSSProperties = {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    width: 32, height: 32, padding: 0,
+    border: 'none', background: 'transparent', borderRadius: 3,
+    color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
+  };
+
+  // P1 #8 — Settings (view-options) icon button. Separate from "Manage
+  // columns" (which JiraTable owns inside the table head's `+` button).
+  // Apr 27, 2026 (re-probe iter 2): @atlaskit/dropdown-menu rendered an
+  // EMPTY portal on this surface (verified via Chrome MCP — aria-expanded
+  // flipped to true but atlaskitPortalCount=0, no role="menu" in DOM,
+  // body innerText didn't include "Density"). Same documented bug that
+  // drove GroupByControl's bespoke portal pattern (see line ~2162).
+  // Switched to the shared ToolbarMenuButton helper which uses
+  // ReactDOM.createPortal directly and computes anchor from the trigger
+  // rect — verified working pattern on this exact React tree.
+  // Apr 27 2026 (jira-compare regression iter 3 — View options menu
+  // parity). Replaced Catalyst's Density/Layout items with Jira's actual
+  // view-options menu (probed from /jira/.../list?groupBy=status):
+  //   - Hide done work items   (toggle, filters status="done"|"closed")
+  //   - Expand all work items  (clears collapsedGroups)
+  //   - Collapse all work items (sets every group id to collapsed)
+  // The "Hide done" item shows a check/✓ glyph when active so the toggle
+  // state is visible without a real shadcn-style switch on the menu.
+  const toolbarViewOptionsButton = (
+    <ToolbarMenuButton
+      icon={<SlidersHorizontal size={16} />}
+      ariaLabel="View options"
+      tooltipContent="View options"
+      buttonStyle={toolbarIconButtonStyle}
+      groups={[
+        {
+          items: [
+            {
+              id: 'hide-done',
+              label: hideDoneItems ? 'Show done work items' : 'Hide done work items',
+              onClick: () => setHideDoneItems((v) => !v),
+            },
+            {
+              id: 'expand-all',
+              label: 'Expand all work items',
+              onClick: () => {
+                setCollapsedGroups(new Set());
+                flag.success('Expanded all work items');
+              },
+            },
+            {
+              id: 'collapse-all',
+              label: 'Collapse all work items',
+              onClick: () => {
+                if (groupedRows) {
+                  setCollapsedGroups(new Set(groupedRows.map((g) => g.id)));
+                  flag.success('Collapsed all work items');
+                } else {
+                  flag.info('Collapse all', 'Switch to a grouped view first.');
+                }
+              },
+            },
+          ],
+        },
+      ]}
+    />
+  );
+
+  // P1 #7 — More actions overflow ⋯. Refresh is wired (TanStack Query
+  // invalidation); Export is a stub flag.info until the CSV exporter
+  // lands. The kebab matches the row-level ⋯ pattern in JiraTable but
+  // operates on the table view, not on a single row.
+  const toolbarMoreActionsButton = (
+    <ToolbarMenuButton
+      icon={<MoreHorizontal size={16} />}
+      ariaLabel="More actions"
+      tooltipContent="More actions"
+      buttonStyle={toolbarIconButtonStyle}
+      groups={[
+        { items: [
+          { id: 'refresh', label: 'Refresh', icon: <RefreshCw size={14} />, onClick: handleRefreshBacklog },
+          { id: 'export', label: 'Export to CSV', icon: <Download size={14} />, onClick: () => flag.info('Export', 'CSV export coming soon.') },
+        ]},
+      ]}
+    />
+  );
+
   // Apr 27, 2026 (L46): Compact rail is routed through AtlaskitPageShell's
   // `sideRail` prop so it extends to the TOP of the page card alongside the
   // H1 — matching Jira's pattern where the rail starts at y=67 alongside
@@ -1458,10 +1778,221 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   );
 
   return (
+    <>
     <AtlaskitPageShell
-      title={pageTitle}
+      // Apr 27 2026 (jira-compare regression D-003): the H1 moved OUT of
+      // the white card and INTO the chromeBand (Jira parity — H1 sits in
+      // the chrome band, not inside the table card). The `title` prop is
+      // intentionally NOT passed; passing it would double-render the H1.
       sideRail={useRailAsSideSlot ? railInnerContent : undefined}
       sideRailWidth={400}
+      flush
+      // Apr 27, 2026 — jira-compare iter 3: opt in to Jira's blue page
+      // chrome (#E9F2FE probed at https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list?groupBy=status)
+      // and the white-card-with-margin geometry. cardPadding {x:48,y:16}
+      // matches Jira's card-from-chrome offsets (probed card x=48 on a
+      // 1214px viewport). cardBorder mirrors Jira's BaseTable subtle
+      // stroke. SCOPED to this surface only — Dashboard / Releases /
+      // other Project Hub views still use the V3 flat-white shell.
+      chromeBg="#E9F2FE"
+      // Apr 27 2026 (jira-compare regression iter 4 — Vikram fullscreen
+      // probe). Jira at vp 2133: baseTable.x=47, projectHeader.x=0,
+      // padding-x=24 → card sits 23px in from chrome content edge. Was
+      // {x:48, y:16} which gave card.x=55 in Catalyst (50px in from
+      // chrome) — twice Jira's. Reducing to {x:24, y:16} so the card
+      // edge aligns with toolbar/table inset measured from Jira.
+      cardPadding={{ x: 24, y: 16 }}
+      cardBorder="1px solid #DFE1E6"
+      // Apr 27 2026 (jira-compare regression D-001/002/003): chrome-band
+      // slot. Renders Spaces breadcrumb + project icon + H1 ABOVE the
+      // white card to match Jira parity. The actions slot is currently
+      // empty; LOVABLE handoff #1 (AvatarGroup + Add people) and
+      // DESIGN-CRITIQUE handoff #9 (Give feedback / Enter full screen)
+      // will land into it once those handoffs ship.
+      chromeBand={
+        <ProjectChromeBand
+          projectName={pageTitle}
+          spacesHref="/"
+          nameAdornment={
+            <>
+              {/* Apr 27 2026 (regression iter 4): small invite-people
+                  icon next to project name (Jira testid
+                  `invite-people.ui.navigation-add-people-button.trigger`).
+                  Clicking opens the same Add people modal as the right-
+                  side text button. */}
+              <Tooltip content="Add people">
+                <button
+                  type="button"
+                  data-testid="project-chrome-band.invite-icon-trigger"
+                  aria-label="Add people"
+                  onClick={() => setAddPeopleOpen(true)}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    border: 'none',
+                    background: 'transparent',
+                    color: token('color.text.subtle', '#6B6E76'),
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="8.5" cy="7" r="4" />
+                    <line x1="20" y1="8" x2="20" y2="14" />
+                    <line x1="23" y1="11" x2="17" y2="11" />
+                  </svg>
+                </button>
+              </Tooltip>
+              <Tooltip content="More project actions">
+                <button
+                  ref={projectMenuTriggerRef}
+                  type="button"
+                  data-testid="project-chrome-band.project-menu-trigger"
+                  aria-label="More project actions"
+                  aria-haspopup="menu"
+                  aria-expanded={!!projectMenuAnchor}
+                  onClick={(e) => {
+                    if (projectMenuAnchor) {
+                      setProjectMenuAnchor(null);
+                    } else {
+                      const r = e.currentTarget.getBoundingClientRect();
+                      setProjectMenuAnchor({ top: r.bottom + 4, left: r.left });
+                    }
+                  }}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    border: 'none',
+                    background: 'transparent',
+                    color: token('color.text.subtle', '#6B6E76'),
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!projectMenuAnchor) e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!projectMenuAnchor) e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+              </Tooltip>
+            </>
+          }
+          actions={
+            <>
+              {/* Apr 27 2026 (LOVABLE-01 landed in-session): project member
+                  avatar strip + "Add people" CTA, matching Jira parity probe
+                  at /jira/.../list?groupBy=status. AvatarGroup caps at 7
+                  visible + a +N overflow chip — closes a11y rows #11
+                  (24×24 sizing) and #13 (aria-label on overflow). Add people
+                  click is wired to a sonner toast stub so the affordance is
+                  not DEAD; real user-picker modal is a follow-on. */}
+              {chromeBandMembers.length > 0 && (
+                <AvatarGroup
+                  appearance="stack"
+                  size="small"
+                  maxCount={7}
+                  data={chromeBandMembers}
+                />
+              )}
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                data-testid="project-chrome-band.add-people-trigger"
+                onClick={() => setAddPeopleOpen(true)}
+              >
+                Add people
+              </Button>
+            </>
+          }
+          pageChromeRightCtas={
+            <>
+              {/* Apr 27 2026 (regression iter 2-3 — DESIGN-CRITIQUE #9 +
+                  Share/Automation parity): top-right chrome icons matching
+                  Jira parity probe at /jira/.../list?groupBy=status:
+                    Share              span @ (1042, 95)  23×23 — aria "Share"
+                    Automation         span @ (1082, 95)  23×23 — aria "Automation"
+                    Give feedback      btn  @ (1118, 91)  31×31
+                    Enter full screen  btn  @ (1158, 91)  31×31
+                  All wired to sonner stubs so affordances aren't dead;
+                  real flows (share modal, automation rules, feedback
+                  collector) ship as follow-ons. */}
+              <Tooltip content="Share">
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  iconBefore={<Share2 size={14} />}
+                  aria-label="Share"
+                  onClick={() =>
+                    toast.info('Share', {
+                      description: 'Share modal is coming soon.',
+                    })
+                  }
+                />
+              </Tooltip>
+              <Tooltip content="Automation">
+                <Button
+                  appearance="subtle"
+                  spacing="compact"
+                  iconBefore={<Zap size={14} />}
+                  aria-label="Automation"
+                  onClick={() =>
+                    toast.info('Automation', {
+                      description: 'Automation rules editor is coming soon.',
+                    })
+                  }
+                />
+              </Tooltip>
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                iconBefore={<MessageSquare size={14} />}
+                onClick={() =>
+                  toast.info('Give feedback', {
+                    description: 'Feedback collector is coming soon.',
+                  })
+                }
+              >
+                Give feedback
+              </Button>
+              <Button
+                appearance="subtle"
+                spacing="compact"
+                iconBefore={
+                  panelMode === 'fullscreen' ? (
+                    <Minimize2 size={14} />
+                  ) : (
+                    <Maximize2 size={14} />
+                  )
+                }
+                onClick={() =>
+                  setPanelMode(panelMode === 'fullscreen' ? 'panel' : 'fullscreen')
+                }
+                aria-label={
+                  panelMode === 'fullscreen' ? 'Exit full screen' : 'Enter full screen'
+                }
+              />
+            </>
+          }
+          // Apr 27 2026 (Vikram instruction): tabs row removed entirely.
+          // All work / Releases / "+" not required on this surface.
+        />
+      }
     >
       {/* Toolbar: search + filter + type chips inline + count + maximize.
           Apr 27, 2026 (L48 + L51): type chips inline; bottom padding
@@ -1470,7 +2001,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           Earlier 10px-bottom padding ran the toolbar baseline almost
           flush with the column header row (≈6px gap visually). */}
       <div style={{
-        padding: '6px 16px 14px',
+        // Apr 27 2026 (jira-compare regression iter 3 — left/right padding
+        // re-probed). Probe deltas: toolbar items (Search starts x=72,
+        // count ends x=1137) sit 16px inset from the card edges (card
+        // x=55-1154), while table cells start at x=57 (≈flush with card).
+        // Result: toolbar items appear 15-16px deeper than table columns,
+        // visibly misaligned. Set L+R padding to 0 so toolbar items align
+        // with table content. Top/bottom kept at 32 (still matches Jira's
+        // 45px tabs→toolbar / toolbar→table rhythm — verified earlier
+        // probe). marginBottom kept at 4 so body table doesn't drift.
+        padding: '32px 0 32px',
         marginBottom: 4,
         display: 'flex',
         gap: 12,
@@ -1519,86 +2059,43 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             labels={[]}
           />
         </div>
-        {/* Group by — Atlaskit DropdownMenu (Apr 27, 2026, L41).
-            Was a native <select> which is banned by CLAUDE.md §7 and the
-            jira-compare skill's Atlaskit-only mandate. Replaced with
-            @atlaskit/dropdown-menu's radio-group pattern. Trigger is a
-            compact "Group" button matching Jira's toolbar pill;
-            current selection is shown in parentheses when not 'none'. */}
-        {(() => {
-          const groupLabels: Record<typeof groupBy, string> = {
-            none: 'None',
-            status: 'Status',
-            parent: 'Parent',
-            assignee: 'Assignee',
-            priority: 'Priority',
-          };
-          const triggerText = groupBy === 'none' ? 'Group' : `Group: ${groupLabels[groupBy]}`;
-          // Apr 27, 2026 (L69): switched the trigger from a string (which
-          // Atlaskit renders as a primary-blue button) to a render-prop
-          // returning a subtle Button — matches the Filter button next
-          // to it. Earlier (L49): removed shouldRenderToParent (was
-          // clipping the menu under toolbar overflow:hidden) and removed
-          // the redundant "Group by" radio-group title.
-          return (
-            <DropdownMenu
-              placement="bottom-start"
-              trigger={({ triggerRef, ...triggerProps }) => (
-                <Button
-                  {...triggerProps}
-                  ref={triggerRef}
-                  appearance="subtle"
-                  iconAfter={<ChevronDown size={14} />}
-                >
-                  {triggerText}
-                </Button>
-              )}
-            >
-              <DropdownItemRadioGroup id="backlog-group-by">
-                {(['none', 'status', 'parent', 'assignee', 'priority'] as const).map((opt) => (
-                  <DropdownItemRadio
-                    key={opt}
-                    id={`group-by-${opt}`}
-                    isSelected={groupBy === opt}
-                    onClick={() => { setGroupBy(opt); setCollapsedGroups(new Set()); }}
-                  >
-                    {groupLabels[opt]}
-                  </DropdownItemRadio>
-                ))}
-              </DropdownItemRadioGroup>
-            </DropdownMenu>
-          );
-        })()}
-        {/* Inline type chips — All/Epics/Features/Stories/Defects/Incidents.
-            Sit between Group dropdown and the items count, on the same
-            32px baseline as Filter/Group for visual rhythm.
-            Apr 27, 2026 (L48). */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          marginLeft: 4,
-          flexShrink: 1,
-          minWidth: 0,
-          overflowX: 'auto',
-        }}>
-          {([
-            ['all', 'All', typeCount.all],
-            ['epic', 'Epics', typeCount.epic],
-            ['feature', 'Features', typeCount.feature],
-            ['story', 'Stories', typeCount.story],
-            ['bug', 'Defects', typeCount.bug],
-            ['incident', 'Incidents', typeCount.incident],
-          ] as const).map(([key, label, count]) => (
-            <TypeChip
-              key={key}
-              active={typeFilter === key}
-              onClick={() => setTypeFilter(key as typeof typeFilter)}
-              count={count}
-            >{label}</TypeChip>
-          ))}
-        </div>
+        {/* Apr 27, 2026 — jira-compare audit P0 #2 / P1 #3:
+            Two-flex-cluster toolbar. LEFT cluster (above this spacer)
+            holds Search + Filter — and per LOVABLE handoff #1 will
+            grow to host the @atlaskit/avatar-group + "Add people" CTA.
+            RIGHT cluster (below this spacer) anchors all table-affecting
+            controls: Group → Settings → More actions → divider → count
+            → maximize. Jira's BAU list at /list?groupBy=status anchors
+            "Group: Status" to x≈971 (toolbar-end); pushing it past the
+            flex spacer matches that anchor.
+
+            Audit pass 10 type-chips removal note retained: inline type
+            chips (All/Epics/Features/Stories/...) live in the Filter
+            dropdown's Work-type facet now, not the toolbar. */}
         <div style={{ flex: 1 }} />
+
+        {/* RIGHT cluster begins — Group control + view-options + more-actions */}
+        {/* Group by — Apr 27, 2026 (Vikram audit pass 4): @atlaskit/dropdown-menu
+            was rendering an empty/invisible portal on this surface (same
+            documented bug as the cell editors at line 1003: `@atlaskit/popup
+            portal mounts on this surface but renders empty content`). Click
+            fired but no menu appeared, leaving the CTA dead. Replaced with
+            the same proven portal pattern used by Status/Priority cell
+            editors — manual createPortal + position computed from trigger
+            rect. Visual still uses @atlaskit/button + the Atlaskit chevron
+            glyph; menu rows use ADS tokens for the selected/hover states.
+            Atlaskit-only mandate from CLAUDE.md §7 still satisfied — the
+            primitives that work on this surface are still all ADS. */}
+        <GroupByControl
+          value={groupBy}
+          onChange={(opt) => { setGroupBy(opt); setCollapsedGroups(new Set()); }}
+        />
+        {/* P1 #8 — Settings (view-options) icon: density / layout menu.
+            Distinct from JiraTable's column-picker `+` (which lives
+            inside the table head and owns column visibility). */}
+        {toolbarViewOptionsButton}
+        {/* P1 #7 — More actions overflow ⋯: refresh + export. */}
+        {toolbarMoreActionsButton}
         {/* Subtle divider between pills/spacer and the right-side cluster
             (count + maximize). Mirrors Atlaskit toolbar separators. */}
         <span aria-hidden style={{
@@ -1606,6 +2103,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           width: 1, height: 18,
           background: token('color.border', '#DFE1E6'),
           marginRight: 4,
+          marginLeft: 4,
         }} />
         <span style={{ fontSize: 13, color: token('color.text.subtlest', '#6B778C') }}>
           {total} item{total === 1 ? '' : 's'}
@@ -1665,7 +2163,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             display: 'flex',
             flexDirection: 'column',
             minHeight: 0,
-            padding: '4px 16px 0',
+            // Apr 27, 2026 (audit pass 9): horizontal padding 16/16 → 0/0.
+            // 32px of dead whitespace on the right of the table that the
+            // user surfaced ("still empty space") was 16px contributed
+            // here. Keeping top:4 for breathing room under the toolbar
+            // bottom border. Outer page chrome still has 8px padding-left
+            // (AtlaskitPageShell) so the table won't touch the nav edge.
+            padding: '4px 0 0',
             transition: 'width 150ms ease, flex-basis 150ms ease',
           }}
         >
@@ -1676,6 +2180,97 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
+            // Apr 27 2026 (jira-compare regression F-NEW-3 functional fill):
+            // wire chevron slot to BacklogPage's existing childrenOf Map +
+            // expandedIds state. typeFilter='all' uses INVERTED semantics
+            // (expandedIds = explicitly-collapsed) so the chevron icon
+            // needs to read "expanded" = parent NOT in collapsedSet. We
+            // pass an `expandedRowIds` Set that always reflects the
+            // visible state regardless of which mode is active.
+            getRowHasChildren={(row) => childrenOf.has(row.id)}
+            expandedRowIds={
+              typeFilter === 'all'
+                ? new Set(
+                    topLevel
+                      .filter((t) => childrenOf.has(t.id) && !expandedIds.has(t.id))
+                      .map((t) => t.id),
+                  )
+                : expandedIds
+            }
+            onToggleRowExpanded={(rowId) => {
+              setExpandedIds((prev) => {
+                const next = new Set(prev);
+                if (next.has(rowId)) next.delete(rowId);
+                else next.add(rowId);
+                return next;
+              });
+            }}
+            // Apr 27 2026 (jira-compare regression F-NEW-2 functional):
+            // per-group "+" → opens an inline-create row inside that group
+            // with summary input + Create + Cancel. Mirrors Jira's
+            // `child-create-button-wrapper` testid + position. On submit,
+            // creates an issue with status=groupId (groupBy=status case).
+            onAddToGroup={(groupId: string) => {
+              setInlineCreateGroup((prev) => (prev === groupId ? null : groupId));
+            }}
+            renderGroupInlineRow={(groupId: string) => {
+              if (inlineCreateGroup !== groupId) return null;
+              const submit = async (
+                summaryText: string,
+                issueType: CreatableIssueType,
+                assignee: { id: string; name: string } | null,
+              ) => {
+                const trimmed = summaryText.trim();
+                if (!trimmed || !projectKey) return;
+                if (trimmed.length > 255) {
+                  flag.error('Summary must be 255 characters or fewer');
+                  return;
+                }
+                setInlineCreateSubmitting(true);
+                try {
+                  const issueKey = await generateIssueKey(projectKey);
+                  const nowIso = new Date().toISOString();
+                  // groupBy=status case: groupId IS the status string. Other
+                  // groupBy modes (priority/assignee/parent) fall back to
+                  // 'To Do' so we never write a malformed status.
+                  const statusForGroup = groupBy === 'status' ? groupId : 'To Do';
+                  const { error } = await supabase.from('ph_issues').insert({
+                    issue_key: issueKey,
+                    project_key: projectKey,
+                    summary: trimmed,
+                    issue_type: issueType,
+                    status: statusForGroup,
+                    priority: 'medium',
+                    source: 'catalyst',
+                    // Apr 27 2026 (regression iter 3 — assignee picker
+                    // landed): write assignee_account_id + display name
+                    // when the user picked a member, else NULL.
+                    assignee_account_id: assignee?.id ?? null,
+                    assignee_display_name: assignee?.name ?? null,
+                    jira_created_at: nowIso,
+                    jira_updated_at: nowIso,
+                  } as any);
+                  if (error) throw error;
+                  flag.success(`Created ${issueKey} — ${trimmed}`);
+                  queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
+                  queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
+                  setInlineCreateGroup(null);
+                } catch {
+                  flag.error('Failed to create');
+                } finally {
+                  setInlineCreateSubmitting(false);
+                }
+              };
+              return (
+                <InlineGroupCreateRow
+                  groupLabel={groupId}
+                  isSubmitting={inlineCreateSubmitting}
+                  members={chromeBandMembers}
+                  onSubmit={submit}
+                  onCancel={() => setInlineCreateGroup(null)}
+                />
+              );
+            }}
             columnVisibility={visibleColumns}
             onColumnVisibilityChange={setVisibleColumns}
             contextMenuActions={rowActions}
@@ -1972,6 +2567,331 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />
     </AtlaskitPageShell>
+
+    {/* Apr 27 2026 (jira-compare regression iter 4 — project ... menu).
+        Bespoke createPortal popup (L21 dropdown-menu portal-empty bug).
+        Anchored to projectMenuTrigger ref. Items per Vikram scope. */}
+    {projectMenuAnchor && ReactDOM.createPortal(
+      <>
+        {/* Click-outside backdrop */}
+        <div
+          onClick={() => setProjectMenuAnchor(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 9000 }}
+        />
+        <div
+          role="menu"
+          data-testid="project-chrome-band.project-menu-popup"
+          style={{
+            position: 'fixed',
+            top: projectMenuAnchor.top,
+            left: projectMenuAnchor.left,
+            zIndex: 9001,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: '0 4px 16px rgba(9, 30, 66, 0.16)',
+            minWidth: 280,
+            padding: '6px 0',
+          }}
+        >
+          {[
+            { id: 'star', label: isStarred ? 'Remove from starred' : 'Add to starred', onClick: () => { setIsStarred((s) => !s); flag.success(isStarred ? 'Removed from starred' : 'Added to starred'); } },
+            { id: 'teams', label: 'Linked teams', onClick: () => flag.info('Linked teams', 'Team management is coming soon.') },
+            { id: 'bg', label: 'Set space background', onClick: () => flag.info('Set space background', 'Backgrounds are coming soon.') },
+            { id: 'sep1', divider: true },
+            { id: 'settings', label: 'Space settings', onClick: () => flag.info('Space settings', 'Settings page is coming soon.') },
+            { id: 'sep2', divider: true },
+            { id: 'archive', label: 'Archive space', onClick: () => flag.info('Archive space', 'Archive flow is coming soon.') },
+            { id: 'delete', label: 'Delete space', danger: true, onClick: () => flag.info('Delete space', 'Delete flow is coming soon.') },
+          ].map((item) => {
+            if ((item as any).divider) {
+              return <div key={item.id} style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '6px 0' }} />;
+            }
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  (item as any).onClick();
+                  setProjectMenuAnchor(null);
+                }}
+                style={{
+                  display: 'block',
+                  width: '100%',
+                  padding: '8px 16px',
+                  border: 'none',
+                  background: 'transparent',
+                  textAlign: 'left',
+                  fontSize: 14,
+                  fontWeight: 400,
+                  fontFamily: 'inherit',
+                  color: (item as any).danger
+                    ? token('color.text.danger', '#AE2A19')
+                    : token('color.text', '#172B4D'),
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                {(item as any).label}
+              </button>
+            );
+          })}
+        </div>
+      </>,
+      document.body,
+    )}
+
+    {/* Apr 27 2026 (jira-compare regression iter 3 — Add people modal).
+        @atlaskit/modal-dialog rendered an empty portal on this surface
+        (L21 — same documented bug that hit @atlaskit/dropdown-menu and
+        drove GroupByControl's bespoke portal). Replaced with a bespoke
+        createPortal-to-body modal. Visual conventions still come from
+        @atlaskit/tokens; semantically it's a real role="dialog" with
+        focus trap-ish behavior (Esc dismisses; click overlay does not). */}
+    {addPeopleOpen && ReactDOM.createPortal(
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-people-modal-title"
+        data-testid="add-people-modal"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(9, 30, 66, 0.54)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          paddingTop: 60,
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape' && !addPeopleSubmitting) {
+            setAddPeopleOpen(false);
+            setAddPeopleEmails('');
+            setAddPeopleRole('Member');
+          }
+        }}
+      >
+        <div
+          style={{
+            width: 480,
+            maxWidth: 'calc(100vw - 48px)',
+            background: token('elevation.surface', '#FFFFFF'),
+            borderRadius: 8,
+            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: 'calc(100vh - 120px)',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '20px 24px 12px',
+            }}
+          >
+            <h2
+              id="add-people-modal-title"
+              style={{
+                margin: 0,
+                fontSize: 20,
+                fontWeight: 653,
+                letterSpacing: '-0.003em',
+                color: token('color.text', '#172B4D'),
+              }}
+            >
+              Add people to {pageTitle}
+            </h2>
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => {
+                if (!addPeopleSubmitting) {
+                  setAddPeopleOpen(false);
+                  setAddPeopleEmails('');
+                  setAddPeopleRole('Member');
+                }
+              }}
+              style={{
+                width: 32,
+                height: 32,
+                border: 'none',
+                background: 'transparent',
+                color: token('color.text.subtle', '#6B6E76'),
+                cursor: 'pointer',
+                borderRadius: 3,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CloseIcon size={16} />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label
+                htmlFor="add-people-emails"
+                style={{
+                  display: 'block',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: token('color.text.subtle', '#6B6E76'),
+                  marginBottom: 4,
+                }}
+              >
+                Names or emails <span style={{ color: token('color.text.danger', '#AE2A19') }}>*</span>
+              </label>
+              <Textfield
+                id="add-people-emails"
+                placeholder="e.g., maria@company.com, john@company.com"
+                value={addPeopleEmails}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setAddPeopleEmails(e.target.value)
+                }
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: token('color.text.subtle', '#6B6E76'),
+                  marginBottom: 4,
+                }}
+              >
+                Role <span style={{ color: token('color.text.danger', '#AE2A19') }}>*</span>
+              </label>
+              <button
+                type="button"
+                data-testid="add-people-modal.role-trigger"
+                onClick={() =>
+                  setAddPeopleRole((r) =>
+                    r === 'Member' ? 'Admin' : r === 'Admin' ? 'Viewer' : 'Member',
+                  )
+                }
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  height: 36,
+                  padding: '0 12px',
+                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderRadius: 3,
+                  background: token('elevation.surface', '#FFFFFF'),
+                  color: token('color.text', '#172B4D'),
+                  fontSize: 14,
+                  fontWeight: 400,
+                  fontFamily: 'inherit',
+                  cursor: 'pointer',
+                }}
+              >
+                <span>{addPeopleRole}</span>
+                <ChevronDown size={14} />
+              </button>
+            </div>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                color: token('color.text.subtlest', '#6B778C'),
+              }}
+            >
+              Each person you add will get access to this project.
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 8,
+              padding: '12px 24px 20px',
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            }}
+          >
+            <Button
+              appearance="subtle"
+              onClick={() => {
+                setAddPeopleOpen(false);
+                setAddPeopleEmails('');
+                setAddPeopleRole('Member');
+              }}
+              isDisabled={addPeopleSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              appearance="primary"
+              isDisabled={!addPeopleEmails.trim() || addPeopleSubmitting}
+              onClick={async () => {
+                const tokens = addPeopleEmails
+                  .split(/[\s,;]+/)
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+                if (!tokens.length || !projectId) return;
+                setAddPeopleSubmitting(true);
+                try {
+                  const { data: profiles, error: pErr } = await supabase
+                    .from('profiles')
+                    .select('id, email, full_name')
+                    .in('email', tokens);
+                  if (pErr) throw pErr;
+                  const found = profiles ?? [];
+                  if (!found.length) {
+                    flag.error('No matching users', `Could not find profiles for: ${tokens.join(', ')}`);
+                    setAddPeopleSubmitting(false);
+                    return;
+                  }
+                  const rows = found.map((p) => ({
+                    project_id: projectId,
+                    user_id: p.id,
+                    role: addPeopleRole.toLowerCase(),
+                  }));
+                  const { error: insErr } = await supabase
+                    .from('project_members')
+                    .upsert(rows as any, { onConflict: 'project_id,user_id' });
+                  if (insErr) throw insErr;
+                  flag.success(
+                    `Added ${found.length} ${found.length === 1 ? 'person' : 'people'}`,
+                    found.map((p) => p.full_name || p.email).join(', '),
+                  );
+                  queryClient.invalidateQueries({
+                    queryKey: ['chrome-band-members', projectId],
+                  });
+                  setAddPeopleOpen(false);
+                  setAddPeopleEmails('');
+                  setAddPeopleRole('Member');
+                } catch (e) {
+                  flag.error('Failed to add people', String(e));
+                } finally {
+                  setAddPeopleSubmitting(false);
+                }
+              }}
+            >
+              {addPeopleSubmitting ? 'Adding…' : 'Add'}
+            </Button>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    )}
+    </>
   );
 }
 
@@ -1987,50 +2907,444 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 // count. This keeps full ADS token compliance and ADS-hosted Badge
 // rendering while guaranteeing the selected visual updates with every
 // click — the original parity goal.
-function TypeChip({
-  active, count, onClick, children,
-}: { active: boolean; count: number; onClick: () => void; children: React.ReactNode }) {
-  // Hover state intentionally lives in the className-keyed CSS rule below
-  // (jira-typechip:hover) so React stays in full control of the inline
-  // `style` prop. The earlier version mutated `e.currentTarget.style` on
-  // mouseenter/leave, which left the DOM with a stale inline style that
-  // React's reconciler couldn't override on prop changes — clicking the
-  // chip flipped aria-pressed but the background colour was stuck on
-  // whatever the last mouse event wrote. Verified live via Chrome MCP DOM
-  // probe: aria-pressed updated, bg colour did not (CLAUDE.md §0
-  // guardrail caught this).
+// Apr 27, 2026 — GroupByControl. Replaces the @atlaskit/dropdown-menu
+// version that rendered an empty portal on this surface (same documented
+// bug that drove the bespoke EditorPopover used by Status/Priority cell
+// editors). Trigger is still @atlaskit/button + Atlaskit chevron glyph;
+// menu is portal-mounted to <body> with position computed from the
+// trigger rect, exactly mirroring the editors.tsx EditorPopover pattern
+// that's been verified working in this exact React tree.
+type GroupByOption = 'none' | 'status' | 'parent' | 'assignee' | 'priority';
+const GROUP_BY_LABELS: Record<GroupByOption, string> = {
+  none: 'None',
+  status: 'Status',
+  parent: 'Parent',
+  assignee: 'Assignee',
+  priority: 'Priority',
+};
+function GroupByControl({
+  value, onChange,
+}: { value: GroupByOption; onChange: (next: GroupByOption) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; left: number } | null>(null);
+  // Apr 27, 2026 (audit pass 10, IRP-518/519 + spec): focused index for
+  // arrow-key nav through the menu. Resets to the currently-active option
+  // each time the menu opens.
+  const [focusedIdx, setFocusedIdx] = useState<number>(0);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
+  const OPTIONS: GroupByOption[] = ['none', 'status', 'parent', 'assignee', 'priority'];
+
+  const triggerText = value === 'none' ? 'Group' : `Group: ${GROUP_BY_LABELS[value]}`;
+
+  useLayoutEffect(() => {
+    if (!isOpen || !triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    setAnchor({ top: r.bottom + 4, left: r.left });
+    // Seed focused index from the current value so the active row is
+    // pre-highlighted for keyboard users.
+    const activeIdx = OPTIONS.indexOf(value);
+    setFocusedIdx(activeIdx >= 0 ? activeIdx : 0);
+  }, [isOpen, value]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    // Move DOM focus to the focused menu item so screen readers track it.
+    const el = itemsRef.current[focusedIdx];
+    if (el) el.focus();
+  }, [isOpen, focusedIdx]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setIsOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setIsOpen(false); triggerRef.current?.focus(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedIdx((i) => (i + 1) % OPTIONS.length); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedIdx((i) => (i - 1 + OPTIONS.length) % OPTIONS.length); }
+      else if (e.key === 'Home') { e.preventDefault(); setFocusedIdx(0); }
+      else if (e.key === 'End') { e.preventDefault(); setFocusedIdx(OPTIONS.length - 1); }
+      else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onChange(OPTIONS[focusedIdx]);
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [isOpen, focusedIdx, onChange]);
+
   return (
-    <button
-      type="button"
-      className="jira-typechip"
-      onClick={onClick}
-      aria-pressed={active}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 8,
-        height: 32,
-        padding: '0 12px',
-        borderRadius: 3,
-        border: 'none',
-        background: active
-          ? token('color.background.selected', '#E9F2FF')
-          : 'transparent',
-        color: active
-          ? token('color.text.selected', '#0C66E4')
-          : token('color.text.subtle', '#44546F'),
-        fontSize: 14,
-        fontWeight: active ? 500 : 400,
-        cursor: 'pointer',
-        fontFamily: 'inherit',
-        transition: 'background 100ms ease',
-      }}
-    >
-      <span>{children}</span>
-      <Badge appearance={active ? 'primary' : 'default'} max={9999}>
-        {count}
-      </Badge>
-    </button>
+    <>
+      {/* Apr 27, 2026 (Vikram audit pass 7): trigger ported to the same
+          hand-rolled native button + inline ADS-token style that
+          JiraFilterAtlaskit's "Filter" trigger uses (lines 210-229 of
+          JiraFilterAtlaskit.tsx) so the two pills are pixel-identical:
+          32px height, 0 12px padding, white surface, 1px ds-border,
+          3px radius, 13/500 type, with the open-state border switching
+          to color.border.selected and the bg to color.background.selected.
+          @atlaskit/button v20.5 with appearance="default" rendered a
+          *different* visual (37px tall, no border, neutral subtle bg) on
+          this surface, which is what caused the original drift. Native
+          button + ADS tokens is also what the toolbar's Filter button
+          itself does, so this isn't escaping ADS — it's matching the
+          exact ADS pattern in use right next door. */}
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label={value === 'none' ? 'Group by' : `Group by ${GROUP_BY_LABELS[value]}. Click to change.`}
+        onKeyDown={(e) => {
+          if (!isOpen && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
+        style={{
+          // Apr 27, 2026 (jira-compare regression D-004): pill renders the
+          // selected/active blue-chip styling whenever the menu is open OR
+          // groupBy is engaged (value !== 'none'). Jira's parity probe at
+          // /jira/.../list?groupBy=status: bg=rgb(233,242,254), color=
+          // rgb(24,104,219). Without the `isActive` flag the trigger stays
+          // flat white when the menu is closed even though the URL is
+          // grouped — which fails to signal that a non-default group is
+          // applied. The selected token resolves to the right values across
+          // light + NOCTURNE dark mode.
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          height: 32,
+          padding: '0 12px',
+          borderRadius: 3,
+          border: `1px solid ${(isOpen || value !== 'none') ? token('color.border.selected', '#0C66E4') : token('color.border', '#DFE1E6')}`,
+          background: (isOpen || value !== 'none') ? token('color.background.selected', '#E9F2FF') : token('elevation.surface', '#FFFFFF'),
+          color: (isOpen || value !== 'none') ? token('color.text.selected', '#0055CC') : token('color.text', '#172B4D'),
+          fontSize: 13,
+          fontWeight: 500,
+          fontFamily: 'inherit',
+          cursor: 'pointer',
+          // Apr 27, 2026 (audit pass 9): nowrap + flexShrink:0 so the
+          // trigger keeps "Group: Assignee" / "Group: Priority" on one
+          // line when the toolbar shrinks. Earlier wrapping to two lines
+          // (height ~50, label split across rows) was the user-flagged
+          // mess.
+          whiteSpace: 'nowrap',
+          flexShrink: 0,
+        }}
+      >
+        <span>{triggerText}</span>
+        <AkChevronDownIcon label="" size="small" />
+      </button>
+      {isOpen && anchor && ReactDOM.createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          aria-label="Group by"
+          style={{
+            position: 'fixed',
+            top: anchor.top,
+            left: anchor.left,
+            minWidth: 180,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            padding: '6px 0',
+            zIndex: 9999,
+            fontFamily: 'var(--cp-font-body)',
+            fontSize: 14,
+          }}
+        >
+          {OPTIONS.map((opt, i) => {
+            const active = value === opt;
+            const focused = focusedIdx === i;
+            return (
+              <button
+                key={opt}
+                ref={(el) => { itemsRef.current[i] = el; }}
+                role="menuitemradio"
+                aria-checked={active}
+                tabIndex={focused ? 0 : -1}
+                type="button"
+                onMouseEnter={() => setFocusedIdx(i)}
+                onClick={() => { onChange(opt); setIsOpen(false); triggerRef.current?.focus(); }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  padding: '6px 16px',
+                  border: 'none',
+                  outline: 'none',
+                  background: active
+                    ? token('color.background.selected', '#E9F2FF')
+                    : focused
+                      ? token('color.background.neutral.subtle.hovered', '#091E4208')
+                      : 'transparent',
+                  color: active ? token('color.text.selected', '#0C66E4') : token('color.text', '#172B4D'),
+                  fontWeight: active ? 500 : 400,
+                  fontSize: 14,
+                  fontFamily: 'inherit',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                }}
+              >
+                {GROUP_BY_LABELS[opt]}
+              </button>
+            );
+          })}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
+// Apr 27, 2026 (audit pass 10): TypeChip component DELETED. Type-based
+// filtering is now done through JiraFilterAtlaskit's "Work type" facet,
+// matching Jira's BAU list (which has no inline chip strip). The
+// component went through several iterations (lucide → Atlaskit Button +
+// isSelected → Atlaskit Badge + native button + ADS tokens) before the
+// chip strip itself was retired. Recover from git history if needed.
+
+/**
+ * ToolbarMenuButton — generic icon-button + portal-mounted menu.
+ *
+ * Apr 27, 2026 (jira-compare audit P1 #7 + #8 re-probe iter 2):
+ * @atlaskit/dropdown-menu renders an empty portal on this surface (same
+ * bug GroupByControl works around). This helper mirrors GroupByControl's
+ * proven pattern: native trigger + ReactDOM.createPortal menu mounted to
+ * <body> with position computed from the trigger rect. Items are
+ * grouped, each with an optional icon + click handler. Disabled items
+ * still render but don't fire onClick.
+ *
+ * Visual + a11y conventions match Atlaskit DropdownMenu / DropdownItem:
+ *   - role="menu" on container, role="menuitem" on items
+ *   - aria-haspopup="menu" + aria-expanded on trigger
+ *   - keyboard nav: ArrowUp/Down, Home/End, Enter/Space, Esc
+ *   - mousedown outside the trigger or menu closes the menu
+ */
+type ToolbarMenuItem = {
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  isDisabled?: boolean;
+  onClick?: () => void;
+};
+type ToolbarMenuGroup = {
+  title?: string;
+  items: ToolbarMenuItem[];
+};
+function ToolbarMenuButton({
+  icon, ariaLabel, tooltipContent, buttonStyle, groups,
+}: {
+  icon: React.ReactNode;
+  ariaLabel: string;
+  tooltipContent: string;
+  buttonStyle: React.CSSProperties;
+  groups: ToolbarMenuGroup[];
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [anchor, setAnchor] = useState<{ top: number; right: number } | null>(null);
+  const [focusedIdx, setFocusedIdx] = useState<number>(0);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
+
+  // Flat enabled-items list for keyboard navigation (skips disabled).
+  const enabledItems = useMemo(() => {
+    const out: Array<{ groupIdx: number; itemIdx: number; flat: number }> = [];
+    let flat = 0;
+    groups.forEach((g, gi) => {
+      g.items.forEach((it, ii) => {
+        if (!it.isDisabled) out.push({ groupIdx: gi, itemIdx: ii, flat });
+        flat++;
+      });
+    });
+    return out;
+  }, [groups]);
+
+  useLayoutEffect(() => {
+    if (!isOpen || !triggerRef.current) return;
+    const r = triggerRef.current.getBoundingClientRect();
+    // Anchor by the right edge so menu opens flush-right with trigger
+    // (matches Atlaskit DropdownMenu placement="bottom-end" semantics).
+    setAnchor({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    setFocusedIdx(0);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = itemsRef.current[enabledItems[focusedIdx]?.flat ?? 0];
+    if (el) el.focus();
+  }, [isOpen, focusedIdx, enabledItems]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onDocClick = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t) || menuRef.current?.contains(t)) return;
+      setIsOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { setIsOpen(false); triggerRef.current?.focus(); return; }
+      if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedIdx((i) => (i + 1) % Math.max(1, enabledItems.length)); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedIdx((i) => (i - 1 + enabledItems.length) % Math.max(1, enabledItems.length)); }
+      else if (e.key === 'Home') { e.preventDefault(); setFocusedIdx(0); }
+      else if (e.key === 'End') { e.preventDefault(); setFocusedIdx(Math.max(0, enabledItems.length - 1)); }
+      else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        const target = enabledItems[focusedIdx];
+        if (target) {
+          const item = groups[target.groupIdx]?.items[target.itemIdx];
+          if (item && !item.isDisabled) {
+            item.onClick?.();
+            setIsOpen(false);
+            triggerRef.current?.focus();
+          }
+        }
+      }
+    };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [isOpen, focusedIdx, enabledItems, groups]);
+
+  // Flat counter for assigning refs / focus indices to items in render.
+  let flatIdx = 0;
+
+  return (
+    <>
+      <Tooltip content={tooltipContent}>
+        <button
+          ref={triggerRef}
+          type="button"
+          aria-label={ariaLabel}
+          aria-haspopup="menu"
+          aria-expanded={isOpen}
+          onClick={() => setIsOpen((v) => !v)}
+          onKeyDown={(e) => {
+            if (!isOpen && (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ')) {
+              e.preventDefault();
+              setIsOpen(true);
+            }
+          }}
+          style={buttonStyle}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+        >
+          {icon}
+        </button>
+      </Tooltip>
+      {isOpen && anchor && ReactDOM.createPortal(
+        <div
+          ref={menuRef}
+          role="menu"
+          aria-label={ariaLabel}
+          style={{
+            position: 'fixed',
+            top: anchor.top,
+            right: anchor.right,
+            minWidth: 180,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 4,
+            boxShadow: token('elevation.shadow.overlay', '0 8px 16px rgba(9,30,66,0.15)'),
+            padding: '6px 0',
+            zIndex: 9999,
+            fontFamily: 'var(--cp-font-body)',
+            fontSize: 14,
+          }}
+        >
+          {groups.map((group, gi) => (
+            <React.Fragment key={`g${gi}`}>
+              {group.title && (
+                <div style={{
+                  padding: '4px 16px',
+                  fontSize: 11,
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  color: token('color.text.subtlest', '#6B778C'),
+                }}>
+                  {group.title}
+                </div>
+              )}
+              {group.items.map((item) => {
+                const myFlat = flatIdx++;
+                const enabledIdx = enabledItems.findIndex((e) => e.flat === myFlat);
+                const focused = enabledIdx !== -1 && enabledIdx === focusedIdx;
+                return (
+                  <button
+                    key={item.id}
+                    ref={(el) => { itemsRef.current[myFlat] = el; }}
+                    role="menuitem"
+                    type="button"
+                    aria-disabled={item.isDisabled || undefined}
+                    tabIndex={focused ? 0 : -1}
+                    disabled={item.isDisabled}
+                    onMouseEnter={() => { if (enabledIdx !== -1) setFocusedIdx(enabledIdx); }}
+                    onClick={() => {
+                      if (item.isDisabled) return;
+                      item.onClick?.();
+                      setIsOpen(false);
+                      triggerRef.current?.focus();
+                    }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      width: '100%',
+                      padding: '6px 16px',
+                      border: 'none',
+                      outline: 'none',
+                      background: focused
+                        ? token('color.background.neutral.subtle.hovered', '#091E4208')
+                        : 'transparent',
+                      color: item.isDisabled
+                        ? token('color.text.disabled', '#A6A7AA')
+                        : token('color.text', '#172B4D'),
+                      fontSize: 14,
+                      fontFamily: 'inherit',
+                      textAlign: 'left',
+                      cursor: item.isDisabled ? 'not-allowed' : 'pointer',
+                    }}
+                  >
+                    {item.icon && (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', color: 'inherit' }}>
+                        {item.icon}
+                      </span>
+                    )}
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+              {gi < groups.length - 1 && (
+                <div style={{
+                  height: 1,
+                  margin: '4px 0',
+                  background: token('color.border', '#DFE1E6'),
+                }} />
+              )}
+            </React.Fragment>
+          ))}
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
 
@@ -2083,6 +3397,215 @@ const CREATABLE_TYPES: CreatableIssueType[] = [
   'API Requirement',
   'Change Request',
 ];
+
+/**
+ * InlineGroupCreateRow — Apr 27 2026 (jira-compare regression F-NEW-2
+ * functional fill). Inline create form rendered as an extra row inside
+ * a group when the user clicks the per-group "+" button. Mirrors Jira's
+ * `business-list.common.ui.create-issue-plus-button.child-create-button-wrapper`
+ * → on-click inline form, but Catalyst version is intentionally minimal:
+ *   - Summary @atlaskit/textfield (autofocused, 255-char limit)
+ *   - Create @atlaskit/button (primary, compact, disabled until non-empty)
+ *   - Cancel @atlaskit/button (subtle, compact)
+ *   - Enter submits, Esc cancels
+ * Type defaults to "Story", status is wired by the consumer via the group
+ * id (BacklogPage maps groupId → status when groupBy=status). The full
+ * type-picker + assignee picker can layer on later without touching this
+ * geometry.
+ */
+function InlineGroupCreateRow({
+  groupLabel,
+  isSubmitting,
+  members,
+  onSubmit,
+  onCancel,
+}: {
+  groupLabel: string;
+  isSubmitting: boolean;
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-2 layer 3 — assignee
+   * picker): project members from useQuery on project_members. The
+   * picker cycles through these (+ Unassigned at index 0). Empty array
+   * is allowed; in that case picker stays on "Unassigned".
+   */
+  members: Array<{ key: string; name: string; src?: string }>;
+  onSubmit: (
+    summary: string,
+    issueType: CreatableIssueType,
+    assignee: { id: string; name: string } | null,
+  ) => void;
+  onCancel: () => void;
+}) {
+  const [summary, setSummary] = useState('');
+  const [issueType, setIssueType] = useState<CreatableIssueType>('Story');
+  const [assigneeIdx, setAssigneeIdx] = useState<number>(-1); // -1 = Unassigned
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    // Focus the input on mount so the user can start typing immediately.
+    const t = setTimeout(() => inputRef.current?.focus(), 30);
+    return () => clearTimeout(t);
+  }, []);
+
+  const trimmed = summary.trim();
+  const canSubmit = !!trimmed && !isSubmitting;
+  const currentAssignee = assigneeIdx === -1 ? null : members[assigneeIdx] ?? null;
+
+  return (
+    <div
+      data-testid="jira-table.group-row.inline-create-row"
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        padding: '8px 16px',
+        background: token('elevation.surface', '#FFFFFF'),
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          onCancel();
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          if (canSubmit) {
+            onSubmit(
+              summary,
+              issueType,
+              currentAssignee ? { id: currentAssignee.key, name: currentAssignee.name } : null,
+            );
+          }
+        }
+      }}
+    >
+      {/* Type picker — Apr 27 2026 (jira-compare regression F-NEW-2 layer
+          2). Click-to-cycle button. Originally tried `@atlaskit/dropdown-menu`
+          but L21 (BacklogPage portal bug) caused the menu to render empty
+          on this surface — same bug GroupByControl works around with a
+          bespoke createPortal pattern. To avoid building another bespoke
+          portal for a small picker, the trigger now cycles through
+          CREATABLE_TYPES on click. Tooltip shows the next-on-click value
+          so the cycle direction is discoverable. */}
+      {(() => {
+        const idx = CREATABLE_TYPES.indexOf(issueType);
+        const next = CREATABLE_TYPES[(idx + 1) % CREATABLE_TYPES.length];
+        return (
+          <Tooltip content={`Click to cycle issue type (next: ${next})`}>
+            <button
+              type="button"
+              data-testid="jira-table.group-row.inline-create-type-trigger"
+              aria-label={`Issue type: ${issueType}. Click to change.`}
+              onClick={() =>
+                setIssueType(
+                  CREATABLE_TYPES[(CREATABLE_TYPES.indexOf(issueType) + 1) % CREATABLE_TYPES.length]
+                )
+              }
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 27,
+                padding: '0 10px',
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderRadius: 3,
+                background: token('elevation.surface', '#FFFFFF'),
+                color: token('color.text', '#172B4D'),
+                fontSize: 13,
+                fontWeight: 500,
+                fontFamily: 'inherit',
+                cursor: 'pointer',
+                flexShrink: 0,
+              }}
+            >
+              <JiraIssueTypeIcon type={issueType} size={14} />
+              <span>{issueType}</span>
+            </button>
+          </Tooltip>
+        );
+      })()}
+      <Textfield
+        ref={inputRef as any}
+        isCompact
+        placeholder={`What needs to be done in ${groupLabel}?`}
+        value={summary}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
+        elemBeforeInput={
+          <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+            <Plus size={14} />
+          </span>
+        }
+      />
+      {/* Assignee picker — Apr 27 2026 (jira-compare regression F-NEW-2
+          layer 3). Click cycles through Unassigned + project members
+          (same click-cycle pattern as the type picker — avoids L21
+          portal-empty bug from @atlaskit/dropdown-menu on this surface).
+          Tooltip shows next-on-click value. When a member is selected
+          the avatar is rendered alongside the name. */}
+      {(() => {
+        const totalSlots = members.length + 1; // +1 for Unassigned
+        const nextIdx =
+          assigneeIdx === -1 ? (members.length > 0 ? 0 : -1) : (assigneeIdx + 1 >= members.length ? -1 : assigneeIdx + 1);
+        const nextLabel = nextIdx === -1 ? 'Unassigned' : members[nextIdx]?.name ?? 'Unassigned';
+        const currentLabel = currentAssignee ? currentAssignee.name : 'Unassigned';
+        return (
+          <Tooltip content={`Click to cycle assignee (next: ${nextLabel})`}>
+            <button
+              type="button"
+              data-testid="jira-table.group-row.inline-create-assignee-trigger"
+              aria-label={`Assignee: ${currentLabel}. Click to change.`}
+              disabled={totalSlots <= 1}
+              onClick={() => setAssigneeIdx(nextIdx)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                height: 27,
+                padding: '0 10px',
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderRadius: 3,
+                background: token('elevation.surface', '#FFFFFF'),
+                color: token('color.text', '#172B4D'),
+                fontSize: 13,
+                fontWeight: 500,
+                fontFamily: 'inherit',
+                cursor: totalSlots > 1 ? 'pointer' : 'not-allowed',
+                flexShrink: 0,
+                maxWidth: 180,
+              }}
+            >
+              {currentAssignee ? (
+                <Avatar size="xsmall" src={currentAssignee.src} name={currentAssignee.name} />
+              ) : (
+                <CircleUser size={14} />
+              )}
+              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {currentLabel}
+              </span>
+            </button>
+          </Tooltip>
+        );
+      })()}
+      <Button
+        appearance="primary"
+        spacing="compact"
+        isDisabled={!canSubmit}
+        onClick={() =>
+          canSubmit &&
+          onSubmit(
+            summary,
+            issueType,
+            currentAssignee ? { id: currentAssignee.key, name: currentAssignee.name } : null,
+          )
+        }
+      >
+        {isSubmitting ? 'Creating…' : 'Create'}
+      </Button>
+      <Button appearance="subtle" spacing="compact" onClick={onCancel}>
+        Cancel
+      </Button>
+    </div>
+  );
+}
 
 function BottomCreateRow({
   projectKey,
@@ -2175,6 +3698,15 @@ function BottomCreateRow({
     return (
       <div
         style={{
+          // Apr 27, 2026: position:sticky bottom:0 pins this row to the
+          // bottom of the .jira-table-viewport scroller — Jira's exact
+          // pattern. The probe-confirmed bug was that the row sat at
+          // y≈1226 (below the 911px viewport bottom), so users had to
+          // scroll the table to find Create. Now visible at all scroll
+          // positions, including the moment the page loads.
+          position: 'sticky',
+          bottom: 0,
+          zIndex: 2,
           borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface', '#FFFFFF'),
           minWidth: '100%',
@@ -2210,10 +3742,14 @@ function BottomCreateRow({
   }
 
   // Expanded state — Jira pattern: type picker | textarea | assignee | Create
-  // Apr 27, 2026 (L70): inline flow inside JiraTable.bottomSlot.
+  // Apr 27, 2026 (L70): inline flow inside JiraTable.bottomSlot. Sticky
+  // at viewport bottom for both collapsed and expanded states (Jira parity).
   return (
     <div
       style={{
+        position: 'sticky',
+        bottom: 0,
+        zIndex: 2,
         borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
         background: token('elevation.surface', '#FFFFFF'),
         padding: '10px 16px',

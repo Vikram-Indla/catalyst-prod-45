@@ -63,6 +63,16 @@ export interface RowGroup<TRow> {
    * (e.g. a status lozenge or the assignee's name). Rendered as plain text.
    */
   meta?: string;
+  /**
+   * Apr 27, 2026 (audit pass 10, spec parity): optional rich-content
+   * label rendered in place of the plain `label` string when present.
+   * Use this to put a Lozenge for status, an Avatar for assignee, or a
+   * priority-bars glyph for priority groups — matching the Atlaskit
+   * "Group: …" reference (Lozenge / Avatar / Tooltip wrappers per the
+   * groupBy field). The chevron + count are still rendered by JiraTable;
+   * `labelNode` only replaces the middle label slot.
+   */
+  labelNode?: ReactNode;
 }
 
 /** Public props for the canonical JiraTable. */
@@ -138,6 +148,53 @@ export interface JiraTableProps<TRow> {
    */
   collapsedGroups?: ReadonlySet<string>;
   onToggleGroup?: (groupId: string) => void;
+
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-2): when provided, each
+   * group header row renders a 24×24 "+" IconButton AFTER the chevron and
+   * BEFORE the label, mirroring Jira's
+   * `business-list.common.ui.create-issue-plus-button.child-create-button-wrapper`
+   * at probed (203, 328). Click bubbles via this callback with the
+   * group's id — consumer wires to its own create flow (modal, inline
+   * row, etc.). When omitted, the button is not rendered.
+   */
+  onAddToGroup?: (groupId: string) => void;
+
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-2 functional fill): when
+   * provided AND returns non-null for a given groupId, the table renders
+   * an EXTRA row inside that group, immediately after the group header
+   * and before the first data row. The returned node fills the full
+   * width of the table (colSpan over all columns). Use to render an
+   * inline create form when the user clicks the per-group "+" button.
+   * Returning null hides the row — typically the consumer keys the
+   * "active inline-create group" in state and returns the form only
+   * for that one id.
+   */
+  renderGroupInlineRow?: (groupId: string) => ReactNode | null;
+
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-3 functional fill): when
+   * provided AND returns true for a row, the chevron slot in that row's
+   * first data column renders an interactive ChevronRight/Down icon.
+   * Click toggles row expansion via `onToggleRowExpanded`. Rows where
+   * this returns false render an empty 24×24 placeholder slot — the
+   * geometry stays uniform so column alignment is preserved.
+   */
+  getRowHasChildren?: (row: TRow) => boolean;
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-3 functional fill): set
+   * of row ids that are currently expanded. Drives the chevron icon's
+   * orientation (ChevronDown when expanded, ChevronRight when collapsed).
+   */
+  expandedRowIds?: ReadonlySet<string>;
+  /**
+   * Apr 27 2026 (jira-compare regression F-NEW-3 functional fill):
+   * called when a row's chevron is clicked. Consumer manages
+   * expandedRowIds state and is responsible for actually rendering
+   * children rows.
+   */
+  onToggleRowExpanded?: (rowId: string) => void;
 
   /**
    * Optional right-click context-menu actions. When provided, a right-click
