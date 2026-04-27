@@ -7,7 +7,6 @@ import { ProtectedRoute } from "../components/ProtectedRoute";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const FeatureFlagsPage = lazy(() => import("../pages/admin/FeatureFlagsPage"));
-const WorkflowsAdminPage = lazy(() => import("../pages/admin/WorkflowsAdminPage"));
 
 // ─── Lazy page imports ───────────────────────────────────────────
 const KBAdminSetup = ENABLE_AI ? lazy(() => import("../pages/KBAdminSetup")) : () => <FeatureComingSoon title="KB Admin" />;
