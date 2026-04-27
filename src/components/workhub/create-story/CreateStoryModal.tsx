@@ -892,7 +892,7 @@ export function CreateStoryModal({
     setSubmitAttempted(true);
     setFormError(null);
 
-    if (!form.projectId) {
+    if (!form.projectId && workType !== 'Business Request') {
       setFormError('Space is required');
       return;
     }
@@ -1026,41 +1026,7 @@ export function CreateStoryModal({
             </Box>
 
             <Box xcss={fieldGroupStyles}>
-              {/* ── Project — required ────────────────────────────── */}
-              <Field
-                name="space"
-                label="Project"
-                isRequired
-                defaultValue={form.projectId}
-              >
-                {({ fieldProps: { id, isRequired, isDisabled } }) => (
-                  <>
-                    <Select<IconOption>
-                      id={id}
-                      isRequired={isRequired}
-                      isDisabled={isDisabled}
-                      inputId="cs-space"
-                      options={projectOptions}
-                      value={
-                        projectOptions.find(
-                          (o) => o.value === form.projectId,
-                        ) ?? null
-                      }
-                      onChange={(opt) =>
-                        updateField('projectId', (opt as IconOption)?.value ?? '')
-                      }
-                      placeholder="Select project"
-                      formatOptionLabel={formatIconOption}
-                      isSearchable
-                    />
-                    {submitAttempted && !form.projectId && (
-                      <ErrorMessage>Space is required</ErrorMessage>
-                    )}
-                  </>
-                )}
-              </Field>
-
-              {/* ── Work type — required ───────────────────────────── */}
+              {/* ── Work type — first so BR hand-off fires before Project is touched ── */}
               <Field name="workType" label="Work type" isRequired>
                 {({ fieldProps: { id, isRequired, isDisabled } }) => (
                   <>
@@ -1101,6 +1067,42 @@ export function CreateStoryModal({
                   </>
                 )}
               </Field>
+
+              {/* ── Project — only shown for non-BR types ─────────── */}
+              {workType !== 'Business Request' && (
+                <Field
+                  name="space"
+                  label="Project"
+                  isRequired
+                  defaultValue={form.projectId}
+                >
+                  {({ fieldProps: { id, isRequired, isDisabled } }) => (
+                    <>
+                      <Select<IconOption>
+                        id={id}
+                        isRequired={isRequired}
+                        isDisabled={isDisabled}
+                        inputId="cs-space"
+                        options={projectOptions}
+                        value={
+                          projectOptions.find(
+                            (o) => o.value === form.projectId,
+                          ) ?? null
+                        }
+                        onChange={(opt) =>
+                          updateField('projectId', (opt as IconOption)?.value ?? '')
+                        }
+                        placeholder="Select project"
+                        formatOptionLabel={formatIconOption}
+                        isSearchable
+                      />
+                      {submitAttempted && !form.projectId && (
+                        <ErrorMessage>Space is required</ErrorMessage>
+                      )}
+                    </>
+                  )}
+                </Field>
+              )}
 
               <Box xcss={dividerStyles} />
 
