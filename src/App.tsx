@@ -35,7 +35,7 @@ const ForYouPage = lazy(() => import("./pages/ForYouPage.atlaskit"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout").then(m => ({ default: m.AdminLayout })));
 const FeatureFlagsPage = lazy(() => import("./pages/admin/FeatureFlagsPage").then(m => ({ default: m.default })));
-const WorkflowsAdminPage = lazy(() => import("./pages/admin/WorkflowsAdminPage").then(m => ({ default: m.default })));
+const WorkflowsAdminPage = lazy(() => import("./pages/admin/workflows/WorkflowAdminPage").then(m => ({ default: m.default })));
 const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const SubmitDemandRequest = lazy(() => import("./pages/SubmitDemandRequest"));
