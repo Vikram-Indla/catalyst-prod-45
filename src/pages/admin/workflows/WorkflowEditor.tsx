@@ -193,23 +193,23 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-0 divide-x divide-[#2E2E2E]">
+    <div className="flex flex-col lg:flex-row gap-0 divide-x divide-[#E2E8F0] bg-white">
       {/* ─── LEFT: Status List ─── */}
       <div className="w-full lg:w-[380px] shrink-0">
-        <div className="px-4 py-3 border-b border-[#2E2E2E] flex items-center justify-between">
-          <h3 className="text-xs font-semibold text-[#A1A1A1] uppercase tracking-wider">
+        <div className="px-4 py-3 border-b border-[#E2E8F0] flex items-center justify-between">
+          <h3 className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
             Statuses ({statuses.length})
           </h3>
         </div>
 
         {/* Status rows */}
-        <div className="divide-y divide-[#2E2E2E]">
+        <div className="divide-y divide-[#E2E8F0]">
           {statuses.map(s => (
             <div
               key={s.id}
-              className="group flex items-center gap-2 px-4 py-2.5 hover:bg-[#1F1F1F] transition-colors"
+              className="group flex items-center gap-2 px-4 py-2.5 hover:bg-[#F8FAFC] transition-colors"
             >
-              <GripVertical size={14} className="text-[#454545] shrink-0" />
+              <GripVertical size={14} className="text-[#CBD5E1] shrink-0" />
 
               {/* Category dot */}
               <div
@@ -227,12 +227,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   onChange={e => setEditName(e.target.value)}
                   onBlur={() => handleRename(s.id)}
                   onKeyDown={e => e.key === 'Enter' && handleRename(s.id)}
-                  className="h-7 text-xs bg-[#111111] border-[#454545] text-[#EDEDED] flex-1"
+                  className="h-7 text-xs bg-white border-[#CBD5E1] text-[#0F172A] flex-1"
                   autoFocus
                 />
               ) : (
                 <span
-                  className="text-[13px] text-[#EDEDED] flex-1 cursor-pointer hover:underline"
+                  className="text-[13px] text-[#0F172A] flex-1 cursor-pointer hover:underline"
                   onClick={() => { setEditingId(s.id); setEditName(s.name); }}
                 >
                   {s.name}
@@ -242,12 +242,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               {/* Flags */}
               <div className="flex items-center gap-1 shrink-0">
                 {s.is_initial && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[#292929] text-[#A1A1A1] rounded border border-[#454545]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[#F1F5F9] text-[#475569] rounded border border-[#E2E8F0]">
                     START
                   </span>
                 )}
                 {s.is_final && (
-                  <span className="px-1.5 py-0.5 text-[10px] bg-[#292929] text-[#A1A1A1] rounded border border-[#454545]">
+                  <span className="px-1.5 py-0.5 text-[10px] bg-[#F1F5F9] text-[#475569] rounded border border-[#E2E8F0]">
                     END
                   </span>
                 )}
@@ -258,7 +258,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 value={s.category}
                 onValueChange={val => handleUpdateCategory(s.id, val)}
               >
-                <SelectTrigger className="h-7 w-[100px] text-[11px] bg-[#111111] border-[#2E2E2E] text-[#A1A1A1]">
+                <SelectTrigger className="h-7 w-[100px] text-[11px] bg-white border-[#E2E8F0] text-[#475569]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -273,8 +273,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_initial', s.is_initial)}
                   className={cn(
-                    'p-1 rounded hover:bg-[#292929] transition-colors',
-                    s.is_initial ? 'text-[#EDEDED]' : 'text-[#454545]'
+                    'p-1 rounded hover:bg-[#F1F5F9] transition-colors',
+                    s.is_initial ? 'text-[#0F172A]' : 'text-[#CBD5E1]'
                   )}
                   title="Set as initial status"
                 >
@@ -283,8 +283,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 <button
                   onClick={() => handleToggleFlag(s.id, 'is_final', s.is_final)}
                   className={cn(
-                    'p-1 rounded hover:bg-[#292929] transition-colors',
-                    s.is_final ? 'text-[#EDEDED]' : 'text-[#454545]'
+                    'p-1 rounded hover:bg-[#F1F5F9] transition-colors',
+                    s.is_final ? 'text-[#0F172A]' : 'text-[#CBD5E1]'
                   )}
                   title="Set as final status"
                 >
@@ -292,7 +292,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                 </button>
                 <button
                   onClick={() => setDeleteTarget(s)}
-                  className="p-1 rounded hover:bg-[#292929] text-[#454545] hover:text-red-400 transition-colors"
+                  className="p-1 rounded hover:bg-[#FEE2E2] text-[#CBD5E1] hover:text-red-600 transition-colors"
                   title="Delete status"
                 >
                   <Trash2 size={12} />
@@ -303,16 +303,16 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
         </div>
 
         {/* Add status form */}
-        <div className="px-4 py-3 border-t border-[#2E2E2E] flex items-center gap-2">
+        <div className="px-4 py-3 border-t border-[#E2E8F0] flex items-center gap-2">
           <Input
             value={newStatusName}
             onChange={e => setNewStatusName(e.target.value)}
             placeholder="New status name…"
-            className="h-8 text-xs bg-[#111111] border-[#2E2E2E] text-[#EDEDED] placeholder:text-[#454545] flex-1"
+            className="h-8 text-xs bg-white border-[#E2E8F0] text-[#0F172A] placeholder:text-[#94A3B8] flex-1"
             onKeyDown={e => e.key === 'Enter' && handleAddStatus()}
           />
           <Select value={newStatusCategory} onValueChange={setNewStatusCategory}>
-            <SelectTrigger className="h-8 w-[90px] text-[10px] bg-[#111111] border-[#2E2E2E] text-[#A1A1A1]">
+            <SelectTrigger className="h-8 w-[90px] text-[10px] bg-white border-[#E2E8F0] text-[#475569]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -325,7 +325,7 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             size="sm"
             onClick={handleAddStatus}
             disabled={adding || !newStatusName.trim()}
-            className="h-8 px-3 text-xs bg-[#292929] hover:bg-[#454545] text-[#EDEDED] border border-[#454545]"
+            className="h-8 px-3 text-xs bg-[#2563EB] hover:bg-[#1D4ED8] text-white border border-[#2563EB]"
           >
             <Plus size={14} />
           </Button>
@@ -334,17 +334,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
       {/* ─── RIGHT: Transition Matrix ─── */}
       <div className="flex-1 overflow-auto">
-        <div className="px-4 py-3 border-b border-[#2E2E2E]">
-          <h3 className="text-xs font-semibold text-[#A1A1A1] uppercase tracking-wider">
+        <div className="px-4 py-3 border-b border-[#E2E8F0]">
+          <h3 className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
             Transition Matrix
           </h3>
-          <p className="text-[11px] text-[#7D7D7D] mt-0.5">
+          <p className="text-[11px] text-[#94A3B8] mt-0.5">
             Check a cell to allow transition from row → column
           </p>
         </div>
 
         {statuses.length === 0 ? (
-          <div className="flex items-center justify-center py-16 text-[#454545] text-sm">
+          <div className="flex items-center justify-center py-16 text-[#94A3B8] text-sm">
             Add statuses to configure transitions
           </div>
         ) : (
@@ -352,13 +352,13 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
             <table className="w-full border-collapse text-xs">
               <thead>
                 <tr>
-                  <th className="sticky left-0 z-10 bg-[#111111] border-b border-r border-[#2E2E2E] px-3 py-2 text-left text-[10px] text-[#878787] uppercase tracking-wider min-w-[140px]">
+                  <th className="sticky left-0 z-10 bg-[#F8FAFC] border-b border-r border-[#E2E8F0] px-3 py-2 text-left text-[10px] text-[#64748B] uppercase tracking-wider min-w-[140px]">
                     From ↓ \ To →
                   </th>
                   {statuses.map(s => (
                     <th
                       key={s.id}
-                      className="border-b border-r border-[#2E2E2E] px-2 py-2 text-center text-[10px] text-[#A1A1A1] font-medium min-w-[80px] bg-[#111111]"
+                      className="border-b border-r border-[#E2E8F0] px-2 py-2 text-center text-[10px] text-[#475569] font-medium min-w-[80px] bg-[#F8FAFC]"
                     >
                       <div className="flex flex-col items-center gap-1">
                         <div
@@ -373,17 +373,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
               </thead>
               <tbody>
                 {/* Global row */}
-                <tr className="bg-[#1A1A1A]">
-                  <td className="sticky left-0 z-10 bg-[#1A1A1A] border-b border-r border-[#2E2E2E] px-3 py-2 text-[#EDEDED] font-medium">
+                <tr className="bg-[#FFFBEB]">
+                  <td className="sticky left-0 z-10 bg-[#FFFBEB] border-b border-r border-[#E2E8F0] px-3 py-2 text-[#0F172A] font-medium">
                     <span className="flex items-center gap-1.5">
-                      <Zap size={12} className="text-amber-400" />
+                      <Zap size={12} className="text-amber-500" />
                       Any (Global)
                     </span>
                   </td>
                   {statuses.map(to => (
                     <td
                       key={to.id}
-                      className="border-b border-r border-[#2E2E2E] px-2 py-2 text-center"
+                      className="border-b border-r border-[#E2E8F0] px-2 py-2 text-center"
                     >
                       <TransitionCell
                         active={hasTransition(null, to.id, true)}
@@ -395,8 +395,8 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
                 {/* Per-status rows */}
                 {statuses.map(from => (
-                  <tr key={from.id} className="hover:bg-[#1F1F1F] transition-colors">
-                    <td className="sticky left-0 z-10 bg-[#0A0A0A] hover:bg-[#1F1F1F] border-b border-r border-[#2E2E2E] px-3 py-2 text-[#EDEDED] font-medium">
+                  <tr key={from.id} className="hover:bg-[#F8FAFC] transition-colors">
+                    <td className="sticky left-0 z-10 bg-white hover:bg-[#F8FAFC] border-b border-r border-[#E2E8F0] px-3 py-2 text-[#0F172A] font-medium">
                       <span className="flex items-center gap-1.5">
                         <div
                           className="w-2 h-2 rounded-full"
@@ -409,12 +409,12 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                       <td
                         key={to.id}
                         className={cn(
-                          'border-b border-r border-[#2E2E2E] px-2 py-2 text-center',
-                          from.id === to.id ? 'bg-[#111111]' : ''
+                          'border-b border-r border-[#E2E8F0] px-2 py-2 text-center',
+                          from.id === to.id ? 'bg-[#F1F5F9]' : ''
                         )}
                       >
                         {from.id === to.id ? (
-                          <span className="text-[#2E2E2E]">—</span>
+                          <span className="text-[#CBD5E1]">—</span>
                         ) : (
                           <TransitionCell
                             active={hasTransition(from.id, to.id, false)}
@@ -433,17 +433,17 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
 
       {/* Delete confirmation */}
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
-        <AlertDialogContent className="bg-[#1A1A1A] border-[#2E2E2E]">
+        <AlertDialogContent className="bg-white border-[#E2E8F0]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#EDEDED]">Delete Status</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#878787]">
+            <AlertDialogTitle className="text-[#0F172A]">Delete Status</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#64748B]">
               Are you sure you want to delete "{deleteTarget?.name}"? This will also remove all
               transitions referencing this status. Any issues currently in this status will need
               to be reassigned.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="bg-[#292929] border-[#454545] text-[#EDEDED] hover:bg-[#454545]">
+            <AlertDialogCancel className="bg-white border-[#E2E8F0] text-[#0F172A] hover:bg-[#F8FAFC]">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -467,10 +467,11 @@ function TransitionCell({ active, onClick }: { active: boolean; onClick: () => v
         'w-6 h-6 rounded border flex items-center justify-center mx-auto transition-all',
         active
           ? 'bg-[#2563EB] border-[#2563EB] text-white'
-          : 'bg-[#111111] border-[#2E2E2E] text-transparent hover:border-[#454545] hover:bg-[#1F1F1F]'
+          : 'bg-white border-[#E2E8F0] text-transparent hover:border-[#2563EB] hover:bg-[#EFF6FF]'
       )}
     >
       <Check size={12} />
     </button>
   );
 }
+

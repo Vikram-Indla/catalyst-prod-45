@@ -176,6 +176,27 @@ These are hard-won lessons from the ECLIPSE pipeline. Violating them causes regr
 > **Rule:** Do NOT change `--cp-font-*` values in any task other than the F2 task brief.
 > Ringfenced: `--ph-font`, `--planner-*`, `src/styles/planhub.css`, `src/modules/planner/styles/*`.
 
+**L43 — CRITICAL: ph_issues SELECT silent 400**
+> Selecting a non-existent column from `ph_issues` (e.g. `comment_count`)
+> triggers a PostgREST 400 with PG error `42703 column does not exist`.
+> The Supabase JS client returns the error inside the result object, but
+> React Query callers that throw on error catch it internally — the rest
+> of the page renders fine while the affected query holds an empty array.
+> Symptom seen Apr 28, 2026: BAU's Parent picker rendered "No parent" +
+> "No matches" on every row. Cause: `useEpicBacklog` selected
+> `comment_count`, returned `[]`, `parentOptions = epics.map()` was empty.
+> **Rule:** Before adding a column to a SELECT against `ph_issues`,
+> verify it exists by checking `src/integrations/supabase/types.ts`
+> (auto-generated from the schema). Forbidden columns (do not exist):
+> `comment_count`, `attachment_count`, `child_count`, `children_count`,
+> `link_count`, `worklog_count`. Identity columns that DO exist:
+> `id` (UUID) AND `issue_key` (text PK).
+> **Diagnostic:** when a derived UI element (picker, filter, badge) is
+> empty when it shouldn't be, fire the underlying SQL DIRECTLY against
+> the Supabase REST endpoint with `fetch()` and read the error body
+> BEFORE assuming a render bug. A 400 from PostgREST is invisible in the
+> UI and trivial to spot in DevTools network.
+
 ### ProjectHub Violation Pattern (S7 RCA)
 
 **Root cause:** Multiple `.dark .bg-white { background: ... !important }` blocks in `index.css` create elevation token conflicts.
@@ -333,6 +354,7 @@ These are NON-SEMANTIC structural identifiers. They must NEVER be confused with 
 ❌ Direct font-family literals in tailwind.config.ts, typography.ts, or tokens.ts (use var(--ds-font-family-*) with fallback)
 ❌ Assigning a literal font name to --ds-font-family-* (always delegate via var(--cp-font-*))
 ❌ Changing --cp-font-* values outside the F2 task brief (L42)
+❌ Selecting non-existent ph_issues columns (`comment_count`, `attachment_count`, `child_count`, `children_count`, `link_count`, `worklog_count`) — these trigger silent PostgREST 400s (L43 / §9 / FP-012). Always verify against `src/integrations/supabase/types.ts` before adding to a SELECT
 ```
 
 ---
@@ -373,6 +395,47 @@ pipeline_stage                  (Edge Function authority only — never client-s
 
 ---
 
+### ph_issues — schema guard (Apr 28, 2026)
+
+**Identity columns that DO exist on `ph_issues`:**
+- `id` (UUID) — secondary identifier.
+- `issue_key` (text, primary key) — the canonical join key for parent
+  resolution and writeback. Use this for `.eq('issue_key', key)` queries.
+
+**Columns that DO NOT exist (writing them in a SELECT = silent 400):**
+
+```
+❌ comment_count        ❌ attachment_count        ❌ child_count
+❌ children_count       ❌ link_count              ❌ worklog_count
+```
+
+If a derived count is required, fetch it via a separate JOIN/aggregation
+query (e.g., count rows in `ph_comments` grouped by `issue_key`) and
+merge client-side. Never add a count column to the `ph_issues` SELECT
+hoping the column exists.
+
+**The canonical reference for every column on `ph_issues` is
+`src/integrations/supabase/types.ts`** (auto-generated from the live
+schema). Before adding a column to any SELECT against `ph_issues`,
+search that file for the column name. If it's not in the `Row:` type
+definition, it doesn't exist — and selecting it will trigger PostgREST
+400 silently.
+
+**The 2026-04-28 BAU "Parent picker shows no epics" bug:** `useEpicBacklog`
+selected `comment_count`. PostgREST returned `42703 column does not
+exist`. React Query treated `epics` as `[]`. The Parent picker on every
+BAU row rendered "No parent" + "No matches" because `parentOptions =
+epics.map(...)` was empty. The 400 was invisible in the UI and persisted
+for hours.
+
+**Diagnostic shortcut:** if a derived UI element (picker, filter, badge)
+is unexpectedly empty, fire the underlying SQL DIRECTLY against the
+Supabase REST endpoint and read the error body before assuming a render
+bug. A bare `fetch()` with the apikey + bearer token is the fastest
+ground truth.
+
+---
+
 ## 10. CLAUDE CODE OPERATING RULES
 
 ### Surgical Scope (MANDATORY)
@@ -385,6 +448,45 @@ Never introduce new npm dependencies.
 Never rename existing exports or interfaces.
 Always check what exists before creating new.
 ```
+
+### NEW-FILE GUARDRAIL (Apr 28, 2026 — L44)
+
+**Never generate new files of ANY kind unless Vikram explicitly asks for one.**
+This applies in BOTH directions:
+
+- **No new source files (.ts / .tsx / .js / .css / .json):** when a fix is
+  needed, patch the existing file in place. Do NOT spin up a new helper
+  module, types file, hooks file, utility lib, or "canonical chokepoint"
+  abstraction unsolicited — even when consolidating duplication. The
+  refactor is invisible to Vikram and just adds files they have to
+  maintain. If consolidation seems necessary, ASK first.
+- **No new audit / doc / report files (.md / .json under `.catalyst/...`,
+  `audits/...`, `reports/...`, `handoffs/...`, `patches/...`):** Vikram
+  doesn't read them. Surface findings inline in the chat. If a skill
+  (e.g. `jira-compare`) wants to write probe snapshots / audit reports,
+  override that behaviour and report inline instead. Existing audit
+  files in the repo are legacy; do not add to them.
+
+**The only thing to write to disk is the fix itself, in the existing
+file that needs the fix.** Everything else is conversation.
+
+If Vikram asks "make this canonical" or "lock this as a lesson" — the
+canonical part is updating CLAUDE.md (this file) and patching the bug
+in place across affected sites. The lesson part is appending a §3
+lesson entry like L43/L44 + a §13 FP entry. NOT spinning up a new
+module to host shared constants. If the constants must live somewhere,
+inline them at the top of an EXISTING file (e.g. the hook that already
+uses them) and let consumers import from there.
+
+**Symptom this lesson came from:** in the 2026-04-28 BAU parent-picker
+session, Claude Code created a brand-new
+`src/modules/project-work-hub/lib/phIssueQueries.ts` to host SELECT
+constants AND wrote ~6 audit/probe/handoff/patch files under
+`.catalyst/audits/jira-compare/2026-04-28-...` — none of which Vikram
+asked for. Token waste + maintenance debt. The TS file was reverted
+out of the import graph but left orphaned in the repo for Vikram to
+delete; the audit files remain on disk for the same reason. Don't
+repeat this pattern.
 
 ### Pre-Flight Checks (Run Before ANY Fix)
 
@@ -602,6 +704,14 @@ FP-010: Duplicate .dark blocks → consolidate
 FP-011: Literal font-family values outside @font-face → P0 bug; bridge to var(--cp-font-*)
          Banned literals: 'Inter', 'Sora', 'JetBrains Mono', 'Atlassian Sans',
          'Playfair Display', 'Plus Jakarta Sans', system font stacks in component CSS
+FP-012: SELECT against ph_issues with a non-existent column → silent
+         PostgREST 400 (PG 42703). React Query swallows the error and
+         the UI renders empty. Symptom: parent pickers show "No parent /
+         No matches" even when the project has epics. Fix: verify every
+         column in the SELECT exists in `src/integrations/supabase/types.ts`
+         before submitting. Banned columns: comment_count,
+         attachment_count, child_count, children_count, link_count,
+         worklog_count. See §9 + L43.
 ```
 
 ---

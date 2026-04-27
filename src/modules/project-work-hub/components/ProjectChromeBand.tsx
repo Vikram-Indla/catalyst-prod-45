@@ -11,7 +11,7 @@
  * three additional defects sharing one root cause:
  *
  *   D-001 [UI-Parity P0]  Project header band missing entirely
- *   D-002 [UI-Parity P0]  Spaces breadcrumb missing
+ *   D-002 [UI-Parity P0]  Projects breadcrumb missing
  *   D-003 [UX-Parity P0]  H1 misplaced (currently inside white card,
  *                         should be in chrome band — same hierarchy
  *                         level as the project icon and CTAs)
@@ -24,7 +24,7 @@
  * ────────────────────────────────────────────
  *   Row A — Breadcrumbs at y≈68 (relative to chrome top):
  *     <NAV aria-label="Breadcrumbs">  via @atlaskit/breadcrumbs
- *       <BreadcrumbsItem text="Spaces" />
+ *       <BreadcrumbsItem text="Projects" />
  *
  *   Row B — Project header at y≈91:
  *     [project icon 20×20]  [H1 "Project name" 20px/653]   <flex spacer>   {actions slot}
@@ -63,9 +63,9 @@ export interface ProjectChromeBandProps {
    */
   projectHref?: string;
   /**
-   * Optional href for the "Spaces" breadcrumb root. Defaults to "/".
+   * Optional href for the "Projects" breadcrumb root. Defaults to "/".
    */
-  spacesHref?: string;
+  projectsHref?: string;
   /**
    * Right-side actions slot (Row B, right cluster). Targets:
    *   - AvatarGroup + "Add people" button (LOVABLE handoff #1)
@@ -113,7 +113,7 @@ export function ProjectChromeBand({
   projectName,
   projectIconUrl,
   projectHref,
-  spacesHref = '/',
+  projectsHref = '/',
   actions,
   pageChromeRightCtas,
   tabs,
@@ -130,17 +130,17 @@ export function ProjectChromeBand({
         gap: 4,
       }}
     >
-      {/* Row A — Spaces breadcrumb. @atlaskit/breadcrumbs renders a
-          NAV[aria-label="Breadcrumbs"] which matches Jira's parity
-          probe at (23, 68) "Spaces" on the BAU list view. */}
+      {/* Row A — Projects breadcrumb. @atlaskit/breadcrumbs renders a
+          NAV[aria-label="Breadcrumbs"] above the project name on the
+          BAU list view. */}
       <div style={{ paddingTop: 8, paddingBottom: 0 }}>
         <Breadcrumbs>
           <BreadcrumbsItem
-            href={spacesHref}
-            text="Spaces"
+            href={projectsHref}
+            text="Projects"
             onClick={(e) => {
               // No-op for now — parity-only render. Replace with router
-              // navigation when Spaces lands as a Catalyst route.
+              // navigation when Projects lands as a Catalyst route.
               e.preventDefault();
             }}
           />
