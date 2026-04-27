@@ -172,7 +172,14 @@ export function useStoryBacklog(projectId: string) {
   const projectKey = project?.key ?? null;
 
   return useQuery({
-    queryKey: ['backlog-stories', projectId, projectKey],
+    // Apr 27, 2026 (L68): bumped query key 'backlog-stories' →
+    // 'backlog-stories-v2' so PersistQueryClient discards the stale
+    // cached payload that didn't include `issue_type` (added on parent
+    // lookups + leaf-row mapping today). Without this bump, the cached
+    // localStorage entry rehydrates with `parent_issue_type: undefined`
+    // and the Parent column falls back to the 'Story' icon for every
+    // row regardless of actual parent type. Per skill L29.
+    queryKey: ['backlog-stories-v2', projectId, projectKey],
     queryFn: async (): Promise<BacklogStory[]> => {
       if (!projectKey) return [];
       // F-iter9 unification: single query against ph_issues — Catalyst-native

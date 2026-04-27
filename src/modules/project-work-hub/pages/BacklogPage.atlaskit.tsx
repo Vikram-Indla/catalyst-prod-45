@@ -125,6 +125,13 @@ export interface BacklogItem {
   parent_id: string | null;        // used to link stories to epics
   parent_key: string | null;
   parent_label: string | null;     // computed for display
+  /** Apr 27, 2026 (L54): parent's actual Jira issue_type ('Epic' |
+   *  'Feature' | 'Story' | 'Task' etc.) — used by the Parent column
+   *  cell to render the correct icon (was hardcoded as Epic, causing
+   *  BAU-4466 — a Feature — to render as a purple lightning bolt in
+   *  the Parent column while showing as a green checkbox elsewhere
+   *  in the rail). null when no parent. */
+  parent_issue_type: string | null;
   source: 'jira' | 'catalyst';
   updated_at: string | null;
   created_at: string | null;
@@ -418,7 +425,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }
     },
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
       if (variables.source === 'jira') {
         flag.success('Updated', 'Change queued for Jira sync approval');
@@ -462,6 +469,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           parent_id: null,
           parent_key: null,
           parent_label: null,
+          parent_issue_type: null,
           source: 'catalyst',
           updated_at: null,
           created_at: null,
@@ -492,6 +500,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         parent_id: parentInit?.id ?? null,
         parent_key: parentInit?.initiative_key ?? null,
         parent_label: parentInit?.title ?? null,
+        parent_issue_type: parentInit ? 'Initiative' : null,
         source: e.source ?? 'jira',
         updated_at: e.jira_updated_at ?? null,
         created_at: e.jira_created_at ?? null,
@@ -532,6 +541,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           parent_id: null,
           parent_key: null,
           parent_label: null,
+          parent_issue_type: null,
           source: 'jira',
           updated_at: ep.jira_updated_at ?? null,
           created_at: ep.jira_created_at ?? null,
@@ -563,6 +573,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       const parentId = ep?.id ?? rawParentKey ?? null;
       const parentKey = ep?.epic_key ?? rawParentKey ?? null;
       const parentLabel = ep?.name ?? rawParentSummary ?? null;
+      // L54: parent's real issue_type from epicMap. The parent might be a
+      // Feature/Story/Task (not an Epic), so this drives the Parent column's
+      // icon canonically — no more hardcoded purple Epic lightning.
+      const parentIssueType = (ep as any)?.issue_type ?? null;
       out.push({
         id: s.id,
         type: leafTypeFromIssueType((s as any).issue_type),
@@ -576,6 +590,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         parent_id: parentId,
         parent_key: parentKey,
         parent_label: parentLabel,
+        parent_issue_type: parentIssueType,
         source: s.source ?? 'jira',
         updated_at: s.jira_updated_at ?? null,
         created_at: s.jira_created_at ?? null,
@@ -1006,6 +1021,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       id: 'comments',
       label: 'Comments',
       width: 9,
+      // Apr 27, 2026 (L61): default visible — Jira's list view shows
+      // Comments column at position 5 between Status and Parent. Probed
+      // against Jira BAU list "1 comment" / "Add comment" cells.
+      defaultVisible: true,
       cell: makeCommentsCell(
         (r: BacklogItem) => r.comment_count,
         // Clicking the cell opens the side panel — users land on Comments
@@ -1025,7 +1044,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           id: r.parent_id,
           key: r.parent_key,
           label: r.parent_label || '',
-          icon: <JiraIssueTypeIcon type="Epic" size={12} />,
+          // Apr 27, 2026 (L68): size bumped 12→16 so the SVG renders at
+          // its native designed size (story-16.svg, bug-16.svg, etc.)
+          // — the 0.75× scale at size=12 caused sub-pixel rendering
+          // jitter that made adjacent rows' icons LOOK like different
+          // shapes even when they were the same source SVG. 16×16 is
+          // pixel-perfect at 1× zoom and aligns with the row-1 type
+          // icon's size (also 16).
+          icon: <JiraIssueTypeIcon type={r.parent_issue_type || 'Story'} size={16} />,
         } : null,
         options: parentOptions,
         // Editable for any row — Jira-synced items still fail at mutation
@@ -1068,8 +1094,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     },
     {
       id: 'updated',
+      // Apr 27, 2026 (L65): width bumped 7→12 to fit the new bordered
+      // calendar chip ("📅 27 Apr 26") without truncating to "27 A".
+      // 7% of 1280 = 89px which left only ~39px for text after the
+      // chip's icon+gap+padding+border (~50px). 12% = 154px is enough.
       label: 'Updated',
-      width: 7,
+      width: 12,
       sortable: true,
       defaultVisible: true,
       accessor: (r) => r.updated_at || '',
@@ -1123,7 +1153,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     onSuccess: (_data, item) => {
       flag.success(`Deleted ${item.key || item.title}`);
       setDeleteTarget(null);
-      queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
     },
     onError: (e: Error) => flag.error('Delete failed', e.message),
@@ -1156,7 +1186,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         `Updated ${applied} item${applied === 1 ? '' : 's'}`,
         skipped > 0 ? `${skipped} Jira-synced item${skipped === 1 ? '' : 's'} skipped.` : undefined,
       );
-      queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
     },
     onError: (e: Error) => flag.error('Bulk update failed', e.message),
@@ -1184,7 +1214,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       );
       setBulkDeleteOpen(false);
       setSelectedIds(new Set());
-      queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+      queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
       queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
     },
     onError: (e: Error) => flag.error('Bulk delete failed', e.message),
@@ -1548,19 +1578,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 ? { flex: 1 }       // compact — share remainder with fixed 400px panel
                 : { flex: 1 }),     // panel closed OR fullscreen modal — full width
             minWidth: 0,
-            // Apr 27, 2026 (L58 fix): switched the column to overflow:auto
-            // so vertical scroll happens HERE — and dropped flex:1 on the
-            // table viewport wrapper so it hugs its actual content height
-            // instead of stretching to fill. Was: viewport wrapper with
-            // flex:1 + minHeight:0 forced JiraTable to fill the column,
-            // creating a huge empty white area below the pagination
-            // (visible between BAU-5505 / "Page 1 of 33" and the floating
-            // "+ Create"). Now BottomCreateRow sits immediately after the
-            // table+pagination — Jira parity.
+            // Apr 27, 2026 (L66): bottom padding 60px reserves space for
+            // the fixed-positioned Create row at the viewport bottom (Create
+            // is height ~46 + 6px margin from footer + breathing room) —
+            // without this, the last table row gets hidden under the
+            // floating Create bar. Vertical scroll on the column lets the
+            // content above the fixed Create remain reachable.
             overflow: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            padding: '4px 16px 0',
+            padding: '4px 16px 60px',
             transition: 'width 150ms ease, flex-basis 150ms ease',
           }}
         >
@@ -1632,7 +1659,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             }
             leftOffset={0}
             onCreated={() => {
-              queryClient.invalidateQueries({ queryKey: ['backlog-stories', projectId] });
+              queryClient.invalidateQueries({ queryKey: ['backlog-stories-v2', projectId] });
               queryClient.invalidateQueries({ queryKey: ['backlog-epics', projectId] });
             }}
           />
@@ -2051,21 +2078,24 @@ function BottomCreateRow({
   };
 
   // Collapsed state — full-width persistent "+ Create" trigger.
-  // Apr 27, 2026 (L57 → L58 fix): WAS position:fixed at viewport bottom,
-  // which created a huge empty gap between the table's last row /
-  // pagination and the floating Create bar at the viewport bottom (the
-  // user spotted this — the page chrome flex column had no content
-  // filling the void). Switched to INLINE flow — sits immediately below
-  // the table content (and pagination, if any), scrolls with the page.
-  // This matches Jira's actual pattern: "+ Create" lives at the END of
-  // the table content, not pinned to the viewport. left/right offset
-  // props are now ignored (no longer needed since we're in flow).
+  // Apr 27, 2026 (L66): position:fixed at viewport bottom, 6px above
+  // the page footer per user spec. Right-offset accounts for the rail
+  // width when open. To prevent the fixed bar from hiding the last
+  // table row, the table column wrapper applies a bottom padding
+  // equal to ~52px (Create row height + 6px gap).
   if (!isOpen) {
     return (
       <div
         style={{
+          position: 'fixed',
+          bottom: 6,
+          left: leftOffset,
+          right: rightOffset,
+          zIndex: 50,
           borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
           background: token('elevation.surface', '#FFFFFF'),
+          boxShadow: '0 -2px 8px rgba(9, 30, 66, 0.08)',
           flexShrink: 0,
         }}
       >
@@ -2097,15 +2127,20 @@ function BottomCreateRow({
   }
 
   // Expanded state — Jira pattern: type picker | textarea | assignee | Create
-  // Apr 27, 2026 (L58): same fix as collapsed state — switched from
-  // position:fixed to inline flow so the expanded Create row sits
-  // immediately below the table content, not pinned to viewport bottom
-  // with a void gap.
+  // Apr 27, 2026 (L66): position:fixed at viewport bottom (6px above
+  // footer), same as the collapsed trigger. Pinned, not in flow.
   return (
     <div
       style={{
+        position: 'fixed',
+        bottom: 6,
+        left: leftOffset,
+        right: rightOffset,
+        zIndex: 50,
         borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
         background: token('elevation.surface', '#FFFFFF'),
+        boxShadow: '0 -2px 8px rgba(9, 30, 66, 0.08)',
         padding: '10px 16px',
         display: 'flex',
         alignItems: 'center',

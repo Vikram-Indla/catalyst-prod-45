@@ -515,6 +515,15 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         padding: 0 12px;
         vertical-align: middle;
         background: #FFFFFF;
+        /* Apr 27, 2026 (L60): explicit typography baseline per Jira-parity
+           spec — 14/20/400 with primary text color. Cells with their own
+           cell-renderers (Lozenge, Avatar, dates, etc.) override locally;
+           all unstyled text inherits this default so we don't drift. */
+        font-size: 14px;
+        line-height: 20px;
+        font-weight: 400;
+        color: #172B4D;
+        font-family: inherit;
       }
       /* Column resize handle — 6px hit area on the right edge of each
          sortable/resizable header. Highlights on hover to advertise. */
@@ -565,9 +574,16 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         z-index: 1;
         background: #FFFFFF;
       }
+      /* Apr 27, 2026 (L62 fix): corrected left offsets to match
+         actual column widths (probed: checkbox=48, type=103, key=103).
+         Previous offsets (0/48/96) caused cells to OVERLAP on
+         horizontal scroll because cell 2 sat at left:48 (correct) but
+         cell 3 sat at left:96 instead of left:48+103=151. The stack
+         was: checkbox(0–48) | type(48–151) | key(96–199) — key
+         overlapped type by 55px when scrolled. */
       .jira-table-grid tbody td:nth-child(1) { left: 0; }
       .jira-table-grid tbody td:nth-child(2) { left: 48px; }
-      .jira-table-grid tbody td:nth-child(3) { left: 96px; }
+      .jira-table-grid tbody td:nth-child(3) { left: 151px; }
       /* Header sticky cells inherit the existing top:0 sticky, but need
          left:0 too in the frozen-prefix range and a higher z-index so
          they paint above body sticky cells when horizontal scroll
@@ -582,7 +598,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       }
       .jira-table-grid thead th:nth-child(1) { left: 0; }
       .jira-table-grid thead th:nth-child(2) { left: 48px; }
-      .jira-table-grid thead th:nth-child(3) { left: 96px; }
+      .jira-table-grid thead th:nth-child(3) { left: 151px; }
       /* Subtle right-side shadow on the sticky prefix so users see
          the boundary when scrolled horizontally. Mirrors Jira's
          frozen-column treatment. */

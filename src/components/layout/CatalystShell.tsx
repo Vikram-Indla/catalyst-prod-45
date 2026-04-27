@@ -219,6 +219,13 @@ function CatalystShellContent() {
   // Check if on ProjectHub V5 route (/project-hub/*)
   const isProjectHubRoute = location.pathname.startsWith('/project-hub');
   const isProjectHubAllWorkRoute = /\/project-hub\/[^/]+\/allwork(\/|$|\?)/.test(location.pathname);
+  // Apr 27, 2026 (L67): backlog route also needs the fullpage flex chain
+  // (flex-1 min-h-0 overflow-hidden) so the rail's internal scroll fires
+  // instead of pushing the whole page taller than viewport. Without
+  // min-h-0 on the wrapper, the rail's content height (1638px) leaks
+  // up the chain and the table column extends with it. Adding backlog
+  // to the same code path that allwork uses.
+  const isProjectHubBacklogRoute = /\/project-hub\/[^/]+\/backlog/.test(location.pathname);
 
   // Check if on full-screen issue view (/issue/:issueKey)
   const isIssueFullPageRoute = location.pathname.startsWith('/issue/');
@@ -637,8 +644,8 @@ function CatalystShellContent() {
           style={{ background: mainBg }}
         >
           <Suspense fallback={null}><AnnouncementBanner /></Suspense>
-          <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
-            <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
+          <div className={`flex-1 min-h-0 w-full max-w-full flex flex-col ${(isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute) ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'}`}>
+            <div className={`w-full max-w-full ${(isProjectHubAllWorkRoute || isIssueFullPageRoute || isProjectHubBacklogRoute) ? 'flex-1 min-h-0 flex flex-col overflow-hidden' : ''}`}>
               {shouldWrapHubSurface ? (
                 <HubSurface panelPadding={0}>
                   <Outlet />

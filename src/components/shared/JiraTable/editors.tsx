@@ -762,19 +762,48 @@ export interface ParentChoice {
 //   font-weight: 400
 function ParentChip({ choice }: { choice: { key: string | null; label: string; icon?: React.ReactNode } }) {
   const display = choice.key ? `${choice.key} ${choice.label}` : choice.label;
-  // Fix #3 (iter-9, hard rule): Atlaskit Lozenge default appearance —
-  // neutral grey, token-clean, no hex literals (CLAUDE.md §4). The prior
-  // hardcoded #B3DF72 mint-green was both off-token and off-tone vs Jira.
+  // Apr 27, 2026 (L64): switched from Atlaskit Lozenge to a plain
+  // bordered chip matching the table baseline (14/20/400, normal-case).
+  // The Lozenge was rendering 11px/653/UPPERCASE — visually different
+  // from every other cell in the table. Per Jira-parity spec for
+  // Parent/Hierarchy fields: 14/20/400, key in `color.link`, label in
+  // `color.text`, single-line ellipsis. Catalyst now matches.
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, maxWidth: 260 }} title={display}>
+    <span
+      title={display}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 6,
+        maxWidth: 260,
+        padding: '2px 8px',
+        border: `1px solid ${token('color.border', '#DFE1E6')}`,
+        borderRadius: 3,
+        fontSize: 14,
+        lineHeight: '20px',
+        fontWeight: 400,
+        color: token('color.text', '#172B4D'),
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+      }}
+    >
       {choice.icon && (
         <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}>
           {choice.icon}
         </span>
       )}
-      <Lozenge appearance="default" maxWidth={240}>
-        {display}
-      </Lozenge>
+      {choice.key && (
+        <strong style={{
+          fontWeight: 500,
+          color: token('color.link', '#0C66E4'),
+          flexShrink: 0,
+        }}>
+          {choice.key}
+        </strong>
+      )}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+        {choice.label}
+      </span>
     </span>
   );
 }

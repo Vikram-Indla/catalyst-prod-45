@@ -170,7 +170,17 @@ export function AtlaskitPageShell({
     <div
       {...forwardTestId(testId)}
       style={{
-        minHeight: '100%',
+        // Apr 27, 2026 (L67): clamp height to 100% (was minHeight: 100%)
+        // when sideRail is present so the rail's internal scroll fires
+        // instead of the whole page scrolling. With minHeight, when the
+        // rail's content was taller than the viewport the entire page
+        // grew vertically — meaning scrolling the rail also moved the
+        // table column. height: 100% caps the shell at its parent's
+        // height (CatalystShell <main> is fixed to viewport-minus-nav).
+        // Standalone (no sideRail) keeps minHeight so non-list surfaces
+        // can grow naturally.
+        height: hasSideRail ? '100%' : undefined,
+        minHeight: hasSideRail ? undefined : '100%',
         display: 'flex',
         flexDirection: 'column',
         fontFamily: ATLASSIAN_SANS_STACK,

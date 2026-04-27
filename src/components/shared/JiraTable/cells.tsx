@@ -11,6 +11,7 @@
 import React from 'react';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
+import CalendarIcon from '@atlaskit/icon/glyph/calendar';
 import { token } from '@atlaskit/tokens';
 import { ChevronRight, ChevronDown } from 'lucide-react';
 import type { CellProps } from './types';
@@ -114,10 +115,20 @@ export function makeKeyCell(getKey: (row: any) => string | null) {
 // ─── Summary (text) Cell ───────────────────────────────────────────────────
 // Plain text with truncation. Inline edit happens via editors.SummaryEditor —
 // wire it on the column with `onCellEdit`.
+//
+// Apr 27, 2026 (L60): typography per Jira-parity spec — 14/20/400 with
+// `color.text` (#172B4D). Inherits from JiraTable's tbody td baseline so
+// no explicit fontSize is needed here; only truncation behavior.
+//
+// Tooltip on truncated text is the user's spec requirement — added via
+// the `title` attribute (browser-native tooltip; Atlaskit Tooltip is
+// heavier and overkill for "show full text on hover when truncated").
 export function makeSummaryCell(getSummary: (row: any) => string) {
   return function SummaryCell({ row }: CellProps<any>) {
+    const summary = getSummary(row);
     return (
       <span
+        title={summary}
         style={{
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -125,7 +136,7 @@ export function makeSummaryCell(getSummary: (row: any) => string) {
           flex: 1,
         }}
       >
-        {getSummary(row)}
+        {summary}
       </span>
     );
   };
@@ -411,6 +422,20 @@ export function makePriorityCell(getPriority: (row: any) => string | null) {
 }
 
 // ─── Date Cell ─────────────────────────────────────────────────────────────
+//
+// Apr 27, 2026 (L63): canonical Jira-parity date cell — calendar icon
+// prefix + bordered pill background, matching Jira's Created/Updated
+// columns where every date renders as `📅 27 Apr 26` in a subtle
+// rounded border. Spec requires:
+//   - Atlaskit calendar icon (NOT Lucide) — using @atlaskit/icon/glyph/calendar
+//   - 12px / 16px line-height / weight 400 / color.text.subtle (per Jira-parity
+//     spec; was 13px previously)
+//   - Subtle border + 3px radius around the date "chip" mirrors Jira's
+//     bordered date affordance
+//
+// This is the SOLE date renderer for the JiraTable. Other date sites
+// across Catalyst that don't yet use makeDateCell should adopt this
+// component (sweep targets: see L63 lessons).
 export function makeDateCell(
   getISO: (row: any) => string | null,
   format: (iso: string) => string = (iso) =>
@@ -418,10 +443,33 @@ export function makeDateCell(
 ) {
   return function DateCell({ row }: CellProps<any>) {
     const iso = getISO(row);
-    return iso ? (
-      <span style={{ color: token('color.text.subtle', '#42526E'), fontSize: 13 }}>{format(iso)}</span>
-    ) : (
-      <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>
+    if (!iso) {
+      return <span style={{ color: token('color.text.subtlest', '#7A869A') }}>—</span>;
+    }
+    const display = format(iso);
+    const fullIso = new Date(iso).toLocaleString('en-GB', { dateStyle: 'long', timeStyle: 'short' });
+    return (
+      <span
+        title={fullIso}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '2px 8px',
+          border: `1px solid ${token('color.border', '#DFE1E6')}`,
+          borderRadius: 3,
+          color: token('color.text.subtle', '#42526E'),
+          fontSize: 12,
+          lineHeight: '16px',
+          fontWeight: 400,
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <span style={{ display: 'inline-flex', flexShrink: 0, color: token('color.icon.subtle', '#6B778C') }}>
+          <CalendarIcon label="" size="small" />
+        </span>
+        {display}
+      </span>
     );
   };
 }
