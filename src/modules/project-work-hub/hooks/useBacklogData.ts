@@ -107,9 +107,15 @@ export function useEpicBacklog(projectId: string) {
       // F-iter9 unification: ph_issues now holds BOTH Jira-synced and
       // Catalyst-native rows (distinguished by `source` column). Single
       // query replaces the previous two-table parallel + JS merge.
+      // Apr 28, 2026: removed `comment_count` from the SELECT. The column
+      // does NOT exist on ph_issues — including it caused PostgREST 400
+      // (PG error 42703) and React Query treated `epics` as []. Visible
+      // symptom: Parent picker on every BAU row showed only "No parent"
+      // + "No matches" even though BAU has 13 epics. See CLAUDE.md §9 +
+      // §13 FP-012 for the forbidden columns list.
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, comment_count, jira_created_at, jira_updated_at, source')
+        .select('issue_key, summary, status, status_category, assignee_display_name, due_date, priority, parent_key, parent_summary, issue_type, jira_created_at, jira_updated_at, source')
         .eq('project_key', projectKey)
         .eq('issue_type', 'Epic')
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)

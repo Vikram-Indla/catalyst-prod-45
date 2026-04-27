@@ -145,7 +145,7 @@ export function AddParentPicker({
       if (isMultiWithBR) {
         const [nonBr, br] = await Promise.all([
           supabase.from('ph_issues')
-            .select('id, issue_key, summary, issue_type, status_category')
+            .select('id, issue_key, summary, issue_type, status, status_category')
             .in('issue_type', STORY_EPIC_FEATURE_TYPES)
             .eq('project_key', projectKey)
             .is('deleted_at', null)
@@ -153,7 +153,7 @@ export function AddParentPicker({
             .order('jira_updated_at', { ascending: false, nullsFirst: false })
             .limit(4),
           supabase.from('ph_issues')
-            .select('id, issue_key, summary, issue_type, status_category')
+            .select('id, issue_key, summary, issue_type, status, status_category')
             .in('issue_type', BR_TYPES)
             .in('project_key', BR_PROJECT_KEYS)
             .is('deleted_at', null)
@@ -164,7 +164,7 @@ export function AddParentPicker({
         return [...((nonBr.data || []) as CandidateRow[]), ...((br.data || []) as CandidateRow[])];
       }
       let q = supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
+        .select('id, issue_key, summary, issue_type, status, status_category')
         .in('issue_type', typesForSource)
         .is('deleted_at', null);
       if (isBR) {
@@ -188,14 +188,14 @@ export function AddParentPicker({
       if (isMultiWithBR) {
         const [nonBr, br] = await Promise.all([
           supabase.from('ph_issues')
-            .select('id, issue_key, summary, issue_type, status_category')
+            .select('id, issue_key, summary, issue_type, status, status_category')
             .in('issue_type', STORY_EPIC_FEATURE_TYPES)
             .eq('project_key', projectKey)
             .is('deleted_at', null)
             .order('jira_updated_at', { ascending: false, nullsFirst: false })
             .limit(200),
           supabase.from('ph_issues')
-            .select('id, issue_key, summary, issue_type, status_category')
+            .select('id, issue_key, summary, issue_type, status, status_category')
             .in('issue_type', BR_TYPES)
             .in('project_key', BR_PROJECT_KEYS)
             .is('deleted_at', null)
@@ -205,7 +205,7 @@ export function AddParentPicker({
         return [...((nonBr.data || []) as CandidateRow[]), ...((br.data || []) as CandidateRow[])];
       }
       let q = supabase.from('ph_issues')
-        .select('id, issue_key, summary, issue_type, status_category')
+        .select('id, issue_key, summary, issue_type, status, status_category')
         .in('issue_type', typesForSource)
         .is('deleted_at', null);
       if (isBR) {

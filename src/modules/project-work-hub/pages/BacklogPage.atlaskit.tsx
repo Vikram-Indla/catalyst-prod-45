@@ -482,7 +482,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Apr 27 2026 (jira-compare regression iter 4 — project ... menu).
   // Mirrors Jira's project-menu-kebab next to the project header H1.
   // Items per Vikram scope: Remove from starred / Linked teams / Set
-  // space background / Space settings / Archive space / Delete space.
+  // project background / Project settings / Archive project / Delete project.
   // Uses bespoke createPortal (L21).
   const [projectMenuAnchor, setProjectMenuAnchor] = useState<{ top: number; left: number } | null>(null);
   const [isStarred, setIsStarred] = useState<boolean>(false);
@@ -1804,15 +1804,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       cardPadding={{ x: 24, y: 16 }}
       cardBorder="1px solid #DFE1E6"
       // Apr 27 2026 (jira-compare regression D-001/002/003): chrome-band
-      // slot. Renders Spaces breadcrumb + project icon + H1 ABOVE the
-      // white card to match Jira parity. The actions slot is currently
-      // empty; LOVABLE handoff #1 (AvatarGroup + Add people) and
-      // DESIGN-CRITIQUE handoff #9 (Give feedback / Enter full screen)
-      // will land into it once those handoffs ship.
+      // slot. Renders Projects breadcrumb + project icon + H1 ABOVE the
+      // white card.
+      // Apr 28 2026 (Vikram): removed AvatarGroup + Add people text button
+      // + Share + Automation + Give feedback from the right cluster. Only
+      // Enter full screen remains (the invite-people icon next to the H1
+      // still opens the Add people modal).
       chromeBand={
         <ProjectChromeBand
           projectName={pageTitle}
-          spacesHref="/"
+          projectsHref="/"
           nameAdornment={
             <>
               {/* Apr 27 2026 (regression iter 4): small invite-people
@@ -1893,101 +1894,30 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
               </Tooltip>
             </>
           }
-          actions={
-            <>
-              {/* Apr 27 2026 (LOVABLE-01 landed in-session): project member
-                  avatar strip + "Add people" CTA, matching Jira parity probe
-                  at /jira/.../list?groupBy=status. AvatarGroup caps at 7
-                  visible + a +N overflow chip — closes a11y rows #11
-                  (24×24 sizing) and #13 (aria-label on overflow). Add people
-                  click is wired to a sonner toast stub so the affordance is
-                  not DEAD; real user-picker modal is a follow-on. */}
-              {chromeBandMembers.length > 0 && (
-                <AvatarGroup
-                  appearance="stack"
-                  size="small"
-                  maxCount={7}
-                  data={chromeBandMembers}
-                />
-              )}
-              <Button
-                appearance="subtle"
-                spacing="compact"
-                data-testid="project-chrome-band.add-people-trigger"
-                onClick={() => setAddPeopleOpen(true)}
-              >
-                Add people
-              </Button>
-            </>
-          }
+          // Apr 28 2026 (Vikram): right-side cluster (AvatarGroup + Add
+          // people text button + Share + Automation + Give feedback) was
+          // removed from the chrome band. Only the Enter full screen
+          // affordance remains in pageChromeRightCtas. The small invite-
+          // people icon next to the H1 (in nameAdornment) still opens the
+          // Add people modal.
           pageChromeRightCtas={
-            <>
-              {/* Apr 27 2026 (regression iter 2-3 — DESIGN-CRITIQUE #9 +
-                  Share/Automation parity): top-right chrome icons matching
-                  Jira parity probe at /jira/.../list?groupBy=status:
-                    Share              span @ (1042, 95)  23×23 — aria "Share"
-                    Automation         span @ (1082, 95)  23×23 — aria "Automation"
-                    Give feedback      btn  @ (1118, 91)  31×31
-                    Enter full screen  btn  @ (1158, 91)  31×31
-                  All wired to sonner stubs so affordances aren't dead;
-                  real flows (share modal, automation rules, feedback
-                  collector) ship as follow-ons. */}
-              <Tooltip content="Share">
-                <Button
-                  appearance="subtle"
-                  spacing="compact"
-                  iconBefore={<Share2 size={14} />}
-                  aria-label="Share"
-                  onClick={() =>
-                    toast.info('Share', {
-                      description: 'Share modal is coming soon.',
-                    })
-                  }
-                />
-              </Tooltip>
-              <Tooltip content="Automation">
-                <Button
-                  appearance="subtle"
-                  spacing="compact"
-                  iconBefore={<Zap size={14} />}
-                  aria-label="Automation"
-                  onClick={() =>
-                    toast.info('Automation', {
-                      description: 'Automation rules editor is coming soon.',
-                    })
-                  }
-                />
-              </Tooltip>
-              <Button
-                appearance="subtle"
-                spacing="compact"
-                iconBefore={<MessageSquare size={14} />}
-                onClick={() =>
-                  toast.info('Give feedback', {
-                    description: 'Feedback collector is coming soon.',
-                  })
-                }
-              >
-                Give feedback
-              </Button>
-              <Button
-                appearance="subtle"
-                spacing="compact"
-                iconBefore={
-                  panelMode === 'fullscreen' ? (
-                    <Minimize2 size={14} />
-                  ) : (
-                    <Maximize2 size={14} />
-                  )
-                }
-                onClick={() =>
-                  setPanelMode(panelMode === 'fullscreen' ? 'panel' : 'fullscreen')
-                }
-                aria-label={
-                  panelMode === 'fullscreen' ? 'Exit full screen' : 'Enter full screen'
-                }
-              />
-            </>
+            <Button
+              appearance="subtle"
+              spacing="compact"
+              iconBefore={
+                panelMode === 'fullscreen' ? (
+                  <Minimize2 size={14} />
+                ) : (
+                  <Maximize2 size={14} />
+                )
+              }
+              onClick={() =>
+                setPanelMode(panelMode === 'fullscreen' ? 'panel' : 'fullscreen')
+              }
+              aria-label={
+                panelMode === 'fullscreen' ? 'Exit full screen' : 'Enter full screen'
+              }
+            />
           }
           // Apr 27 2026 (Vikram instruction): tabs row removed entirely.
           // All work / Releases / "+" not required on this surface.
@@ -2597,12 +2527,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           {[
             { id: 'star', label: isStarred ? 'Remove from starred' : 'Add to starred', onClick: () => { setIsStarred((s) => !s); flag.success(isStarred ? 'Removed from starred' : 'Added to starred'); } },
             { id: 'teams', label: 'Linked teams', onClick: () => flag.info('Linked teams', 'Team management is coming soon.') },
-            { id: 'bg', label: 'Set space background', onClick: () => flag.info('Set space background', 'Backgrounds are coming soon.') },
+            { id: 'bg', label: 'Set project background', onClick: () => flag.info('Set project background', 'Backgrounds are coming soon.') },
             { id: 'sep1', divider: true },
-            { id: 'settings', label: 'Space settings', onClick: () => flag.info('Space settings', 'Settings page is coming soon.') },
+            { id: 'settings', label: 'Project settings', onClick: () => flag.info('Project settings', 'Settings page is coming soon.') },
             { id: 'sep2', divider: true },
-            { id: 'archive', label: 'Archive space', onClick: () => flag.info('Archive space', 'Archive flow is coming soon.') },
-            { id: 'delete', label: 'Delete space', danger: true, onClick: () => flag.info('Delete space', 'Delete flow is coming soon.') },
+            { id: 'archive', label: 'Archive project', onClick: () => flag.info('Archive project', 'Archive flow is coming soon.') },
+            { id: 'delete', label: 'Delete project', danger: true, onClick: () => flag.info('Delete project', 'Delete flow is coming soon.') },
           ].map((item) => {
             if ((item as any).divider) {
               return <div key={item.id} style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '6px 0' }} />;
