@@ -217,7 +217,7 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: DEFAULT_MODEL,
+          model: "google/gemini-2.5-flash-lite",
           messages: [
             {
               role: "system",
@@ -228,7 +228,7 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
             { role: "user", content: prompt },
           ],
           temperature: 0.2,
-          max_tokens: 200,
+          max_tokens: 80,
         }),
       });
 
