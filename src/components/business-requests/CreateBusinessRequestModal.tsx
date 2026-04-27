@@ -678,6 +678,16 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
   const [formError, setFormError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
+  // Seed initial status from /admin/workflows (Business Request scheme)
+  const { initialStatus: brInitialStatus, statuses: brStatuses } = useCatalystWorkflow('Business Request');
+  useEffect(() => {
+    if (!brStatuses.length || !brInitialStatus) return;
+    const validSlugs = brStatuses.map(s => s.slug);
+    if (!validSlugs.includes(form.process_step)) {
+      setForm(prev => ({ ...prev, process_step: brInitialStatus.slug }));
+    }
+  }, [brInitialStatus, brStatuses, form.process_step]);
+
   const set = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm(prev => ({ ...prev, [key]: value }));
     setFormError(null);
