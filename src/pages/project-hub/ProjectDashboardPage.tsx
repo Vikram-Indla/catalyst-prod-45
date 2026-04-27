@@ -331,7 +331,11 @@ function ProjectDashboardPageInner() {
 
   return (
     <AtlaskitPageShell
-      title="Dashboard"
+      // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
+      // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Dashboard".
+      // Falls back to the project key while name is loading; falls back
+      // to bare "Dashboard" if neither is available.
+      title={`${(project as any)?.name || pKey || ''} Dashboard`.trim()}
       actions={actions}
       testId="project-dashboard-shell"
     >

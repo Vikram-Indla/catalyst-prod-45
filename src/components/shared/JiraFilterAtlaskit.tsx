@@ -47,6 +47,7 @@ import Avatar from '@atlaskit/avatar';
 import Lozenge from '@atlaskit/lozenge';
 import Textfield from '@atlaskit/textfield';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
+import { DatePicker } from '@atlaskit/datetime-picker';
 import { token } from '@atlaskit/tokens';
 import {
   Filter as FilterIcon,
@@ -835,35 +836,36 @@ function DateRange({
   fromLabel: string;
   toLabel: string;
 }) {
+  // Apr 27, 2026 (L41): replaced two `Textfield type="date"` (which renders
+  // the native browser date input — banned by CLAUDE.md §7 and the
+  // jira-compare skill's Atlaskit-only mandate) with @atlaskit/datetime-picker
+  // DatePicker. DatePicker uses ISO yyyy-mm-dd internally just like the
+  // native input it replaces, so the existing `from`/`to` callsite contracts
+  // don't change. Calendar icon now ships with the picker; CalendarIcon
+  // import retained elsewhere in this file for other uses.
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: 8, alignItems: 'end' }}>
       <div>
         <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E'), marginBottom: 4 }}>{fromLabel}</div>
-        <Textfield
-          isCompact
-          type="date"
+        <DatePicker
           value={from || ''}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value || null, to)}
-          elemAfterInput={
-            <span style={{ paddingRight: 6, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-              <CalendarIcon size={14} />
-            </span>
-          }
+          onChange={(v: string) => onChange(v || null, to)}
+          dateFormat="DD/MM/YYYY"
+          placeholder="dd/mm/yyyy"
+          spacing="compact"
+          weekStartDay={0}
         />
       </div>
       <div style={{ paddingBottom: 8, color: token('color.text.subtlest', '#6B778C') }}>→</div>
       <div>
         <div style={{ fontSize: 12, color: token('color.text.subtle', '#42526E'), marginBottom: 4 }}>{toLabel}</div>
-        <Textfield
-          isCompact
-          type="date"
+        <DatePicker
           value={to || ''}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(from, e.target.value || null)}
-          elemAfterInput={
-            <span style={{ paddingRight: 6, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
-              <CalendarIcon size={14} />
-            </span>
-          }
+          onChange={(v: string) => onChange(from, v || null)}
+          dateFormat="DD/MM/YYYY"
+          placeholder="dd/mm/yyyy"
+          spacing="compact"
+          weekStartDay={0}
         />
       </div>
     </div>

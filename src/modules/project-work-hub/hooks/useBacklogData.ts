@@ -178,11 +178,16 @@ export function useStoryBacklog(projectId: string) {
       // F-iter9 unification: single query against ph_issues — Catalyst-native
       // rows are filtered by `source='catalyst'` (year-window OR'd so Jira-
       // synced rows still respect the YEAR_2026_START boundary).
+      // Apr 27, 2026 — Backlog scope expansion: include QA Bug + Production
+      // Incident alongside Story. The hook is named useStoryBacklog for
+      // historical reasons but now serves the unified leaf-item set
+      // ('story' | 'bug' | 'incident' in BacklogItem.type). Epics and
+      // Features remain in their dedicated hooks.
       const { data, error } = await supabase
         .from('ph_issues')
-        .select('issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source')
+        .select('issue_key, summary, status, status_category, assignee_display_name, reporter_display_name, due_date, priority, parent_key, parent_summary, jira_created_at, jira_updated_at, source, issue_type')
         .eq('project_key', projectKey)
-        .eq('issue_type', 'Story')
+        .in('issue_type', ['Story', 'QA Bug', 'Production Incident'])
         .or(`source.eq.catalyst,jira_created_at.gte.${YEAR_2026_START},jira_updated_at.gte.${YEAR_2026_START}`)
         .is('jira_removed_at', null)
         .is('archived_at', null)
@@ -264,6 +269,16 @@ export function useStoryBacklog(projectId: string) {
         jira_updated_at: row.jira_updated_at,
         // F-iter9: source comes from the unified ph_issues row (jira | catalyst)
         source: (row.source === 'catalyst' ? 'catalyst' : 'jira') as 'jira' | 'catalyst',
+        // Apr 27, 2026: pass through issue_type so the unified Backlog
+        // view can derive BacklogItem.type for Story/QA Bug/Production
+        // Incident leaf rows.
+        issue_type: row.issue_type ?? null,
+        // Apr 27, 2026 (L52): pass through raw parent_key/parent_summary
+        // so the table's Parent column renders for QA Bug + Production
+        // Incident rows whose parent isn't in epicMap (e.g. parent is a
+        // Story or Feature, not an Epic).
+        parent_key: row.parent_key ?? null,
+        parent_summary: row.parent_summary ?? null,
         feature: row.parent_key && epicMap[row.parent_key] ? {
           id: epicMap[row.parent_key].id,
           display_id: null,

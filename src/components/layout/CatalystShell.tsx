@@ -45,7 +45,13 @@ import { HubSurface } from './HubSurface';
  * by unwinding this file + HubSurface.tsx. Mirrors the dark-aware logic used
  * in HubSurface so both stay consistent when NOCTURNE toggles.
  */
-const JIRA_CANVAS_BG = '#E9F2FE';
+// V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
+// Was '#E9F2FE' (light Jira blue) — painted on <main> for every hub-surface
+// route, producing a global blue tint that didn't match Jira's actual
+// background (which is white #FFFFFF). Catalyst owner decision: all hub
+// pages are white-canvas. Kept as a named constant in case we ever bring
+// back a tinted page wash.
+const JIRA_CANVAS_BG = '#FFFFFF';
 function useIsDarkTheme(): boolean {
   return useSyncExternalStore(
     (onChange) => {

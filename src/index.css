@@ -185,7 +185,14 @@
      project-hub pages now render on a single white canvas (token
      docstring in src/theme/ads/tokens.ts explains the pre-V3 value). */
   --cp-bg-hub-page: #FFFFFF;
-  --cp-bg-surface: #F8FAFC;
+  /* --cp-bg-surface is "cards, panels" per CLAUDE.md §4. Was drifting to
+     #F8FAFC (slate-50) which painted a grey tint behind every Atlaskit
+     PageShell inner card — visible in BAU backlog audit 2026-04-27 as
+     a grey wash behind the right rail header band. Restored to canonical
+     #FFFFFF to match both CLAUDE.md and src/theme/ads/tokens.ts which
+     already declared bg.surface light = #FFFFFF. The grey-card aesthetic
+     was never the design — it was a value drift. */
+  --cp-bg-surface: #FFFFFF;
   --cp-bg-sunken: #F1F5F9;
   --cp-bg-elevated: #FFFFFF;
   --cp-text-primary: #0F172A;
@@ -668,7 +675,12 @@ html:has(body[data-scroll-locked]) {
     /* ═══════════════════════════════════════════════════════════════
        LIGHT MODE — Clean White backgrounds, Blue Primary
        ═══════════════════════════════════════════════════════════════ */
-    --background: 210 40% 98%;            /* #f8fafc slate-50 - Catalyst V5 */
+    --background: 0 0% 100%;              /* #FFFFFF — V3 Canonical White Canvas
+                                             (Apr 27, 2026 audit, lesson L36).
+                                             Was 210 40% 98% (#F8FAFC slate-50)
+                                             which painted body+`.bg-background`
+                                             as a slate wash visible behind
+                                             every page card. */
     --foreground: 0 0% 4%;               /* #0a0a0a near-black */
     
     --card: 0 0% 100%;                   /* #ffffff */

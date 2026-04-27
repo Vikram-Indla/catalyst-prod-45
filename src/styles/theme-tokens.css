@@ -8,7 +8,12 @@
 :root, [data-theme="light"] {
   /* Surfaces */
   --cp-bg:              #FFFFFF;
-  --cp-bg-canvas:       #F7F8F9;
+  /* V3 Canonical White Canvas (Apr 27, 2026 audit, L36).
+     Was #F7F8F9 (Atlassian sunken slate) which painted the h-screen
+     wrapper with a tint visible at the page edges. Catalyst owner
+     decision: every light-mode page surface is white. The Jira-blue
+     wash and Atlassian-slate wash both retire here. */
+  --cp-bg-canvas:       #FFFFFF;
   --cp-bg-sidebar-hdr:  #F8FAFC;
   --cp-bg-sunken:       #F1F5F9;
   --cp-float:           #FFFFFF;

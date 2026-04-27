@@ -72,6 +72,22 @@ export interface BacklogStory {
   jira_created_at?: string | null;
   jira_updated_at?: string | null;
   source?: 'jira' | 'catalyst';
+  /** Apr 27, 2026 — Backlog scope expansion: rows now include Story plus
+   *  QA Bug and Production Incident. issue_type is passed through so the
+   *  unified Backlog view can derive BacklogItem.type ('story' | 'bug' |
+   *  'incident'). Older callers that only read `type === 'story'` keep
+   *  working — the field is additive. */
+  issue_type?: string | null;
+  /** Apr 27, 2026 (L52): raw parent_key and parent_summary from ph_issues
+   *  — passed through unmodified so the unified Backlog view can show the
+   *  parent column for QA Bug and Production Incident rows whose parent
+   *  is NOT an Epic (Stories or Features). The legacy `feature.epic`
+   *  branch only resolved when parent_key matched an Epic; for non-epic
+   *  parents that branch returns null and the table column was empty.
+   *  Detail panel reads from ph_issues directly so it shows the parent
+   *  correctly — table column should match. */
+  parent_key?: string | null;
+  parent_summary?: string | null;
   feature?: {
     id: string;
     display_id: string | null;

@@ -29,6 +29,7 @@ import { token } from '@atlaskit/tokens';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Tooltip from '@atlaskit/tooltip';
 import Button from '@atlaskit/button';
+import DropdownMenu, { DropdownItemRadioGroup, DropdownItemRadio } from '@atlaskit/dropdown-menu';
 import Modal, {
   ModalBody,
   ModalFooter,
@@ -64,6 +65,8 @@ import type {
 } from '@/components/shared/JiraTable';
 
 import { useStoryBacklog, useEpicBacklog, useInitiativesByKeys, useInitiativeLinksByEpicKeys } from '../hooks/useBacklogData';
+import { useProject } from '@/hooks/useProjects';
+import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import type { InitiativeRow } from '../hooks/useBacklogData';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { STORY_STATUS_LOZENGE, getPriorityLabel } from '../utils/backlog.utils';
@@ -97,7 +100,11 @@ const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-vie
  * - 'epic' / 'feature' / 'story' come from Jira + Catalyst work-item
  *   tables.
  */
-export type BacklogType = 'initiative' | 'epic' | 'feature' | 'story';
+/** Apr 27, 2026 — Backlog scope expansion: 'bug' (QA Bug) and 'incident'
+ *  (Production Incident) are now first-class leaf types alongside 'story'.
+ *  The unified Backlog view fetches all three from ph_issues and renders
+ *  pill filters for each. */
+export type BacklogType = 'initiative' | 'epic' | 'feature' | 'story' | 'bug' | 'incident';
 
 export interface BacklogItem {
   id: string;
@@ -184,6 +191,14 @@ export default function NativeBacklogPage() {
 /* ─── The canonical page ───────────────────────────────────────────────── */
 
 function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey: string }) {
+  // Apr 27, 2026 (L50): canonical Project Hub page-title pattern is
+  // `{Project Name} {Hub Function}` — e.g. "Senaei BAU Backlog". Falls
+  // back to the project key while the name is loading. Same pattern
+  // should be applied to every Project Hub surface (Dashboard, Board,
+  // Roadmap, etc.) — see the L50 lesson note for the sweep target list.
+  const { data: project } = useProject(projectId);
+  const projectDisplayName = project?.name || projectKey;
+  const pageTitle = `${projectDisplayName} Backlog`;
   useAtlaskitThemeSync();
 
   const queryClient = useQueryClient();
@@ -286,6 +301,12 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const [detailItemId, setDetailItemId] = useState<string | null>(
     () => searchParams.get('selectedIssue') || searchParams.get('detail') || null,
   );
+  // Apr 27, 2026 (L44): track the most recently viewed detail item so the
+  // "Maximize table" toolbar button can act as a toggle — when the rail
+  // is closed via Maximize, this lets the same button restore the last
+  // panel without the user having to re-click a row. Cleared when the
+  // user explicitly closes via the rail's X (intentional dismissal).
+  const [lastDetailId, setLastDetailId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<BacklogItem | null>(null);
   // Panel mode machine — matches Jira's 3 states measured from their DOM:
@@ -519,12 +540,32 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       }
     });
 
-    // Stories
+    // Leaf rows (Story / QA Bug / Production Incident).
+    // Apr 27, 2026: useStoryBacklog now fetches all three issue types in
+    // one query. Map ph_issues.issue_type → BacklogItem.type so the pill
+    // filters and Group-by-Type logic can split them correctly. Anything
+    // else (older rows missing issue_type) defaults to 'story' to preserve
+    // historical behaviour.
+    const leafTypeFromIssueType = (it: string | null | undefined): 'story' | 'bug' | 'incident' => {
+      if (it === 'QA Bug') return 'bug';
+      if (it === 'Production Incident') return 'incident';
+      return 'story';
+    };
     stories.forEach((s) => {
       const ep = s.feature?.epic;
+      // Apr 27, 2026 (L52): fall back to raw parent_key/parent_summary
+      // from ph_issues when the parent isn't an Epic (so QA Bug +
+      // Production Incident rows linked to Stories/Features still render
+      // a parent in the table column). Epic-parent rows keep their
+      // existing rich epic_key + name + status enrichment via `ep`.
+      const rawParentKey = (s as any).parent_key as string | null | undefined;
+      const rawParentSummary = (s as any).parent_summary as string | null | undefined;
+      const parentId = ep?.id ?? rawParentKey ?? null;
+      const parentKey = ep?.epic_key ?? rawParentKey ?? null;
+      const parentLabel = ep?.name ?? rawParentSummary ?? null;
       out.push({
         id: s.id,
-        type: 'story',
+        type: leafTypeFromIssueType((s as any).issue_type),
         key: s.story_key,
         title: s.title,
         status: s.status,
@@ -532,9 +573,9 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         assignee_name: s.assignee_name ?? null,
         reporter_name: s.reporter_name ?? null,
         business_request_key: null,
-        parent_id: ep?.id ?? null,
-        parent_key: ep?.epic_key ?? null,
-        parent_label: ep?.name ?? null,
+        parent_id: parentId,
+        parent_key: parentKey,
+        parent_label: parentLabel,
         source: s.source ?? 'jira',
         updated_at: s.jira_updated_at ?? null,
         created_at: s.jira_created_at ?? null,
@@ -628,10 +669,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         for (const k of matchingKids) tryPush(k);
       }
     }
-    // Orphan stories (no parent_id, or parent not in epics list) — show them when stories filter is active.
-    if (typeFilter === 'all' || typeFilter === 'story') {
+    // Orphan leaf rows (no parent_id, or parent not in epics list).
+    // Apr 27, 2026: extended from 'story' only to also cover 'bug' and
+    // 'incident' so the new Defects + Incidents pills surface their
+    // unparented items. The matchesType() guard ensures the filter still
+    // narrows correctly on each pill.
+    if (typeFilter === 'all' || typeFilter === 'story' || typeFilter === 'bug' || typeFilter === 'incident') {
       for (const it of items) {
-        if (it.type !== 'story') continue;
+        if (it.type !== 'story' && it.type !== 'bug' && it.type !== 'incident') continue;
         if (!it.parent_id || !topLevel.find((t) => t.id === it.parent_id)) {
           if (matchesText(it) && matchesType(it) && matchesFilterBar(it)) tryPush(it);
         }
@@ -713,9 +758,24 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     setDetailItemId(it.id);
   }, [projectKey]);
   const closeDetail = useCallback(() => {
+    // Explicit close via rail's X — clear the restore memory.
+    setLastDetailId(null);
     setDetailItemId(null);
     setPanelMode('compact');
   }, []);
+  // Maximize-table — close the rail BUT remember what was open so the
+  // toolbar button can restore it. Used by the "Maximize table" button.
+  const maximizeTable = useCallback(() => {
+    setLastDetailId((prev) => prev ?? detailItemId);
+    setDetailItemId(null);
+    setPanelMode('compact');
+  }, [detailItemId]);
+  // Restore the last panel that was maximized away.
+  const restoreDetail = useCallback(() => {
+    if (!lastDetailId) return;
+    setDetailItemId(lastDetailId);
+    setLastDetailId(null);
+  }, [lastDetailId]);
 
   // Prev / next navigation for the side detail panel. Walks through the
   // currently-sorted rows (respecting group/filter/search). Wraps at the ends.
@@ -869,8 +929,20 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             </span>
           );
         }
-        const typeMap: Record<Exclude<BacklogType, 'initiative'>, 'Epic' | 'Feature' | 'Story'> = {
-          epic: 'Epic', feature: 'Feature', story: 'Story',
+        // Apr 27, 2026 — Backlog scope expansion: map 'bug' and 'incident'
+        // to the canonical Jira issue-type strings expected by
+        // JiraIssueTypeIcon. CLAUDE.md §11 calls these out as 'QA Bug'
+        // (red asterisk #E5493A) and 'Production Incident' (orange
+        // question-circle #F97316). size=16 keeps every leaf row's icon
+        // at one consistent visual size — the misalignment the user
+        // surfaced earlier was actually a size mismatch from JiraIssueTypeIcon
+        // rendering different glyphs at different intrinsic heights.
+        const typeMap: Record<Exclude<BacklogType, 'initiative'>, string> = {
+          epic: 'Epic',
+          feature: 'Feature',
+          story: 'Story',
+          bug: 'QA Bug',
+          incident: 'Production Incident',
         };
         return <JiraIssueTypeIcon type={typeMap[it.type as Exclude<BacklogType, 'initiative'>]} size={16} />;
       }),
@@ -1161,29 +1233,159 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     epic: items.filter((i) => i.type === 'epic').length,
     feature: items.filter((i) => i.type === 'feature').length,
     story: items.filter((i) => i.type === 'story').length,
+    bug: items.filter((i) => i.type === 'bug').length,
+    incident: items.filter((i) => i.type === 'incident').length,
   };
 
-  return (
-    <AtlaskitPageShell title="Backlog">
-      {/* Type chips */}
-      <div style={{ padding: '12px 16px 6px', display: 'flex', gap: 8 }}>
-        {([
-          ['all', 'All', typeCount.all],
-          ['epic', 'Epics', typeCount.epic],
-          ['feature', 'Features', typeCount.feature],
-          ['story', 'Stories', typeCount.story],
-        ] as const).map(([key, label, count]) => (
-          <TypeChip
-            key={key}
-            active={typeFilter === key}
-            onClick={() => setTypeFilter(key as typeof typeFilter)}
-            count={count}
-          >{label}</TypeChip>
-        ))}
-      </div>
+  // Apr 27, 2026 (L48): Maximize/Restore icon now lives in the toolbar,
+  // immediately right of "N items" so the label sits to its LEFT (per
+  // user request — earlier iter put it in the page header's actions slot
+  // which left the label and icon vertically stacked at different y's).
+  // Defined as a JSX expression so we can drop it inline in the toolbar.
+  const toolbarMaximizeIcon = isPanelOpen ? (
+    <Tooltip content="Maximize table — closes the detail panel">
+      <button
+        type="button"
+        onClick={maximizeTable}
+        aria-label="Maximize table"
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 32, height: 32, padding: 0, marginLeft: 8,
+          border: 'none', background: 'transparent', borderRadius: 3,
+          color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+      >
+        <Maximize2 size={16} />
+      </button>
+    </Tooltip>
+  ) : lastDetailId ? (
+    <Tooltip content="Restore detail panel">
+      <button
+        type="button"
+        onClick={restoreDetail}
+        aria-label="Restore detail panel"
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 32, height: 32, padding: 0, marginLeft: 8,
+          border: 'none', background: 'transparent', borderRadius: 3,
+          color: token('color.text.subtle', '#42526E'), cursor: 'pointer',
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = '#E4E6EA'; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+      >
+        <Minimize2 size={16} />
+      </button>
+    </Tooltip>
+  ) : null;
 
-      {/* Toolbar: search + filter */}
-      <div style={{ padding: '6px 16px 10px', display: 'flex', gap: 12, alignItems: 'center' }}>
+  // Apr 27, 2026 (L46): Compact rail is routed through AtlaskitPageShell's
+  // `sideRail` prop so it extends to the TOP of the page card alongside the
+  // H1 — matching Jira's pattern where the rail starts at y=67 alongside
+  // "Senaei BAU" project header (probed). Expanded/fullscreen modes keep
+  // their existing rendering (expanded uses the inline 60% column,
+  // fullscreen uses position:fixed modal with backdrop).
+  const useRailAsSideSlot = isPanelOpen && panelMode === 'compact';
+
+  // Inner content shared by sideRail compact rendering AND the fullscreen
+  // modal — keeps "Catalyst work item" + toolbar + scrollable detail one
+  // source of truth.
+  // Apr 27, 2026 (L47): merged the "Catalyst work item" label band and
+  // the panel controls into ONE row to mirror Jira's pattern
+  // (`☑ Jira work item .......... ↗ ⤢ ×`). Dropped the second toolbar
+  // row entirely along with the Prev/Next chevrons and the "1 of N"
+  // counter — Jira's rail has neither (verified by probe of
+  // platform-issue-preview-panel.preview-panel-expand-btn at y=68).
+  // Row navigation still works via j/k keyboard shortcuts (see
+  // useEffect that registers them).
+  const railInnerContent = !isPanelOpen ? null : (
+    <>
+      {/* Single header row — label on left, controls on right.
+          Bottom border = horizontal divider that Jira shows after the
+          "Jira work item" label. Removed Prev/Next + counter (no Jira
+          equivalent). */}
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 12px 10px 14px',
+          flexShrink: 0,
+          background: '#F4F5F7',
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          minHeight: 44,
+        }}
+      >
+        {/* Label group — Atlaskit-style checkbox-in-square + text */}
+        <span style={{
+          display: 'inline-flex', alignItems: 'center',
+          width: 20, height: 20, borderRadius: 4,
+          background: token('color.icon.accent.blue', '#1868DB'),
+          color: '#FFFFFF', justifyContent: 'center',
+          fontSize: 12, fontWeight: 700,
+        }}>✓</span>
+        <span style={{
+          fontSize: 14, fontWeight: 653,
+          color: token('color.text', '#172B4D'),
+          letterSpacing: '-0.003em',
+        }}>Catalyst work item</span>
+        <div style={{ flex: 1 }} />
+        {/* Controls — Expand/Fullscreen/Close (Jira parity).
+            'Open in new tab' deferred (no Catalyst equivalent yet). */}
+        <DetailNavIconButton
+          ariaLabel={panelMode === 'compact' ? 'Expand panel' : 'Collapse panel'}
+          onClick={toggleExpanded2}
+          isDisabled={panelMode === 'fullscreen'}
+        >
+          {panelMode === 'compact' ? <ChevronsLeft size={14} /> : <ChevronsRight size={14} />}
+        </DetailNavIconButton>
+        <DetailNavIconButton
+          ariaLabel={panelMode === 'fullscreen' ? 'Exit fullscreen' : 'Fullscreen'}
+          onClick={toggleFullscreen}
+        >
+          {panelMode === 'fullscreen' ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </DetailNavIconButton>
+        <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
+          <CloseIcon size={14} />
+        </DetailNavIconButton>
+      </div>
+      {/* Scrollable detail body (Add parent / BAU-5609 / H1 / fields) */}
+      <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+        <Suspense fallback={<div style={{ padding: 24, color: token('color.text.subtlest', '#6B778C') }}>Loading…</div>}>
+          <CatalystDetailRouter
+            isOpen={true}
+            onClose={closeDetail}
+            itemId={detailItemId!}
+            projectId={projectId}
+            projectKey={projectKey}
+            onOpenItem={(id) => setDetailItemId(id)}
+            panelMode={true}
+            onTogglePanelMode={closeDetail}
+          />
+        </Suspense>
+      </div>
+    </>
+  );
+
+  return (
+    <AtlaskitPageShell
+      title={pageTitle}
+      sideRail={useRailAsSideSlot ? railInnerContent : undefined}
+      sideRailWidth={400}
+    >
+      {/* Toolbar: search + filter + type chips inline + count + maximize.
+          Apr 27, 2026 (L48 + L51): type chips inline; bottom padding
+          increased to 16px and a 1px subtle border-bottom added to give
+          the eye a clear "controls finished" rest before the table.
+          Earlier 10px-bottom padding ran the toolbar baseline almost
+          flush with the column header row (≈6px gap visually). */}
+      <div style={{
+        padding: '6px 16px 14px',
+        marginBottom: 4,
+        display: 'flex',
+        gap: 12,
+        alignItems: 'center',
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}>
         <div style={{ width: 280 }}>
           <Textfield
             isCompact
@@ -1219,36 +1421,92 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             labels={[]}
           />
         </div>
-        {/* Group by — native select kept local; small surface, Atlaskit Select
-            is heavier than needed here. The result feeds JiraTable.groups. */}
-        <label style={{ fontSize: 12, color: token('color.text.subtlest', '#6B778C') }}>
-          Group by:{' '}
-          <select
-            value={groupBy}
-            onChange={(e) => { setGroupBy(e.target.value as typeof groupBy); setCollapsedGroups(new Set()); }}
-            style={{
-              height: 28,
-              padding: '0 6px',
-              fontSize: 13,
-              border: `1px solid ${token('color.border', '#DFE1E6')}`,
-              borderRadius: 3,
-              background: token('elevation.surface', '#FFFFFF'),
-              color: token('color.text', '#172B4D'),
-              fontFamily: 'inherit',
-            }}
-          >
-            <option value="none">None</option>
-            <option value="status">Status</option>
-            <option value="parent">Parent</option>
-            <option value="assignee">Assignee</option>
-            <option value="priority">Priority</option>
-          </select>
-        </label>
+        {/* Group by — Atlaskit DropdownMenu (Apr 27, 2026, L41).
+            Was a native <select> which is banned by CLAUDE.md §7 and the
+            jira-compare skill's Atlaskit-only mandate. Replaced with
+            @atlaskit/dropdown-menu's radio-group pattern. Trigger is a
+            compact "Group" button matching Jira's toolbar pill;
+            current selection is shown in parentheses when not 'none'. */}
+        {(() => {
+          const groupLabels: Record<typeof groupBy, string> = {
+            none: 'None',
+            status: 'Status',
+            parent: 'Parent',
+            assignee: 'Assignee',
+            priority: 'Priority',
+          };
+          const triggerText = groupBy === 'none' ? 'Group' : `Group: ${groupLabels[groupBy]}`;
+          // Apr 27, 2026 (L49):
+          // 1. Removed `shouldRenderToParent` — it forced the menu to render
+          //    inside the toolbar's flex container which has overflow:hidden,
+          //    causing the menu to flip ABOVE the trigger and clip into the
+          //    global nav. Default portal rendering positions correctly
+          //    against viewport.
+          // 2. Removed `title="Group by"` from the radio group — it was
+          //    rendering a small grey caps heading inside the menu that
+          //    duplicated the trigger label.
+          return (
+            <DropdownMenu trigger={triggerText} placement="bottom-start">
+              <DropdownItemRadioGroup id="backlog-group-by">
+                {(['none', 'status', 'parent', 'assignee', 'priority'] as const).map((opt) => (
+                  <DropdownItemRadio
+                    key={opt}
+                    id={`group-by-${opt}`}
+                    isSelected={groupBy === opt}
+                    onClick={() => { setGroupBy(opt); setCollapsedGroups(new Set()); }}
+                  >
+                    {groupLabels[opt]}
+                  </DropdownItemRadio>
+                ))}
+              </DropdownItemRadioGroup>
+            </DropdownMenu>
+          );
+        })()}
+        {/* Inline type chips — All/Epics/Features/Stories/Defects/Incidents.
+            Sit between Group dropdown and the items count, on the same
+            32px baseline as Filter/Group for visual rhythm.
+            Apr 27, 2026 (L48). */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          marginLeft: 4,
+          flexShrink: 1,
+          minWidth: 0,
+          overflowX: 'auto',
+        }}>
+          {([
+            ['all', 'All', typeCount.all],
+            ['epic', 'Epics', typeCount.epic],
+            ['feature', 'Features', typeCount.feature],
+            ['story', 'Stories', typeCount.story],
+            ['bug', 'Defects', typeCount.bug],
+            ['incident', 'Incidents', typeCount.incident],
+          ] as const).map(([key, label, count]) => (
+            <TypeChip
+              key={key}
+              active={typeFilter === key}
+              onClick={() => setTypeFilter(key as typeof typeFilter)}
+              count={count}
+            >{label}</TypeChip>
+          ))}
+        </div>
         <div style={{ flex: 1 }} />
+        {/* Subtle divider between pills/spacer and the right-side cluster
+            (count + maximize). Mirrors Atlaskit toolbar separators. */}
+        <span aria-hidden style={{
+          display: 'inline-block',
+          width: 1, height: 18,
+          background: token('color.border', '#DFE1E6'),
+          marginRight: 4,
+        }} />
         <span style={{ fontSize: 13, color: token('color.text.subtlest', '#6B778C') }}>
           {total} item{total === 1 ? '' : 's'}
           {selectedIds.size > 0 ? ` · ${selectedIds.size} selected` : ''}
         </span>
+        {/* Maximize/Restore icon — sits to the RIGHT of the items label.
+            Apr 27, 2026 (L48). */}
+        {toolbarMaximizeIcon}
       </div>
 
       {/* Bulk actions bar — only visible when selection is non-empty.
@@ -1279,13 +1537,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         <div
           style={{
             // Table column width driven by panelMode (no drag-resize).
-            ...(isPanelOpen && panelMode === 'fullscreen'
-              ? { display: 'none' as const }
-              : isPanelOpen && panelMode === 'expanded'
-                ? { width: '40%', flexShrink: 0 }
-                : isPanelOpen
-                  ? { flex: 1 }       // compact — share remainder with fixed 400px panel
-                  : { flex: 1 }),     // panel closed — full width
+            // Apr 27, 2026 (L39): fullscreen no longer hides the table.
+            // The panel renders as a position:fixed modal overlay above
+            // the table (Jira parity), so we keep the table at full
+            // flex width behind the modal — visible at the modal's edges
+            // and contributing to the dim-backdrop perception.
+            ...(isPanelOpen && panelMode === 'expanded'
+              ? { width: '40%', flexShrink: 0 }
+              : isPanelOpen && panelMode !== 'fullscreen'
+                ? { flex: 1 }       // compact — share remainder with fixed 400px panel
+                : { flex: 1 }),     // panel closed OR fullscreen modal — full width
             minWidth: 0,
             overflow: 'auto',
             padding: '4px 16px 16px',
@@ -1387,25 +1648,115 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           )}
         </div>
 
-        {isPanelOpen && (
+        {/* Fullscreen backdrop — dim layer behind the modal panel.
+            Click closes back to compact mode (Jira parity). */}
+        {isPanelOpen && panelMode === 'fullscreen' && (
+          <div
+            onClick={() => setPanelMode('compact')}
+            aria-hidden
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(9, 30, 66, 0.54)',
+              zIndex: 510,
+              transition: 'opacity 150ms ease',
+            }}
+          />
+        )}
+        {/* Apr 27, 2026 (L46): compact mode rail is now rendered via
+            AtlaskitPageShell.sideRail (extends to top of page = Jira parity).
+            Only render this inline panel for 'expanded' (60% inline) and
+            'fullscreen' (position:fixed modal) modes. */}
+        {isPanelOpen && panelMode !== 'compact' && (
           <div
             style={{
               // Panel column width driven by panelMode:
-              //  compact   → fixed 400px (Jira parity)
-              //  expanded  → 60% of viewport
-              //  fullscreen→ 100% (table hidden above)
+              //  expanded  → 60% of flex row (table at 40% beside)
+              //  fullscreen→ position:fixed modal overlay (Apr 27, 2026 L39)
+              //                — table stays visible behind the dim backdrop;
+              //                  modal centered, capped width/height, scrollable
+              //                  internally. Click backdrop or X/⛶ to close.
               ...(panelMode === 'fullscreen'
-                ? { flex: 1, minWidth: 0 }
+                ? {
+                    position: 'fixed' as const,
+                    top: '4vh',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    width: 'min(1280px, 92vw)',
+                    height: '92vh',
+                    zIndex: 520,
+                    background: token('elevation.surface', '#FFFFFF'),
+                    borderRadius: 8,
+                    boxShadow: '0 24px 56px rgba(9, 30, 66, 0.32), 0 0 1px rgba(9, 30, 66, 0.31)',
+                    border: 'none',
+                  }
                 : panelMode === 'expanded'
-                  ? { width: '60%', flexShrink: 0 }
-                  : { width: 400, flexShrink: 0 }),
-              borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  ? {
+                      width: '60%', flexShrink: 0,
+                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      // Apr 27, 2026 (L45): reverted aggressive sticky+100vh
+                      // clamp — it was causing the rail to overlap the
+                      // global page chrome (search vanishing when rail
+                      // opened). Rely on the parent flex container's
+                      // existing min-height:0 + overflow:hidden to size
+                      // the rail; inner content scrolls via the existing
+                      // flex:1+overflow:auto wrapper at line 1572.
+                    }
+                  : {
+                      width: 400, flexShrink: 0,
+                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    }),
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
-              transition: 'width 150ms ease',
+              transition: panelMode === 'fullscreen' ? 'none' : 'width 150ms ease',
             }}
           >
+            {/* "Catalyst work item" anchor band — mirrors Jira's "Jira work
+                item" label at the top of every issue rail. Apr 27, 2026
+                (L40, iter 2): without this the rail's first content
+                (chevrons + close buttons) reads as "floating against
+                white" — the persistent "roof touch" perception even
+                after the canonical white canvas landed. The label gives
+                the rail a clear top edge and a cognitive anchor so the
+                user knows what they're looking at. Atlaskit Heading
+                semibold (Atlassian Sans, 14px/653) for top-row prominence;
+                bottom border separates it from the chevrons toolbar. */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 14px',
+                fontSize: 14,
+                fontWeight: 653,
+                color: token('color.text', '#172B4D'),
+                letterSpacing: '-0.003em',
+                flexShrink: 0,
+                // Hex literal — `color.background.neutral.subtle` token
+                // resolved to transparent in this theme (probed iter 16),
+                // and CLAUDE.md mandates hex over HSL anyway.
+                background: '#F4F5F7',
+                borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                minHeight: 44,
+              }}
+            >
+              <span style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                width: 20,
+                height: 20,
+                borderRadius: 4,
+                background: token('color.icon.accent.blue', '#1868DB'),
+                color: '#FFFFFF',
+                justifyContent: 'center',
+                fontSize: 12,
+                fontWeight: 700,
+              }}>
+                ✓
+              </span>
+              Catalyst work item
+            </div>
             {/* Jira-faithful panel toolbar — Expand / Fullscreen / Close triad.
                 Prev/Next row navigation still works via j/k/↑/↓ keyboard. */}
             <div
@@ -1415,9 +1766,8 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 display: 'flex',
                 alignItems: 'center',
                 gap: 6,
-                padding: '6px 10px',
+                padding: '0 10px 6px',
                 borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                background: token('color.background.neutral.subtle', '#FAFBFC'),
                 flexShrink: 0,
               }}
             >
@@ -1439,22 +1789,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 {currentDetailIdx >= 0 ? `${currentDetailIdx + 1} of ${sortedRows.length}` : ''}
               </span>
               <span style={{ width: 1, height: 14, background: token('color.border', '#DFE1E6'), margin: '0 4px' }} />
-              {/* Atlaskit Breadcrumbs — ProjectHub / KEY / Backlog / ITEM.
-                  Handles truncation + overflow disclosure automatically. */}
-              {(() => {
-                const current = detailItemId ? items.find((it) => it.id === detailItemId) : null;
-                const label = current ? (current.key ? `${current.key} \u2014 ${current.title}` : current.title) : '';
-                return (
-                  <div style={{ minWidth: 0, overflow: 'hidden', flex: '0 1 auto' }}>
-                    <Breadcrumbs>
-                      <BreadcrumbsItem text="ProjectHub" />
-                      <BreadcrumbsItem text={projectKey} />
-                      <BreadcrumbsItem text="Backlog" />
-                      {label && <BreadcrumbsItem text={label} />}
-                    </Breadcrumbs>
-                  </div>
-                );
-              })()}
+              {/* Apr 27, 2026 iter-3 (duplication fix): dropped the
+                  Breadcrumbs from this top row entirely. Row 2 below
+                  ("Add parent / <issue-key> / Share / Actions") already
+                  carries the issue identification. Jira's pattern is:
+                  Row 1 = panel chrome only (label + expand/fullscreen/close);
+                  Row 2 = parent-switcher + current key.
+                  Earlier iters had this row showing
+                  "ProjectHub / BAU / Backlog / BAU-5609 — long title" then
+                  trimmed to "BAU / BAU-5609". Both produced redundant key
+                  display since row 2 also shows BAU-5609. Keep row 1 as
+                  pure chrome to match Jira and remove the duplication. */}
+              <div style={{ flex: '0 1 auto' }} />
               <div style={{ flex: 1 }} />
               {/* Jira-faithful icon triad: Expand (←/→) · Fullscreen · Close */}
               <DetailNavIconButton
@@ -1504,79 +1850,34 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         }}
       />
 
-      {/* Atlaskit-native Delete confirmation (replaces shadcn AlertDialog wrapper). */}
-      <ModalTransition>
-        {deleteTarget && (
-          <Modal
-            onClose={() => setDeleteTarget(null)}
-            shouldScrollInViewport
-            width="small"
-          >
-            <ModalHeader>
-              <ModalTitle appearance="danger">
-                Delete {deleteTarget.type}?
-              </ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <p style={{ margin: 0, color: token('color.text', '#172B4D'), fontSize: 14 }}>
-                <strong>{deleteTarget.key ? `${deleteTarget.key} — ` : ''}{deleteTarget.title}</strong>
-              </p>
-              <p style={{ marginTop: 12, color: token('color.text.subtlest', '#6B778C'), fontSize: 13 }}>
-                This action can&rsquo;t be undone. Any links pointing at this item will break.
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <Button appearance="subtle" onClick={() => setDeleteTarget(null)}>
-                Cancel
-              </Button>
-              <Button
-                appearance="danger"
-                isLoading={deleteItem.isPending}
-                onClick={() => deleteItem.mutate(deleteTarget)}
-              >
-                Delete
-              </Button>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
+      {/* Apr 27, 2026 (L53): both delete dialogs now use the canonical
+          DangerConfirmModal, which mirrors Jira's exact pattern from the
+          BAU list-view delete probe — title with red-icon ModalTitle
+          appearance="danger", irreversible warning copy, "Type delete to
+          continue" gating, Cancel + danger Delete buttons. The phrase-
+          typing gate is the safeguard against a single misclick wiping
+          data. Other Catalyst delete sites should adopt the same
+          component (see DangerConfirmModal.tsx header comment for the
+          sweep target list). */}
+      <DangerConfirmModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() => deleteTarget && deleteItem.mutate(deleteTarget)}
+        title={`Delete ${deleteTarget?.key ? `${deleteTarget.key} — ` : ''}${deleteTarget?.title || 'work item'}?`}
+        description="You're about to permanently delete this work item, its comments and attachments, and all of its data. This is irreversible."
+        hint="If you're not sure, you can resolve or close this issue instead."
+        isLoading={deleteItem.isPending}
+      />
 
-      {/* Bulk delete confirmation (ModalDialog) */}
-      <ModalTransition>
-        {bulkDeleteOpen && (
-          <Modal
-            onClose={() => setBulkDeleteOpen(false)}
-            shouldScrollInViewport
-            width="small"
-          >
-            <ModalHeader>
-              <ModalTitle appearance="danger">
-                Delete {selectedIds.size} item{selectedIds.size === 1 ? '' : 's'}?
-              </ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <p style={{ margin: 0, color: token('color.text', '#172B4D'), fontSize: 14 }}>
-                You&rsquo;re about to delete <strong>{selectedIds.size}</strong> item{selectedIds.size === 1 ? '' : 's'}.
-              </p>
-              <p style={{ marginTop: 12, color: token('color.text.subtlest', '#6B778C'), fontSize: 13 }}>
-                Jira-synced items will be skipped. This action can&rsquo;t be undone.
-              </p>
-            </ModalBody>
-            <ModalFooter>
-              <Button appearance="subtle" onClick={() => setBulkDeleteOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                appearance="danger"
-                isLoading={bulkDelete.isPending}
-                onClick={() => bulkDelete.mutate(Array.from(selectedIds))}
-              >
-                Delete
-              </Button>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
+      <DangerConfirmModal
+        isOpen={bulkDeleteOpen}
+        onClose={() => setBulkDeleteOpen(false)}
+        onConfirm={() => bulkDelete.mutate(Array.from(selectedIds))}
+        title={`Delete ${selectedIds.size} work item${selectedIds.size === 1 ? '' : 's'}?`}
+        description={`You're about to permanently delete ${selectedIds.size} work item${selectedIds.size === 1 ? '' : 's'}, including comments and attachments. This is irreversible. Jira-synced items will be skipped.`}
+        hint="If you're not sure, you can close the items instead."
+        isLoading={bulkDelete.isPending}
+      />
 
       {/* Single FlagsHost for this route — picks up every showFlag()/flag.* call. */}
       <FlagsHost />
