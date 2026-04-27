@@ -193,6 +193,62 @@ Return JSON only: {"suggestions": ["...", "...", "..."]}`;
     }
 
     // ─────────────────────────────────────────────────────────────
+    // Branch: translate_text
+    //   Returns: { translation: string }
+    //   Used by CreateBusinessRequestModal bidirectional title translation.
+    //   direction: 'en_to_ar' | 'ar_to_en'
+    // ─────────────────────────────────────────────────────────────
+    if (improve_type === "translate_text") {
+      const { text, direction } = body as { text: string; direction: "en_to_ar" | "ar_to_en" };
+      if (!text?.trim()) {
+        return new Response(JSON.stringify({ translation: "" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const isToArabic = direction === "en_to_ar";
+      const prompt = isToArabic
+        ? `Translate the following English text into Modern Standard Arabic (فصحى). Output ONLY the Arabic translation — no explanation, no punctuation changes, no quotes. Preserve technical terms as-is if there is no standard Arabic equivalent.\n\nText: ${text}`
+        : `Translate the following Arabic text into English. Output ONLY the English translation — no explanation, no quotes, no Arabic. Use professional enterprise software terminology.\n\nText: ${text}`;
+
+      const aiResp = await fetch(AI_GATEWAY_URL, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash-lite",
+          messages: [
+            {
+              role: "system",
+              content: isToArabic
+                ? "You are a professional Arabic translator specialising in enterprise software and government ministry systems. Return only the translation, nothing else."
+                : "You are a professional English translator specialising in enterprise software and government ministry systems. Return only the translation, nothing else.",
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.2,
+          max_tokens: 80,
+        }),
+      });
+
+      if (!aiResp.ok) {
+        const t = await aiResp.text();
+        console.error("translate_text gateway error:", aiResp.status, t);
+        return new Response(JSON.stringify({ error: "Translation failed", translation: "" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const aiData = await aiResp.json();
+      const translation = (aiData.choices?.[0]?.message?.content ?? "").trim();
+      await logGovernance({ admin_jwt: null, action: "translate_text", payload: { direction, char_count: text.length }, status: "ok" });
+      return new Response(JSON.stringify({ translation }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // Default branch: existing story-improvement contract (unchanged)
     // ─────────────────────────────────────────────────────────────
     const instruction = IMPROVE_INSTRUCTIONS[improve_type] ?? "Improve and clarify";

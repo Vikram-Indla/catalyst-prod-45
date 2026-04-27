@@ -1,6 +1,7 @@
 /**
  * WorkflowAdminPage — Admin module for managing issue type workflows.
  * Tabs for each issue type, showing statuses + transition matrix.
+ * Light theme (Catalyst V12 light tokens).
  */
 import React, { useState } from 'react';
 import { useAllWorkflowSchemes, useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
@@ -27,32 +28,32 @@ export default function WorkflowAdminPage() {
   const { data: schemes = [] } = useAllWorkflowSchemes();
 
   return (
-    <div className="space-y-0">
+    <div className="space-y-0 bg-white min-h-screen text-[#0F172A]">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-[#2E2E2E] dark:border-[#2E2E2E]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2E8F0]">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#1A1A1A] dark:bg-[#1A1A1A] flex items-center justify-center border border-[#2E2E2E]">
-            <GitBranch size={18} className="text-[#EDEDED]" />
+          <div className="w-9 h-9 rounded-lg bg-[#F1F5F9] flex items-center justify-center border border-[#E2E8F0]">
+            <GitBranch size={18} className="text-[#0F172A]" />
           </div>
           <div>
-            <h1 className="text-lg font-semibold text-[#EDEDED] dark:text-[#EDEDED] font-['Sora']">
+            <h1 className="text-lg font-semibold text-[#0F172A] font-['Sora']">
               Workflows
             </h1>
-            <p className="text-xs text-[#878787] dark:text-[#878787]">
+            <p className="text-xs text-[#64748B]">
               Manage statuses, transitions, and categories per issue type
             </p>
           </div>
         </div>
 
         {/* View toggle */}
-        <div className="flex items-center gap-1 bg-[#111111] border border-[#2E2E2E] rounded-md p-0.5">
+        <div className="flex items-center gap-1 bg-[#F8FAFC] border border-[#E2E8F0] rounded-md p-0.5">
           <button
             onClick={() => setViewMode('editor')}
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors',
               viewMode === 'editor'
-                ? 'bg-[#292929] text-[#EDEDED]'
-                : 'text-[#878787] hover:text-[#A1A1A1]'
+                ? 'bg-white text-[#0F172A] shadow-sm border border-[#E2E8F0]'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             )}
           >
             <LayoutGrid size={13} />
@@ -63,8 +64,8 @@ export default function WorkflowAdminPage() {
             className={cn(
               'flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors',
               viewMode === 'diagram'
-                ? 'bg-[#292929] text-[#EDEDED]'
-                : 'text-[#878787] hover:text-[#A1A1A1]'
+                ? 'bg-white text-[#0F172A] shadow-sm border border-[#E2E8F0]'
+                : 'text-[#64748B] hover:text-[#0F172A]'
             )}
           >
             <Workflow size={13} />
@@ -75,7 +76,7 @@ export default function WorkflowAdminPage() {
 
       {/* Issue type tabs */}
       <Tabs value={activeType} onValueChange={setActiveType} className="w-full">
-        <div className="border-b border-[#2E2E2E] px-6">
+        <div className="border-b border-[#E2E8F0] px-6">
           <TabsList className="bg-transparent h-10 gap-0 p-0">
             {ISSUE_TYPES.map(t => (
               <TabsTrigger
@@ -83,8 +84,8 @@ export default function WorkflowAdminPage() {
                 value={t.key}
                 className={cn(
                   'relative px-4 py-2 text-xs font-medium rounded-none border-b-2 transition-colors data-[state=active]:shadow-none',
-                  'data-[state=active]:border-[#EDEDED] data-[state=active]:text-[#EDEDED]',
-                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[#878787] data-[state=inactive]:hover:text-[#A1A1A1]',
+                  'data-[state=active]:border-[#2563EB] data-[state=active]:text-[#0F172A]',
+                  'data-[state=inactive]:border-transparent data-[state=inactive]:text-[#64748B] data-[state=inactive]:hover:text-[#0F172A]',
                   'bg-transparent'
                 )}
               >
@@ -110,14 +111,14 @@ function WorkflowTabContent({ issueType, viewMode }: { issueType: string; viewMo
   if (workflow.isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin w-5 h-5 border-2 border-[#878787] border-t-transparent rounded-full" />
+        <div className="animate-spin w-5 h-5 border-2 border-[#64748B] border-t-transparent rounded-full" />
       </div>
     );
   }
 
   if (!workflow.scheme) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-[#878787]">
+      <div className="flex flex-col items-center justify-center py-20 text-[#64748B]">
         <GitBranch size={32} className="mb-3 opacity-40" />
         <p className="text-sm">No workflow configured for {issueType}</p>
       </div>

@@ -251,6 +251,17 @@ export function useCreateBusinessRequest() {
           end_date_locked: (data as any).end_date_locked || false,
           end_date_locked_by: (data as any).end_date_locked_by || null,
           end_date_locked_at: (data as any).end_date_locked_at || null,
+          // Feature unification fields (migration: 20260428090000)
+          arabic_title: (data as any).arabic_title || null,
+          request_type: (data as any).request_type || null,
+          category: (data as any).category || null,
+          theme: (data as any).theme || null,
+          scope_url: (data as any).scope_url || null,
+          stakeholders: (data as any).stakeholders || [],
+          po_user_id: (data as any).po_user_id || null,
+          targeted_feature: (data as any).targeted_feature ?? false,
+          import_source: (data as any).import_source || 'manual',
+          import_ref: (data as any).import_ref || null,
         }])
         .select()
         .single();
