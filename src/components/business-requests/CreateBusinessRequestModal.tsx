@@ -784,6 +784,40 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
 
             <Box xcss={fieldGroupStyles}>
 
+              {/* ── English title + translate-to-Arabic button ───────────── */}
+              {/* @atlaskit/textfield — Textfield */}
+              <Field name="title" label="Business Request name (English)" isRequired>
+                {({ fieldProps }) => (
+                  <>
+                    <Box xcss={translateRowStyles}>
+                      <div style={{ flex: 1 }}>
+                        <Textfield
+                          {...(fieldProps as any)}
+                          value={form.title}
+                          onChange={(e: any) => set('title', e.target.value)}
+                          onBlur={() => setTitleBlurred(true)}
+                          placeholder="English name of the business request"
+                          maxLength={TITLE_MAX}
+                          isInvalid={!!titleError}
+                        />
+                      </div>
+                      <TranslateButton
+                        loading={translating === 'en_to_ar'}
+                        label="Translate English → Arabic"
+                        onClick={handleTranslateToArabic}
+                      />
+                    </Box>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
+                      {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
+                      <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'var(--cp-font-body)', marginLeft: 'auto' }}>
+                        {form.title.length} / {TITLE_MAX}
+                      </span>
+                    </div>
+                    {!titleError && <HelperMessage>Click ✦ to auto-translate to Arabic.</HelperMessage>}
+                  </>
+                )}
+              </Field>
+
               {/* ── Arabic title + translate-to-English button ────────────── */}
               {/* @atlaskit/textfield — Textfield with dir="rtl" HTML attribute */}
               <Field name="arabic_title" label="Business Request name (Arabic)" isRequired>
@@ -815,40 +849,6 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
                       ? <ErrorMessage>{arabicError}</ErrorMessage>
                       : <HelperMessage>Official Arabic name as it appears in the ministry system. Click ✦ to auto-translate to English.</HelperMessage>
                     }
-                  </>
-                )}
-              </Field>
-
-              {/* ── English title + translate-to-Arabic button ───────────── */}
-              {/* @atlaskit/textfield — Textfield */}
-              <Field name="title" label="Business Request name (English)" isRequired>
-                {({ fieldProps }) => (
-                  <>
-                    <Box xcss={translateRowStyles}>
-                      <div style={{ flex: 1 }}>
-                        <Textfield
-                          {...(fieldProps as any)}
-                          value={form.title}
-                          onChange={(e: any) => set('title', e.target.value)}
-                          onBlur={() => setTitleBlurred(true)}
-                          placeholder="English name of the business request"
-                          maxLength={TITLE_MAX}
-                          isInvalid={!!titleError}
-                        />
-                      </div>
-                      <TranslateButton
-                        loading={translating === 'en_to_ar'}
-                        label="Translate English → Arabic"
-                        onClick={handleTranslateToArabic}
-                      />
-                    </Box>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-                      {titleError ? <ErrorMessage>{titleError}</ErrorMessage> : <span />}
-                      <span style={{ fontSize: 11, color: token('color.text.disabled', '#8590A2'), fontFamily: 'var(--cp-font-body)', marginLeft: 'auto' }}>
-                        {form.title.length} / {TITLE_MAX}
-                      </span>
-                    </div>
-                    {!titleError && <HelperMessage>Click ✦ to auto-translate to Arabic.</HelperMessage>}
                   </>
                 )}
               </Field>
