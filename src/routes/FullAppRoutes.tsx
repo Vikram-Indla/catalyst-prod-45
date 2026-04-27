@@ -821,7 +821,6 @@ export default function FullAppRoutes() {
           <Route path="notification-triggers" element={<S><NotificationTriggers /></S>} />
           <Route path="settings/notifications" element={<S><UserNotificationSettingsPage /></S>} />
           <Route path="feature-flags" element={<S><FeatureFlagsPage /></S>} />
-          <Route path="workflows" element={<S><WorkflowsAdminPage /></S>} />
         </Route>
 
         <Route path="/value-stream" element={<S><ValueStreamView /></S>} />
