@@ -384,11 +384,11 @@ END $$;
 -- write-back path, which is now disabled.
 -- ─────────────────────────────────────────────────────────────────────────────
 
--- requirements / tm_requirements
-ALTER TABLE requirements    DROP COLUMN IF EXISTS last_synced_at;
-ALTER TABLE requirements    DROP COLUMN IF EXISTS sync_status;
-ALTER TABLE tm_requirements DROP COLUMN IF EXISTS last_synced_at;
-ALTER TABLE tm_requirements DROP COLUMN IF EXISTS sync_status;
+-- requirements / tm_requirements (wrapped — tm_requirements absent in some envs)
+DO $$ BEGIN ALTER TABLE requirements    DROP COLUMN IF EXISTS last_synced_at; EXCEPTION WHEN undefined_table THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE requirements    DROP COLUMN IF EXISTS sync_status;    EXCEPTION WHEN undefined_table THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE tm_requirements DROP COLUMN IF EXISTS last_synced_at; EXCEPTION WHEN undefined_table THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE tm_requirements DROP COLUMN IF EXISTS sync_status;    EXCEPTION WHEN undefined_table THEN NULL; END $$;
 
 -- kb document Jira issue linkage table
 DROP TABLE IF EXISTS kb_document_jira_issues CASCADE;
