@@ -36,6 +36,11 @@ import { createPortal } from 'react-dom';
 import { Checkbox as AkCheckbox } from '@atlaskit/checkbox';
 import Textfield from '@atlaskit/textfield';
 import Spinner from '@atlaskit/spinner';
+// Apr 27, 2026 (jira-compare regression F-NEW-3): replace literal Unicode ▾
+// with @atlaskit/icon ChevronDownIcon on group-row chevron — matches Jira's
+// IconButton pattern + L11 mandate.
+import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 // NOTE: useVirtualizer (from @tanstack/react-virtual) was wired here on
 // 2026-04-26 alongside the enableVirtualization prop. The dependency was
 // added to vite.config.ts optimizeDeps.include, but Vite's optimize-deps
@@ -143,6 +148,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     onColumnVisibilityChange,
     collapsedGroups,
     onToggleGroup,
+    onAddToGroup,
+    renderGroupInlineRow,
+    getRowHasChildren,
+    expandedRowIds,
+    onToggleRowExpanded,
     contextMenuActions,
     enableColumnReorder = false,
     columnOrder: columnOrderProp,
@@ -397,6 +407,18 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid table tbody > tr > td {
         box-shadow: inset 0 -1px 0 0 #DFE1E6 !important;
       }
+      /* Apr 27, 2026 (Vikram audit pass 4): Type column is icon-only, so
+         the standard 12px L/R cell padding leaves ~14px of dead space
+         next to the 16px glyph and pushes Key visibly away from Type.
+         Tightening to 4px L / 8px R brings the icon flush against the
+         column edge and matches Jira's compact icon-column rhythm.
+         Targets BOTH the header cell (col 2 — col 1 is the checkbox)
+         and every body cell at the same index. */
+      .jira-table-grid table thead > tr > th:nth-child(2),
+      .jira-table-grid table tbody > tr > td:nth-child(2) {
+        padding-left: 4px !important;
+        padding-right: 8px !important;
+      }
       .jira-table-grid table thead > tr > th {
         box-shadow: inset 0 -2px 0 0 #C1C7D0 !important;
         background: #F7F8F9 !important;
@@ -461,30 +483,38 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         width: 100%;
         /* Smooth horizontal scroll on touchpads / mobile */
         -webkit-overflow-scrolling: touch;
+        /* Apr 27, 2026 (audit pass 9): scrollbar-gutter:stable reserves
+           a fixed gutter for the vertical scrollbar so layout doesn't
+           shift when rows fill / drain. Without this, removing the
+           outer-wrapper padding made the right edge "jump" by ~12px
+           every time the scrollbar appeared/disappeared. */
+        scrollbar-gutter: stable;
       }
       .jira-table-grid table {
         width: 100%;
-        /* Jira parity (2026-04-27, BAU list audit): bumped from 800px to
-           1280px because with the right-rail open (~40% of viewport) the
-           table area collapses to ~700–900px and EVERY column was being
-           crushed to truncated text — "BAU-" with no number, "IN PROGRES"
-           losing the "S", "Una..." for assignee. Jira's list view never
-           crushes columns; below the natural sum the viewport scrolls
-           horizontally. 1280px = roughly the natural sum of the default
-           column schema (10 cols × avg ~128px). The wrapping
-           .jira-table-viewport already has overflow-x: auto so narrower
-           containers (rail open, narrow window) scroll horizontally. */
-        min-width: 1280px;
+        /* Apr 27, 2026 (audit pass 9): min-width 1180 → 1100. 1180 was
+           ABOVE the table's parent width (~1133–1145px on a 1214 window
+           with panel closed), forcing horizontal scroll even at the
+           default state — that's the "empty space on the side AND
+           crunched dates" perception the user surfaced (dates were
+           shown via the scroll-clipped right edge, not because of
+           crushing). 1100 lets the table fit fully inside ~1145 of
+           parent width on common 13" / 14" displays, then engages
+           horizontal scroll only when the right rail opens (parent
+           drops to ~750). Each col's allocation at 1100 still meets
+           or exceeds natural minimum (type 33 / key 88 / summary 242 /
+           status 121 / comments 88 / parent 132 / assignee 121 /
+           priority 77 / created 88 / updated 88 / actions 33). */
+        min-width: 1100px;
         border-collapse: separate;
         border-spacing: 0;
         table-layout: fixed;
       }
-      /* On narrow viewports the wrapping viewport scrolls horizontally
-         and the table keeps its natural min-width so columns don't crush.
-         Mirrors Jira's behaviour when the rail is open or the window is
-         narrow — never truncate, always scroll. */
-      @media (max-width: 1024px) {
-        .jira-table-grid table { min-width: 1280px; }
+      /* On very narrow viewports we still keep the natural column floor
+         so cells never truncate; .jira-table-viewport's overflow-x:auto
+         takes over. */
+      @media (max-width: 900px) {
+        .jira-table-grid table { min-width: 1100px; }
       }
       .jira-table-grid thead th {
         position: sticky;
@@ -493,17 +523,28 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background: #F7F8F9;
         padding: 8px 12px;
         text-align: left;
+        /* Apr 27, 2026 (Vikram audit pass 8): without overflow:hidden +
+           text-overflow:ellipsis the header text BLEEDS into the next
+           column whenever the rendered column width is narrower than the
+           text's natural width. "Comments" at 53px (rendered) needs 66px
+           (natural) → "Comm…" overlaps Parent. With these two declarations
+           the cell clips cleanly with an ellipsis instead. Body td cells
+           already clip via the inner div wrapper at line ~870. */
+        overflow: hidden;
+        text-overflow: ellipsis;
         /* Re-measured 2026-04-26 from Jira BAU list view header "Summary":
-             - 12px / weight 653 (Charlie variable; we use 700 statically)
-             - color #505258 (--ds-text-subtle)
+             - 12px / weight 653 (Charlie variable; matched exactly)
+             - color #6B6E76 (color.text.subtle — re-probed 2026-04-27 vs
+               Jira, was previously written as #505258 from a stale probe)
              - text-transform: none (Title Case — NOT uppercase)
              - letter-spacing: normal (NOT 0.04em)
            Catalyst's previous UPPERCASE / wide-tracked / muted-grey
            treatment was a Catalyst opinion. Matching Jira's actual list
-           view here for parity. */
+           view here for parity. Apr 27 2026 jira-compare regression
+           (D-005 + D-006): fontWeight 700 → 653, color #505258 → #6B6E76. */
         font-size: 12px;
-        font-weight: 700;
-        color: #505258;
+        font-weight: 653;
+        color: #6B6E76;
         text-transform: none;
         letter-spacing: normal;
         white-space: nowrap;
@@ -567,44 +608,31 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
          References:
            https://atlassian.design/foundations/tokens (border + surface)
       */
-      .jira-table-grid tbody td:nth-child(1),
-      .jira-table-grid tbody td:nth-child(2),
-      .jira-table-grid tbody td:nth-child(3) {
-        position: sticky;
-        z-index: 1;
-        background: #FFFFFF;
-      }
-      /* Apr 27, 2026 (L62 fix): corrected left offsets to match
-         actual column widths (probed: checkbox=48, type=103, key=103).
-         Previous offsets (0/48/96) caused cells to OVERLAP on
-         horizontal scroll because cell 2 sat at left:48 (correct) but
-         cell 3 sat at left:96 instead of left:48+103=151. The stack
-         was: checkbox(0–48) | type(48–151) | key(96–199) — key
-         overlapped type by 55px when scrolled. */
-      .jira-table-grid tbody td:nth-child(1) { left: 0; }
-      .jira-table-grid tbody td:nth-child(2) { left: 48px; }
-      .jira-table-grid tbody td:nth-child(3) { left: 151px; }
-      /* Header sticky cells inherit the existing top:0 sticky, but need
-         left:0 too in the frozen-prefix range and a higher z-index so
-         they paint above body sticky cells when horizontal scroll
-         intersects with vertical scroll. */
+      /* Apr 27, 2026 (Vikram audit pass 5): frozen-prefix sticky
+         positioning REMOVED. The previous version pinned cells 1-3
+         (select / type / key) with hardcoded left offsets
+         (0 / 48px / 151px) that assumed Type col was 103px wide.
+         When Type was tightened to ~43px (icon-only column), col 3
+         (Key) still tried to float at left:151px while col 2 ended
+         at x ~ 91px, leaving a 60px hole between every Type icon and
+         the Key text. The DOM probe caught this exactly. Frozen
+         columns are valuable on Jira narrow-viewport list views
+         but Catalyst rarely horizontal-scrolls on a 1214px+ viewport
+         (with the 1040px min-width); the cost (alignment bugs every
+         time anyone resizes a column) outweighs the benefit. Re-add
+         later with dynamic offsets if needed. */
       .jira-table-grid thead th:nth-child(1),
       .jira-table-grid thead th:nth-child(2),
       .jira-table-grid thead th:nth-child(3) {
         position: sticky;
         top: 0;
-        z-index: 3;
+        z-index: 2;
         background: #F7F8F9;
       }
-      .jira-table-grid thead th:nth-child(1) { left: 0; }
-      .jira-table-grid thead th:nth-child(2) { left: 48px; }
-      .jira-table-grid thead th:nth-child(3) { left: 151px; }
-      /* Subtle right-side shadow on the sticky prefix so users see
-         the boundary when scrolled horizontally. Mirrors Jira's
-         frozen-column treatment. */
-      .jira-table-grid tbody td:nth-child(3),
-      .jira-table-grid thead th:nth-child(3) {
-        box-shadow: 1px 0 0 0 #DFE1E6;
+      /* Header z-index for non-sticky-left case — no left-pin, just
+         keep header floating above body on vertical scroll. */
+      .jira-table-grid tbody td:nth-child(3) {
+        box-shadow: none;
       }
       /* Group rows (collapsed/group headers) need to keep their
          lighter bg even on sticky cells — override the default white. */
@@ -873,6 +901,77 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 whiteSpace: 'nowrap',
               }}
             >
+              {/* Apr 27 2026 (jira-compare regression F-NEW-3 — issue half
+                  + functional fill): uniform 24×24 chevron slot at the
+                  START of the first data column on EVERY issue row.
+                  Matches Jira parity probe testid
+                  `business-list.ui.list-view.base-table.expand-icon.expand-button`.
+                  When `getRowHasChildren` returns true for the row, the
+                  slot renders an interactive ChevronRight/Down button
+                  that toggles `expandedRowIds` via `onToggleRowExpanded`.
+                  Rows without children get an empty 24×24 placeholder
+                  so column geometry stays uniform. */}
+              {isFirstDataCol && (() => {
+                const rowHasChildren = !!getRowHasChildren?.(row);
+                const isExpanded = !!expandedRowIds?.has(id);
+                if (rowHasChildren && onToggleRowExpanded) {
+                  return (
+                    <button
+                      type="button"
+                      data-jira-table-issue-chevron-button
+                      data-testid="jira-table.row.expand-button"
+                      aria-label={isExpanded ? 'Collapse children' : 'Expand children'}
+                      aria-expanded={isExpanded}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleRowExpanded(id);
+                      }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: 24,
+                        height: 24,
+                        flexShrink: 0,
+                        marginRight: 4,
+                        padding: 0,
+                        border: 'none',
+                        background: 'transparent',
+                        color: '#6B6E76',
+                        borderRadius: 3,
+                        cursor: 'pointer',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                      }}
+                    >
+                      {isExpanded ? (
+                        <ChevronDownIcon label="" size="small" />
+                      ) : (
+                        <ChevronRightIcon label="" size="small" />
+                      )}
+                    </button>
+                  );
+                }
+                return (
+                  <span
+                    aria-hidden="true"
+                    data-jira-table-issue-chevron-slot
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 24,
+                      height: 24,
+                      flexShrink: 0,
+                      marginRight: 4,
+                    }}
+                  />
+                );
+              })()}
               <CellRenderer
                 cell={col.cell}
                 row={row}
@@ -971,11 +1070,18 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           });
         }
 
-        // First cell hosts the full-visual header. Since DynamicTable won't
-        // let us colSpan, we render the label in the first cell and leave
-        // the rest empty with a shared background.
+        // Apr 27, 2026 (audit pass 9): the original comment said "DynamicTable
+        // won't let us colSpan, render label in first cell and leave the
+        // rest empty". We're no longer on DynamicTable (Round H switched
+        // to a plain <table>), so colSpan IS available. Without it the
+        // 12px-padded label cell was being placed in the 43px-wide Type
+        // column → "AWAITING" / "BACKLOG" / "BETA READY" / "BLOCKED" /
+        // "CLOSED" all clipped to 4 chars (AWAI / BACK / BETA / BLOC /
+        // CLOS). We now mark the header cell with `colSpan` covering all
+        // remaining columns and stop padding empty trailing cells.
         groupCells.push({
           key: `__group-${g.id}-header`,
+          colSpan: totalCellCount - groupCells.length,
           content: (
             <div
               role={onToggleGroup ? 'button' : undefined}
@@ -1008,18 +1114,77 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: 16,
-                    height: 16,
-                    color: '#6B778C',
+                    width: 24,
+                    height: 24,
+                    color: '#6B6E76',
                     transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
                     transition: 'transform 120ms ease',
                   }}
                 >
-                  {/* Inline chevron — avoids another lucide import here */}
-                  ▾
+                  {/* Apr 27 2026 jira-compare regression F-NEW-3: replaced
+                      literal Unicode ▾ character with @atlaskit/icon
+                      ChevronDownIcon. Sized to 24×24 to match Jira's
+                      group-item.expand-icon-wrapper geometry probed at
+                      /jira/.../list?groupBy=status. The outer span keeps
+                      the rotate-on-collapse animation and click handler
+                      (delegated up to the wrapper div). */}
+                  <ChevronDownIcon label="" size="small" />
                 </span>
               )}
-              <span>{g.label}</span>
+              {onAddToGroup && (
+                <button
+                  type="button"
+                  data-testid="jira-table.group-row.add-issue-button"
+                  aria-label={`Add issue to ${g.label}`}
+                  onClick={(e) => {
+                    // Stop the click bubbling to the wrapper div which
+                    // toggles group expand/collapse — we want this button
+                    // to be a SEPARATE affordance per Jira parity.
+                    e.stopPropagation();
+                    onAddToGroup(g.id);
+                  }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 24,
+                    height: 24,
+                    padding: 0,
+                    border: 'none',
+                    background: 'transparent',
+                    color: '#6B6E76',
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(9, 30, 66, 0.06)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  {/* Apr 27 2026 jira-compare regression F-NEW-2 (in-session):
+                      per-group "+" affordance matching Jira parity probe
+                      `business-list.common.ui.create-issue-plus-button.child-create-button-wrapper`
+                      at (203, 328), 24×24, after the chevron and before the
+                      group label. Click stops propagation so the group expand
+                      doesn't toggle. Consumer (BacklogPage) wires onAddToGroup
+                      to its create-flow. */}
+                  <PlusIcon size={14} />
+                </button>
+              )}
+              {/* Apr 27, 2026 (audit pass 10): if the consumer provided
+                  a labelNode (Lozenge / Avatar+name / PriorityBars+name /
+                  IssueIcon+key), render it INSTEAD of the plain
+                  uppercase string label. The wrapper still owns the
+                  layout so chevron + label + count line up correctly. */}
+              {(g as any).labelNode != null ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, textTransform: 'none', letterSpacing: 0, fontWeight: 500 }}>
+                  {(g as any).labelNode}
+                </span>
+              ) : (
+                <span>{g.label}</span>
+              )}
               <span
                 style={{
                   padding: '1px 8px',
@@ -1041,14 +1206,8 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
             </div>
           ),
         });
-        // Pad trailing cells so layout is stable under isFixedSize.
-        // groupCells already has: [select?, header]. Pad the remainder.
-        while (groupCells.length < totalCellCount) {
-          groupCells.push({
-            key: `__group-${g.id}-pad-${groupCells.length}`,
-            content: <span aria-hidden="true" />,
-          });
-        }
+        // Pass 9: padding cells removed — the header now uses colSpan
+        // to occupy the rest of the row width (see header cell above).
 
         out.push({
           key: `__group-${g.id}`,
@@ -1056,6 +1215,30 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
           // @atlaskit/dynamic-table respects className on row objects.
           cells: groupCells,
         } as any);
+
+        // Apr 27 2026 (jira-compare regression F-NEW-2 functional fill):
+        // when consumer provides renderGroupInlineRow and returns non-null
+        // for this group's id, push it as an extra row immediately after
+        // the group header. The row's content spans the full table width
+        // via a single cell with colSpan-equivalent rendering. Used to
+        // host the inline create form when "+" was clicked.
+        if (!collapsed && renderGroupInlineRow) {
+          const inline = renderGroupInlineRow(g.id);
+          if (inline != null) {
+            const totalCols = (selectable ? 1 : 0) + visibleColumns.length + (showColumnManager ? 1 : 0);
+            out.push({
+              key: `__group-${g.id}-inline-create`,
+              className: 'jira-table-group-inline-create-row',
+              cells: [
+                {
+                  key: `__group-${g.id}-inline-content`,
+                  colSpan: totalCols,
+                  content: inline,
+                },
+              ],
+            } as any);
+          }
+        }
 
         if (!collapsed) for (const row of g.rows) out.push(renderDataRow(row));
       }
@@ -1076,6 +1259,11 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
     groups,
     collapsedGroups,
     onToggleGroup,
+    onAddToGroup,
+    renderGroupInlineRow,
+    getRowHasChildren,
+    expandedRowIds,
+    onToggleRowExpanded,
     contextMenuActions,
     onCellEdit,
     onRowClick,
@@ -1179,7 +1367,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         outline: 'none',
         background: '#FFFFFF',
         border: '1px solid #DFE1E6',
-        borderRadius: 6,
+        // Apr 27, 2026 — jira-compare audit P2 #10: Jira's outer table
+        // card uses 8px border-radius; Catalyst was 6px. Bumped to
+        // match — minor token drift, single-line change.
+        borderRadius: 8,
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
@@ -1200,6 +1391,17 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                 const isSorted = meta && sortKey === meta.id;
                 const isStructural = !!meta && meta.id.startsWith('__');
                 const isReorderable = enableColumnReorder && !!meta && !isStructural;
+                // Apr 27 2026 (jira-compare regression F-NEW-3 issue half):
+                // first non-structural column header gets a 24×24 placeholder
+                // BEFORE the label content so the column-grid alignment
+                // matches body rows (which prepend a chevron slot via
+                // `data-jira-table-issue-chevron-slot`). Without this, the
+                // header text would float at the unindented column origin
+                // while body cells start +28px right of it.
+                const firstDataColKey =
+                  head.cells.find((c) => !c.key.startsWith('__'))?.key;
+                const isFirstDataColHeader =
+                  !isStructural && cell.key === firstDataColKey;
                 const isDraggingThis = isReorderable && dragId === meta!.id;
                 const isDragOverThis = isReorderable && dragOverId === meta!.id && dragId && dragId !== meta!.id;
                 return (
@@ -1256,6 +1458,20 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     }}
                   >
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      {/* F-NEW-3 chevron-slot placeholder in the header,
+                          mirrors body-row slot at `data-jira-table-issue-chevron-slot`. */}
+                      {isFirstDataColHeader && (
+                        <span
+                          aria-hidden="true"
+                          style={{
+                            display: 'inline-block',
+                            width: 24,
+                            height: 24,
+                            flexShrink: 0,
+                            marginRight: 4,
+                          }}
+                        />
+                      )}
                       {cell.content}
                       {meta?.sortable && isSorted && (
                         <span aria-hidden="true" style={{ color: '#6B778C' }}>
@@ -1322,7 +1538,7 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                   style={{ height: d.rowHeight }}
                 >
                   {r.cells.map((c: any) => (
-                    <td key={c.key} style={{ overflow: 'hidden' }}>
+                    <td key={c.key} colSpan={c.colSpan} style={{ overflow: 'hidden' }}>
                       {c.content}
                     </td>
                   ))}

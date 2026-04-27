@@ -99,8 +99,55 @@ export interface AtlaskitPageShellProps {
    * rail). Pass `sideRailWidth` to override.
    */
   sideRail?: ReactNode;
+  /**
+   * Apr 27, 2026 (audit pass 9): when `flush` is true, drop the 8px
+   * outer padding around the white card so the content extends to the
+   * page chrome's inner edge. Used for list-view surfaces (BAU backlog)
+   * where every pixel of horizontal width is needed for table columns
+   * and the page chrome already provides edge breathing room. Default
+   * false preserves the rounded padded card aesthetic for non-list
+   * surfaces.
+   */
+  flush?: boolean;
   /** Width of the side rail column. Default 400px (Jira parity). */
   sideRailWidth?: number;
+  /**
+   * Apr 27, 2026 (jira-compare iter 3): override the outer wrapper
+   * background. Opt-in, single-surface scope. Used by BAU backlog list
+   * view to paint the Jira-parity blue chrome (`#E9F2FE`) WITHOUT
+   * affecting other migrated hub surfaces (Dashboard, Releases, etc.)
+   * which keep the V3 flat white. When undefined, falls back to the
+   * canonical `--cp-bg-hub-page` token.
+   */
+  chromeBg?: string;
+  /**
+   * Apr 27, 2026 (jira-compare iter 3): override the outer padding
+   * around the inner white card. Number = uniform px; object = per-axis
+   * (matches Jira's card x=48, y=16-ish offsets from the chrome edge).
+   * Takes precedence over `flush` when defined.
+   */
+  cardPadding?: number | { x: number; y: number };
+  /**
+   * Apr 27, 2026 (jira-compare iter 3): override the inner card border.
+   * Defaults to none. BAU backlog passes a subtle 1px border to mirror
+   * Jira's BaseTable card outline (probed 0.555px solid; rounded to 1px
+   * for crisp render at 1× zoom).
+   */
+  cardBorder?: string;
+  /**
+   * Apr 27, 2026 (jira-compare regression D-001/002/003): when provided,
+   * renders a chrome-band region BETWEEN the outer chrome bg and the
+   * inner white card. The band sits in the tinted chrome (e.g., #E9F2FE
+   * for BAU backlog) and contains the breadcrumb row + project header
+   * row (Spaces > Senaei BAU + project icon + H1 + actions). When absent,
+   * the chrome and the card sit flush as before — opt-in, scoped to the
+   * BAU backlog surface for Jira parity. Other consumers unaffected.
+   *
+   * The chromeBand sits inside the outer chromeBg padding, so it uses the
+   * same horizontal alignment as the card (cardPadding.x). A 12px gap
+   * separates the band from the card top.
+   */
+  chromeBand?: ReactNode;
   /** Test selector forwarded to the outer wrapper. */
   testId?: string;
 }
@@ -110,11 +157,30 @@ export function AtlaskitPageShell({
   actions,
   children,
   sideRail,
+  flush = false,
   sideRailWidth = 400,
+  chromeBg,
+  cardPadding,
+  cardBorder,
+  chromeBand,
   testId,
 }: AtlaskitPageShellProps) {
   const hasHeaderRow = title != null || actions != null;
   const hasSideRail = sideRail != null;
+
+  // Resolve outer padding. Explicit cardPadding prop wins over flush
+  // and over the default 8px. This is the lever BAU backlog uses to
+  // sit the white card off the blue chrome edges (Jira parity).
+  const padX = cardPadding != null
+    ? (typeof cardPadding === 'number' ? cardPadding : cardPadding.x)
+    : (hasSideRail || flush ? 0 : 8);
+  const padY = cardPadding != null
+    ? (typeof cardPadding === 'number' ? cardPadding : cardPadding.y)
+    : (hasSideRail || flush ? 0 : 8);
+
+  // Resolve outer wrapper bg. Defaults to the V3 flat white (hubPage
+  // token). BAU backlog passes `#E9F2FE` to paint Jira's blue chrome.
+  const outerBg = chromeBg ?? cp(adsTokens.bg.hubPage);
 
   // Header + children block. When sideRail is present this becomes the
   // LEFT column of a 2-column white card (Jira parity — rail extends to
@@ -184,15 +250,32 @@ export function AtlaskitPageShell({
         display: 'flex',
         flexDirection: 'column',
         fontFamily: ATLASSIAN_SANS_STACK,
-        background: cp(adsTokens.bg.hubPage),
-        // Apr 27, 2026 (L48): when sideRail is present, drop the 8px
-        // outer padding + inner border-radius so the rail touches the
-        // global nav (y=56) flush — matches Jira's rail-meets-global-nav
-        // pattern. Standalone (no sideRail) surfaces keep the rounded
-        // padded card aesthetic for non-list pages.
-        padding: hasSideRail ? 0 : 8,
+        background: outerBg,
+        // Apr 27, 2026 (L48 + jira-compare iter 3): outer padding now
+        // resolved upstream (padX/padY). When `cardPadding` is supplied
+        // the caller wins (BAU backlog passes {x:48,y:16} for Jira chrome
+        // parity); else falls back to the original sideRail/flush logic.
+        padding: `${padY}px ${padX}px`,
       }}
     >
+      {/* Apr 27 2026 (jira-compare regression D-001/002/003): chromeBand
+          slot. Renders inside the outer chromeBg padding, aligned with the
+          card horizontally, with a 12px gap before the card starts. Holds
+          the Spaces breadcrumb + project icon + H1 + actions row that Jira
+          renders above the white card. Opt-in via the chromeBand prop —
+          when undefined the shell collapses back to chrome→card flush. */}
+      {chromeBand && (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            flexShrink: 0,
+            paddingBottom: 12,
+          }}
+        >
+          {chromeBand}
+        </div>
+      )}
       <div
         style={{
           width: '100%',
@@ -202,7 +285,14 @@ export function AtlaskitPageShell({
           flex: 1,
           minHeight: 0,
           background: cp(adsTokens.bg.surface),
-          borderRadius: hasSideRail ? 0 : 8,
+          // jira-compare iter 3: when cardPadding is explicitly supplied,
+          // we're rendering a visible card on a tinted chrome — keep the
+          // 8px radius even if a sideRail is present. Otherwise preserve
+          // the original behavior (sideRail surfaces flatten radius=0).
+          borderRadius: hasSideRail && cardPadding == null ? 0 : 8,
+          // jira-compare iter 3: optional subtle border for the card
+          // outline (mirrors Jira's BaseTable card stroke).
+          border: cardBorder,
           overflow: 'hidden',
         }}
       >

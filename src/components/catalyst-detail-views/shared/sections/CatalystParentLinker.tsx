@@ -369,18 +369,26 @@ function SingleParentPicker({
         </div>
       ) : hasRawParent ? (
         /* Resolve returned null OR still loading — surface the raw key so
-           users never see "+ Add parent" when a parent actually exists. */
+           users never see "+ Add parent" when a parent actually exists.
+           Apr 27, 2026: icon now derives from issue.parent_issue_type
+           (matches the breadcrumb / TicketBreadcrumbs path). The earlier
+           hardcoded "Feature" caused the right-panel parent icon to
+           disagree with the breadcrumb (BAU-5534-style: breadcrumb showed
+           the correct Epic/Initiative icon, panel showed a blue Feature
+           checkbox). Falls back to 'Epic' to match TicketBreadcrumbs'
+           default. */
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <IssueIcon type="Feature" size={16} />
+          <IssueIcon type={(issue as any)?.parent_issue_type || 'Epic'} size={16} />
           <span
             style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
             onClick={() => onOpenItem?.(rawParentKey!)}
           >{rawParentKey}</span>
-          {parentFetched && (
-            <span style={{ fontSize: 12, color: '#6B778C', fontStyle: 'italic' }}>
-              (details unavailable)
-            </span>
-          )}
+          {/* Apr 27, 2026: removed the "(details unavailable)" italic suffix.
+              Vikram flagged it as misleading — it appeared whenever the
+              parent_key existed on the issue but the row lived outside
+              ph_issues (e.g. BAU-4466 lives in a separate Features/Epic
+              table). The clickable key + icon already signal "parent
+              exists"; the suffix made functional rows look broken. */}
           <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex', marginLeft: 'auto' }}>
             <X size={12} />
           </button>

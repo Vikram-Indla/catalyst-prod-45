@@ -1,0 +1,89 @@
+{
+  "date": "2026-04-27",
+  "surface": "BAU list (groupBy=status)",
+  "skill": "regression",
+  "phase": 3,
+  "viewports": {
+    "jira": { "w": 1214, "h": 1079 },
+    "catalyst": { "w": 1214, "h": 1021 }
+  },
+  "regions": {
+    "1_pageChrome": {
+      "jira": { "depth1Bg": "rgb(233, 242, 254)", "bodyBg": "rgb(255, 255, 255)" },
+      "catalyst": { "depth1Bg": "rgb(233, 242, 254)", "bodyBg": "rgb(255, 255, 255)" },
+      "verdict": "F-NEW-1 verified live; both surfaces match"
+    },
+    "2_projectHeaderBand": {
+      "jira": {
+        "header": { "testid": "horizontal-nav-header.ui.project-header.header", "x": 0, "y": 91, "w": 1214, "h": 31, "text": "Senaei BAU Add people Give feedback Enter full screen" },
+        "icon": { "testid": "horizontal-nav-header.ui.project-header.project-icon", "x": 23, "y": 97, "w": 20, "h": 20, "tag": "IMG" }
+      },
+      "catalyst": null,
+      "verdict": "P0 gap — not present in Catalyst"
+    },
+    "2b_breadcrumb": {
+      "jira": { "ariaLabel": "Breadcrumbs", "x": 23, "y": 68, "w": 49, "h": 23, "text": "Spaces", "fontSize": "14px" },
+      "catalyst": null,
+      "verdict": "P0 gap — not present in Catalyst"
+    },
+    "3_topRightCTAs": {
+      "jira": { "feedbackButton": { "testid": "feedback-button.horizontal-nav-feedback-button", "x": 1118, "y": 91, "w": 31, "h": 31, "fontWeight": "500" } },
+      "catalyst": null,
+      "verdict": "tracked in DESIGN-CRITIQUE handoff #9"
+    },
+    "4_h1": {
+      "jira": { "tag": "H1", "text": "Senaei BAU", "x": 49, "y": 95, "fontSize": "20px", "fontWeight": "653", "color": "rgb(41, 42, 46)" },
+      "catalyst": { "tag": "H1", "text": "Senaei BAU", "x": 72, "y": 88, "fontSize": "20px", "fontWeight": "653", "color": "rgb(41, 42, 46)" },
+      "verdict": "title text + size + weight + color match; x position differs by 23px (Catalyst's card padding); structurally MISPLACED — Jira's H1 sits in chrome band, Catalyst's H1 sits inside white card"
+    },
+    "5_addPeople": {
+      "jira": { "testid": "invite-people.ui.navigation-add-people-button.trigger", "x": 167, "y": 91, "fontWeight": "500" },
+      "catalyst": null,
+      "verdict": "tracked in LOVABLE handoff #1"
+    },
+    "6_groupByPill": {
+      "jira": { "testid": "business-list.ui.list-view.header-actions.group-by-dropdown.trigger.button-wrapper", "x": 970, "y": 203, "w": 115, "h": 31, "bg": "rgb(233, 242, 254)", "color": "rgb(24, 104, 219)", "fontWeight": "500", "ariaLabel": "Group by Status" },
+      "catalyst": { "x": 825, "y": 128, "w": 132, "h": 31, "bg": "rgb(255, 255, 255)", "color": "rgb(41, 42, 46)", "fontWeight": "500", "fontSize": "13px", "ariaLabel": "Group by Status. Click to change." },
+      "verdict": "P1 — pill should render selected-state styling (blue bg + brand text) when groupBy is active; Catalyst's flat white doesn't signal active state"
+    },
+    "6b_moreActions": {
+      "jira": { "x": 1013, "y": 0, "verdict": "off-screen at this viewport — visible only above the table region; not the toolbar More Actions button" },
+      "catalyst": { "ariaLabel": "More actions", "x": 1013, "y": 128, "w": 31, "h": 31 }
+    },
+    "6c_viewOptions": {
+      "jira": "not directly probed",
+      "catalyst": { "ariaLabel": "View options", "x": 969, "y": 128, "w": 31, "h": 31 }
+    },
+    "7_tableHeader": {
+      "jira": "BaseTable structure — thead th selector returned empty",
+      "catalyst": [
+        { "text": "(checkbox col)", "w": 47, "x": 57, "bg": "rgb(247, 248, 249)", "color": "rgb(80, 82, 88)", "fontWeight": "700", "fontSize": "12px" },
+        { "text": "Type", "w": 68, "x": 105 },
+        { "text": "Key", "w": 68, "x": 173 },
+        { "text": "Summary", "w": 283, "x": 242 },
+        { "text": "Status", "w": 94, "x": 525 }
+      ],
+      "verdict": "P2 — re-probe Jira BaseTable th cells with explicit BaseTable selector; verify Catalyst th styling matches @atlaskit/dynamic-table spec"
+    },
+    "8_groupHeaderRow": {
+      "jira": { "testid": "business-list.ui.list-view.base-table.draggable-rows-container.row-wrapper-GROUP_BY_...", "x": 48, "y": 320, "w": 2440, "h": 40, "text": "Select group BACKLOG Add group item", "role": "row" },
+      "catalyst": { "tag": "TR", "cls": "jira-table-group-row", "x": 57, "y": 223, "w": 1100, "h": 40, "text": "▾ AWAITING INFO 21" },
+      "verdict": "P0 — Catalyst row is NARROWER than Jira (1100 vs 2440 — partly due to viewport, partly because Catalyst doesn't horizontally scroll); chevron is text not button (F-NEW-3); '+ Add group item' missing (F-NEW-2)"
+    },
+    "9_issueRow": {
+      "jira": { "testid": "business-list.ui.list-view.base-table.draggable-rows-container.row-wrapper-52668", "x": 48, "y": 360, "w": 2440, "h": 40, "text": "Select BAU-5419 BAU-5419 Business Proces..." },
+      "catalyst": "selector miss — Catalyst likely uses different DOM hooks; probe again with broader query",
+      "verdict": "needs re-probe"
+    },
+    "10_inlineCreateButton": {
+      "jira": { "testid": "business-list.common.ui.create-issue-plus-button.child-create-button-wrapper", "x": 203, "y": 328, "w": 23, "h": 23, "text": "Add group item" },
+      "catalyst": null,
+      "verdict": "tracked in LOVABLE F-NEW-2"
+    },
+    "11_stickyBottomCreate": {
+      "jira": null,
+      "catalyst": { "testid": "backlog-bottom-create", "x": 57, "y": 894, "w": 1083, "h": 40, "ariaLabel": "Create work item", "text": "Create" },
+      "verdict": "Catalyst-only, no Jira parity needed; affordance is acceptable supplemental affordance to per-group +"
+    }
+  }
+}
