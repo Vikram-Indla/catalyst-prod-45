@@ -371,13 +371,13 @@ export function DemandDetailsViewTab({ data, onChange, onDirtyChange, requestId 
           <hr className="border-gray-200" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
-              Feature Details
+              Business Request Details
             </p>
             <div className="space-y-3">
               {/* Arabic title */}
               {data.arabic_title && (
                 <div>
-                  <FieldLabel>Feature name (Arabic)</FieldLabel>
+                  <FieldLabel>Business Request name (Arabic)</FieldLabel>
                   <div
                     className="h-9 px-3 rounded-md border flex items-center text-sm"
                     style={{ direction: 'rtl', textAlign: 'right', borderColor: 'var(--divider)' }}

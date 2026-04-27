@@ -106,6 +106,11 @@ export interface CreateStoryModalProps {
   onSuccess?: (issueKey: string) => void;
   /** When provided, modal enters "create linked" mode with pre-populated linked items */
   linkedSource?: LinkedSourceConfig;
+  /**
+   * When provided, selecting "Business Request" as the work type will close this modal
+   * and call this callback so the caller can open CreateBusinessRequestModal instead.
+   */
+  onOpenBusinessRequest?: () => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -116,6 +121,7 @@ const WORK_TYPES = [
   'Story',
   'Epic',
   'Feature',
+  'Business Request',
   'Business Gap',
   'QA Bug',
   'Production Incident',
@@ -727,6 +733,7 @@ export function CreateStoryModal({
   projectKey,
   onSuccess,
   linkedSource,
+  onOpenBusinessRequest,
 }: CreateStoryModalProps) {
   const { user } = useAuth();
   const { form, updateField, reset } = useCreateStoryForm(projectId);
@@ -1067,9 +1074,16 @@ export function CreateStoryModal({
                         workTypeOptions.find((o) => o.value === workType) ??
                         null
                       }
-                      onChange={(opt) =>
-                        setWorkType((opt as IconOption)?.value ?? 'Story')
-                      }
+                      onChange={(opt) => {
+                        const selected = (opt as IconOption)?.value ?? 'Story';
+                        // Business Request has its own dedicated form — hand off immediately.
+                        if (selected === 'Business Request' && onOpenBusinessRequest) {
+                          handleClose();
+                          onOpenBusinessRequest();
+                          return;
+                        }
+                        setWorkType(selected);
+                      }}
                       formatOptionLabel={formatIconOption}
                       isSearchable={false}
                     />
