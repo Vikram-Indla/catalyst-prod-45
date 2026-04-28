@@ -55,9 +55,23 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
 
   useEffect(() => {
     const mode: 'light' | 'dark' = isDark ? 'dark' : 'light';
-    // setGlobalTheme is async-returning-promise but fire-and-forget here is
-    // correct — we don't block render on Atlaskit's CSS injection, and the
-    // light-mode default is already applied by its auto-setup.
+    // setGlobalTheme is async-returning-promise. We MUST chain on it because
+    // it writes a parameterised `data-theme="dark:dark light:light spacing:
+    // spacing typography:typography"` string to <html> for its own internal
+    // lookups. That string clobbers Catalyst's clean `data-theme="dark"`,
+    // and every Catalyst CSS rule keyed on `[data-theme="dark"]` (the entire
+    // --cp-* dark-mode override block in theme-tokens.css and index.css)
+    // is an exact-equals attribute selector — it never matches the mangled
+    // value. Net effect: the entire Catalyst dark theme silently dies the
+    // moment AdsThemeProvider mounts.
+    //
+    // Fix (2026-04-28, jira-compare lesson): after setGlobalTheme resolves,
+    // restore the attribute to the clean mode string so Catalyst's CSS
+    // selectors match. Atlaskit reads the attribute internally during the
+    // setGlobalTheme call — by the time the promise resolves, its lookups
+    // are done and we can take the attribute back. Verified live: --cp-bg
+    // flips to #0A0A0A, sidebar/header/main all turn dark, Atlaskit
+    // components keep their --ds-* tokens.
     void setGlobalTheme({
       colorMode: mode,
       typography: 'typography',
@@ -66,7 +80,20 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
       // values without per-component work. Null-safe on older Atlaskit
       // builds — unknown keys are silently ignored.
       customColors: atlaskitCustomColors(mode) as unknown as Record<string, string>,
-    } as Parameters<typeof setGlobalTheme>[0]);
+    } as Parameters<typeof setGlobalTheme>[0])
+      .then(() => {
+        if (typeof document !== 'undefined') {
+          document.documentElement.setAttribute('data-theme', mode);
+        }
+      })
+      .catch(() => {
+        // Even if setGlobalTheme rejects, the attribute may already be
+        // mangled — restore it anyway so CSS doesn't end up in a broken
+        // intermediate state.
+        if (typeof document !== 'undefined') {
+          document.documentElement.setAttribute('data-theme', mode);
+        }
+      });
   }, [isDark]);
 
   return <>{children}</>;

@@ -215,6 +215,17 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // ARCHITECTURAL DEFECT (parked 2026-04-28, see CLAUDE.md cycle 13):
+  // ph_comments.work_item_id is a UUID FK'd to ph_issues.id, but
+  // initiativeId is a ph_initiatives.id UUID — distinct entity. This
+  // select returns no rows in production. The insert in handleSubmit
+  // also includes work_item_type which doesn't exist on ph_comments;
+  // PostgREST throws schema-cache error and the comment never persists.
+  // Same defect lives in src/components/initiatives/DetailPanel.tsx and
+  // src/components/producthub/timeline/DetailTabActivity.tsx. Real fix
+  // requires either ph_initiative_comments mirror or polymorphic FK +
+  // work_item_type discriminator on ph_comments. Do NOT ship features
+  // that depend on initiative comments rendering.
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['pk-comments', initiativeId],
     queryFn: async () => {
@@ -239,6 +250,7 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      // ARCHITECTURAL DEFECT — see comment block above the comments useQuery.
       await typedQuery('ph_comments').insert({
         work_item_id: initiativeId,
         work_item_type: 'initiative',

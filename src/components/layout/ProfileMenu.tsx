@@ -17,6 +17,12 @@ import {
 import { useAuth } from '@/lib/auth';
 import { useTheme } from '@/hooks/useTheme';
 import { resolveAvatarUrl } from '@/lib/avatars';
+import { adsTokens, cp } from '@/theme/ads/tokens';
+
+// Atlassian brand purple — kept as a literal because it is the canonical
+// avatar fallback colour across both light and dark modes (Jira / Confluence
+// parity). Do not migrate to a token; this is a brand identity hex.
+const AVATAR_BRAND_PURPLE = '#5243AA';
 
 /**
  * ProfileMenu — Radix rebuild Apr 2026
@@ -94,7 +100,7 @@ export function ProfileMenu() {
             outline: 'none',
             transition: 'box-shadow 120ms ease',
             boxShadow: open
-              ? '0 0 0 2px #0052CC'
+              ? `0 0 0 2px ${cp(adsTokens.border.focus)}`
               : '0 0 0 0 transparent',
           }}
         >
@@ -107,8 +113,8 @@ export function ProfileMenu() {
               height: 28,
               borderRadius: '50%',
               overflow: 'hidden',
-              backgroundColor: '#5243AA',
-              color: '#FFFFFF',
+              backgroundColor: AVATAR_BRAND_PURPLE,
+              color: cp(adsTokens.text.inverse),
               fontSize: 11,
               fontWeight: 600,
               pointerEvents: 'none',
@@ -138,8 +144,8 @@ export function ProfileMenu() {
             alignItems: 'center',
             gap: 12,
             padding: '12px 14px',
-            borderBottom: '1px solid #DFE1E6',
-            background: '#F4F5F7',
+            borderBottom: `1px solid ${cp(adsTokens.border.default)}`,
+            background: cp(adsTokens.bg.inset),
           }}
         >
           <span
@@ -151,8 +157,8 @@ export function ProfileMenu() {
               height: 40,
               borderRadius: '50%',
               overflow: 'hidden',
-              backgroundColor: '#5243AA',
-              color: '#FFFFFF',
+              backgroundColor: AVATAR_BRAND_PURPLE,
+              color: cp(adsTokens.text.inverse),
               fontSize: 14,
               fontWeight: 600,
               flexShrink: 0,
@@ -173,7 +179,7 @@ export function ProfileMenu() {
               style={{
                 fontSize: 14,
                 fontWeight: 600,
-                color: '#172B4D',
+                color: cp(adsTokens.text.primary),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -184,7 +190,7 @@ export function ProfileMenu() {
             <div
               style={{
                 fontSize: 12,
-                color: '#6B778C',
+                color: cp(adsTokens.text.secondary),
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
@@ -196,7 +202,10 @@ export function ProfileMenu() {
         </div>
 
         <div style={{ padding: 4 }}>
-          <DropdownMenuLabel className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#6B778C]">
+          <DropdownMenuLabel
+            className="px-2 py-1.5 text-[11px] font-semibold uppercase tracking-wide"
+            style={{ color: cp(adsTokens.text.secondary) }}
+          >
             Account
           </DropdownMenuLabel>
           <DropdownMenuItem
@@ -236,7 +245,7 @@ export function ProfileMenu() {
                 <Sun className="mr-2 h-4 w-4" />
                 Light
                 {theme === 'light' && (
-                  <span className="ml-auto text-[#0052CC]">✓</span>
+                  <span className="ml-auto" style={{ color: cp(adsTokens.brand.primary) }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -249,7 +258,7 @@ export function ProfileMenu() {
                 <Moon className="mr-2 h-4 w-4" />
                 Dark
                 {theme === 'dark' && (
-                  <span className="ml-auto text-[#0052CC]">✓</span>
+                  <span className="ml-auto" style={{ color: cp(adsTokens.brand.primary) }}>✓</span>
                 )}
               </DropdownMenuItem>
               <DropdownMenuItem
@@ -262,7 +271,7 @@ export function ProfileMenu() {
                 <Monitor className="mr-2 h-4 w-4" />
                 Match system
                 {theme === 'system' && (
-                  <span className="ml-auto text-[#0052CC]">✓</span>
+                  <span className="ml-auto" style={{ color: cp(adsTokens.brand.primary) }}>✓</span>
                 )}
               </DropdownMenuItem>
             </DropdownMenuSubContent>

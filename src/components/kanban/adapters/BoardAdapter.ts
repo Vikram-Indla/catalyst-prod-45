@@ -88,6 +88,20 @@ export interface CanonicalBoardIssue extends BoardIssue {
   secondaryLozenge?: BoardLozenge | null;
   /** Right-aligned footer meta (e.g. "updated 3d ago", "due Apr 30"). */
   metaText?: string | null;
+  /**
+   * Optional override for column routing.
+   *
+   * Some hubs translate their DB enum into a UI vocabulary at the data-fetch
+   * layer (e.g. ProductHub's `STATUS_MAP` rewrites `in_progress` →
+   * `under_implementation` for legacy lozenge consumers). The kanban column
+   * scheme is keyed off the DB enum (via `slug` + `slug_aliases`), so the
+   * UI-translated `status` no longer matches.
+   *
+   * When set, `buildColMapFromAdapter` uses `boardStatus` for column
+   * lookup; otherwise it falls back to `status`. Hubs that don't translate
+   * (every adapter except ProductHub initially) leave it `undefined`.
+   */
+  boardStatus?: string | null;
   /** Opaque passthrough — the original hub row, for adapter callbacks. */
   raw?: unknown;
 }
@@ -278,7 +292,10 @@ export function buildColMapFromAdapter<T>(adapter: BoardAdapter<T>): Record<stri
   const map: Record<string, string[]> = {};
   for (const col of adapter.columns) map[col.id] = [];
   for (const card of adapter.cards) {
-    const colId = adapter.statusToColumnId(card.status);
+    // Prefer `boardStatus` (raw DB enum) when the adapter populated it.
+    // Falls back to UI-translated `status` for adapters that don't translate.
+    const lookup = (card.boardStatus ?? card.status) as string;
+    const colId = adapter.statusToColumnId(lookup);
     if (colId && map[colId]) map[colId].push(card.id);
   }
   return map;

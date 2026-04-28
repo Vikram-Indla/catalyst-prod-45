@@ -109,6 +109,14 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
     },
   });
 
+  // ARCHITECTURAL DEFECT (parked 2026-04-28, see CLAUDE.md cycle 13):
+  // ph_comments.work_item_id is a UUID FK'd to ph_issues.id, but
+  // initiativeId is a ph_initiatives.id UUID — distinct entity. This
+  // query has never returned rows in production. Same defect lives in
+  // src/components/initiatives/DetailPanel.tsx and
+  // src/components/producthub/timeline/DetailTabDetails.tsx. Real fix
+  // requires either ph_initiative_comments mirror table or polymorphic
+  // FK + work_item_type discriminator on ph_comments.
   const { data: rawComments = [], isLoading: isLoadingComments } = useQuery({
     queryKey: ['pk-comments', initiativeId],
     queryFn: async () => {
@@ -142,6 +150,15 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
     mutationFn: async (body: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
+      // ARCHITECTURAL DEFECT (see CLAUDE.md cycle 13): this insert
+      // currently fails with PostgREST "Could not find the
+      // 'work_item_type' column of 'ph_comments' in the schema cache"
+      // (the column does NOT exist on ph_comments; Supabase types
+      // confirm columns are id / work_item_id / author_id / body /
+      // created_at / updated_at). Even with that field dropped, the
+      // FK on work_item_id targets ph_issues.id, NOT ph_initiatives.id
+      // — so the row would be an orphan or rejected by the FK.
+      // Comments on this surface have never persisted in production.
       const { error } = await supabase.from('ph_comments').insert({
         work_item_id: initiativeId,
         work_item_type: 'initiative',

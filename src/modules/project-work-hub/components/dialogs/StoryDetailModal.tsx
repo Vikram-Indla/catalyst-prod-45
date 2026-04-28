@@ -18,7 +18,7 @@ import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Search, MessageSquare, Clock,
   GripVertical, Link2, Trash2, Check,
-  Eye, EyeOff, Sparkles, Loader2, RotateCcw, Settings2, AlertTriangle, Zap,
+  Eye, EyeOff, Loader2, Settings2, Zap,
   SquarePen, Reply, ThumbsUp, Smile, Pencil, MoreHorizontal, Copy,
   Globe, Palette, CheckSquare,
 } from 'lucide-react';
@@ -43,8 +43,8 @@ import type {
   PhIssue, PhComment, PhActivityLog, PhAttachment, PhIssueLink,
   TmTestCase, ThTestExecution, RhRelease, RhChange,
   Profile, ProjectMember, PhIssueRow,
-  ColumnConfig, ParentIssue, AIOutput,
-  StatusCategory, PriorityLevel, TestResult, AIImproveType,
+  ColumnConfig, ParentIssue,
+  StatusCategory, PriorityLevel, TestResult,
   ActivityTab, StoryDetailModalProps,
 } from './story-detail-modules';
 
@@ -52,7 +52,7 @@ import {
   DEFAULT_COLUMNS, STATUS_CATEGORIES, STATUS_STYLES, STATUS_OPTION_GROUPS,
   LOZENGE_STYLES, LOZENGE, PRIORITY_COLORS, PRIORITY_STYLES, PRIORITY_ICONS, PRIORITY_LIST,
   TEST_RESULT_STYLES, LINK_TYPE_LABELS, LINK_TYPE_STYLES, LINK_TYPE_OPTIONS,
-  WORK_ITEM_ICONS, AI_IMPROVE_OPTIONS,
+  WORK_ITEM_ICONS,
   menuItemStyle, detailLabelStyle, detailValueStyle,
 } from './story-detail-modules';
 
@@ -508,7 +508,6 @@ export default function StoryDetailModal({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [showWorkflow, setShowWorkflow] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [showAiRegenConfirm, setShowAiRegenConfirm] = useState(false);
   const [showFigmaInput, setShowFigmaInput] = useState(false);
   const [figmaUrl, setFigmaUrl] = useState('');
   const [figmaError, setFigmaError] = useState('');
@@ -574,28 +573,16 @@ export default function StoryDetailModal({
     return () => { document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp); };
   }, []);
 
-  // AI Improve Story state
-  // Apr 28 2026 (jira-compare cycle 4): legacy state (aiPanelOpen,
-  // aiImproveType, …) kept ALIVE because the inline AI panel below
-  // still renders when aiPanelOpen=true, but the entry point — the
-  // Improve Story trigger — is now the canonical ImproveIssueDropdown
-  // (mirrors the other 7 CatalystView* types). Old "Find similar
-  // items" / "Summarize comments" actions were re-routed to the new
-  // dialogs which use the same ai-improve-story per-type prompts.
-  const [aiPanelOpen, setAiPanelOpen] = useState(false);
-  const [aiImproveType, setAiImproveType] = useState<AIImproveType>('improve_clarify');
-  const [aiDropOpen, setAiDropOpen] = useState(false);
-  const [aiFocusHint, setAiFocusHint] = useState('');
-  const [aiGenerating, setAiGenerating] = useState(false);
-  const [aiOutput, setAiOutput] = useState<AIOutput | null>(null);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const [aiEdited, setAiEdited] = useState(false);
-  const aiDropRef = useRef<HTMLDivElement>(null);
+  // AI Improve handlers — wired into the canonical ImproveIssueDropdown.
+  // Apr 28 2026 (jira-compare cycle 4): the legacy inline AI panel + its
+  // 9 supporting state slots / 2 callbacks / 1 confirm-modal were removed
+  // as DEAD CODE in cycle-6 cleanup once the new dropdown had baked in.
+  // ImproveIssueDropdown owns description/AC/comments/children/similar
+  // flows now via the per-type prompts in supabase/functions/ai-improve-story.
   const improveHandlers = useImproveApplyHandlers(issue ?? null);
 
   useEffect(() => {
     const h = (e: MouseEvent) => {
-      if (aiDropRef.current && !aiDropRef.current.contains(e.target as Node)) setAiDropOpen(false);
       if (addMenuRef.current && !addMenuRef.current.contains(e.target as Node)) { setShowAddMenu(false); setAddMenuSearch(''); }
       if (aiMenuRef.current && !aiMenuRef.current.contains(e.target as Node)) setShowAiMenu(false);
       if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) setShowStatusDropdown(false);
@@ -787,47 +774,11 @@ export default function StoryDetailModal({
     });
   }, [figmaUrl, itemId, user, queryClient, attachmentsTable]);
 
-  /* ── AI Apply handlers ─────────────────────── */
-  const handleApplyDescription = useCallback(async (newDesc: string, prev: string) => {
-    updateFieldMutation.mutate({ field: 'description_text', value: newDesc, oldValue: prev });
-    // TipTap editor re-renders via React Query invalidation
-  }, [updateFieldMutation]);
-
-  const handleApplyAC = useCallback(async (newAC: string, _prev: string) => {
-    setAcceptanceCriteria(newAC);
-    await supabase.from(issueTable).update({ acceptance_criteria: newAC } as any).eq('issue_key', itemId);
-    queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-  }, [itemId, queryClient, issueTable]);
-
-  const doAiGenerate = useCallback(async () => {
-    setAiGenerating(true); setAiError(null); setAiOutput(null); setAiEdited(false); setShowAiRegenConfirm(false);
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke('ai-improve-story', {
-        body: {
-          issue_id: itemId,
-          improve_type: aiImproveType,
-          focus_hint: aiFocusHint.trim() || null,
-          current_description: issue?.description_text || '(empty)',
-          current_ac: acceptanceCriteria || '(none)',
-          issue_summary: issue?.summary ?? '',
-        },
-      });
-      if (fnError) throw fnError;
-      if (!data?.description && !data?.acceptance_criteria) throw new Error('No content returned');
-      setAiOutput({ description: data.description ?? '', acceptance_criteria: data.acceptance_criteria ?? '' });
-    } catch {
-      setAiError('AI features temporarily unavailable. Try again.');
-    } finally { setAiGenerating(false); }
-  }, [aiImproveType, aiFocusHint, itemId, issue, acceptanceCriteria]);
-
-  const handleAiGenerate = useCallback(async () => {
-    if (aiGenerating) return;
-    if (aiEdited && aiOutput) {
-      setShowAiRegenConfirm(true);
-      return;
-    }
-    doAiGenerate();
-  }, [aiGenerating, aiEdited, aiOutput, doAiGenerate]);
+  // Apr 28 2026 (cycle 6 cleanup): legacy handleApplyDescription /
+  // handleApplyAC callbacks (writing description_text + acceptance_criteria
+  // on the ph_issues row) were removed alongside the inline AI panel. The
+  // canonical ImproveIssueDropdown now writes to description_adf via
+  // useImproveApplyHandlers — see src/components/catalyst-detail-views/improve.
 
   const handleParentChange = useCallback(async (newParentKey: string | null) => {
     await supabase.from(issueTable).update({ parent_key: newParentKey } as any).eq('issue_key', itemId);
@@ -919,13 +870,13 @@ export default function StoryDetailModal({
   useEffect(() => {
     if (!isOpen || !panelMode) return;
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !showStatusDropdown && !showHeaderStatusDropdown && !showDotsMenu && !showAddMenu && !aiDropOpen && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
+      if (e.key === 'Escape' && !showStatusDropdown && !showHeaderStatusDropdown && !showDotsMenu && !showAddMenu && !showConfirmDelete && !showWorkflow && !showFigmaInput) {
         onClose();
       }
     };
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, panelMode, showStatusDropdown, showHeaderStatusDropdown, showDotsMenu, showAddMenu, aiDropOpen, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
+  }, [isOpen, panelMode, showStatusDropdown, showHeaderStatusDropdown, showDotsMenu, showAddMenu, showConfirmDelete, showWorkflow, showFigmaInput, onClose]);
 
   if (!isOpen) return null;
 
@@ -1360,108 +1311,6 @@ export default function StoryDetailModal({
                       {...improveHandlers}
                     />
                   </div>
-
-                  {/* AI IMPROVE PANEL — DEAD CODE.
-                      Apr 28 2026 (cycle 6 follow-up): every entry point
-                      that called `setAiPanelOpen(true)` was removed in
-                      cycle 4 when the legacy aiMenuRef trigger was
-                      replaced by ImproveIssueDropdown. `aiPanelOpen`
-                      now stays `false` for the whole component
-                      lifetime, so the JSX below never renders. Kept
-                      in source as a single block so a future cleanup
-                      pass can delete it (state declarations + this
-                      render branch + related handlers like
-                      doAiGenerate / handleAiGenerate / setAiOutput /
-                      setShowAiRegenConfirm) in one commit. Not
-                      deleting now to keep the diff blast-radius small
-                      while the new dropdown bakes in. */}
-                  {aiPanelOpen && (
-                    <div style={{ marginBottom: 20, border: '1px solid #BFDBFE', borderRadius: 8, overflow: 'hidden', animation: 'sdm-slide-down 0.2s ease' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#DBEAFE' }}>
-                        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <Sparkles size={13} style={{ color: '#2563EB' }} />
-                          <span style={{ fontSize: 12, fontWeight: 700, color: '#1E40AF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>AI Improve Story Requirements</span>
-                        </div>
-                        <span style={{ fontSize: 10, color: '#1D4ED8', background: '#EFF6FF', padding: '1px 6px', borderRadius: 3, fontFamily: 'var(--cp-font-mono)', fontWeight: 600, letterSpacing: '0.02em' }}>gemini-flash</span>
-                        <button onClick={() => { setAiPanelOpen(false); setAiOutput(null); setAiError(null); }}
-                          style={{ width: 22, height: 22, borderRadius: 3, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6B778C' }}
-                        ><X size={13} /></button>
-                      </div>
-                      <div style={{ padding: '14px 14px 16px', background: '#FFFFFF' }}>
-                        <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Improve type</div>
-                          <div ref={aiDropRef} style={{ position: 'relative' }}>
-                            <div onClick={() => setAiDropOpen(o => !o)} role="button" tabIndex={0}
-                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 32, padding: '0 10px', border: '1px solid rgba(9,30,66,0.14)', borderRadius: 4, cursor: 'pointer', background: aiDropOpen ? '#F8FAFC' : '#fff', transition: 'border-color 0.12s' }}>
-                              <span style={{ fontSize: 13, color: '#172B4D' }}>{AI_IMPROVE_OPTIONS.find(o => o.value === aiImproveType)?.label ?? 'Select…'}</span>
-                              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 5L6 8L9 5" stroke="#6B778C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                            </div>
-                            {aiDropOpen && (
-                              <div style={{ position: 'absolute', top: 'calc(100% + 2px)', left: 0, right: 0, background: '#fff', border: '1px solid rgba(9,30,66,0.24)', borderRadius: 6, boxShadow: '0 6px 16px rgba(9,30,66,0.15)', zIndex: 60, overflow: 'hidden' }}>
-                                {AI_IMPROVE_OPTIONS.map(opt => (
-                                  <div key={opt.value} onClick={() => { setAiImproveType(opt.value); setAiDropOpen(false); }}
-                                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, padding: '8px 12px', cursor: 'pointer', fontSize: 13, color: '#172B4D', background: opt.value === aiImproveType ? '#EFF6FF' : 'transparent', transition: 'background 0.1s' }}
-                                    onMouseEnter={e => { if (opt.value !== aiImproveType) (e.currentTarget as HTMLElement).style.background = 'rgba(9,30,66,0.04)'; }}
-                                    onMouseLeave={e => { if (opt.value !== aiImproveType) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
-                                  >
-                                    <span>{opt.label}</span>
-                                    {opt.value === aiImproveType && <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <div style={{ marginBottom: 12 }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4 }}>Focus area <span style={{ fontWeight: 400, color: '#8993A4' }}>(optional)</span></div>
-                          <input value={aiFocusHint} onChange={e => setAiFocusHint(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleAiGenerate(); }}
-                            placeholder='e.g. "focus on edge cases" or "make more concise"'
-                            style={{ width: '100%', height: 32, padding: '0 8px', border: '1px solid rgba(9,30,66,0.14)', borderRadius: 4, fontFamily: 'inherit', fontSize: 13, color: '#172B4D', background: '#fff', outline: 'none' }}
-                            onFocus={e => (e.target.style.borderColor = '#2563EB')} onBlur={e => (e.target.style.borderColor = 'rgba(9,30,66,0.14)')} />
-                        </div>
-                        <div style={{ marginBottom: 14 }}>
-                          <div style={{ fontSize: 11, fontWeight: 600, color: '#6B778C', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.04em' }}>Context from story</div>
-                          <div style={{ padding: '8px 10px', background: '#F8FAFC', border: '1px solid rgba(9,30,66,0.08)', borderRadius: 4, fontSize: 12, color: '#42526E', lineHeight: 1.5, maxHeight: 80, overflow: 'auto' }}>
-                            {issue?.description_text || <em style={{ color: '#8993A4' }}>No description yet — AI will generate from story title</em>}
-                          </div>
-                        </div>
-                        <div style={{ marginBottom: 8 }}>
-                          <button onClick={handleAiGenerate} disabled={aiGenerating}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, height: 34, padding: '0 16px', borderRadius: 4, border: 'none', background: aiGenerating ? '#93C5FD' : '#2563EB', color: '#FFFFFF', fontSize: 13, fontWeight: 600, cursor: aiGenerating ? 'wait' : 'pointer', fontFamily: 'inherit', transition: 'background 0.15s' }}
-                            onMouseEnter={e => { if (!aiGenerating) (e.currentTarget.style.background = '#1D4ED8'); }}
-                            onMouseLeave={e => { if (!aiGenerating) (e.currentTarget.style.background = '#2563EB'); }}
-                          >
-                            {aiGenerating ? (<><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ animation: 'sdm-spin 1s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg> Generating…</>) : (<><Sparkles size={13} /> Generate</>)}
-                          </button>
-                        </div>
-                        {aiError && (
-                          <div style={{ marginTop: 4, padding: '8px 10px', background: '#FFF1EF', border: '1px solid #FFBDAD', borderRadius: 4, fontSize: 12, color: '#BF2600', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <AlertTriangle size={13} />{aiError}
-                            <button onClick={handleAiGenerate} style={{ marginLeft: 'auto', color: '#BF2600', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>Retry</button>
-                          </div>
-                        )}
-                        {aiGenerating && (
-                          <div style={{ marginTop: 10, padding: 12, background: '#F8FAFC', borderRadius: 6, border: '1px solid rgba(9,30,66,0.08)' }}>
-                            {[100, 85, 70, 55].map((w, i) => (<div key={i} style={{ height: 12, marginBottom: 8, borderRadius: 4, width: `${w}%`, background: 'linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%)', backgroundSize: '200% 100%', animation: 'sdm-shimmer 1.5s ease-in-out infinite' }} />))}
-                          </div>
-                        )}
-                        {aiOutput && !aiGenerating && (
-                          <div style={{ marginTop: 10 }}>
-                            <div style={{ padding: 12, background: '#F8FAFC', borderRadius: 6, border: '1px solid rgba(9,30,66,0.08)', fontSize: 13, color: '#172B4D', lineHeight: 1.6 }}>
-                              {aiOutput.description && (<><div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', marginBottom: 6 }}>Description</div><p style={{ margin: '0 0 12px', whiteSpace: 'pre-wrap' }}>{aiOutput.description}</p></>)}
-                              {aiOutput.acceptance_criteria && (<><div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#6B778C', marginBottom: 6 }}>Acceptance Criteria</div><pre style={{ fontFamily: 'inherit', whiteSpace: 'pre-wrap', margin: 0, fontSize: 12 }}>{aiOutput.acceptance_criteria}</pre></>)}
-                            </div>
-                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
-                              <button onClick={handleAiGenerate} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 4, border: '1px solid #BFDBFE', background: 'transparent', fontSize: 12, fontWeight: 500, color: '#1D4ED8', cursor: 'pointer', fontFamily: 'inherit' }}><RotateCcw size={11} /> Regenerate</button>
-                              {aiOutput.description && (<button onClick={() => { handleApplyDescription(aiOutput.description, issue?.description_text ?? ''); setAiPanelOpen(false); }} style={{ padding: '5px 10px', borderRadius: 4, border: '1px solid #BFDBFE', background: 'transparent', fontSize: 12, fontWeight: 500, color: '#1D4ED8', cursor: 'pointer', fontFamily: 'inherit' }}>← Apply to Description</button>)}
-                              {aiOutput.acceptance_criteria && (<button onClick={() => { handleApplyAC(aiOutput.acceptance_criteria, acceptanceCriteria); setAiPanelOpen(false); }} style={{ padding: '5px 10px', borderRadius: 4, border: '1px solid #BFDBFE', background: 'transparent', fontSize: 12, fontWeight: 500, color: '#1D4ED8', cursor: 'pointer', fontFamily: 'inherit' }}>← Apply to AC</button>)}
-                              {aiOutput.description && aiOutput.acceptance_criteria && (<button onClick={() => { handleApplyDescription(aiOutput.description, issue?.description_text ?? ''); handleApplyAC(aiOutput.acceptance_criteria, acceptanceCriteria); setAiPanelOpen(false); }} style={{ padding: '5px 10px', borderRadius: 4, border: 'none', background: '#2563EB', fontSize: 12, fontWeight: 600, color: '#FFFFFF', cursor: 'pointer', fontFamily: 'inherit' }}>← Apply Both</button>)}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
 
                   {/* 3. FIGMA URL INPUT ROW */}
                   {showFigmaInput && (
@@ -2324,33 +2173,6 @@ export default function StoryDetailModal({
             <ModalFooter>
               <Button appearance="subtle" onClick={() => setShowWorkflow(false)}>
                 Close
-              </Button>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
-
-      {/* AI Regen Confirm */}
-      <ModalTransition>
-        {showAiRegenConfirm && (
-          <Modal
-            onClose={() => setShowAiRegenConfirm(false)}
-            width="small"
-          >
-            <ModalHeader>
-              <ModalTitle>
-                Regenerate AI output?
-              </ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              Your edits will be discarded. This cannot be undone.
-            </ModalBody>
-            <ModalFooter>
-              <Button appearance="subtle" onClick={() => setShowAiRegenConfirm(false)}>
-                Cancel
-              </Button>
-              <Button appearance="primary" onClick={() => doAiGenerate()}>
-                Regenerate
               </Button>
             </ModalFooter>
           </Modal>

@@ -6,6 +6,7 @@ import SidebarCollapseIcon from '@atlaskit/icon/core/sidebar-collapse';
 import { AskCatalystPill } from '@/components/layout/AskCatalystPill';
 import { SettingsMenu } from '@/components/layout/SettingsMenu';
 import { ProfileMenu } from '@/components/layout/ProfileMenu';
+import { ThemeToggle } from '@/components/ads';
 import { HubSwitcher } from '@/components/layout/HubSwitcher';
 import { GlobalSearch } from '@/components/layout/GlobalSearch';
 import { CreateDropdown } from './CreateDropdown';
@@ -172,9 +173,15 @@ export function CatalystHeader() {
         </div>
       </div>
 
-      {/* RIGHT cluster — justifySelf:end pins it to the right screen edge */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'end' }}>
+      {/* RIGHT cluster — justifySelf:end pins it to the right screen edge.
+          ThemeToggle sits left of NotificationsPanel so the moon/sun lives
+          inside the natural reading order before the alert/settings/avatar
+          stack. The toggle and ProfileMenu's Theme submenu share state
+          via useThemeMode() — clicking either flips both. (2026-04-28).
+          HMR-nudge marker: phase-0-1-v2 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', justifySelf: 'end' }} data-theme-toggle-cluster>
         <AskCatalystPill />
+        <ThemeToggle />
         <NotificationsPanel />
         <SettingsMenu />
         <ProfileMenu />

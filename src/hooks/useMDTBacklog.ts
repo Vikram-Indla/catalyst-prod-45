@@ -140,6 +140,13 @@ export function useMDTBacklog() {
           title: row.title,
           description: row.description || null,
           status: mapDbStatus(row.status),
+          // Raw DB enum value passed through untranslated — kanban
+          // column-routing reads this so `catalyst_workflow_statuses.slug_aliases`
+          // can route legacy DB values (`new_demand`, `in_progress`,
+          // `closed` etc.) into their post-rename columns. Without this,
+          // STATUS_MAP collides with the workflow scheme and 41 of 47
+          // cards drop on the floor.
+          db_status: row.status as string,
           assignee_id: row.assignee_id || null,
           assignee_name: assigneeProfile?.name || null,
           assignee_avatar: assigneeProfile?.avatar || null,

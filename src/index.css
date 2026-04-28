@@ -3420,7 +3420,32 @@ input[type="range"]::-moz-range-thumb {
   --text-1: #EDEDED;
   --text-2: #A1A1A1;
   --text-3: #878787;
-  
+
+  /* ── Hub navigation tokens — dark mode overrides (Phase 7, 2026-04-28) ──
+     Light defaults at line 230 use Atlaskit Blue 50/500/700 + Navy N200/800.
+     In dark mode the original light-blue tile bg (#DEEBFF) and dark navy
+     label (#091E42) inverted into nearly-invisible dark-blue-on-dark. The
+     screenshot evidence: every hub name in the HubSwitcher dropdown was
+     unreadable except the selected ProductHub, which kept its bright #DEEBFF
+     bg (glaring near-white in dark). Dark values:
+       - tile-rest      uses NOCTURNE bg-inset for a subtle dark surface
+       - tile-selected  keeps brand blue but slightly lifted
+       - ink-rest       brightens to Atlaskit Blue 200 for icon visibility
+       - row-selected   uses brand-blue 14% wash matching adsTokens.bg.selected dark
+       - label-rest     uses --cp-text-primary so hub names are bright
+       - label-sub      uses --cp-text-secondary for the description line. */
+  --hub-tile-rest:      #1F2937;
+  --hub-tile-selected:  #2563EB;
+  --hub-tile-pressed:   #1D4ED8;
+  --hub-ink-rest:       #93C5FD;
+  --hub-ink-inverse:    #FFFFFF;
+  --hub-row-rest:       transparent;
+  --hub-row-hover:      rgba(255,255,255,0.04);
+  --hub-row-selected:   rgba(37,99,235,0.14);
+  --hub-row-pressed:    rgba(37,99,235,0.22);
+  --hub-bar-selected:   #2563EB;
+  --hub-label-rest:     #EDEDED;
+  --hub-label-sub:      #A1A1A1;
 }
 
 .dark ::-webkit-scrollbar-track,

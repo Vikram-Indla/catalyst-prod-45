@@ -98,6 +98,7 @@ import { createPortal } from 'react-dom';
 import Button from '@atlaskit/button/new';
 import Textfield from '@atlaskit/textfield';
 import { token } from '@atlaskit/tokens';
+import { adsTokens, cp } from '@/theme/ads/tokens';
 
 export interface DangerConfirmModalProps {
   /** Whether the modal is open. */
@@ -233,7 +234,11 @@ export function DangerConfirmModal({
         style={{
           width: 400,
           maxWidth: 'calc(100vw - 48px)',
-          background: token('elevation.surface.overlay', '#FFFFFF'),
+          // Phase 5 (2026-04-28): swap token('elevation.surface.overlay')
+          // to bridge token. token() returns the fallback hex on snapshot
+          // path, leaving modal surface white in dark mode. cp() reads
+          // through CSS var which flips at every paint.
+          background: cp(adsTokens.bg.overlay),
           borderRadius: 8,
           boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
           display: 'flex',
@@ -286,7 +291,7 @@ export function DangerConfirmModal({
               lineHeight: '24px',
               fontWeight: 600,
               letterSpacing: '-0.003em',
-              color: token('color.text', '#292A2E'),
+              color: cp(adsTokens.text.primary),
             }}
           >
             {title}
@@ -300,7 +305,7 @@ export function DangerConfirmModal({
               margin: 0,
               fontSize: 14,
               lineHeight: '20px',
-              color: token('color.text', '#292A2E'),
+              color: cp(adsTokens.text.primary),
             }}
           >
             {description}
@@ -312,7 +317,7 @@ export function DangerConfirmModal({
                 marginBottom: 0,
                 fontSize: 13,
                 lineHeight: '18px',
-                color: token('color.text.subtle', '#42526E'),
+                color: cp(adsTokens.text.secondary),
               }}
             >
               {hint}
@@ -326,7 +331,7 @@ export function DangerConfirmModal({
                   display: 'block',
                   fontSize: 12,
                   fontWeight: 600,
-                  color: token('color.text', '#292A2E'),
+                  color: cp(adsTokens.text.primary),
                   marginBottom: 6,
                 }}
               >

@@ -17,6 +17,15 @@
   --cp-bg-sidebar-hdr:  #F8FAFC;
   --cp-bg-sunken:       #F1F5F9;
   --cp-float:           #FFFFFF;
+  /* Bridge gap closure (2026-04-28): src/theme/ads/tokens.ts declared
+     overlay/inset/disabled values in TS but no CSS rule emitted them
+     as custom properties. Wrappers reading var(--cp-bg-overlay) etc.
+     resolved to nothing. Adding here so the bridge has a real CSS
+     counterpart. Light values mirror tokens.ts adsTokens.bg.* and
+     text.disabled. */
+  --cp-bg-overlay:      #F8FAFC;
+  --cp-bg-inset:        #F1F5F9;
+  --cp-text-disabled:   #CBD5E1;
 
   /* Text */
   --cp-t1:              #111827;
@@ -98,6 +107,12 @@
   --cp-bg-sidebar-hdr:  #0A0A0A;
   --cp-bg-sunken:       #0A0A0A;
   --cp-float:           #1A1A1A;
+  /* Bridge gap closure (2026-04-28) — see light block. NOCTURNE
+     dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
+     and text.disabled. */
+  --cp-bg-overlay:      #1F1F1F;
+  --cp-bg-inset:        #111111;
+  --cp-text-disabled:   #7D7D7D;
 
   /* Text — Geist solid hex scale */
   --cp-t1:              #EDEDED;
