@@ -559,11 +559,21 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         /* Apr 27, 2026 (L60): explicit typography baseline per Jira-parity
            spec — 14/20/400 with primary text color. Cells with their own
            cell-renderers (Lozenge, Avatar, dates, etc.) override locally;
-           all unstyled text inherits this default so we don't drift. */
+           all unstyled text inherits this default so we don't drift.
+           Apr 28, 2026 (jira-compare cycle 2 typography RCA): switched
+           from legacy hardcoded #172B4D (rgb 23,43,77 — old Atlassian
+           Refresh "neutral 800") to the modern --ds-text token (resolves
+           to rgb 41,42,46 on Jira /list per live probe of Catalyst H1
+           AND Jira BAU body cells). The legacy hex was the cause of the
+           washed-out / blue-shifted body text Vikram flagged: every body
+           td was rendering #172B4D while headers + H1 used the modern
+           token. Token-first ensures dark-mode + Nocturne switch flips
+           too. Fallback hex updated to #292A2E to match Jira's resolved
+           --ds-text in light theme. */
         font-size: 14px;
         line-height: 20px;
         font-weight: 400;
-        color: #172B4D;
+        color: var(--ds-text, #292A2E);
         font-family: inherit;
       }
       /* Column resize handle — 6px hit area on the right edge of each
@@ -1638,7 +1648,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
                     padding: '8px 10px',
                     border: 'none',
                     background: 'transparent',
-                    color: a.danger ? '#AE2A19' : '#172B4D',
+                    // Apr 28, 2026 (jira-compare cycle 3 typography sweep):
+                    // legacy #172B4D → --ds-text fallback #292A2E to match
+                    // the rest of the table's body-text token swap.
+                    color: a.danger ? 'var(--ds-text-danger, #AE2A19)' : 'var(--ds-text, #292A2E)',
                     fontSize: 14,
                     textAlign: 'left',
                     cursor: disabled ? 'default' : 'pointer',

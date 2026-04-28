@@ -2149,7 +2149,14 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         // with table content. Top/bottom kept at 32 (still matches Jira's
         // 45px tabs→toolbar / toolbar→table rhythm — verified earlier
         // probe). marginBottom kept at 4 so body table doesn't drift.
-        padding: '32px 0 32px',
+        // Apr 28, 2026 (jira-compare cycle 2 V1+V2+V3): horizontal
+        // padding 0 → 24px so the search input + items count + table
+        // STOP hugging the white card edges. User-visible defect that
+        // multiple cycles missed. This wrapper extends across both
+        // toolbar and (via marginBottom + the JiraTable wrapper below)
+        // bleeds the same inset to the table head + body — see the
+        // sibling wrapper directly after this div.
+        padding: '32px 24px 32px',
         marginBottom: 4,
         display: 'flex',
         gap: 12,
@@ -2311,7 +2318,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             // here. Keeping top:4 for breathing room under the toolbar
             // bottom border. Outer page chrome still has 8px padding-left
             // (AtlaskitPageShell) so the table won't touch the nav edge.
-            padding: '4px 0 0',
+            // Apr 28, 2026 (jira-compare cycle 2 V3): horizontal padding
+            // 0 → 24px so the table thead + tbody inset matches the
+            // toolbar's new 24px inset. Without this the table still
+            // hugs the white card edge.
+            padding: '4px 24px 0',
             transition: 'width 150ms ease, flex-basis 150ms ease',
           }}
         >

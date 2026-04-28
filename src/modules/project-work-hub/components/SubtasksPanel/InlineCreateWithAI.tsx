@@ -79,6 +79,11 @@ export function InlineCreateWithAI({
     query: draft,
     projectKey,
     excludedIds,
+    // Apr 28, 2026 (jira-compare cycle 3): wire allowedTypes through so
+    // the typeahead respects Jira's hierarchy. Without this an Epic
+    // could surface another Epic as a linkable child (architectural
+    // hierarchy bug Vikram flagged in cycle 2 critique).
+    allowedTypes,
     disabled: allowedTypes.length === 0,
   });
 

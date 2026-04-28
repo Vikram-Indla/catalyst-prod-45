@@ -25,6 +25,18 @@ export interface UseFuzzyChildSearchParams {
   projectKey: string;
   /** Ids already linked under this parent — filtered out of results. */
   excludedIds: string[];
+  /**
+   * Apr 28, 2026 (jira-compare cycle 3): Issue types that are valid as
+   * children under the current parent, sourced from
+   * `allowedChildTypes(parentType)` in ./hierarchy.ts. Filters the
+   * "Choose existing" typeahead results so e.g. an Epic can never be
+   * linked as a child of another Epic. Without this filter the user
+   * could match any issue in the project — the hierarchy was advisory
+   * only, not enforced. Pass empty array to disable the filter (the
+   * caller should only pass empty when allowedTypes is unknown, NOT
+   * when "no children allowed" — that case should disable the panel).
+   */
+  allowedTypes?: string[];
   disabled?: boolean;
 }
 
@@ -41,6 +53,7 @@ export function useFuzzyChildSearch({
   query,
   projectKey,
   excludedIds,
+  allowedTypes,
   disabled,
 }: UseFuzzyChildSearchParams): UseFuzzyChildSearchResult {
   const [results, setResults] = useState<FuzzyChildResult[]>([]);
@@ -80,14 +93,27 @@ export function useFuzzyChildSearch({
           q = q.not('id', 'in', excludeList);
         }
 
+        // Apr 28, 2026 (jira-compare cycle 3 — hierarchy enforcement):
+        // restrict to allowed child types so e.g. an Epic can never
+        // surface another Epic as a linkable child. Empty / undefined
+        // allowedTypes leaves the filter off (back-compat for callers
+        // that haven't been updated yet).
+        if (allowedTypes && allowedTypes.length > 0) {
+          q = q.in('issue_type', allowedTypes);
+        }
+
         // Catalyst-native items: scoped via projects.key join
-        const catQ = supabase
+        let catQ = supabase
           .from('catalyst_issues')
           .select('id,issue_key,title,issue_type,status,projects!inner(key)')
           .eq('projects.key', projectKey)
           .or(`issue_key.ilike.%${needle}%,title.ilike.%${needle}%`)
           .order('updated_at', { ascending: false })
           .limit(RESULT_LIMIT);
+
+        if (allowedTypes && allowedTypes.length > 0) {
+          catQ = catQ.in('issue_type', allowedTypes);
+        }
 
         const [phRes, catRes] = await Promise.all([q, catQ]);
         if (rid !== requestIdRef.current) return; // stale
