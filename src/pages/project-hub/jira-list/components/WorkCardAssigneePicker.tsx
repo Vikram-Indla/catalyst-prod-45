@@ -84,7 +84,7 @@ export function WorkCardAssigneePicker({
     },
     onSuccess: () => {
       // Real-time refresh of the navigator list AND any open detail panels.
-      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
       queryClient.invalidateQueries({ queryKey: ['cv-issue-detail'] });
       setOpen(false);
     },

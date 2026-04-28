@@ -32,6 +32,41 @@ function toStatusCategory(raw: unknown): StatusCategory {
   return 'todo';
 }
 
+/**
+ * Jira-parity inverse for ph_issue_links.link_type.
+ *
+ * `ph_issue_links` rows are stored from the perspective of the source
+ * (the issue that initiated the link). When this side of the relationship
+ * is the TARGET, the displayed label has to flip to the inbound phrasing
+ * so grouping reads correctly — Jira shows "A blocks B" under the
+ * "blocks" group on A and under the "is blocked by" group on B.
+ *
+ * Vocabulary mirrors LINK_TYPE_OPTIONS in
+ * `story-detail-modules/constants.ts`. "relates to" is symmetric.
+ * Unknown labels pass through unchanged so partner-bespoke link types
+ * still group cleanly (just without the inbound phrasing).
+ *
+ * jira-compare Round 4 S9 (2026-04-28).
+ */
+const LINK_TYPE_INVERSE: Record<string, string> = {
+  'blocks': 'is blocked by',
+  'is blocked by': 'blocks',
+  'BRD': 'is BRD of',
+  'is BRD of': 'BRD',
+  'clones': 'is cloned by',
+  'is cloned by': 'clones',
+  'duplicates': 'is duplicated by',
+  'is duplicated by': 'duplicates',
+  'implements': 'is implemented by',
+  'is implemented by': 'implements',
+  'relates to': 'relates to',
+};
+
+function inverseLinkType(label: string | null | undefined): string {
+  if (!label) return 'relates to';
+  return LINK_TYPE_INVERSE[label] ?? label;
+}
+
 export function useLinkedWorkItems(issueKey: string) {
   return useQuery<LinkedWorkItem[]>({
     queryKey: LINKED_ISSUES_KEY(issueKey),
@@ -165,12 +200,17 @@ export function useLinkedWorkItems(issueKey: string) {
 
       return rawLinks
         .map((l): LinkedWorkItem | null => {
-          const key = l.source_id === issueKey ? l.target_id : l.source_id;
+          // Inbound rows (source_id !== issueKey) need the inverted label
+          // so Jira-parity grouping shows e.g. "is blocked by" on the
+          // target side rather than mislabelling it as "blocks". See
+          // inverseLinkType / CLAUDE.md S9 (2026-04-28).
+          const isInbound = l.source_id !== issueKey;
+          const key = isInbound ? l.source_id : l.target_id;
           const target = targetMap.get(key);
           if (!target) return null;
           return {
             id: l.id,
-            link_type: l.link_type,
+            link_type: isInbound ? inverseLinkType(l.link_type) : l.link_type,
             created_at: l.created_at,
             source_id: l.source_id,
             target_id: l.target_id,

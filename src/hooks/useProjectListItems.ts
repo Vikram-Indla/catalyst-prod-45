@@ -146,24 +146,48 @@ function mapPhIssue(row: any): WorkItem {
 
 const PH_ISSUES_SELECT = 'id, issue_key, project_key, issue_type, summary, status, status_category, assignee_account_id, assignee_display_name, parent_key, parent_summary, fix_versions, labels, priority, story_points, sprint_name, resolution, jira_created_at, jira_updated_at, description_text, comments, reporter_account_id, reporter_display_name, is_flagged, flag_reason, raw_json';
 
+/* ── Paginated ph_issues fetch ────────────────────────────────────────
+   PostgREST applies a server-side max-rows cap (typically 1000) that
+   .limit(N) cannot exceed. The /allwork view needs every row for the
+   project regardless of type, so we page through with .range() until
+   the server returns a short page. Without this, projects with >1000
+   issues silently lose Epic / Feature / Task / older Story rows because
+   the most-recently-created N Defect rows fill the cap (jira-compare
+   Round 4 S10 — see CLAUDE.md "/allwork list excludes Epic, Feature,
+   Task ..." 2026-04-28). PH_ISSUES_PAGE_SIZE matches the typical
+   PostgREST max-rows ceiling; bump only if the server config is raised.
+*/
+const PH_ISSUES_PAGE_SIZE = 1000;
+const PH_ISSUES_MAX_ROWS = 20000; // safety stop; one project << this in practice
+
+async function fetchAllPhIssues(
+  applyFilters: (qb: any) => any,
+): Promise<any[]> {
+  const all: any[] = [];
+  for (let start = 0; start < PH_ISSUES_MAX_ROWS; start += PH_ISSUES_PAGE_SIZE) {
+    // @ts-ignore - supabase type inference doesn't cover dynamic builder use
+    const base = supabase.from('ph_issues').select(PH_ISSUES_SELECT);
+    const { data, error } = await applyFilters(base).range(start, start + PH_ISSUES_PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < PH_ISSUES_PAGE_SIZE) break;
+  }
+  return all;
+}
+
 /* ── List view: all items for a project ── */
 export function useProjectListItems(projectKey: string | undefined) {
   return useQuery({
     queryKey: ['project-list-items-v2', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
-
-      // @ts-ignore
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select(PH_ISSUES_SELECT)
+      const rows = await fetchAllPhIssues((qb) => qb
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .order('jira_updated_at', { ascending: false, nullsFirst: false })
-        .limit(2000);
-      if (error) throw error;
-
-      return (data ?? []).map(mapPhIssue);
+        .order('jira_updated_at', { ascending: false, nullsFirst: false }),
+      );
+      return rows.map(mapPhIssue);
     },
     enabled: !!projectKey,
     staleTime: 30_000,
@@ -175,24 +199,23 @@ export function useProjectListItems(projectKey: string | undefined) {
    AND in-app created rows (source='catalyst'). The legacy catalyst_issues
    table has been retired; ph_issues is the unified source of truth.
    issue_key is unique across sources (upsert onConflict='issue_key' in
-   wh-jira-sync), so no dedup is needed. */
+   wh-jira-sync), so no dedup is needed.
+
+   2026-04-28 (jira-compare Round 4 S10): paginates via fetchAllPhIssues to
+   bypass PostgREST max-rows cap. Without pagination, projects with >1000
+   issues lost Epic/Feature/Task/older Story rows because the top-N most
+   recently created Defect rows filled the response. */
 export function useProjectAllWorkItems(projectKey: string | undefined) {
   return useQuery({
     queryKey: ['project-all-work-items-v3', projectKey],
     queryFn: async (): Promise<WorkItem[]> => {
       if (!projectKey) return [];
-
-      // @ts-ignore
-      const { data, error } = await supabase
-        .from('ph_issues')
-        .select(PH_ISSUES_SELECT)
+      const rows = await fetchAllPhIssues((qb) => qb
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .order('jira_created_at', { ascending: false, nullsFirst: false })
-        .limit(5000);
-      if (error) throw error;
-
-      return (data ?? []).map(mapPhIssue);
+        .order('jira_created_at', { ascending: false, nullsFirst: false }),
+      );
+      return rows.map(mapPhIssue);
     },
     enabled: !!projectKey,
     staleTime: 30_000,
@@ -298,7 +321,7 @@ export function useCreateWorkItem() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'] });
-      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
     },
   });
 }
@@ -320,7 +343,7 @@ export function useUpdateWorkItemStatus() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'] });
-      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
       queryClient.invalidateQueries({ queryKey: ['work-item-detail'] });
     },
   });

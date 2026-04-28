@@ -211,7 +211,7 @@ export function IssueContentView({
       .update({ parent_key: newParentKey })
       .eq('issue_key', issueKey ?? item?.issue_key);
     await enqueueWriteBack({ phIssueId: item.id, fieldName: 'parent', newValue: newParentKey ?? '' });
-    queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+    queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
     queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
     queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
   }, [item?.id, issueKey, item?.issue_key, queryClient]);
@@ -667,7 +667,7 @@ export function IssueContentView({
                           if (!item?.id) { setDescEditMode(false); return; }
                           const parsed = adfJson ? JSON.parse(adfJson) : null;
                           supabase.from('ph_issues').update({ description_adf: parsed }).eq('id', item.id).then(() => {
-                            queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                            queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
                             queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
                             queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
                             toast.success('Description saved');

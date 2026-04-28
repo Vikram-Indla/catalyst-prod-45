@@ -101,7 +101,7 @@ function updateFlagStateInCache(data: any, issueKey: string, nextFlagged: boolea
 
 function syncFlagCaches(queryClient: ReturnType<typeof useQueryClient>, issueKey: string, nextFlagged: boolean, nextReason: string | null) {
   const cacheKeys = [
-    ['project-all-work-items-v2'],
+    ['project-all-work-items-v3'],
     ['project-list-items-v2'],
     ['allwork-items'],
     ['project-work-items'],
@@ -181,7 +181,7 @@ export function FlagPopover({ issueId, issueKey, flagged, anchorRef, onClose, ta
     },
     onSuccess: ({ newFlagged, nextFlagReason }) => {
       syncFlagCaches(queryClient, issueKey, newFlagged, nextFlagReason);
-      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
       queryClient.invalidateQueries({ queryKey: ['project-list-items-v2'] });
       queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
       queryClient.invalidateQueries({ queryKey: ['project-work-items'] });
