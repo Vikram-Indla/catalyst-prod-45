@@ -487,10 +487,25 @@ export function CatalystViewBase({
     );
   }
 
-  /* ── Panel + fullpage modes: hand-rolled shell (unchanged from Phase A.1) ── */
+  /* ── Panel + fullpage modes: hand-rolled shell (unchanged from Phase A.1) ──
+     Apr 28, 2026 (jira-compare cycle 2 — Phase B B13): added
+     `role="dialog"` + `aria-label` on the inner shell so screen
+     readers announce it as a discrete view. `aria-modal` is set per
+     mode — modal-style overlay traps focus (true), the side-panel
+     mode coexists with the table behind it (false), full-page mode
+     IS the page (omitted). Falls back to a generic "Work item
+     details" label if `itemKey` hasn't loaded yet. */
+  const ariaLabel = itemKey ? `${itemKey} — work item details` : 'Work item details';
   return (
     <div style={OVERLAY} onClick={panelMode || fullPageMode ? undefined : onClose}>
-      <div data-cv-scope style={MODAL} onClick={e => e.stopPropagation()}>
+      <div
+        data-cv-scope
+        role={fullPageMode ? undefined : 'dialog'}
+        aria-modal={fullPageMode ? undefined : panelMode ? 'false' : 'true'}
+        aria-label={fullPageMode ? undefined : ariaLabel}
+        style={MODAL}
+        onClick={e => e.stopPropagation()}
+      >
         {cardContents}
       </div>
     </div>

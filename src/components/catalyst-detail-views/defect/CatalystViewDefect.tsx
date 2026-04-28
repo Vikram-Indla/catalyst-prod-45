@@ -7,11 +7,13 @@
  */
 import React from 'react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import { CatalystViewBase } from '../shared/CatalystViewBase';
 import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
+  KeyDetailsFieldRow,
 } from '../shared/sections';
 import {
   CatalystDefectKeyRows,
@@ -19,6 +21,7 @@ import {
 } from './CatalystDefectFields';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -32,26 +35,39 @@ export default function CatalystViewDefect({
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
+  const queryClient = useQueryClient();
 
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
       <CatalystQuickActions />
 
-      {/* Jira-parity: Parent / Priority / Severity / Found-in / Fix-in /
-          Root cause / Resolution all render inside the collapsible "Key
+      {/* Jira-parity: Parent → Severity → Priority → (any populated
+          Catalyst-only fields) all render inside the collapsible "Key
           details" block. The standalone "Bug / Defect" badge was removed
           (BAU-5534 audit) — the issue-type icon in the title already
           carries the defect signal and Jira's own detail view has no
           equivalent inline badge. Long-form fields (Steps / Environment)
           render below via CatalystDefectLongFields, matching Jira's
-          collapsed-block layout. */}
+          collapsed-block layout.
+
+          Apr 28, 2026 (jira-compare cycle 2 — Phase B B5):
+            - Field order changed from Parent → Priority → Severity to
+              Parent → Severity → Priority to match Jira's BAU/list
+              detail panel. Implemented by passing showPriority={false}
+              to CatalystKeyDetails (so it skips its own Priority row)
+              and threading a priorityRow JSX through CatalystDefectKeyRows
+              between Severity and the rest.
+            - Found in / Fix in / Root cause / Resolution rows now hide
+              when their value is null/empty (match Jira hide-empty
+              default). Severity stays always-rendered. */}
       <CatalystKeyDetails
         issue={issue ?? null}
         itemId={itemId}
         itemType="defect"
         projectKey={projectKey}
         onOpenItem={onOpenItem}
+        showPriority={false}
         extraRows={
           <CatalystDefectKeyRows
             issue={issue ?? null}
@@ -64,6 +80,19 @@ export default function CatalystViewDefect({
             }
             foundInBuild={(issue as any)?.found_in_build ?? null}
             rootCause={(issue as any)?.root_cause ?? null}
+            priorityRow={
+              <KeyDetailsFieldRow label="Priority" alignBlock="center">
+                {issue && (
+                  <EditablePriority
+                    issueId={issue.id}
+                    currentPriority={issue.priority}
+                    onUpdate={() =>
+                      queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })
+                    }
+                  />
+                )}
+              </KeyDetailsFieldRow>
+            }
           />
         }
       />
