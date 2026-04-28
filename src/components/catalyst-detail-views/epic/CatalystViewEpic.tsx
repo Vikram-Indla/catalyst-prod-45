@@ -11,11 +11,12 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { ParentAndLabels } from './ParentAndLabels';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
+import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewEpic({
@@ -25,6 +26,7 @@ export default function CatalystViewEpic({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const improveHandlers = useImproveApplyHandlers(issue ?? null);
 
   // Track this view in user_recent_items so the sidebar Recents rail picks it up.
   // Per CLAUDE.md §7A + the Apr 2026 Recents directive: subtasks are excluded.
@@ -48,7 +50,9 @@ export default function CatalystViewEpic({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
+      <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
+      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
       <ParentAndLabels issue={issue ?? null} itemId={itemId} itemType="epic" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />

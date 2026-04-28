@@ -13,7 +13,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
-  KeyDetailsFieldRow,
+  KeyDetailsFieldRow, CatalystStatusPill,
 } from '../shared/sections';
 import {
   CatalystDefectKeyRows,
@@ -22,6 +22,7 @@ import {
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
+import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import type { CatalystViewBaseProps } from '../shared/types';
 import {
   PRIORITY_STYLES,
@@ -36,11 +37,20 @@ export default function CatalystViewDefect({
   const mutations = useCatalystIssueMutations(itemId, onClose);
   const priorityStyle = PRIORITY_STYLES[issue?.priority ?? 'Medium'] ?? PRIORITY_STYLES.Medium;
   const queryClient = useQueryClient();
+  const improveHandlers = useImproveApplyHandlers(issue ?? null);
 
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
+      <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
+
+      {/* Apr 28, 2026 (jira-compare cycle 3 — Phase B B2):
+          AI "Improve QA Bug" dropdown (mirrors Jira's
+          issue-improve-issue-dropdown trigger). Per-type prompt
+          focus is selected backend-side from PER_TYPE_FOCUS keyed
+          off `issue.issue_type`. */}
+      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
 
       {/* Jira-parity: Parent → Severity → Priority → (any populated
           Catalyst-only fields) all render inside the collapsible "Key

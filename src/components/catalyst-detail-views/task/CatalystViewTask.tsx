@@ -8,10 +8,11 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails, CatalystStatusPill,
 } from '../shared/sections';
 import { LinkedWorkItemsSection } from '@/modules/project-work-hub/components/linked-work-items';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
+import { ImproveIssueDropdown, useImproveApplyHandlers } from '@/components/catalyst-detail-views/improve';
 import type { CatalystViewBaseProps } from '../shared/types';
 
 export default function CatalystViewTask({
@@ -21,6 +22,7 @@ export default function CatalystViewTask({
 
   const { data: issue, isLoading } = useCatalystIssue(itemId, isOpen);
   const mutations = useCatalystIssueMutations(itemId, onClose);
+  const improveHandlers = useImproveApplyHandlers(issue ?? null);
 
   // Sidebar Recents tracking — top-level tasks only.
   // Subtask exclusion (Apr 2026 owner directive): a task with a `parent_key`
@@ -47,7 +49,9 @@ export default function CatalystViewTask({
   const leftContent = (
     <>
       <CatalystTitleEditor issue={issue ?? null} onTitleChange={(t) => mutations.updateField.mutate({ field: 'summary', value: t, oldValue: issue?.summary ?? '' })} />
+      <CatalystStatusPill status={issue?.status} onStatusChange={(st) => mutations.updateStatus.mutate(st)} />
       <CatalystQuickActions />
+      <ImproveIssueDropdown issue={issue ?? null} {...improveHandlers} />
       <CatalystKeyDetails issue={issue ?? null} itemId={itemId} itemType="task" projectKey={projectKey} onOpenItem={onOpenItem} />
       <CatalystDescriptionSection issue={issue ?? null} />
       <CatalystAcceptanceCriteria issue={issue ?? null} />

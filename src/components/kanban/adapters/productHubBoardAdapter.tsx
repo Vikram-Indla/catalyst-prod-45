@@ -60,13 +60,24 @@ export function buildColumnsFromWorkflowStatuses(
   return statuses
     .slice()
     .sort((a, b) => a.position - b.position)
-    .map((status) => ({
-      id: `col-${status.slug}`,
-      name: status.name.toUpperCase(),
-      category: status.category,
-      statuses: [status.slug],
-      wipLimit: status.wip_limit ?? null,
-    }));
+    .map((status) => {
+      // Multi-status mapping — primary slug + any aliases from
+      // catalyst_workflow_statuses.slug_aliases. Mirrors Jira's column→N-status
+      // model (board 597 has 0..7 statuses per column). The aliases array is
+      // populated for ph_initiatives.status enum values that don't share a
+      // workflow slug (e.g. column 'done' aliases ['closed','delivered',
+      // 'cancelled']).
+      const aliases = (status as WorkflowStatus & { slug_aliases?: string[] | null })
+        .slug_aliases ?? [];
+      const allStatuses = [status.slug, ...aliases];
+      return {
+        id: `col-${status.slug}`,
+        name: status.name.toUpperCase(),
+        category: status.category,
+        statuses: allStatuses,
+        wipLimit: status.wip_limit ?? null,
+      } as KanbanColumnDef;
+    });
 }
 
 function buildStatusToColumnId(

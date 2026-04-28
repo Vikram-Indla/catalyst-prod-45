@@ -30,6 +30,11 @@ export interface WorkflowStatus {
   /** Soft-deactivation flag. Inactive statuses do not render columns on the
    * kanban; preserved so any historical initiative.status keeps mapping. */
   is_active: boolean;
+  /** Additional `ph_initiatives.status` enum values (`initiative_status`)
+   * that should fold into THIS column. Mirrors Jira's column→multi-status
+   * mapping (board 597 has 0..7 statuses per column). The primary `slug`
+   * is implicitly always included. */
+  slug_aliases: string[];
 }
 
 export interface WorkflowTransition {
@@ -69,13 +74,24 @@ export function useCatalystWorkflow(issueType: string) {
     queryKey: [...QUERY_KEY_BASE, 'statuses', schemeId],
     queryFn: async () => {
       if (!schemeId) return [];
-      const { data, error } = await typedQuery('catalyst_workflow_statuses')
+      // Resilient fetch — the jira-compare migration adds `is_active`,
+      // `wip_limit`, and `slug_aliases` columns. Until that migration runs,
+      // PostgREST errors on the `is_active` filter. Detect the schema
+      // miss and fall back to the legacy query so Catalyst keeps rendering.
+      const withFilter = await typedQuery('catalyst_workflow_statuses')
         .select('*')
         .eq('scheme_id', schemeId)
         .eq('is_active', true)
         .order('position', { ascending: true });
-      if (error) throw error;
-      return (data || []) as WorkflowStatus[];
+      if (!withFilter.error) {
+        return (withFilter.data || []) as WorkflowStatus[];
+      }
+      const legacy = await typedQuery('catalyst_workflow_statuses')
+        .select('*')
+        .eq('scheme_id', schemeId)
+        .order('position', { ascending: true });
+      if (legacy.error) throw legacy.error;
+      return (legacy.data || []) as WorkflowStatus[];
     },
     enabled: !!schemeId,
     staleTime: 120_000,

@@ -98,7 +98,27 @@ export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEdito
     // baseline, looked like an icon prefix. Removing it matches Jira
     // and reduces visual noise. The icon stays in the breadcrumb row
     // (rendered by the parent component), so issue type is still clear.
-    <div className="cv-title-edit-hide-label" style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 12 }}>
+    // Apr 28, 2026 (jira-compare cycle 5 — Phase B B9): title sticks
+    //   to the top of the panel's scrolling left column. The status
+    //   pill rendered immediately below by CatalystStatusPill carries
+    //   `top: 32px` so the two stack as a unified sticky header that
+    //   stays visible as the user scrolls description / activity. The
+    //   left column (cv-drawer-left) is the scroll container per
+    //   CatalystViewBase.tsx — `position: sticky` works because that
+    //   ancestor has `overflow-y: auto`.
+    <div
+      className="cv-title-edit-hide-label"
+      style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        marginBottom: 12,
+        position: 'sticky',
+        top: 0,
+        zIndex: 10,
+        background: '#FFFFFF',
+        paddingTop: 4,
+      }}
+    >
       <div style={{ flex: 1, minWidth: 0 }}>
         {/* key={issue.id} remounts InlineEdit when the user navigates to a
             different item so defaultValue picks up the new summary. */}
