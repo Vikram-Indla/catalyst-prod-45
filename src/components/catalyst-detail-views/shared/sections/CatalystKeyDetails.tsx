@@ -20,7 +20,7 @@
  */
 import React, { useState } from 'react';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import { Inline } from '@atlaskit/primitives';
 import { EditablePriority } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { useQueryClient } from '@tanstack/react-query';

@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import { token } from '@atlaskit/tokens';
+import { adsTokens, cp } from '@/theme/ads/tokens';
 
 const DepartmentIntelligenceOverlay = lazy(
   () => import('@/components/resource360/DepartmentIntelligenceOverlay')
@@ -141,8 +142,8 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               height: 36,
               padding: '0 14px 0 12px',
               borderRadius: 9999,
-              background: '#FFFFFF',
-              border: '1px solid #2563EB',
+              background: cp(adsTokens.bg.surface),
+              border: `1px solid ${cp(adsTokens.brand.primary)}`,
               boxShadow: hovered && isForYou
                 ? '0 0 0 3px rgba(37,99,235,0.08), 0 4px 10px rgba(37,99,235,0.12)'
                 : '0 1px 2px rgba(15,23,42,0.04)',
@@ -150,7 +151,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
               cursor: isForYou ? 'pointer' : 'not-allowed',
               opacity: isForYou ? 1 : 0.55,
               fontFamily: 'var(--cp-font-body)',
-              color: '#0F172A',
+              color: cp(adsTokens.text.primary),
             }}
           >
             <CatySparkle size={18} />
@@ -160,7 +161,7 @@ export function AskCatalystPill({ iconOnly = false }: AskCatalystPillProps) {
                 fontWeight: 650,
                 letterSpacing: '-0.1px',
                 lineHeight: 1,
-                color: '#0F172A',
+                color: cp(adsTokens.text.primary),
               }}
             >
               Ask Caty

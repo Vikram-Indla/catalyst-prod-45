@@ -7,8 +7,8 @@ export type {
   PhIssue, PhComment, PhActivityLog, PhAttachment, PhIssueLink,
   TmTestCase, ThTestExecution, RhRelease, RhChange,
   Profile, ProjectMember, PhIssueRow,
-  ColumnConfig, ParentIssue, AIOutput,
-  StatusCategory, PriorityLevel, TestResult, AIImproveType,
+  ColumnConfig, ParentIssue,
+  StatusCategory, PriorityLevel, TestResult,
   ActivityTab, StoryDetailModalProps,
 } from './types';
 
@@ -17,7 +17,7 @@ export {
   DEFAULT_COLUMNS, STATUS_CATEGORIES, STATUS_STYLES, STATUS_OPTION_GROUPS,
   LOZENGE_STYLES, LOZENGE, PRIORITY_COLORS, PRIORITY_STYLES, PRIORITY_ICONS, PRIORITY_LIST,
   TEST_RESULT_STYLES, LINK_TYPE_LABELS, LINK_TYPE_STYLES, LINK_TYPE_OPTIONS,
-  WORK_ITEM_ICONS, AI_IMPROVE_OPTIONS,
+  WORK_ITEM_ICONS,
   menuItemStyle, detailLabelStyle, detailValueStyle,
 } from './constants';
 

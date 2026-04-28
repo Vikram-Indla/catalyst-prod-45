@@ -1,0 +1,70 @@
+{
+  "$schema": "catalyst/theme-baseline/v1",
+  "captured": "2026-04-28",
+  "branch": "theme/phase-0-1-unblock",
+  "phase": "post-phase-0-1",
+  "mode": "dark",
+  "notes": "Dark-mode baseline AFTER Phase 0+1 patches. THIS IS THE FIRST WORKING DARK BASELINE — before Phase 0, --cp-* dark overrides never engaged because setGlobalTheme clobbered <html data-theme>. Patch added a post-resolve attribute restore in AdsThemeProvider.tsx and three missing CSS bridge tokens (overlay/inset/disabled).",
+  "pages": {
+    "home-for-you": {
+      "url": "/",
+      "htmlDataTheme": "dark",
+      "htmlClass": true,
+      "cpVars": {
+        "bg": "#0A0A0A",
+        "bgPage": "#0A0A0A",
+        "bgHubPage": "#0A0A0A",
+        "bgSurface": "#1A1A1A",
+        "bgOverlay": "#1F1F1F",
+        "bgInset": "#111111",
+        "textPrimary": "#EDEDED",
+        "textDisabled": "#7D7D7D",
+        "t1": "#EDEDED",
+        "t2": "#A1A1A1",
+        "t3": "#878787",
+        "bd": "#2E2E2E"
+      },
+      "surfaces": [
+        ["body",   [26,26,26,1],    [237,237,237,1], 0, 1887, 1090],
+        ["shell",  [0,0,0,0],       [237,237,237,1], 0, 1855, 1058],
+        ["hdrWrap",[0,0,0,0],       [237,237,237,1], 0, 1887, 55],
+        ["sbrWrap",[0,0,0,0],       [237,237,237,1], 0, 0,    1034],
+        ["main",   [10,10,10,1],    [237,237,237,1], 0, 1887, 1034],
+        ["h1",     [0,0,0,0],       [41,42,46,1],    0, 71,   24],
+        ["h2",     [0,0,0,0],       [41,42,46,1],    0, 183,  20],
+        ["toggle", [0,0,0,0],       [135,135,135,1], 0, 35,   35],
+        ["profile",[0,0,0,0],       [237,237,237,1], 0, 31,   31]
+      ]
+    },
+    "project-hub-projects": {
+      "url": "/project-hub/projects",
+      "htmlDataTheme": "dark",
+      "cpVars": {
+        "bg": "#0A0A0A",
+        "bgHubPage": "#0A0A0A",
+        "bgSurface": "#1A1A1A",
+        "textPrimary": "#EDEDED",
+        "t1": "#EDEDED",
+        "bd": "#2E2E2E"
+      },
+      "surfaces": [
+        ["body",   [26,26,26,1],    [237,237,237,1], 0, 1887, 1090],
+        ["shell",  [0,0,0,0],       [237,237,237,1], 0, 1855, 1058],
+        ["hdr",    [0,0,0,0],       [237,237,237,1], 0, 1887, 55],
+        ["sbr",    [0,0,0,0],       [237,237,237,1], 0, 0,    1034],
+        ["main",   [10,10,10,1],    [237,237,237,1], 0, 1887, 1034],
+        ["h1",     [0,0,0,0],       [41,42,46,1],    0, 132,  28],
+        ["table",  [0,0,0,0],       [237,237,237,1], 0, 1838, 545],
+        ["thead",  [10,10,10,1],    [125,125,125,1], 0, 1838, 35],
+        ["row",    [0,0,0,0],       [237,237,237,1], 0, 1838, 57],
+        ["toggle", [0,0,0,0],       [135,135,135,1], 0, 35,   35],
+        ["profile",[0,0,0,0],       [237,237,237,1], 0, 31,   31]
+      ]
+    }
+  },
+  "knownDriftToFixInLaterPhases": [
+    "h1/h2 fg stays at [41,42,46] (#292A2E) in dark — Atlaskit Heading consumer not picking up customColors override; root-cause in Phase 2",
+    "Sidebar wrap reports w=0 because ProjectHubSidebar collapses to placeholder when not pinned/peeked — not a defect",
+    "ThemeToggle fg [135,135,135] = #878787 in dark resolves from --cp-t3, correct"
+  ]
+}

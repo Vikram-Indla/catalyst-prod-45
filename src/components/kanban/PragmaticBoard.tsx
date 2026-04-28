@@ -32,12 +32,12 @@
  */
 
 import { memo, useEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import { MoreHorizontal, Inbox } from 'lucide-react';
+import { MoreHorizontal, Inbox, Plus } from 'lucide-react';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -64,6 +64,16 @@ interface CardActions {
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  /**
+   * Per-column inline create — Jira-parity affordance. Renders a
+   * "+ Create issue" button at the bottom of every column (subtle,
+   * uses textMuted color, full column width). Click hands the column id
+   * to the host so it can open a typed create flow with the destination
+   * status pre-filled. Optional — column omits the button when not set.
+   */
+  onCreateInColumn?: (colId: string) => void;
+  /** Label for the per-column create button. Default: "+ Create issue". */
+  createInColumnLabel?: string;
   /**
    * Optional hub-specific icon resolver — forwarded to WorkItemCard. Hubs
    * whose type taxonomy diverges from Jira (ProductHub initiatives,
@@ -93,6 +103,21 @@ const PragmaticCard = memo(function PragmaticCard({
   const ref = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [closestEdge, setClosestEdge] = useState<Edge | null>(null);
+  // Right-click context menu state — Jira-parity (board 597 ships
+  // software-context-menu.ui.context-menu on every card). Catalyst previously
+  // suppressed contextmenu via preventDefault; this restores it.
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!ctxMenu) return;
+    const close = () => setCtxMenu(null);
+    window.addEventListener('click', close);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    return () => {
+      window.removeEventListener('click', close);
+      window.removeEventListener('scroll', close, true);
+    };
+  }, [ctxMenu]);
 
   useEffect(() => {
     const el = ref.current;
@@ -151,7 +176,11 @@ const PragmaticCard = memo(function PragmaticCard({
         ref={ref}
         style={cardStyle}
         onClick={() => { if (!isDragging) onClick(); }}
-        onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setCtxMenu({ x: e.clientX, y: e.clientY });
+        }}
         onMouseEnter={(e) => {
           if (!isDragging) {
             e.currentTarget.style.background = tk.cardHoverBg;
@@ -187,6 +216,54 @@ const PragmaticCard = memo(function PragmaticCard({
         />
       </div>
       {closestEdge && <DropIndicator edge={closestEdge} gap="4px" />}
+      {ctxMenu && (
+        <div
+          data-testid={`kanban-card-context-menu-${issue.id}`}
+          role="menu"
+          aria-label={`Actions for ${issue.issueKey}`}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{
+            position: 'fixed',
+            left: ctxMenu.x,
+            top: ctxMenu.y,
+            zIndex: 9999,
+            minWidth: 180,
+            background: '#FFFFFF',
+            borderRadius: 4,
+            boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
+            padding: '4px 0',
+            fontFamily: 'var(--cp-font-body)',
+          }}
+        >
+          {[
+            { key: 'open',    label: 'Open',         act: () => onClick() },
+            { key: 'copyKey', label: 'Copy issue key', act: () => actions.onCopyKey?.(issue.issueKey) },
+            { key: 'copyLink',label: 'Copy link',    act: () => actions.onCopyLink?.(issue.issueKey) },
+            { key: 'flag',    label: issue.isFlagged ? 'Unflag' : 'Flag', act: () => actions.onToggleFlag?.(issue.id) },
+            { key: 'archive', label: 'Archive',      act: () => actions.onArchive?.(issue.id) },
+            { key: 'delete',  label: 'Delete',       act: () => actions.onDelete?.(issue.id), danger: true },
+          ].map((item) => (
+            <button
+              key={item.key}
+              role="menuitem"
+              data-testid={`kanban-card-context-menu-${item.key}`}
+              onClick={() => { item.act(); setCtxMenu(null); }}
+              style={{
+                display: 'block', width: '100%',
+                padding: '6px 16px', background: 'transparent',
+                border: 'none', cursor: 'pointer', textAlign: 'left',
+                fontSize: 14, lineHeight: '20px',
+                color: item.danger ? '#AE2A19' : tk.textPrimary,
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = '#F4F5F7'; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 });
@@ -212,7 +289,33 @@ const PragmaticColumn = memo(function PragmaticColumn({
   selectedId, focusedId, ...actions
 }: PragmaticColumnProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
+  const meatballRef = useRef<HTMLButtonElement>(null);
   const [isOver, setIsOver] = useState(false);
+  // Meatball menu — manual createPortal popover positioned by trigger rect.
+  // Replaces @atlaskit/dropdown-menu which fails to anchor properly inside
+  // the column header (CLAUDE.md L1 + cycle-3 evidence: trigger flips
+  // aria-expanded but the menu mounts at viewport (0,0) regardless of
+  // shouldRenderToParent / placement / parent positioning mode).
+  const [meatballAnchor, setMeatballAnchor] = useState<{ x: number; y: number } | null>(null);
+  useEffect(() => {
+    if (!meatballAnchor) return;
+    const close = (e?: Event) => {
+      // Don't close if click is inside the meatball menu itself
+      if (e && e.target && (e.target as HTMLElement).closest?.('[data-testid^="kanban-column-meatball-menu-"]')) return;
+      setMeatballAnchor(null);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMeatballAnchor(null); };
+    setTimeout(() => window.addEventListener('click', close), 0);
+    window.addEventListener('keydown', onKey);
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('resize', close);
+    return () => {
+      window.removeEventListener('click', close);
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('resize', close);
+    };
+  }, [meatballAnchor]);
 
   useEffect(() => {
     const el = bodyRef.current;
@@ -259,8 +362,15 @@ const PragmaticColumn = memo(function PragmaticColumn({
       role="list"
       aria-label={`${column.name} column, ${issueIds.length} items`}
     >
-      {/* Header — 48h, 6px top-radius, plain-text count */}
-      <div className="flex items-center gap-2 sticky top-0 z-10" style={{
+      {/* Header — 48h, 6px top-radius, plain-text count.
+          Note: previously `sticky top-0` — removed because Atlaskit Floating UI
+          inside @atlaskit/dropdown-menu computes the wrong reference frame
+          when its trigger lives in a position:sticky parent (cycle-3 evidence:
+          menu mounts at viewport (0,0) instead of below trigger). The sticky
+          behaviour can be reintroduced once Floating UI's reference resolution
+          is fixed (open Atlaskit issue) or a `@atlaskit/popup` swap is in. */}
+      <div className="flex items-center gap-2" style={{
+        position: 'relative',
         height: 48,
         padding: '0 12px',
         background: tk.headerBg,
@@ -300,44 +410,66 @@ const PragmaticColumn = memo(function PragmaticColumn({
           fontSize: 12, fontWeight: 500, color: tk.textPrimary,
           fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
         }}>{issueIds.length}</span>
-        {/* Per-column meatball menu — Jira parity (board 597). Direct
-            @atlaskit/dropdown-menu with @atlaskit/button/new IconButton trigger
-            (matches UWVToolbar pattern that works elsewhere in the codebase).
-            Default body portal handles positioning correctly even inside
-            position:sticky parents. */}
-        <DropdownMenu
-          placement="bottom-end"
-          testId={`kanban-column-meatball-${column.id}`}
-          shouldRenderToParent
-          trigger={({ triggerRef, isSelected: _isSel, testId: _tid, ...triggerProps }) => (
-            <button
-              {...triggerProps}
-              ref={triggerRef as React.Ref<HTMLButtonElement>}
-              type="button"
-              aria-label={`${column.name} column actions`}
-              style={{
-                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                width: 24, height: 24, padding: 0,
-                border: 'none', background: 'transparent', borderRadius: 3,
-                cursor: 'pointer', color: tk.textMuted, flexShrink: 0,
-              }}
-              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover; }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
-            >
-              <MoreHorizontal size={14} />
-            </button>
-          )}
+        {/* Per-column meatball — manual popover via createPortal. */}
+        <button
+          ref={meatballRef}
+          type="button"
+          aria-label={`${column.name} column actions`}
+          aria-expanded={!!meatballAnchor}
+          data-testid={`kanban-column-meatball-${column.id}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            const r = (e.currentTarget as HTMLButtonElement).getBoundingClientRect();
+            setMeatballAnchor((prev) => prev ? null : { x: r.right, y: r.bottom + 4 });
+          }}
+          style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: 24, height: 24, padding: 0,
+            border: 'none', background: 'transparent', borderRadius: 3,
+            cursor: 'pointer', color: tk.textMuted, flexShrink: 0,
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
         >
-          <DropdownItemGroup title={column.name}>
-            <DropdownItem isDisabled>{`Cards in column: ${issueIds.length}`}</DropdownItem>
-            <DropdownItem isDisabled>
+          <MoreHorizontal size={14} />
+        </button>
+        {meatballAnchor && createPortal(
+          <div
+            data-testid={`kanban-column-meatball-menu-${column.id}`}
+            role="menu"
+            aria-label={`${column.name} column actions menu`}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'fixed',
+              left: Math.max(8, meatballAnchor.x - 200),
+              top: meatballAnchor.y,
+              zIndex: 9999,
+              minWidth: 200,
+              background: '#FFFFFF',
+              borderRadius: 4,
+              boxShadow: 'rgba(9,30,66,0.31) 0 0 1px, rgba(9,30,66,0.25) 0 4px 8px -2px',
+              padding: '6px 0',
+              fontFamily: 'var(--cp-font-body)',
+            }}
+          >
+            <div style={{
+              padding: '4px 16px 6px', fontSize: 11, fontWeight: 600, color: tk.textMuted,
+              textTransform: 'uppercase', letterSpacing: 0.4,
+            }}>{column.name}</div>
+            <div style={{ padding: '4px 16px', fontSize: 13, color: tk.textPrimary }}>
+              {`Cards in column: ${issueIds.length}`}
+            </div>
+            <div style={{ padding: '4px 16px', fontSize: 13, color: tk.textPrimary }}>
               {column.wipLimit != null
                 ? `WIP limit: ${column.wipLimit}${issueIds.length > column.wipLimit ? ' (exceeded)' : ''}`
                 : 'No WIP limit'}
-            </DropdownItem>
-            <DropdownItem isDisabled>{`Statuses mapped: ${column.statuses.length}`}</DropdownItem>
-          </DropdownItemGroup>
-        </DropdownMenu>
+            </div>
+            <div style={{ padding: '4px 16px 6px', fontSize: 13, color: tk.textPrimary }}>
+              {`Statuses mapped: ${column.statuses.length}`}
+            </div>
+          </div>,
+          document.body,
+        )}
       </div>
 
       {/* Body (drop target) */}
@@ -388,6 +520,49 @@ const PragmaticColumn = memo(function PragmaticColumn({
             />
           );
         })}
+        {/*
+          Per-column create — Jira-parity "+ Create issue" affordance,
+          rendered at the bottom of every column. Subtle by default;
+          becomes more prominent on hover. Hidden if no `onCreateInColumn`
+          handler is wired by the host. Click forwards the column id to
+          the host so it can open a typed create flow with the
+          destination status pre-filled.
+        */}
+        {actions.onCreateInColumn && (
+          <button
+            type="button"
+            data-testid={`kanban-column-create-${column.id}`}
+            onClick={() => actions.onCreateInColumn?.(column.id)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              gap: 6,
+              padding: '6px 8px',
+              border: 'none',
+              background: 'transparent',
+              color: tk.textMuted,
+              fontSize: 12,
+              fontWeight: 500,
+              fontFamily: 'var(--cp-font-body)',
+              borderRadius: 4,
+              cursor: 'pointer',
+              transition: 'background 120ms ease, color 120ms ease',
+              marginTop: issueIds.length === 0 ? 0 : 4,
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
+              (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = tk.textMuted;
+            }}
+          >
+            <Plus size={14} />
+            <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
+          </button>
+        )}
       </div>
     </div>
   );

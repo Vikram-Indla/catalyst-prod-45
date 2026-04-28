@@ -6,7 +6,7 @@
 
 import { Stack } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import type { CreateSpaceDraft } from '../../types';
 import { SPACE_PURPOSE_LABEL, SPACE_PERMISSION_LABEL } from '../../types';

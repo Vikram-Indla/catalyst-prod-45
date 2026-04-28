@@ -114,3 +114,5 @@ export type { AtlaskitPageShellProps } from './AtlaskitPageShell';
 
 export { TruncateCell } from './TruncateCell';
 export type { TruncateCellProps } from './TruncateCell';
+
+export { ThemeToggle } from './ThemeToggle';

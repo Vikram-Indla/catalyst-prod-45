@@ -17,10 +17,12 @@
  * use PragmaticBoard directly (its page predates this shell). Hubs
  * migrated in Phases 3-6 will use <KanbanBoardShell adapter={...} />.
  */
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { CatalystPageHeader } from '@/components/shared/CatalystPageHeader';
 import { KanbanToolbar } from '@/components/kanban/toolbar/KanbanToolbar';
 import { PragmaticBoard } from '@/components/kanban/PragmaticBoard';
+import { QuickFilterChips, type QuickFilterId } from '@/components/kanban/QuickFilterChips';
+import { supabase } from '@/integrations/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 import { KANBAN_TOKENS, DENSITY_CONFIG } from '@/components/kanban/kanban-tokens';
 import type { KanbanDensity } from '@/components/kanban/kanban-tokens';
@@ -86,6 +88,16 @@ export function KanbanBoardShell<THubRow = unknown>({
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilters>(EMPTY_ADVANCED_FILTERS);
   const advFilterCount = countAdvancedFilters(advancedFilters);
 
+  /* ─── Quick filter (Jira-parity board 597 quick filter set) ─── */
+  const [quickFilter, setQuickFilter] = useState<QuickFilterId>(null);
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      const meta = data.user?.user_metadata as { full_name?: string; name?: string } | undefined;
+      setCurrentUserName(meta?.full_name ?? meta?.name ?? data.user?.email ?? null);
+    });
+  }, []);
+
   /* ─── Optimistic colMap (shell owns this; persist delegates to adapter) ─── */
   const initialColMap = useMemo(() => buildColMapFromAdapter(adapter), [adapter]);
   const [colMap, setColMap] = useState(initialColMap);
@@ -96,6 +108,30 @@ export function KanbanBoardShell<THubRow = unknown>({
   }, [adapter.cards]);
 
   const issuesById = useMemo(() => buildIssuesByIdFromAdapter(adapter), [adapter.cards]);
+
+  /* ─── Quick-filter predicate. Applied AFTER colMap so the optimistic-drag
+       state is preserved; the filtered colMap is what PragmaticBoard receives. */
+  const filteredColMap = useMemo(() => {
+    if (!quickFilter) return colMap;
+    const oneDayAgoMs = Date.now() - 24 * 60 * 60 * 1000;
+    const passes = (cardId: string): boolean => {
+      const issue = issuesById.get(cardId);
+      if (!issue) return false;
+      if (quickFilter === 'recently_updated') {
+        const t = issue.updatedAt ? Date.parse(issue.updatedAt) : NaN;
+        return Number.isFinite(t) && t >= oneDayAgoMs;
+      }
+      if (quickFilter === 'assigned_to_me') {
+        return !!currentUserName && issue.assigneeName === currentUserName;
+      }
+      return true;
+    };
+    const next: typeof colMap = {};
+    for (const [colId, ids] of Object.entries(colMap)) {
+      next[colId] = ids.filter(passes);
+    }
+    return next;
+  }, [colMap, issuesById, quickFilter, currentUserName]);
 
   /* ─── Counts for toolbar ─── */
   const totalIssues = adapter.cards.length;
@@ -196,10 +232,12 @@ export function KanbanBoardShell<THubRow = unknown>({
         projectKey={adapter.contextKey}
       />
 
+      <QuickFilterChips active={quickFilter} onChange={setQuickFilter} tk={tk} />
+
       <div className="flex-1 min-h-0" style={{ overflow: 'auto', padding: '0 16px 16px 16px' }}>
         <PragmaticBoard
           columns={adapter.columns}
-          colMap={colMap}
+          colMap={filteredColMap}
           issuesById={issuesById}
           avatarsByName={adapter.avatarsByName}
           onCardClick={(id) => adapter.interactions?.onCardClick?.(id)}
@@ -211,6 +249,8 @@ export function KanbanBoardShell<THubRow = unknown>({
             : undefined}
           onCopyLink={adapter.interactions?.onCopyLink}
           onCopyKey={adapter.interactions?.onCopyKey}
+          onCreateInColumn={adapter.interactions?.onCreateInColumn}
+          createInColumnLabel={adapter.interactions?.createInColumnLabel}
           onChangeStatus={adapter.persistence.onStatusChange
             ? (id, s) => adapter.persistence.onStatusChange!(id, s)
             : undefined}

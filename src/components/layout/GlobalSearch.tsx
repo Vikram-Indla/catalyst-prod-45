@@ -6,6 +6,7 @@ import Tooltip from '@atlaskit/tooltip';
 import Textfield from '@atlaskit/textfield';
 import { useGlobalSearchStore } from '@/store/globalSearchStore';
 import { GlobalSearchPanel } from '@/components/global-search/GlobalSearchPanel';
+import { adsTokens, cp } from '@/theme/ads/tokens';
 
 // GlobalSearch — correctly anchored search trigger.
 //
@@ -132,7 +133,7 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
           ref={inputRef}
           isCompact
           elemBeforeInput={
-            <span style={{ display: 'inline-flex', paddingLeft: 6, color: '#626F86' }}>
+            <span style={{ display: 'inline-flex', paddingLeft: 6, color: cp(adsTokens.text.secondary) }}>
               <SearchIcon label="" />
             </span>
           }
@@ -147,9 +148,9 @@ export function GlobalSearch({ collapsed = false }: GlobalSearchProps) {
                 padding: '0 6px',
                 marginRight: 6,
                 borderRadius: 3,
-                border: '1px solid #DFE1E6',
-                background: '#F4F5F7',
-                color: '#626F86',
+                border: `1px solid ${cp(adsTokens.border.default)}`,
+                background: cp(adsTokens.bg.inset),
+                color: cp(adsTokens.text.secondary),
                 fontSize: 11,
                 fontWeight: 600,
                 fontFamily: 'var(--cp-font-body)',

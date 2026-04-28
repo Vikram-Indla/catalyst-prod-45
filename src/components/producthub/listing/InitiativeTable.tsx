@@ -62,7 +62,7 @@ import {
   DateCell, ProgressCell, EACell, QuarterCell, IDCell,
 } from './CellRenderers';
 import type { ColumnConfig } from './ColumnManager';
-import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
+// SourceBadge import dropped — see Source-column removal note below.
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 
 import { JiraTable } from '@/components/shared/JiraTable';
@@ -233,15 +233,13 @@ export function InitiativeTable({
         );
       },
     },
-    {
-      id: 'source', label: 'Source', width: 7, sortable: true,
-      accessor: (r: any) => r.source,
-      cell: ({ row }) => (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <SourceBadge source={(row as any).source} />
-        </div>
-      ),
-    },
+    /*
+      'Source' column removed — every initiative is Catalyst-canonical
+      now per the "no Jira data inflow" decision. Keeping the column
+      surfaced provenance distinctions that no longer mean anything in
+      the UX. The `source` field stays on the row for legacy callers
+      but the table no longer renders it.
+    */
     {
       id: 'title', label: 'Title', width: 24, sortable: true, alwaysVisible: true,
       accessor: (r: any) => r.title,

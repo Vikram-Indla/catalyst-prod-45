@@ -16,7 +16,7 @@
  */
 import React, { Suspense, lazy, useState, useCallback } from 'react';
 import { ChevronRight, Pencil } from 'lucide-react';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { adfToPlainText, isAdfEmpty } from '@/components/shared/rich-text/atlaskit/adfHelpers';

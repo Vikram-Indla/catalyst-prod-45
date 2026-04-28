@@ -75,6 +75,36 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   const { user } = useAuth();
   const [currentUser, setCurrentUser] = useState<CdsUser | undefined>();
 
+  // Apr 28 2026 (cycle 8 fix — silent comments-system bug):
+  //   `ph_comments.work_item_id` AND `ph_activity_log.work_item_id`
+  //   are both `uuid` columns (verified via Postgres 22P02 error
+  //   probe on 2026-04-28). The component is passed `itemId` which
+  //   the F-iter9 era set to `issue_key` (a text "BAU-5711"). Every
+  //   `eq('work_item_id', itemId)` query and every insert silently
+  //   threw a type-mismatch error → all comments / activity log
+  //   reads returned empty, all comment writes failed quietly.
+  //   Fix: resolve the UUID for the row's PK once via ph_issues
+  //   lookup, then thread the resolved UUID through every
+  //   downstream query + mutation. Cached for the open lifetime.
+  //   When `itemId` already looks like a UUID (catalyst-native
+  //   rows might pass it directly), the lookup short-circuits.
+  const isLikelyUuid = (s: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+  const { data: resolvedWorkItemId } = useQuery({
+    queryKey: ['cv-resolve-work-item-uuid', itemId],
+    enabled: !!itemId && isOpen,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async (): Promise<string | null> => {
+      if (!itemId) return null;
+      if (isLikelyUuid(itemId)) return itemId;
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('id')
+        .eq('issue_key', itemId)
+        .maybeSingle();
+      return (data as { id?: string } | null)?.id ?? null;
+    },
+  });
+
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles-for-mentions-approved'],
     queryFn: async () => {
@@ -133,13 +163,13 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
 
   // Comments: ph_comments (Catalyst-native + Jira-mirrored)
   const { data: comments = [], isLoading: isLoadingComments } = useQuery({
-    queryKey: ['cv-comments', itemId],
-    enabled: !!itemId && isOpen,
+    queryKey: ['cv-comments', resolvedWorkItemId],
+    enabled: !!resolvedWorkItemId && isOpen,
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_comments')
         .select('id, work_item_id, body, author_id, created_at, updated_at')
-        .eq('work_item_id', itemId)
+        .eq('work_item_id', resolvedWorkItemId!)
         .order('created_at', { ascending: true });
       if (!data?.length) return [];
       const authorIds = [...new Set(data.map(c => c.author_id).filter(Boolean))];
@@ -155,13 +185,13 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
 
   // History: ph_activity_log (Catalyst-native + Jira-mirrored)
   const { data: historyItems = [], isLoading: isLoadingHistory } = useQuery({
-    queryKey: ['cv-activity', itemId],
-    enabled: !!itemId && isOpen,
+    queryKey: ['cv-activity', resolvedWorkItemId],
+    enabled: !!resolvedWorkItemId && isOpen,
     queryFn: async () => {
       const { data } = await supabase
         .from('ph_activity_log')
         .select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at')
-        .eq('work_item_id', itemId)
+        .eq('work_item_id', resolvedWorkItemId!)
         .order('created_at', { ascending: false });
       if (!data?.length) return [];
       const userIds = [...new Set(data.map(e => e.user_id).filter(Boolean))];
@@ -181,15 +211,21 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
   // Mutations — Catalyst-native comments only (source='catalyst')
   const addMutation = useMutation({
     mutationFn: async (body: string) => {
+      if (!resolvedWorkItemId) throw new Error('Work item not resolved yet — try again in a moment.');
+      // Apr 28 2026 (cycle 8 fix): dropped `source: 'catalyst'` from
+      // the insert payload — `ph_comments` has no `source` column
+      // (verified columns: id / work_item_id / author_id / body /
+      // created_at / updated_at). PostgREST's schema cache was
+      // rejecting every comment insert with "Could not find the
+      // 'source' column of 'ph_comments' in the schema cache".
       await supabase.from('ph_comments').insert({
-        work_item_id: itemId,
+        work_item_id: resolvedWorkItemId,
         body,
         author_id: user!.id,
-        source: 'catalyst',
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cv-comments', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['cv-comments', resolvedWorkItemId] });
       toast.success('Comment added');
     },
     onError: () => toast.error('Failed to add comment'),
@@ -200,7 +236,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
       await supabase.from('ph_comments').update({ body, updated_at: new Date().toISOString() }).eq('id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cv-comments', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['cv-comments', resolvedWorkItemId] });
       toast.success('Comment updated');
     },
   });
@@ -210,7 +246,7 @@ export function CatalystActivitySection({ itemId, isOpen }: CatalystActivitySect
       await supabase.from('ph_comments').delete().eq('id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cv-comments', itemId] });
+      queryClient.invalidateQueries({ queryKey: ['cv-comments', resolvedWorkItemId] });
       toast.success('Comment deleted');
     },
   });
