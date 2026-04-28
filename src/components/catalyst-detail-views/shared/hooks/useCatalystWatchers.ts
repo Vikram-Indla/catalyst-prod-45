@@ -25,8 +25,8 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
     queryFn: async (): Promise<WatcherSummary> => {
       if (!issueKey) return { count: 0, isWatching: false };
       const { data: { user } } = await supabase.auth.getUser();
-      // @ts-ignore — ph_issue_watchers added by Cycle-3 migration
-      const { data, error } = await supabase
+      // ph_issue_watchers added by Cycle-3 migration; not yet in generated types
+      const { data, error } = await (supabase as any)
         .from('ph_issue_watchers')
         .select('user_id')
         .eq('issue_key', issueKey);
@@ -50,12 +50,10 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
       if (!user) throw new Error('Not authenticated');
       const isWatching = query.data?.isWatching ?? false;
       if (isWatching) {
-        // @ts-ignore
-        await supabase.from('ph_issue_watchers').delete()
+        await (supabase as any).from('ph_issue_watchers').delete()
           .eq('issue_key', issueKey).eq('user_id', user.id);
       } else {
-        // @ts-ignore
-        await supabase.from('ph_issue_watchers').insert({ issue_key: issueKey, user_id: user.id });
+        await (supabase as any).from('ph_issue_watchers').insert({ issue_key: issueKey, user_id: user.id });
       }
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ['cv-watchers', issueKey] }),
