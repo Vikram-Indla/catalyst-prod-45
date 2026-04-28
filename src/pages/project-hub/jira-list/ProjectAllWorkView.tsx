@@ -26,9 +26,6 @@ import { useItemSelection } from '@/hooks/useItemSelection';
 const CatalystDetailRouter = lazy(
   () => import('@/components/catalyst-detail-views/CatalystDetailRouter'),
 );
-const StoryDetailModal = lazy(
-  () => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'),
-);
 
 interface Props {
   projectKey: string;
@@ -182,18 +179,22 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
           )}
       </div>
 
-      {/* ── Narrow-mode overlay — opens StoryDetailModal (V15) for the
-            selected card. Stories use V15 directly; other types still get
-            the V15 shell, which routes via itemId/projectKey. */}
+      {/* ── Narrow-mode overlay — Catalyst detail router (Patch #9, 2026-04-28).
+            Previously routed every type through the V15 StoryDetailModal
+            shell; that path is retired. Now the canonical type-aware
+            router (same one used in the wide-mode panel above) handles
+            all types, so Story / Epic / Feature / Subtask / Task / BR /
+            Defect / Incident all render through their own CatalystView*. */}
       {overlayItemId && (() => {
         const overlayItem = items.find(i => i.id === overlayItemId);
         if (!overlayItem) return null;
         return (
           <Suspense fallback={null}>
-            <StoryDetailModal
+            <CatalystDetailRouter
               isOpen={true}
               onClose={() => setOverlayItemId(null)}
               itemId={overlayItem.id}
+              itemType={overlayItem.type}
               projectId={projectId ?? ''}
               projectKey={projectKey}
               onOpenItem={(id) => setOverlayItemId(id)}

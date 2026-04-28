@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 
-const StoryDetailModal = lazy(() => import('@/modules/project-work-hub/components/dialogs/StoryDetailModal'));
+const CatalystDetailRouter = lazy(() => import('@/components/catalyst-detail-views/CatalystDetailRouter'));
 
 // ── Types ────────────────────────────────────────
 interface CleanupItem {
@@ -1547,26 +1547,31 @@ export default function CleanupPage() {
         </DialogContent>
       </Dialog>
 
-      {/* ═══ STORY DETAIL MODAL ═══ */}
-      {detailItem && (viewMode === 'group' ? detailCatItems.length > 0 : listFilteredItems.length > 0) && (
-        <Suspense fallback={null}>
-          <StoryDetailModal
-            isOpen={true}
-            onClose={() => setDetailItem(null)}
-            itemId={
-              viewMode === 'group'
-                ? (detailCatItems[detailNavIndex]?.id ?? detailItem.id)
-                : (listFilteredItems[detailNavIndex]?.id ?? detailItem.id)
-            }
-            projectId=""
-            projectKey={
-              viewMode === 'group'
-                ? (detailCatItems[detailNavIndex]?.project_key ?? '')
-                : (listFilteredItems[detailNavIndex]?.project_key ?? '')
-            }
-          />
-        </Suspense>
-      )}
+      {/* ═══ CATALYST DETAIL ROUTER ═══
+          Patch #9 (2026-04-28): retired the V15 StoryDetailModal shell.
+          Also fixes a pre-existing defect — the previous wiring passed
+          ph_issues.id (UUID) as itemId, but both StoryDetailModal and
+          CatalystDetailRouter query by issue_key (text), so the modal
+          silently rendered with no row. Now passes issue_key + itemType. */}
+      {detailItem && (viewMode === 'group' ? detailCatItems.length > 0 : listFilteredItems.length > 0) && (() => {
+        const active =
+          viewMode === 'group'
+            ? detailCatItems[detailNavIndex] ?? detailCatItems.find(i => i.id === detailItem.id)
+            : listFilteredItems[detailNavIndex] ?? listFilteredItems.find(i => i.id === detailItem.id);
+        if (!active) return null;
+        return (
+          <Suspense fallback={null}>
+            <CatalystDetailRouter
+              isOpen={true}
+              onClose={() => setDetailItem(null)}
+              itemId={active.issue_key}
+              itemType={active.issue_type}
+              projectId=""
+              projectKey={active.project_key ?? ''}
+            />
+          </Suspense>
+        );
+      })()}
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
