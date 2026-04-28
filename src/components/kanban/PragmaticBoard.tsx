@@ -622,6 +622,21 @@ export interface PragmaticBoardProps extends CardActions {
   selectedId?: string | null;
   focusedId?: string | null;
   /**
+   * Optional swimlane resolver. When set, the board renders one
+   * "lane band" per distinct value returned by `swimlaneOf(issue)`,
+   * each band repeating the column row with only that lane's cards.
+   * `swimlaneLabel` may humanise the lane key for the header.
+   *
+   * Drag-and-drop continues to operate at the column level — drops
+   * change `status`, not the lane attribute. To move a card across
+   * lanes the user must explicitly edit the lane field on the card
+   * (assignee, quarter, etc.). Mirrors Jira board 597's swimlane
+   * behaviour, which also pins lane membership to the underlying
+   * field rather than to the lane the card was dropped on.
+   */
+  swimlaneOf?: (issue: BoardIssue) => string | null;
+  swimlaneLabel?: (key: string) => string;
+  /**
    * Called whenever a drop resolves to a concrete (destColId, insertIndex).
    * Host is responsible for:
    *   - updating local colMap optimistically
@@ -638,7 +653,8 @@ export interface PragmaticBoardProps extends CardActions {
 
 export function PragmaticBoard({
   columns, colMap, issuesById, avatarsByName, onCardClick,
-  d, tk, selectedId, focusedId, onDrop, ...actions
+  d, tk, selectedId, focusedId, onDrop, swimlaneOf, swimlaneLabel,
+  ...actions
 }: PragmaticBoardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
