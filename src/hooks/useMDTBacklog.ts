@@ -46,17 +46,17 @@ export interface MDTRequest extends Request {
 }
 
 /**
- * Fetches requests from ph_backlog_requests_view (canonical source).
+ * Fetches business requests from `ph_backlog_requests_view` — the
+ * Catalyst-canonical view over `ph_requests`. The hook owns enrichment
+ * (profiles / departments / scores / favorites / milestone counts).
  *
- * @deprecated Prefer `useRequestsBacklog` — the `MDT` in the legacy
- * name is a Jira-project-key fossil from the original mirror. The data
- * source today is `ph_backlog_requests_view`, a Catalyst-canonical
- * view over `ph_requests`. New consumers should adopt the renamed
- * alias; the old name stays exported until every call site is migrated.
+ * Canonical name: `useRequestsBacklog`. Legacy aliases `useMDTBacklog`
+ * and `useInitiativesBacklog` stay exported until every call site is
+ * migrated.
  */
-export function useMDTBacklog() {
+export function useRequestsBacklog() {
   return useQuery({
-    queryKey: ['mdt-backlog'],
+    queryKey: ['requests-backlog'],
     queryFn: async (): Promise<{ data: MDTRequest[]; count: number }> => {
       // Get current user for favorites
       const { data: { user } } = await supabase.auth.getUser();
@@ -191,10 +191,9 @@ export function useMDTBacklog() {
 }
 
 /**
- * Catalyst-canonical name for the ProductHub backlog hook.
- *
- * Identical behavior to `useMDTBacklog` — both names point at the same
- * underlying query. Use this name in net-new code; the legacy name will
- * be removed once existing call sites have been migrated.
+ * Legacy aliases — both `useMDTBacklog` and `useInitiativesBacklog`
+ * point at the canonical `useRequestsBacklog`. Existing call sites
+ * compile unchanged; remove once every consumer has been migrated.
  */
-export const useRequestsBacklog = useMDTBacklog;
+export const useMDTBacklog = useRequestsBacklog;
+export const useInitiativesBacklog = useRequestsBacklog;

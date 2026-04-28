@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from 'lucide-react';
-import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
 import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
 import { PCRequestCard } from '@/components/producthub/cards/PCRequestCard';
@@ -110,7 +110,7 @@ const PAGE_SIZES = [12, 24, 48];
 
 const CardsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { data, isLoading } = useMDTBacklog();
+  const { data, isLoading } = useRequestsBacklog();
   const requests = data?.data ?? [];
 
   const [searchRaw, setSearchRaw] = useState('');
