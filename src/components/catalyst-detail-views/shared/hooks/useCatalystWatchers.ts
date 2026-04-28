@@ -50,12 +50,10 @@ export function useCatalystWatchers(issueKey: string | null | undefined) {
       if (!user) throw new Error('Not authenticated');
       const isWatching = query.data?.isWatching ?? false;
       if (isWatching) {
-        // @ts-ignore
-        await supabase.from('ph_issue_watchers').delete()
+        await (supabase as any).from('ph_issue_watchers').delete()
           .eq('issue_key', issueKey).eq('user_id', user.id);
       } else {
-        // @ts-ignore
-        await supabase.from('ph_issue_watchers').insert({ issue_key: issueKey, user_id: user.id });
+        await (supabase as any).from('ph_issue_watchers').insert({ issue_key: issueKey, user_id: user.id });
       }
     },
     onSettled: () => qc.invalidateQueries({ queryKey: ['cv-watchers', issueKey] }),
