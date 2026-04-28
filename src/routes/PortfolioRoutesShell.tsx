@@ -3,7 +3,7 @@
  * Handles /portfolio/:portfolioId/* routes
  */
 import { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from "react-router-dom";
 
 const PlaceholderPage = lazy(() => import("../pages/jira-align/PlaceholderPage"));
 const WorkTreePage = lazy(() => import("../pages/work-tree").then(m => ({ default: m.WorkTreePage })));
@@ -13,7 +13,7 @@ const EpicEstimationPage = lazy(() => import("../pages/items/EpicEstimationPage"
 const EpicStatusReport = lazy(() => import("../pages/items/reports/EpicStatusReport"));
 const EpicTraceReport = lazy(() => import("../pages/items/reports/EpicTraceReport"));
 const Themes = lazy(() => import("../pages/Themes"));
-const Requests = lazy(() => import("../pages/Requests"));
+const Initiatives = lazy(() => import("../pages/Initiatives"));
 const Features = lazy(() => import("../pages/Features"));
 const Stories = lazy(() => import("../pages/Stories"));
 const Defects = lazy(() => import("../pages/Defects"));
@@ -46,9 +46,7 @@ export function PortfolioRoutes() {
       <Route path="forecast" element={<S><Forecast /></S>} />
       <Route path="capacity" element={<S><CapacityPlanning /></S>} />
       <Route path="themes" element={<S><Themes /></S>} />
-      <Route path="requests" element={<S><Requests /></S>} />
-      {/* Legacy redirect: /initiatives → /requests (rename 2026-04-29) */}
-      <Route path="initiatives" element={<Navigate to="../requests" replace />} />
+      <Route path="initiatives" element={<S><Initiatives /></S>} />
       <Route path="features" element={<S><Features /></S>} />
       <Route path="stories" element={<S><Stories /></S>} />
       <Route path="defects" element={<S><Defects /></S>} />
