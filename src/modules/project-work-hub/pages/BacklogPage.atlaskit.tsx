@@ -370,7 +370,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // ph_requests.initiative_key appears as ph_issues.parent_key on any
   // Jira issue that belongs to an initiative. So we collect every distinct
   // parent_key across stories + epics (and the stories' epic parents), then
-  // ask ph_backlog_initiatives_view which of those keys are initiatives.
+  // ask ph_backlog_requests_view which of those keys are initiatives.
   // Matches become top-level rows in the backlog; epics that reference them
   // nest underneath.
   //
@@ -771,7 +771,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     const initiativeSeen = new Set<string>();
 
     // Request rows first (top of hierarchy). Sourced from
-    // ph_backlog_initiatives_view via useRequestsByKeys. Only initiatives
+    // ph_backlog_requests_view via useRequestsByKeys. Only initiatives
     // that are referenced as a parent_key by any current BAU epic/story land
     // here — no noise.
     if (initiativesByKey && initiativesByKey.size > 0) {
@@ -1348,7 +1348,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
         // Requests render with their own pre-joined color/icon (from
-        // ph_backlog_initiatives_view). Fall back to the purple Epic lightning
+        // ph_backlog_requests_view). Fall back to the purple Epic lightning
         // if the view row somehow lacks type metadata. Every other backlog
         // type uses our canonical JiraIssueTypeIcon.
         if (it.type === 'initiative') {

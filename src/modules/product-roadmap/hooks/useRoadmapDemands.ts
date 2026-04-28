@@ -11,8 +11,8 @@ export function useRoadmapDemands(filters: RoadmapFilters) {
   return useQuery({
     queryKey: ['roadmap-demands', filters],
     queryFn: async () => {
-      // Use ph_roadmap_initiatives_view which filters on_roadmap = true
-      let query = typedQuery('ph_roadmap_initiatives_view')
+      // Use ph_roadmap_requests_view which filters on_roadmap = true
+      let query = typedQuery('ph_roadmap_requests_view')
         .select('*')
         .order('roadmap_priority', { ascending: true, nullsFirst: false });
 

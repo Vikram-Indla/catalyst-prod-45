@@ -6,7 +6,7 @@ import type { BacklogEpic, BacklogFeature, BacklogStory } from '../types/backlog
 const YEAR_2026_START = '2026-01-01T00:00:00Z';
 
 /**
- * Request row shape — pulled from `ph_backlog_initiatives_view` which
+ * Request row shape — pulled from `ph_backlog_requests_view` which
  * pre-joins initiative type styling (icon + color) onto ph_requests.
  * This is the "Business Request" layer in Catalyst's hierarchy, sitting
  * one level above Epic. Source of truth per the ProductBacklog ERD
@@ -25,7 +25,7 @@ export interface RequestRow {
  * Per the ProductBacklog ERD (uploaded 2026-04-18):
  *   ph_requests ||--o{ ph_issues : "parent_key = initiative_key"
  *
- * ph_backlog_initiatives_view is a Supabase view that pre-joins
+ * ph_backlog_requests_view is a Supabase view that pre-joins
  * ph_requests with initiative_types so icon + color resolve in a single
  * query — no client-side mapping required.
  *
@@ -42,7 +42,7 @@ export function useRequestsByKeys(keys: string[]) {
       const out = new Map<string, RequestRow>();
       if (keys.length === 0) return out;
       const { data, error } = await supabase
-        .from('ph_backlog_initiatives_view')
+        .from('ph_backlog_requests_view')
         .select('id, initiative_key, title')
         .in('initiative_key', keys);
       if (error) throw error;

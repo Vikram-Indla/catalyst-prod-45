@@ -46,11 +46,11 @@ export interface MDTInitiative extends Request {
 }
 
 /**
- * Fetches requests from ph_backlog_initiatives_view (canonical source).
+ * Fetches requests from ph_backlog_requests_view (canonical source).
  *
  * @deprecated Prefer `useRequestsBacklog` — the `MDT` in the legacy
  * name is a Jira-project-key fossil from the original mirror. The data
- * source today is `ph_backlog_initiatives_view`, a Catalyst-canonical
+ * source today is `ph_backlog_requests_view`, a Catalyst-canonical
  * view over `ph_requests`. New consumers should adopt the renamed
  * alias; the old name stays exported until every call site is migrated.
  */
@@ -75,7 +75,7 @@ export function useMDTBacklog() {
       // returned request as an empty array so consumers compile
       // unchanged; rebuild lands in a follow-up cycle.
       const [initResult, profilesResult, deptsResult, scoresResult, favsResult, milestonesResult] = await Promise.all([
-        typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
+        typedQuery('ph_backlog_requests_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
         typedQuery('ph_request_scores').select('request_id, strategic_alignment, business_impact, time_urgency, resource_feasibility, computed_score'),
@@ -155,7 +155,7 @@ export function useMDTBacklog() {
           kickoff_date: row.kickoff_date || null,
           target_complete: row.target_complete || null,
           // `progress` is now driven by the linked-items roll-up computed in
-          // ph_backlog_initiatives_view. Falls back to the legacy column for
+          // ph_backlog_requests_view. Falls back to the legacy column for
           // older rows that have no linked work items yet.
           progress: row.linked_items_progress ?? row.progress ?? 0,
           linked_items_total: row.linked_items_total ?? 0,

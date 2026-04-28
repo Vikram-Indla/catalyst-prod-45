@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';

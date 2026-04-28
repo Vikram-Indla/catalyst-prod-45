@@ -7248,7 +7248,7 @@ export type Database = {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -7269,7 +7269,7 @@ export type Database = {
             foreignKeyName: "es_goal_initiatives_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -7972,7 +7972,7 @@ export type Database = {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -7993,7 +7993,7 @@ export type Database = {
             foreignKeyName: "es_kr_initiatives_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -23636,7 +23636,7 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -23657,7 +23657,7 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -23959,7 +23959,7 @@ export type Database = {
             foreignKeyName: "ph_request_attachments_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -23980,7 +23980,7 @@ export type Database = {
             foreignKeyName: "ph_request_attachments_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24234,7 +24234,7 @@ export type Database = {
             foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24255,7 +24255,7 @@ export type Database = {
             foreignKeyName: "ph_request_budget_items_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24379,7 +24379,7 @@ export type Database = {
             foreignKeyName: "ph_request_links_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24400,7 +24400,7 @@ export type Database = {
             foreignKeyName: "ph_request_links_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24548,7 +24548,7 @@ export type Database = {
             foreignKeyName: "ph_request_milestones_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24569,7 +24569,7 @@ export type Database = {
             foreignKeyName: "ph_request_milestones_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24793,7 +24793,7 @@ export type Database = {
             foreignKeyName: "ph_request_risks_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24814,7 +24814,7 @@ export type Database = {
             foreignKeyName: "ph_request_risks_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24935,7 +24935,7 @@ export type Database = {
             foreignKeyName: "ph_request_scores_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: true
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -24956,7 +24956,7 @@ export type Database = {
             foreignKeyName: "ph_request_scores_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: true
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -27494,7 +27494,7 @@ export type Database = {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -27515,7 +27515,7 @@ export type Database = {
             foreignKeyName: "ph_user_favorites_initiative_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -67142,7 +67142,7 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_backlog_initiatives_view: {
+      ph_backlog_requests_view: {
         Row: {
           assignee_id: string | null
           budget_allocated: number | null
@@ -67306,7 +67306,7 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -67327,7 +67327,7 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -67491,7 +67491,7 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_backlog_initiatives_view"
+            referencedRelation: "ph_backlog_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -67512,7 +67512,7 @@ export type Database = {
             foreignKeyName: "ph_ideas_linked_initiative_id_fkey"
             columns: ["linked_initiative_id"]
             isOneToOne: false
-            referencedRelation: "ph_roadmap_initiatives_view"
+            referencedRelation: "ph_roadmap_requests_view"
             referencedColumns: ["id"]
           },
           {
@@ -67858,7 +67858,7 @@ export type Database = {
         }
         Relationships: []
       }
-      ph_roadmap_initiatives_view: {
+      ph_roadmap_requests_view: {
         Row: {
           assignee_id: string | null
           budget_allocated: number | null

@@ -150,7 +150,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ request, isS
 
       {/*
         Step 6 — Progress bar wired to linked_items_progress (computed in
-        ph_backlog_initiatives_view from real linked work items). Tooltip
+        ph_backlog_requests_view from real linked work items). Tooltip
         shows "{done} / {total} items" so the number is auditable.
       */}
       <div

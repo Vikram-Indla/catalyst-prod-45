@@ -1,6 +1,6 @@
 /**
  * Product Roadmap — Database-wired data hooks
- * All data from ph_roadmap_initiatives_view, ph_roadmap_summary_view, ph_request_milestones
+ * All data from ph_roadmap_requests_view, ph_roadmap_summary_view, ph_request_milestones
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -136,7 +136,7 @@ export function useRoadmapInitiatives() {
     queryKey: ['roadmap-requests'],
     queryFn: async (): Promise<RoadmapInitiative[]> => {
       const [{ data, error }, profiles, milestones, issueOwners, favoriteIds] = await Promise.all([
-        typedQuery('ph_roadmap_initiatives_view')
+        typedQuery('ph_roadmap_requests_view')
           .select('*')
           .eq('on_roadmap', true)
           .eq('is_deleted', false)
@@ -256,7 +256,7 @@ export function useRoadmapStats() {
 }
 
 // ══════════════════════════════════════════
-// useBacklogItemsNotOnRoadmap — queries ph_backlog_initiatives_view
+// useBacklogItemsNotOnRoadmap — queries ph_backlog_requests_view
 // (canonical source: includes BOTH catalyst-native and Jira-synced initiatives)
 // ══════════════════════════════════════════
 export function useBacklogItemsNotOnRoadmap() {
@@ -264,7 +264,7 @@ export function useBacklogItemsNotOnRoadmap() {
     queryKey: ['backlog-not-on-roadmap'],
     queryFn: async () => {
       const [{ data, error }, profiles] = await Promise.all([
-        typedQuery('ph_backlog_initiatives_view')
+        typedQuery('ph_backlog_requests_view')
           .select('id, initiative_key, title, status, priority, assignee_id, on_roadmap, is_deleted')
           .eq('is_deleted', false)
           .eq('on_roadmap', false)

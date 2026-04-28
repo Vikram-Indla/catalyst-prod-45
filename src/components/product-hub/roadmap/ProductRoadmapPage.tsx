@@ -13,7 +13,7 @@ import { RoadmapKPIStrip } from './RoadmapKPIStrip';
 import { RoadmapToolbar } from './RoadmapToolbar';
 import { RoadmapFilters } from './RoadmapFilters';
 import { RoadmapTimeline } from './RoadmapTimeline';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/InitiativeDetailPanel';
+import { InitiativeDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
 import type { TimelineRequest } from '@/types/producthub/request';
 
 import { AddInitiativeModal } from './AddInitiativeModal';
