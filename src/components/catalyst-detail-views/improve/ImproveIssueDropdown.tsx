@@ -240,12 +240,16 @@ export function ImproveIssueDropdown({
         onApplyAcceptanceCriteria={onApplyAcceptanceCriteria}
       />
 
+      {/* Apr 28 2026 (cycle 7 follow-up): pass `issue.id` (UUID)
+          first — `ph_comments.work_item_id` is a `uuid` column, so
+          passing `issue_key` ("BAU-5711") fails with Postgres error
+          22P02 "invalid input syntax for type uuid". */}
       <SummarizeCommentsDialog
         isOpen={mode === 'summarize'}
         onClose={() => setMode('closed')}
         issueType={issueType}
         issueSummary={issue?.summary}
-        workItemId={issue?.issue_key ?? issue?.id ?? null}
+        workItemId={issue?.id ?? issue?.issue_key ?? null}
       />
 
       <SuggestChildIssuesDialog

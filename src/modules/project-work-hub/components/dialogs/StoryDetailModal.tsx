@@ -1328,7 +1328,20 @@ export default function StoryDetailModal({
                     />
                   </div>
 
-                  {/* AI IMPROVE PANEL */}
+                  {/* AI IMPROVE PANEL — DEAD CODE.
+                      Apr 28 2026 (cycle 6 follow-up): every entry point
+                      that called `setAiPanelOpen(true)` was removed in
+                      cycle 4 when the legacy aiMenuRef trigger was
+                      replaced by ImproveIssueDropdown. `aiPanelOpen`
+                      now stays `false` for the whole component
+                      lifetime, so the JSX below never renders. Kept
+                      in source as a single block so a future cleanup
+                      pass can delete it (state declarations + this
+                      render branch + related handlers like
+                      doAiGenerate / handleAiGenerate / setAiOutput /
+                      setShowAiRegenConfirm) in one commit. Not
+                      deleting now to keep the diff blast-radius small
+                      while the new dropdown bakes in. */}
                   {aiPanelOpen && (
                     <div style={{ marginBottom: 20, border: '1px solid #BFDBFE', borderRadius: 8, overflow: 'hidden', animation: 'sdm-slide-down 0.2s ease' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: '#DBEAFE' }}>

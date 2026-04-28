@@ -11,7 +11,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
-  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill,
+  CatalystActivitySection, CatalystSidebarDetails, CatalystStatusPill, CatalystFooterMeta,
 } from '../shared/sections';
 import { ParentAndLabels } from './ParentAndLabels';
 import { SubtasksPanel } from '@/modules/project-work-hub/components/SubtasksPanel';
@@ -75,6 +75,7 @@ export default function CatalystViewEpic({
         projectKey={issue?.project_key || projectKey}
       />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
+      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 

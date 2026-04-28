@@ -33,10 +33,13 @@ interface SummarizeCommentsDialogProps {
   /** Issue summary (title) — prompt context. */
   issueSummary?: string | null;
   /**
-   * Work item ID — the value used as `work_item_id` in
-   * `ph_comments`. For Jira-synced and Catalyst-native rows in
-   * `ph_issues`, this is the issue_key (BAU-1234) per the
-   * existing useWorkItemActivity hook contract.
+   * Work item ID — the value matched against `ph_comments.work_item_id`.
+   * That column is a `uuid` (verified via PostgREST 22P02 error on
+   * 2026-04-28), so this MUST be `ph_issues.id` (the UUID). Passing
+   * `issue_key` ("BAU-5711") trips a type-mismatch error and the
+   * dialog falls into the "AI features temporarily unavailable" path.
+   * The consumer (`ImproveIssueDropdown`) sources this from
+   * `issue?.id ?? issue?.issue_key` so a UUID lands when available.
    */
   workItemId?: string | null;
 }

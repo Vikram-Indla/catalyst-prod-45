@@ -103,36 +103,137 @@ export const IMPROVE_SUB_TYPES = [
 export type ImproveSubType = (typeof IMPROVE_SUB_TYPES)[number]['id'];
 
 /**
- * Minimal plain-text → ADF (Atlassian Document Format) paragraph
- * doc. Catalyst's CatalystDescriptionSection writes the description
- * field as `description_adf` (a JSON ADF document). The Improve
- * pipeline emits plain text, so consumers wrap with this helper
- * before calling `supabase.from('ph_issues').update({
- * description_adf: ... })`. Splits on blank lines so multi-paragraph
- * AI output becomes multiple ADF paragraphs.
+ * Plain-text / lightweight-markdown → ADF (Atlassian Document
+ * Format) doc. Catalyst's CatalystDescriptionSection writes the
+ * description field as `description_adf` (a JSON ADF document). The
+ * Improve pipeline emits plain text — but the LLM frequently uses
+ * markdown-style structure (### headings, "- " bullets, "1. " numbered
+ * lists, **bold** / *italic* spans) which would collapse to flat
+ * paragraphs without parsing.
+ *
+ * Apr 28, 2026 (cycle 6 follow-up): upgraded from "split on blank
+ * lines, wrap each as a paragraph" to a small line-based markdown
+ * parser. Recognises:
+ *   - `# Heading 1` / `## Heading 2` / `### Heading 3` → heading nodes
+ *   - `- bullet` / `* bullet` → bulletList
+ *   - `1. item` / `2. item` → orderedList
+ *   - `**bold**` text mark "strong"
+ *   - `*italic*` / `_italic_` text mark "em"
+ *   - Plain lines → paragraph
+ * Blank lines separate blocks. Nested lists, code blocks, and
+ * tables are NOT parsed (kept simple — AI output rarely uses them
+ * for description fields).
  */
-export function plainTextToAdfDoc(text: string): {
-  version: number;
-  type: 'doc';
-  content: Array<{
-    type: 'paragraph';
-    content?: Array<{ type: 'text'; text: string }>;
-  }>;
-} {
+
+type AdfNode = Record<string, unknown>;
+type AdfDoc = { version: number; type: 'doc'; content: AdfNode[] };
+
+/** Parse inline `**bold**` and `*italic*` / `_italic_` runs to ADF text nodes. */
+function parseInlineMarks(line: string): AdfNode[] {
+  const out: AdfNode[] = [];
+  // Tokenise on bold / italic boundaries while preserving order.
+  // Greedy-bold first (so **a *b* a** doesn't mis-tokenise), then italic.
+  const re = /(\*\*[^*]+\*\*|\*[^*\n]+\*|_[^_\n]+_)/g;
+  let lastIdx = 0;
+  let match;
+  while ((match = re.exec(line)) !== null) {
+    if (match.index > lastIdx) {
+      out.push({ type: 'text', text: line.slice(lastIdx, match.index) });
+    }
+    const tok = match[0];
+    if (tok.startsWith('**') && tok.endsWith('**')) {
+      out.push({ type: 'text', text: tok.slice(2, -2), marks: [{ type: 'strong' }] });
+    } else if ((tok.startsWith('*') && tok.endsWith('*')) || (tok.startsWith('_') && tok.endsWith('_'))) {
+      out.push({ type: 'text', text: tok.slice(1, -1), marks: [{ type: 'em' }] });
+    } else {
+      out.push({ type: 'text', text: tok });
+    }
+    lastIdx = re.lastIndex;
+  }
+  if (lastIdx < line.length) {
+    out.push({ type: 'text', text: line.slice(lastIdx) });
+  }
+  return out.length ? out : [{ type: 'text', text: line }];
+}
+
+export function plainTextToAdfDoc(text: string): AdfDoc {
   const trimmed = (text || '').trim();
   if (!trimmed) {
     return { version: 1, type: 'doc', content: [{ type: 'paragraph' }] };
   }
-  const paragraphs = trimmed
-    .split(/\n{2,}/)
-    .map((p) => p.replace(/\n/g, ' ').trim())
-    .filter(Boolean);
-  return {
-    version: 1,
-    type: 'doc',
-    content: paragraphs.map((p) => ({
-      type: 'paragraph' as const,
-      content: [{ type: 'text' as const, text: p }],
-    })),
-  };
+  const lines = trimmed.split(/\r?\n/);
+  const blocks: AdfNode[] = [];
+  let i = 0;
+
+  const isBullet = (s: string) => /^\s*[-*]\s+/.test(s);
+  const isOrdered = (s: string) => /^\s*\d+\.\s+/.test(s);
+  const stripBullet = (s: string) => s.replace(/^\s*[-*]\s+/, '');
+  const stripOrdered = (s: string) => s.replace(/^\s*\d+\.\s+/, '');
+
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.trim().length === 0) { i++; continue; }
+
+    // Heading
+    const headingMatch = line.match(/^(#{1,3})\s+(.*)$/);
+    if (headingMatch) {
+      const level = headingMatch[1].length as 1 | 2 | 3;
+      blocks.push({
+        type: 'heading',
+        attrs: { level },
+        content: parseInlineMarks(headingMatch[2]),
+      });
+      i++;
+      continue;
+    }
+
+    // Bullet list
+    if (isBullet(line)) {
+      const items: AdfNode[] = [];
+      while (i < lines.length && isBullet(lines[i])) {
+        items.push({
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: parseInlineMarks(stripBullet(lines[i])) }],
+        });
+        i++;
+      }
+      blocks.push({ type: 'bulletList', content: items });
+      continue;
+    }
+
+    // Ordered list
+    if (isOrdered(line)) {
+      const items: AdfNode[] = [];
+      while (i < lines.length && isOrdered(lines[i])) {
+        items.push({
+          type: 'listItem',
+          content: [{ type: 'paragraph', content: parseInlineMarks(stripOrdered(lines[i])) }],
+        });
+        i++;
+      }
+      blocks.push({ type: 'orderedList', content: items });
+      continue;
+    }
+
+    // Paragraph — collect consecutive non-empty, non-block-prefix lines.
+    const paraLines: string[] = [];
+    while (
+      i < lines.length &&
+      lines[i].trim().length > 0 &&
+      !lines[i].match(/^#{1,3}\s+/) &&
+      !isBullet(lines[i]) &&
+      !isOrdered(lines[i])
+    ) {
+      paraLines.push(lines[i].trim());
+      i++;
+    }
+    if (paraLines.length) {
+      blocks.push({
+        type: 'paragraph',
+        content: parseInlineMarks(paraLines.join(' ')),
+      });
+    }
+  }
+
+  return { version: 1, type: 'doc', content: blocks.length ? blocks : [{ type: 'paragraph' }] };
 }

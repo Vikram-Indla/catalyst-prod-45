@@ -13,7 +13,7 @@ import { useCatalystIssue, useCatalystIssueMutations } from '../shared/hooks';
 import {
   CatalystTitleEditor, CatalystQuickActions, CatalystDescriptionSection, CatalystAcceptanceCriteria,
   CatalystActivitySection, CatalystSidebarDetails, CatalystKeyDetails,
-  KeyDetailsFieldRow, CatalystStatusPill,
+  KeyDetailsFieldRow, CatalystStatusPill, CatalystFooterMeta,
 } from '../shared/sections';
 import {
   CatalystDefectKeyRows,
@@ -129,6 +129,7 @@ export default function CatalystViewDefect({
         projectKey={issue?.project_key || projectKey}
       />
       <CatalystActivitySection itemId={itemId} isOpen={isOpen} />
+      <CatalystFooterMeta issue={issue ?? null} />
     </>
   );
 

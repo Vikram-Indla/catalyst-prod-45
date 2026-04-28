@@ -8,4 +8,5 @@ export { CatalystPriorityField } from './CatalystPriorityField';
 export { CatalystParentLinker } from './CatalystParentLinker';
 export { CatalystKeyDetails, KeyDetailsFieldRow } from './CatalystKeyDetails';
 export { CatalystStatusPill } from './CatalystStatusPill';
+export { CatalystFooterMeta } from './CatalystFooterMeta';
 

@@ -36,7 +36,7 @@ import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
-import { DropdownMenu as AdsDropdownMenu } from '@/components/ads/DropdownMenu';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { MoreHorizontal, Inbox } from 'lucide-react';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
@@ -300,24 +300,26 @@ const PragmaticColumn = memo(function PragmaticColumn({
           fontSize: 12, fontWeight: 500, color: tk.textPrimary,
           fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
         }}>{issueIds.length}</span>
-        {/* Per-column meatball menu — Jira parity (board 597 surfaces this on
-            every column header). Uses the shared ADS DropdownMenu wrapper
-            which already handles the shouldRenderToParent + span-wrap pattern
-            that defeats the portal-mount race (CLAUDE.md L1/L21). */}
-        <AdsDropdownMenu
-          aria-label={`${column.name} column actions`}
-          testId={`kanban-column-meatball-${column.id}`}
+        {/* Per-column meatball menu — Jira parity (board 597). Direct
+            @atlaskit/dropdown-menu with @atlaskit/button/new IconButton trigger
+            (matches UWVToolbar pattern that works elsewhere in the codebase).
+            Default body portal handles positioning correctly even inside
+            position:sticky parents. */}
+        <DropdownMenu
           placement="bottom-end"
-          trigger={() => (
+          testId={`kanban-column-meatball-${column.id}`}
+          shouldRenderToParent
+          trigger={({ triggerRef, isSelected: _isSel, testId: _tid, ...triggerProps }) => (
             <button
+              {...triggerProps}
+              ref={triggerRef as React.Ref<HTMLButtonElement>}
               type="button"
               aria-label={`${column.name} column actions`}
-              data-testid={`kanban-column-meatball-${column.id}-btn`}
               style={{
-                width: 24, height: 24, display: 'inline-flex', alignItems: 'center',
-                justifyContent: 'center', background: 'transparent',
-                border: 'none', borderRadius: 3, cursor: 'pointer',
-                color: tk.textMuted, padding: 0, flexShrink: 0,
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                width: 24, height: 24, padding: 0,
+                border: 'none', background: 'transparent', borderRadius: 3,
+                cursor: 'pointer', color: tk.textMuted, flexShrink: 0,
               }}
               onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover; }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
@@ -325,19 +327,17 @@ const PragmaticColumn = memo(function PragmaticColumn({
               <MoreHorizontal size={14} />
             </button>
           )}
-          groups={[{
-            key: 'col-info',
-            title: column.name,
-            items: [
-              { key: 'cards', label: `Cards in column: ${issueIds.length}`, isDisabled: true },
-              { key: 'wip', isDisabled: true,
-                label: column.wipLimit != null
-                  ? `WIP limit: ${column.wipLimit}${issueIds.length > column.wipLimit ? ' (exceeded)' : ''}`
-                  : 'No WIP limit' },
-              { key: 'statuses', label: `Statuses mapped: ${column.statuses.length}`, isDisabled: true },
-            ],
-          }]}
-        />
+        >
+          <DropdownItemGroup title={column.name}>
+            <DropdownItem isDisabled>{`Cards in column: ${issueIds.length}`}</DropdownItem>
+            <DropdownItem isDisabled>
+              {column.wipLimit != null
+                ? `WIP limit: ${column.wipLimit}${issueIds.length > column.wipLimit ? ' (exceeded)' : ''}`
+                : 'No WIP limit'}
+            </DropdownItem>
+            <DropdownItem isDisabled>{`Statuses mapped: ${column.statuses.length}`}</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
       </div>
 
       {/* Body (drop target) */}
