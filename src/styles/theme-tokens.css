@@ -17,6 +17,15 @@
   --cp-bg-sidebar-hdr:  #F8FAFC;
   --cp-bg-sunken:       #F1F5F9;
   --cp-float:           #FFFFFF;
+  /* Bridge gap closure (2026-04-28): src/theme/ads/tokens.ts declared
+     overlay/inset/disabled values in TS but no CSS rule emitted them
+     as custom properties. Wrappers reading var(--cp-bg-overlay) etc.
+     resolved to nothing. Adding here so the bridge has a real CSS
+     counterpart. Light values mirror tokens.ts adsTokens.bg.* and
+     text.disabled. */
+  --cp-bg-overlay:      #F8FAFC;
+  --cp-bg-inset:        #F1F5F9;
+  --cp-text-disabled:   #CBD5E1;
 
   /* Text */
   --cp-t1:              #111827;
@@ -91,13 +100,25 @@
 }
 
 /* ── DARK MODE — NOCTURNE Geist (canonical Apr 2026) ── */
-[data-theme="dark"] {
+/* Phase 11 (2026-04-29): switched the dark selector from [data-theme="dark"]
+   to .dark. Atlaskit's tokens runtime owns data-theme — it writes a
+   space-separated token list ("dark:dark light:light spacing:spacing ...")
+   that its own [data-theme~="dark:dark"] selectors need. Catalyst's
+   ThemeProvider also sets <html class="dark">, which Atlaskit never
+   touches, so we use that as our flip signal. Both layers coexist. */
+.dark, [data-theme="dark"] {
   /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
   --cp-bg:              #0A0A0A;
   --cp-bg-canvas:       #0A0A0A;
   --cp-bg-sidebar-hdr:  #0A0A0A;
   --cp-bg-sunken:       #0A0A0A;
   --cp-float:           #1A1A1A;
+  /* Bridge gap closure (2026-04-28) — see light block. NOCTURNE
+     dark counterparts mirror tokens.ts adsTokens.bg.overlay/inset
+     and text.disabled. */
+  --cp-bg-overlay:      #1F1F1F;
+  --cp-bg-inset:        #111111;
+  --cp-text-disabled:   #7D7D7D;
 
   /* Text — Geist solid hex scale */
   --cp-t1:              #EDEDED;

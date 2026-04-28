@@ -188,18 +188,10 @@ export interface ParentIssue {
   status_category: 'todo' | 'in_progress' | 'done';
 }
 
-export type AIImproveType =
-  | 'improve_clarify'
-  | 'expand_detail'
-  | 'add_acceptance_criteria'
-  | 'convert_user_story'
-  | 'shorten_focus'
-  | 'add_edge_cases';
-
-export interface AIOutput {
-  description: string;
-  acceptance_criteria: string;
-}
+// Note: `AIImproveType` and `AIOutput` were removed 2026-04-28 along with
+// the legacy AI Improve inline panel in StoryDetailModal. The canonical
+// dropdown lives in `src/components/catalyst-detail-views/improve/` and
+// owns its own per-type focus map; no shared types are needed here.
 
 export type ActivityTab = 'all' | 'comments' | 'history';
 

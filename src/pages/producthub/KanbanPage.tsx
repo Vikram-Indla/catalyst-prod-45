@@ -161,6 +161,17 @@ export default function ProductHubKanbanPage() {
 
   /* ═════ Detail panel routing. ═════ */
   const onCardClick = useCallback((initiativeId: string) => setSelectedId(initiativeId), []);
+
+  /**
+   * Per-column "+ Create initiative" — Jira-parity affordance threaded
+   * through the canonical adapter. Today the drawer doesn't accept a
+   * pre-filled status so we just open it; once `CreateInitiativeDrawer`
+   * supports `initialStatus` we can map `colId` ("col-<slug>") to the
+   * matching `initiative_status` enum value and seed the form.
+   */
+  const onCreateInColumn = useCallback((_colId: string) => {
+    setShowCreate(true);
+  }, []);
   const selectedInitiative = useMemo(
     () => (selectedId ? initiatives.find(i => i.id === selectedId) ?? null : null),
     [selectedId, initiatives],
@@ -184,11 +195,12 @@ export default function ProductHubKanbanPage() {
     onStatusChange,
     onToggleFavorite,
     onCardClick,
+    onCreateInColumn,
   }), [
     initiatives, avatarsByName, workflowStatuses,
     search, selAssignees, filterSelected, groupBy,
     onFilterChange, onClearFilters,
-    onStatusChange, onToggleFavorite, onCardClick,
+    onStatusChange, onToggleFavorite, onCardClick, onCreateInColumn,
   ]);
 
   if (isLoading || workflowLoading) {

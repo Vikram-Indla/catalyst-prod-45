@@ -134,6 +134,62 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
     }
   }
 
+  // ─── Update WIP Limit ───
+  // Cycle-4 schema added `wip_limit INTEGER NULL` on
+  // `catalyst_workflow_statuses`. Surfaces straight through to the
+  // kanban column header (PragmaticBoard renders MAX badge that goes red
+  // when card count exceeds the limit).
+  async function handleUpdateWipLimit(statusId: string, raw: string) {
+    const parsed = raw.trim() === '' ? null : Math.max(0, parseInt(raw, 10) || 0);
+    try {
+      const { error } = await typedQuery('catalyst_workflow_statuses')
+        .update({ wip_limit: parsed })
+        .eq('id', statusId);
+      if (error) throw error;
+      invalidateAll();
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to update WIP limit');
+    }
+  }
+
+  // ─── Toggle Active ───
+  // `is_active = false` keeps a status row in the database (so historical
+  // initiatives that still reference it don't orphan) but hides the
+  // column from the kanban surface.
+  async function handleToggleActive(statusId: string, current: boolean) {
+    try {
+      const { error } = await typedQuery('catalyst_workflow_statuses')
+        .update({ is_active: !current })
+        .eq('id', statusId);
+      if (error) throw error;
+      invalidateAll();
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to toggle active');
+    }
+  }
+
+  // ─── Update Slug Aliases ───
+  // Comma-separated raw text → string[] persisted to `slug_aliases`.
+  // The kanban routing reads slug + slug_aliases as the column's
+  // accepted enum values, so adding "in_progress" to "implementation"'s
+  // aliases routes legacy `ph_initiatives.status='in_progress'` rows
+  // into the renamed Implementation column without a DB migration.
+  async function handleUpdateAliases(statusId: string, raw: string) {
+    const aliases = raw
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+    try {
+      const { error } = await typedQuery('catalyst_workflow_statuses')
+        .update({ slug_aliases: aliases })
+        .eq('id', statusId);
+      if (error) throw error;
+      invalidateAll();
+    } catch (e: any) {
+      toast.error(e.message || 'Failed to update aliases');
+    }
+  }
+
   // ─── Toggle Transition ───
   async function handleToggleTransition(fromId: string | null, toId: string, isGlobal: boolean) {
     const existing = transitions.find(t =>
@@ -267,6 +323,47 @@ export function WorkflowEditor({ scheme, statuses, transitions, onInvalidate }: 
                   ))}
                 </SelectContent>
               </Select>
+
+              {/* WIP limit — numeric input; blank = no limit */}
+              <Input
+                type="number"
+                min={0}
+                placeholder="WIP"
+                defaultValue={(s as WorkflowStatus & { wip_limit?: number | null }).wip_limit ?? ''}
+                onBlur={e => handleUpdateWipLimit(s.id, e.currentTarget.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
+                }}
+                className="h-7 w-[68px] text-[11px] bg-white border-[#E2E8F0] text-[#475569] shrink-0"
+                title="Work-in-progress limit (blank for no limit)"
+              />
+
+              {/* Aliases — comma-separated slug list (e.g. "in_progress, under_implementation") */}
+              <Input
+                type="text"
+                placeholder="aliases"
+                defaultValue={(((s as WorkflowStatus & { slug_aliases?: string[] | null }).slug_aliases) ?? []).join(', ')}
+                onBlur={e => handleUpdateAliases(s.id, e.currentTarget.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') (e.currentTarget as HTMLInputElement).blur();
+                }}
+                className="h-7 w-[140px] text-[11px] bg-white border-[#E2E8F0] text-[#475569] shrink-0 font-mono"
+                title="Comma-separated DB enum values that route into this column"
+              />
+
+              {/* Active toggle */}
+              <button
+                onClick={() => handleToggleActive(s.id, (s as WorkflowStatus & { is_active?: boolean }).is_active ?? true)}
+                className={cn(
+                  'px-2 h-7 text-[10px] font-medium uppercase tracking-wider rounded border transition-colors shrink-0',
+                  ((s as WorkflowStatus & { is_active?: boolean }).is_active ?? true)
+                    ? 'bg-[#ECFDF5] text-[#065F46] border-[#A7F3D0]'
+                    : 'bg-[#F1F5F9] text-[#94A3B8] border-[#E2E8F0]',
+                )}
+                title="Toggle whether this status renders as a kanban column"
+              >
+                {((s as WorkflowStatus & { is_active?: boolean }).is_active ?? true) ? 'Active' : 'Hidden'}
+              </button>
 
               {/* Actions */}
               <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">

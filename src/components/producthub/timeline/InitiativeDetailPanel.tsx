@@ -14,7 +14,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, X, Archive } from 'lucide-react';
+import { ArrowLeft, X, Archive, Link2, Share2, Eye } from 'lucide-react';
 import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import {
   Modal,
@@ -192,6 +192,51 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     } catch { toast.error('Clone failed'); }
   };
 
+  /**
+   * Permalink — Jira-parity affordance. Copies the current URL with
+   * `?selectedInitiative=<key>` to the clipboard. Surface owns its own
+   * URL routing today; this button reflects whatever route the user
+   * arrived at.
+   */
+  const handleCopyPermalink = useCallback(async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('selectedInitiative', initiative.initiative_key);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      toast.success('Permalink copied', {
+        duration: 1800,
+        style: { background: '#18181B', color: '#fff' },
+        position: 'bottom-center',
+      });
+    } catch {
+      toast.error('Could not copy permalink');
+    }
+  }, [initiative.initiative_key]);
+
+  /**
+   * Share — opens the native OS share sheet on supporting devices,
+   * otherwise falls back to copying the permalink. Mirrors the share
+   * affordance on Jira's detail panel right cluster.
+   */
+  const handleShare = useCallback(async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('selectedInitiative', initiative.initiative_key);
+    const shareData = {
+      title: initiative.title,
+      text: `${initiative.initiative_key} — ${initiative.title}`,
+      url: url.toString(),
+    };
+    if (typeof navigator !== 'undefined' && (navigator as Navigator & { share?: (data: typeof shareData) => Promise<void> }).share) {
+      try {
+        await (navigator as Navigator & { share: (data: typeof shareData) => Promise<void> }).share(shareData);
+        return;
+      } catch {
+        // user cancelled OR not allowed in this browser context — fall through to clipboard
+      }
+    }
+    handleCopyPermalink();
+  }, [initiative.initiative_key, initiative.title, handleCopyPermalink]);
+
   const handleArchiveToggle = async () => {
     try {
       const { error } = await typedQuery('ph_initiatives')
@@ -226,10 +271,66 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       >
         {/* Top Bar */}
         <div className="idp-topbar">
-          <button className="idp-back-btn" onClick={handleClose}>
-            <ArrowLeft size={14} /> Back to list
+          <button className="idp-back-btn" onClick={handleClose} aria-label="Back to list">
+            <ArrowLeft size={14} />
           </button>
+          {/*
+            Breadcrumb — Jira-parity navigation context. Static today
+            (every initiative lives under Product Hub > Backlog), but
+            structured so the segments can become real <Link>s when the
+            ProductHub IA gets richer (department or quarter sub-pages).
+          */}
+          <nav
+            className="idp-breadcrumbs"
+            aria-label="Breadcrumb"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 12, color: 'var(--cp-text-secondary, #6B6E76)',
+              fontFamily: 'var(--cp-font-body)', minWidth: 0, flex: 1,
+              marginLeft: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>Product Hub</span>
+            <span aria-hidden="true">/</span>
+            <span style={{ fontWeight: 500 }}>Backlog</span>
+            <span aria-hidden="true">/</span>
+            <span style={{ fontWeight: 600, color: 'var(--cp-text-primary, #292A2E)' }}>
+              {initiative.initiative_key}
+            </span>
+          </nav>
           <div className="idp-action-group">
+            {/* Watchers — Jira-parity affordance; backend table is a follow-up */}
+            <button
+              className="idp-action-btn"
+              onClick={() => toast.info('Watchers — coming soon', { duration: 1600, position: 'bottom-center' })}
+              aria-label="Watchers"
+              title="Watchers"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            >
+              <Eye size={14} />
+              <span style={{ fontSize: 12 }}>0</span>
+            </button>
+            {/* Share — native share sheet; falls back to clipboard */}
+            <button
+              className="idp-action-btn"
+              onClick={handleShare}
+              aria-label="Share"
+              title="Share"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            >
+              <Share2 size={14} />
+            </button>
+            {/* Permalink — copy current URL with selectedInitiative param */}
+            <button
+              className="idp-action-btn"
+              onClick={handleCopyPermalink}
+              aria-label="Copy permalink"
+              title="Copy permalink"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            >
+              <Link2 size={14} />
+            </button>
+            <div className="idp-divider" />
             <button className="idp-action-btn" onClick={handleClone}>Clone</button>
             <button className="idp-action-btn idp-action-btn--archive" onClick={handleArchiveToggle}>
               {initiative.is_archived ? 'Restore' : 'Archive'}
@@ -288,24 +389,13 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
               ))}
               <span className="idp-priority-label" style={{ textTransform: 'capitalize' }}>{priority}</span>
             </div>
-            {(initiative as any).source === 'catalyst' && (
-              <span style={{
-                fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                color: 'var(--fg-3)', background: '#F1F5F9', border: '1px solid var(--divider)',
-                borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
-              }}>
-                ✦ Catalyst
-              </span>
-            )}
-            {(initiative as any).source === 'jira' && (
-              <span style={{
-                fontSize: 10, fontWeight: 500, letterSpacing: '0.04em',
-                color: 'var(--cp-blue)', background: 'var(--cp-blue-wash)', border: '1px solid #DBEAFE',
-                borderRadius: 4, padding: '2px 6px', marginLeft: 8, userSelect: 'none',
-              }}>
-                ⚡ Jira
-              </span>
-            )}
+            {/*
+              Source-of-record chips ("✦ Catalyst" / "⚡ Jira") removed —
+              every initiative is Catalyst-canonical now per the
+              "no Jira data inflow" decision. Provenance no longer drives
+              the panel chrome; the field stays on the row for legacy
+              callers but the surface treats every initiative uniformly.
+            */}
           </div>
         </div>
 

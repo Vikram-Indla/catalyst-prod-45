@@ -1,0 +1,52 @@
+{
+  "$schema": "catalyst/theme-baseline/v1",
+  "captured": "2026-04-28",
+  "branch": "theme/phase-0-1-unblock",
+  "phase": "post-phase-0-1",
+  "mode": "light",
+  "notes": "Light-mode baseline AFTER Phase 0+1 patches. Used as the regression lock for every later phase — any rgb / px deviation from these values on the listed surfaces fails the phase. Surface tuple format: [name, bg(rgba), fg(rgba), borderTopWidth, width, height].",
+  "pages": {
+    "home-for-you": {
+      "url": "/",
+      "htmlDataTheme": "light",
+      "cpVars": {
+        "bg": "#FFFFFF",
+        "bgHubPage": "#FFFFFF",
+        "bgSurface": "#FFFFFF",
+        "bgOverlay": "#F8FAFC",
+        "bgInset": "#F1F5F9",
+        "textPrimary": "#0F172A",
+        "textDisabled": "#CBD5E1",
+        "t1": "#0F172A",
+        "bd": "rgba(15,23,42,0.12)"
+      },
+      "surfaces": [
+        ["body",   [255,255,255,1], [10,10,10,1],   0, 1887, 1027],
+        ["shell",  [0,0,0,0],       [10,10,10,1],   0, 1855, 995],
+        ["hdr",    [0,0,0,0],       [15,23,42,1],   0, 1887, 55],
+        ["sbr",    [0,0,0,0],       [15,23,42,1],   0, 0,    971],
+        ["main",   [255,255,255,1], [15,23,42,1],   0, 1887, 971],
+        ["h1",     [0,0,0,0],       [41,42,46,1],   0, 133,  28],
+        ["toggle", [0,0,0,0],       [100,116,139,1],0, 35,   35],
+        ["profile",[0,0,0,0],       [15,23,42,1],   0, 31,   31]
+      ]
+    },
+    "project-hub-projects": {
+      "url": "/project-hub/projects",
+      "htmlDataTheme": "light",
+      "cpVars": {
+        "bg": "#FFFFFF",
+        "bgHubPage": "#FFFFFF",
+        "bgSurface": "#FFFFFF",
+        "textPrimary": "#0F172A",
+        "t1": "#0F172A",
+        "bd": "rgba(15,23,42,0.12)"
+      },
+      "surfaces": [
+        ["body",   [255,255,255,1], [10,10,10,1],  0, 1887, 1090],
+        ["main",   [255,255,255,1], [15,23,42,1],  0, 1887, 1034],
+        ["h1",     [0,0,0,0],       [41,42,46,1],  0, 124,  28]
+      ]
+    }
+  }
+}

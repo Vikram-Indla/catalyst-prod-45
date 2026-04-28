@@ -578,7 +578,11 @@ function RoadmapToggleInline({ initiative }: { initiative: Initiative }) {
 }
 
 /* ════════════════════════════════════════════════════
-   COMMENTS SECTION — Real data from ph_comments
+   COMMENTS SECTION — Real data from ph_initiative_comments
+   (Split-table fix shipped 2026-04-28; see migration
+   20260428140000_jira_compare_initiative_comments_split.sql.
+   Previously routed through ph_comments which FK-targets
+   ph_issues.id, never persisted in production.)
    ════════════════════════════════════════════════════ */
 function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const queryClient = useQueryClient();
@@ -587,10 +591,10 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const [submitting, setSubmitting] = useState(false);
 
   const { data: comments = [], isLoading } = useQuery({
-    queryKey: ['ph-comments', initiativeId],
+    queryKey: ['ph-initiative-comments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_comments')
-        .select('id, body, author_id, created_at, updated_at').eq('work_item_id', initiativeId).order('created_at', { ascending: true });
+      const { data, error } = await typedQuery('ph_initiative_comments')
+        .select('id, body, author_id, created_at, updated_at').eq('initiative_id', initiativeId).order('created_at', { ascending: true });
       if (error) throw error;
       const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
       const uniqueAuthorIds = Array.from(new Set(authorIds));
@@ -608,8 +612,8 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      await typedQuery('ph_comments').insert({ work_item_id: initiativeId, work_item_type: 'initiative', body: newComment.trim(), author_id: user?.id || null });
-      queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
+      await typedQuery('ph_initiative_comments').insert({ initiative_id: initiativeId, body: newComment.trim(), author_id: user?.id || null });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
       setNewComment('');
       catalystToast.success('Comment added');
     } catch (err: any) { catalystToast.error('Failed: ' + err.message); }
@@ -617,8 +621,8 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   };
 
   const handleDelete = async (id: string) => {
-    await typedQuery('ph_comments').delete().eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
+    await typedQuery('ph_initiative_comments').delete().eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
     catalystToast.success('Comment deleted');
   };
 

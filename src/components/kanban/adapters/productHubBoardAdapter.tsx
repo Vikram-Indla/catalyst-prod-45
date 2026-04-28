@@ -80,11 +80,54 @@ export function buildColumnsFromWorkflowStatuses(
     });
 }
 
+/**
+ * Catalyst-native fallback alias map.
+ *
+ * The post-Phase-3 design routes raw `ph_initiatives.status` enum values
+ * into workflow columns via `catalyst_workflow_statuses.slug_aliases`.
+ * That assumes the DB has the slug_aliases populated (cycle-4 migration).
+ * On any DB where the migration hasn't landed (e.g. dev DB without admin
+ * access), we still want the kanban to render every initiative in a
+ * sensible column instead of dropping cards on the floor.
+ *
+ * This map ships a Catalyst-canonical routing for every base
+ * `initiative_status` enum value to a legacy or post-migration column slug.
+ * It's consulted ONLY when the workflow row's slug_aliases didn't match.
+ *
+ * Routing logic, in order:
+ *   1. Exact match on column.slug.
+ *   2. Match on column.slug_aliases.
+ *   3. Fallback alias map below.
+ *   4. null (card drops to "no column" — should be impossible after this).
+ */
+const CATALYST_DB_STATUS_FALLBACK: Record<string, string[]> = {
+  new_demand:    ['demand_intake', 'new'],
+  under_review:  ['demand_validation'],
+  approved:      ['pending_approval'],
+  in_progress:   ['implementation'],
+  on_hold:       ['on_hold'],
+  delivered:     ['done'],
+  closed:        ['done'],
+  cancelled:     ['done', 'canceled'],
+};
+
 function buildStatusToColumnId(
   columns: KanbanColumnDef[],
 ): (status: string) => string | null {
   const map = new Map<string, string>();
   columns.forEach((col) => col.statuses.forEach((s) => map.set(s, col.id)));
+  // Layer the Catalyst fallback aliases on top — only fills slots the
+  // workflow rows didn't already own, so DB-driven slug_aliases always win.
+  Object.entries(CATALYST_DB_STATUS_FALLBACK).forEach(([dbStatus, candidates]) => {
+    if (map.has(dbStatus)) return;
+    for (const candidateSlug of candidates) {
+      const target = columns.find((c) => c.id === `col-${candidateSlug}`);
+      if (target) {
+        map.set(dbStatus, target.id);
+        return;
+      }
+    }
+  });
   return (status) => map.get(status) ?? null;
 }
 
@@ -104,7 +147,13 @@ function mapPriority(initiative: Initiative): string {
   const explicit = (initiative as { priority?: string | null }).priority;
   if (explicit) return explicit;
   const score = initiative.computed_score;
-  if (score === null || score === undefined) return '';
+  if (score === null || score === undefined) {
+    // Jira parity — every card on board 597 shows a priority indicator.
+    // Catalyst initiatives often have neither explicit priority nor a
+    // computed score; default to 'Medium' so the priority bars always
+    // render and the card never looks half-baked.
+    return 'Medium';
+  }
   if (score >= 4.0) return 'High';
   if (score >= 3.0) return 'Medium';
   if (score >= 2.0) return 'Low';
@@ -143,14 +192,32 @@ function makeInitiativeToCanonicalIssue(
     const secondary: BoardLozenge | null = initiative.target_quarter
       ? { label: initiative.target_quarter, appearance: 'inprogress' }
       : null;
-    const sourceTag: 'catalyst' | 'jira' = initiative.source === 'jira' ? 'jira' : 'catalyst';
+    // Catalyst-canonical: every initiative is Catalyst's own row. The
+    // historical `sourceTag === 'jira'` rendering chip ("Jira-MDT") is
+    // dropped now that we treat Catalyst as standalone — provenance no
+    // longer drives card chrome. Field intentionally omitted from the
+    // canonical card so `WorkItemCard` doesn't render a SourceBadge for
+    // initiatives. Other hubs that still want provenance signaling
+    // (e.g. cross-system imports) keep it via their own adapters.
+    // Raw DB enum value — the kanban routes columns off this so
+    // `catalyst_workflow_statuses.slug_aliases` actually maps the legacy
+    // statuses (`new_demand`, `in_progress`, `closed` etc.) into their
+    // post-rename column homes. Falls back to UI status for older rows.
+    const dbStatus =
+      ((initiative as { db_status?: string }).db_status ?? null) ||
+      (initiative.status as string);
     const issue: CanonicalBoardIssue = {
       id: initiative.id,
       issueKey: initiative.initiative_key,
       summary: initiative.title,
-      issueType: 'Feature',
+      // Jira board 597 filter is `worktype = "Business Request"` — match
+      // that string so JiraIssueTypeIcon falls back to the amber-lightbulb
+      // glyph defined in jira-issue-type-icons.tsx (line 201) when the
+      // adapter's resolveIcon returns null.
+      issueType: 'Business Request',
       priority: mapPriority(initiative),
       status: initiative.status,
+      boardStatus: dbStatus,
       statusCategory: resolveCategory(initiative.status),
       assigneeName: initiative.assignee_name,
       labels: [],
@@ -162,7 +229,7 @@ function makeInitiativeToCanonicalIssue(
       isFlagged: initiative.is_favorited,
       updatedAt: initiative.updated_at,
       createdAt: initiative.created_at,
-      sourceTag,
+      // sourceTag intentionally omitted — see comment above.
       primaryLozenge: primary,
       secondaryLozenge: secondary,
       metaText: null,
@@ -309,6 +376,12 @@ export interface BuildProductHubAdapterArgs {
 
   /* ── Interactions ── */
   onCardClick?: (initiativeId: string) => void;
+  /**
+   * Per-column "+ Create" — host opens its create flow with the
+   * destination status pre-filled. Forwarded straight to
+   * `BoardInteractions.onCreateInColumn`.
+   */
+  onCreateInColumn?: (colId: string) => void;
 }
 
 export function buildProductHubBoardAdapter(
@@ -321,7 +394,7 @@ export function buildProductHubBoardAdapter(
     filterSelected, onFilterChange, onClearFilters,
     groupBy, onGroupByChange,
     onStatusChange, onToggleFavorite,
-    onCardClick,
+    onCardClick, onCreateInColumn,
   } = args;
 
   /* ── Workflow-derived structures. ── */
@@ -378,6 +451,8 @@ export function buildProductHubBoardAdapter(
 
   const interactions: BoardInteractions = {
     onCardClick,
+    onCreateInColumn,
+    createInColumnLabel: 'Create initiative',
   };
 
   return {

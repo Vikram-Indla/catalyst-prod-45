@@ -157,7 +157,7 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ initiative, 
         style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}
         title={`${initiative.linked_items_done} / ${initiative.linked_items_total} items`}
       >
-        <div style={{ flex: 1, height: 4, background: '#F4F4F5', borderRadius: 4, overflow: 'hidden', border: 'none' }}>
+        <div style={{ flex: 1, height: 4, background: 'var(--pc-border)', borderRadius: 4, overflow: 'hidden', border: 'none' }}>
           <div style={{
             height: '100%',
             width: `${Math.min(initiative.linked_items_progress, 100)}%`,

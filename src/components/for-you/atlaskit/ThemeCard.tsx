@@ -50,19 +50,19 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { Box, xcss } from '@atlaskit/primitives';
-import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
 import ProgressBar from '@atlaskit/progress-bar';
 import Button from '@atlaskit/button/new';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
-import { AvatarGroup } from '@/components/ads';
+import { AvatarGroup, Heading } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
 import { type } from '@/lib/typography';
 import type { Theme, ThemeIntent } from '@/hooks/useAiThemes';
 import ThemeIssueList from './ThemeIssueList';
+import { adsTokens, cp } from '@/theme/ads/tokens';
 
 // ─── A2 · Card surface (Atlaskit primitives Box + elevation tokens) ─────────
 // Prior surface used `elevation.surface` (page-level white) — visually flat
@@ -299,7 +299,18 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
   };
 
   return (
-    <Box xcss={cardStyles}>
+    <Box
+      xcss={cardStyles}
+      // Phase 8 (2026-04-28): Atlaskit's `elevation.surface.raised` xcss
+      // value resolved to white in dark mode (Atlaskit v13 partial-load).
+      // Inline style overrides the xcss-generated class with bridge tokens
+      // that flip via Catalyst's CSS layer (proven post-Phase-0). Light
+      // value matches the previous resolved value (~#FFFFFF).
+      style={{
+        backgroundColor: cp(adsTokens.bg.surface),
+        borderColor: cp(adsTokens.border.default),
+      }}
+    >
       {/* B1 · Intent ribbon — 4px sticky left edge mapped to ADS semantic
           *.bolder tokens. The ribbon gives a peripheral-vision intent read
           at the page level, even before the lozenge label registers in
@@ -343,7 +354,7 @@ export default function ThemeCard({ theme, defaultExpanded = false }: ThemeCardP
         <span
           style={{
             ...type.meta,
-            color: token('color.text.subtle', '#44546F'),
+            color: cp(adsTokens.text.secondary),
             whiteSpace: 'nowrap',
           }}
         >

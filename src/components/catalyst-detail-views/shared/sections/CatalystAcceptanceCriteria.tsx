@@ -7,7 +7,7 @@
  * (e.g. "Expected Behavior" for Defect, "Impact / Root Cause" for Incident).
  */
 import React from 'react';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import type { PhIssue } from '../types';
 
 interface CatalystAcceptanceCriteriaProps {

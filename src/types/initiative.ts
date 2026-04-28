@@ -24,7 +24,23 @@ export interface Initiative {
   initiative_key: string;
   title: string;
   description: string | null;
+  /**
+   * Catalyst UI-mapped status — translated by `STATUS_MAP` in `useInitiativesBacklog`.
+   * Consumed by every legacy InitiativeStatus switch across the app
+   * (lozenge color, list cells, planner pills, reports, etc.).
+   * Don't remove until every consumer is migrated.
+   */
   status: InitiativeStatus;
+  /**
+   * Raw `ph_initiatives.status` enum value, untranslated.
+   * Catalyst-native column-routing on the kanban reads this so the
+   * `slug_aliases` mapping in `catalyst_workflow_statuses` actually fires.
+   * Examples: `new_demand`, `under_review`, `approved`, `in_progress`,
+   * `on_hold`, `delivered`, `closed`, `cancelled`.
+   * Optional so existing callsites that construct Initiative literally
+   * compile without churn — populated by the canonical hub data hook.
+   */
+  db_status?: string | null;
   assignee_id: string | null;
   assignee_name: string | null;
   assignee_avatar: string | null;

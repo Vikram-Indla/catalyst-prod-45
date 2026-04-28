@@ -7,7 +7,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import Button from '@atlaskit/button/new';
 import Spinner from '@atlaskit/spinner';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import { Stack } from '@atlaskit/primitives';
 import { token } from '@atlaskit/tokens';
 import SectionMessage from '@atlaskit/section-message';
