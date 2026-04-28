@@ -35,7 +35,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { Box, Stack, Inline, Pressable, Text, xcss } from '@atlaskit/primitives';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import Spinner from '@atlaskit/spinner';
 import { StatusLozenge, toStatusCategory } from '@/components/ads';
 import { supabase } from '@/integrations/supabase/client';

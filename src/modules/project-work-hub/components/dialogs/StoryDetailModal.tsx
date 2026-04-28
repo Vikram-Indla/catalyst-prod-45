@@ -13,7 +13,7 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import Tooltip from '@atlaskit/tooltip';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import {
   X, ChevronDown, ChevronRight, Plus, Paperclip,
   ExternalLink, Share2, Search, MessageSquare, Clock,

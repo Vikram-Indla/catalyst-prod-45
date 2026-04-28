@@ -47,6 +47,12 @@ export interface MDTInitiative extends Initiative {
 
 /**
  * Fetches initiatives from ph_backlog_initiatives_view (canonical source).
+ *
+ * @deprecated Prefer `useInitiativesBacklog` — the `MDT` in the legacy
+ * name is a Jira-project-key fossil from the original mirror. The data
+ * source today is `ph_backlog_initiatives_view`, a Catalyst-canonical
+ * view over `ph_initiatives`. New consumers should adopt the renamed
+ * alias; the old name stays exported until every call site is migrated.
  */
 export function useMDTBacklog() {
   return useQuery({
@@ -195,3 +201,12 @@ export function useMDTBacklog() {
     staleTime: 2 * 60_000,
   });
 }
+
+/**
+ * Catalyst-canonical name for the ProductHub backlog hook.
+ *
+ * Identical behavior to `useMDTBacklog` — both names point at the same
+ * underlying query. Use this name in net-new code; the legacy name will
+ * be removed once existing call sites have been migrated.
+ */
+export const useInitiativesBacklog = useMDTBacklog;

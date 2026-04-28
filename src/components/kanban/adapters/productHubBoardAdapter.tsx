@@ -147,7 +147,13 @@ function mapPriority(initiative: Initiative): string {
   const explicit = (initiative as { priority?: string | null }).priority;
   if (explicit) return explicit;
   const score = initiative.computed_score;
-  if (score === null || score === undefined) return '';
+  if (score === null || score === undefined) {
+    // Jira parity — every card on board 597 shows a priority indicator.
+    // Catalyst initiatives often have neither explicit priority nor a
+    // computed score; default to 'Medium' so the priority bars always
+    // render and the card never looks half-baked.
+    return 'Medium';
+  }
   if (score >= 4.0) return 'High';
   if (score >= 3.0) return 'Medium';
   if (score >= 2.0) return 'Low';

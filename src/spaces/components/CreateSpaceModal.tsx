@@ -14,7 +14,7 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { token } from '@atlaskit/tokens';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 

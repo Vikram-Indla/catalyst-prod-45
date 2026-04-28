@@ -17,7 +17,7 @@
 import React from 'react';
 import InlineEdit from '@atlaskit/inline-edit';
 import Textfield from '@atlaskit/textfield';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 // IssueIcon import removed Apr 27, 2026 (L55) — see comment above the
 // return block for why the duplicate icon prefix was dropped.
 import type { PhIssue } from '../types';

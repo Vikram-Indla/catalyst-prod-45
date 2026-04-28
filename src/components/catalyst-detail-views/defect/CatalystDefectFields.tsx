@@ -31,7 +31,7 @@
  *   ph_issues or join a `defects` table) — UI shape is stable.
  */
 import React from 'react';
-import Heading from '@atlaskit/heading';
+import { Heading } from '@/components/ads';
 import Lozenge from '@atlaskit/lozenge';
 import { KeyDetailsFieldRow } from '../shared/sections';
 import type { PhIssue } from '../shared/types';

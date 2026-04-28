@@ -50,14 +50,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { token } from '@atlaskit/tokens';
 import { Box, xcss } from '@atlaskit/primitives';
-import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
 import ProgressBar from '@atlaskit/progress-bar';
 import Button from '@atlaskit/button/new';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import CopyIcon from '@atlaskit/icon/glyph/copy';
-import { AvatarGroup } from '@/components/ads';
+import { AvatarGroup, Heading } from '@/components/ads';
 import { resolveAvatarUrl } from '@/lib/avatars';
 import { supabase } from '@/integrations/supabase/client';
 import { type } from '@/lib/typography';
