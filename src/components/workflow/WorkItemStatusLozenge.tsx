@@ -120,12 +120,14 @@ export function StatusLozengeByType({
   const label = matchedState?.name ?? displayName;
 
   return (
-    <Lozenge
-      appearance={APPEARANCE_MAP[category]}
-      isBold={variant === 'bold'}
-      maxWidth={maxWidth}
-    >
-      {label}
-    </Lozenge>
+    <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+      <Lozenge
+        appearance={APPEARANCE_MAP[category]}
+        isBold={variant === 'bold'}
+        maxWidth={maxWidth}
+      >
+        {label}
+      </Lozenge>
+    </span>
   );
 }

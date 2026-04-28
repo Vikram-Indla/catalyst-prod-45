@@ -188,7 +188,7 @@ export function useProjectAllWorkItems(projectKey: string | undefined) {
         .select(PH_ISSUES_SELECT)
         .eq('project_key', projectKey)
         .is('jira_removed_at', null)
-        .order('jira_updated_at', { ascending: false, nullsFirst: false })
+        .order('jira_created_at', { ascending: false, nullsFirst: false })
         .limit(5000);
       if (error) throw error;
 

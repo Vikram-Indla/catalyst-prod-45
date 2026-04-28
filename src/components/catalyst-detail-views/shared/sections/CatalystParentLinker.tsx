@@ -72,6 +72,50 @@ interface CandidateItem {
   status_category: string;
 }
 
+/* jira-compare Patch #6 (2026-04-28) — Parent lozenge tokens.
+ * Renders parent as Atlaskit-style subtle lozenge with type-color background.
+ * Jira renders parent links as a single clickable chip (key + summary).
+ */
+const PARENT_TOKENS: Record<string, { bg: string; text: string }> = {
+  Epic:               { bg: '#F1E6FF', text: '#403294' },
+  Story:              { bg: '#DCFFF1', text: '#216E4E' },
+  Feature:            { bg: '#E9F2FF', text: '#0055CC' },
+  Defect:             { bg: '#FFEBE6', text: '#BF2600' },
+  Bug:                { bg: '#FFEBE6', text: '#BF2600' },
+  Task:               { bg: '#DFE1E6', text: '#42526E' },
+  'Production Incident': { bg: '#FFF7D6', text: '#7F5F01' },
+  'Business Request': { bg: '#FFFAE6', text: '#594300' },
+  default:            { bg: '#F4F5F7', text: '#42526E' },
+};
+
+function ParentLozenge({
+  parentType, parentKey, parentSummary, onClick,
+}: {
+  parentType: string; parentKey: string; parentSummary?: string; onClick?: () => void;
+}) {
+  const tok = PARENT_TOKENS[parentType] ?? PARENT_TOKENS.default;
+  return (
+    <span
+      role="button"
+      onClick={onClick}
+      data-cp-parent-lozenge
+      style={{
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+        padding: '2px 6px', borderRadius: 3,
+        background: tok.bg, color: tok.text,
+        fontSize: 13, fontWeight: 500,
+        cursor: onClick ? 'pointer' : 'default',
+        maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+      }}
+      title={`${parentKey} ${parentSummary ?? ''}`}
+    >
+      <IssueIcon type={parentType} size={14} />
+      <span style={{ fontFamily: 'var(--cp-font-mono)', fontWeight: 600 }}>{parentKey}</span>
+      {parentSummary ? <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{parentSummary}</span> : null}
+    </span>
+  );
+}
+
 export function CatalystParentLinker({
   issue, itemId, itemType, projectKey, onOpenItem,
 }: CatalystParentLinkerProps) {
@@ -355,14 +399,12 @@ function SingleParentPicker({
       {/* Current parent display */}
       {currentParent ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <IssueIcon type={currentParent.issue_type} size={16} />
-          <span
-            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+          <ParentLozenge
+            parentType={currentParent.issue_type}
+            parentKey={currentParent.issue_key}
+            parentSummary={currentParent.summary}
             onClick={() => onOpenItem?.(currentParent.id)}
-          >{currentParent.issue_key}</span>
-          <span style={{ fontSize: 14, color: '#292A2E', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', cursor: 'pointer' }}
-            onClick={() => onOpenItem?.(currentParent.id)}
-          >{currentParent.summary}</span>
+          />
           <button onClick={() => updateParent.mutate(null)} title="Remove parent" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, color: '#6B778C', display: 'flex' }}>
             <X size={12} />
           </button>
@@ -378,11 +420,12 @@ function SingleParentPicker({
            checkbox). Falls back to 'Epic' to match TicketBreadcrumbs'
            default. */
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <IssueIcon type={(issue as any)?.parent_issue_type || 'Epic'} size={16} />
-          <span
-            style={{ fontFamily: 'var(--cp-font-mono)', fontSize: 14, color: '#0052CC', cursor: 'pointer', flexShrink: 0 }}
+          <ParentLozenge
+            parentType={(issue as any)?.parent_issue_type || 'Epic'}
+            parentKey={rawParentKey!}
+            parentSummary={(issue as any)?.parent_summary}
             onClick={() => onOpenItem?.(rawParentKey!)}
-          >{rawParentKey}</span>
+          />
           {/* Apr 27, 2026: removed the "(details unavailable)" italic suffix.
               Vikram flagged it as misleading — it appeared whenever the
               parent_key existed on the issue but the row lived outside

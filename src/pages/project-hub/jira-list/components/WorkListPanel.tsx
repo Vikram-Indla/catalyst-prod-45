@@ -25,14 +25,24 @@ interface Props {
 
 export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props) {
   const [query, setQuery] = useState('');
+  /* jira-compare Patch #3: Sort "Created" toggles asc/desc.
+     Default desc to match Jira's "Newest first" on All work. */
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return items;
-    return items.filter(i =>
+    const base = !q ? items : items.filter(i =>
       (i.jiraKey + ' ' + i.summary).toLowerCase().includes(q)
     );
-  }, [items, query]);
+    /* Sort by created (jira_created_at if present; falls back to id ordering). */
+    const sorted = [...base].sort((a, b) => {
+      const av = (a as any).jira_created_at ?? (a as any).createdAt ?? a.id ?? '';
+      const bv = (b as any).jira_created_at ?? (b as any).createdAt ?? b.id ?? '';
+      const cmp = String(av) < String(bv) ? -1 : String(av) > String(bv) ? 1 : 0;
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+    return sorted;
+  }, [items, query, sortDir]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
@@ -78,14 +88,19 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '8px 12px', borderBottom: '1px solid #DFE1E6', background: 'transparent',
       }}>
-        <button style={{
+        <button
+          onClick={() => setSortDir(d => (d === 'asc' ? 'desc' : 'asc'))}
+          aria-label={`Sort by Created ${sortDir === 'asc' ? 'ascending' : 'descending'}`}
+          style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           background: 'transparent', border: 'none', cursor: 'pointer',
           fontWeight: 600, color: '#172B4D', fontSize: 14,
           fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
         }}>
           Created
-          <svg width="10" height="6" viewBox="0 0 10 6"><path d="M0 0l5 6 5-6z" fill="#44546F"/></svg>
+          <svg width="10" height="6" viewBox="0 0 10 6" style={{ transform: sortDir === 'asc' ? 'rotate(180deg)' : 'none' }}>
+            <path d="M0 0l5 6 5-6z" fill="#44546F"/>
+          </svg>
         </button>
         <div style={{ display: 'inline-flex', gap: 4 }}>
           <SortIconBtn><ArrowUpDown size={16} /></SortIconBtn>
@@ -182,7 +197,11 @@ export function WorkListPanel({ items, selectedKey, onSelect, projectId }: Props
           padding: '12px 4px', color: '#626F86', fontSize: 12, textAlign: 'center',
           fontFamily: "'Atlassian Sans', -apple-system, sans-serif",
         }}>
-          {filtered.length} of <a href="#" onClick={e => e.preventDefault()} style={{ color: '#0C66E4', fontWeight: 600, textDecoration: 'none' }}>1000+</a>
+          {(() => {
+            const total = items.length >= 1000 ? '1000+' : `${items.length}`;
+            if (filtered.length === items.length) return `${total} items`;
+            return `${filtered.length} of ${total} (filtered)`;
+          })()}
         </div>
       </div>
     </div>
