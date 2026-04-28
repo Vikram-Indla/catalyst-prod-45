@@ -2442,15 +2442,24 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
             onSortChange={(k, ord) => { setSortKey(k); setSortDir(ord); }}
-            // Apr 28, 2026 (jira-compare cycle 2 T20+T21): pagination
-            // footer ("Page 1 of 34" + Prev/Next + circular info button)
-            // removed — Jira /list uses infinite scroll, has none of these.
-            // Setting rowsPerPage=undefined disables JiraTable's slice +
-            // paginator, rendering all rows with native scroll. True
-            // IntersectionObserver-driven lazy load deferred to next batch
-            // (T20 follow-up); for now native scroll is correct parity.
-            rowsPerPage={undefined as any}
-            page={undefined as any}
+            // Apr 28, 2026 (jira-compare cycle 2 T20+T21, refined cycle 3 +
+            // cycle 3 second pass):
+            // Pagination footer + circular info button removed — Jira /list
+            // uses infinite scroll, has none of these.
+            //
+            // Earlier attempt: rowsPerPage=undefined → JiraTable defaulted to
+            // 25 (line 137 of JiraTable.tsx) → only 25 of 810 rows rendered,
+            // BAU-5419 + older Epics never in DOM.
+            //
+            // Second attempt: rowsPerPage=Infinity → caused (page-1)*Infinity
+            // = 0*Infinity = NaN → data.slice(NaN, NaN) = [] → empty table.
+            //
+            // Final: rowsPerPage=0 hits the early-exit `if (!rowsPerPage ||
+            // rowsPerPage <= 0) return data` (JiraTable.tsx:312) and renders
+            // ALL rows. Native scroll handles the tall table. True
+            // IntersectionObserver lazy load is a later optimization.
+            rowsPerPage={0}
+            page={1}
             onPageChange={undefined as any}
             density="compact"
             ariaLabel="Unified backlog"
