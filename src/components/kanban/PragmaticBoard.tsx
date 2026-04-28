@@ -36,7 +36,8 @@ import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
-import { Inbox } from 'lucide-react';
+import { DropdownMenu as AdsDropdownMenu } from '@/components/ads/DropdownMenu';
+import { MoreHorizontal, Inbox } from 'lucide-react';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -299,6 +300,44 @@ const PragmaticColumn = memo(function PragmaticColumn({
           fontSize: 12, fontWeight: 500, color: tk.textPrimary,
           fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
         }}>{issueIds.length}</span>
+        {/* Per-column meatball menu — Jira parity (board 597 surfaces this on
+            every column header). Uses the shared ADS DropdownMenu wrapper
+            which already handles the shouldRenderToParent + span-wrap pattern
+            that defeats the portal-mount race (CLAUDE.md L1/L21). */}
+        <AdsDropdownMenu
+          aria-label={`${column.name} column actions`}
+          testId={`kanban-column-meatball-${column.id}`}
+          placement="bottom-end"
+          trigger={() => (
+            <button
+              type="button"
+              aria-label={`${column.name} column actions`}
+              data-testid={`kanban-column-meatball-${column.id}-btn`}
+              style={{
+                width: 24, height: 24, display: 'inline-flex', alignItems: 'center',
+                justifyContent: 'center', background: 'transparent',
+                border: 'none', borderRadius: 3, cursor: 'pointer',
+                color: tk.textMuted, padding: 0, flexShrink: 0,
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+            >
+              <MoreHorizontal size={14} />
+            </button>
+          )}
+          groups={[{
+            key: 'col-info',
+            title: column.name,
+            items: [
+              { key: 'cards', label: `Cards in column: ${issueIds.length}`, isDisabled: true },
+              { key: 'wip', isDisabled: true,
+                label: column.wipLimit != null
+                  ? `WIP limit: ${column.wipLimit}${issueIds.length > column.wipLimit ? ' (exceeded)' : ''}`
+                  : 'No WIP limit' },
+              { key: 'statuses', label: `Statuses mapped: ${column.statuses.length}`, isDisabled: true },
+            ],
+          }]}
+        />
       </div>
 
       {/* Body (drop target) */}
