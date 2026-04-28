@@ -2,9 +2,9 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Search, Plus, Download, LayoutList, LayoutGrid, Columns3, Package } from 'lucide-react';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
-import { PCInitiativeCard } from '@/components/producthub/cards/PCInitiativeCard';
+import { PCRequestCard } from '@/components/producthub/cards/PCRequestCard';
 import { useDebounce } from '@/hooks/useDebounce';
 import { supabase } from '@/integrations/supabase/client';
 import type { Request } from '@/types/request';
@@ -288,7 +288,7 @@ const CardsPage: React.FC = () => {
                 )}
                 <div className="pc-grid">
                   {group.items.map(init => (
-                    <PCInitiativeCard
+                    <PCRequestCard
                       key={init.id}
                       request={init}
                       isSelected={selectedId === init.id}
@@ -319,7 +319,7 @@ const CardsPage: React.FC = () => {
 
       {/* Detail Panel — REUSE existing */}
       {selectedInitiative && (
-        <InitiativeDetailPanel
+        <RequestDetailPanel
           request={toTimelineInitiative(selectedInitiative)}
           requests={processed.map(toTimelineInitiative)}
           onClose={() => setSelectedId(null)}

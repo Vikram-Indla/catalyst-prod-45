@@ -12,7 +12,7 @@ import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
-interface InitiativeMilestonesTabProps {
+interface RequestMilestonesTabProps {
   requestId: string;
 }
 
@@ -21,7 +21,7 @@ function formatDate(dateStr: string | null): string {
   try { return format(new Date(dateStr), 'dd MMM yyyy'); } catch { return dateStr; }
 }
 
-export function RequestMilestonesTab({ requestId }: InitiativeMilestonesTabProps) {
+export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
   const [newTitle, setNewTitle] = useState('');

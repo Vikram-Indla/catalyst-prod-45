@@ -38,7 +38,7 @@ import { DetailTabRisks } from './DetailTabRisks';
 import { DetailTabMilestones } from './DetailTabMilestones';
 import { DetailTabAttachments } from './DetailTabAttachments';
 import { DetailTabActivity } from './DetailTabActivity';
-import { InitiativeLinkedItemsTab } from '@/components/producthub/InitiativeLinkedItemsTab';
+import { RequestLinkedItemsTab } from '@/components/producthub/RequestLinkedItemsTab';
 import { typedQuery, supabase } from '@/integrations/supabase/client';
 import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -75,13 +75,13 @@ const TABS = [
 
 type TabKey = typeof TABS[number]['key'];
 
-interface InitiativeDetailPanelProps {
+interface RequestDetailPanelProps {
   request: TimelineRequest;
   requests: TimelineRequest[];
   onClose: () => void;
 }
 
-export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
+export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
   request,
   requests,
   onClose,
@@ -475,7 +475,7 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
           {activeTab === 'risks' && <DetailTabRisks requestId={request.id} />}
           {activeTab === 'milestones' && <DetailTabMilestones requestId={request.id} />}
           {activeTab === 'attachments' && <DetailTabAttachments requestId={request.id} />}
-          {activeTab === 'linked_items' && <InitiativeLinkedItemsTab request={{ id: request.id, initiative_key: request.initiative_key }} />}
+          {activeTab === 'linked_items' && <RequestLinkedItemsTab request={{ id: request.id, initiative_key: request.initiative_key }} />}
           {activeTab === 'activity' && <DetailTabActivity requestId={request.id} />}
         </div>
       </div>
@@ -505,4 +505,4 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
   return createPortal(portalContent, document.body);
 };
 
-export default InitiativeDetailPanel;
+export default RequestDetailPanel;

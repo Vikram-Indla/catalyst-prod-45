@@ -10,12 +10,12 @@ import { useBacklogItemsNotOnRoadmap, useAddToRoadmap } from './hooks/useRoadmap
 import { SourceBadge } from '@/components/producthub/shared/SourceBadge';
 import { toast } from 'sonner';
 
-interface AddInitiativeModalProps {
+interface AddRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function AddInitiativeModal({ isOpen, onClose }: AddInitiativeModalProps) {
+export function AddRequestModal({ isOpen, onClose }: AddRequestModalProps) {
   const [search, setSearch] = useState('');
   const { data: backlogItems = [], isLoading, error } = useBacklogItemsNotOnRoadmap();
   const addMutation = useAddToRoadmap();

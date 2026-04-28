@@ -324,7 +324,7 @@ function useUnlinkedEpics(projectKey: string, settings: GadgetSettings) {
         .limit(500);
 
       // Also exclude epics linked via ph_issue_links → MIM/MDT initiatives
-      // (Apr 2026 InitiativeLinkedItemsTab path). Without this an epic
+      // (Apr 2026 RequestLinkedItemsTab path). Without this an epic
       // linked from Product Hub appears in BOTH the linked rollup and the
       // "unlinked" tab.
       const { data: phLinks2 } = await (supabase as any)
@@ -436,7 +436,7 @@ function useDemandData(projectKey: string, settings: GadgetSettings) {
         .select('request_id, epic_id');
 
       // 1b) Union with ph_issue_links rows that pair an initiative_key
-      // (MIM-* / MDT-*) with an Epic issue_key. The InitiativeLinkedItemsTab
+      // (MIM-* / MDT-*) with an Epic issue_key. The RequestLinkedItemsTab
       // (Apr 2026) writes only to ph_issue_links, so without this union
       // anything linked from a Product Hub initiative is invisible here.
       const { data: phLinks } = await (supabase as any)

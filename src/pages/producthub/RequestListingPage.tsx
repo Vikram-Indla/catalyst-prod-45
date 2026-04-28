@@ -13,7 +13,7 @@ import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { RequestTable } from '@/components/producthub/listing/RequestTable';
 import { Pagination } from '@/components/producthub/listing/Pagination';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
 import type { TimelineRequest } from '@/types/producthub/request';
 import { ContextMenu } from '@/components/requests/ContextMenu';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
@@ -155,7 +155,7 @@ function getGroupSortKey(item: Request, groupBy: GroupByField): string {
   }
 }
 
-export default function InitiativeListingPage() {
+export default function RequestListingPage() {
   useSyncMDTToInitiatives();
   const { data: mdtData, isLoading } = useMDTBacklog();
   const { data: profiles } = useProfileOptions();
@@ -712,7 +712,7 @@ export default function InitiativeListingPage() {
       />
 
       {detailOpen && detailInitiative && (
-        <InitiativeDetailPanel
+        <RequestDetailPanel
           request={toTimelineInitiative(detailInitiative)}
           requests={memoizedTimelineInitiatives}
           onClose={() => setDetailOpen(false)}

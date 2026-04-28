@@ -28,7 +28,7 @@ const priorityBarStyle = (filled: boolean): React.CSSProperties => ({
   margin: 0,
 });
 
-export function InitiativeScoreBars({ score = 0 }: { score?: number | null }) {
+export function RequestScoreBars({ score = 0 }: { score?: number | null }) {
   const s = score ?? 0;
   const level = Math.round(s);
   return (
@@ -42,7 +42,7 @@ export function InitiativeScoreBars({ score = 0 }: { score?: number | null }) {
   );
 }
 
-export function InitiativePriorityBars({ score = 0 }: { score?: number | null }) {
+export function RequestPriorityBars({ score = 0 }: { score?: number | null }) {
   const s = score ?? 0;
   const level = s === 0 ? 0 : s >= 4.0 ? 4 : s >= 3.0 ? 3 : s >= 2.0 ? 2 : 1;
   return (
@@ -55,7 +55,7 @@ export function InitiativePriorityBars({ score = 0 }: { score?: number | null })
   );
 }
 
-export function InitiativeMetrics({ score }: { score?: number | null }) {
+export function RequestMetrics({ score }: { score?: number | null }) {
   const s = score ?? 0;
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
@@ -72,7 +72,7 @@ export function InitiativeMetrics({ score }: { score?: number | null }) {
           SCORE
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <InitiativeScoreBars score={score} />
+          <RequestScoreBars score={score} />
           <span style={{
             fontFamily: 'var(--cp-font-mono)',
             fontSize: '12px',
@@ -95,7 +95,7 @@ export function InitiativeMetrics({ score }: { score?: number | null }) {
         }}>
           PRIORITY
         </div>
-        <InitiativePriorityBars score={score} />
+        <RequestPriorityBars score={score} />
       </div>
     </div>
   );

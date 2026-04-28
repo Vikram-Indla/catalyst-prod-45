@@ -396,7 +396,7 @@ export function LinkedIssuesSection({ issueId, issueKey: issueKeyProp, projectKe
       }
 
       // Final fallback: resolve missing keys from ph_requests so links to
-      // MIM-* / MDT-* initiatives (created via InitiativeLinkedItemsTab)
+      // MIM-* / MDT-* initiatives (created via RequestLinkedItemsTab)
       // appear on the linked epic / story / defect side of the relationship.
       const stillMissing = targetKeys.filter(k => !targetMap.has(k));
       if (stillMissing.length > 0) {

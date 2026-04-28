@@ -7,7 +7,7 @@ import { CardScoreRing } from './CardScoreRing';
 import type { GridSize } from './GridSizeToggle';
 import { formatDistanceToNow, format, isPast, differenceInDays } from 'date-fns';
 
-interface InitiativeCardProps {
+interface RequestCardProps {
   request: Request;
   gridSize: GridSize;
   onClick: () => void;
@@ -40,7 +40,7 @@ function relativeTime(dateStr: string): string {
   return formatDistanceToNow(new Date(dateStr), { addSuffix: true });
 }
 
-export const RequestCard: React.FC<InitiativeCardProps> = React.memo(({ request, gridSize, onClick }) => {
+export const RequestCard: React.FC<RequestCardProps> = React.memo(({ request, gridSize, onClick }) => {
   const status = STATUS_DISPLAY[request.status];
   const isCancelled = request.status === 'cancelled';
   const priority = getPriorityLabel(request.computed_score);

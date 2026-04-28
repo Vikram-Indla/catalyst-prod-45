@@ -1,5 +1,5 @@
 /**
- * Product Roadmap — Detail Panel (matches backlog InitiativeDetailPanel design)
+ * Product Roadmap — Detail Panel (matches backlog RequestDetailPanel design)
  * Same visual layout as backlog panel with roadmap-specific save wiring.
  */
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
@@ -15,7 +15,7 @@ import {
   X, Pencil, Copy, Star, Trash2,
   Map,
 } from 'lucide-react';
-import type { RoadmapInitiative } from './types/roadmap.types';
+import type { RoadmapRequest } from './types/roadmap.types';
 import { useApprovedProfiles } from '@/hooks/useApprovedProfiles';
 
 // ── Constants ──
@@ -88,7 +88,7 @@ function getInitials(name: string): string {
 }
 
 interface RoadmapDetailPanelProps {
-  item: RoadmapInitiative | null;
+  item: RoadmapRequest | null;
   isOpen: boolean;
   onClose: () => void;
 }

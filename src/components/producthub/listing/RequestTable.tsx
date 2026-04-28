@@ -7,7 +7,7 @@
  *         and four hover row-actions (promote, edit, star, more).
  *
  * AFTER:  thin wrapper that calls <JiraTable> with a column schema. The
- *         public `Props` interface is unchanged, so InitiativeListingPage
+ *         public `Props` interface is unchanged, so RequestListingPage
  *         doesn't need any edits.
  *
  * FEATURE PARITY MAP — what carries over and what's deferred:

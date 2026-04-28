@@ -1,5 +1,5 @@
 /**
- * InitiativeLinkedItemsTab — thin wrapper around the canonical
+ * RequestLinkedItemsTab — thin wrapper around the canonical
  * LinkedWorkItemsSection, scoped to the request's display key
  * (e.g. MIM-001, MDT-746). Provides a custom loadOptions that
  * surfaces Epics (catalyst_issues + ph_issues) and Projects.
@@ -15,14 +15,14 @@ interface PickerOption {
   issue_type?: string;
 }
 
-interface InitiativeLinkedItemsTabProps {
+interface RequestLinkedItemsTabProps {
   request: {
     id: string;
     initiative_key: string;
   };
 }
 
-export const InitiativeLinkedItemsTab: React.FC<InitiativeLinkedItemsTabProps> = ({ request }) => {
+export const RequestLinkedItemsTab: React.FC<RequestLinkedItemsTabProps> = ({ request }) => {
   const loadOptions = useCallback(async (input: string): Promise<PickerOption[]> => {
     const q = input.trim();
     const like = q ? `%${q}%` : '%';
@@ -86,4 +86,4 @@ export const InitiativeLinkedItemsTab: React.FC<InitiativeLinkedItemsTabProps> =
   );
 };
 
-export default InitiativeLinkedItemsTab;
+export default RequestLinkedItemsTab;

@@ -11,7 +11,7 @@ import { Plus, Link as LinkIcon, ExternalLink, Trash2 } from 'lucide-react';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { toast } from 'sonner';
 
-interface InitiativeLinksTabProps {
+interface RequestLinksTabProps {
   requestId: string;
 }
 
@@ -114,7 +114,7 @@ function AddLinkForm({ requestId, onClose }: { requestId: string; onClose: () =>
   );
 }
 
-export function RequestLinksTab({ requestId }: InitiativeLinksTabProps) {
+export function RequestLinksTab({ requestId }: RequestLinksTabProps) {
   const queryClient = useQueryClient();
   const [showAdd, setShowAdd] = useState(false);
 

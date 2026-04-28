@@ -27,7 +27,7 @@ import { toast } from 'sonner';
 import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
-import { InitiativeDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
+import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
 import { useMDTBacklog } from '@/hooks/useMDTBacklog';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
@@ -229,7 +229,7 @@ export default function ProductHubKanbanPage() {
       <KanbanBoardShell adapter={adapter} title="Product Kanban" />
 
       {selectedInitiative && (
-        <InitiativeDetailPanel
+        <RequestDetailPanel
           request={toTimelineInitiative(selectedInitiative)}
           requests={detailList}
           onClose={() => setSelectedId(null)}

@@ -82,7 +82,7 @@
  * Sweep targets (other delete sites that should adopt this — see
  * /jira-compare lessons L53):
  *   - StoryDetailModal.tsx     (single-issue delete in detail rail)
- *   - InitiativeDetailPanel    (initiative delete)
+ *   - RequestDetailPanel    (initiative delete)
  *   - SubtasksPanel            (subtask delete)
  *   - AllProjectsTable         (project delete)
  *   - PlanLibrary              (plan delete)

@@ -3,7 +3,7 @@ import { Star, MoreHorizontal, Target } from 'lucide-react';
 import type { Request } from '@/types/request';
 import { BusinessRequestBadge } from '@/components/producthub/shared/BusinessRequestBadge';
 import { STATUS_DISPLAY } from '@/types/request';
-import { InitiativeMetrics } from '@/components/backlog/MetricBars';
+import { RequestMetrics } from '@/components/backlog/MetricBars';
 import { formatDistanceToNow, format, isValid } from 'date-fns';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
@@ -19,7 +19,7 @@ function formatCardDate(value: string | null | undefined): string | null {
   return format(d, 'dd MMM yyyy');
 }
 
-interface PCInitiativeCardProps {
+interface PCRequestCardProps {
   request: Request;
   isSelected: boolean;
   onClick: () => void;
@@ -63,11 +63,11 @@ function darkPill(pill: { color: string; bg: string; border: string }): { color:
 
 // PRIORITY_STYLE / HEALTH_STYLE removed — Priority and Health pills no
 // longer render on the card per the Apr 2026 simplification pass. The
-// PRIORITY bar (rendered by InitiativeMetrics) remains the canonical
+// PRIORITY bar (rendered by RequestMetrics) remains the canonical
 // priority indicator.
 
 
-export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ request, isSelected, onClick }) => {
+export const PCRequestCard: React.FC<PCRequestCardProps> = ({ request, isSelected, onClick }) => {
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
   const status = STATUS_DISPLAY[request.status];
@@ -141,11 +141,11 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ request, isS
       </div>
 
       {/* Steps 4 + 5 — Priority and Health pills removed. Priority is
-          conveyed by the PRIORITY bar inside InitiativeMetrics below. */}
+          conveyed by the PRIORITY bar inside RequestMetrics below. */}
 
       {/* Score + Priority bars */}
       <div style={{ marginBottom: 10 }}>
-        <InitiativeMetrics score={request.computed_score} />
+        <RequestMetrics score={request.computed_score} />
       </div>
 
       {/*
@@ -229,4 +229,4 @@ export const PCInitiativeCard: React.FC<PCInitiativeCardProps> = ({ request, isS
   );
 };
 
-export default PCInitiativeCard;
+export default PCRequestCard;

@@ -15,18 +15,18 @@
  */
 import React from 'react';
 
-export type InitiativeSource = 'catalyst' | 'jira' | string | null | undefined;
+export type RequestSource = 'catalyst' | 'jira' | string | null | undefined;
 
-export function normalizeSource(source: InitiativeSource): 'catalyst' | 'jira' {
+export function normalizeSource(source: RequestSource): 'catalyst' | 'jira' {
   return source === 'jira' ? 'jira' : 'catalyst';
 }
 
-export function getSourceLabel(source: InitiativeSource): string {
+export function getSourceLabel(source: RequestSource): string {
   return normalizeSource(source) === 'jira' ? 'Jira-MDT' : 'Catalyst';
 }
 
 interface SourceBadgeProps {
-  source: InitiativeSource;
+  source: RequestSource;
   size?: 'xs' | 'sm';
   variant?: 'solid' | 'outline';
   className?: string;

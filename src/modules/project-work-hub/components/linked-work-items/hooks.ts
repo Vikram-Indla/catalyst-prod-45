@@ -108,7 +108,7 @@ export function useLinkedWorkItems(issueKey: string) {
       }
 
       // Final fallback: resolve missing keys from ph_requests so links to
-      // MIM-* / MDT-* initiatives (created via the InitiativeLinkedItemsTab)
+      // MIM-* / MDT-* initiatives (created via the RequestLinkedItemsTab)
       // surface on the epic / story side of the relationship too. Requests
       // map to "issue_type=Request" for icon/lozenge rendering.
       const stillMissing = targetKeys.filter((k) => !targetMap.has(k));

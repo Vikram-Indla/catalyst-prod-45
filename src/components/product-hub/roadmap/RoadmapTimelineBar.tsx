@@ -7,11 +7,11 @@ import { createPortal } from 'react-dom';
 import { Calendar } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { useTheme } from '@/hooks/useTheme';
-import type { RoadmapInitiative } from './types/roadmap.types';
+import type { RoadmapRequest } from './types/roadmap.types';
 import { TYPE_COLORS, FONT, INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 
 interface RoadmapTimelineBarProps {
-  item: RoadmapInitiative;
+  item: RoadmapRequest;
   left: number;
   width: number;
   isSelected: boolean;

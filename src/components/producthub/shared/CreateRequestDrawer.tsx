@@ -1,5 +1,5 @@
 /**
- * CreateInitiativeDialog — Centered modal for creating a new request.
+ * CreateRequestDialog — Centered modal for creating a new request.
  * MARAM V3.1 · Catalyst V11 Carbon Precision
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
@@ -31,7 +31,7 @@ export interface ConversionSource {
   mergeIdea?: { key: string; title: string; description?: string; impact: number; votes: number };
 }
 
-interface CreateInitiativeDrawerProps {
+interface CreateRequestDrawerProps {
   open: boolean;
   onClose: () => void;
   conversionSource?: ConversionSource | null;
@@ -148,7 +148,7 @@ function FieldWrapper({ label, required, children }: { label: string; required?:
 const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#71717A]";
 
 /* ── Main Component ── */
-export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated, initialStatus }: CreateInitiativeDrawerProps) {
+export function CreateRequestDrawer({ open, onClose, conversionSource, onCreated, initialStatus }: CreateRequestDrawerProps) {
   const { isDark } = useTheme();
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();

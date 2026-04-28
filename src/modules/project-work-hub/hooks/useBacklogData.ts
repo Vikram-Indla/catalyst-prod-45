@@ -57,7 +57,7 @@ export function useRequestsByKeys(keys: string[]) {
 /**
  * useRequestLinksByEpicKeys — resolves epic→initiative associations that
  * live in `ph_issue_links` (the canonical link table written by the Apr 2026
- * InitiativeLinkedItemsTab). This is the SECOND hierarchy path alongside
+ * RequestLinkedItemsTab). This is the SECOND hierarchy path alongside
  * `ph_issues.parent_key`. Returns a Map<epic_issue_key, initiative_key>.
  *
  * Without this, a Product Hub initiative (MIM-* / MDT-*) linked to an Epic

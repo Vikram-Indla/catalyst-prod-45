@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Pencil, Trash2, ArrowRight, Star, ShieldAlert, Flag, CheckCircle, Wallet, Link2, Paperclip, MessageSquare, History, Filter, ChevronDown } from 'lucide-react';
 
-interface InitiativeAuditTabProps {
+interface RequestAuditTabProps {
   requestId: string;
 }
 
@@ -85,7 +85,7 @@ function groupByDate(entries: any[]) {
   return groups;
 }
 
-export function RequestAuditTab({ requestId }: InitiativeAuditTabProps) {
+export function RequestAuditTab({ requestId }: RequestAuditTabProps) {
   const [auditFilter, setAuditFilter] = useState('all');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
 

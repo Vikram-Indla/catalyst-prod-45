@@ -5,10 +5,10 @@
 import React from 'react';
 import { ArrowUpDown, ChevronDown, ChevronRight, Plus, Lightbulb, Star } from 'lucide-react';
 import { useTheme } from '@/hooks/useTheme';
-import type { RoadmapInitiative, RoadmapGroup } from './types/roadmap.types';
+import type { RoadmapRequest, RoadmapGroup } from './types/roadmap.types';
 import { TYPE_COLORS, INK, INK_DARK, SURFACE, SURFACE_DARK, FONT, ROW_HEIGHT, GROUP_HEADER_HEIGHT, LIST_PANEL_WIDTH, AVATAR_BG } from './constants/roadmap.constants';
 
-interface RoadmapInitiativeListProps {
+interface RoadmapRequestListProps {
   groups: RoadmapGroup[];
   selectedId: string | null;
   hoveredId: string | null;
@@ -52,7 +52,7 @@ function OwnerAvatar({ initials, name }: { initials?: string; name?: string }) {
   );
 }
 
-export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar, width, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapInitiativeListProps) {
+export function RoadmapRequestList({ groups, selectedId, hoveredId, onSelect, onHover, onAddClick, onToggleStar, width, scrollRef, onScroll, collapsedGroups, onToggleGroup }: RoadmapRequestListProps) {
   const { isDark } = useTheme();
   const ink = isDark ? INK_DARK : INK;
   const surface = isDark ? SURFACE_DARK : SURFACE;
@@ -163,7 +163,7 @@ export function RoadmapInitiativeList({ groups, selectedId, hoveredId, onSelect,
 function RequestRow({
   item, isSelected, isHovered, onSelect, onHover, onToggleStar, ink, surface, isDark, selectedBg, hoverBg,
 }: {
-  item: RoadmapInitiative;
+  item: RoadmapRequest;
   isSelected: boolean;
   isHovered: boolean;
   onSelect: () => void;

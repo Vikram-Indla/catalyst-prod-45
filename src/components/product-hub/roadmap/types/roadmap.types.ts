@@ -2,7 +2,7 @@
  * Product Roadmap — Type definitions
  */
 
-export type InitiativeType = 'business_request';
+export type RequestType = 'business_request';
 
 export type RequestStatus = 'Active' | 'Planned' | 'Completed' | 'Cancelled';
 
@@ -23,13 +23,13 @@ export interface RoadmapMilestone {
   completed: boolean;
 }
 
-export interface RoadmapInitiative {
+export interface RoadmapRequest {
   id: string;
   initiativeKey: string;
   title: string;
   titleAr: string;
   titleEn: string;
-  type: InitiativeType;
+  type: RequestType;
   priority: Priority;
   status: RequestStatus;
   progress: number;
@@ -59,7 +59,7 @@ export interface RoadmapGroup {
   key: string;
   label: string;
   color: string;
-  items: RoadmapInitiative[];
+  items: RoadmapRequest[];
   isExpanded: boolean;
 }
 

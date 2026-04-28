@@ -20,7 +20,7 @@ import { UserAvatar } from './UserAvatar';
 import { ProgressBar } from './ProgressBar';
 import { RelativeDate } from './RelativeDate';
 
-interface InitiativeTableProps {
+interface RequestTableProps {
   data: Request[];
   loading?: boolean;
   density: Density;
@@ -86,7 +86,7 @@ export function RequestTable({
   onSortChange,
   onContextMenu,
   onReorder,
-}: InitiativeTableProps) {
+}: RequestTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const dc = DENSITY_CONFIG[density];

@@ -378,7 +378,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // rows surface. When linkage gets created (Catalyst sets parent_key on an
   // epic to an initiative_key, or Jira sync starts populating it), the UI
   // picks it up on the next render with no code change.
-  // Resolve initiative links via ph_issue_links (Apr 2026 InitiativeLinkedItemsTab
+  // Resolve initiative links via ph_issue_links (Apr 2026 RequestLinkedItemsTab
   // path). Map<epic_issue_key, initiative_key>. This is the SECOND linkage path
   // alongside ph_issues.parent_key.
   const epicKeysForLinks = useMemo(
@@ -804,7 +804,7 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       epicSeen.add(e.id);
       // If this epic's own parent_key resolves to an initiative, link it up
       // so the tree builder nests the epic under the initiative row. As a
-      // fallback, honor ph_issue_links rows from the InitiativeLinkedItemsTab.
+      // fallback, honor ph_issue_links rows from the RequestLinkedItemsTab.
       const epicParentKey = (e as any).parent_key as string | null;
       const linkedInitKey = epicLinkedInitiativeByKey?.get(e.epic_key) ?? null;
       const resolvedParentKey = epicParentKey ?? linkedInitKey;

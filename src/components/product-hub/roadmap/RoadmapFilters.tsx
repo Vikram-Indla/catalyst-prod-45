@@ -3,7 +3,7 @@
  */
 import React, { useRef, useEffect } from 'react';
 import { Search } from 'lucide-react';
-import type { InitiativeType, QuickFilter } from './types/roadmap.types';
+import type { RequestType, QuickFilter } from './types/roadmap.types';
 import { INK, INK_DARK, SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -12,8 +12,8 @@ interface RoadmapFiltersProps {
   onSearchChange: (v: string) => void;
   quickFilter: QuickFilter;
   onQuickFilterChange: (f: QuickFilter) => void;
-  typeFilter?: InitiativeType | 'all';
-  onTypeFilterChange?: (t: InitiativeType | 'all') => void;
+  typeFilter?: RequestType | 'all';
+  onTypeFilterChange?: (t: RequestType | 'all') => void;
 }
 
 const QUICK_FILTERS: { key: QuickFilter; label: string }[] = [

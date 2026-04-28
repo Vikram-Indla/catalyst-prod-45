@@ -9,7 +9,7 @@ import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Plus, ShieldAlert, X, ChevronDown, Search } from 'lucide-react';
 import { useProfileOptions } from '@/hooks/useRequestLookups';
 
-interface InitiativeRisksTabProps {
+interface RequestRisksTabProps {
   requestId: string;
 }
 
@@ -38,7 +38,7 @@ function getStatusBg(status: string) {
   return 'bg-zinc-100 text-zinc-600';
 }
 
-export function RequestRisksTab({ requestId }: InitiativeRisksTabProps) {
+export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
   const [showAddRisk, setShowAddRisk] = useState(false);
   const [riskForm, setRiskForm] = useState({
     title: '', description: '', category: 'technical', probability: 3, impact: 3,

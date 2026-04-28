@@ -9,13 +9,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
-interface InitiativeDialogProps {
+interface RequestDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   initiative?: any;
 }
 
-export function RequestDialog({ open, onOpenChange, initiative }: InitiativeDialogProps) {
+export function RequestDialog({ open, onOpenChange, initiative }: RequestDialogProps) {
   const [name, setName] = useState(initiative?.name || '');
   const [description, setDescription] = useState(initiative?.description || '');
   const [status, setStatus] = useState(initiative?.status || 'proposed');

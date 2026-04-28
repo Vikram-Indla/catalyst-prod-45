@@ -41,7 +41,7 @@ export interface BRDTask {
   jira_updated_at: string;
 }
 
-export interface MDTInitiative extends Request {
+export interface MDTRequest extends Request {
   brd_tasks: BRDTask[];
 }
 
@@ -57,7 +57,7 @@ export interface MDTInitiative extends Request {
 export function useMDTBacklog() {
   return useQuery({
     queryKey: ['mdt-backlog'],
-    queryFn: async (): Promise<{ data: MDTInitiative[]; count: number }> => {
+    queryFn: async (): Promise<{ data: MDTRequest[]; count: number }> => {
       // Get current user for favorites
       const { data: { user } } = await supabase.auth.getUser();
       const currentUserId = user?.id;
@@ -121,7 +121,7 @@ export function useMDTBacklog() {
         milestoneCountMap.set(m.request_id, (milestoneCountMap.get(m.request_id) || 0) + 1);
       });
 
-      const requests: MDTInitiative[] = (initResult.data || []).map((row: any, idx: number) => {
+      const requests: MDTRequest[] = (initResult.data || []).map((row: any, idx: number) => {
         const assigneeProfile = row.assignee_id ? profileMap.get(row.assignee_id) : null;
         const businessOwnerProfile = row.business_owner_id ? profileMap.get(row.business_owner_id) : null;
         const reporterProfile = row.reporter_id ? profileMap.get(row.reporter_id) : null;

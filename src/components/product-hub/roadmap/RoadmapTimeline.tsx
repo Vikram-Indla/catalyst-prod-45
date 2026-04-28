@@ -3,7 +3,7 @@
  * Features: resizable left panel, synced vertical scroll
  */
 import React, { useState, useRef, useCallback } from 'react';
-import { RoadmapInitiativeList } from './RoadmapInitiativeList';
+import { RoadmapRequestList } from './RoadmapRequestList';
 import { RoadmapGanttChart } from './RoadmapGanttChart';
 import { useTheme } from '@/hooks/useTheme';
 import { SURFACE, SURFACE_DARK } from './constants/roadmap.constants';
@@ -92,7 +92,7 @@ export function RoadmapTimeline({
   return (
     <div className="flex flex-1 overflow-hidden" style={{ background: surface.page }}>
       {/* Left panel — resizable */}
-      <RoadmapInitiativeList
+      <RoadmapRequestList
         groups={groups}
         selectedId={selectedId}
         hoveredId={hoveredId}

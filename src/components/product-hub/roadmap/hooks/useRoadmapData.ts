@@ -4,10 +4,10 @@
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
-import type { RoadmapInitiative, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
+import type { RoadmapRequest, RoadmapStats, RoadmapMilestone } from '../types/roadmap.types';
 
 // ── Status mapping: DB enum → UI label ──
-const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
+const STATUS_MAP: Record<string, RoadmapRequest['status']> = {
   in_progress: 'Active',
   approved: 'Active',
   under_review: 'Planned',
@@ -18,7 +18,7 @@ const STATUS_MAP: Record<string, RoadmapInitiative['status']> = {
 };
 
 // ── Type mapping (single business_request type) ──
-const TYPE_MAP: Record<string, RoadmapInitiative['type']> = {
+const TYPE_MAP: Record<string, RoadmapRequest['type']> = {
   project: 'business_request',
   enhancement: 'business_request',
   improvement: 'business_request',
@@ -129,12 +129,12 @@ async function fetchIssueOwners(): Promise<Map<string, string>> {
 }
 
 // ══════════════════════════════════════════
-// useRoadmapInitiatives — main data hook
+// useRoadmapRequests — main data hook
 // ══════════════════════════════════════════
-export function useRoadmapInitiatives() {
+export function useRoadmapRequests() {
   return useQuery({
     queryKey: ['roadmap-requests'],
-    queryFn: async (): Promise<RoadmapInitiative[]> => {
+    queryFn: async (): Promise<RoadmapRequest[]> => {
       const [{ data, error }, profiles, milestones, issueOwners, favoriteIds] = await Promise.all([
         typedQuery('ph_roadmap_requests_view')
           .select('*')
@@ -150,7 +150,7 @@ export function useRoadmapInitiatives() {
       if (error) throw error;
       if (!data) return [];
 
-      return data.map((row: any, index: number): RoadmapInitiative => {
+      return data.map((row: any, index: number): RoadmapRequest => {
         const { titleAr, titleEn } = splitTitle(row.title || '');
         
         // Resolve owner: try assignee_id → business_owner_id → Jira assignee → fallback
@@ -286,7 +286,7 @@ export function useBacklogItemsNotOnRoadmap() {
           status: row.status || '',
           owner: ownerName,
           source: 'catalyst',
-          type: 'business_request' as RoadmapInitiative['type'],
+          type: 'business_request' as RoadmapRequest['type'],
           alreadyOnRoadmap: false, // filtered out at query level
         };
       });
@@ -379,8 +379,8 @@ export function useToggleRoadmapStar() {
     },
     onMutate: async ({ requestId, isCurrentlyStarred }) => {
       await queryClient.cancelQueries({ queryKey: ['roadmap-requests'] });
-      const prev = queryClient.getQueryData<RoadmapInitiative[]>(['roadmap-requests']);
-      queryClient.setQueryData<RoadmapInitiative[]>(['roadmap-requests'], old =>
+      const prev = queryClient.getQueryData<RoadmapRequest[]>(['roadmap-requests']);
+      queryClient.setQueryData<RoadmapRequest[]>(['roadmap-requests'], old =>
         (old || []).map(i => i.id === requestId ? { ...i, starred: !isCurrentlyStarred } : i)
       );
       return { prev };
@@ -398,7 +398,7 @@ export function useToggleRoadmapStar() {
 // Convenience wrapper
 // ══════════════════════════════════════════
 export function useRoadmapData() {
-  const { data: initiatives = [], isLoading: initLoading, error: initError } = useRoadmapInitiatives();
+  const { data: initiatives = [], isLoading: initLoading, error: initError } = useRoadmapRequests();
   const { data: stats, isLoading: statsLoading, error: statsError } = useRoadmapStats();
 
   const defaultStats: RoadmapStats = {

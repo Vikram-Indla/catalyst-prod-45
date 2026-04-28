@@ -9,7 +9,7 @@ import { catalystToast } from '@/lib/catalystToast';
 import { logInitiativeAudit } from '@/lib/initiativeAudit';
 import { Plus, Wallet, ChevronDown } from 'lucide-react';
 
-interface InitiativeBudgetTabProps {
+interface RequestBudgetTabProps {
   requestId: string;
   budgetAllocated: number;
   onBudgetAllocatedChange?: (value: string) => void;
@@ -18,7 +18,7 @@ interface InitiativeBudgetTabProps {
 const BUDGET_CATEGORIES = ['development', 'infrastructure', 'consulting', 'licensing', 'training', 'operations', 'contingency', 'other'];
 const FISCAL_QUARTERS = ['Q1 2026', 'Q2 2026', 'Q3 2026', 'Q4 2026', 'Q1 2027', 'Q2 2027', 'Q3 2027', 'Q4 2027'];
 
-export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocatedChange }: InitiativeBudgetTabProps) {
+export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocatedChange }: RequestBudgetTabProps) {
   const [showAddBudget, setShowAddBudget] = useState(false);
   const [showCatDropdown, setShowCatDropdown] = useState(false);
   const [showQtrDropdown, setShowQtrDropdown] = useState(false);
