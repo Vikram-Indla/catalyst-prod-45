@@ -189,9 +189,10 @@ function makeInitiativeToCanonicalIssue(
     // Catalyst-canonical: every initiative is Catalyst's own row. The
     // historical `sourceTag === 'jira'` rendering chip ("Jira-MDT") is
     // dropped now that we treat Catalyst as standalone — provenance no
-    // longer drives card chrome. Hardcoded to 'catalyst' so any reader
-    // still expecting the field gets a clean signal.
-    const sourceTag: 'catalyst' | 'jira' = 'catalyst';
+    // longer drives card chrome. Field intentionally omitted from the
+    // canonical card so `WorkItemCard` doesn't render a SourceBadge for
+    // initiatives. Other hubs that still want provenance signaling
+    // (e.g. cross-system imports) keep it via their own adapters.
     // Raw DB enum value — the kanban routes columns off this so
     // `catalyst_workflow_statuses.slug_aliases` actually maps the legacy
     // statuses (`new_demand`, `in_progress`, `closed` etc.) into their
@@ -203,7 +204,11 @@ function makeInitiativeToCanonicalIssue(
       id: initiative.id,
       issueKey: initiative.initiative_key,
       summary: initiative.title,
-      issueType: 'Initiative',
+      // Jira board 597 filter is `worktype = "Business Request"` — match
+      // that string so JiraIssueTypeIcon falls back to the amber-lightbulb
+      // glyph defined in jira-issue-type-icons.tsx (line 201) when the
+      // adapter's resolveIcon returns null.
+      issueType: 'Business Request',
       priority: mapPriority(initiative),
       status: initiative.status,
       boardStatus: dbStatus,
@@ -218,7 +223,7 @@ function makeInitiativeToCanonicalIssue(
       isFlagged: initiative.is_favorited,
       updatedAt: initiative.updated_at,
       createdAt: initiative.created_at,
-      sourceTag,
+      // sourceTag intentionally omitted — see comment above.
       primaryLozenge: primary,
       secondaryLozenge: secondary,
       metaText: null,

@@ -35,14 +35,19 @@
 }
 
 /* ── DARK MODE ── */
+/* Phase 8 (2026-04-28): swapped `transparent` --pc-surface to a real
+   NOCTURNE elevation hex so the gallery cards have a visible surface
+   delta against the page bg. transparent reads as "broken / missing
+   card" because the dark page bg shows straight through. The new
+   value matches --cp-bg-surface dark (#1A1A1A) for consistency. */
 .dark [data-module="product-cards"],
 [data-theme="dark"] [data-module="product-cards"] {
   --pc-ink: #EDEDED;
   --pc-ink-secondary: #EDEDED;
   --pc-ink-tertiary: #A1A1A1;
   --pc-ink-muted: #7D7D7D;
-  --pc-surface: transparent;
-  --pc-surface-secondary: transparent;
+  --pc-surface: #1A1A1A;
+  --pc-surface-secondary: #1F1F1F;
   --pc-surface-tertiary: #1F1F1F;
   --pc-border: #2E2E2E;
   --pc-border-strong: #454545;

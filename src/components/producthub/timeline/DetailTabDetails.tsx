@@ -215,23 +215,12 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   const [newComment, setNewComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // ARCHITECTURAL DEFECT (parked 2026-04-28, see CLAUDE.md cycle 13):
-  // ph_comments.work_item_id is a UUID FK'd to ph_issues.id, but
-  // initiativeId is a ph_initiatives.id UUID — distinct entity. This
-  // select returns no rows in production. The insert in handleSubmit
-  // also includes work_item_type which doesn't exist on ph_comments;
-  // PostgREST throws schema-cache error and the comment never persists.
-  // Same defect lives in src/components/initiatives/DetailPanel.tsx and
-  // src/components/producthub/timeline/DetailTabActivity.tsx. Real fix
-  // requires either ph_initiative_comments mirror or polymorphic FK +
-  // work_item_type discriminator on ph_comments. Do NOT ship features
-  // that depend on initiative comments rendering.
   const { data: comments = [], isLoading } = useQuery({
-    queryKey: ['pk-comments', initiativeId],
+    queryKey: ['ph-initiative-comments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await typedQuery('ph_comments')
+      const { data, error } = await typedQuery('ph_initiative_comments')
         .select('id, body, author_id, created_at')
-        .eq('work_item_id', initiativeId)
+        .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       const authorIds: string[] = (data || []).map((c: any) => c.author_id).filter(Boolean);
@@ -250,14 +239,12 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      // ARCHITECTURAL DEFECT — see comment block above the comments useQuery.
-      await typedQuery('ph_comments').insert({
-        work_item_id: initiativeId,
-        work_item_type: 'initiative',
+      await typedQuery('ph_initiative_comments').insert({
+        initiative_id: initiativeId,
         body: newComment.trim(),
         author_id: user?.id || null,
       });
-      queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
       setNewComment('');
       // Silent auto-save
     } catch (err: any) {
@@ -268,8 +255,8 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
   };
 
   const handleDelete = async (id: string) => {
-    await typedQuery('ph_comments').delete().eq('id', id);
-    queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
+    await typedQuery('ph_initiative_comments').delete().eq('id', id);
+    queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
     // Silent auto-save
   };
 

@@ -3,7 +3,7 @@
  * Extracted from StoryDetailModal.tsx for modularity
  */
 import React from 'react';
-import type { ColumnConfig, StatusCategory, TestResult, AIImproveType, PriorityLevel } from './types';
+import type { ColumnConfig, StatusCategory, TestResult, PriorityLevel } from './types';
 
 export const DEFAULT_COLUMNS: ColumnConfig = {
   status: true, assignee: true, priority: true, created: false, updated: true,
@@ -156,14 +156,10 @@ export const WORK_ITEM_ICONS: Record<string, string> = Object.fromEntries(
   WORK_ITEM_ICON_ALIASES.flatMap(([file, label, aliases]) => aliases.map((alias) => [alias, jiraIconImg(file, label)]))
 ) as Record<string, string>;
 
-export const AI_IMPROVE_OPTIONS: { value: AIImproveType; label: string }[] = [
-  { value: 'improve_clarify', label: 'Improve & Clarify' },
-  { value: 'expand_detail', label: 'Expand & Detail' },
-  { value: 'add_acceptance_criteria', label: 'Add Acceptance Criteria' },
-  { value: 'convert_user_story', label: 'Convert to User Story format' },
-  { value: 'shorten_focus', label: 'Shorten & Focus' },
-  { value: 'add_edge_cases', label: 'Add Edge Cases' },
-];
+// Note: `AI_IMPROVE_OPTIONS` was removed 2026-04-28 along with the legacy
+// AI Improve inline panel. The canonical Improve dropdown is in
+// `src/components/catalyst-detail-views/improve/` and defines its own
+// menu items per issue type.
 
 export const menuItemStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, width: '100%', padding: '7px 14px',

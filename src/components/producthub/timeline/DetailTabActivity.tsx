@@ -1,6 +1,9 @@
 /**
  * Detail Tab — Activity (catalyst-ds replacement)
- * Reads from ph_comments + ph_initiative_audit_log.
+ * Reads from ph_initiative_comments + ph_initiative_audit_log.
+ * Comments routed to the dedicated ph_initiative_comments table after
+ * the split-table fix in migration
+ * 20260428140000_jira_compare_initiative_comments_split.sql.
  * For business_request types, also reads business_request_discussions + audit_logs.
  */
 import React, { useState, useCallback } from 'react';
@@ -109,21 +112,12 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
     },
   });
 
-  // ARCHITECTURAL DEFECT (parked 2026-04-28, see CLAUDE.md cycle 13):
-  // ph_comments.work_item_id is a UUID FK'd to ph_issues.id, but
-  // initiativeId is a ph_initiatives.id UUID — distinct entity. This
-  // query has never returned rows in production. Same defect lives in
-  // src/components/initiatives/DetailPanel.tsx and
-  // src/components/producthub/timeline/DetailTabDetails.tsx. Real fix
-  // requires either ph_initiative_comments mirror table or polymorphic
-  // FK + work_item_type discriminator on ph_comments.
   const { data: rawComments = [], isLoading: isLoadingComments } = useQuery({
-    queryKey: ['pk-comments', initiativeId],
+    queryKey: ['ph-initiative-comments', initiativeId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ph_comments')
+      const { data, error } = await typedQuery('ph_initiative_comments')
         .select('id, body, author_id, created_at, updated_at')
-        .eq('work_item_id', initiativeId)
+        .eq('initiative_id', initiativeId)
         .order('created_at', { ascending: true });
       if (error) throw error;
       return data || [];
@@ -150,25 +144,15 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
     mutationFn: async (body: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
-      // ARCHITECTURAL DEFECT (see CLAUDE.md cycle 13): this insert
-      // currently fails with PostgREST "Could not find the
-      // 'work_item_type' column of 'ph_comments' in the schema cache"
-      // (the column does NOT exist on ph_comments; Supabase types
-      // confirm columns are id / work_item_id / author_id / body /
-      // created_at / updated_at). Even with that field dropped, the
-      // FK on work_item_id targets ph_issues.id, NOT ph_initiatives.id
-      // — so the row would be an orphan or rejected by the FK.
-      // Comments on this surface have never persisted in production.
-      const { error } = await supabase.from('ph_comments').insert({
-        work_item_id: initiativeId,
-        work_item_type: 'initiative',
+      const { error } = await typedQuery('ph_initiative_comments').insert({
+        initiative_id: initiativeId,
         body,
         author_id: user.id,
       });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
       toast.success('Comment added');
     },
     onError: () => toast.error('Failed to add comment'),
@@ -176,20 +160,20 @@ export const DetailTabActivity: React.FC<DetailTabActivityProps> = ({ initiative
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      await supabase.from('ph_comments').delete().eq('id', id);
+      await typedQuery('ph_initiative_comments').delete().eq('id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
       toast.success('Comment deleted');
     },
   });
 
   const editMutation = useMutation({
     mutationFn: async ({ id, body }: { id: string; body: string }) => {
-      await supabase.from('ph_comments').update({ body, updated_at: new Date().toISOString() }).eq('id', id);
+      await typedQuery('ph_initiative_comments').update({ body, updated_at: new Date().toISOString() }).eq('id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pk-comments', initiativeId] });
+      queryClient.invalidateQueries({ queryKey: ['ph-initiative-comments', initiativeId] });
     },
   });
 
