@@ -148,7 +148,7 @@ const BudgetGovernancePage = lazy(() => import("../pages/enterprise/BudgetGovern
 const BudgetPlannerPage = lazy(() => import("../pages/enterprise/BudgetPlannerPage"));
 
 const Themes = lazy(() => import("../pages/Themes"));
-const Requests = lazy(() => import("../pages/Requests"));
+const Initiatives = lazy(() => import("@/pages/Initiatives"));
 const EpicsPage = lazy(() => import("../pages/items/EpicsPage"));
 const EpicsRecycleBinPage = lazy(() => import("../pages/items/EpicsRecycleBinPage"));
 const EpicsCanceledPage = lazy(() => import("../pages/items/EpicsCanceledPage"));
@@ -642,9 +642,7 @@ export default function FullAppRoutes() {
 
         <Route path="/themes" element={<S><Themes /></S>} />
         <Route path="/themes/grid" element={<S><Themes /></S>} />
-        <Route path="/requests" element={<S><Requests /></S>} />
-        {/* Legacy redirect: /initiatives → /requests (rename 2026-04-29) */}
-        <Route path="/initiatives" element={<Navigate to="/requests" replace />} />
+        <Route path="/initiatives" element={<S><Initiatives /></S>} />
         <Route path="/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
         <Route path="/backlog/epics" element={<Navigate to="/program/b2c3d4e5-f6a7-8901-bcde-f12345678901/epic-backlog" replace />} />
         <Route path="/features" element={<S><FeaturesBacklog /></S>} />

@@ -16,7 +16,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
-export default function Requests() {
+export default function Initiatives() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -79,7 +79,7 @@ export default function Requests() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['initiatives'] });
-      toast({ title: 'Requests imported successfully' });
+      toast({ title: 'Initiatives imported successfully' });
     },
     onError: () => {
       toast({ title: 'Failed to import initiatives', variant: 'destructive' });
@@ -89,7 +89,7 @@ export default function Requests() {
   const handleExport = () => {
     if (items && items.length > 0) {
       exportToCSV(items, 'initiatives', ['name', 'description', 'status', 'wsjf_score', 'benefit_score']);
-      toast({ title: 'Requests exported successfully' });
+      toast({ title: 'Initiatives exported successfully' });
     }
   };
 
@@ -98,7 +98,7 @@ export default function Requests() {
       <div className="h-[72px] border-b bg-card px-6 flex items-center">
         <div className="flex items-center justify-between w-full">
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold truncate">Requests</h1>
+            <h1 className="text-2xl font-bold truncate">Initiatives</h1>
             <p className="text-sm text-muted-foreground truncate">Strategic initiatives driving portfolio goals</p>
           </div>
           <PermissionGuard requiredRole="team_lead" showMessage={false}>
@@ -161,7 +161,7 @@ export default function Requests() {
                 <PermissionGuard requiredRole="team_lead" showMessage={false}>
                   <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
                     <Edit className="h-4 w-4 mr-2" />
-                    Edit Request
+                    Edit Initiative
                   </Button>
                 </PermissionGuard>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
@@ -193,7 +193,7 @@ export default function Requests() {
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
         onImport={(data) => importMutation.mutate(data)}
-        title="Import Requests"
+        title="Import Initiatives"
         requiredFields={['name']}
       />
     </div>
