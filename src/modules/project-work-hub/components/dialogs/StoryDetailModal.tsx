@@ -339,14 +339,43 @@ export default function StoryDetailModal({
     [issue?.reporter_display_name],
   );
 
+  // Apr 28 2026 (cycle 10 fix — Story comments+activity+attachments
+  //   silently broken). Same root cause as cycle 8's CatalystActivity
+  //   fix: ph_comments / ph_activity_log / ph_attachments /
+  //   catalyst_comments / catalyst_activity_log all use `uuid` for
+  //   `work_item_id`, but `itemId` here is the issue_key (text). Every
+  //   `eq('work_item_id', itemId)` and `insert({ work_item_id: itemId })`
+  //   was failing with Postgres 22P02. Resolve once, thread through.
+  //   MUST be declared BEFORE the comments / activity_log / attachments
+  //   queries below — they reference `resolvedWorkItemId` directly.
+  const { data: resolvedWorkItemId } = useQuery({
+    queryKey: ['sdm-resolve-work-item-uuid', itemId, workItemSource],
+    enabled: !!itemId,
+    staleTime: 10 * 60 * 1000,
+    queryFn: async (): Promise<string | null> => {
+      if (!itemId) return null;
+      // Catalyst-native UUIDs already match the FK shape — no lookup needed.
+      if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(itemId)) {
+        return itemId;
+      }
+      const fromTable = workItemSource === 'catalyst' ? 'catalyst_issues' : 'ph_issues';
+      const { data } = await supabase
+        .from(fromTable as 'ph_issues' | 'catalyst_issues')
+        .select('id')
+        .eq('issue_key', itemId)
+        .maybeSingle();
+      return (data as { id?: string } | null)?.id ?? null;
+    },
+  });
+
   const { data: comments = [] } = useQuery({
-    queryKey: ['ph-comments', itemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
-    enabled: !!itemId && isOpen && !!issue,
+    queryKey: ['ph-comments', resolvedWorkItemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!resolvedWorkItemId && isOpen && !!issue,
     queryFn: async () => {
       const isCatalyst = !!(issue as any)?.__catalyst_source;
       const tbl = isCatalyst ? 'catalyst_comments' : 'ph_comments';
       // 1) Native comments (source-aware table)
-      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', itemId).order('created_at', { ascending: true });
+      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, body, author_id, created_at, updated_at').eq('work_item_id', resolvedWorkItemId!).order('created_at', { ascending: true });
       const phRows = phData ?? [];
       const authorIds = [...new Set(phRows.map((c: any) => c.author_id).filter(Boolean))];
       // §19 chokepoint: select full_name only, resolve avatar locally.
@@ -367,7 +396,7 @@ export default function StoryDetailModal({
           .order('jira_created_at', { ascending: true });
         jiraMapped = (jiraRows ?? []).map(j => ({
           id: `jira-${j.id}`,
-          work_item_id: itemId,
+          work_item_id: resolvedWorkItemId!,
           body: j.body ?? '',
           author_id: j.author_account_id ?? null,
           created_at: j.jira_created_at ?? j.created_at,
@@ -387,13 +416,13 @@ export default function StoryDetailModal({
   });
 
   const { data: activityLog = [] } = useQuery({
-    queryKey: ['ph-activity-log', itemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
-    enabled: !!itemId && isOpen && !!issue,
+    queryKey: ['ph-activity-log', resolvedWorkItemId, issue?.issue_key, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!resolvedWorkItemId && isOpen && !!issue,
     queryFn: async () => {
       const isCatalyst = !!(issue as any)?.__catalyst_source;
       const tbl = isCatalyst ? 'catalyst_activity_log' : 'ph_activity_log';
       // 1) Native activity log (source-aware table)
-      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const { data: phData } = await supabase.from(tbl).select('id, work_item_id, action, field_name, old_value, new_value, user_id, metadata, created_at').eq('work_item_id', resolvedWorkItemId!).order('created_at', { ascending: false });
       const phRows = phData ?? [];
       const userIds = [...new Set(phRows.map((e: any) => e.user_id).filter(Boolean))];
       // §19 chokepoint: select full_name only, resolve avatar locally.
@@ -414,7 +443,7 @@ export default function StoryDetailModal({
           .order('jira_created_at', { ascending: false });
         jiraMapped = (jiraRows ?? []).map(j => ({
           id: `jira-cl-${j.id}`,
-          work_item_id: itemId,
+          work_item_id: resolvedWorkItemId!,
           action: 'field_updated',
           field_name: j.field_name ?? '',
           old_value: j.from_string ?? j.from_value ?? null,
@@ -446,12 +475,12 @@ export default function StoryDetailModal({
   });
 
   const { data: attachments = [] } = useQuery({
-    queryKey: ['ph-attachments', itemId, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
-    enabled: !!itemId && isOpen && !!issue,
+    queryKey: ['ph-attachments', resolvedWorkItemId, (issue as any)?.__catalyst_source ? 'catalyst' : 'jira'],
+    enabled: !!resolvedWorkItemId && isOpen && !!issue,
     queryFn: async () => {
       const isCatalyst = !!(issue as any)?.__catalyst_source;
       const tbl = isCatalyst ? 'catalyst_attachments' : 'ph_attachments';
-      const { data } = await supabase.from(tbl).select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', itemId).order('created_at', { ascending: false });
+      const { data } = await supabase.from(tbl).select('id, work_item_id, file_name, file_size, mime_type, storage_path, uploaded_by, created_at').eq('work_item_id', resolvedWorkItemId!).order('created_at', { ascending: false });
       return (data ?? []) as unknown as PhAttachment[];
     },
   });
@@ -592,6 +621,10 @@ export default function StoryDetailModal({
   const commentsTable = workItemSource === 'catalyst' ? 'catalyst_comments' : 'ph_comments';
   const attachmentsTable = workItemSource === 'catalyst' ? 'catalyst_attachments' : 'ph_attachments';
   const attachmentsBucket = workItemSource === 'catalyst' ? 'catalyst-attachments' : 'attachments';
+
+  // (Cycle 10) `resolvedWorkItemId` is declared earlier in this
+  // component (right after `reporterProfile`) — moved up because the
+  // comments / activity_log / attachments queries reference it.
   // Field-name shim: catalyst_issues uses different column names.
   const mapField = (f: string): string | null => {
     if (workItemSource !== 'catalyst') return f;
@@ -650,7 +683,7 @@ export default function StoryDetailModal({
       // them automatically via tg_catalyst_issue_audit.
       if (workItemSource === 'jira') {
         await supabase.from('ph_activity_log').insert({
-          work_item_id: itemId, action: 'field_updated', field_name: field,
+          work_item_id: resolvedWorkItemId!, action: 'field_updated', field_name: field,
           old_value: oldValue, new_value: value, user_id: user!.id,
         });
       }
@@ -685,7 +718,7 @@ export default function StoryDetailModal({
 
   const addCommentMutation = useMutation({
     mutationFn: async (body: string) => {
-      const { error } = await supabase.from(commentsTable).insert({ work_item_id: itemId, body, author_id: user!.id } as any);
+      const { error } = await supabase.from(commentsTable).insert({ work_item_id: resolvedWorkItemId!, body, author_id: user!.id } as any);
       if (error) throw error;
     },
     onSuccess: () => { setNewComment(''); toast.success('Comment added'); queryClient.invalidateQueries({ queryKey: ['ph-comments', itemId] }); queryClient.invalidateQueries({ queryKey: ['ph-activity-log', itemId] }); },
@@ -729,7 +762,7 @@ export default function StoryDetailModal({
       const path = `attachments/${itemId}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage.from(attachmentsBucket).upload(path, file);
       if (uploadError) throw uploadError;
-      const { error: dbError } = await supabase.from(attachmentsTable).insert({ work_item_id: itemId, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id } as any);
+      const { error: dbError } = await supabase.from(attachmentsTable).insert({ work_item_id: resolvedWorkItemId!, file_name: file.name, file_size: file.size, mime_type: file.type, storage_path: path, uploaded_by: user!.id } as any);
       if (dbError) throw dbError;
     },
     onSuccess: () => { toast.success('Attachment uploaded'); queryClient.invalidateQueries({ queryKey: ['ph-attachments', itemId] }); },
@@ -746,7 +779,7 @@ export default function StoryDetailModal({
   const saveFigmaLink = useCallback(() => {
     if (!/^https:\/\/(www\.)?figma\.com\//.test(figmaUrl)) { setFigmaError('Only Figma URLs accepted (figma.com)'); return; }
     setFigmaError('');
-    supabase.from(attachmentsTable).insert({ work_item_id: itemId, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id } as any).then(({ error }) => {
+    supabase.from(attachmentsTable).insert({ work_item_id: resolvedWorkItemId!, file_name: figmaUrl, file_size: 0, mime_type: 'application/figma', storage_path: figmaUrl, uploaded_by: user!.id } as any).then(({ error }) => {
       if (error) { toast.error(`Failed to save Figma link: ${error.message}`); return; }
       setFigmaUrl(''); setShowFigmaInput(false);
       toast.success('Figma design link added');
@@ -839,7 +872,7 @@ export default function StoryDetailModal({
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
           await supabase.from('ph_activity_log').insert({
-            work_item_id: itemId,
+            work_item_id: resolvedWorkItemId!,
             user_id: user.id,
             action: 'updated',
             field_name: 'fix_versions',
