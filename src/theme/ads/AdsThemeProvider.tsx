@@ -72,13 +72,27 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
     // are done and we can take the attribute back. Verified live: --cp-bg
     // flips to #0A0A0A, sidebar/header/main all turn dark, Atlaskit
     // components keep their --ds-* tokens.
+    // Phase 10 (2026-04-29) RCA fix: pass `light: 'light', dark: 'dark'`
+    // theme IDs explicitly. Without these, Atlaskit's tokens runtime never
+    // loads its bundled dark-theme CSS file — `--ds-text` / `--ds-surface` /
+    // every `--ds-*` token stays unset, and `token('color.x')` consumers
+    // (Atlaskit's own <Heading>, <Lozenge>, <Button>, etc., plus every
+    // direct call site) fall back to the inline hex fallback in BOTH modes.
+    // This is why heading text on AI Focus theme cards stayed dark-blue
+    // on dark for 9 phases of patching: the wrapper-level color-pin trick
+    // was inheritance-only and got overridden by Atlaskit's xcss class on
+    // the rendered element. Loading the dark theme CSS makes Atlaskit
+    // tokens flip natively — no wrapper hacks needed.
     void setGlobalTheme({
       colorMode: mode,
+      light: 'light',
+      dark: 'dark',
+      spacing: 'spacing',
       typography: 'typography',
-      // @atlaskit/tokens accepts `customColors` as an opt-in override. We
-      // feed it our bridge so every Atlaskit component inherits Catalyst
-      // values without per-component work. Null-safe on older Atlaskit
-      // builds — unknown keys are silently ignored.
+      // `customColors` is a v12-era key that v13 silently drops (CLAUDE.md
+      // Phase 2 lesson). Kept for now in case future Atlaskit versions
+      // reinstate the override path — the cast bypasses TypeScript's
+      // refusal of the unknown key.
       customColors: atlaskitCustomColors(mode) as unknown as Record<string, string>,
     } as Parameters<typeof setGlobalTheme>[0])
       .then(() => {

@@ -271,9 +271,33 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
       >
         {/* Top Bar */}
         <div className="idp-topbar">
-          <button className="idp-back-btn" onClick={handleClose}>
-            <ArrowLeft size={14} /> Back to list
+          <button className="idp-back-btn" onClick={handleClose} aria-label="Back to list">
+            <ArrowLeft size={14} />
           </button>
+          {/*
+            Breadcrumb — Jira-parity navigation context. Static today
+            (every initiative lives under Product Hub > Backlog), but
+            structured so the segments can become real <Link>s when the
+            ProductHub IA gets richer (department or quarter sub-pages).
+          */}
+          <nav
+            className="idp-breadcrumbs"
+            aria-label="Breadcrumb"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              fontSize: 12, color: 'var(--cp-text-secondary, #6B6E76)',
+              fontFamily: 'var(--cp-font-body)', minWidth: 0, flex: 1,
+              marginLeft: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+            }}
+          >
+            <span style={{ fontWeight: 500 }}>Product Hub</span>
+            <span aria-hidden="true">/</span>
+            <span style={{ fontWeight: 500 }}>Backlog</span>
+            <span aria-hidden="true">/</span>
+            <span style={{ fontWeight: 600, color: 'var(--cp-text-primary, #292A2E)' }}>
+              {initiative.initiative_key}
+            </span>
+          </nav>
           <div className="idp-action-group">
             {/* Watchers — Jira-parity affordance; backend table is a follow-up */}
             <button
