@@ -55,7 +55,7 @@ function getInitials(name: string): string {
 }
 
 function invalidateAllInitiatives(queryClient: ReturnType<typeof useQueryClient>) {
-  queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+  queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
   queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
   queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
   queryClient.invalidateQueries({ queryKey: ['roadmap-summary'] });
@@ -274,7 +274,7 @@ export function DetailPanel({ request, isOpen, onClose, onStatusChange, onScoreS
   const UUID_FK_FIELDS = ['department_id', 'assignee_id', 'reporter_id', 'business_owner_id', 'product_id'];
   const handleQuickEdit = useCallback(async (field: string, value: any, label?: string) => {
     if (!request) return;
-    if (!isNativeInitiative(request.id)) { if (field === 'initiative_type_key') queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] }); return; }
+    if (!isNativeInitiative(request.id)) { if (field === 'initiative_type_key') queryClient.invalidateQueries({ queryKey: ['requests-backlog'] }); return; }
     // Sanitize: empty strings on UUID FK columns must be null to avoid FK constraint violations
     let sanitized = value;
     if (UUID_FK_FIELDS.includes(field) && (value === '' || value === undefined)) sanitized = null;
@@ -302,8 +302,8 @@ export function DetailPanel({ request, isOpen, onClose, onStatusChange, onScoreS
       }).eq('id', request.id);
       invalidateAllInitiatives(queryClient);
       catalystToast.success('Score saved');
-      const { logInitiativeAudit } = await import('@/lib/initiativeAudit');
-      logInitiativeAudit({
+      const { logRequestAudit } = await import('@/lib/requestAudit');
+      logRequestAudit({
         request_id: request.id,
         action: 'score_saved',
         entity_type: 'score',
@@ -544,7 +544,7 @@ function RoadmapToggleInline({ request }: { request: Request }) {
           }
           await promoteMutation.mutateAsync({ request_id: requestId });
         }
-        queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+        queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       } else {
         if (!newValue) await removeMutation.mutateAsync(request.id);
         else await promoteMutation.mutateAsync({ request_id: request.id });

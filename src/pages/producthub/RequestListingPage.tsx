@@ -6,7 +6,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
 import type { BRDTask } from '@/hooks/useRequestsBacklog';
-import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
+import { useSyncMDTToRequests } from '@/hooks/useSyncMDTToRequests';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useRequestLookups';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
@@ -156,7 +156,7 @@ function getGroupSortKey(item: Request, groupBy: GroupByField): string {
 }
 
 export default function RequestListingPage() {
-  useSyncMDTToInitiatives();
+  useSyncMDTToRequests();
   const { data: mdtData, isLoading } = useRequestsBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();

@@ -52,7 +52,7 @@
 import { useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { BRDTask } from '@/hooks/useMDTBacklog';
+import type { BRDTask } from '@/hooks/useRequestsBacklog';
 import { Star, Map as MapIcon, LayoutGrid, Paperclip, Pencil, MoreVertical } from 'lucide-react';
 import type { Request, RequestStatus, Density } from '@/types/request';
 import { STATUS_DISPLAY, getPriorityLevel } from '@/types/request';

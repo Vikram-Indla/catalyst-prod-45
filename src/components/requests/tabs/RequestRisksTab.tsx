@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { Plus, ShieldAlert, X, ChevronDown, Search } from 'lucide-react';
 import { useProfileOptions } from '@/hooks/useRequestLookups';
 
@@ -87,7 +87,7 @@ export function RequestRisksTab({ requestId }: RequestRisksTabProps) {
 
     if (error) { catalystToast.error('Failed to create risk'); return; }
     catalystToast.success(`${nextKey} created`);
-    logInitiativeAudit({
+    logRequestAudit({
       request_id: requestId,
       action: 'risk_added',
       entity_type: 'risk',

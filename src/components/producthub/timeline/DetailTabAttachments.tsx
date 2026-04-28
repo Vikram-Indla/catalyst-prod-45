@@ -7,7 +7,7 @@ import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { Upload, Paperclip, Download, Pin, PinOff, Trash2 } from 'lucide-react';
 
 interface DetailTabAttachmentsProps {
@@ -116,7 +116,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
       });
       if (dbErr) { toast.error(`DB insert failed: ${file.name}`); continue; }
 
-      logInitiativeAudit({ request_id: requestId, action: 'uploaded', entity_type: 'attachment', new_value: file.name });
+      logRequestAudit({ request_id: requestId, action: 'uploaded', entity_type: 'attachment', new_value: file.name });
       toast.success(`Uploaded ${file.name}`, TOAST_OPTS);
     }
     refetch();
@@ -137,7 +137,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
 
   const handlePin = async (f: any) => {
     await typedQuery('ph_request_attachments').update({ is_pinned: !f.is_pinned }).eq('id', f.id);
-    logInitiativeAudit({ request_id: requestId, action: f.is_pinned ? 'unpinned' : 'pinned', entity_type: 'attachment', new_value: f.file_name });
+    logRequestAudit({ request_id: requestId, action: f.is_pinned ? 'unpinned' : 'pinned', entity_type: 'attachment', new_value: f.file_name });
     // Silent auto-save
     refetch();
   };
@@ -145,7 +145,7 @@ export const DetailTabAttachments: React.FC<DetailTabAttachmentsProps> = ({ requ
   const handleDelete = async (f: any) => {
     await supabase.storage.from('request-attachments').remove([f.file_path]);
     await typedQuery('ph_request_attachments').delete().eq('id', f.id);
-    logInitiativeAudit({ request_id: requestId, action: 'deleted', entity_type: 'attachment', new_value: f.file_name });
+    logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'attachment', new_value: f.file_name });
     toast.success(`Deleted ${f.file_name}`, TOAST_OPTS);
     refetch();
   };

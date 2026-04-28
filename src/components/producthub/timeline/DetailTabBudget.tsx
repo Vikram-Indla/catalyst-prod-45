@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { Pencil, Trash2, FolderOpen, X } from 'lucide-react';
 
 interface DetailTabBudgetProps {
@@ -115,7 +115,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
 
   const saveTotalBudget = useCallback(async () => {
     await typedQuery('ph_requests').update({ budget_allocated: totalBudget, updated_at: new Date().toISOString() }).eq('id', requestId);
-    logInitiativeAudit({ request_id: requestId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
+    logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'budget', field_name: 'budget_allocated', new_value: `SAR ${totalBudget.toLocaleString('en-US')}` });
     // Silent auto-save
   }, [totalBudget, requestId]);
 
@@ -149,13 +149,13 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
     if (editingItem) {
       const { error } = await typedQuery('ph_request_budget_items').update(payload).eq('id', editingItem.id);
       if (error) { toast.error('Failed to update'); return; }
-      logInitiativeAudit({ request_id: requestId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
+      logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'budget_item', new_value: form.description });
       // Silent auto-save
     } else {
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await typedQuery('ph_request_budget_items').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
-      logInitiativeAudit({ request_id: requestId, action: 'created', entity_type: 'budget_item', new_value: form.description });
+      logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'budget_item', new_value: form.description });
       toast.success('Item added', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     }
     setShowModal(false);
@@ -164,7 +164,7 @@ export const DetailTabBudget: React.FC<DetailTabBudgetProps> = ({ requestId }) =
 
   const handleDelete = async (id: string) => {
     await typedQuery('ph_request_budget_items').delete().eq('id', id);
-    logInitiativeAudit({ request_id: requestId, action: 'deleted', entity_type: 'budget_item' });
+    logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'budget_item' });
     toast.success('Item deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     refetch();
   };

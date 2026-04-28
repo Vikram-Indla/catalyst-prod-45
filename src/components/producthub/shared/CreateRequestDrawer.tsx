@@ -106,7 +106,7 @@ function useCreateInitiative() {
     },
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['next-request-key'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
       queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });

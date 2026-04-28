@@ -144,7 +144,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
         .eq('id', request.id);
       if (error) throw error;
       // Silent auto-save
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
     } catch { toast.error('Failed to save title'); }
   }, [request.title, request.id, queryClient]);
@@ -159,7 +159,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       toast.success('Business Request deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
       setShowDeleteConfirm(false);
       handleClose();
@@ -187,7 +187,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
         initiative_key: `MIM-${String(nextNum).padStart(3, '0')}`,
       });
       if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       toast.success('Business Request cloned', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     } catch { toast.error('Clone failed'); }
   };
@@ -287,7 +287,7 @@ export const RequestDetailPanel: React.FC<RequestDetailPanelProps> = ({
         .update({ is_archived: !request.is_archived, updated_at: new Date().toISOString() })
         .eq('id', request.id);
       if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
       queryClient.invalidateQueries({ queryKey: ['ph-requests'] });
       toast.success(request.is_archived ? 'Restored' : 'Archived', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     } catch { toast.error('Failed to archive'); }

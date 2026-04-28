@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { getInitialsFromName, hashColor } from '@/types/producthub/request';
 import { Pencil, Trash2, Shield, X } from 'lucide-react';
 
@@ -180,7 +180,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => 
     if (editingRisk) {
       const { error } = await typedQuery('ph_request_risks').update(payload).eq('id', editingRisk.id);
       if (error) { toast.error('Failed to update'); return; }
-      logInitiativeAudit({ request_id: requestId, action: 'updated', entity_type: 'risk', entity_id: editingRisk.id, new_value: form.title });
+      logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'risk', entity_id: editingRisk.id, new_value: form.title });
       // Silent auto-save
     } else {
       // Generate key
@@ -192,7 +192,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => 
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await typedQuery('ph_request_risks').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
-      logInitiativeAudit({ request_id: requestId, action: 'created', entity_type: 'risk', new_value: form.title });
+      logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'risk', new_value: form.title });
       toast.success(`${payload.risk_key} created`, { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     }
     setShowModal(false);
@@ -201,7 +201,7 @@ export const DetailTabRisks: React.FC<DetailTabRisksProps> = ({ requestId }) => 
 
   const handleDelete = async (id: string) => {
     await typedQuery('ph_request_risks').delete().eq('id', id);
-    logInitiativeAudit({ request_id: requestId, action: 'deleted', entity_type: 'risk', entity_id: id });
+    logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'risk', entity_id: id });
     toast.success('Risk deleted', { duration: 2200, style: { background: '#18181B', color: '#fff' }, position: 'bottom-center' });
     refetch();
   };

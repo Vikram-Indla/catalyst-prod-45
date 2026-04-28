@@ -15,7 +15,7 @@
  *   - Request-typed icon (via the adapter's resolveIcon).
  *
  * Still owned here:
- *   - Data fetch (useMDTBacklog).
+ *   - Data fetch (useRequestsBacklog).
  *   - Page-level filter state (search, selAssignees, filterSelected,
  *     groupBy) because it drives query keys.
  *   - Status-change mutation (Supabase update on ph_requests).
@@ -28,7 +28,7 @@ import { KanbanBoardShell } from '@/components/kanban/KanbanBoardShell';
 import { buildProductHubBoardAdapter } from '@/components/kanban/adapters/productHubBoardAdapter';
 import { CreateRequestDrawer } from '@/components/producthub/shared/CreateRequestDrawer';
 import { RequestDetailPanel } from '@/components/producthub/timeline/RequestDetailPanel';
-import { useMDTBacklog } from '@/hooks/useMDTBacklog';
+import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
 import { useCatalystWorkflow } from '@/hooks/useCatalystWorkflow';
 import { supabase } from '@/integrations/supabase/client';
@@ -76,7 +76,7 @@ function toTimelineInitiative(i: Request): TimelineRequest {
 }
 
 export default function ProductHubKanbanPage() {
-  const { data, isLoading } = useMDTBacklog();
+  const { data, isLoading } = useRequestsBacklog();
   const requests = useMemo<Request[]>(() => data?.data ?? [], [data]);
   const avatarsByName = useProfileAvatarsByName();
 
@@ -122,7 +122,7 @@ export default function ProductHubKanbanPage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ph-requests'] });
-      qc.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      qc.invalidateQueries({ queryKey: ['requests-backlog'] });
     },
     onError: (err) => {
       toast.error(err instanceof Error ? err.message : 'Failed to update request status');
@@ -147,7 +147,7 @@ export default function ProductHubKanbanPage() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ph-requests'] });
-      qc.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      qc.invalidateQueries({ queryKey: ['requests-backlog'] });
     },
   });
 

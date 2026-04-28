@@ -8,7 +8,7 @@ import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import type { TimelineRequest } from '@/types/producthub/request';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 
 interface DetailTabScoreProps {
   request: TimelineRequest;
@@ -135,10 +135,10 @@ export const DetailTabScore: React.FC<DetailTabScoreProps> = ({ request }) => {
         }, { onConflict: 'request_id' });
       if (error) throw error;
       // Silent auto-save
-      logInitiativeAudit({ request_id: request.id, action: 'updated', entity_type: 'score', new_value: String(composite) });
+      logRequestAudit({ request_id: request.id, action: 'updated', entity_type: 'score', new_value: String(composite) });
       queryClient.invalidateQueries({ queryKey: ['idp-scores', request.id] });
       queryClient.invalidateQueries({ queryKey: ['idp-activity', request.id] });
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     } catch {
       toast.error('Failed to save score');
     } finally {

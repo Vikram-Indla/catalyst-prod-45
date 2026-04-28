@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Link as LinkIcon, ExternalLink, Trash2 } from 'lucide-react';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { toast } from 'sonner';
 
 interface RequestLinksTabProps {
@@ -54,7 +54,7 @@ function AddLinkForm({ requestId, onClose }: { requestId: string; onClose: () =>
       }
       queryClient.invalidateQueries({ queryKey: ['ph-links', requestId] });
       toast.success('Link added');
-      logInitiativeAudit({
+      logRequestAudit({
         request_id: requestId,
         action: 'link_added',
         entity_type: 'link',
@@ -138,7 +138,7 @@ export function RequestLinksTab({ requestId }: RequestLinksTabProps) {
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ['ph-links', requestId] });
       toast.success('Link removed');
-      logInitiativeAudit({
+      logRequestAudit({
         request_id: requestId,
         action: 'link_deleted',
         entity_type: 'link',

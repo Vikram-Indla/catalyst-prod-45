@@ -81,7 +81,7 @@ export function PromoteToRoadmapDialog({ open, onClose, request }: Props) {
       request_id: requestId,
       roadmap_priority: priority ? parseInt(priority) : undefined,
     });
-    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     onClose();
   };
 

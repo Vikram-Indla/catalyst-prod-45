@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { CheckCircle2, RotateCcw, Pencil, Trash2, Flag, CircleDot, X } from 'lucide-react';
 
 interface DetailTabMilestonesProps {
@@ -173,7 +173,7 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
     if (editing) {
       const { error } = await typedQuery('ph_request_milestones').update(payload).eq('id', editing.id);
       if (error) { toast.error('Failed to update'); return; }
-      logInitiativeAudit({ request_id: requestId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
+      logRequestAudit({ request_id: requestId, action: 'updated', entity_type: 'milestone', entity_id: editing.id, field_name: 'milestone', new_value: form.title });
       // Silent auto-save
     } else {
       payload.status = 'not_started';
@@ -181,19 +181,19 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
       payload.created_by = (await supabase.auth.getUser()).data.user?.id;
       const { error } = await typedQuery('ph_request_milestones').insert(payload);
       if (error) { toast.error('Failed to add'); return; }
-      logInitiativeAudit({ request_id: requestId, action: 'created', entity_type: 'milestone', new_value: form.title });
+      logRequestAudit({ request_id: requestId, action: 'created', entity_type: 'milestone', new_value: form.title });
       toast.success('Milestone added', TOAST_OPTS);
     }
     setShowModal(false);
     refetch();
-    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
   };
 
   const handleComplete = async (m: any) => {
     await typedQuery('ph_request_milestones').update({
       status: 'completed', actual_date: new Date().toISOString().slice(0, 10),
     }).eq('id', m.id);
-    logInitiativeAudit({ request_id: requestId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
+    logRequestAudit({ request_id: requestId, action: 'completed', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success(`${m.title} completed`, TOAST_OPTS);
     refetch();
   };
@@ -201,16 +201,16 @@ export const DetailTabMilestones: React.FC<DetailTabMilestonesProps> = ({ reques
     await typedQuery('ph_request_milestones').update({
       status: 'in_progress', actual_date: null,
     }).eq('id', m.id);
-    logInitiativeAudit({ request_id: requestId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
+    logRequestAudit({ request_id: requestId, action: 'reopened', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success(`${m.title} reopened`, TOAST_OPTS);
     refetch();
   };
   const handleDelete = async (m: any) => {
     await typedQuery('ph_request_milestones').delete().eq('id', m.id);
-    logInitiativeAudit({ request_id: requestId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
+    logRequestAudit({ request_id: requestId, action: 'deleted', entity_type: 'milestone', entity_id: m.id, new_value: m.title });
     toast.success('Milestone deleted', TOAST_OPTS);
     refetch();
-    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
   };
 
   const statusLabel = (s: string) => {

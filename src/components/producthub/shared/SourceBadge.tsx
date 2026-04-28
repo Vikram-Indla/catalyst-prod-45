@@ -3,7 +3,7 @@
  *
  * Source values from `ph_requests.source`:
  *   - 'catalyst' (DB default for new inserts via CreateRequestDrawer)
- *   - 'jira'     (set by useSyncMDTToInitiatives for MDT-* imports)
+ *   - 'jira'     (set by useSyncMDTToRequests for MDT-* imports)
  *
  * Visual rules (per CLAUDE.md §6):
  *   - Catalyst → neutral grey #3F3F46 (structural, NOT semantic)

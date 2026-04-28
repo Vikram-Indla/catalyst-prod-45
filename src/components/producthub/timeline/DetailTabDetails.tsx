@@ -357,7 +357,7 @@ export const DetailTabDetails: React.FC<DetailTabDetailsProps> = ({ request }) =
   const isUuid = useCallback((val: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(val), []);
 
   const invalidateAll = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
     queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
     queryClient.invalidateQueries({ queryKey: ['ph-requests'] });

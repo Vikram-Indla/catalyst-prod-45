@@ -15,7 +15,7 @@ interface AuditEntry {
   metadata?: Record<string, any>;
 }
 
-export async function logInitiativeAudit(entry: AuditEntry) {
+export async function logRequestAudit(entry: AuditEntry) {
   try {
     const { data: { user } } = await supabase.auth.getUser();
     await typedQuery('ph_request_audit_log').insert({

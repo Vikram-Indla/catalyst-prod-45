@@ -398,7 +398,7 @@ export function useToggleRoadmapStar() {
 // Convenience wrapper
 // ══════════════════════════════════════════
 export function useRoadmapData() {
-  const { data: initiatives = [], isLoading: initLoading, error: initError } = useRoadmapRequests();
+  const { data: requests = [], isLoading: reqLoading, error: reqError } = useRoadmapRequests();
   const { data: stats, isLoading: statsLoading, error: statsError } = useRoadmapStats();
 
   const defaultStats: RoadmapStats = {
@@ -407,9 +407,9 @@ export function useRoadmapData() {
   };
 
   return {
-    initiatives,
+    requests,
     stats: stats || defaultStats,
-    isLoading: initLoading || statsLoading,
-    error: initError || statsError,
+    isLoading: reqLoading || statsLoading,
+    error: reqError || statsError,
   };
 }

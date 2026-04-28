@@ -36,7 +36,7 @@ function mapJiraStatus(status: string, statusCategory: string): string {
   return 'new_demand';
 }
 
-export function useSyncMDTToInitiatives() {
+export function useSyncMDTToRequests() {
   const didSync = useRef(false);
   const queryClient = useQueryClient();
 
@@ -122,7 +122,7 @@ export function useSyncMDTToInitiatives() {
         }
 
         // 5. Invalidate queries
-        queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+        queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
         queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
 
         console.log(`[MDT Sync] Created ${newIssues.length} initiatives from MDT (guardrail: ${ALLOWED_ASSIGNEE_IDS.length} assignees)`);

@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase, typedQuery } from '@/integrations/supabase/client';
 import { Plus, Flag, Trash2, Check } from 'lucide-react';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -68,7 +68,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
       setNewDate('');
       setShowAdd(false);
       toast.success('Milestone added');
-      logInitiativeAudit({
+      logRequestAudit({
         request_id: requestId,
         action: 'milestone_added',
         entity_type: 'milestone',
@@ -97,7 +97,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
       }
       invalidate();
       toast.success(newStatus === 'completed' ? 'Milestone completed' : 'Milestone reopened');
-      logInitiativeAudit({
+      logRequestAudit({
         request_id: requestId,
         action: newStatus === 'completed' ? 'milestone_completed' : 'milestone_reopened',
         entity_type: 'milestone',
@@ -119,7 +119,7 @@ export function RequestMilestonesTab({ requestId }: RequestMilestonesTabProps) {
       if (error) throw error;
       invalidate();
       toast.success('Milestone removed');
-      logInitiativeAudit({
+      logRequestAudit({
         request_id: requestId,
         action: 'milestone_deleted',
         entity_type: 'milestone',

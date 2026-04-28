@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
-import { logInitiativeAudit } from '@/lib/initiativeAudit';
+import { logRequestAudit } from '@/lib/requestAudit';
 import { Plus, Wallet, ChevronDown } from 'lucide-react';
 
 interface RequestBudgetTabProps {
@@ -58,7 +58,7 @@ export function RequestBudgetTab({ requestId, budgetAllocated, onBudgetAllocated
     } as any);
     if (error) { catalystToast.error('Failed to add budget item'); return; }
     catalystToast.success('Budget item added');
-    logInitiativeAudit({
+    logRequestAudit({
       request_id: requestId,
       action: 'budget_item_added',
       entity_type: 'budget_item',
