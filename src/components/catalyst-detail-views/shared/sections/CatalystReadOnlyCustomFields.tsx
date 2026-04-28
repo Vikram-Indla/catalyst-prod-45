@@ -46,7 +46,7 @@ const EMPTY_STYLE: React.CSSProperties = {
 };
 
 /** Format an ISO date string as Jira's "DD MMM YYYY" (eg "23 Sep 2025"). */
-function formatJiraDate(iso: string | null | undefined): string | null {
+export function formatJiraDate(iso: string | null | undefined): string | null {
   if (!iso) return null;
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return null;
@@ -58,7 +58,7 @@ function formatJiraDate(iso: string | null | undefined): string | null {
  * options or null. Defensive against `string` (some legacy payloads
  * stringify single options) and against a single object.
  */
-function readMultiCheckboxValues(raw: unknown): string[] {
+export function readMultiCheckboxValues(raw: unknown): string[] {
   if (raw == null) return [];
   if (Array.isArray(raw)) {
     return raw
@@ -76,7 +76,7 @@ function readMultiCheckboxValues(raw: unknown): string[] {
 /** Approval-style lozenge appearance map. Mirrors EditableFields' tonal
  *  vocabulary (success / removed / inprogress) — kept inline here since
  *  this component is read-only and the mapping is a 1-pass switch. */
-function approvalAppearance(value: string): React.ComponentProps<typeof Lozenge>['appearance'] {
+export function approvalAppearance(value: string): React.ComponentProps<typeof Lozenge>['appearance'] {
   const v = value.toLowerCase().trim();
   if (v === 'yes') return 'success';
   if (v === 'no') return 'removed';
