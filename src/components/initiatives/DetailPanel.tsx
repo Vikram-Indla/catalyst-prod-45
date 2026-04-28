@@ -608,6 +608,19 @@ function CommentsSection({ initiativeId }: { initiativeId: string }) {
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
+      // ARCHITECTURAL DEFECT (parked 2026-04-28, see CLAUDE.md cycle 12):
+      // ph_comments has NO work_item_type column (Supabase types confirm
+      // columns are id / work_item_id / author_id / body / created_at /
+      // updated_at) — and ph_comments.work_item_id is FK'd to ph_issues.id,
+      // not ph_initiatives.id. So this insert (a) fails today with a
+      // PostgREST "Could not find the 'work_item_type' column" error and
+      // (b) even if work_item_type were dropped, the row would be an
+      // orphan since initiativeId is a ph_initiatives.id UUID, not a
+      // ph_issues.id UUID. Fixing this requires either a new
+      // ph_initiative_comments table or a discriminator column +
+      // broadened FK on ph_comments — both bigger than a 1-cycle change.
+      // DO NOT ship features that depend on initiatives comments
+      // rendering or persisting until this is resolved.
       await typedQuery('ph_comments').insert({ work_item_id: initiativeId, work_item_type: 'initiative', body: newComment.trim(), author_id: user?.id || null });
       queryClient.invalidateQueries({ queryKey: ['ph-comments', initiativeId] });
       setNewComment('');

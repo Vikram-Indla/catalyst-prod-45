@@ -1,10 +1,22 @@
 /**
  * useWorkItemActivity — Merged feed of comments (with reactions) + history
+ *
+ * Accepts either a UUID (ph_work_items.id or ph_issues.id) or an issue_key
+ * (catalyst-side, e.g. "BAU-5711"). Resolves issue_key → ph_issues.id once
+ * via a sibling useQuery so the downstream comment + activity-log queries
+ * can satisfy ph_comments.work_item_id / ph_activity_log.work_item_id which
+ * are both UUID columns. Without this resolver, passing an issue_key into
+ * these queries fails with Postgres 22P02 ("invalid input syntax for type
+ * uuid") and silently renders an empty Activity feed. See CLAUDE.md cycles
+ * 7, 8, 10 for the same pattern previously fixed in
+ * CatalystActivitySection, SummarizeCommentsDialog, and StoryDetailModal.
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface Reaction {
   emoji: string;
@@ -31,12 +43,38 @@ export interface ActivityEntry {
 
 export function useWorkItemActivity(workItemId: string | null) {
   const queryClient = useQueryClient();
-  const queryKey = ['ph-work-item-activity', workItemId];
+
+  // CRITICAL: resolver hook MUST be defined BEFORE any consumer hook below
+  // that references `resolvedWorkItemId` in its enabled / queryKey / queryFn.
+  // JavaScript const TDZ would otherwise throw "Cannot access
+  // 'resolvedWorkItemId' before initialization" on every render and the
+  // ErrorBoundary would swallow the whole panel — see CLAUDE.md cycle 10.
+  const { data: resolvedWorkItemId = null } = useQuery({
+    queryKey: ['ph-resolved-work-item-id', workItemId],
+    queryFn: async (): Promise<string | null> => {
+      if (!workItemId) return null;
+      // UUID-shape inputs (project-hub ph_work_items.id, or catalyst-native
+      // ph_issues.id already resolved upstream) pass through unchanged.
+      if (UUID_RE.test(workItemId)) return workItemId;
+      // Otherwise treat as a catalyst issue_key and look up the UUID.
+      const { data } = await supabase
+        .from('ph_issues')
+        .select('id')
+        .eq('issue_key', workItemId)
+        .maybeSingle();
+      return data?.id ?? null;
+    },
+    enabled: !!workItemId,
+    // Issue_key → UUID is effectively immutable; cache aggressively.
+    staleTime: 5 * 60_000,
+  });
+
+  const queryKey = ['ph-work-item-activity', resolvedWorkItemId];
 
   const { data: entries = [], isLoading } = useQuery({
     queryKey,
     queryFn: async (): Promise<ActivityEntry[]> => {
-      if (!workItemId) return [];
+      if (!resolvedWorkItemId) return [];
 
       const { data: { user } } = await supabase.auth.getUser();
       const myId = user?.id;
@@ -46,13 +84,13 @@ export function useWorkItemActivity(workItemId: string | null) {
         supabase
           .from('ph_comments')
           .select('id, author_id, body, created_at')
-          .eq('work_item_id', workItemId)
+          .eq('work_item_id', resolvedWorkItemId)
           .order('created_at', { ascending: false })
           .limit(50),
         supabase
           .from('ph_activity_log')
           .select('id, user_id, action, field_name, old_value, new_value, created_at')
-          .eq('work_item_id', workItemId)
+          .eq('work_item_id', resolvedWorkItemId)
           .order('created_at', { ascending: false })
           .limit(50),
         supabase
@@ -126,23 +164,24 @@ export function useWorkItemActivity(workItemId: string | null) {
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     },
-    enabled: !!workItemId,
+    enabled: !!resolvedWorkItemId,
   });
 
   // Add comment
   const addComment = useMutation({
     mutationFn: async (body: string) => {
+      if (!resolvedWorkItemId) throw new Error('Work item not resolved');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { error } = await supabase
         .from('ph_comments')
-        .insert({ work_item_id: workItemId!, author_id: user.id, body });
+        .insert({ work_item_id: resolvedWorkItemId, author_id: user.id, body });
       if (error) throw new Error(error.message);
 
       // Also log activity
       await supabase.from('ph_activity_log').insert({
-        work_item_id: workItemId!,
+        work_item_id: resolvedWorkItemId,
         user_id: user.id,
         action: 'commented',
         field_name: null,
