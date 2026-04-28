@@ -132,6 +132,9 @@ export interface KanbanColumnDef {
   name: string;
   statuses: string[];
   category: 'todo' | 'in_progress' | 'done';
+  /** WIP limit (max cards in column). When set, header renders `MAX: <n>`
+   * to mirror Jira's column-limit badge (e.g., MDT board 597). */
+  wipLimit?: number | null;
 }
 
 export const KANBAN_COLUMNS: KanbanColumnDef[] = [

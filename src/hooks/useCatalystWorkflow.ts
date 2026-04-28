@@ -24,6 +24,12 @@ export interface WorkflowStatus {
   position: number;
   is_initial: boolean;
   is_final: boolean;
+  /** WIP (work-in-progress) limit displayed as `MAX: <n>` on the column header.
+   * Mirrors Jira's column constraint surfaced on board 597. NULL = no limit. */
+  wip_limit: number | null;
+  /** Soft-deactivation flag. Inactive statuses do not render columns on the
+   * kanban; preserved so any historical initiative.status keeps mapping. */
+  is_active: boolean;
 }
 
 export interface WorkflowTransition {
@@ -66,6 +72,7 @@ export function useCatalystWorkflow(issueType: string) {
       const { data, error } = await typedQuery('catalyst_workflow_statuses')
         .select('*')
         .eq('scheme_id', schemeId)
+        .eq('is_active', true)
         .order('position', { ascending: true });
       if (error) throw error;
       return (data || []) as WorkflowStatus[];

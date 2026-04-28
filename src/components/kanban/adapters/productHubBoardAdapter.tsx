@@ -65,6 +65,7 @@ export function buildColumnsFromWorkflowStatuses(
       name: status.name.toUpperCase(),
       category: status.category,
       statuses: [status.slug],
+      wipLimit: status.wip_limit ?? null,
     }));
 }
 

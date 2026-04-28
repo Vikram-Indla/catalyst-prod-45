@@ -274,6 +274,27 @@ const PragmaticColumn = memo(function PragmaticColumn({
           color: tk.textMuted, fontFamily: 'var(--cp-font-body)',
           lineHeight: '16px', flex: 1,
         }}>{column.name}</span>
+        {/* MAX badge — Jira board 597 surfaces column WIP via `MAX: <n>`. */}
+        {column.wipLimit != null && (
+          <span
+            data-testid={`kanban-column-wip-${column.id}`}
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              color: issueIds.length > column.wipLimit ? '#AE2A19' : tk.textMuted,
+              fontFamily: 'var(--cp-font-body)',
+              lineHeight: '16px',
+              padding: '0 6px',
+              borderRadius: 3,
+              background: issueIds.length > column.wipLimit ? '#FFEBE6' : 'transparent',
+              border: `1px solid ${issueIds.length > column.wipLimit ? '#AE2A19' : tk.borderSubtle}`,
+              letterSpacing: 0.2,
+            }}
+            aria-label={`Work-in-progress limit ${column.wipLimit}`}
+          >
+            MAX: {column.wipLimit}
+          </span>
+        )}
         <span style={{
           fontSize: 12, fontWeight: 500, color: tk.textPrimary,
           fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
