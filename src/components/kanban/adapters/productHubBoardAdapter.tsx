@@ -376,6 +376,12 @@ export interface BuildProductHubAdapterArgs {
 
   /* ── Interactions ── */
   onCardClick?: (initiativeId: string) => void;
+  /**
+   * Per-column "+ Create" — host opens its create flow with the
+   * destination status pre-filled. Forwarded straight to
+   * `BoardInteractions.onCreateInColumn`.
+   */
+  onCreateInColumn?: (colId: string) => void;
 }
 
 export function buildProductHubBoardAdapter(
@@ -388,7 +394,7 @@ export function buildProductHubBoardAdapter(
     filterSelected, onFilterChange, onClearFilters,
     groupBy, onGroupByChange,
     onStatusChange, onToggleFavorite,
-    onCardClick,
+    onCardClick, onCreateInColumn,
   } = args;
 
   /* ── Workflow-derived structures. ── */
@@ -445,6 +451,8 @@ export function buildProductHubBoardAdapter(
 
   const interactions: BoardInteractions = {
     onCardClick,
+    onCreateInColumn,
+    createInColumnLabel: 'Create initiative',
   };
 
   return {

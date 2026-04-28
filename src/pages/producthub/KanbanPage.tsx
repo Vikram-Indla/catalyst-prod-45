@@ -195,11 +195,12 @@ export default function ProductHubKanbanPage() {
     onStatusChange,
     onToggleFavorite,
     onCardClick,
+    onCreateInColumn,
   }), [
     initiatives, avatarsByName, workflowStatuses,
     search, selAssignees, filterSelected, groupBy,
     onFilterChange, onClearFilters,
-    onStatusChange, onToggleFavorite, onCardClick,
+    onStatusChange, onToggleFavorite, onCardClick, onCreateInColumn,
   ]);
 
   if (isLoading || workflowLoading) {
