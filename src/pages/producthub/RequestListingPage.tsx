@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { useMDTBacklog } from '@/hooks/useMDTBacklog';
-import type { BRDTask } from '@/hooks/useMDTBacklog';
+import { useRequestsBacklog } from '@/hooks/useRequestsBacklog';
+import type { BRDTask } from '@/hooks/useRequestsBacklog';
 import { useSyncMDTToInitiatives } from '@/hooks/useSyncMDTToInitiatives';
 import { useProfileOptions, useDepartmentOptions } from '@/hooks/useRequestLookups';
 import { useProfileAvatarsByName } from '@/hooks/useProfileAvatars';
@@ -157,14 +157,14 @@ function getGroupSortKey(item: Request, groupBy: GroupByField): string {
 
 export default function RequestListingPage() {
   useSyncMDTToInitiatives();
-  const { data: mdtData, isLoading } = useMDTBacklog();
+  const { data: mdtData, isLoading } = useRequestsBacklog();
   const { data: profiles } = useProfileOptions();
   const { data: departments } = useDepartmentOptions();
   const avatarsByName = useProfileAvatarsByName();
   const queryClient = useQueryClient();
 
   const invalidateAll = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+    queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     queryClient.invalidateQueries({ queryKey: ['backlog-requests'] });
     queryClient.invalidateQueries({ queryKey: ['roadmap-requests'] });
   }, [queryClient]);
