@@ -91,7 +91,18 @@ function Empty({ text = 'None' }: { text?: string }) {
 
 /* ═══════════════════════════════════════════════════════════
    CatalystDefectKeyRows — goes into CatalystKeyDetails.extraRows
-   ═══════════════════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════
+
+   Apr 28, 2026 (jira-compare cycle 2 — Phase B B5):
+     • Reordered to Jira-parity: Severity → (Priority injected via
+       priorityRow) → Found in → Fix in → Root cause → Resolution.
+     • Empty Catalyst-only fields (Found in / Fix in / Root cause /
+       Resolution) now render NOTHING instead of the "None"
+       placeholder — matches Jira's hide-empty default. Severity
+       still always renders (treated as a required field). The old
+       behaviour leaked four "None" rows on every defect that
+       wasn't fully populated, which dominated the panel chrome.
+*/
 
 export function CatalystDefectKeyRows({
   issue,
@@ -99,10 +110,20 @@ export function CatalystDefectKeyRows({
   foundInBuild,
   rootCause,
   assessmentFeature,
+  priorityRow,
 }: Pick<
   CatalystDefectFieldsProps,
   'issue' | 'severity' | 'foundInBuild' | 'rootCause' | 'assessmentFeature'
->) {
+> & {
+  /**
+   * Optional Priority row injected between Severity and the rest.
+   * Defect view passes this so order matches Jira's
+   * Parent → Severity → Priority instead of the legacy
+   * Parent → Priority → Severity layout that
+   * `CatalystKeyDetails.showPriority` defaults to.
+   */
+  priorityRow?: React.ReactNode;
+}) {
   // Normalize fix_versions — stored as Json, may be null or malformed.
   const fixVersions: Array<{ name: string }> = Array.isArray(issue?.fix_versions)
     ? ((issue as any).fix_versions as any[]).filter(
@@ -115,8 +136,17 @@ export function CatalystDefectKeyRows({
     ? ((issue as { resolution?: string }).resolution?.trim() || null)
     : null;
 
+  const hasFoundIn = !!foundInBuild && foundInBuild.trim().length > 0;
+  const hasFixIn = fixVersions.length > 0;
+  const hasRootCause = !!rootCause && rootCause.trim().length > 0;
+  const hasResolution = !!resolution;
+  const hasAssessment = !!assessmentFeature && assessmentFeature.trim().length > 0;
+
   return (
     <>
+      {/* Severity always renders — Jira treats this as a required
+          field even when empty (the "None" placeholder is
+          intentional). */}
       <KeyDetailsFieldRow label="Severity" alignBlock="center">
         {severity ? (
           <Lozenge appearance={severityAppearance(severity)}>
@@ -127,51 +157,44 @@ export function CatalystDefectKeyRows({
         )}
       </KeyDetailsFieldRow>
 
-      {assessmentFeature !== undefined && (
+      {/* Priority row (injected by consumer) — placed after Severity
+          to match Jira's Parent → Severity → Priority field order. */}
+      {priorityRow}
+
+      {/* Catalyst-specific fields — render only when populated. */}
+      {hasAssessment && (
         <KeyDetailsFieldRow label="Assessment" alignBlock="center">
-          {assessmentFeature ? (
-            <Lozenge appearance="default">{assessmentFeature}</Lozenge>
-          ) : (
-            <Empty />
-          )}
+          <Lozenge appearance="default">{assessmentFeature}</Lozenge>
         </KeyDetailsFieldRow>
       )}
 
-      <KeyDetailsFieldRow label="Found in" alignBlock="center">
-        {foundInBuild ? (
+      {hasFoundIn && (
+        <KeyDetailsFieldRow label="Found in" alignBlock="center">
           <Lozenge appearance="default">{foundInBuild}</Lozenge>
-        ) : (
-          <Empty />
-        )}
-      </KeyDetailsFieldRow>
+        </KeyDetailsFieldRow>
+      )}
 
-      <KeyDetailsFieldRow label="Fix in" alignBlock="center">
-        {fixVersions.length > 0 ? (
+      {hasFixIn && (
+        <KeyDetailsFieldRow label="Fix in" alignBlock="center">
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {fixVersions.map((v, i) => (
               <Lozenge key={i} appearance="default">{v.name}</Lozenge>
             ))}
           </div>
-        ) : (
-          <Empty />
-        )}
-      </KeyDetailsFieldRow>
+        </KeyDetailsFieldRow>
+      )}
 
-      <KeyDetailsFieldRow label="Root cause" alignBlock="center">
-        {rootCause ? (
+      {hasRootCause && (
+        <KeyDetailsFieldRow label="Root cause" alignBlock="center">
           <span style={{ fontSize: 14, color: '#292A2E' }}>{rootCause}</span>
-        ) : (
-          <Empty />
-        )}
-      </KeyDetailsFieldRow>
+        </KeyDetailsFieldRow>
+      )}
 
-      <KeyDetailsFieldRow label="Resolution" alignBlock="center">
-        {resolution ? (
+      {hasResolution && (
+        <KeyDetailsFieldRow label="Resolution" alignBlock="center">
           <Lozenge appearance="success">{resolution}</Lozenge>
-        ) : (
-          <Empty />
-        )}
-      </KeyDetailsFieldRow>
+        </KeyDetailsFieldRow>
+      )}
     </>
   );
 }

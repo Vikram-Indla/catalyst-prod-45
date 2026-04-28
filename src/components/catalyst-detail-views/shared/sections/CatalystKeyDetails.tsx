@@ -69,6 +69,12 @@ interface CatalystKeyDetailsProps {
   /** If false, the Parent row is not rendered (for types that use
    *  ParentAndLabels at a higher level, like Epic). Default true. */
   showParent?: boolean;
+  /** If false, Priority is NOT rendered by core — the consumer must
+   *  inject a Priority row inside `extraRows` to control its position
+   *  (Jira-parity for defects: Parent → Severity → Priority instead of
+   *  Parent → Priority → Severity). Default true (legacy behaviour).
+   *  Added 2026-04-28 (jira-compare cycle 2 — Phase B B5). */
+  showPriority?: boolean;
   /** Start collapsed (default: false). */
   defaultCollapsed?: boolean;
   /** Type-specific extra rows. Rendered after Parent + Priority inside
@@ -82,6 +88,7 @@ interface CatalystKeyDetailsProps {
 export function CatalystKeyDetails({
   issue, itemId, itemType, projectKey, onOpenItem,
   showParent = true,
+  showPriority = true,
   defaultCollapsed = false,
   extraRows,
 }: CatalystKeyDetailsProps) {
@@ -134,15 +141,17 @@ export function CatalystKeyDetails({
             </FieldRow>
           )}
 
-          <FieldRow label="Priority" alignBlock="center">
-            {issue && (
-              <EditablePriority
-                issueId={issue.id}
-                currentPriority={issue.priority}
-                onUpdate={invalidateIssue}
-              />
-            )}
-          </FieldRow>
+          {showPriority && (
+            <FieldRow label="Priority" alignBlock="center">
+              {issue && (
+                <EditablePriority
+                  issueId={issue.id}
+                  currentPriority={issue.priority}
+                  onUpdate={invalidateIssue}
+                />
+              )}
+            </FieldRow>
+          )}
 
           {/* Type-specific rows — defect / incident / etc. slot in here
               so they pick up the canonical FieldRow typography and the
