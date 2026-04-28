@@ -100,7 +100,13 @@
 }
 
 /* ── DARK MODE — NOCTURNE Geist (canonical Apr 2026) ── */
-[data-theme="dark"] {
+/* Phase 11 (2026-04-29): switched the dark selector from [data-theme="dark"]
+   to .dark. Atlaskit's tokens runtime owns data-theme — it writes a
+   space-separated token list ("dark:dark light:light spacing:spacing ...")
+   that its own [data-theme~="dark:dark"] selectors need. Catalyst's
+   ThemeProvider also sets <html class="dark">, which Atlaskit never
+   touches, so we use that as our flip signal. Both layers coexist. */
+.dark, [data-theme="dark"] {
   /* Surfaces — ONE SURFACE MODEL. No luminance zones. */
   --cp-bg:              #0A0A0A;
   --cp-bg-canvas:       #0A0A0A;

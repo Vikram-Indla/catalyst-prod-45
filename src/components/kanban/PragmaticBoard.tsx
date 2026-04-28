@@ -37,7 +37,7 @@ import { draggable, dropTargetForElements, monitorForElements } from '@atlaskit/
 import { attachClosestEdge, extractClosestEdge, type Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { DropIndicator } from '@atlaskit/pragmatic-drag-and-drop-react-drop-indicator/box';
-import { MoreHorizontal, Inbox } from 'lucide-react';
+import { MoreHorizontal, Inbox, Plus } from 'lucide-react';
 import { WorkItemCard } from './WorkItemCard';
 import type { BoardIssue } from './kanban-types';
 import type { KanbanThemeTokens, DensityConfig, KanbanColumnDef } from './kanban-tokens';
@@ -64,6 +64,16 @@ interface CardActions {
   onMoved?: (issueId: string, newProjectKey: string) => void;
   onLinked?: () => void;
   visibleFields?: VisibleFields;
+  /**
+   * Per-column inline create — Jira-parity affordance. Renders a
+   * "+ Create issue" button at the bottom of every column (subtle,
+   * uses textMuted color, full column width). Click hands the column id
+   * to the host so it can open a typed create flow with the destination
+   * status pre-filled. Optional — column omits the button when not set.
+   */
+  onCreateInColumn?: (colId: string) => void;
+  /** Label for the per-column create button. Default: "+ Create issue". */
+  createInColumnLabel?: string;
   /**
    * Optional hub-specific icon resolver — forwarded to WorkItemCard. Hubs
    * whose type taxonomy diverges from Jira (ProductHub initiatives,
@@ -510,6 +520,49 @@ const PragmaticColumn = memo(function PragmaticColumn({
             />
           );
         })}
+        {/*
+          Per-column create — Jira-parity "+ Create issue" affordance,
+          rendered at the bottom of every column. Subtle by default;
+          becomes more prominent on hover. Hidden if no `onCreateInColumn`
+          handler is wired by the host. Click forwards the column id to
+          the host so it can open a typed create flow with the
+          destination status pre-filled.
+        */}
+        {actions.onCreateInColumn && (
+          <button
+            type="button"
+            data-testid={`kanban-column-create-${column.id}`}
+            onClick={() => actions.onCreateInColumn?.(column.id)}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              gap: 6,
+              padding: '6px 8px',
+              border: 'none',
+              background: 'transparent',
+              color: tk.textMuted,
+              fontSize: 12,
+              fontWeight: 500,
+              fontFamily: 'var(--cp-font-body)',
+              borderRadius: 4,
+              cursor: 'pointer',
+              transition: 'background 120ms ease, color 120ms ease',
+              marginTop: issueIds.length === 0 ? 0 : 4,
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = tk.surfaceHover ?? 'rgba(0,0,0,0.04)';
+              (e.currentTarget as HTMLButtonElement).style.color = tk.textPrimary;
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+              (e.currentTarget as HTMLButtonElement).style.color = tk.textMuted;
+            }}
+          >
+            <Plus size={14} />
+            <span>{actions.createInColumnLabel ?? 'Create issue'}</span>
+          </button>
+        )}
       </div>
     </div>
   );

@@ -3354,7 +3354,9 @@ input[type="range"]::-moz-range-thumb {
   box-shadow: none;
 }
 
-[data-theme="dark"] {
+/* Phase 11 (2026-04-29): see theme-tokens.css comment — Atlaskit owns
+   data-theme, Catalyst keys off .dark class. */
+.dark, [data-theme="dark"] {
   --bg-0: #0A0A0A;
   --bg-1: #0A0A0A;
   --bg-2: #1A1A1A;

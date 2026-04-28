@@ -188,6 +188,18 @@ export interface BoardInteractions {
   onCopyLink?: (cardId: string) => void;
   /** Copy issue key to clipboard (⋯ menu). */
   onCopyKey?: (cardId: string) => void;
+  /**
+   * Per-column "+ Create" — Jira-parity affordance. Host opens its
+   * typed create flow with the destination status (slug) pre-filled.
+   * Optional; omitted columns simply hide the button.
+   */
+  onCreateInColumn?: (colId: string) => void;
+  /**
+   * Custom label for the per-column create button. Defaults to
+   * "Create issue" when unset. Hubs override per their entity name
+   * ("Create initiative", "Create idea", etc.).
+   */
+  createInColumnLabel?: string;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════

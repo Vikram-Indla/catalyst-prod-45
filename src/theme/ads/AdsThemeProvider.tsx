@@ -72,42 +72,41 @@ export function AdsThemeProvider({ children }: AdsThemeProviderProps) {
     // are done and we can take the attribute back. Verified live: --cp-bg
     // flips to #0A0A0A, sidebar/header/main all turn dark, Atlaskit
     // components keep their --ds-* tokens.
-    // Phase 10 (2026-04-29) RCA fix: pass `light: 'light', dark: 'dark'`
-    // theme IDs explicitly. Without these, Atlaskit's tokens runtime never
-    // loads its bundled dark-theme CSS file — `--ds-text` / `--ds-surface` /
-    // every `--ds-*` token stays unset, and `token('color.x')` consumers
-    // (Atlaskit's own <Heading>, <Lozenge>, <Button>, etc., plus every
-    // direct call site) fall back to the inline hex fallback in BOTH modes.
-    // This is why heading text on AI Focus theme cards stayed dark-blue
-    // on dark for 9 phases of patching: the wrapper-level color-pin trick
-    // was inheritance-only and got overridden by Atlaskit's xcss class on
-    // the rendered element. Loading the dark theme CSS makes Atlaskit
-    // tokens flip natively — no wrapper hacks needed.
+    // Phase 11 (2026-04-29) — TRUE RCA. Earlier "fixes" were wrong.
+    //
+    // What I previously thought:
+    //   "Atlaskit's setGlobalTheme writes a parameterised data-theme string
+    //    that clobbers Catalyst's clean value, so I restore it after."
+    //
+    // What's actually true:
+    //   Atlaskit's bundled dark-theme CSS rules use the `~=` (token-list-contains)
+    //   attribute selector. Their generated selectors look like:
+    //     html[data-color-mode="dark"][data-theme~="dark:dark"]
+    //     [data-subtree-theme][data-color-mode="dark"][data-theme~="dark:dark"]
+    //   These ONLY match when `data-theme` is a SPACE-SEPARATED LIST that
+    //   contains `dark:dark` as one of its tokens. The "weird" string
+    //   `"dark:dark light:light spacing:spacing typography:typography"` is
+    //   exactly the contract Atlaskit needs.
+    //
+    //   When I "restored" data-theme to the clean value `"dark"`, Atlaskit's
+    //   selector `[data-theme~="dark:dark"]` stopped matching. Result: 460
+    //   --ds-* CSS rules existed in stylesheets but applied to no element.
+    //   --ds-text resolved to "unset" everywhere, every Atlaskit @compiled
+    //   class painted its static fallback hex (#292A2E light) onto every
+    //   <Heading>, regardless of the colorMode attribute.
+    //
+    // The real fix:
+    //   Let Atlaskit own `data-theme`. Catalyst CSS keys off the `.dark`
+    //   class (set by ThemeProvider — Atlaskit never touches it). Both
+    //   layers coexist on the same <html> without stepping on each other.
     void setGlobalTheme({
       colorMode: mode,
       light: 'light',
       dark: 'dark',
       spacing: 'spacing',
       typography: 'typography',
-      // `customColors` is a v12-era key that v13 silently drops (CLAUDE.md
-      // Phase 2 lesson). Kept for now in case future Atlaskit versions
-      // reinstate the override path — the cast bypasses TypeScript's
-      // refusal of the unknown key.
       customColors: atlaskitCustomColors(mode) as unknown as Record<string, string>,
-    } as Parameters<typeof setGlobalTheme>[0])
-      .then(() => {
-        if (typeof document !== 'undefined') {
-          document.documentElement.setAttribute('data-theme', mode);
-        }
-      })
-      .catch(() => {
-        // Even if setGlobalTheme rejects, the attribute may already be
-        // mangled — restore it anyway so CSS doesn't end up in a broken
-        // intermediate state.
-        if (typeof document !== 'undefined') {
-          document.documentElement.setAttribute('data-theme', mode);
-        }
-      });
+    } as Parameters<typeof setGlobalTheme>[0]);
   }, [isDark]);
 
   return <>{children}</>;

@@ -249,6 +249,8 @@ export function KanbanBoardShell<THubRow = unknown>({
             : undefined}
           onCopyLink={adapter.interactions?.onCopyLink}
           onCopyKey={adapter.interactions?.onCopyKey}
+          onCreateInColumn={adapter.interactions?.onCreateInColumn}
+          createInColumnLabel={adapter.interactions?.createInColumnLabel}
           onChangeStatus={adapter.persistence.onStatusChange
             ? (id, s) => adapter.persistence.onStatusChange!(id, s)
             : undefined}
