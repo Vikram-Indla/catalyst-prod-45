@@ -1,0 +1,112 @@
+diff --git a/src/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails.tsx b/src/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails.tsx
+index 610d34aaf..7a3da3179 100644
+--- a/src/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails.tsx
++++ b/src/components/catalyst-detail-views/shared/sections/CatalystSidebarDetails.tsx
+@@ -74,6 +74,42 @@ import { EditableAssignee, EditableLabels, EditableFixVersions } from '@/modules
+ import { EpicDueDateField } from '@/components/project/EpicDueDateField';
+ import { CatalystMdtRefField } from './CatalystMdtRefField';
+ import { CatalystAssessmentFeatureField } from './CatalystAssessmentFeatureField';
++import {
++  CatalystServiceNowDisplay,
++  CatalystIRDemoDateDisplay,
++  CatalystIRFigmaApprovedDisplay,
++  CatalystIRDemoApprovedDisplay,
++  CatalystActualStartDisplay,
++  CatalystActualEndDisplay,
++} from './CatalystReadOnlyCustomFields';
++
++/**
++ * Normalize a ph_issues.issue_type string to a canonical bucket.
++ * Mirrors resolveItemType() in CatalystDetailRouter.tsx — kept inline
++ * to avoid pulling in the router (which lazy-imports every CatalystView*).
++ *
++ * Source of truth for the BAU-project mappings:
++ *   defect   ← bug | defect | qa bug
++ *   incident ← *incident* | production incident | business gap
++ *   task     ← task
++ *   feature  ← feature | new feature
++ *   epic     ← epic
++ */
++function normalizeIssueTypeBucket(raw: string | undefined | null):
++  | 'epic' | 'feature' | 'defect' | 'incident' | 'task'
++  | 'story' | 'subtask' | 'business_request' | null {
++  if (!raw) return null;
++  const t = raw.toLowerCase().trim();
++  if (t === 'epic') return 'epic';
++  if (t === 'feature' || t === 'new feature') return 'feature';
++  if (t === 'bug' || t === 'defect' || t === 'qa bug') return 'defect';
++  if (t.includes('incident') || t === 'production incident' || t === 'business gap') return 'incident';
++  if (t === 'task') return 'task';
++  if (t === 'business request' || t === 'business_request' || t === 'demand') return 'business_request';
++  if (t === 'sub-task' || t === 'subtask' || t === 'backend' || t === 'frontend' || t === 'figma' || t === 'entity figma' || t === 'integration') return 'subtask';
++  if (t === 'story' || t === 'improvement') return 'story';
++  return null;
++}
+ import { toast } from 'sonner';
+ import {
+   STATUS_OPTION_GROUPS,
+@@ -339,6 +375,21 @@ export function CatalystSidebarDetails({
+                   }}
+                 />
+               </FieldRow>
++
++              {/* ── Actual start (Epic) ──── jira-compare night session
++                  (2026-04-28). Read-only surface of customfield_10109
++                  ("Actual start - تاريخ البداية الفعلية"). Edit waits on
++                  Lovable migration adding ph_issues.actual_start. */}
++              <FieldRow label="Actual start">
++                <CatalystActualStartDisplay issue={issue} />
++              </FieldRow>
++
++              {/* ── Actual end (Epic) ──── customfield_10108
++                  ("Actual end - تاريخ النهاية الفعلية"). */}
++              <FieldRow label="Actual end">
++                <CatalystActualEndDisplay issue={issue} />
++              </FieldRow>
++
+               <div style={{ borderTop: '1px solid #DCDFE4', margin: '4px 0' }} />
+             </>
+           )}
+@@ -424,6 +475,42 @@ export function CatalystSidebarDetails({
+             <CatalystAssessmentFeatureField issue={issue} onUpdate={invalidateIssue} />
+           </FieldRow>
+ 
++          {/* ── Service Now# (Defect / Incident / Task) ──── jira-compare
++              night session (2026-04-28). Read-only surface of
++              customfield_10050. Edit affordance deferred until Lovable
++              lands a typed `service_now_ref` column on ph_issues. */}
++          {(() => {
++            const bucket = normalizeIssueTypeBucket(issue?.issue_type);
++            if (bucket === 'defect' || bucket === 'incident' || bucket === 'task') {
++              return (
++                <FieldRow label="Service Now#">
++                  <CatalystServiceNowDisplay issue={issue} />
++                </FieldRow>
++              );
++            }
++            return null;
++          })()}
++
++          {/* ── Feature IR fields ──── jira-compare night session
++              (2026-04-28). Read-only surfaces of:
++                customfield_10489  IR Demo Date        (date)
++                customfield_10492  IR Figma Approved   (multi-checkbox)
++                customfield_10493  IR Demo Approved    (multi-checkbox)
++              Edit affordance deferred until Lovable lands typed columns. */}
++          {normalizeIssueTypeBucket(issue?.issue_type) === 'feature' && (
++            <>
++              <FieldRow label="IR Demo Date">
++                <CatalystIRDemoDateDisplay issue={issue} />
++              </FieldRow>
++              <FieldRow label="IR Figma Approved" labelTopPad>
++                <CatalystIRFigmaApprovedDisplay issue={issue} />
++              </FieldRow>
++              <FieldRow label="IR Demo Approved" labelTopPad>
++                <CatalystIRDemoApprovedDisplay issue={issue} />
++              </FieldRow>
++            </>
++          )}
++
+           {/* ── TYPE-SPECIFIC FIELDS (children slot) ──
+               Jira parity: custom fields (MDT Ref, parent picker for legacy
+               code paths, etc.) render after Labels. Each CatalystView* owns

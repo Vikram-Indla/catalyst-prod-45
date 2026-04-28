@@ -1497,7 +1497,7 @@ export default function StoryDetailModal({
                                    const descCol = workItemSource === 'catalyst' ? 'description_adf_raw' : 'description_adf';
                                    supabase.from(issueTable).update({ [descCol]: parsed } as any).eq('issue_key', itemId).then(() => {
                                     queryClient.invalidateQueries({ queryKey: ['ph-issue-detail', itemId] });
-                                    queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v2'] });
+                                    queryClient.invalidateQueries({ queryKey: ['project-all-work-items-v3'] });
                                     queryClient.invalidateQueries({ queryKey: ['allwork-items'] });
                                     queryClient.invalidateQueries({ queryKey: ['ph_issues'] });
                                     toast.success('Description saved');
