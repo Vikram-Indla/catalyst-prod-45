@@ -84,9 +84,11 @@ export function StatusTransitionDropdown({
   if (!workflow || !currentState) {
     // Fallback lozenge if the issue type is unmapped
     return (
-      <Lozenge appearance="default" isBold>
-        {currentStateId || 'Unknown'}
-      </Lozenge>
+<span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+        <Lozenge appearance="default" isBold>
+          {currentStateId || 'Unknown'}
+        </Lozenge>
+      </span>
     );
   }
 
@@ -149,9 +151,11 @@ export function StatusTransitionDropdown({
                 >
                   <span style={{ color: '#44546F' }}>{tr.verb}</span>
                   <span aria-hidden="true" style={{ color: '#8590A2' }}>→</span>
-                  <Lozenge appearance={APPEARANCE_MAP[target.category]} isBold>
-                    {target.name}
-                  </Lozenge>
+                  <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+                    <Lozenge appearance={APPEARANCE_MAP[target.category]} isBold>
+                      {target.name}
+                    </Lozenge>
+                  </span>
                 </div>
               </DropdownItem>
             );

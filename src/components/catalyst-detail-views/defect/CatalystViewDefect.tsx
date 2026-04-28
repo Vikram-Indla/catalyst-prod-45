@@ -81,8 +81,10 @@ export default function CatalystViewDefect({
         extraRows={
           <CatalystDefectKeyRows
             issue={issue ?? null}
-            // Pull custom fields from raw_json (ph_issues schema lacks severity / assessment_feature
-            // columns; wh-jira-sync is parked. Reading raw_json is the lowest-friction parity fix.)
+            // Severity now reads ph_issues.severity directly via
+            // CatalystSeverityField (jira-compare Round 4, 2026-04-28).
+            // raw_json fallback is preserved inside the component itself
+            // for the transition window before the migration is applied.
             severity={
               (issue as any)?.severity
                 ?? (issue as any)?.raw_json?.fields?.customfield_10125?.value
@@ -90,6 +92,9 @@ export default function CatalystViewDefect({
             }
             foundInBuild={(issue as any)?.found_in_build ?? null}
             rootCause={(issue as any)?.root_cause ?? null}
+            onUpdate={() =>
+              queryClient.invalidateQueries({ queryKey: ['cv-issue-detail', itemId] })
+            }
             priorityRow={
               <KeyDetailsFieldRow label="Priority" alignBlock="center">
                 {issue && (

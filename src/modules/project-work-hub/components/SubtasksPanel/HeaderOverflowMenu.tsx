@@ -45,17 +45,25 @@ export function HeaderOverflowMenu({
   return (
     <DropdownMenu
       placement="bottom-end"
-      trigger={({ triggerRef, ...triggerProps }) => (
+      trigger={({ triggerRef, ...triggerProps }) => {
+        /* jira-compare S-64 (2026-04-28): Atlaskit DropdownMenu spreads
+           camelCase props (isSelected, testId) onto the trigger. When
+           the trigger is a native <button> React warns. Strip the
+           Atlaskit-only props before passing through. */
+        const { isSelected: _isSelected, testId: _testId, ...nativeProps } = triggerProps as any;
+        return (
         <button
-          {...triggerProps}
+          {...nativeProps}
           ref={triggerRef as React.Ref<HTMLButtonElement>}
           type="button"
           className="sp-icon-btn"
           aria-label="Subtasks actions"
+          data-testid={_testId}
         >
           <MoreHorizontal size={16} />
         </button>
-      )}
+        );
+      }}
     >
       <DropdownItemCheckboxGroup id="sp-hide-done" title="">
         <DropdownItemCheckbox

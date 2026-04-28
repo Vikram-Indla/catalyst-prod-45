@@ -495,16 +495,30 @@ function renderMenuItem(
           (reveals on row hover), so not crossfading this one doesn't produce
           a visible pop. */}
       {expanded && !isFooter && (
-        <button
+        /* jira-compare S-63 (2026-04-28): nested <button> inside the
+           sidebar row's outer <button> violates HTML semantics. Use a
+           span with role="button" + tabIndex so a11y stays intact. */
+        <span
+          role="button"
+          tabIndex={0}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            // Per-item override (HomeSidebar "Pinned") takes precedence
-            // over the built-in path-based favorites toggle.
             if (item.onStarClick) {
               item.onStarClick();
             } else {
               toggleFavorite(item.path);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              e.stopPropagation();
+              if (item.onStarClick) {
+                item.onStarClick();
+              } else {
+                toggleFavorite(item.path);
+              }
             }
           }}
           className={cn(
@@ -528,7 +542,7 @@ function renderMenuItem(
           }}
         >
           <Star size={14} fill={starred ? "currentColor" : "none"} />
-        </button>
+        </span>
       )}
       {/* Text Badge (AI, NEW, BETA, etc.) */}
       {item.textBadge && (

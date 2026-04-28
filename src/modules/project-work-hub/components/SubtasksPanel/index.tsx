@@ -218,7 +218,7 @@ function fixVersionNames(raw: unknown): string[] {
 
 function FixVersionsCell({ value }: { value: unknown }) {
   const names = fixVersionNames(value);
-  if (names.length === 0) return <span className="sp-fixv-empty">—</span>;
+  if (names.length === 0) return <span className="sp-fixv-empty" aria-label="No fix versions"></span>;
   return (
     <div className="sp-fixv-cell" title={names.join(', ')}>
       {names.slice(0, 2).map((n) => (
@@ -702,7 +702,7 @@ export function SubtasksPanel({
           >
             {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
-          <span className="sp-title">{effectiveTitle}</span>
+          <h2 className="sp-title" style={{margin:0,fontSize:"inherit",fontWeight:"inherit",fontFamily:"inherit",color:"inherit",letterSpacing:"inherit"}}>{effectiveTitle}</h2>
           {totalCount > 0 && (
             <span className="sp-title-count">{doneCount}/{totalCount}</span>
           )}

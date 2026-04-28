@@ -192,8 +192,8 @@ const CONFIGS: Record<string, JiraTypeConfig> = {
   },
 
   // ── Backend / Frontend / Integration / Figma: uses subtask ──
-  backend: { label: 'Backend', color: '#2684FF', iconFile: 'subtask' },
-  frontend: { label: 'Frontend', color: '#2684FF', iconFile: 'subtask' },
+  backend: { label: 'Backend', color: '#5243AA', iconFile: 'backend' },
+  frontend: { label: 'Frontend', color: '#00B8D9', iconFile: 'frontend' },
   integration: { label: 'Integration', color: '#2684FF', iconFile: 'subtask' },
   figma: { label: 'Figma', color: '#2684FF', iconFile: 'subtask' },
   'entity figma': { label: 'Entity FIGMA', color: '#2684FF', iconFile: 'subtask' },
@@ -319,6 +319,24 @@ interface JiraIssueTypeIconProps {
  * Atlassian UI.
  */
 const INLINE_SVGS: Record<string, (size: number) => React.ReactNode> = {
+  /* jira-compare ST-7 (2026-04-28): Frontend / Backend differentiated.
+   * Frontend = monitor (cyan), Backend = server stack (indigo). */
+  frontend: (size) => (
+    <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Frontend">
+      <rect width="16" height="16" rx="2" fill="#00B8D9" />
+      <rect x="3" y="4" width="10" height="6" rx="0.5" fill="none" stroke="#FFFFFF" strokeWidth="1.2" />
+      <rect x="6.5" y="11" width="3" height="1.6" fill="#FFFFFF" />
+      <rect x="5" y="12.6" width="6" height="0.8" fill="#FFFFFF" />
+    </svg>
+  ),
+  backend: (size) => (
+    <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Backend">
+      <rect width="16" height="16" rx="2" fill="#5243AA" />
+      <ellipse cx="8" cy="4.5" rx="3.5" ry="1.4" fill="none" stroke="#FFFFFF" strokeWidth="1.1" />
+      <path d="M4.5 4.5v3c0 .77 1.57 1.4 3.5 1.4s3.5-.63 3.5-1.4v-3" fill="none" stroke="#FFFFFF" strokeWidth="1.1" />
+      <path d="M4.5 7.5v3c0 .77 1.57 1.4 3.5 1.4s3.5-.63 3.5-1.4v-3" fill="none" stroke="#FFFFFF" strokeWidth="1.1" />
+    </svg>
+  ),
   epic: (size) => (
     <svg width={size} height={size} viewBox="0 0 16 16" role="img" aria-label="Epic">
       <rect width="16" height="16" rx="2" fill="#904EE2" />

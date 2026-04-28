@@ -99,8 +99,13 @@ export default function AtlaskitRenderer({
     [nodeComponents],
   );
 
+  /* jira-compare S-66 (2026-04-28): set dir="auto" so browsers detect
+     Arabic blocks and render them RTL. Atlaskit Renderer doesn't do this
+     itself; without dir="auto" Arabic text in BAU's bilingual descriptions
+     reads LTR (broken word order). */
   return (
     <div
+      dir="auto"
       className="atlaskit-renderer-wrapper"
       style={maxHeight ? { maxHeight, overflowY: 'auto' } : undefined}
     >

@@ -22,10 +22,22 @@ interface CatalystFooterMetaProps {
   issue: PhIssue | null;
 }
 
-function formatTimestamp(iso: string | null | undefined): string {
+/* jira-compare S-61 (2026-04-28): Jira renders the absolute form as
+ * "April 16, 2026 at 6:51 PM" (full month name + time). Updated stays
+ * relative ("5 hours ago") — that's what live Jira does in modern UI.
+ */
+function formatAbsolute(iso: string): string {
+  const d = new Date(iso);
+  const datePart = d.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+  const timePart = d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  return `${datePart} at ${timePart}`;
+}
+
+function formatTimestamp(iso: string | null | undefined, mode: 'absolute' | 'auto' = 'auto'): string {
   if (!iso) return '—';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '—';
+  if (mode === 'absolute') return formatAbsolute(iso);
   const now = Date.now();
   const diffMs = now - d.getTime();
   const day = 24 * 60 * 60 * 1000;
@@ -42,8 +54,7 @@ function formatTimestamp(iso: string | null | undefined): string {
     const days = Math.floor(diffMs / day);
     return `${days} day${days === 1 ? '' : 's'} ago`;
   }
-  // Absolute "28 Apr 2026"
-  return d.toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' });
+  return formatAbsolute(iso);
 }
 
 export function CatalystFooterMeta({ issue }: CatalystFooterMetaProps) {
@@ -69,7 +80,7 @@ export function CatalystFooterMeta({ issue }: CatalystFooterMetaProps) {
     >
       {created && (
         <span>
-          Created <span style={{ color: token('color.text', '#292A2E') }}>{formatTimestamp(created)}</span>
+          Created <span style={{ color: token('color.text', '#292A2E') }}>{formatTimestamp(created, 'absolute')}</span>
         </span>
       )}
       {created && updated && <span aria-hidden="true">·</span>}

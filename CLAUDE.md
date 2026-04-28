@@ -4,6 +4,21 @@ Append-only. Newest at top. Each entry: date, pattern, rule, surface.
 
 ---
 
+## 2026-04-28 — Handover items can conflict with in-code prohibitions
+**Surface:** any patch listed in a handover
+**Pattern:** Handover labelled Story Points as the "highest-asked Story-specific field" and option B for the next round. CatalystSidebarDetails.tsx line 422 has the explicit comment `Story Points: BANNED platform-wide. Do NOT re-add.` plus a JSDoc GUARDRAIL — added 2026-04-16 by Lovable co-authored with Vikram, citing Catalyst spec. The handover was written 12 days later and didn't reconcile with the ban. Following the handover blindly would have re-added a field the spec explicitly removed.
+**Rule:** Before implementing any handover-listed feature, grep the codebase for negative directives ("BANNED", "Do NOT", "DEPRECATED", "REMOVED") that mention the feature. If a directive exists, halt and surface the conflict to Vikram. In-code directives win over handovers — they were authored against the live codebase, the handover was a snapshot.
+
+## 2026-04-28 — `cv-*-select__*` DOM classes don't mean non-Atlaskit
+**Surface:** any Lane A DOM probe that flags Atlaskit compliance
+**Pattern:** I saw `cv-priority-select__control` in the rendered DOM and inferred the priority field bypassed `@atlaskit/select`. Wrong. `@atlaskit/select` is a styled wrapper around react-select and forwards `classNamePrefix` to it. The `cv-` prefix here was a deliberate styling override passed to Atlaskit Select (`classNamePrefix="cv-priority-select"` on line 264 of `EditableFields.tsx`, with `import Select from '@atlaskit/select'` on line 9). The DOM class prefix was a developer choice, not a primitive choice.
+**Rule:** Before flagging an ADS-compliance defect from DOM classnames, grep the source for the component's `import` statement. `@atlaskit/select` + custom `classNamePrefix` is fine. Only flag a violation when the component imports `react-select` directly (no `@atlaskit/*` wrapper) or rolls its own dropdown.
+
+## 2026-04-28 — CRUD gate is about data flow on each side, not cross-system parity (sync deliberately off)
+**Surface:** Defect (QA Bug) right-rail, BAU-5717
+**Pattern:** I treated a Catalyst-vs-Jira data divergence (BAU-5717: Status ToDo vs Ready for QA, Assignee Syed Habib vs Yazeed Daraz) as a P0 defect. Vikram corrected: Catalyst is in functionality-mode, wh-jira-sync is intentionally parked, divergence is expected and the risk is accepted. The CRUD gate's job is to prove data FLOWS through CRUD on each side independently — UI → backend → render — not that the two sides agree.
+**Rule:** Don't flag stale data as a defect while sync is parked. CRUD-R diff is informational only, not pass/fail. The gate's pass criteria are: CRUD-C lands a row in each side's backend, CRUD-U writes through and renders after reload, CRUD-D removes the row. Cross-system parity is out of scope for this regime. Pick recently-synced tickets (a couple days old) when you want incidental data alignment, but don't make alignment the test.
+
 ## 2026-04-28 — Round 1 cross-type patches: 8 self-contained P0 fixes closed 113 of 253
 **Surface:** /allwork list + Defect/Incident/Task/Story views
 **Pattern:** Audit produced 253 cross-type findings dominated by 8 root-cause clusters (status pill uppercase, footer count, deep-link, lozenge typography, parent rendering, smart-card crash, description font, page H1). Each fix was tiny but repeated across 7 issue types — fixing once at the shared component closed 24+ findings in one shot.

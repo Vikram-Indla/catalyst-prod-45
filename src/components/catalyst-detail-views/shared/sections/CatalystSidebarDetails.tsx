@@ -72,6 +72,8 @@ import { useCatalystAvatarProfile } from '../hooks/useCatalystAvatarProfile';
    parity audit on 2026-04-20. Keeping the other three editable fields. */
 import { EditableAssignee, EditableLabels, EditableFixVersions } from '@/modules/project-work-hub/components/dialogs/story-detail-modules/EditableFields';
 import { EpicDueDateField } from '@/components/project/EpicDueDateField';
+import { CatalystMdtRefField } from './CatalystMdtRefField';
+import { CatalystAssessmentFeatureField } from './CatalystAssessmentFeatureField';
 import { toast } from 'sonner';
 import {
   STATUS_OPTION_GROUPS,
@@ -186,6 +188,9 @@ export function CatalystSidebarDetails({
           picker for unmapped types (Task, Subtask, etc.). */}
       {workflow && currentWorkflowState ? (
         <div style={{ marginBottom: 14 }}>
+          {/* jira-compare A2 (2026-04-28): label every right-rail field for
+              consistency with Fix versions / Assignee / Reporter / Labels. */}
+          <div style={{ fontSize: 12, fontWeight: 600, color: '#292A2E', marginBottom: 4 }}>Status</div>
           <StatusTransitionDropdown
             issueType={issue?.issue_type ?? 'Defect'}
             currentStateId={currentWorkflowState.id}
@@ -199,6 +204,8 @@ export function CatalystSidebarDetails({
         </div>
       ) : (
       <div style={{ marginBottom: 14, position: 'relative' }} ref={statusDropdownRef}>
+        {/* jira-compare A2 (2026-04-28): label for the rail Status field. */}
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#292A2E', marginBottom: 4 }}>Status</div>
         <button
           onClick={() => setShowStatusDropdown(!showStatusDropdown)}
           style={{
@@ -215,7 +222,12 @@ export function CatalystSidebarDetails({
           onMouseEnter={e => (e.currentTarget.style.background = '#F4F5F7')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
         >
-          <Lozenge appearance={lozengeAppearance}>{statusValue}</Lozenge>
+          {/* jira-compare A1 (2026-04-28): wrap with jira-parity attribute so
+              the global lozenge override (text-transform: none, fw 600) reaches
+              this direct AkLozenge import. */}
+          <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+            <Lozenge appearance={lozengeAppearance}>{statusValue}</Lozenge>
+          </span>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
             <path d="M2 4L5 7L8 4" stroke="#42526E" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
@@ -250,7 +262,9 @@ export function CatalystSidebarDetails({
                       onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = '#F4F5F7'; }}
                       onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <Lozenge appearance={optionAppearance}>{st}</Lozenge>
+                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+                        <Lozenge appearance={optionAppearance}>{st}</Lozenge>
+                      </span>
                       {isActive && (
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0052CC" strokeWidth="2.5">
                           <polyline points="20 6 9 17 4 12" />
@@ -389,6 +403,25 @@ export function CatalystSidebarDetails({
                 onUpdate={invalidateIssue}
               />
             )}
+          </FieldRow>
+
+          {/* ── MDT Ref ──── jira-compare Round 4 (2026-04-28)
+              Universal Catalyst↔Jira parity field shown on every issue
+              type's Details rail. Free-text reference that mirrors the
+              "MDT Ref" custom field in the digital-transformation Jira
+              tenant. Schema: ph_issues.mdt_ref TEXT (nullable). */}
+          <FieldRow label="MDT Ref" labelTopPad>
+            <CatalystMdtRefField issue={issue} onUpdate={invalidateIssue} />
+          </FieldRow>
+
+          {/* ── Assessment Feature ──── jira-compare Round 4 follow-up
+              (2026-04-28). Universal Catalyst↔Jira parity field — Lane B
+              confirmed customfield_10288 ("Assessment Feature") on QA Bug
+              with cross-project usage on Incident / Task. Schema:
+              ph_issues.assessment_feature TEXT (nullable). 30+ allowed
+              values from the Jira project schema. */}
+          <FieldRow label="Assessment Feature" labelTopPad>
+            <CatalystAssessmentFeatureField issue={issue} onUpdate={invalidateIssue} />
           </FieldRow>
 
           {/* ── TYPE-SPECIFIC FIELDS (children slot) ──

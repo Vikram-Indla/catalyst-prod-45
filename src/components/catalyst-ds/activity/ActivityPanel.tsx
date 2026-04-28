@@ -62,7 +62,7 @@ function ActivityPanel({
   isLoadingMoreHistory = false,
   quickReplies,
   defaultTab = 'all',
-  defaultSortOrder = 'newest',
+  defaultSortOrder = 'oldest', // jira-compare S-50: Jira's default is Oldest first
   jiraUserMap,
   className,
 }: ActivityPanelProps) {
@@ -100,7 +100,10 @@ function ActivityPanel({
   return (
     <div className={cn('flex flex-col', className)}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-[16px] font-semibold text-[#172B4D] dark:text-[#EDEDED]">
+        <h3
+          className="text-[16px] font-semibold text-[#172B4D] dark:text-[#EDEDED]"
+          style={{ fontFamily: '"Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif' }}
+        >
           Activity
         </h3>
       </div>

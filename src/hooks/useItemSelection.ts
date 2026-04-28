@@ -166,5 +166,20 @@ export function useItemSelection<T extends SelectableItem>(
     }
   }, [activeItemId, items, searchParams, setSearchParams, urlParam]);
 
+  /* jira-compare G7 (2026-04-28): stale-detail guard.
+     When the items list narrows (e.g. user types a filter that matches
+     nothing) and the previously-selected row is no longer present, the
+     detail panel kept showing stale content. Clear the selection so
+     consumers can render an empty state. We only clear when items has
+     loaded and is non-empty enough to make this distinction; an empty
+     items[] from "still loading" (initial mount) is preserved by the
+     early return. */
+  useEffect(() => {
+    if (!activeItemId) return;
+    if (items.length === 0) return;
+    const stillPresent = items.some(i => i.id === activeItemId || i.dbId === activeItemId);
+    if (!stillPresent) setActiveItemId(null);
+  }, [items, activeItemId]);
+
   return { activeItem, activeItemId, selectItem, clearSelection };
 }

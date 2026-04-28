@@ -40,9 +40,12 @@ const PRIORITY_SVG: Record<string, React.ReactNode> = {
     </svg>
   ),
   Medium: (
+    /* jira-compare S-23 (2026-04-28): Jira renders Medium as three
+     * horizontal bars (≡), not two. Match Jira's medium_new.svg. */
     <svg width="16" height="16" viewBox="0 0 16 16">
-      <path d="M3 6h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
-      <path d="M3 10h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 4.5h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 8h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
+      <path d="M3 11.5h10" fill="none" stroke="#FFAB00" strokeWidth="2" strokeLinecap="round"/>
     </svg>
   ),
   Low: (

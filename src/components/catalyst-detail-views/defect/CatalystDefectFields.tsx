@@ -34,6 +34,7 @@ import React from 'react';
 import Heading from '@atlaskit/heading';
 import Lozenge from '@atlaskit/lozenge';
 import { KeyDetailsFieldRow } from '../shared/sections';
+import { CatalystSeverityField } from '../shared/sections/CatalystSeverityField';
 import type { PhIssue } from '../shared/types';
 
 interface CatalystDefectFieldsProps {
@@ -111,6 +112,7 @@ export function CatalystDefectKeyRows({
   rootCause,
   assessmentFeature,
   priorityRow,
+  onUpdate,
 }: Pick<
   CatalystDefectFieldsProps,
   'issue' | 'severity' | 'foundInBuild' | 'rootCause' | 'assessmentFeature'
@@ -123,6 +125,12 @@ export function CatalystDefectKeyRows({
    * `CatalystKeyDetails.showPriority` defaults to.
    */
   priorityRow?: React.ReactNode;
+  /**
+   * Refetch hook called by editable fields after a successful mutation.
+   * jira-compare Round 4 (2026-04-28): Severity is now editable inline,
+   * so the consumer needs to invalidate the issue query.
+   */
+  onUpdate?: () => void;
 }) {
   // Normalize fix_versions — stored as Json, may be null or malformed.
   const fixVersions: Array<{ name: string }> = Array.isArray(issue?.fix_versions)
@@ -144,17 +152,12 @@ export function CatalystDefectKeyRows({
 
   return (
     <>
-      {/* Severity always renders — Jira treats this as a required
-          field even when empty (the "None" placeholder is
-          intentional). */}
+      {/* Severity — inline-editable as of jira-compare Round 4
+          (2026-04-28). Renders the Lozenge in the closed state and an
+          Atlaskit Select dropdown when active. Always renders the row;
+          Jira treats Severity as a required field even when null. */}
       <KeyDetailsFieldRow label="Severity" alignBlock="center">
-        {severity ? (
-          <Lozenge appearance={severityAppearance(severity)}>
-            {severity}
-          </Lozenge>
-        ) : (
-          <Empty />
-        )}
+        <CatalystSeverityField issue={issue} onUpdate={onUpdate} />
       </KeyDetailsFieldRow>
 
       {/* Priority row (injected by consumer) — placed after Severity

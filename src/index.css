@@ -5936,3 +5936,16 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
   font-weight: 600 !important;
   margin-top: 8px;
 }
+
+/* jira-compare S-66 (2026-04-28): paragraphs and headings inside the
+   renderer use unicode-bidi: plaintext so each text block is laid out
+   per its own first-strong direction. Combined with dir="auto" on the
+   wrapper, BAU's bilingual EN/AR descriptions render naturally. */
+.atlaskit-renderer-wrapper p,
+.atlaskit-renderer-wrapper li,
+.atlaskit-renderer-wrapper h1,
+.atlaskit-renderer-wrapper h2,
+.atlaskit-renderer-wrapper h3,
+.atlaskit-renderer-wrapper h4 {
+  unicode-bidi: plaintext;
+}

@@ -86,7 +86,7 @@ interface CatalystTitleEditorProps {
 }
 
 export function CatalystTitleEditor({ issue, onTitleChange }: CatalystTitleEditorProps) {
-  const summary = issue?.summary ?? '';
+  const summary = (issue?.summary ?? '').trim(); // jira-compare E-7 (2026-04-28): trim trailing whitespace
 
   return (
     // Apr 27, 2026 (L55): dropped the duplicate <IssueIcon> prefix that

@@ -124,7 +124,7 @@ export function CatalystStatusPill({ status, onStatusChange }: CatalystStatusPil
           e.currentTarget.style.borderColor = token('color.border', '#DFE1E6');
         }}
       >
-        <Lozenge appearance={statusToLozenge(display)}>{display}</Lozenge>
+        <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(display)}>{display}</Lozenge></span>
         <ChevronDown size={12} color={token('color.icon.subtle', '#42526E') as string} />
       </button>
       </div>
@@ -197,7 +197,7 @@ export function CatalystStatusPill({ status, onStatusChange }: CatalystStatusPil
                         if (!isActive) e.currentTarget.style.background = 'transparent';
                       }}
                     >
-                      <Lozenge appearance={statusToLozenge(st)}>{st}</Lozenge>
+                      <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}><Lozenge appearance={statusToLozenge(st)}>{st}</Lozenge></span>
                       {isActive && (
                         <span style={{ fontSize: 12, color: token('color.text.brand', '#0C66E4'), fontWeight: 600 }}>
                           ✓

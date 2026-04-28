@@ -44,7 +44,7 @@ export const StatusCell = React.memo(function StatusCell({
       aria-label={readOnly ? `Status ${status}` : `${status} — change status`}
       disabled={readOnly}
     >
-      <Lozenge appearance={appearance} isBold>{status}</Lozenge>
+      <span data-cp-lozenge-jira-parity style={{ display: "inline-block" }}><Lozenge appearance={appearance} isBold>{status}</Lozenge></span>
       {!readOnly && (
         <span className="sp-status-chevron-ak" aria-hidden>
           <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">

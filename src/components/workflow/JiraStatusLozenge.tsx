@@ -36,13 +36,15 @@ export function JiraStatusLozenge({
   maxWidth,
 }: JiraStatusLozengeProps) {
   return (
-    <Lozenge
-      appearance={APPEARANCE_MAP[category]}
-      isBold={variant === 'bold'}
-      maxWidth={maxWidth}
-    >
-      {name}
-    </Lozenge>
+    <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+      <Lozenge
+        appearance={APPEARANCE_MAP[category]}
+        isBold={variant === 'bold'}
+        maxWidth={maxWidth}
+      >
+        {name}
+      </Lozenge>
+    </span>
   );
 }
 
