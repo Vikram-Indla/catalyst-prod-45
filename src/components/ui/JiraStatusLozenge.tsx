@@ -1,20 +1,26 @@
 /**
- * JiraStatusLozenge — 3-colour guardrail status badge
- * Stage E: Unknown status guard + onStatusChange wiring
+ * JiraStatusLozenge — Jira-parity status badge
+ *
+ * jira-compare Patch #1 (2026-04-28):
+ *   - Drop `text-transform: uppercase` (Jira renders status name verbatim).
+ *   - Drop letter-spacing.
+ *   - Change font-weight 700 → 600 to match Atlaskit @atlaskit/lozenge.
+ *   - Update STATUS_MAP labels to sentence-case strings exactly as Jira
+ *     renders them: "In QA", "Ready for QA", "Done", "In UAT", etc.
  */
 import { ChevronDown } from 'lucide-react';
 
 const STATUS_MAP: Record<string, { bg: string; text: string; label: string }> = {
-  backlog:         { bg: '#DFE1E6', text: '#253858', label: 'BACKLOG' },
-  in_progress:     { bg: '#DEEBFF', text: '#0747A6', label: 'IN PROGRESS' },
-  done:            { bg: '#E3FCEF', text: '#006644', label: 'DONE' },
-  in_production:   { bg: '#E3FCEF', text: '#006644', label: 'IN PRODUCTION' },
-  ready_for_qa:    { bg: '#E3FCEF', text: '#006644', label: 'READY FOR QA' },
-  in_requirements: { bg: '#DFE1E6', text: '#253858', label: 'IN REQUIREMENTS' },
-  in_uat:          { bg: '#E3FCEF', text: '#006644', label: 'IN UAT' },
-  in_qa:           { bg: '#DEEBFF', text: '#0747A6', label: 'IN QA' },
-  in_dev:          { bg: '#DEEBFF', text: '#0747A6', label: 'IN DEV' },
-  closed:          { bg: '#E3FCEF', text: '#006644', label: 'CLOSED' },
+  backlog:         { bg: '#DFE1E6', text: '#253858', label: 'Backlog' },
+  in_progress:     { bg: '#FFF7D6', text: '#7F5F01', label: 'In Progress' },
+  done:            { bg: '#DCFFF1', text: '#216E4E', label: 'Done' },
+  in_production:   { bg: '#DCFFF1', text: '#216E4E', label: 'In Production' },
+  ready_for_qa:    { bg: '#DCFFF1', text: '#216E4E', label: 'Ready for QA' },
+  in_requirements: { bg: '#DFE1E6', text: '#253858', label: 'In Requirements' },
+  in_uat:          { bg: '#DCFFF1', text: '#216E4E', label: 'In UAT' },
+  in_qa:           { bg: '#DCFFF1', text: '#216E4E', label: 'In QA' },
+  in_dev:          { bg: '#FFF7D6', text: '#7F5F01', label: 'In Dev' },
+  closed:          { bg: '#DCFFF1', text: '#216E4E', label: 'Closed' },
 };
 
 interface Props {
@@ -24,11 +30,12 @@ interface Props {
 }
 
 export function JiraStatusLozenge({ status, interactive = false, onStatusChange }: Props) {
-  // Cycle 1 §1.4: guard unknown status — never crash
+  // Cycle 1 §1.4: guard unknown status — never crash. For unknown values,
+  // pass the string through unchanged (Jira does the same).
   const config = STATUS_MAP[status] ?? {
     bg: '#DFE1E6',
     text: '#253858',
-    label: status?.toUpperCase?.() ?? 'UNKNOWN',
+    label: status ?? 'Unknown',
   };
 
   return (
@@ -61,10 +68,8 @@ export function JiraStatusLozenge({ status, interactive = false, onStatusChange 
         background: config.bg,
         color: config.text,
         fontSize: '11px',
-        fontWeight: 700,
+        fontWeight: 600,
         fontFamily: 'var(--cp-font-body)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.03em',
         whiteSpace: 'nowrap',
         cursor: interactive ? 'pointer' : 'default',
       }}

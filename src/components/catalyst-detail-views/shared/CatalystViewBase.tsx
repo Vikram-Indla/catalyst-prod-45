@@ -24,6 +24,7 @@ import { Skel } from '@/modules/project-work-hub/components/dialogs/story-detail
 import { TicketBreadcrumbs } from '@/modules/project-work-hub/components/TicketBreadcrumbs';
 import { AddParentPicker } from '@/components/shared/AddParentPicker';
 import { IssueNavChevrons } from '@/components/shared/IssueNavChevrons';
+import { WatchersChip } from './WatchersChip';
 
 /* ═══════════════════════════════════════════
    ANIMATIONS — injected once
@@ -330,6 +331,10 @@ export function CatalystViewBase({
 
           {/* Right actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {/* Watchers eye + count — Jira parity. Lives between the
+                nav chevrons and Share. ph_issue_watchers backs it. */}
+            {itemKey && <WatchersChip issueKey={itemKey} />}
+
             {/* Phase B (2026-04-18): @atlaskit/button with iconBefore.
                 Hover state + typography owned by Atlaskit tokens. */}
             <Button

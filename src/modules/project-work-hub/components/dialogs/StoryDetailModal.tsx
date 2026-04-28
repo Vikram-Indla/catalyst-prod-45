@@ -28,6 +28,7 @@ import { enqueueWriteBack } from '@/lib/jira-writeback';
 import { CloneIssueDialog } from './CloneIssueDialog';
 import { MoveIssueDialog } from './MoveIssueDialog';
 import { ArchiveConfirmDialog } from './ArchiveConfirmDialog';
+import { DangerConfirmModal } from '@/components/shared/DangerConfirmModal';
 import { useProjectMemberRole } from '../../hooks/useProjectMemberRole';
 import { useTrackRecentItem } from '@/hooks/useRecentProjectItems';
 
@@ -2287,34 +2288,17 @@ export default function StoryDetailModal({
           modals to @atlaskit/modal-dialog. Focus trap, Escape, click-outside,
           body scroll lock all inherited. Matches E.1 sidebar delete pattern
           and BacklogPage bulk-delete pattern. */}
-      <ModalTransition>
-        {showConfirmDelete && (
-          <Modal
-            onClose={() => setShowConfirmDelete(false)}
-            width="small"
-          >
-            <ModalHeader>
-              <ModalTitle appearance="danger">
-                Delete {issue?.issue_key}?
-              </ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              This ticket will be soft-deleted. It can be restored from the admin panel within 30 days.
-            </ModalBody>
-            <ModalFooter>
-              <Button appearance="subtle" onClick={() => setShowConfirmDelete(false)}>
-                Cancel
-              </Button>
-              <Button
-                appearance="danger"
-                onClick={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }}
-              >
-                Delete
-              </Button>
-            </ModalFooter>
-          </Modal>
-        )}
-      </ModalTransition>
+      <DangerConfirmModal
+        isOpen={showConfirmDelete}
+        onClose={() => setShowConfirmDelete(false)}
+        title={`Delete ${issue?.issue_key ?? 'ticket'}?`}
+        description={`You're about to permanently delete ${issue?.issue_key ?? 'this ticket'}, its comments and attachments, and all of its data. This action cannot be undone.`}
+        hint="If you're not sure, you can resolve or close this issue instead."
+        confirmPhrase="delete"
+        confirmLabel="Delete"
+        onConfirm={() => { setShowConfirmDelete(false); deleteIssueMutation.mutate(); }}
+        isLoading={deleteIssueMutation.isPending}
+      />
 
       <ModalTransition>
         {showWorkflow && (

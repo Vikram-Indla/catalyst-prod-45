@@ -1,5 +1,11 @@
 /**
  * StatusLozenge — Theme-aware via CSS custom properties
+ *
+ * jira-compare Patch #1 (2026-04-28):
+ *   - Drop `text-transform: uppercase` (Atlaskit lozenge spec is no transform).
+ *   - Change font-weight 700 → 600 to match Atlaskit @atlaskit/lozenge.
+ *   - Return Jira's status.name verbatim (sentence case "In QA", "Ready for QA",
+ *     "Done"). Previously upper-cased everything via getDisplayName.
  */
 
 import React from "react";
@@ -37,25 +43,40 @@ function getLozengeTokens(category: StatusCategory): { bg: string; text: string 
   return map[category];
 }
 
+/**
+ * Display the status label as Jira renders it.
+ *
+ * Jira passes status.name straight through ("In QA", "Ready for QA",
+ * "Done", "In Progress"). We do the same — no uppercasing, no
+ * abbreviating ("READY FOR DEV"), no snake_case decoding tricks. If
+ * the upstream string already has the canonical Jira name, we use it.
+ *
+ * The only normalisation: a few legacy snake_case variants from
+ * Catalyst's own internal state get mapped to their Jira display name,
+ * because that's what users actually see.
+ */
 function getDisplayName(status: string): string {
-  const shortNames: Record<string, string> = {
-    "Ready for Development": "READY FOR DEV", "Ready for development": "READY FOR DEV",
-    "In Development": "IN DEV", "In development": "IN DEV",
-    "In Progress": "IN PROGRESS", "In progress": "IN PROGRESS",
-    "End to End Testing": "E2E TESTING", "End to end testing": "E2E TESTING",
-    "In Production": "IN PROD", "In production": "IN PROD",
-    "In Review": "IN REVIEW", "In review": "IN REVIEW",
-    "Ready for QA": "READY FOR QA", "Ready for qa": "READY FOR QA",
-    "ToDo": "TODO", "To Do": "TODO", "To do": "TODO",
-    "pending_approval": "PENDING APPROVAL", "in_progress": "IN PROGRESS",
-    "in_requirements": "REQUIREMENTS", "in_design": "DESIGN",
-    "ready_for_development": "READY FOR DEV", "in_development": "IN DEV",
-    "in_qa": "IN QA", "in_uat": "IN UAT", "in_entity_integration": "INTEGRATION",
-    "technical_validation": "TECH VALIDATION", "in_beta": "IN BETA",
-    "end_to_end_testing": "E2E TESTING", "production_ready": "PROD READY",
-    "beta_ready": "BETA READY", "in_production": "IN PROD", "on_hold": "ON HOLD",
+  const snakeToJira: Record<string, string> = {
+    "pending_approval": "Pending approval",
+    "in_progress": "In Progress",
+    "in_requirements": "In Requirements",
+    "in_design": "In Design",
+    "ready_for_development": "Ready for Development",
+    "in_development": "In Development",
+    "in_qa": "In QA",
+    "in_uat": "In UAT",
+    "in_entity_integration": "In Entity Integration",
+    "technical_validation": "Technical Validation",
+    "in_beta": "In Beta",
+    "end_to_end_testing": "End to end testing",
+    "production_ready": "Production Ready",
+    "beta_ready": "Beta Ready",
+    "in_production": "In Production",
+    "ready_for_qa": "Ready for QA",
+    "on_hold": "On Hold",
   };
-  return shortNames[status] || status.toUpperCase();
+  if (snakeToJira[status]) return snakeToJira[status];
+  return status;
 }
 
 export function StatusLozenge({ status }: { status: string }) {
@@ -72,12 +93,11 @@ export function StatusLozenge({ status }: { status: string }) {
         backgroundColor: tokens.bg,
         color: tokens.text,
         fontSize: "11px",
-        fontWeight: 700,
-        textTransform: "uppercase",
+        fontWeight: 600,
         lineHeight: "16px",
         whiteSpace: "nowrap",
         verticalAlign: "middle",
-        letterSpacing: "0.03em",
+        letterSpacing: "0",
       }}
     >
       {displayName}

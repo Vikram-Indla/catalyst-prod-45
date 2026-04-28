@@ -52,7 +52,20 @@ export default function CatalystViewDefect({
         itemType="defect"
         projectKey={projectKey}
         onOpenItem={onOpenItem}
-        extraRows={<CatalystDefectKeyRows issue={issue ?? null} />}
+        extraRows={
+          <CatalystDefectKeyRows
+            issue={issue ?? null}
+            // Pull custom fields from raw_json (ph_issues schema lacks severity / assessment_feature
+            // columns; wh-jira-sync is parked. Reading raw_json is the lowest-friction parity fix.)
+            severity={
+              (issue as any)?.severity
+                ?? (issue as any)?.raw_json?.fields?.customfield_10125?.value
+                ?? null
+            }
+            foundInBuild={(issue as any)?.found_in_build ?? null}
+            rootCause={(issue as any)?.root_cause ?? null}
+          />
+        }
       />
 
       <CatalystDefectLongFields />

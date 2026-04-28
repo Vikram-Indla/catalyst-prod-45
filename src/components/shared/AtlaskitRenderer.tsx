@@ -13,13 +13,56 @@
  * only enters the page when an Atlaskit-rendered surface actually mounts.
  * The user-visible rendering experience is identical.
  */
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useMemo } from 'react';
 import type { ADFEntity } from '@atlaskit/adf-utils/types';
 
 const LazyReactRenderer = lazy(async () => {
   const mod = await import('@atlaskit/renderer');
   return { default: mod.ReactRenderer as unknown as React.ComponentType<any> };
 });
+
+/* jira-compare Patch #10 (2026-04-28) — SmartLink graceful fallback.
+ * Atlaskit's renderer auto-renders ADF `inlineCard` / `blockCard` nodes via
+ * its bundled @atlaskit/smart-card. Without a SmartCardProvider in the
+ * shell, that path throws `useSmartCard() must be wrapped in
+ * <SmartCardProvider>` at runtime. We don't currently install
+ * @atlaskit/smart-card, so override the smart-link node components to
+ * render plain anchors. Visually similar to Jira when smart-link auth
+ * isn't configured (host shown, link clickable), no runtime crash.
+ */
+function PlainSmartLink({ url, data }: { url?: string; data?: any }) {
+  const href = url || data?.url || '';
+  let host = href;
+  try { host = new URL(href).hostname; } catch (_) { /* noop */ }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        color: '#0052CC', textDecoration: 'none',
+        display: 'inline-flex', alignItems: 'center', gap: 4,
+      }}
+      onMouseEnter={e => (e.currentTarget.style.textDecoration = 'underline')}
+      onMouseLeave={e => (e.currentTarget.style.textDecoration = 'none')}
+      title={href}
+    >
+      {host || href}
+    </a>
+  );
+}
+
+const SMART_LINK_OVERRIDES = {
+  inlineCard: (props: any) => <PlainSmartLink {...props} />,
+  blockCard: (props: any) => (
+    <div style={{
+      padding: '12px 16px', border: '1px solid #DFE1E6', borderRadius: 4,
+      background: '#FFFFFF', margin: '8px 0', fontSize: 14,
+    }}>
+      <PlainSmartLink {...props} />
+    </div>
+  ),
+};
 
 interface AtlaskitRendererProps {
   /** ADF document to render */
@@ -51,6 +94,11 @@ export default function AtlaskitRenderer({
     return null;
   }
 
+  const mergedNodeComponents = useMemo(
+    () => ({ ...SMART_LINK_OVERRIDES, ...(nodeComponents ?? {}) }),
+    [nodeComponents],
+  );
+
   return (
     <div
       className="atlaskit-renderer-wrapper"
@@ -61,7 +109,7 @@ export default function AtlaskitRenderer({
           document={{ ...document, version: document.version ?? 1 } as any}
           appearance={appearance}
           adfStage="stage0"
-          nodeComponents={nodeComponents}
+          nodeComponents={mergedNodeComponents}
         />
       </Suspense>
     </div>

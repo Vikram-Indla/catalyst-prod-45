@@ -93,14 +93,17 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             tight vertical rhythm; page title same size Jira uses (20/600).
       */}
       <div style={{ padding: '16px 16px 4px', flexShrink: 0 }}>
-        <h1 style={{
+        {/* jira-compare Patch #13 (2026-04-28): the issue detail panel
+            owns the page <h1> (the issue title). Page chrome uses <h2>
+            so we don't ship two H1s on a single page (WCAG 2.4.6). */}
+        <h2 style={{
           margin: 0, fontSize: 20, fontWeight: 600,
           color: token('color.text', '#292A2E'),
           letterSpacing: '-0.003em',
           fontFamily: "'Atlassian Sans', -apple-system, BlinkMacSystemFont, sans-serif",
         }}>
           All work
-        </h1>
+        </h2>
       </div>
 
       {/* Split region — 3-panel responsive model (corrected 2026-04-20):
@@ -152,7 +155,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
                     // Use dbId (ph_issues.id). CLAUDE.md §L39 warns that
                     // passing the issue_key here yields a silent 400 and an
                     // empty issue object → title falls back to "—".
-                    itemId={activeItem.dbId || activeItem.id}
+                    itemId={activeItem.id}
                     itemType={activeItem.type}
                     projectId={projectId}
                     projectKey={projectKey}
@@ -190,7 +193,7 @@ export default function ProjectAllWorkView({ projectKey, projectId }: Props) {
             <StoryDetailModal
               isOpen={true}
               onClose={() => setOverlayItemId(null)}
-              itemId={overlayItem.dbId || overlayItem.id}
+              itemId={overlayItem.id}
               projectId={projectId ?? ''}
               projectKey={projectKey}
               onOpenItem={(id) => setOverlayItemId(id)}

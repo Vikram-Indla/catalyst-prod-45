@@ -132,12 +132,26 @@ export function useItemSelection<T extends SelectableItem>(
     if (!urlParam) return;
     const current = searchParams.get(urlParam);
     if (!activeItemId) {
+      /* jira-compare Patch #7 (2026-04-28): only clear ?issue= if the
+         param value matches a row currently in `items`. Previously we
+         unconditionally cleared on every mount where activeItemId was
+         null, which raced the hydration effect — items hadn't loaded
+         yet, so the URL got wiped before hydration could match. The
+         result: opening /allwork?issue=BAU-5485 always landed on the
+         default selection. Now we keep the param around for late-
+         arriving data; we only delete it once we know the value is
+         stale (matches no row that exists). */
       if (current) {
-        setSearchParams(prev => {
-          const next = new URLSearchParams(prev);
-          next.delete(urlParam);
-          return next;
-        }, { replace: true });
+        const wantedKnown = items.some(
+          i => i.jiraKey === current || i.id === current,
+        );
+        if (wantedKnown) {
+          setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            next.delete(urlParam);
+            return next;
+          }, { replace: true });
+        }
       }
       return;
     }

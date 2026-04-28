@@ -5881,3 +5881,58 @@ html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="re
 html[data-presentation="true"] [data-testid="project-dashboard-shell"] [role="region"] > div {
   min-height: 56px !important;
 }
+
+/* ────────────────────────────────────────────────────────────────────────
+   jira-compare Patch #1+#2 (2026-04-28) — Atlaskit Lozenge Jira parity
+   ────────────────────────────────────────────────────────────────────────
+   Atlaskit @atlaskit/lozenge v11 renders a two-span nesting where the
+   inner label span carries `text-transform: uppercase`, `font-weight: 653`,
+   and `letter-spacing > 0`. Modern Jira renders status/lozenges in
+   sentence case ("In QA", "Ready for QA", "Done"). We override at the
+   wrapper attribute we add in components/ads/Lozenge and
+   components/workflow/WorkItemStatusLozenge so any rendered lozenge in
+   Catalyst matches Jira typography.
+   ────────────────────────────────────────────────────────────────────── */
+[data-cp-lozenge-jira-parity] > span,
+[data-cp-lozenge-jira-parity] > span > span,
+[data-cp-lozenge-jira-parity] span[class^="css-"] {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-weight: 600 !important;
+}
+
+/* ────────────────────────────────────────────────────────────────────────
+   jira-compare Patch #11+#12 (2026-04-28) — Atlaskit Renderer typography
+   ────────────────────────────────────────────────────────────────────────
+   The Atlaskit Renderer ships its own font stack (defaults to system
+   ui-sans-serif). Catalyst description content was rendering with
+   ui-sans-serif while everything else used Atlassian Sans, producing a
+   3-font drift on a single page (S-28). Pin the renderer's wrapper to
+   Atlassian Sans so all rendered nodes inherit Jira's font.
+
+   Patch #12: also demote h1 inside the renderer wrapper visually so the
+   description hierarchy doesn't compete with the page H1. Keep semantic
+   <h1> for assistive tech (a11y); only the rendered size is adjusted.
+   ────────────────────────────────────────────────────────────────────── */
+.atlaskit-renderer-wrapper,
+.atlaskit-renderer-wrapper *:not(code):not(pre):not(.code-block) {
+  font-family: "Atlassian Sans", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Ubuntu, "Helvetica Neue", sans-serif !important;
+}
+.atlaskit-renderer-wrapper h1 {
+  font-size: 20px !important;
+  line-height: 24px !important;
+  font-weight: 600 !important;
+  margin-top: 16px;
+}
+.atlaskit-renderer-wrapper h2 {
+  font-size: 16px !important;
+  line-height: 20px !important;
+  font-weight: 600 !important;
+  margin-top: 12px;
+}
+.atlaskit-renderer-wrapper h3 {
+  font-size: 14px !important;
+  line-height: 18px !important;
+  font-weight: 600 !important;
+  margin-top: 8px;
+}

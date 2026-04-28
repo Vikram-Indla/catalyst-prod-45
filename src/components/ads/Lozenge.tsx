@@ -57,14 +57,16 @@ export function Lozenge({
   testId,
 }: LozengeProps) {
   return (
-    <AkLozenge
-      appearance={appearance}
-      isBold={isBold}
-      maxWidth={maxWidth}
-      {...forwardTestId(testId)}
-    >
-      {children}
-    </AkLozenge>
+    <span data-cp-lozenge-jira-parity style={{ display: 'inline-block' }}>
+      <AkLozenge
+        appearance={appearance}
+        isBold={isBold}
+        maxWidth={maxWidth}
+        {...forwardTestId(testId)}
+      >
+        {children}
+      </AkLozenge>
+    </span>
   );
 }
 
