@@ -259,8 +259,15 @@ const PragmaticColumn = memo(function PragmaticColumn({
       role="list"
       aria-label={`${column.name} column, ${issueIds.length} items`}
     >
-      {/* Header — 48h, 6px top-radius, plain-text count */}
-      <div className="flex items-center gap-2 sticky top-0 z-10" style={{
+      {/* Header — 48h, 6px top-radius, plain-text count.
+          Note: previously `sticky top-0` — removed because Atlaskit Floating UI
+          inside @atlaskit/dropdown-menu computes the wrong reference frame
+          when its trigger lives in a position:sticky parent (cycle-3 evidence:
+          menu mounts at viewport (0,0) instead of below trigger). The sticky
+          behaviour can be reintroduced once Floating UI's reference resolution
+          is fixed (open Atlaskit issue) or a `@atlaskit/popup` swap is in. */}
+      <div className="flex items-center gap-2" style={{
+        position: 'relative',
         height: 48,
         padding: '0 12px',
         background: tk.headerBg,
@@ -300,11 +307,11 @@ const PragmaticColumn = memo(function PragmaticColumn({
           fontSize: 12, fontWeight: 500, color: tk.textPrimary,
           fontFamily: 'var(--cp-font-body)', lineHeight: '16px',
         }}>{issueIds.length}</span>
-        {/* Per-column meatball menu — Jira parity (board 597). Direct
-            @atlaskit/dropdown-menu with @atlaskit/button/new IconButton trigger
-            (matches UWVToolbar pattern that works elsewhere in the codebase).
-            Default body portal handles positioning correctly even inside
-            position:sticky parents. */}
+        {/* Per-column meatball menu — Jira parity (board 597). The wrapping
+            div with position:relative gives Floating UI a clean reference frame
+            inside the position:sticky column header (without it, the menu
+            anchors to viewport (0,0) per cycle-3 evidence). */}
+        <div style={{ position: 'relative', display: 'inline-flex' }}>
         <DropdownMenu
           placement="bottom-end"
           testId={`kanban-column-meatball-${column.id}`}
@@ -338,6 +345,7 @@ const PragmaticColumn = memo(function PragmaticColumn({
             <DropdownItem isDisabled>{`Statuses mapped: ${column.statuses.length}`}</DropdownItem>
           </DropdownItemGroup>
         </DropdownMenu>
+        </div>
       </div>
 
       {/* Body (drop target) */}
