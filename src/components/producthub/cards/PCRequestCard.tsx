@@ -85,7 +85,7 @@ export const PCRequestCard: React.FC<PCRequestCardProps> = ({ request, isSelecte
       } else {
         await typedQuery('ph_user_favorites').insert({ user_id: user.id, request_id: request.id });
       }
-      queryClient.invalidateQueries({ queryKey: ['mdt-backlog'] });
+      queryClient.invalidateQueries({ queryKey: ['requests-backlog'] });
     } catch {
       toast.error('Failed to update star');
     }
