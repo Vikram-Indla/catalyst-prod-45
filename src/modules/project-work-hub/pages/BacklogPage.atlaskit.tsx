@@ -88,7 +88,7 @@ import type {
   AssigneeOption,
   FixVersionOption,
 } from '@/components/shared/JiraFilterAtlaskit';
-import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, ChevronDown, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser, MoreHorizontal, SlidersHorizontal, RefreshCw, Download, MessageSquare, Share2, Zap } from 'lucide-react';
+import { Search as SearchIcon, Plus, Pencil, Trash2, Flag, Copy as CopyIcon, ChevronLeft, ChevronRight, ChevronDown, X as CloseIcon, Maximize2, Minimize2, ChevronsLeft, ChevronsRight, CircleUser, MoreHorizontal, SlidersHorizontal, RefreshCw, Download, MessageSquare, Share2, Zap, AlertTriangle, Archive } from 'lucide-react';
 
 // Apr 19, 2026 — U-4 (BAU Dashboard Atlaskit Conversion handover §2):
 // migrated outer page wrapper (blue page bg + white card + h1) onto the
@@ -212,6 +212,50 @@ const PRIORITY_ORDER = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'
 // Pass explicit options (including 'highest') at the column wiring site.
 const PRIORITY_OPTIONS = ['highest', 'critical', 'high', 'medium', 'low', 'lowest'];
 
+// Apr 28, 2026 — Set project background palettes. Sourced from Atlassian
+// Design System color tokens (atlassian.design/tokens) for the solids,
+// and from common Jira theme-picker gradient hues for the gradients.
+// Stored in `projects.settings.background` as { type, value } where
+// `value` is the CSS background string applied directly to the chrome
+// band. Default chrome background `#E9F2FE` is the Jira BAU list-view
+// chrome blue (probed 2026-04-27).
+const BG_DEFAULT = '#E9F2FE';
+const BG_SOLIDS: Array<{ name: string; value: string }> = [
+  { name: 'Sky',     value: '#E9F2FE' }, // Jira BAU chrome (default)
+  { name: 'Mint',    value: '#DCFFF1' },
+  { name: 'Lemon',   value: '#FFF7D6' },
+  { name: 'Peach',   value: '#FFE2D5' },
+  { name: 'Rose',    value: '#FFD2DC' },
+  { name: 'Lilac',   value: '#E5DBFF' },
+  { name: 'Stone',   value: '#DFE1E6' },
+  { name: 'Blue',    value: '#0C66E4' }, // bold accents
+  { name: 'Teal',    value: '#1F845A' },
+  { name: 'Violet',  value: '#5E4DB2' },
+  { name: 'Orange',  value: '#F18D3D' },
+  { name: 'Crimson', value: '#C9372C' },
+];
+const BG_GRADIENTS: Array<{ name: string; value: string }> = [
+  { name: 'Sunrise',  value: 'linear-gradient(135deg, #FFD2DC, #FFF7D6)' },
+  { name: 'Ocean',    value: 'linear-gradient(135deg, #B8DAFF, #DCFFF1)' },
+  { name: 'Sunset',   value: 'linear-gradient(135deg, #C9372C, #E54787)' },
+  { name: 'Forest',   value: 'linear-gradient(135deg, #1F845A, #22A06B)' },
+  { name: 'Lavender', value: 'linear-gradient(135deg, #8270DB, #5E4DB2)' },
+  { name: 'Slate',    value: 'linear-gradient(135deg, #44546F, #6B6E76)' },
+];
+
+interface ProjectBackground {
+  type: 'solid' | 'gradient';
+  value: string;
+}
+function readProjectBackground(project: any): ProjectBackground | null {
+  const bg = project?.settings?.background;
+  if (!bg || typeof bg !== 'object') return null;
+  if (bg.type === 'solid' || bg.type === 'gradient') {
+    if (typeof bg.value === 'string' && bg.value) return bg as ProjectBackground;
+  }
+  return null;
+}
+
 /* ─── Entry wrapper: resolves projectId from URL key ───────────────────── */
 
 export default function NativeBacklogPage() {
@@ -250,6 +294,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   // Roadmap, etc.) — see the L50 lesson note for the sweep target list.
   const { data: project } = useProject(projectId);
   const projectDisplayName = project?.name || projectKey;
+  // Apr 28, 2026 — chrome band background derived from
+  // `projects.settings.background`. Falls back to the Jira-parity blue.
+  const projectBackground = readProjectBackground(project);
+  const chromeBgValue = projectBackground?.value || BG_DEFAULT;
   // Apr 27, 2026 — jira-compare audit P1 #4: Jira's BAU list page header
   // is the project name only ("Senaei BAU"), not "{Project} Backlog". The
   // hub function (Backlog/Board/Roadmap) is communicated by the breadcrumb
@@ -447,7 +495,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
     return fromUrl;
   });
   // Group-by — matches catalog 076-095. 'none' disables grouping.
-  type GroupByKey = 'none' | 'status' | 'parent' | 'assignee' | 'priority';
+  // Apr 28, 2026 (jira-compare cycle 2): added 'type' + 'storyPoints' to
+  // match Jira /list group-by menu (Status / Assignee / Priority / Story
+  // Points). 'type' also unblocks per-type chevron parity testing requested
+  // by Vikram (Story → Story, Bug → Bug, etc).
+  type GroupByKey = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority' | 'storyPoints';
   // Apr 27, 2026 (audit pass 10, IRP-518 alignment): URL param renamed
   // 'group' → 'groupBy' to match Jira's list-view URL contract. Reads
   // both for one release so bookmarked URLs from the old name keep
@@ -497,6 +549,41 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
   const { toggleStar: toggleStarredItem, isStarred: isStarredFn } = useStarredItems({ filterByRoomType: 'project' as const, limit: 100 });
   const isStarred = isStarredFn('project' as const, projectId);
   const projectMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
+  // Apr 28, 2026 (carryover A + C): Linked teams + Archive + Delete project
+  // confirm modals. Patterns sourced from:
+  //   - Linked teams: Jira live DOM probe — modal title "Link contributing
+  //     teams", body "Add the teams that work in this space, so everyone
+  //     knows who to go to for help.", search input "Search and add teams",
+  //     Cancel + Save footer, 400×370 modal.
+  //     (Catalyst rename: "space" → "project" per the Spaces→Projects
+  //     rename pass — see CLAUDE.md §10 NEW-FILE GUARDRAIL session log.)
+  //   - Archive (warning) and Delete (danger): Atlassian Design System
+  //     canonical pattern from atlassian.design/components/modal-dialog —
+  //     "warning or danger styling … must be set on both the modal title
+  //     and the primary button". Bespoke createPortal modal because
+  //     @atlaskit/modal-dialog renders empty in this surface (L21).
+  // Backend writes (link_teams insert, project archive flag, project hard-
+  // delete) are intentionally stubbed via flag.info — no Supabase tables
+  // exist for these flows yet. UI is wired so the affordances are no
+  // longer dead toasts.
+  const [linkedTeamsOpen, setLinkedTeamsOpen] = useState(false);
+  const [linkedTeamsSearch, setLinkedTeamsSearch] = useState('');
+  const [archiveOpen, setArchiveOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+
+  // Apr 28, 2026 (carryover — Set project background).
+  // Pattern source: Jira live DOM probe of the testid
+  // `project-theme-components.ui.theme-picker.popup-content.background-picker-wrapper`
+  // — popup, not modal; 350×500; heading "Space background"; sections:
+  // Photos by Unsplash + Solid colors + Gradients + Custom images, plus
+  // "Remove background". Catalyst scope (Vikram, Apr 28): solid + gradient
+  // + remove only. No Unsplash API integration, no custom upload — those
+  // require API keys / Storage buckets we haven't provisioned. Background
+  // value persisted in `projects.settings.background` (existing JSONB,
+  // no migration needed) as `{ type: 'solid'|'gradient', value: <css> }`.
+  // Renders on the chrome band only via AtlaskitPageShell's chromeBg prop.
+  const [bgPickerAnchor, setBgPickerAnchor] = useState<{ top: number; left: number } | null>(null);
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
     () => parseSet(searchParams.get('collapsed')),
@@ -903,31 +990,29 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       out.push(it);
     };
 
-    // Jira parity (2026-04-27): when typeFilter='all', the list is FLAT
-     // (matches Jira's list view, e.g. /jira/software/c/projects/BAU/list).
-     // Catalyst's tree view only emitted children when the parent epic was
-     // in expandedIds — so with all 11 epics collapsed by default, the
-     // user saw "135 items" instead of the actual 243. Force-expand all
-     // parents on the "All" tab; other tabs preserve the manual tree.
+    // Apr 28 2026 (carryover #13 — chevron discoverability fix).
+    // Pattern source: Jira BAU list view live DOM probe — clicked the
+    // expand button on BAU-5419, observed delta +10 rows (children
+    // expanded inline) and aria-label flipped from "open" to "collapse".
+    // Initial state: ALL parents collapsed. Children appear only when the
+    // user explicitly clicks a chevron.
     //
-    // Apr 27 2026 (jira-compare regression F-NEW-3 functional fill):
-    // chevron click on a parent row ADDS that row's id to expandedIds.
-    // For typeFilter='all' we now invert the meaning of expandedIds:
-    // it's a set of EXPLICITLY-COLLAPSED parents. Children render unless
-    // the parent is in that set. For other typeFilters, expandedIds keeps
-    // its original "explicit-expand" semantics (manual tree). This way
-    // the chevron actually collapses children on the BAU list view —
-    // matching Jira's behaviour where clicking a parent's chevron
-    // toggles its children's visibility.
-    const flattenAll = typeFilter === 'all';
+    // Catalyst previously inverted the semantics for typeFilter='all'
+    // (Apr 27 2026 — F-NEW-3 fill): start all expanded, expandedIds
+    // tracks explicitly-COLLAPSED rows. That diverged from Jira and
+    // hurt discoverability — the chevron started rotated-down and users
+    // didn't see "click to expand" affordance on initial load.
+    //
+    // Reverted to standard semantics: expandedIds tracks explicitly-
+    // EXPANDED rows. Initial set is empty (URL-seeded), so all parents
+    // start collapsed. Clicking a chevron adds the parent's id to the
+    // set. Same behaviour for every typeFilter. Matches Jira parity.
     for (const top of topLevel) {
       const topVisible = matchesText(top) && matchesType(top) && matchesFilterBar(top);
       const kids = childrenOf.get(top.id) ?? [];
       const matchingKids = kids.filter((k) => matchesText(k) && matchesType(k) && matchesFilterBar(k));
       if (topVisible) tryPush(top);
-      const showChildren = flattenAll
-        ? !expandedIds.has(top.id) // expandedIds = explicitly-collapsed when flattenAll
-        : expandedIds.has(top.id); // expandedIds = explicitly-expanded otherwise
+      const showChildren = expandedIds.has(top.id);
       if (showChildren) {
         for (const k of matchingKids) tryPush(k);
       }
@@ -1000,6 +1085,23 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
         case 'parent':   return it.parent_label || (it.type === 'epic' ? it.title : 'No parent');
         case 'assignee': return it.assignee_name || 'Unassigned';
         case 'priority': return it.priority ? it.priority[0].toUpperCase() + it.priority.slice(1) : 'No priority';
+        // Apr 28, 2026 (jira-compare cycle 2): per-type comparison —
+        // map BacklogItem.type ('story' | 'bug' | 'incident' | 'epic' |
+        // 'feature') to the Jira display label so users see "Story",
+        // "QA Bug", "Production Incident", "Epic", "Feature".
+        case 'type': {
+          const t = it.type || '';
+          if (t === 'epic') return 'Epic';
+          if (t === 'feature') return 'Feature';
+          if (t === 'story') return 'Story';
+          if (t === 'bug') return 'QA Bug';
+          if (t === 'incident') return 'Production Incident';
+          return t ? t[0].toUpperCase() + t.slice(1) : 'No type';
+        }
+        case 'storyPoints': {
+          const sp = (it as any).story_points ?? (it as any).storyPoints;
+          return (sp === null || sp === undefined || sp === '') ? 'No estimate' : String(sp);
+        }
         default: return '—';
       }
     };
@@ -1227,11 +1329,13 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // both a parity gap and an a11y gap (screen readers read an empty
       // header for the issue-type cell). Setting label to "Type" fixes
       // both findings in one change — visible text doubles as the
-      // accessible name on the th element. Width bumped 3 → 8 to give
-      // the header text comfortable footprint (~88px @ 1100 minw)
-      // without overshooting Jira's 110px.
+      // accessible name on the th element.
+      // Apr 28, 2026 (jira-compare cycle 2 T10): width 8 (~88px) → 11
+      // (~110px) to match Jira's actual probed cell_type width=110px.
+      // Earlier 8 was a conservative under-shoot; the new icon (BAU-5684)
+      // + 8/8 padding + optional 24px chevron gutter need the full 110.
       label: 'Type',
-      width: 8,
+      width: 11,
       align: 'start',
       alwaysVisible: true,
       cell: makeTypeIconCell((it: BacklogItem) => {
@@ -1817,7 +1921,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           fontSize: 12, fontWeight: 700,
         }}>✓</span>
         <span style={{
-          fontSize: 14, fontWeight: 653,
+          // Apr 28, 2026 (jira-compare cycle 2 P22): fontWeight 653 → 600
+          // to match Atlaskit canonical heading weight token. 653 was a
+          // bespoke value carried over from the old shell.
+          fontSize: 14, fontWeight: 600,
           color: token('color.text', '#172B4D'),
           letterSpacing: '-0.003em',
         }}>Catalyst work item</span>
@@ -1836,6 +1943,18 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
           onClick={toggleFullscreen}
         >
           {panelMode === 'fullscreen' ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
+        </DetailNavIconButton>
+        {/* Apr 28, 2026 (jira-compare cycle 2 P5): open-in-new-tab icon
+            added to match Jira's panel header triad ↗ / ⤢ / ×. Routes
+            to /project-hub/<projectKey>/issues/<key> which mounts the
+            full-page issue view. No side effect on panel state. */}
+        <DetailNavIconButton
+          ariaLabel="Open issue in full page"
+          onClick={() => {
+            if (detailItemId) window.open(`/project-hub/${projectKey}/issues/${detailItemId}`, '_blank');
+          }}
+        >
+          <Maximize2 size={14} style={{ transform: 'rotate(45deg)' }} />
         </DetailNavIconButton>
         <DetailNavIconButton ariaLabel="Close panel (Esc)" onClick={closeDetail}>
           <CloseIcon size={14} />
@@ -1867,7 +1986,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // the chrome band, not inside the table card). The `title` prop is
       // intentionally NOT passed; passing it would double-render the H1.
       sideRail={useRailAsSideSlot ? railInnerContent : undefined}
-      sideRailWidth={400}
+      // Apr 28, 2026 (jira-compare cycle 2 P1): panel width 400 → 528.
+      // Probed Catalyst panelW=399, Jira drawer narrow=528. Catalyst was
+      // ~24% too narrow, cramping field rows + Description column.
+      // Aligns with @atlaskit/drawer narrow preset.
+      sideRailWidth={528}
       flush
       // Apr 27, 2026 — jira-compare iter 3: opt in to Jira's blue page
       // chrome (#E9F2FE probed at https://digital-transformation.atlassian.net/jira/software/c/projects/BAU/list?groupBy=status)
@@ -1876,7 +1999,11 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       // 1214px viewport). cardBorder mirrors Jira's BaseTable subtle
       // stroke. SCOPED to this surface only — Dashboard / Releases /
       // other Project Hub views still use the V3 flat-white shell.
-      chromeBg="#E9F2FE"
+      // Apr 28, 2026: chrome bg now resolves from
+      // `projects.settings.background` (Set project background picker).
+      // Falls back to BG_DEFAULT (#E9F2FE) when unset → preserves the
+      // Jira-parity look for projects that haven't picked a background.
+      chromeBg={chromeBgValue}
       // Apr 27 2026 (jira-compare regression iter 4 — Vikram fullscreen
       // probe). Jira at vp 2133: baseTable.x=47, projectHeader.x=0,
       // padding-x=24 → card sits 23px in from chrome content edge. Was
@@ -2036,7 +2163,10 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             The global-nav Create handles cross-hub creation. Adding a
             third Create CTA on the toolbar was scope creep that broke
             Jira parity. Removed cleanly; toolbar starts with Search. */}
-        <div style={{ width: 280 }}>
+        {/* Apr 28, 2026 (jira-compare cycle 2 T5): wrapper width fixed
+            280 → flex:1 with min/max so the input expands like Jira's
+            (probed Jira width=625px) instead of cramming at 280. */}
+        <div style={{ flex: 1, minWidth: 240, maxWidth: 640 }}>
           <Textfield
             isCompact
             placeholder="Search list"
@@ -2192,23 +2322,17 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             groups={groupedRows ?? undefined}
             collapsedGroups={collapsedGroups}
             onToggleGroup={toggleGroup}
-            // Apr 27 2026 (jira-compare regression F-NEW-3 functional fill):
-            // wire chevron slot to BacklogPage's existing childrenOf Map +
-            // expandedIds state. typeFilter='all' uses INVERTED semantics
-            // (expandedIds = explicitly-collapsed) so the chevron icon
-            // needs to read "expanded" = parent NOT in collapsedSet. We
-            // pass an `expandedRowIds` Set that always reflects the
-            // visible state regardless of which mode is active.
+            // Apr 28 2026 (carryover #13 — chevron discoverability):
+            // expandedRowIds passes through expandedIds directly. Removed
+            // the typeFilter='all' inversion (which previously fed the
+            // table a set of "currently expanded" parents derived from
+            // the inverted expandedIds = explicitly-collapsed semantics).
+            // Both the visibleRows logic above and the chevron icon now
+            // share the same standard semantics: expandedIds tracks
+            // explicitly-EXPANDED rows, initial state empty → all
+            // chevrons render collapsed. Click to expand. Matches Jira.
             getRowHasChildren={(row) => childrenOf.has(row.id)}
-            expandedRowIds={
-              typeFilter === 'all'
-                ? new Set(
-                    topLevel
-                      .filter((t) => childrenOf.has(t.id) && !expandedIds.has(t.id))
-                      .map((t) => t.id),
-                  )
-                : expandedIds
-            }
+            expandedRowIds={expandedIds}
             onToggleRowExpanded={(rowId) => {
               setExpandedIds((prev) => {
                 const next = new Set(prev);
@@ -2307,9 +2431,16 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
             sortKey={sortKey || undefined}
             sortOrder={sortDir || undefined}
             onSortChange={(k, ord) => { setSortKey(k); setSortDir(ord); }}
-            rowsPerPage={pageSize}
-            page={page}
-            onPageChange={setPage}
+            // Apr 28, 2026 (jira-compare cycle 2 T20+T21): pagination
+            // footer ("Page 1 of 34" + Prev/Next + circular info button)
+            // removed — Jira /list uses infinite scroll, has none of these.
+            // Setting rowsPerPage=undefined disables JiraTable's slice +
+            // paginator, rendering all rows with native scroll. True
+            // IntersectionObserver-driven lazy load deferred to next batch
+            // (T20 follow-up); for now native scroll is correct parity.
+            rowsPerPage={undefined as any}
+            page={undefined as any}
+            onPageChange={undefined as any}
             density="compact"
             ariaLabel="Unified backlog"
             emptyView={
@@ -2617,13 +2748,19 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
                 pi_label: null,
               });
             } },
-            { id: 'teams', label: 'Linked teams', onClick: () => flag.info('Linked teams', 'Team management is coming soon.') },
-            { id: 'bg', label: 'Set project background', onClick: () => flag.info('Set project background', 'Backgrounds are coming soon.') },
+            { id: 'teams', label: 'Linked teams', onClick: () => setLinkedTeamsOpen(true) },
+            { id: 'bg', label: 'Set project background', onClick: () => {
+              // Anchor the popup at the menu's left edge, just below it
+              // (matches Jira's popup-anchored-to-menu-item placement).
+              if (projectMenuAnchor) {
+                setBgPickerAnchor({ top: projectMenuAnchor.top + 32, left: projectMenuAnchor.left });
+              }
+            } },
             { id: 'sep1', divider: true },
             { id: 'settings', label: 'Project settings', onClick: () => flag.info('Project settings', 'Settings page is coming soon.') },
             { id: 'sep2', divider: true },
-            { id: 'archive', label: 'Archive project', onClick: () => flag.info('Archive project', 'Archive flow is coming soon.') },
-            { id: 'delete', label: 'Delete project', danger: true, onClick: () => flag.info('Delete project', 'Delete flow is coming soon.') },
+            { id: 'archive', label: 'Archive project', onClick: () => setArchiveOpen(true) },
+            { id: 'delete', label: 'Delete project', danger: true, onClick: () => { setDeleteConfirmText(''); setDeleteOpen(true); } },
           ].map((item) => {
             if ((item as any).divider) {
               return <div key={item.id} style={{ height: 1, background: token('color.border', '#DFE1E6'), margin: '6px 0' }} />;
@@ -2912,6 +3049,533 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
       </div>,
       document.body,
     )}
+
+    {/* Apr 28 2026 (carryover C — Linked teams).
+        Pattern source: Jira live DOM probe of BAU project ⋯ → Linked teams.
+        Captured: title "Link contributing teams", body "Add the teams that
+        work in this space, so everyone knows who to go to for help.", search
+        input "Search and add teams", Cancel + Save footer, 400×370 modal,
+        testid `modal-dialog`. Catalyst rename: "space" → "project". Bespoke
+        createPortal because @atlaskit/modal-dialog renders empty here (L21).
+        Save handler is intentionally a flag.info — there is no
+        ph_linked_teams table yet; backend wiring lands separately. */}
+    {linkedTeamsOpen && ReactDOM.createPortal(
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="linked-teams-modal-title"
+        data-testid="linked-teams-modal"
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(9, 30, 66, 0.54)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          paddingTop: 80,
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            setLinkedTeamsOpen(false);
+            setLinkedTeamsSearch('');
+          }
+        }}
+      >
+        <div
+          style={{
+            width: 400,
+            maxWidth: 'calc(100vw - 48px)',
+            background: token('elevation.surface', '#FFFFFF'),
+            borderRadius: 8,
+            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header — matches Jira's modal-header-manage-team layout. */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '20px 24px 8px',
+            }}
+          >
+            <h2
+              id="linked-teams-modal-title"
+              style={{
+                margin: 0,
+                fontSize: 20,
+                fontWeight: 653,
+                letterSpacing: '-0.003em',
+                color: token('color.text', '#172B4D'),
+              }}
+            >
+              Link contributing teams
+            </h2>
+            <button
+              type="button"
+              data-testid="linked-teams-modal-close-button"
+              aria-label="Close"
+              onClick={() => { setLinkedTeamsOpen(false); setLinkedTeamsSearch(''); }}
+              style={{
+                width: 32, height: 32, border: 'none', background: 'transparent',
+                color: token('color.text.subtle', '#6B6E76'), cursor: 'pointer',
+                borderRadius: 3, display: 'inline-flex', alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CloseIcon size={16} />
+            </button>
+          </div>
+
+          {/* Body — Jira copy adapted: "space" → "project". */}
+          <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#172B4D') }}>
+              Add the teams that work in this project, so everyone knows who to go to for help.
+            </p>
+            <Textfield
+              isCompact
+              autoFocus
+              placeholder="Search and add teams"
+              value={linkedTeamsSearch}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLinkedTeamsSearch(e.target.value)}
+              elemBeforeInput={
+                <span style={{ paddingInlineStart: 8, color: token('color.text.subtlest', '#6B778C'), display: 'flex', alignItems: 'center' }}>
+                  <SearchIcon size={14} />
+                </span>
+              }
+            />
+          </div>
+
+          {/* Footer — Cancel + Save (Jira parity). */}
+          <div
+            data-testid="linked-teams-modal-footer"
+            style={{
+              padding: '12px 24px 16px',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 8,
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            }}
+          >
+            <Button appearance="subtle" onClick={() => { setLinkedTeamsOpen(false); setLinkedTeamsSearch(''); }}>
+              Cancel
+            </Button>
+            <Button
+              appearance="primary"
+              onClick={() => {
+                // Backend wiring deferred — no ph_linked_teams table yet.
+                // Surfacing as a flag so the affordance is wired end-to-end
+                // visually without claiming success against a missing DB.
+                flag.info('Save linked teams', 'Team linking will persist once the ph_linked_teams table lands.');
+                setLinkedTeamsOpen(false);
+                setLinkedTeamsSearch('');
+              }}
+            >
+              Save
+            </Button>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    )}
+
+    {/* Apr 28 2026 (carryover A — Archive project warning modal).
+        Pattern source: Atlassian Design System docs at
+        atlassian.design/components/modal-dialog/examples § Warning.
+        ADS canonical: "warning or danger styling … must be set on both
+        the modal title and the primary button". Bespoke createPortal
+        (L21) so we apply the warning palette via @atlaskit/tokens
+        (`color.text.warning`, `color.icon.warning`, `color.background.warning.bold`)
+        on the title icon, title text, and primary button.
+        Archive button stub: there is no project archive flag on the
+        projects table yet (verified — the projects schema doesn't have
+        archived_at). Wired to flag.info to acknowledge UX, no DB write. */}
+    {archiveOpen && ReactDOM.createPortal(
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="archive-project-modal-title"
+        data-testid="archive-project-modal"
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(9, 30, 66, 0.54)',
+          zIndex: 9999,
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          paddingTop: 100,
+        }}
+        onKeyDown={(e) => { if (e.key === 'Escape') setArchiveOpen(false); }}
+      >
+        <div
+          style={{
+            width: 480, maxWidth: 'calc(100vw - 48px)',
+            background: token('elevation.surface', '#FFFFFF'),
+            borderRadius: 8,
+            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            display: 'flex', flexDirection: 'column',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header — warning appearance (icon + title in warning color). */}
+          <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ color: token('color.icon.warning', '#946F00'), display: 'inline-flex' }}>
+              <AlertTriangle size={20} />
+            </span>
+            <h2
+              id="archive-project-modal-title"
+              style={{
+                margin: 0, fontSize: 20, fontWeight: 653,
+                letterSpacing: '-0.003em',
+                color: token('color.text.warning', '#7F5F01'),
+              }}
+            >
+              Archive project?
+            </h2>
+          </div>
+
+          <div style={{ padding: '0 24px 16px' }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#172B4D'), lineHeight: '20px' }}>
+              <strong>{pageTitle}</strong> will be archived. Issues stay accessible from search and links, but the project disappears from the active projects list. You can unarchive it later.
+            </p>
+          </div>
+
+          <div
+            style={{
+              padding: '12px 24px 16px',
+              display: 'flex', justifyContent: 'flex-end', gap: 8,
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            }}
+          >
+            <Button appearance="subtle" onClick={() => setArchiveOpen(false)}>Cancel</Button>
+            <Button
+              appearance="warning"
+              iconBefore={<Archive size={14} />}
+              onClick={() => {
+                // No `archived_at` column on `projects` yet; archive flag
+                // ships with a follow-on schema change. Surface as info.
+                flag.info('Archive project', 'Project archival will persist once the projects.archived_at column lands.');
+                setArchiveOpen(false);
+              }}
+            >
+              Archive
+            </Button>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    )}
+
+    {/* Apr 28 2026 (carryover A — Delete project danger modal).
+        Pattern source: Atlassian Design System docs at
+        atlassian.design/components/modal-dialog/examples § Danger.
+        Includes the type-to-confirm pattern Atlaskit recommends for
+        destructive actions: user must type the project key/name to
+        enable the Delete button. Adapted from
+        @atlaskit/modal-dialog patterns and Atlassian's destructive-
+        action guidance. Bespoke createPortal (L21).
+        Delete button stub: hard-deleting a `projects` row would cascade
+        across many tables (issues, releases, sprints, etc.) and there
+        is no defined cascade path. Wired to flag.info — actual delete
+        ships with a backend Edge Function. */}
+    {deleteOpen && ReactDOM.createPortal(
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-project-modal-title"
+        data-testid="delete-project-modal"
+        style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(9, 30, 66, 0.54)',
+          zIndex: 9999,
+          display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+          paddingTop: 100,
+        }}
+        onKeyDown={(e) => { if (e.key === 'Escape') { setDeleteOpen(false); setDeleteConfirmText(''); } }}
+      >
+        <div
+          style={{
+            width: 480, maxWidth: 'calc(100vw - 48px)',
+            background: token('elevation.surface', '#FFFFFF'),
+            borderRadius: 8,
+            boxShadow: '0 8px 32px rgba(9, 30, 66, 0.25)',
+            display: 'flex', flexDirection: 'column',
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header — danger appearance. */}
+          <div style={{ padding: '20px 24px 12px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ color: token('color.icon.danger', '#AE2A19'), display: 'inline-flex' }}>
+              <AlertTriangle size={20} />
+            </span>
+            <h2
+              id="delete-project-modal-title"
+              style={{
+                margin: 0, fontSize: 20, fontWeight: 653,
+                letterSpacing: '-0.003em',
+                color: token('color.text.danger', '#AE2A19'),
+              }}
+            >
+              Delete project?
+            </h2>
+          </div>
+
+          <div style={{ padding: '0 24px 16px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <p style={{ margin: 0, fontSize: 14, color: token('color.text', '#172B4D'), lineHeight: '20px' }}>
+              This will permanently delete <strong>{pageTitle}</strong> and all of its issues, releases, and sprints. This action cannot be undone.
+            </p>
+            <div>
+              <label
+                htmlFor="delete-project-confirm"
+                style={{
+                  display: 'block',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: token('color.text.subtle', '#6B6E76'),
+                  marginBottom: 4,
+                }}
+              >
+                Type <code style={{ background: token('color.background.neutral', '#DFE1E6'), padding: '0 4px', borderRadius: 3, fontFamily: 'inherit' }}>{projectKey}</code> to confirm
+              </label>
+              <Textfield
+                id="delete-project-confirm"
+                autoFocus
+                placeholder={projectKey}
+                value={deleteConfirmText}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeleteConfirmText(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '12px 24px 16px',
+              display: 'flex', justifyContent: 'flex-end', gap: 8,
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+            }}
+          >
+            <Button appearance="subtle" onClick={() => { setDeleteOpen(false); setDeleteConfirmText(''); }}>Cancel</Button>
+            <Button
+              appearance="danger"
+              iconBefore={<Trash2 size={14} />}
+              isDisabled={deleteConfirmText !== projectKey}
+              onClick={() => {
+                // No cascade path defined for projects → issues/releases/etc.
+                // Real delete ships behind an Edge Function with cascade
+                // ordering + audit log. Surface as info for now.
+                flag.info('Delete project', 'Project deletion needs an Edge Function with cascade ordering before it can ship. Stubbed.');
+                setDeleteOpen(false);
+                setDeleteConfirmText('');
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </div>,
+      document.body,
+    )}
+
+    {/* Apr 28 2026 — Set project background picker.
+        Pattern source: Jira live DOM probe of testid
+        `project-theme-components.ui.theme-picker.popup-content.background-picker-wrapper`.
+        Probe captured: popup (not modal), 350×500 anchored to the menu
+        item, heading "Space background", sections for Photos by Unsplash
+        + Solid colors + Gradients + Custom images, plus "Remove
+        background" footer action.
+        Catalyst scope (Vikram, Apr 28): Solid + Gradient + Remove only.
+        Persistence: writes to `projects.settings.background` JSONB key
+        (existing column, no migration). Optimistic UI via setQueryData
+        on the `tm-project` cache key. Renders on the chrome band only
+        (chromeBg prop on AtlaskitPageShell). */}
+    {bgPickerAnchor && ReactDOM.createPortal(
+      <>
+        <div
+          onClick={() => setBgPickerAnchor(null)}
+          style={{ position: 'fixed', inset: 0, zIndex: 9000 }}
+        />
+        <div
+          role="dialog"
+          aria-labelledby="project-background-picker-title"
+          data-testid="project-background-picker"
+          style={{
+            position: 'fixed',
+            top: bgPickerAnchor.top,
+            left: bgPickerAnchor.left,
+            zIndex: 9001,
+            width: 350,
+            maxHeight: 500,
+            background: token('elevation.surface.overlay', '#FFFFFF'),
+            border: `1px solid ${token('color.border', '#DFE1E6')}`,
+            borderRadius: 8,
+            boxShadow: '0 8px 24px rgba(9, 30, 66, 0.18)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => { if (e.key === 'Escape') setBgPickerAnchor(null); }}
+        >
+          {/* Header */}
+          <div style={{ padding: '14px 16px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2
+              id="project-background-picker-title"
+              style={{
+                margin: 0,
+                fontSize: 16,
+                fontWeight: 653,
+                color: token('color.text', '#172B4D'),
+              }}
+            >
+              Project background
+            </h2>
+            <button
+              type="button"
+              aria-label="Close"
+              onClick={() => setBgPickerAnchor(null)}
+              style={{
+                width: 24, height: 24, border: 'none', background: 'transparent',
+                color: token('color.text.subtle', '#6B6E76'),
+                cursor: 'pointer', borderRadius: 3, display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center',
+              }}
+            >
+              <CloseIcon size={14} />
+            </button>
+          </div>
+
+          {/* Body — scrollable */}
+          <div style={{ padding: '8px 16px 12px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {/* Solid colors section */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B6E76'), marginBottom: 8 }}>
+                Solid colors
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 8 }}>
+                {BG_SOLIDS.map((sw) => {
+                  const isActive = projectBackground?.type === 'solid' && projectBackground.value === sw.value;
+                  return (
+                    <button
+                      key={sw.value}
+                      type="button"
+                      title={sw.name}
+                      aria-label={`Set background to ${sw.name}`}
+                      data-active={isActive || undefined}
+                      onClick={async () => {
+                        const nextBg: ProjectBackground = { type: 'solid', value: sw.value };
+                        const prevSettings = (project as any)?.settings ?? {};
+                        const nextSettings = { ...prevSettings, background: nextBg };
+                        // Optimistic
+                        queryClient.setQueryData(['projects', projectId], (old: any) => old ? { ...old, settings: nextSettings } : old);
+                        setBgPickerAnchor(null);
+                        try {
+                          const { error } = await supabase.from('projects').update({ settings: nextSettings as any }).eq('id', projectId);
+                          if (error) throw error;
+                          queryClient.invalidateQueries({ queryKey: ['projects', projectId] });
+                        } catch (e: any) {
+                          flag.error('Background not saved', e?.message || 'Try again.');
+                          queryClient.invalidateQueries({ queryKey: ['projects', projectId] });
+                        }
+                      }}
+                      style={{
+                        height: 36,
+                        borderRadius: 6,
+                        background: sw.value,
+                        border: isActive
+                          ? `2px solid ${token('color.border.selected', '#0C66E4')}`
+                          : `1px solid ${token('color.border', '#DFE1E6')}`,
+                        cursor: 'pointer',
+                        padding: 0,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Gradients section */}
+            <div>
+              <div style={{ fontSize: 12, fontWeight: 600, color: token('color.text.subtle', '#6B6E76'), marginBottom: 8 }}>
+                Gradients
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                {BG_GRADIENTS.map((gr) => {
+                  const isActive = projectBackground?.type === 'gradient' && projectBackground.value === gr.value;
+                  return (
+                    <button
+                      key={gr.value}
+                      type="button"
+                      title={gr.name}
+                      aria-label={`Set background to ${gr.name} gradient`}
+                      data-active={isActive || undefined}
+                      onClick={async () => {
+                        const nextBg: ProjectBackground = { type: 'gradient', value: gr.value };
+                        const prevSettings = (project as any)?.settings ?? {};
+                        const nextSettings = { ...prevSettings, background: nextBg };
+                        queryClient.setQueryData(['projects', projectId], (old: any) => old ? { ...old, settings: nextSettings } : old);
+                        setBgPickerAnchor(null);
+                        try {
+                          const { error } = await supabase.from('projects').update({ settings: nextSettings as any }).eq('id', projectId);
+                          if (error) throw error;
+                          queryClient.invalidateQueries({ queryKey: ['projects', projectId] });
+                        } catch (e: any) {
+                          flag.error('Background not saved', e?.message || 'Try again.');
+                          queryClient.invalidateQueries({ queryKey: ['projects', projectId] });
+                        }
+                      }}
+                      style={{
+                        height: 50,
+                        borderRadius: 6,
+                        background: gr.value,
+                        border: isActive
+                          ? `2px solid ${token('color.border.selected', '#0C66E4')}`
+                          : `1px solid ${token('color.border', '#DFE1E6')}`,
+                        cursor: 'pointer',
+                        padding: 0,
+                      }}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer — Remove background. Disabled when no background is set. */}
+          <div
+            style={{
+              padding: '10px 16px 12px',
+              borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+              display: 'flex',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <Button
+              appearance="subtle"
+              isDisabled={!projectBackground}
+              onClick={async () => {
+                const prevSettings = (project as any)?.settings ?? {};
+                const { background: _omit, ...rest } = prevSettings;
+                queryClient.setQueryData(['projects', projectId], (old: any) => old ? { ...old, settings: rest } : old);
+                setBgPickerAnchor(null);
+                try {
+                  const { error } = await supabase.from('projects').update({ settings: rest as any }).eq('id', projectId);
+                  if (error) throw error;
+                  queryClient.invalidateQueries({ queryKey: ['projects', projectId] });
+                } catch (e: any) {
+                  flag.error('Background not removed', e?.message || 'Try again.');
+                  queryClient.invalidateQueries({ queryKey: ['projects', projectId] });
+                }
+              }}
+            >
+              Remove background
+            </Button>
+          </div>
+        </div>
+      </>,
+      document.body,
+    )}
     </>
   );
 }
@@ -2935,13 +3599,15 @@ function BacklogPage({ projectId, projectKey }: { projectId: string; projectKey:
 // menu is portal-mounted to <body> with position computed from the
 // trigger rect, exactly mirroring the editors.tsx EditorPopover pattern
 // that's been verified working in this exact React tree.
-type GroupByOption = 'none' | 'status' | 'parent' | 'assignee' | 'priority';
+type GroupByOption = 'none' | 'type' | 'status' | 'parent' | 'assignee' | 'priority' | 'storyPoints';
 const GROUP_BY_LABELS: Record<GroupByOption, string> = {
   none: 'None',
+  type: 'Type',
   status: 'Status',
   parent: 'Parent',
   assignee: 'Assignee',
   priority: 'Priority',
+  storyPoints: 'Story Points',
 };
 function GroupByControl({
   value, onChange,
@@ -2955,7 +3621,10 @@ function GroupByControl({
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const itemsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  const OPTIONS: GroupByOption[] = ['none', 'status', 'parent', 'assignee', 'priority'];
+  // Apr 28, 2026 (jira-compare cycle 2): order matches Jira /list:
+  // Status / Assignee / Priority / Story Points, with 'type' first as
+  // the primary axis users actually want for per-type comparison.
+  const OPTIONS: GroupByOption[] = ['none', 'type', 'status', 'parent', 'assignee', 'priority', 'storyPoints'];
 
   const triggerText = value === 'none' ? 'Group' : `Group: ${GROUP_BY_LABELS[value]}`;
 

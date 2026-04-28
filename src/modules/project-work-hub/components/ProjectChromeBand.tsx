@@ -208,6 +208,11 @@ export function ProjectChromeBand({
             margin: 0,
             fontSize: 20,
             fontWeight: 653,
+            // Apr 28, 2026 (jira-compare cycle 2 T1): explicit lineHeight
+            // 24px. Without it the browser default (1.5 × 20 = 30px)
+            // gave Catalyst H1 box-height 30px vs Jira's probed 24px.
+            // Visual: header band looked vertically over-tall by 6px.
+            lineHeight: '24px',
             letterSpacing: '-0.003em',
             color: token('color.text', '#172B4D'),
             whiteSpace: 'nowrap',
