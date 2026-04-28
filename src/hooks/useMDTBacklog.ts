@@ -66,7 +66,15 @@ export function useMDTBacklog() {
       // 2026 GUARDRAIL — only show items created or updated in 2026+
       const YEAR_2026 = '2026-01-01T00:00:00Z';
 
-      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, brdTasksResult, milestonesResult] = await Promise.all([
+      // BRD-Task sidecar fetch dropped — that path read `ph_issues`
+      // filtered by project_key='MDT' AND issue_type IN ('BRD Task',
+      // 'Sub-task') from the legacy Jira mirror. With Catalyst standing
+      // on its own (no Jira inflow), the sub-task list rebuilds on
+      // Catalyst-native data (existing `ph_initiative_milestones` and
+      // the linked-items roll-up). Keeping `brd_tasks` shape on the
+      // returned initiative as an empty array so consumers compile
+      // unchanged; rebuild lands in a follow-up cycle.
+      const [initResult, profilesResult, deptsResult, scoresResult, favsResult, milestonesResult] = await Promise.all([
         typedQuery('ph_backlog_initiatives_view').select('*').or(`created_at.gte.${YEAR_2026},updated_at.gte.${YEAR_2026}`).limit(5000),
         supabase.from('profiles').select('id, full_name, avatar_url'),
         typedQuery('ph_departments').select('id, name'),
@@ -74,14 +82,6 @@ export function useMDTBacklog() {
         currentUserId
           ? typedQuery('ph_user_favorites').select('initiative_id').eq('user_id', currentUserId)
           : Promise.resolve({ data: [] }),
-        // Fetch BRD Tasks (sub-tasks of Business Requests) from ph_issues
-        typedQuery('ph_issues')
-          .select('issue_key, summary, status, assignee_display_name, priority, jira_created_at, jira_updated_at, parent_key')
-          .eq('project_key', 'MDT')
-          .in('issue_type', ['BRD Task', 'Sub-task'])
-          .not('parent_key', 'is', null)
-          .is('archived_at', null)
-          .limit(5000),
         // Milestone counts per initiative — minimal projection for tally only
         typedQuery('ph_initiative_milestones').select('initiative_id').limit(10000),
       ]);
@@ -109,22 +109,10 @@ export function useMDTBacklog() {
         favSet.add(f.initiative_id);
       });
 
-      // Build BRD tasks map: parent Jira key → BRDTask[]
-      const brdTasksByParent = new Map<string, BRDTask[]>();
-      (brdTasksResult.data || []).forEach((t: any) => {
-        if (!t.parent_key) return;
-        const key = t.parent_key;
-        if (!brdTasksByParent.has(key)) brdTasksByParent.set(key, []);
-        brdTasksByParent.get(key)!.push({
-          issue_key: t.issue_key,
-          summary: t.summary,
-          status: t.status,
-          assignee_display_name: t.assignee_display_name,
-          priority: t.priority,
-          jira_created_at: t.jira_created_at,
-          jira_updated_at: t.jira_updated_at,
-        });
-      });
+      // BRD-Task → parent map dropped along with the sidecar fetch.
+      // Consumers that read `brd_tasks` get an empty array per row so
+      // existing JSX (`init.brd_tasks?.length` checks) compiles and
+      // renders no sub-tasks until the Catalyst-native rebuild lands.
 
       // Tally milestones per initiative_id
       const milestoneCountMap = new Map<string, number>();
@@ -192,7 +180,7 @@ export function useMDTBacklog() {
           jira_issue_key: row.jira_issue_key ?? null,
           created_at: row.created_at,
           updated_at: row.updated_at,
-          brd_tasks: brdTasksByParent.get(row.jira_issue_key || row.initiative_key) || [],
+          brd_tasks: [], // see comment above — empty until rebuild lands
         };
       });
 

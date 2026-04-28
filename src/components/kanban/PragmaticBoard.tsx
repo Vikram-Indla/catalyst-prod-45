@@ -705,6 +705,112 @@ export function PragmaticBoard({
     });
   }, [colMap, onDrop]);
 
+  /* ── Swimlane decomposition.
+     When `swimlaneOf` is provided we slice the cross-column `colMap`
+     into one sub-colMap per lane key, then render N lane bands stacked
+     vertically. Each lane re-uses PragmaticColumn — the same drop
+     targets are registered N times (once per lane), and the global
+     monitor reconciles by colId. Cards never cross lanes via DnD;
+     lane membership is read-only. */
+  const lanes = (() => {
+    if (!swimlaneOf) return null;
+    const buckets = new Map<string, { label: string; subColMap: Record<string, string[]> }>();
+    const ensure = (key: string, label: string) => {
+      let b = buckets.get(key);
+      if (!b) {
+        const seed: Record<string, string[]> = {};
+        for (const c of columns) seed[c.id] = [];
+        b = { label, subColMap: seed };
+        buckets.set(key, b);
+      }
+      return b;
+    };
+    for (const col of columns) {
+      for (const id of colMap[col.id] ?? []) {
+        const issue = issuesById.get(id);
+        if (!issue) continue;
+        const rawKey = swimlaneOf(issue);
+        const key = rawKey ?? '__unassigned__';
+        const label = (swimlaneLabel?.(key)) ?? (rawKey ?? 'Unassigned');
+        ensure(key, label).subColMap[col.id].push(id);
+      }
+    }
+    return Array.from(buckets.entries())
+      .sort((a, b) => a[1].label.localeCompare(b[1].label))
+      .map(([key, v]) => ({ key, label: v.label, subColMap: v.subColMap }));
+  })();
+
+  if (lanes && lanes.length > 0) {
+    return (
+      <div
+        ref={scrollRef}
+        style={{
+          width: '100%',
+          minWidth: columns.length * 267 + (columns.length - 1) * 8,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+        {lanes.map((lane) => {
+          const total = Object.values(lane.subColMap).reduce((s, a) => s + a.length, 0);
+          return (
+            <div key={lane.key}>
+              {/* Swimlane header — sticky at the top of the scroll
+                  container so the lane label stays visible while the
+                  user scans down a long lane. */}
+              <div
+                role="rowheader"
+                aria-label={`Swimlane: ${lane.label}, ${total} card${total === 1 ? '' : 's'}`}
+                style={{
+                  position: 'sticky', top: 0, zIndex: 4,
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '6px 8px',
+                  background: tk.surfaceAlt,
+                  borderBottom: `1px solid ${tk.border}`,
+                  borderRadius: 4,
+                  fontSize: 12, fontWeight: 600,
+                  color: tk.textPrimary,
+                  fontFamily: 'var(--cp-font-body)',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                <span>{lane.label}</span>
+                <span style={{ fontWeight: 500, color: tk.textMuted }}>·</span>
+                <span style={{ fontWeight: 500, color: tk.textMuted }}>{total}</span>
+              </div>
+              <div
+                className="flex"
+                style={{
+                  gap: 8,
+                  width: '100%',
+                  minWidth: columns.length * 267 + (columns.length - 1) * 8,
+                  marginTop: 6,
+                }}
+              >
+                {columns.map((col) => (
+                  <PragmaticColumn
+                    key={`${lane.key}-${col.id}`}
+                    column={col}
+                    issueIds={lane.subColMap[col.id] ?? []}
+                    issuesById={issuesById}
+                    avatarsByName={avatarsByName}
+                    onCardClick={onCardClick}
+                    d={d}
+                    tk={tk}
+                    selectedId={selectedId}
+                    focusedId={focusedId}
+                    {...actions}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
   return (
     <div
       ref={scrollRef}

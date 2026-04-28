@@ -36,6 +36,17 @@ interface CreateInitiativeDrawerProps {
   onClose: () => void;
   conversionSource?: ConversionSource | null;
   onCreated?: (initiativeKey: string) => void;
+  /**
+   * Optional initial DB status enum value. When set, the form opens
+   * with the Status field pre-filled — used by the kanban's per-column
+   * "+ Create initiative" button so a card created from a column lands
+   * straight into that column on save.
+   *
+   * Accepted values: any value in `initiative_status` enum (e.g.
+   * `new_demand`, `in_progress`, `closed`). Unknown values fall back
+   * to `'new'`.
+   */
+  initialStatus?: string | null;
 }
 
 /* ── Hooks ── */
@@ -137,7 +148,7 @@ function FieldWrapper({ label, required, children }: { label: string; required?:
 const INPUT_CLS = "w-full h-9 px-3 text-[13px] bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow placeholder:text-[#71717A]";
 
 /* ── Main Component ── */
-export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated }: CreateInitiativeDrawerProps) {
+export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCreated, initialStatus }: CreateInitiativeDrawerProps) {
   const { isDark } = useTheme();
   const { data: nextKey } = useNextInitiativeKey();
   const createMutation = useCreateInitiative();
@@ -202,9 +213,17 @@ export function CreateInitiativeDrawer({ open, onClose, conversionSource, onCrea
         }
       } else {
         resetForm();
+        // Pre-fill status when opened from the kanban's per-column
+        // "+ Create initiative" button. Unknown values fall back to
+        // EMPTY_FORM.status ('new') so the form never breaks if the
+        // workflow scheme references a slug that's not in the
+        // initiative_status enum yet.
+        if (initialStatus) {
+          setForm(prev => ({ ...prev, status: initialStatus }));
+        }
       }
     }
-  }, [open, conversionSource, departmentOptions, profileOptions, resetForm]);
+  }, [open, conversionSource, departmentOptions, profileOptions, resetForm, initialStatus]);
 
   useEffect(() => {
     if (!open) return;

@@ -39,8 +39,8 @@ import { DetailTabMilestones } from './DetailTabMilestones';
 import { DetailTabAttachments } from './DetailTabAttachments';
 import { DetailTabActivity } from './DetailTabActivity';
 import { InitiativeLinkedItemsTab } from '@/components/producthub/InitiativeLinkedItemsTab';
-import { typedQuery } from '@/integrations/supabase/client';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
+import { typedQuery, supabase } from '@/integrations/supabase/client';
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import '@/styles/initiative-detail-panel.css';
 
@@ -192,6 +192,50 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
     } catch { toast.error('Clone failed'); }
   };
 
+  /* ── Watchers — Catalyst-canonical, on `ph_initiative_watchers` ── */
+  const { data: watcherInfo } = useQuery({
+    queryKey: ['ph-initiative-watchers', initiative.id],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id ?? null;
+      const { data: rows } = await typedQuery('ph_initiative_watchers')
+        .select('user_id')
+        .eq('initiative_id', initiative.id);
+      const list = (rows ?? []) as Array<{ user_id: string }>;
+      return {
+        count: list.length,
+        watching: !!userId && list.some(r => r.user_id === userId),
+        userId,
+      };
+    },
+    staleTime: 30_000,
+  });
+
+  const watcherToggle = useMutation({
+    mutationFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+      if (!userId) throw new Error('Sign in required to watch');
+      if (watcherInfo?.watching) {
+        const { error } = await typedQuery('ph_initiative_watchers')
+          .delete()
+          .eq('initiative_id', initiative.id)
+          .eq('user_id', userId);
+        if (error) throw error;
+      } else {
+        const { error } = await typedQuery('ph_initiative_watchers')
+          .insert({ initiative_id: initiative.id, user_id: userId });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ph-initiative-watchers', initiative.id] });
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Could not update watch state');
+    },
+  });
+
   /**
    * Permalink — Jira-parity affordance. Copies the current URL with
    * `?selectedInitiative=<key>` to the clipboard. Surface owns its own
@@ -299,16 +343,25 @@ export const InitiativeDetailPanel: React.FC<InitiativeDetailPanelProps> = ({
             </span>
           </nav>
           <div className="idp-action-group">
-            {/* Watchers — Jira-parity affordance; backend table is a follow-up */}
+            {/* Watchers — wired to ph_initiative_watchers. Eye icon
+                fills when current user is watching; click toggles. */}
             <button
               className="idp-action-btn"
-              onClick={() => toast.info('Watchers — coming soon', { duration: 1600, position: 'bottom-center' })}
-              aria-label="Watchers"
-              title="Watchers"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+              onClick={() => watcherToggle.mutate()}
+              disabled={watcherToggle.isPending}
+              aria-pressed={!!watcherInfo?.watching}
+              aria-label={watcherInfo?.watching ? 'Stop watching' : 'Start watching'}
+              title={watcherInfo?.watching ? 'Stop watching' : 'Watch this initiative'}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                color: watcherInfo?.watching ? '#0C66E4' : undefined,
+              }}
             >
-              <Eye size={14} />
-              <span style={{ fontSize: 12 }}>0</span>
+              <Eye
+                size={14}
+                fill={watcherInfo?.watching ? '#0C66E4' : 'none'}
+              />
+              <span style={{ fontSize: 12 }}>{watcherInfo?.count ?? 0}</span>
             </button>
             {/* Share — native share sheet; falls back to clipboard */}
             <button

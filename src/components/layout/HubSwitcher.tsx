@@ -106,12 +106,11 @@ export function HubSwitcher() {
         className="z-[1000] p-0 shadow-[0_8px_24px_rgba(9,30,66,0.16)]"
         style={{
           width: 320,
-          // Phase 7 (2026-04-28): swapped #FFFFFF + #DFE1E6 to bridge tokens.
-          // The HubSwitcher dropdown is mounted on every page — it must flip
-          // cleanly. cp(adsTokens.bg.surface) gives white in light, #1A1A1A
-          // in dark. Border via cp(adsTokens.border.default) flips to #2E2E2E.
-          background: 'var(--cp-bg-surface)',
-          border: '1px solid var(--cp-bd)',
+          // Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface.overlay
+          // and color.border. Phase 11 unblocked Atlaskit's dark theme so both
+          // tokens flip natively via --ds-* CSS variables.
+          background: 'var(--ds-surface-overlay, #FFFFFF)',
+          border: '1px solid var(--ds-border, #DFE1E6)',
           borderRadius: 6,
           fontFamily: 'var(--cp-font-body)',
           padding: 0,

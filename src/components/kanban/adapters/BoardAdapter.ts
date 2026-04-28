@@ -252,6 +252,18 @@ export interface BoardAdapter<THubRow = unknown> {
   onGroupByChange: (key: string) => void;
   /** The key that represents "no grouping" (usually `"none"`). */
   groupByNoneKey: string;
+  /**
+   * Optional swimlane resolver. When `groupBy !== groupByNoneKey`, the
+   * shell calls this with the active groupBy key and expects either:
+   *   - a function `(issue) => laneKey | null` (one card → one lane key), or
+   *   - `null` if the adapter doesn't support that groupBy as a swimlane.
+   *
+   * Adapters that don't supply this fall back to flat (non-swimlane)
+   * rendering even when groupBy is set — preserves the legacy behaviour.
+   */
+  swimlaneOf?: (groupBy: string) => ((issue: CanonicalBoardIssue) => string | null) | null;
+  /** Optional humaniser for a lane key shown in the lane header. */
+  swimlaneLabel?: (key: string) => string;
 
   /** Sort options (optional). */
   sortOptions?: BoardSortOption[];

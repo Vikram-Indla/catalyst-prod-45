@@ -34,7 +34,6 @@ import { useNavigate } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Avatar from '@atlaskit/avatar';
 import type { Project } from '@/hooks/useForYouData';
-import { adsTokens, cp } from '@/theme/ads/tokens';
 
 interface RecommendedProjectsStripProps {
   projects: Project[];
@@ -79,7 +78,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
         <h2
           style={{
             font: `600 16px/20px "Inter", system-ui, sans-serif`,
-            color: cp(adsTokens.text.primary),
+            color: token('color.text', '#292A2E'),
             margin: 0,
           }}
         >
@@ -93,7 +92,7 @@ export default function RecommendedProjectsStrip({ projects, maxCards = 3 }: Rec
             border: 'none',
             cursor: 'pointer',
             font: `400 14px/20px "Inter", system-ui, sans-serif`,
-            color: cp(adsTokens.text.primary),
+            color: token('color.text', '#292A2E'),
             padding: 4,
             textDecoration: 'underline',
             textDecorationColor: 'transparent',
@@ -148,14 +147,12 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         // Jira parity: 62px total height, 12/16 padding.
         height: 62,
         padding: '12px 16px',
-        // Phase 7 (2026-04-28): swap token() to bridge tokens. token()
-        // resolved to fallback hex on snapshot path; cards stayed white in
-        // dark mode. cp(adsTokens.bg.surface/hover) flips via Catalyst CSS
-        // layer — surface white→#1A1A1A, hover white→#1F1F1F.
+        // Phase 12 (2026-04-29): reverted to Atlaskit token(). Phase 11
+        // loaded Atlaskit's dark theme — `elevation.surface` flips natively.
         background: hover
-          ? cp(adsTokens.bg.hover)
-          : cp(adsTokens.bg.surface),
-        border: `1px solid ${cp(adsTokens.border.default)}`,
+          ? token('elevation.surface.hovered', '#F0F1F2')
+          : token('elevation.surface', '#FFFFFF'),
+        border: `1px solid ${token('color.border', 'rgba(11,18,14,0.14)')}`,
         borderRadius: 4,
         cursor: 'pointer',
         textAlign: 'left',
@@ -198,7 +195,7 @@ function ProjectCardButton({ card, onClick }: { card: Project; onClick: () => vo
         <div
           style={{
             font: `400 12px/16px "Inter", system-ui, sans-serif`,
-            color: cp(adsTokens.text.muted),
+            color: token('color.text.subtlest', '#626F86'),
             marginTop: 2,
             overflow: 'hidden',
             textOverflow: 'ellipsis',

@@ -404,12 +404,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         background-color: #F4F5F7 !important;
       }
       /* Grid lines via box-shadow (immune to Atlaskit's em-based overrides).
-         Phase 3 (2026-04-28): switched border literal #DFE1E6 to --cp-bd so
-         the line color flips to #2E2E2E in dark mode. Light parity with
-         Jira preserved (#DFE1E6 vs --cp-bd light #E5E7EB — within 2% LRGB
-         delta, visually identical). */
+         Phase 12 (2026-04-29): reverted to Atlaskit color.border via
+         --ds-border CSS variable. Phase 11 made it flip natively. */
       .jira-table-grid table tbody > tr > td {
-        box-shadow: inset 0 -1px 0 0 var(--cp-bd, #DFE1E6) !important;
+        box-shadow: inset 0 -1px 0 0 var(--ds-border, #DFE1E6) !important;
       }
       /* Apr 27, 2026 (Vikram audit pass 4): Type column is icon-only, so
          the standard 12px L/R cell padding leaves ~14px of dead space
@@ -424,22 +422,12 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
         padding-right: 8px !important;
       }
       .jira-table-grid table thead > tr > th {
-        /* Apr 28, 2026 (jira-compare cycle 4): tried tokenizing bg via
-           --ds-background-neutral-subtle but that token resolves to
-           transparent (rgba 0,0,0,0) in the Atlaskit light theme — would
-           erase the header band entirely. Jira's actual computed header
-           bg is the literal hex #F7F8F9 (probed live), so we keep the
-           hex in light. Border tokenized to --ds-border which DOES resolve
-           to a visible color and matches Jira's bottom rule.
-           Phase 3 (2026-04-28): hardcoded #F7F8F9 made the header band
-           glaring near-white in dark mode. Kept the light literal for
-           Jira parity, added a dedicated dark override below. */
+        /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface.sunken
+           token via --ds-surface-sunken CSS variable. Phase 11 unblocked
+           dark theme — token flips natively. Removed Catalyst-specific
+           [data-theme="dark"] override block; ADS owns the band colour. */
         box-shadow: inset 0 -2px 0 0 var(--ds-border, #C1C7D0) !important;
-        background: #F7F8F9 !important;
-      }
-      [data-theme="dark"] .jira-table-grid table thead > tr > th {
-        /* NOCTURNE thead band — matches --cp-bg-inset value. */
-        background: #111111 !important;
+        background: var(--ds-surface-sunken, #F7F8F9) !important;
       }
       /* Focused row overrides the td shadow with its own blue bar */
       .jira-table-grid .jira-table-row-focused > td:first-child {
@@ -579,12 +567,10 @@ export function JiraTable<TRow>(props: JiraTableProps<TRow>) {
       .jira-table-grid tbody td {
         padding: 0 12px;
         vertical-align: middle;
-        /* Phase 3 (2026-04-28): hardcoded #FFFFFF made every body cell stay
-           glaring white in dark mode. Switched to var(--cp-bg) which flips
-           cleanly via Catalyst's CSS layer (#FFFFFF light, #0A0A0A dark)
-           since the Phase-0 data-theme restore landed. Light value is
-           preserved exactly. */
-        background: var(--cp-bg, #FFFFFF);
+        /* Phase 12 (2026-04-29): reverted to Atlaskit elevation.surface
+           token via --ds-surface CSS variable. Phase 11 unblocked Atlaskit's
+           bundled dark theme so --ds-surface flips natively. */
+        background: var(--ds-surface, #FFFFFF);
         /* Apr 27, 2026 (L60): explicit typography baseline per Jira-parity
            spec — 14/20/400 with primary text color. Cells with their own
            cell-renderers (Lozenge, Avatar, dates, etc.) override locally;

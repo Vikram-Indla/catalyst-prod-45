@@ -281,6 +281,20 @@ export function KanbanBoardShell<THubRow = unknown>({
             : undefined}
           visibleFields={viewSettings.visibleFields}
           resolveIcon={adapter.resolveIcon as ((issue: import('@/components/kanban/kanban-types').BoardIssue) => React.ReactNode | null) | undefined}
+          /*
+            Swimlane resolver — adapter exposes swimlaneOf(groupBy) → fn|null.
+            When groupBy != 'none' AND adapter.swimlaneOf returns a fn,
+            PragmaticBoard switches to lane-band rendering. Otherwise the
+            board renders flat (legacy path).
+          */
+          swimlaneOf={(() => {
+            if (adapter.groupBy === adapter.groupByNoneKey) return undefined;
+            const resolver = adapter.swimlaneOf?.(adapter.groupBy);
+            if (!resolver) return undefined;
+            return (issue: import('@/components/kanban/kanban-types').BoardIssue) =>
+              resolver(issue as import('@/components/kanban/adapters/BoardAdapter').CanonicalBoardIssue);
+          })()}
+          swimlaneLabel={adapter.swimlaneLabel}
         />
       </div>
     </div>

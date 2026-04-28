@@ -89,6 +89,7 @@ export default function ProductHubKanbanPage() {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const [createInitialStatus, setCreateInitialStatus] = useState<string | null>(null);
   const [, setCurrentUserId] = useState<string | null>(null);
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
@@ -164,14 +165,22 @@ export default function ProductHubKanbanPage() {
 
   /**
    * Per-column "+ Create initiative" — Jira-parity affordance threaded
-   * through the canonical adapter. Today the drawer doesn't accept a
-   * pre-filled status so we just open it; once `CreateInitiativeDrawer`
-   * supports `initialStatus` we can map `colId` ("col-<slug>") to the
-   * matching `initiative_status` enum value and seed the form.
+   * through the canonical adapter. Maps the column id (`col-<slug>`)
+   * back to a workflow status row, prefers an `slug_aliases` value
+   * that's a valid `initiative_status` enum (so the insert doesn't
+   * fail on a renamed slug like `demand_intake` before the migration
+   * lands), and seeds the create drawer with that status.
    */
-  const onCreateInColumn = useCallback((_colId: string) => {
+  const onCreateInColumn = useCallback((colId: string) => {
+    const slug = colId.replace(/^col-/, '');
+    const wf = (workflowStatuses as ReadonlyArray<{ slug: string; slug_aliases?: string[] | null }>).find(s => s.slug === slug);
+    // Prefer the first alias when present — alias values are guaranteed
+    // to be in the legacy `initiative_status` enum (the migration's
+    // whole point of slug_aliases). Falls back to slug if aliases empty.
+    const status = wf?.slug_aliases?.[0] ?? wf?.slug ?? null;
+    setCreateInitialStatus(status);
     setShowCreate(true);
-  }, []);
+  }, [workflowStatuses]);
   const selectedInitiative = useMemo(
     () => (selectedId ? initiatives.find(i => i.id === selectedId) ?? null : null),
     [selectedId, initiatives],
@@ -227,7 +236,11 @@ export default function ProductHubKanbanPage() {
         />
       )}
 
-      <CreateInitiativeDrawer open={showCreate} onClose={() => setShowCreate(false)} />
+      <CreateInitiativeDrawer
+        open={showCreate}
+        onClose={() => { setShowCreate(false); setCreateInitialStatus(null); }}
+        initialStatus={createInitialStatus}
+      />
     </>
   );
 }

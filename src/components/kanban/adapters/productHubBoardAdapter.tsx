@@ -131,12 +131,34 @@ function buildStatusToColumnId(
   return (status) => map.get(status) ?? null;
 }
 
+/**
+ * Map a column id back to a value safe to write into
+ * `ph_initiatives.status`. The column's `statuses` array is
+ * `[slug, ...slug_aliases]` per `buildColumnsFromWorkflowStatuses`.
+ *
+ * Slug-aliases are populated by the cycle-4 migration to route legacy
+ * `initiative_status` enum values (`new_demand`, `in_progress`,
+ * `closed`, etc.) into renamed columns. Those alias values are
+ * GUARANTEED to be in the enum (that's their purpose), while the
+ * column's primary slug may or may not be in the enum yet
+ * (post-migration both work; pre-migration only legacy values do).
+ *
+ * So for write-safety on drag-drop: prefer the first alias when
+ * present, fall back to the slug otherwise. Result is always a value
+ * the existing column-routing accepts (statusToColumnId reads slug
+ * + slug_aliases) AND that the DB enum accepts.
+ */
 function buildColumnIdToStatus(
   columns: KanbanColumnDef[],
 ): (columnId: string) => InitiativeStatus | null {
   return (columnId) => {
     const col = columns.find((c) => c.id === columnId);
-    return (col?.statuses[0] as InitiativeStatus) ?? null;
+    if (!col) return null;
+    // statuses = [slug, ...slug_aliases]. Prefer the first alias for
+    // write-safety; if no aliases were declared, the slug itself is
+    // the only choice.
+    const writeValue = col.statuses[1] ?? col.statuses[0] ?? null;
+    return (writeValue as InitiativeStatus) ?? null;
   };
 }
 
@@ -455,6 +477,21 @@ export function buildProductHubBoardAdapter(
     createInColumnLabel: 'Create initiative',
   };
 
+  /**
+   * Swimlane resolver — Catalyst-canonical groupings:
+   *   department → primaryLozenge.label (department_name)
+   *   quarter    → secondaryLozenge.label (target_quarter)
+   *   assignee   → assigneeName
+   * Cards whose field is null fall into the synthetic "Unassigned" lane.
+   */
+  const swimlaneOf = (groupByKey: string): ((card: CanonicalBoardIssue) => string | null) | null => {
+    if (groupByKey === 'none') return null;
+    if (groupByKey === 'department') return (card) => card.primaryLozenge?.label ?? null;
+    if (groupByKey === 'quarter')    return (card) => card.secondaryLozenge?.label ?? null;
+    if (groupByKey === 'assignee')   return (card) => card.assigneeName ?? null;
+    return null;
+  };
+
   return {
     name: 'producthub',
     contextKey: 'producthub',
@@ -474,6 +511,7 @@ export function buildProductHubBoardAdapter(
     groupBy,
     onGroupByChange,
     groupByNoneKey: 'none',
+    swimlaneOf,
 
     allAssignees,
     selAssignees,
